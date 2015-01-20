@@ -250,7 +250,7 @@
     </dependencySets>
 
     <files>
-        <file>
+ <!--       <file>
             <source>../mobileservices/agents/android/jax-rs/target/cdm-android-api.war</source>
             <outputDirectory>wso2cdm-${pom.version}/repository/deployment/server/webapps
             </outputDirectory>
@@ -261,7 +261,7 @@
             <outputDirectory>wso2cdm-${pom.version}/repository/deployment/server/webapps
             </outputDirectory>
             <fileMode>755</fileMode>
-        </file>
+        </file>-->
         <!-- <file>
              <source>
                  ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/tomcat/webapp-classloading.xml
@@ -350,6 +350,7 @@
         </file>
 
         <!-- Copying application-authentication.xml -->
+<!--
         <file>
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/security/application-authentication.xml
@@ -358,16 +359,17 @@
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
+-->
 
         <!-- Copying thrift-authentication.xml -->
-        <file>
+<!--        <file>
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/thrift-authentication.xml
             </source>
             <outputDirectory>wso2cdm-${project.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
-        </file>
+        </file>-->
 
         <file>
             <source>src/repository/conf/multitenancy/cloud-services-desc.xml</source>
@@ -420,7 +422,7 @@
         </file>
 
         <!--cdm plugin config file-->
-        <file>
+<!--        <file>
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/mobile-config.xml
             </source>
@@ -429,7 +431,7 @@
             </outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
-        </file>
+        </file>-->
         <file>
             <source>
                 ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/tomcat/webapp-classloading-environments.xml
@@ -441,14 +443,14 @@
         </file>
 
 	<!-- Copying H2 database related files corresponding to default API management repository schema -->
-	<file>
+<!--	<file>
             <source>
                 target/wso2carbon-core-${carbon.kernel.version}/repository/database/WSO2AM_DB.h2.db
 	    </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
             <destName>WSO2AM_DB.h2.db</destName>
             <fileMode>644</fileMode>
-        </file>
+        </file>-->
 
 	<!-- Copying H2 database related files corresponding to default Device management repository schema -->
         <file>

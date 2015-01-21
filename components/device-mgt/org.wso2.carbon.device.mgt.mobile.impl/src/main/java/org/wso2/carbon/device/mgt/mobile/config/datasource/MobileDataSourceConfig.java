@@ -28,12 +28,11 @@ public class MobileDataSourceConfig {
 	private JNDILookupDefinition jndiLookupDefinition;
 
 	@XmlElement(name = "JndiLookupDefinition", nillable = true)
-	public JNDILookupDefinition getJndiLookupDefintion() {
+	public JNDILookupDefinition getJndiLookupDefinition() {
 		return jndiLookupDefinition;
 	}
 
 	public void setJndiLookupDefinition(JNDILookupDefinition jndiLookupDefinition) {
 		this.jndiLookupDefinition = jndiLookupDefinition;
 	}
-
 }

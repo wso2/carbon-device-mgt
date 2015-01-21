@@ -44,7 +44,7 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 	}
 
 	@Override
-	public MobileDevice getDevice(String deviceId) throws MobileDeviceManagementDAOException {
+	public MobileDevice getMobileDevice(String deviceId) throws MobileDeviceManagementDAOException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		MobileDevice mobileDevice = null;
@@ -64,6 +64,8 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 				mobileDevice.setOsVersion(resultSet.getString(5));
 				mobileDevice.setModel(resultSet.getString(6));
 				mobileDevice.setVendor(resultSet.getString(7));
+				mobileDevice.setLatitude(resultSet.getString(8));
+				mobileDevice.setLongitude(resultSet.getString(9));
 				break;
 			}
 		} catch (SQLException e) {
@@ -78,7 +80,7 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 	}
 
 	@Override
-	public boolean addDevice(MobileDevice mobileDevice)
+	public boolean addMobileDevice(MobileDevice mobileDevice)
 			throws MobileDeviceManagementDAOException {
 		boolean status = false;
 		Connection conn = null;
@@ -87,7 +89,7 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 			conn = this.getConnection();
 			String createDBQuery =
 					"INSERT INTO MBL_DEVICE(MOBILE_DEVICE_ID, REG_ID, IMEI, IMSI, OS_VERSION," +
-					"DEVICE_MODEL, VENDOR) VALUES (?, ?, ?, ?, ?, ?, ?)";
+					"DEVICE_MODEL, VENDOR, LATITUDE, LONGITUDE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			stmt = conn.prepareStatement(createDBQuery);
 			stmt.setString(1, mobileDevice.getMobileDeviceId());
@@ -97,13 +99,15 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 			stmt.setString(5, mobileDevice.getOsVersion());
 			stmt.setString(6, mobileDevice.getModel());
 			stmt.setString(7, mobileDevice.getVendor());
+			stmt.setString(8, mobileDevice.getLatitude());
+			stmt.setString(8, mobileDevice.getLongitude());
 			int rows = stmt.executeUpdate();
 			if(rows>0){
 				status = true;
 			}
 		} catch (SQLException e) {
-			String msg = "Error occurred while enrolling mobile device '" +
-			             mobileDevice.getMobileDeviceId() + "'";
+			String msg = "Error occurred while adding the mobile device '" +
+			             mobileDevice.getMobileDeviceId() + "' to the mobile db.";
 			log.error(msg, e);
 			throw new MobileDeviceManagementDAOException(msg, e);
 		} finally {
@@ -113,7 +117,7 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 	}
 
 	@Override
-	public boolean updateDevice(MobileDevice mobileDevice)
+	public boolean updateMobileDevice(MobileDevice mobileDevice)
 			throws MobileDeviceManagementDAOException {
 		boolean status = false;
 		Connection conn = null;
@@ -122,7 +126,7 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 			conn = this.getConnection();
 			String updateDBQuery =
 					"UPDATE MBL_DEVICE SET REG_ID = ?, IMEI = ?, IMSI = ?, OS_VERSION = ?," +
-					"DEVICE_MODEL = ?, VENDOR = ? WHERE MOBILE_DEVICE_ID = ?";
+					"DEVICE_MODEL = ?, VENDOR = ? , LATITUDE = ?, LONGITUDE = ? WHERE MOBILE_DEVICE_ID = ?";
 			stmt = conn.prepareStatement(updateDBQuery);
 			stmt.setString(1, mobileDevice.getRegId());
 			stmt.setString(2, mobileDevice.getImei());
@@ -130,7 +134,9 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 			stmt.setString(4, mobileDevice.getOsVersion());
 			stmt.setString(5, mobileDevice.getModel());
 			stmt.setString(6, mobileDevice.getVendor());
-			stmt.setString(7, mobileDevice.getMobileDeviceId());
+			stmt.setString(7, mobileDevice.getLatitude());
+			stmt.setString(8, mobileDevice.getLongitude());
+			stmt.setString(9, mobileDevice.getMobileDeviceId());
 			int rows = stmt.executeUpdate();
 			if(rows>0){
 				status = true;
@@ -147,7 +153,7 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 	}
 
 	@Override
-	public boolean deleteDevice(String deviceId) throws MobileDeviceManagementDAOException {
+	public boolean deleteMobileDevice(String deviceId) throws MobileDeviceManagementDAOException {
 		boolean status = false;
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -172,7 +178,7 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 	}
 
 	@Override
-	public List<MobileDevice> getAllDevices() throws MobileDeviceManagementDAOException {
+	public List<MobileDevice> getAllMobileDevices() throws MobileDeviceManagementDAOException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		MobileDevice mobileDevice;
@@ -192,6 +198,8 @@ public class MobileDeviceDAOImpl implements MobileDeviceDAO {
 				mobileDevice.setOsVersion(resultSet.getString(5));
 				mobileDevice.setModel(resultSet.getString(6));
 				mobileDevice.setVendor(resultSet.getString(7));
+				mobileDevice.setLatitude(resultSet.getString(8));
+				mobileDevice.setLongitude(resultSet.getString(9));
 				mobileDevices.add(mobileDevice);
 			}
 			return mobileDevices;

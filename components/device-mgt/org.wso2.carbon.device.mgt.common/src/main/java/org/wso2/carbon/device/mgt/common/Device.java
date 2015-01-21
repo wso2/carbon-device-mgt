@@ -18,6 +18,7 @@ package org.wso2.carbon.device.mgt.common;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Map;
 
 @XmlRootElement
 public class Device {
@@ -34,7 +35,7 @@ public class Device {
     private String deviceIdentifier;
     private String owner;
     private List<Feature> features;
-    private List<Device.Property> properties;
+    private Map<String, String> properties;
 
     @XmlElement
     public int getId() {
@@ -145,34 +146,12 @@ public class Device {
     }
 
     @XmlElement
-    public List<Device.Property> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<Device.Property> properties) {
+    public void setProperties(Map<String, String> properties) {
         this.properties = properties;
-    }
-
-    public static class Property {
-
-        private String name;
-        private String value;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
     }
 
 }

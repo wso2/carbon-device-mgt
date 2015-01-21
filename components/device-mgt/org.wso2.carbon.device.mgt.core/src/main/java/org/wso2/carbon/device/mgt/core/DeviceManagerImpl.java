@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,17 +110,19 @@ public class DeviceManagerImpl implements DeviceManager {
 	    List<Device> devicesList = new ArrayList<Device>();
         try {
             Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(type);
-	        List<org.wso2.carbon.device.mgt.core.dto.Device> devices =
-			        this.getDeviceDAO().getDevices(deviceTypeId);
+            List<org.wso2.carbon.device.mgt.core.dto.Device> devices =
+                    this.getDeviceDAO().getDevices(deviceTypeId);
 
             for (org.wso2.carbon.device.mgt.core.dto.Device device : devices) {
-                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device);
-                DeviceIdentifier deviceIdentifier = DeviceManagementDAOUtil
-                        .createDeviceIdentifier(device, this.deviceTypeDAO
-                                .getDeviceType(device.getDeviceTypeId()));
+                DeviceType deviceType = this.deviceTypeDAO.getDeviceType(device.getDeviceTypeId());
+                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, deviceType);
+                DeviceIdentifier deviceIdentifier =
+                        DeviceManagementDAOUtil.createDeviceIdentifier(device, deviceType);
                 Device dmsDevice = dms.getDevice(deviceIdentifier);
-                convertedDevice.setProperties(dmsDevice.getProperties());
-                convertedDevice.setFeatures(dmsDevice.getFeatures());
+                if (dmsDevice != null) {
+                    convertedDevice.setProperties(dmsDevice.getProperties());
+                    convertedDevice.setFeatures(dmsDevice.getFeatures());
+                }
                 devicesList.add(convertedDevice);
             }
         } catch (DeviceManagementDAOException e) {

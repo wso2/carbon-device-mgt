@@ -35,13 +35,23 @@ public interface OperationManager {
 			throws OperationManagementException;
 
 	/**
-	 * Method to retrieve the list of available operations to a device.
+	 * Method to retrieve the list of all operations to a device.
 	 *
 	 * @param deviceId DeviceIdentifier of the device
 	 * @throws OperationManagementException If some unusual behaviour is observed while fetching the
 	 * operation list.
 	 */
 	public List<Operation> getOperations(DeviceIdentifier deviceId)
+			throws OperationManagementException;
+
+	/**
+	 * Method to retrieve the list of available operations to a device.
+	 *
+	 * @param deviceId DeviceIdentifier of the device
+	 * @throws OperationManagementException If some unusual behaviour is observed while fetching the
+	 * operation list.
+	 */
+	public List<Operation> getPendingOperations(DeviceIdentifier deviceId)
 			throws OperationManagementException;
 
 }

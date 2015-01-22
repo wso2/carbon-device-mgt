@@ -34,8 +34,6 @@
     <name>WSO2 Connected Device Manager (CDM) - Parent</name>
 
     <modules>
-        <module>modules/mobileservices</module>
-        <module>modules/rest-api</module>
         <module>modules/p2-profile-gen</module>
         <module>modules/distribution</module>
         <module>modules/integration</module>

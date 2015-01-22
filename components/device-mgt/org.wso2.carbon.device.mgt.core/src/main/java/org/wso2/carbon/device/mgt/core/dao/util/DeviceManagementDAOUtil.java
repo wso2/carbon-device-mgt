@@ -34,9 +34,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
 public final class DeviceManagementDAOUtil {
 
@@ -107,9 +105,10 @@ public final class DeviceManagementDAOUtil {
 
     /**
      * @param device - The DTO device object.
+     * @param deviceType - The DeviceType object associated with the device
      * @return A Business Object.
      */
-    public static org.wso2.carbon.device.mgt.common.Device convertDevice(Device device){
+    public static org.wso2.carbon.device.mgt.common.Device convertDevice(Device device, DeviceType deviceType){
         org.wso2.carbon.device.mgt.common.Device deviceBO =
                 new org.wso2.carbon.device.mgt.common.Device();
         deviceBO.setDateOfEnrolment(device.getDateOfEnrollment());
@@ -117,6 +116,7 @@ public final class DeviceManagementDAOUtil {
         deviceBO.setDescription(device.getDescription());
         deviceBO.setDeviceIdentifier(device.getDeviceIdentificationId());
         deviceBO.setDeviceTypeId(device.getDeviceTypeId());
+        deviceBO.setType(deviceType.getName());
         deviceBO.setName(device.getName());
         deviceBO.setId(device.getId());
         deviceBO.setOwner(device.getOwnerId());
@@ -126,21 +126,7 @@ public final class DeviceManagementDAOUtil {
         } else if (device.getStatus() == Status.INACTIVE) {
             deviceBO.setStatus(false);
         }
-        return null;
-    }
-
-    /**
-     * @param devices - DTO Device Object list.
-     * @return  converted Business Object list.
-     */
-    public static List<org.wso2.carbon.device.mgt.common.Device> convertDevices(
-            List<Device> devices) {
-        List<org.wso2.carbon.device.mgt.common.Device> deviceBOList =
-                new ArrayList<org.wso2.carbon.device.mgt.common.Device>();
-        for (Device device : devices) {
-            deviceBOList.add(convertDevice(device));
-        }
-        return deviceBOList;
+        return deviceBO;
     }
 
     public static Device convertDevice(org.wso2.carbon.device.mgt.common.Device

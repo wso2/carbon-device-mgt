@@ -135,8 +135,6 @@ public class DeviceManagerImpl implements DeviceManager {
 					convertedDevice.setProperties(dmsDevice.getProperties());
 					convertedDevice.setFeatures(dmsDevice.getFeatures());
 				}
-			} else {
-				throw new DeviceManagementException("No device found for the id '" + deviceId.getId() + "'");
 			}
 		} catch (DeviceManagementDAOException e) {
 			throw new DeviceManagementException(

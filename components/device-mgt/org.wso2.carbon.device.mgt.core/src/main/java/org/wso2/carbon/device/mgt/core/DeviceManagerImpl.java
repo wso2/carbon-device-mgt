@@ -135,7 +135,26 @@ public class DeviceManagerImpl implements DeviceManager {
     @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.getDevice(deviceId);
+        Device convertedDevice = null;
+        try {
+            Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(deviceId.getType());
+            org.wso2.carbon.device.mgt.core.dto.Device device =
+                    this.getDeviceDAO().getDeviceByDeviceIdentifier(deviceTypeId, deviceId.getId());
+            if(device!=null){
+                convertedDevice = DeviceManagementDAOUtil.convertDevice(device, this.getDeviceTypeDAO().getDeviceType(deviceTypeId));
+                Device dmsDevice = dms.getDevice(deviceId);
+                if (dmsDevice != null) {
+                    convertedDevice.setProperties(dmsDevice.getProperties());
+                    convertedDevice.setFeatures(dmsDevice.getFeatures());
+                }
+            }else{
+                throw new DeviceManagementException("No device found for the id '" + deviceId.getId() + "'");
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id '" + deviceId.getId() + "'",
+                                                e);
+        }
+        return convertedDevice;
     }
 
     @Override

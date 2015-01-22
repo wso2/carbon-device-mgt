@@ -38,6 +38,14 @@ public interface DeviceDAO {
 
     Device getDeviceByDeviceId(Long deviceId) throws DeviceManagementDAOException;
 
+    /**
+     * @param type - Device type.
+     * @param identifier - Device identifier.
+     * @return
+     * @throws DeviceManagementDAOException
+     */
+    Device getDeviceByDeviceIdentifier(Integer type, String identifier) throws DeviceManagementDAOException;
+
     List<Device> getDevices() throws DeviceManagementDAOException;
 
     /**

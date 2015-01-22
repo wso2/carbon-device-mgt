@@ -21,8 +21,8 @@ package org.wso2.carbon.device.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.dto.Status;
 
@@ -97,6 +97,48 @@ public class DeviceDAOImpl implements DeviceDAO {
             throws DeviceManagementDAOException {
         return null;
     }
+
+    @Override public Device getDeviceByDeviceIdentifier(Integer type, String identifier)
+            throws DeviceManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        Device device = null;
+        try {
+            conn = this.getConnection();
+            String selectDBQueryForType = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
+                                          "DATE_OF_LAST_UPDATE, OWNERSHIP, STATUS, DEVICE_TYPE_ID, " +
+                                          "DEVICE_IDENTIFICATION, OWNER, TENANT_ID FROM DM_DEVICE " +
+                                          "WHERE DM_DEVICE.DEVICE_TYPE_ID=? AND DM_DEVICE.DEVICE_IDENTIFICATION=?";
+            stmt = conn.prepareStatement(selectDBQueryForType);
+            stmt.setInt(1, type);
+            stmt.setString(2, identifier);
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                device = new Device();
+                device.setId(resultSet.getInt(1));
+                device.setDescription(resultSet.getString(2));
+                device.setName(resultSet.getString(3));
+                device.setDateOfEnrollment(resultSet.getLong(4));
+                device.setDateOfLastUpdate(resultSet.getLong(5));
+                //TODO:- Ownership is not a enum in DeviceDAO
+                device.setOwnerShip(resultSet.getString(6));
+                device.setStatus(Status.valueOf(resultSet.getString(7)));
+                device.setDeviceTypeId(resultSet.getInt(8));
+                device.setDeviceIdentificationId(resultSet.getString(9));
+                device.setOwnerId(resultSet.getString(10));
+                device.setTenantId(resultSet.getInt(11));
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while listing devices for type '" + type + "'";
+            log.error(msg, e);
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
+        }
+        return device;
+    }
+
 
     @Override
     public List<Device> getDevices() throws DeviceManagementDAOException {

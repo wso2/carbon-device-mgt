@@ -28,140 +28,147 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceManagerImpl implements DeviceManager {
 
-    private DeviceDAO deviceDAO;
-    private DeviceTypeDAO deviceTypeDAO;
-    private DeviceManagementConfig config;
-    private DeviceManagementRepository pluginRepository;
+	private DeviceDAO deviceDAO;
+	private DeviceTypeDAO deviceTypeDAO;
+	private DeviceManagementConfig config;
+	private DeviceManagementRepository pluginRepository;
 
-    public DeviceManagerImpl(DeviceManagementConfig config, DeviceManagementRepository pluginRepository) {
-        this.config = config;
-        this.pluginRepository = pluginRepository;
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-    }
+	public DeviceManagerImpl(DeviceManagementConfig config, DeviceManagementRepository pluginRepository) {
+		this.config = config;
+		this.pluginRepository = pluginRepository;
+		this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+		this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+	}
 
-    @Override
-    public boolean enrollDevice(Device device) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
-        boolean status = dms.enrollDevice(device);
+	@Override public boolean enrollDevice(Device device) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
+		boolean status = dms.enrollDevice(device);
 
-        try {
-            org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
-            Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(device.getType());
-            deviceDto.setDeviceTypeId(deviceTypeId);
-            this.getDeviceDAO().addDevice(deviceDto);
+		try {
+			org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
+			Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(device.getType());
+			deviceDto.setDeviceTypeId(deviceTypeId);
+			this.getDeviceDAO().addDevice(deviceDto);
 
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while enrolling the device '" + device.getId() + "'", e);
-        }
-        return status;
-    }
+		} catch (DeviceManagementDAOException e) {
+			throw new DeviceManagementException("Error occurred while enrolling the device '" + device.getId() + "'",
+			                                    e);
+		}
+		return status;
+	}
 
-    @Override
-    public boolean modifyEnrollment(Device device) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
-        boolean status = dms.modifyEnrollment(device);
-        try {
-            this.getDeviceDAO().updateDevice(DeviceManagementDAOUtil.convertDevice(device));
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while modifying the device '" + device.getId() + "'",
-                    e);
-        }
-        return status;
-    }
+	@Override public boolean modifyEnrollment(Device device) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
+		boolean status = dms.modifyEnrollment(device);
+		try {
+			this.getDeviceDAO().updateDevice(DeviceManagementDAOUtil.convertDevice(device));
+		} catch (DeviceManagementDAOException e) {
+			throw new DeviceManagementException("Error occurred while modifying the device '" + device.getId() + "'",
+			                                    e);
+		}
+		return status;
+	}
 
-    @Override
-    public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.disenrollDevice(deviceId);
-    }
+	@Override public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+		return dms.disenrollDevice(deviceId);
+	}
 
-    @Override
-    public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.isEnrolled(deviceId);
-    }
+	@Override public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+		return dms.isEnrolled(deviceId);
+	}
 
-    @Override
-    public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.isActive(deviceId);
-    }
+	@Override public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+		return dms.isActive(deviceId);
+	}
 
-    @Override
-    public boolean setActive(DeviceIdentifier deviceId, boolean status)
-            throws DeviceManagementException {
-        DeviceManagerService dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.setActive(deviceId, status);
-    }
+	@Override public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+		return dms.setActive(deviceId, status);
+	}
 
-    @Override
-    public List<Device> getAllDevices(String type) throws DeviceManagementException {
-      DeviceManagerService dms =
-                this.getPluginRepository().getDeviceManagementProvider(type);
-	    List<Device> devicesList = new ArrayList<Device>();
-        try {
-            Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(type);
-	        List<org.wso2.carbon.device.mgt.core.dto.Device> devices =
-			        this.getDeviceDAO().getDevices(deviceTypeId);
+	@Override public List<Device> getAllDevices(String type) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(type);
+		List<Device> devicesList = new ArrayList<Device>();
+		try {
+			Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(type);
+			List<org.wso2.carbon.device.mgt.core.dto.Device> devices = this.getDeviceDAO().getDevices(deviceTypeId);
 
-            for (org.wso2.carbon.device.mgt.core.dto.Device device : devices) {
-                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device);
-                DeviceIdentifier deviceIdentifier = DeviceManagementDAOUtil
-                        .createDeviceIdentifier(device, this.deviceTypeDAO
-                                .getDeviceType(device.getDeviceTypeId()));
-                Device dmsDevice = dms.getDevice(deviceIdentifier);
-                convertedDevice.setProperties(dmsDevice.getProperties());
-                convertedDevice.setFeatures(dmsDevice.getFeatures());
-                devicesList.add(convertedDevice);
-            }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for type '" + type + "'",
-                                                e);
-        }
-	    return devicesList;
-    }
+			for (org.wso2.carbon.device.mgt.core.dto.Device device : devices) {
+				DeviceType deviceType = this.deviceTypeDAO.getDeviceType(device.getDeviceTypeId());
+				Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, deviceType);
+				DeviceIdentifier deviceIdentifier = DeviceManagementDAOUtil.createDeviceIdentifier(device, deviceType);
+				Device dmsDevice = dms.getDevice(deviceIdentifier);
+				if (dmsDevice != null) {
+					convertedDevice.setProperties(dmsDevice.getProperties());
+					convertedDevice.setFeatures(dmsDevice.getFeatures());
+				}
+				devicesList.add(convertedDevice);
+			}
+		} catch (DeviceManagementDAOException e) {
+			throw new DeviceManagementException("Error occurred while obtaining the device for type '" + type + "'", e);
+		}
+		return devicesList;
+	}
 
-    @Override
-    public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.getDevice(deviceId);
-    }
+	@Override public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+		Device convertedDevice = null;
+		try {
+			Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(deviceId.getType());
+			org.wso2.carbon.device.mgt.core.dto.Device device =
+					this.getDeviceDAO().getDeviceByDeviceIdentifier(deviceTypeId, deviceId.getId());
+			if (device != null) {
+				convertedDevice = DeviceManagementDAOUtil
+						.convertDevice(device, this.getDeviceTypeDAO().getDeviceType(deviceTypeId));
+				Device dmsDevice = dms.getDevice(deviceId);
+				if (dmsDevice != null) {
+					convertedDevice.setProperties(dmsDevice.getProperties());
+					convertedDevice.setFeatures(dmsDevice.getFeatures());
+				}
+			}
+		} catch (DeviceManagementDAOException e) {
+			throw new DeviceManagementException(
+					"Error occurred while obtaining the device for id '" + deviceId.getId() + "'", e);
+		}
+		return convertedDevice;
+	}
 
-    @Override
-    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
-        return dms.updateDeviceInfo(device);
-    }
+	@Override public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
+		return dms.updateDeviceInfo(device);
+	}
 
-    @Override
-    public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.setOwnership(deviceId, ownershipType);
-    }
+	@Override public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
+			throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+		return dms.setOwnership(deviceId, ownershipType);
+	}
 
-    public OperationManager getOperationManager(String type) throws DeviceManagementException {
-        DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(type);
-        return dms.getOperationManager();
-    }
+	public OperationManager getOperationManager(String type) throws DeviceManagementException {
+		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(type);
+		return dms.getOperationManager();
+	}
 
-    public DeviceDAO getDeviceDAO() {
-        return deviceDAO;
-    }
+	public DeviceDAO getDeviceDAO() {
+		return deviceDAO;
+	}
 
-    public DeviceTypeDAO getDeviceTypeDAO() {
-        return deviceTypeDAO;
-    }
+	public DeviceTypeDAO getDeviceTypeDAO() {
+		return deviceTypeDAO;
+	}
 
-    public DeviceManagementRepository getPluginRepository() {
-        return pluginRepository;
-    }
+	public DeviceManagementRepository getPluginRepository() {
+		return pluginRepository;
+	}
 
 }

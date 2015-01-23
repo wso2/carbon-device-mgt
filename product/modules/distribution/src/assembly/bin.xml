@@ -210,7 +210,7 @@
 
         <!-- Copying Device Management related dbscripts -->
         <fileSet>
-            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/cdm</directory>
+            <directory>../distribution/src/repository/dbscripts/cdm</directory>
             <outputDirectory>wso2cdm-${project.version}/dbscripts/cdm</outputDirectory>
             <includes>
                 <include>*/**</include>
@@ -223,13 +223,15 @@
             <outputDirectory>${project.artifactId}-${project.version}/repository/resources
             </outputDirectory>
         </fileSet>
-        <!-- copy cdm jaggery app -->
-        <fileSet>
-            <directory>src/repository/jaggeryapps</directory>
-            <outputDirectory>wso2cdm-${project.version}/repository/deployment/server/jaggeryapps
-            </outputDirectory>
-            <fileMode>755</fileMode>
-        </fileSet>
+        <!-- copy cdm jaggery app
+        Commented the section since the repo was moved to MDM
+        -->
+        <!--<fileSet>-->
+            <!--<directory>src/repository/jaggeryapps</directory>-->
+            <!--<outputDirectory>wso2cdm-${project.version}/repository/deployment/server/jaggeryapps-->
+            <!--</outputDirectory>-->
+            <!--<fileMode>755</fileMode>-->
+        <!--</fileSet>-->
     </fileSets>
     
     <dependencySets>
@@ -461,6 +463,16 @@
             <destName>WSO2DM_DB.h2.db</destName>
             <fileMode>644</fileMode>
         </file>
+
+        <!-- Copying H2 database related files corresponding to default Mobile Device management repository schema -->
+  <!--      <file>
+            <source>
+                ../distribution/src/repository/database/WSO2MobileDM_DB.h2.db
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/database</outputDirectory>
+            <destName>WSO2MobileDM_DB.h2.db</destName>
+            <fileMode>644</fileMode>
+        </file> -->
 
     </files>
 </assembly>

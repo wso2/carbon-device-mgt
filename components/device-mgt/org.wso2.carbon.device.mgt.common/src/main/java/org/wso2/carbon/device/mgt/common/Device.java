@@ -19,7 +19,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement public class Device {
+@XmlRootElement
+public class Device {
 
 	private int id;
 	private String type;
@@ -35,7 +36,8 @@ import java.util.List;
 	private List<Feature> features;
 	private List<Device.Property> properties;
 
-	@XmlElement public int getId() {
+	@XmlElement
+	public int getId() {
 		return id;
 	}
 
@@ -43,7 +45,8 @@ import java.util.List;
 		this.id = id;
 	}
 
-	@XmlElement public String getDescription() {
+	@XmlElement
+	public String getDescription() {
 		return description;
 	}
 
@@ -51,7 +54,8 @@ import java.util.List;
 		this.description = description;
 	}
 
-	@XmlElement public String getName() {
+	@XmlElement
+	public String getName() {
 		return name;
 	}
 
@@ -59,7 +63,8 @@ import java.util.List;
 		this.name = name;
 	}
 
-	@XmlElement public Long getDateOfEnrolment() {
+	@XmlElement
+	public Long getDateOfEnrolment() {
 		return dateOfEnrolment;
 	}
 
@@ -67,7 +72,8 @@ import java.util.List;
 		this.dateOfEnrolment = dateOfEnrolment;
 	}
 
-	@XmlElement public Long getDateOfLastUpdate() {
+	@XmlElement
+	public Long getDateOfLastUpdate() {
 		return dateOfLastUpdate;
 	}
 
@@ -75,7 +81,8 @@ import java.util.List;
 		this.dateOfLastUpdate = dateOfLastUpdate;
 	}
 
-	@XmlElement public String getOwnership() {
+	@XmlElement
+	public String getOwnership() {
 		return ownership;
 	}
 
@@ -83,7 +90,8 @@ import java.util.List;
 		this.ownership = ownership;
 	}
 
-	@XmlElement public boolean isStatus() {
+	@XmlElement
+	public boolean isStatus() {
 		return status;
 	}
 
@@ -91,7 +99,8 @@ import java.util.List;
 		this.status = status;
 	}
 
-	@XmlElement public int getDeviceTypeId() {
+	@XmlElement
+	public int getDeviceTypeId() {
 		return deviceTypeId;
 	}
 
@@ -99,7 +108,8 @@ import java.util.List;
 		this.deviceTypeId = deviceTypeId;
 	}
 
-	@XmlElement public String getDeviceIdentifier() {
+	@XmlElement
+	public String getDeviceIdentifier() {
 		return deviceIdentifier;
 	}
 
@@ -107,7 +117,8 @@ import java.util.List;
 		this.deviceIdentifier = deviceIdentifier;
 	}
 
-	@XmlElement public String getOwner() {
+	@XmlElement
+	public String getOwner() {
 		return owner;
 	}
 
@@ -115,7 +126,8 @@ import java.util.List;
 		this.owner = owner;
 	}
 
-	@XmlElement public List<Feature> getFeatures() {
+	@XmlElement
+	public List<Feature> getFeatures() {
 		return features;
 	}
 
@@ -123,7 +135,8 @@ import java.util.List;
 		this.features = features;
 	}
 
-	@XmlElement public String getType() {
+	@XmlElement
+	public String getType() {
 		return type;
 	}
 
@@ -131,7 +144,8 @@ import java.util.List;
 		this.type = type;
 	}
 
-	@XmlElement public List<Device.Property> getProperties() {
+	@XmlElement
+	public List<Device.Property> getProperties() {
 		return properties;
 	}
 

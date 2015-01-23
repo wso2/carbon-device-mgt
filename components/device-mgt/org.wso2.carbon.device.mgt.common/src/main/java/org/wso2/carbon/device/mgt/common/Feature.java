@@ -21,6 +21,7 @@ public class Feature {
 
     private int id;
     private String name;
+    private String deviceType;
     private List<MetadataEntry> metadataEntries;
 
     public int getId() {
@@ -45,6 +46,14 @@ public class Feature {
 
     public void setMetadataEntries(List<MetadataEntry> metadataEntries) {
         this.metadataEntries = metadataEntries;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 
     public static class MetadataEntry {

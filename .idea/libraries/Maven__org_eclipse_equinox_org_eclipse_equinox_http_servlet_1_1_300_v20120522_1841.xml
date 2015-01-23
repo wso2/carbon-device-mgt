@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.eclipse.equinox:org.eclipse.equinox.http.servlet:1.1.300.v20120522-1841">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.eclipse.equinox.http.servlet/1.1.300.v20120522-1841/org.eclipse.equinox.http.servlet-1.1.300.v20120522-1841.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.eclipse.equinox.http.servlet/1.1.300.v20120522-1841/org.eclipse.equinox.http.servlet-1.1.300.v20120522-1841-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.eclipse.equinox.http.servlet/1.1.300.v20120522-1841/org.eclipse.equinox.http.servlet-1.1.300.v20120522-1841-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

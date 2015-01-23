@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: solr.wso2:solr:1.4.1.wso2v1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/solr/wso2/solr/1.4.1.wso2v1/solr-1.4.1.wso2v1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/solr/wso2/solr/1.4.1.wso2v1/solr-1.4.1.wso2v1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/solr/wso2/solr/1.4.1.wso2v1/solr-1.4.1.wso2v1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.eclipse.equinox:org.eclipse.equinox.simpleconfigurator:1.0.301.v20120828-033635">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.eclipse.equinox.simpleconfigurator/1.0.301.v20120828-033635/org.eclipse.equinox.simpleconfigurator-1.0.301.v20120828-033635.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.eclipse.equinox.simpleconfigurator/1.0.301.v20120828-033635/org.eclipse.equinox.simpleconfigurator-1.0.301.v20120828-033635-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.eclipse.equinox.simpleconfigurator/1.0.301.v20120828-033635/org.eclipse.equinox.simpleconfigurator-1.0.301.v20120828-033635-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

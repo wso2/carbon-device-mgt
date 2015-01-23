@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.eclipse.equinox:org.apache.jasper.glassfish:2.2.2.v201205150955">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.apache.jasper.glassfish/2.2.2.v201205150955/org.apache.jasper.glassfish-2.2.2.v201205150955.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.apache.jasper.glassfish/2.2.2.v201205150955/org.apache.jasper.glassfish-2.2.2.v201205150955-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/equinox/org.apache.jasper.glassfish/2.2.2.v201205150955/org.apache.jasper.glassfish-2.2.2.v201205150955-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

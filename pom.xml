@@ -120,8 +120,11 @@
                 <artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
-
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.api</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
             <!--Osgi dependencies-->
             <dependency>
                 <groupId>org.eclipse.osgi</groupId>
@@ -200,6 +203,7 @@
                 <artifactId>org.wso2.carbon.policy.evaluator</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
 
         </dependencies>
     </dependencyManagement>

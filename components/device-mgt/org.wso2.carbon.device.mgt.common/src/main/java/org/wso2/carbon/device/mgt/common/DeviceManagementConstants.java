@@ -43,4 +43,10 @@ public final class DeviceManagementConstants {
         public final static String MOBILE_DEVICE_TYPE_WINDOWS = "windows";
     }
 
+    public static final class LanguageCodes{
+        private LanguageCodes() { throw new AssertionError();}
+        public final static String LANGUAGE_CODE_ENGLISH_US = "en-us";
+        public final static String LANGUAGE_CODE_ENGLISH_UK = "en-uk";
+    }
+
 }

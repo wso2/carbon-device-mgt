@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -35,6 +37,7 @@ import java.util.List;
 
 public class DeviceManagerImpl implements DeviceManager {
 
+    private static Log log = LogFactory.getLog(DeviceManagerImpl.class);
 	private DeviceDAO deviceDAO;
 	private DeviceTypeDAO deviceTypeDAO;
 	private DeviceManagementConfig config;

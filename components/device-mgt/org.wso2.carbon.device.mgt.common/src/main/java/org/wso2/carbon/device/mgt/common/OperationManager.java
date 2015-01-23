@@ -54,4 +54,12 @@ public interface OperationManager {
 	public List<Operation> getPendingOperations(DeviceIdentifier deviceId)
 			throws OperationManagementException;
 
+	/**
+	 * TODO: Move this into a separate FeatureManager
+	 * @param deviceType - Device type
+	 * @return a list of Feature objects.
+	 * @throws FeatureManagementException
+	 */
+	public List<Feature> getFeaturesForDeviceType(String deviceType) throws FeatureManagementException;
+
 }

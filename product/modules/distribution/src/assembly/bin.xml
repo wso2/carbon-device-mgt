@@ -223,13 +223,15 @@
             <outputDirectory>${project.artifactId}-${project.version}/repository/resources
             </outputDirectory>
         </fileSet>
-        <!-- copy cdm jaggery app -->
-        <fileSet>
-            <directory>src/repository/jaggeryapps</directory>
-            <outputDirectory>wso2cdm-${project.version}/repository/deployment/server/jaggeryapps
-            </outputDirectory>
-            <fileMode>755</fileMode>
-        </fileSet>
+        <!-- copy cdm jaggery app
+        Commented the section since the repo was moved to MDM
+        -->
+        <!--<fileSet>-->
+            <!--<directory>src/repository/jaggeryapps</directory>-->
+            <!--<outputDirectory>wso2cdm-${project.version}/repository/deployment/server/jaggeryapps-->
+            <!--</outputDirectory>-->
+            <!--<fileMode>755</fileMode>-->
+        <!--</fileSet>-->
     </fileSets>
     
     <dependencySets>

@@ -28,22 +28,30 @@ import java.util.List;
  */
 public interface DeviceDAO {
 
-    void addDevice(Device device) throws DeviceManagementDAOException;
+	void addDevice(Device device) throws DeviceManagementDAOException;
 
-    void updateDevice(Device device) throws DeviceManagementDAOException;
+	void updateDevice(Device device) throws DeviceManagementDAOException;
 
-    void updateDeviceStatus(Long deviceId, Status status) throws DeviceManagementDAOException;
+	void updateDeviceStatus(Long deviceId, Status status) throws DeviceManagementDAOException;
 
-    void deleteDevice(Long deviceId) throws DeviceManagementDAOException;
+	void deleteDevice(Long deviceId) throws DeviceManagementDAOException;
 
-    Device getDeviceByDeviceId(Long deviceId) throws DeviceManagementDAOException;
+	Device getDeviceByDeviceId(Long deviceId) throws DeviceManagementDAOException;
 
-    List<Device> getDevices() throws DeviceManagementDAOException;
+	/**
+	 * @param type       - Device type.
+	 * @param identifier - Device identifier.
+	 * @return
+	 * @throws DeviceManagementDAOException
+	 */
+	Device getDeviceByDeviceIdentifier(Integer type, String identifier) throws DeviceManagementDAOException;
 
-    /**
-     * @param type - The device type id.
-     * @return  a list of devices based on the type id.
-     * @throws DeviceManagementDAOException
-     */
-    List<Device> getDevices(Integer type) throws DeviceManagementDAOException;
+	List<Device> getDevices() throws DeviceManagementDAOException;
+
+	/**
+	 * @param type - The device type id.
+	 * @return a list of devices based on the type id.
+	 * @throws DeviceManagementDAOException
+	 */
+	List<Device> getDevices(Integer type) throws DeviceManagementDAOException;
 }

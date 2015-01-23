@@ -10,14 +10,3 @@ target
 
 # Mac crap
 .DS_Store
-*.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-

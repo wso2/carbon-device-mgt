@@ -18,13 +18,21 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.common.License;
+import org.wso2.carbon.device.mgt.common.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.LicenseManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.internal.LicenseManagementDataHolder;
 
-public interface LicenseManager {
+public class LicenseManagementService implements LicenseManager{
+
+    @Override
     public License getLicense(DeviceManagementConstants.MobileDeviceTypes deviceType,
-            DeviceManagementConstants.LanguageCodes languageCodes) throws LicenseManagementException;
+            DeviceManagementConstants.LanguageCodes languageCode) throws LicenseManagementException {
 
+        return LicenseManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
+    }
 }

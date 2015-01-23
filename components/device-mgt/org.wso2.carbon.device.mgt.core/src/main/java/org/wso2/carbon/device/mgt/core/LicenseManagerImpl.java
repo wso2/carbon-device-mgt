@@ -23,8 +23,15 @@ package org.wso2.carbon.device.mgt.core;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 
-public interface LicenseManager {
+public class LicenseManagerImpl implements LicenseManager{
+
+    @Override
     public License getLicense(DeviceManagementConstants.MobileDeviceTypes deviceType,
-            DeviceManagementConstants.LanguageCodes languageCodes) throws LicenseManagementException;
+            DeviceManagementConstants.LanguageCodes languageCodes) throws LicenseManagementException {
+
+
+        return null;
+    }
+
 
 }

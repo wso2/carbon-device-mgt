@@ -50,7 +50,6 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setDeviceManagerService"
  * unbind="unsetDeviceManagerService"
  */
-@SuppressWarnings("unused")
 public class DeviceManagementServiceComponent {
 
     private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);

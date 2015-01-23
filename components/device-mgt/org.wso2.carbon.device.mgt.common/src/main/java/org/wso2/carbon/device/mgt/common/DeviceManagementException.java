@@ -15,7 +15,6 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-@SuppressWarnings("unused")
 public class DeviceManagementException extends Exception {
 
     private static final long serialVersionUID = -3151279311929070297L;

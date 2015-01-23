@@ -126,14 +126,6 @@
                 <include>**/trusted-idp-config.xml</include>
             </includes>
         </fileSet>
-
-        <fileSet>
-            <directory>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/resources/rxts/
-            </directory>
-            <outputDirectory>wso2cdm-${project.version}/repository/resources/rxts/</outputDirectory>
-        </fileSet>
-
         <fileSet>
             <directory>src/repository/conf/datasources</directory>
             <outputDirectory>wso2cdm-${project.version}/repository/conf/datasources

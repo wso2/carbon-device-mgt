@@ -24,7 +24,7 @@ import java.util.Properties;
 public class Operation {
 
 	public enum Type {
-		CONFIG, MESSAGE, INFO
+		CONFIG, MESSAGE, INFO, COMMAND
 	}
 
 	private String code;

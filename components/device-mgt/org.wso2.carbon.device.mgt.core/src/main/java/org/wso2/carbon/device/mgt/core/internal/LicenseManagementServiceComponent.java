@@ -16,7 +16,6 @@
  *  under the License.
  *
  */
-
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.apache.commons.logging.Log;
@@ -65,7 +64,7 @@ public class LicenseManagementServiceComponent {
      */
     protected void setRealmService(RealmService realmService) {
         if (log.isDebugEnabled()) {
-            log.debug("Setting Realm Service");
+            log.debug("Setting Realm Service in license management");
         }
         LicenseManagementDataHolder.getInstance().setRealmService(realmService);
     }
@@ -76,7 +75,7 @@ public class LicenseManagementServiceComponent {
      */
     protected void unsetRealmService(RealmService realmService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting Realm Service");
+            log.debug("Un setting Realm Service in license management");
         }
         LicenseManagementDataHolder.getInstance().setRealmService(null);
     }

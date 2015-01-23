@@ -18,140 +18,161 @@ package org.wso2.carbon.device.mgt.common;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
-import java.util.Map;
 
 @XmlRootElement
 public class Device {
 
-    private int id;
-    private String type;
-    private String description;
-    private String name;
-    private Long dateOfEnrolment;
-    private Long dateOfLastUpdate;
-    private String ownership;
-    private boolean status;
-    private int deviceTypeId;
-    private String deviceIdentifier;
-    private String owner;
-    private List<Feature> features;
-    private Map<String, String> properties;
+	private int id;
+	private String type;
+	private String description;
+	private String name;
+	private Long dateOfEnrolment;
+	private Long dateOfLastUpdate;
+	private String ownership;
+	private boolean status;
+	private int deviceTypeId;
+	private String deviceIdentifier;
+	private String owner;
+	private List<Feature> features;
+	private List<Device.Property> properties;
 
-    @XmlElement
-    public int getId() {
-        return id;
-    }
+	@XmlElement
+	public int getId() {
+		return id;
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    @XmlElement
-    public String getDescription() {
-        return description;
-    }
+	@XmlElement
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    @XmlElement
-    public String getName() {
-        return name;
-    }
+	@XmlElement
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @XmlElement
-    public Long getDateOfEnrolment() {
-        return dateOfEnrolment;
-    }
+	@XmlElement
+	public Long getDateOfEnrolment() {
+		return dateOfEnrolment;
+	}
 
-    public void setDateOfEnrolment(Long dateOfEnrolment) {
-        this.dateOfEnrolment = dateOfEnrolment;
-    }
+	public void setDateOfEnrolment(Long dateOfEnrolment) {
+		this.dateOfEnrolment = dateOfEnrolment;
+	}
 
-    @XmlElement
-    public Long getDateOfLastUpdate() {
-        return dateOfLastUpdate;
-    }
+	@XmlElement
+	public Long getDateOfLastUpdate() {
+		return dateOfLastUpdate;
+	}
 
-    public void setDateOfLastUpdate(Long dateOfLastUpdate) {
-        this.dateOfLastUpdate = dateOfLastUpdate;
-    }
+	public void setDateOfLastUpdate(Long dateOfLastUpdate) {
+		this.dateOfLastUpdate = dateOfLastUpdate;
+	}
 
-    @XmlElement
-    public String getOwnership() {
-        return ownership;
-    }
+	@XmlElement
+	public String getOwnership() {
+		return ownership;
+	}
 
-    public void setOwnership(String ownership) {
-        this.ownership = ownership;
-    }
+	public void setOwnership(String ownership) {
+		this.ownership = ownership;
+	}
 
-    @XmlElement
-    public boolean isStatus() {
-        return status;
-    }
+	@XmlElement
+	public boolean isStatus() {
+		return status;
+	}
 
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
 
-    @XmlElement
-    public int getDeviceTypeId() {
-        return deviceTypeId;
-    }
+	@XmlElement
+	public int getDeviceTypeId() {
+		return deviceTypeId;
+	}
 
-    public void setDeviceTypeId(int deviceTypeId) {
-        this.deviceTypeId = deviceTypeId;
-    }
+	public void setDeviceTypeId(int deviceTypeId) {
+		this.deviceTypeId = deviceTypeId;
+	}
 
-    @XmlElement
-    public String getDeviceIdentifier() {
-        return deviceIdentifier;
-    }
+	@XmlElement
+	public String getDeviceIdentifier() {
+		return deviceIdentifier;
+	}
 
-    public void setDeviceIdentifier(String deviceIdentifier) {
-        this.deviceIdentifier = deviceIdentifier;
-    }
+	public void setDeviceIdentifier(String deviceIdentifier) {
+		this.deviceIdentifier = deviceIdentifier;
+	}
 
-    @XmlElement
-    public String getOwner() {
-        return owner;
-    }
+	@XmlElement
+	public String getOwner() {
+		return owner;
+	}
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 
-    @XmlElement
-    public List<Feature> getFeatures() {
-        return features;
-    }
+	@XmlElement
+	public List<Feature> getFeatures() {
+		return features;
+	}
 
-    public void setFeatures(List<Feature> features) {
-        this.features = features;
-    }
+	public void setFeatures(List<Feature> features) {
+		this.features = features;
+	}
 
-    @XmlElement
-    public String getType() {
-        return type;
-    }
+	@XmlElement
+	public String getType() {
+		return type;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    @XmlElement
-    public Map<String, String> getProperties() {
-        return properties;
-    }
+	@XmlElement
+	public List<Device.Property> getProperties() {
+		return properties;
+	}
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
+	public void setProperties(List<Device.Property> properties) {
+		this.properties = properties;
+	}
+
+	public static class Property {
+
+		private String name;
+		private String value;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
 
 }

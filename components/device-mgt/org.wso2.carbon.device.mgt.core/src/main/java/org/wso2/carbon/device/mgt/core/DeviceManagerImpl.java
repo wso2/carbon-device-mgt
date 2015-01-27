@@ -184,5 +184,4 @@ public class DeviceManagerImpl implements DeviceManager {
     public DeviceManagementRepository getPluginRepository() {
         return pluginRepository;
     }
-
 }

@@ -53,7 +53,6 @@ public class DeviceManagerImpl implements DeviceManager {
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
-
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
         boolean status = dms.enrollDevice(device);
         try {

@@ -55,14 +55,12 @@ public class DeviceManagerImpl implements DeviceManager {
     public boolean enrollDevice(Device device) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
         boolean status = dms.enrollDevice(device);
-
         try {
             org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
             Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(device.getType());
             deviceDto.setStatus(Status.ACTIVE);
             deviceDto.setDeviceTypeId(deviceTypeId);
             this.getDeviceDAO().addDevice(deviceDto);
-
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while enrolling the device '" + device.getId() + "'",
                     e);
@@ -185,5 +183,4 @@ public class DeviceManagerImpl implements DeviceManager {
     public DeviceManagementRepository getPluginRepository() {
         return pluginRepository;
     }
-
 }

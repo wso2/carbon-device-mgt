@@ -51,10 +51,11 @@ public class DeviceManagerImpl implements DeviceManager {
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
-    @Override public boolean enrollDevice(Device device) throws DeviceManagementException {
+    @Override
+    public boolean enrollDevice(Device device) throws DeviceManagementException {
+
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
         boolean status = dms.enrollDevice(device);
-
         try {
             org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
             Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(device.getType());
@@ -68,7 +69,8 @@ public class DeviceManagerImpl implements DeviceManager {
         return status;
     }
 
-    @Override public boolean modifyEnrollment(Device device) throws DeviceManagementException {
+    @Override
+    public boolean modifyEnrollment(Device device) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
         boolean status = dms.modifyEnrollment(device);
         try {
@@ -80,27 +82,32 @@ public class DeviceManagerImpl implements DeviceManager {
         return status;
     }
 
-    @Override public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override
+    public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         return dms.disenrollDevice(deviceId);
     }
 
-    @Override public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override
+    public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         return dms.isEnrolled(deviceId);
     }
 
-    @Override public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override
+    public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         return dms.isActive(deviceId);
     }
 
-    @Override public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
+    @Override
+    public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         return dms.setActive(deviceId, status);
     }
 
-    @Override public List<Device> getAllDevices(String type) throws DeviceManagementException {
+    @Override
+    public List<Device> getAllDevices(String type) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(type);
         List<Device> devicesList = new ArrayList<Device>();
         try {
@@ -124,7 +131,8 @@ public class DeviceManagerImpl implements DeviceManager {
         return devicesList;
     }
 
-    @Override public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override
+    public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         Device convertedDevice = null;
         try {
@@ -147,12 +155,14 @@ public class DeviceManagerImpl implements DeviceManager {
         return convertedDevice;
     }
 
-    @Override public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
+    @Override
+    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
         return dms.updateDeviceInfo(device);
     }
 
-    @Override public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
+    @Override
+    public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
             throws DeviceManagementException {
         DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         return dms.setOwnership(deviceId, ownershipType);

@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.dto.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,7 @@ public class DeviceManagerImpl implements DeviceManager {
 		try {
 			org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
 			Integer deviceTypeId = this.getDeviceTypeDAO().getDeviceTypeIdByDeviceTypeName(device.getType());
+            deviceDto.setStatus(Status.ACTIVE);
 			deviceDto.setDeviceTypeId(deviceTypeId);
 			this.getDeviceDAO().addDevice(deviceDto);
 

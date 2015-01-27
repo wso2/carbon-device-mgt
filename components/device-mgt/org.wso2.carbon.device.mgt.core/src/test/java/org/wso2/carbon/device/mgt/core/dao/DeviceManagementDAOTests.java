@@ -156,22 +156,25 @@ public class DeviceManagementDAOTests {
         Long deviceId = null;
         Connection conn = null;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ResultSet rs = null ;
+        String deviceStatus = null;
         try {
             conn = DeviceManagementDAOFactory.getDataSource().getConnection();
-            stmt = conn.prepareStatement("SELECT ID from DM_DEVICE DEVICE where DEVICE.DEVICE_IDENTIFICATION='111'");
+            stmt = conn.prepareStatement("SELECT ID,STATUS from DM_DEVICE DEVICE where DEVICE.DEVICE_IDENTIFICATION='111'");
             rs = stmt.executeQuery();
 
             while (rs.next()) {
                 deviceId = rs.getLong(1);
+                deviceStatus = rs.getString(2);
             }
         } catch (SQLException e) {
-            throw new DeviceManagementDAOException("error in fetch device by device identification id", e);
+            throw new DeviceManagementDAOException("Error in fetch device by device identification id", e);
         } finally {
             TestUtils.cleanupResources(conn, stmt, rs);
         }
-
         Assert.assertNotNull(deviceId, "Device Id is null");
+        Assert.assertNotNull(deviceStatus,"Device status is null");
+        Assert.assertEquals(deviceStatus,"ACTIVE","enroll device status should active");
     }
 
 }

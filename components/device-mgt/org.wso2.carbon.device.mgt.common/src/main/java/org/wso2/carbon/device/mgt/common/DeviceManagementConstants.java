@@ -49,4 +49,17 @@ public final class DeviceManagementConstants {
         public final static String LANGUAGE_CODE_ENGLISH_UK = "en-uk";
     }
 
+    public static final class DefaultLicences{
+        public static final String DEFAULT_LICENSE_CONFIG_XML_NAME = "DefaultLicense.xml";
+    }
+
+    public static final class LicenseProperties{
+        public static final String OVERVIEW_PROVIDER = "overview_provider";
+        public static final String OVERVIEW_NAME = "overview_name";
+        public static final String OVERVIEW_LANGUAGE = "overview_language";
+        public static final String OVERVIEW_VERSION = "overview_version";
+        public static final String VALID_FROM = "overview_validityFrom";
+        public static final String VALID_TO = "overview_validityTo";
+        public static final String LICENSE = "overview_license";
+    }
 }

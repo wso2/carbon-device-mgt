@@ -73,8 +73,10 @@ public class LicenseManagerImpl implements LicenseManager {
             filteredArtifacts = artifactManager.findGenericArtifacts(
                     new GenericArtifactFilter() {
                         public boolean matches(GenericArtifact artifact) throws GovernanceException {
-                            String attributeNameVal = artifact.getAttribute("overview_name");
-                            String attributeLangVal = artifact.getAttribute("overview_language");
+                            String attributeNameVal = artifact.getAttribute(
+                                    DeviceManagementConstants.LicenseProperties.OVERVIEW_NAME);
+                            String attributeLangVal = artifact.getAttribute(
+                                    DeviceManagementConstants.LicenseProperties.OVERVIEW_LANGUAGE);
                             return (attributeNameVal != null && attributeLangVal != null && attributeNameVal.equals
                                     (deviceType) && attributeLangVal.equals(languageCodes));
                         }

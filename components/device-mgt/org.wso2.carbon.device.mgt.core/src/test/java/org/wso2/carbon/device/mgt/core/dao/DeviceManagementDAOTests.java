@@ -51,15 +51,15 @@ public class DeviceManagementDAOTests {
         TestDBConfiguration dbConfig = getTestDBConfiguration(dbType);
 
         switch (dbType) {
-            case H2:
-                createH2DB(dbConfig);
-                BasicDataSource testDataSource = new BasicDataSource();
-                testDataSource.setDriverClassName(dbConfig.getDriverClass());
-                testDataSource.setUrl(dbConfig.getConnectionUrl());
-                testDataSource.setUsername(dbConfig.getUserName());
-                testDataSource.setPassword(dbConfig.getPwd());
-                DeviceManagementDAOFactory.init(testDataSource);
-            default:
+        case H2:
+            createH2DB(dbConfig);
+            BasicDataSource testDataSource = new BasicDataSource();
+            testDataSource.setDriverClassName(dbConfig.getDriverClass());
+            testDataSource.setUrl(dbConfig.getConnectionUrl());
+            testDataSource.setUsername(dbConfig.getUserName());
+            testDataSource.setPassword(dbConfig.getPwd());
+            DeviceManagementDAOFactory.init(testDataSource);
+        default:
         }
     }
 
@@ -133,7 +133,7 @@ public class DeviceManagementDAOTests {
 
     }
 
-    @Test(dependsOnMethods = {"addDeviceTypeTest"})
+    @Test(dependsOnMethods = { "addDeviceTypeTest" })
     public void addDeviceTest() throws DeviceManagementDAOException, DeviceManagementException {
         DeviceDAO deviceMgtDAO = DeviceManagementDAOFactory.getDeviceDAO();
 
@@ -156,11 +156,13 @@ public class DeviceManagementDAOTests {
         Long deviceId = null;
         Connection conn = null;
         PreparedStatement stmt = null;
-        ResultSet rs = null ;
+        ResultSet rs = null;
         String deviceStatus = null;
         try {
             conn = DeviceManagementDAOFactory.getDataSource().getConnection();
-            stmt = conn.prepareStatement("SELECT ID,STATUS from DM_DEVICE DEVICE where DEVICE.DEVICE_IDENTIFICATION='111'");
+            stmt = conn.prepareStatement(
+                    "SELECT ID,STATUS from DM_DEVICE DEVICE where DEVICE.DEVICE_IDENTIFICATION=?");
+            stmt.setString(1,"111");
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -173,8 +175,8 @@ public class DeviceManagementDAOTests {
             TestUtils.cleanupResources(conn, stmt, rs);
         }
         Assert.assertNotNull(deviceId, "Device Id is null");
-        Assert.assertNotNull(deviceStatus,"Device status is null");
-        Assert.assertEquals(deviceStatus,"ACTIVE","enroll device status should active");
+        Assert.assertNotNull(deviceStatus, "Device status is null");
+        Assert.assertEquals(deviceStatus, "ACTIVE", "Enroll device status should active");
     }
 
 }

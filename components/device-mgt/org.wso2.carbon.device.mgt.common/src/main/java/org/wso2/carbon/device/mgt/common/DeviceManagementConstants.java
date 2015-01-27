@@ -73,7 +73,7 @@ public final class DeviceManagementConstants {
         private LicenseProperties() {
             throw new AssertionError();
         }
-        
+
         public static final String OVERVIEW_PROVIDER = "overview_provider";
         public static final String OVERVIEW_NAME = "overview_name";
         public static final String OVERVIEW_LANGUAGE = "overview_language";

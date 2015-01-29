@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
+    <groupId>org.wso2.carbon.cdm</groupId>
     <artifactId>wso2cdm-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
@@ -100,26 +100,35 @@
                 <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.cdm</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.cdm</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
+            <!--CDM policy dependencies-->
+
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.cdm</groupId>
                 <artifactId>org.wso2.carbon.policy.mgt.common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.cdm</groupId>
                 <artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.cdm</groupId>
+                <artifactId>org.wso2.carbon.policy.evaluator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.governance.api</artifactId>
@@ -198,11 +207,7 @@
                 <version>${carbon.kernel.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.policy.evaluator</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
 
 
         </dependencies>

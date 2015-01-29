@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.cdm</groupId>
         <artifactId>device-mgt-feature</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -49,11 +49,11 @@
             <artifactId>org.wso2.carbon.logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.cdm</groupId>
             <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.cdm</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
     </dependencies>
@@ -106,9 +106,9 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.device.mgt.core:${project.version}
+                                <bundleDef>org.wso2.carbon.cdm:org.wso2.carbon.device.mgt.core:${project.version}
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.device.mgt.common:${project.version}
+                                <bundleDef>org.wso2.carbon.cdm:org.wso2.carbon.device.mgt.common:${project.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>

@@ -104,13 +104,13 @@
                                     org.wso2.carbon:org.wso2.carbon.ndatasource.feature:${carbon.platform.version}
                                 </featureArtifactDef>-->
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.device.mgt.server.feature:${project.version}
+                                    org.wso2.carbon.cdm:org.wso2.carbon.device.mgt.server.feature:${project.version}
                                 </featureArtifactDef>
                                 <!--<featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.device.mgt.mobile.feature:${project.version}
                                 </featureArtifactDef>-->
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.policy.mgt.server.feature:${project.version}
+                                    org.wso2.carbon.cdm:org.wso2.carbon.policy.mgt.server.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.webapp.mgt.feature:${carbon.platform.version}

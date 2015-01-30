@@ -66,19 +66,22 @@
                 <version>${automation.test.framework.version}</version>
                 <scope>test</scope>
             </dependency>
+	    <!-- End of Carbon Automation Framework dependencies -->
+	
+	    <!-- Carbon Automation Utils dependencies -->
             <dependency>
                 <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
-                <version>${automation.test.framework.version}</version>
+                <version>${automation.utils.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
-                <version>${automation.test.framework.version}</version>
+                <version>${automation.utils.version}</version>
                 <scope>test</scope>
             </dependency>
-            <!-- End of Carbon Automation Framework dependencies -->
+            <!-- End of Carbon Automation Utils dependencies -->
 
             <!-- Device Management dependencies -->
             <dependency>
@@ -414,7 +417,6 @@
         </repository>
     </repositories>
 
-
     <properties>
         <testng.version>6.1.1</testng.version>
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
@@ -436,6 +438,7 @@
 
         <!--Testing -->
         <automation.test.framework.version>4.3.1</automation.test.framework.version>
+	<automation.utils.version>4.3.0-SNAPSHOT</automation.utils.version>
         <testng.version>6.8</testng.version>
         <test.automation.emm.ui.version>1.1.0</test.automation.emm.ui.version>
 
@@ -450,8 +453,7 @@
         <apim.version>1.2.4</apim.version>
 
         <!-- Governance -->
-        <governance.version>4.3.0</governance.version>
-
+        <governance.version>4.3.0-SNAPSHOT</governance.version>
     </properties>
 
 </project>

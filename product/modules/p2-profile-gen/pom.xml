@@ -246,12 +246,15 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon.registry:org.wso2.carbon.registry.ui.menu.governance.feature:${carbon.registry.version}
                                 </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon.registry:org.wso2.carbon.registry.community.features.ui.feature:${carbon.registry.version}
+                                </featureArtifactDef>
                                 <!-- End of Registry Features -->
 
                                 <!-- Governance Features -->
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.governance.metadata.feature:${carbon.governance.version}-->
-                                <!--</featureArtifactDef>-->
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.governance.metadata.feature:${carbon.governance.version}
+                                </featureArtifactDef>
                                 <!--<featureArtifactDef>-->
                                     <!--org.wso2.carbon:org.wso2.carbon.governance.lifecycle.management.feature:${carbon.governance.version}-->
                                 <!--</featureArtifactDef>-->
@@ -463,13 +466,17 @@
                                     <id>org.wso2.carbon.registry.ui.menu.governance.feature.group</id>
                                     <version>${carbon.registry.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.registry.community.features.ui.feature.group</id>
+                                    <version>${carbon.registry.version}</version>
+                                </feature>
                                 <!-- End of Registry Features -->
 
                                 <!-- Governance features -->
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.governance.metadata.feature.group</id>-->
-                                    <!--<version>${carbon.governance.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.governance.metadata.feature.group</id>
+                                    <version>${carbon.governance.version}</version>
+                                </feature>
                                 <!--<feature>-->
                                     <!--<id>org.wso2.carbon.governance.lifecycle.management.feature.group</id>-->
                                     <!--<version>${carbon.governance.version}</version>-->

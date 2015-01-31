@@ -157,9 +157,6 @@
                                     org.wso2.carbon.commons:org.wso2.carbon.event.server.feature:${carbon.commons.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.commons:org.wso2.carbon.event.common.feature:${carbon.commons.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
                                     org.wso2.carbon.commons:org.wso2.carbon.logging.mgt.feature:${carbon.commons.version}
                                 </featureArtifactDef>
                                 <!--<featureArtifactDef>-->
@@ -181,7 +178,7 @@
 
                                 <!-- Identity Features -->
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.security.mgt.feature:${carbon.identity.version}
+                                    org.wso2.carbon:org.wso2.carbon.security.mgt.feature:${carbon.platform.version}
                                 </featureArtifactDef>
                                 <!--featureArtifactDef>
                                     org.wso2.carbon.identity:org.wso2.carbon.um.ws.service.server.feature:${carbon.identity.version}
@@ -351,10 +348,6 @@
                                     <version>${carbon.commons.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.event.common.feature.group</id>
-                                    <version>${carbon.commons.version}</version>
-                                </feature>
-                                <feature>
                                     <id>org.wso2.carbon.logging.mgt.feature.group</id>
                                     <version>${carbon.commons.version}</version>
                                 </feature>
@@ -381,7 +374,7 @@
                                 <!-- Identity Features -->
                                 <feature>
                                     <id>org.wso2.carbon.security.mgt.feature.group</id>
-                                    <version>${carbon.identity.version}</version>
+                                    <version>${carbon.platform.version}</version>
                                 </feature>
                                 <!--feature>
                                     <id>org.wso2.carbon.identity.application.authentication.framework.server.feature.group</id>

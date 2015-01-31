@@ -18,7 +18,9 @@
 
 package org.wso2.carbon.device.mgt.core.dao;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -35,6 +37,7 @@ import org.wso2.carbon.device.mgt.core.dto.OwnerShip;
 import org.wso2.carbon.device.mgt.core.dto.Status;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -44,6 +47,9 @@ import java.util.Date;
 
 public class DeviceManagementDAOTests {
 
+    private DataSource dataSource;
+    private static final Log log = LogFactory.getLog(DeviceManagementDAOTests.class);
+
     @BeforeClass
     @Parameters("dbType")
     public void setUpDB(String dbTypeStr) throws Exception {
@@ -51,15 +57,16 @@ public class DeviceManagementDAOTests {
         TestDBConfiguration dbConfig = getTestDBConfiguration(dbType);
 
         switch (dbType) {
-        case H2:
-            createH2DB(dbConfig);
-            BasicDataSource testDataSource = new BasicDataSource();
-            testDataSource.setDriverClassName(dbConfig.getDriverClass());
-            testDataSource.setUrl(dbConfig.getConnectionUrl());
-            testDataSource.setUsername(dbConfig.getUserName());
-            testDataSource.setPassword(dbConfig.getPwd());
-            DeviceManagementDAOFactory.init(testDataSource);
-        default:
+            case H2:
+                PoolProperties properties = new PoolProperties();
+                properties.setUrl(dbConfig.getConnectionUrl());
+                properties.setDriverClassName(dbConfig.getDriverClass());
+                properties.setUsername(dbConfig.getUserName());
+                properties.setPassword(dbConfig.getPwd());
+                dataSource = new org.apache.tomcat.jdbc.pool.DataSource(properties);
+                this.initSQLScript();
+                DeviceManagementDAOFactory.init(dataSource);
+            default:
         }
     }
 
@@ -70,7 +77,7 @@ public class DeviceManagementDAOTests {
         TestDBConfigurations dbConfigs;
 
         doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
-        JAXBContext testDBContext = null;
+        JAXBContext testDBContext;
 
         try {
             testDBContext = JAXBContext.newInstance(TestDBConfigurations.class);
@@ -79,7 +86,6 @@ public class DeviceManagementDAOTests {
         } catch (JAXBException e) {
             throw new DeviceManagementDAOException("Error parsing test db configurations", e);
         }
-
         for (TestDBConfiguration config : dbConfigs.getDbTypesList()) {
             if (config.getDbType().equals(dbType.toString())) {
                 return config;
@@ -88,12 +94,11 @@ public class DeviceManagementDAOTests {
         return null;
     }
 
-    private void createH2DB(TestDBConfiguration testDBConf) throws Exception {
+    private void initSQLScript() throws Exception {
         Connection conn = null;
         Statement stmt = null;
         try {
-            Class.forName(testDBConf.getDriverClass());
-            conn = DriverManager.getConnection(testDBConf.getConnectionUrl());
+            conn = this.getDataSource().getConnection();
             stmt = conn.createStatement();
             stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/CreateH2TestDB.sql'");
         } finally {
@@ -107,33 +112,30 @@ public class DeviceManagementDAOTests {
 
         DeviceType deviceType = new DeviceType();
         deviceType.setName("IOS");
-
         deviceTypeMgtDAO.addDeviceType(deviceType);
-        Long deviceTypeId = null;
 
+        Long id = null;
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
+        String sql = "SELECT ID, NAME from DM_DEVICE_TYPE DType where DType.NAME='IOS'";
         try {
-            conn = DeviceManagementDAOFactory.getDataSource().getConnection();
-            stmt = conn.createStatement();
-            ResultSet resultSet =
-                    stmt.executeQuery("SELECT ID,NAME from DM_DEVICE_TYPE DType where DType.NAME='IOS'");
+            conn = this.getDataSource().getConnection();
+            stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-            while (resultSet.next()) {
-                deviceTypeId = resultSet.getLong(1);
+            if (rs.next()) {
+                id = rs.getLong("ID");
             }
-        } catch (SQLException sqlEx) {
-            throw new DeviceManagementDAOException("error in fetch device type by name IOS", sqlEx);
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("error in fetch device type by name IOS", e);
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
         }
-
-        Assert.assertNotNull(deviceTypeId, "Device Type Id is null");
-        deviceType.setId(deviceTypeId);
-
+        Assert.assertNotNull(id, "Device Type Id is null");
+        deviceType.setId(id);
     }
 
-    @Test(dependsOnMethods = { "addDeviceTypeTest" })
+    @Test(dependsOnMethods = {"addDeviceTypeTest"})
     public void addDeviceTest() throws DeviceManagementDAOException, DeviceManagementException {
         DeviceDAO deviceMgtDAO = DeviceManagementDAOFactory.getDeviceDAO();
 
@@ -153,30 +155,35 @@ public class DeviceManagementDAOTests {
         device.setTenantId(-1234);
         deviceMgtDAO.addDevice(device);
 
-        Long deviceId = null;
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String deviceStatus = null;
-        try {
-            conn = DeviceManagementDAOFactory.getDataSource().getConnection();
-            stmt = conn.prepareStatement(
-                    "SELECT ID,STATUS from DM_DEVICE DEVICE where DEVICE.DEVICE_IDENTIFICATION=?");
-            stmt.setString(1,"111");
-            rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                deviceId = rs.getLong(1);
-                deviceStatus = rs.getString(2);
+        Long id = null;
+        String status = null;
+        try {
+            conn = this.getDataSource().getConnection();
+            String sql = "SELECT ID, STATUS from DM_DEVICE DEVICE where DEVICE.DEVICE_IDENTIFICATION = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "111");
+
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getLong("ID");
+                status = rs.getString("STATUS");
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error in fetch device by device identification id", e);
         } finally {
             TestUtils.cleanupResources(conn, stmt, rs);
         }
-        Assert.assertNotNull(deviceId, "Device Id is null");
-        Assert.assertNotNull(deviceStatus, "Device status is null");
-        Assert.assertEquals(deviceStatus, "ACTIVE", "Enroll device status should active");
+        Assert.assertNotNull(id, "Device Id is null");
+        Assert.assertNotNull(status, "Device status is null");
+        Assert.assertEquals(status, "ACTIVE", "Enroll device status should active");
+    }
+
+    private DataSource getDataSource() {
+        return dataSource;
     }
 
 }

@@ -18,7 +18,7 @@
     <DBType typeName="H2">
         <connectionurl>jdbc:h2:mem:cdm-test-db;DB_CLOSE_DELAY=-1</connectionurl>
         <driverclass>org.h2.Driver</driverclass>
-        <userName></userName>
-        <pwd></pwd>
+        <userName>wso2carbon</userName>
+        <pwd>wso2carbon</pwd>
     </DBType>
 </DeviceMgtTestDBConfigurations>

@@ -22,6 +22,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -83,7 +84,12 @@ public class DeviceManagementConfigTests {
             um.unmarshal(malformedConfig);
             Assert.assertTrue(false);
         } catch (JAXBException e) {
-            log.error("Error occurred while unmarsharlling device management config", e);
+            Throwable linkedException = e.getLinkedException();
+            if (!(linkedException instanceof SAXParseException)) {
+                log.error("Unexpected error occurred while unmarshalling device management config", e);
+                Assert.assertTrue(false);
+            }
+            log.error("JAXB parser occurred while unmarsharlling device management config", e);
             Assert.assertTrue(true);
         }
     }

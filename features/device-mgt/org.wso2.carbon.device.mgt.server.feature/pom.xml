@@ -37,18 +37,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.equinox</groupId>
-            <artifactId>org.eclipse.equinox.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.logging</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.cdm</groupId>
             <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
@@ -106,14 +94,14 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon.cdm:org.wso2.carbon.device.mgt.core:${project.version}
+                                <bundleDef>org.wso2.carbon.cdm:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon.cdm:org.wso2.carbon.device.mgt.common:${project.version}
+                                <bundleDef>org.wso2.carbon.cdm:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
-                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.governance.server:${carbon.kernel.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

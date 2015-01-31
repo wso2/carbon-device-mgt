@@ -26,15 +26,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "DataSourceConfiguration")
 public class DataSourceConfig {
 
-	private JNDILookupDefinition jndiLookupDefintion;
+	private JNDILookupDefinition jndiLookupDefinition;
 
 	@XmlElement(name = "JndiLookupDefinition", required = true)
-	public JNDILookupDefinition getJndiLookupDefintion() {
-		return jndiLookupDefintion;
+	public JNDILookupDefinition getJndiLookupDefinition() {
+		return jndiLookupDefinition;
 	}
 
-	public void setJndiLookupDefintion(JNDILookupDefinition jndiLookupDefintion) {
-		this.jndiLookupDefintion = jndiLookupDefintion;
+	public void setJndiLookupDefinition(JNDILookupDefinition jndiLookupDefinition) {
+		this.jndiLookupDefinition = jndiLookupDefinition;
 	}
 
 }

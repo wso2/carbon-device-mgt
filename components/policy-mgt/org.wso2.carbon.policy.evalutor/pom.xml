@@ -52,13 +52,9 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Description>Policy Management Common Bundle</Bundle-Description>
                         <Private-Package>org.wso2.carbon.policy.evaluator</Private-Package>
-                        <Import-Package>
-                            org.apache.commons.logging
-                        </Import-Package>
                         <Export-Package>
                             org.wso2.carbon.policy.evaluator.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

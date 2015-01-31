@@ -58,12 +58,19 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging,
+                            javax.sql,
+                            javax.naming,
+                            javax.xml.bind.*,
+                            javax.xml.parsers.*,
+                            org.w3c.dom,
+                            org.wso2.carbon.policy.mgt.common.*,
+                            org.wso2.carbon.user.core.*,
+                            org.wso2.carbon.utils
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.policy.mgt.core.internal,
                             org.wso2.carbon.policy.mgt.core.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -98,10 +105,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ndatasource.rdbms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.logging</artifactId>
         </dependency>
 
         <!-- Policy Management Dependencies-->

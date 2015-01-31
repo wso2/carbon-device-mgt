@@ -58,7 +58,6 @@
                         <Export-Package>
                             org.wso2.carbon.policy.mgt.common.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

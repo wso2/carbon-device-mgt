@@ -58,13 +58,27 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging,
+                            javax.xml.bind.*,
+                            javax.naming,
+                            javax.sql,
+                            javax.xml.parsers,
                             javax.transaction.*,
+                            org.wso2.carbon.governance.api.*,
+                            org.wso2.carbon.base,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.core,
+                            org.wso2.carbon.utils.*,
+                            org.wso2.carbon.registry.api,
+                            org.wso2.carbon.registry.core.*,
+                            org.wso2.carbon.device.mgt.common.*,
+                            org.wso2.carbon.user.api,
+                            org.wso2.carbon.user.core.*,
+                            org.w3c.dom
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
                             org.wso2.carbon.device.mgt.core.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -127,6 +141,22 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.governance.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.wso2</groupId>
+            <artifactId>jdbc-pool</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.base</artifactId>
         </dependency>
     </dependencies>
 

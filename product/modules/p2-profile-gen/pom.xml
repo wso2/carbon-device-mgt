@@ -134,17 +134,17 @@
                                 <!-- End of Jaggery Features -->
 
                                 <!-- Carbon Deployment Features -->
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.module.mgt.feature:${carbon.deployment.version}-->
-                                <!--</featureArtifactDef>-->
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.webapp.mgt.feature:${carbon.deployment.version}-->
-                                <!--</featureArtifactDef>-->
+                                <featureArtifactDef>
+                                    org.wso2.carbon.deployment:org.wso2.carbon.module.mgt.feature:${carbon.deployment.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon.deployment:org.wso2.carbon.webapp.mgt.feature:${carbon.deployment.version}
+                                </featureArtifactDef>
                                 <!-- End of Carbon Deployment Features -->
 
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.as.runtimes.cxf.feature:${carbon.platform.version}-->
-                                <!--</featureArtifactDef>-->
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.as.runtimes.cxf.feature:${carbon.platform.version}
+                                </featureArtifactDef>
 
                                 <!-- Carbon Utils Features -->
                                 <!-- End of Carbon Utils Features -->
@@ -159,9 +159,9 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon.commons:org.wso2.carbon.logging.mgt.feature:${carbon.commons.version}
                                 </featureArtifactDef>
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon.commons:org.wso2.carbon.transport.mgt.feature:${carbon.transport.mgt.version}-->
-                                <!--</featureArtifactDef>-->
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.transport.mgt.feature:${carbon.transport.mgt.version}
+                                </featureArtifactDef>
                                 <!-- End of Carbon Commons Features -->
 
                                 <!-- API Manager related features -->
@@ -252,12 +252,12 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.governance.metadata.feature:${carbon.governance.version}
                                 </featureArtifactDef>
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.governance.lifecycle.management.feature:${carbon.governance.version}-->
-                                <!--</featureArtifactDef>-->
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.registry.extensions.feature:${carbon.governance.version}-->
-                                <!--</featureArtifactDef>-->
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.governance.lifecycle.management.feature:${carbon.governance.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.registry.extensions.feature:${carbon.governance.version}
+                                </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -320,20 +320,20 @@
                                 <!-- End of Jaggery Features -->
 
                                 <!-- Carbon Deployment Features -->
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.module.mgt.feature.group</id>-->
-                                    <!--<version>${carbon.deployment.version}</version>-->
-                                <!--</feature>-->
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.webapp.mgt.feature.group</id>-->
-                                    <!--<version>${carbon.deployment.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.module.mgt.feature.group</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.webapp.mgt.feature.group</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
                                 <!-- End of Carbon Deployment Features -->
 
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.as.runtimes.cxf.feature.group</id>-->
-                                    <!--<version>${carbon.platform.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.as.runtimes.cxf.feature.group</id>
+                                    <version>${carbon.platform.version}</version>
+                                </feature>
 
                                 <!-- Carbon Utils Features -->
                                 <!-- End of Carbon Utils Features -->
@@ -351,10 +351,10 @@
                                     <id>org.wso2.carbon.logging.mgt.feature.group</id>
                                     <version>${carbon.commons.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.transport.mgt.feature.group</id>-->
-                                    <!--<version>${carbon.transport.mgt.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.transport.mgt.feature.group</id>
+                                    <version>${carbon.transport.mgt.version}</version>
+                                </feature>
                                  <!--End of Carbon Commons Features-->
 
                                 <!-- API Manager Features -->
@@ -470,14 +470,14 @@
                                     <id>org.wso2.carbon.governance.metadata.feature.group</id>
                                     <version>${carbon.governance.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.governance.lifecycle.management.feature.group</id>-->
-                                    <!--<version>${carbon.governance.version}</version>-->
-                                <!--</feature>-->
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.registry.extensions.feature.group</id>-->
-                                    <!--<version>${carbon.governance.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.governance.lifecycle.management.feature.group</id>
+                                    <version>${carbon.governance.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.registry.extensions.feature.group</id>
+                                    <version>${carbon.governance.version}</version>
+                                </feature>
                                 <!-- End of Governance Features -->
                             </features>
                         </configuration>

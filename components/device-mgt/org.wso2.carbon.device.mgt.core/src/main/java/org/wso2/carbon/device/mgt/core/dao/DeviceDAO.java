@@ -41,7 +41,7 @@ public interface DeviceDAO {
 	/**
 	 * @param type       - Device type.
 	 * @param identifier - Device identifier.
-	 * @return
+	 * @return the Device object which matches given data
 	 * @throws DeviceManagementDAOException
 	 */
 	Device getDeviceByDeviceIdentifier(Integer type, String identifier) throws DeviceManagementDAOException;

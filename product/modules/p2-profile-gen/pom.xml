@@ -179,7 +179,7 @@
 
                                 <!-- Identity Features -->
                                 <featureArtifactDef>
-                                    org.wso2.carbon.identity:org.wso2.carbon.security.mgt.feature:${carbon.identity.version}
+                                    org.wso2.carbon:org.wso2.carbon.security.mgt.feature:${carbon.identity.version}
                                 </featureArtifactDef>
                                 <!--featureArtifactDef>
                                     org.wso2.carbon.identity:org.wso2.carbon.um.ws.service.server.feature:${carbon.identity.version}

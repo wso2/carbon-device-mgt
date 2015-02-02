@@ -270,7 +270,7 @@
                 <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.api</artifactId>
                 <version>${carbon.governance.version}</version>
                 <exclusions>
@@ -279,7 +279,7 @@
                         <artifactId>juddi</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.wso2.carbon</groupId>
+                        <groupId>org.wso2.carbon.registry</groupId>
                         <artifactId>org.wso2.carbon.registry.common</artifactId>
                     </exclusion>
                     <exclusion>
@@ -287,11 +287,11 @@
                         <artifactId>org.wso2.carbon.registry.core</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.wso2.carbon</groupId>
+                        <groupId>org.wso2.carbon.registry</groupId>
                         <artifactId>org.wso2.carbon.registry.admin.api</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.wso2.carbon</groupId>
+                        <groupId>org.wso2.carbon.registry</groupId>
                         <artifactId>org.wso2.carbon.registry.indexing</artifactId>
                     </exclusion>
                     <exclusion>
@@ -315,7 +315,7 @@
                         <artifactId>axiom-impl</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.wso2.carbon</groupId>
+                        <groupId>org.wso2.carbon.governance</groupId>
                         <artifactId>org.wso2.carbon.registry.extensions</artifactId>
                     </exclusion>
                 </exclusions>
@@ -818,10 +818,10 @@
         <carbon.registry.version>4.3.0</carbon.registry.version>
 
         <!-- Governance -->
-        <carbon.governance.version>4.3.0-SNAPSHOT</carbon.governance.version>
+        <carbon.governance.version>4.3.0</carbon.governance.version>
 
         <!-- Transport Management -->
-        <carbon.transport.mgt.version>4.3.0-SNAPSHOT</carbon.transport.mgt.version>
+        <carbon.transport.mgt.version>4.3.2</carbon.transport.mgt.version>
 
         <!-- Device Management -->
         <carbon.device.mgt.version>1.0.0-SNAPSHOT</carbon.device.mgt.version>

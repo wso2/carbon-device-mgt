@@ -140,11 +140,14 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon.deployment:org.wso2.carbon.webapp.mgt.feature:${carbon.deployment.version}
                                 </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon.deployment:org.wso2.carbon.webapp.mgt.server.feature:${carbon.deployment.version}
+                                </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon.deployment:org.wso2.carbon.as.runtimes.cxf.feature:${carbon.deployment.version}
+                                </featureArtifactDef>
                                 <!-- End of Carbon Deployment Features -->
 
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.as.runtimes.cxf.feature:${carbon.platform.version}
-                                </featureArtifactDef>
 
                                 <!-- Carbon Utils Features -->
                                 <!-- End of Carbon Utils Features -->
@@ -159,9 +162,7 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon.commons:org.wso2.carbon.logging.mgt.feature:${carbon.commons.version}
                                 </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.transport.mgt.feature:${carbon.transport.mgt.version}
-                                </featureArtifactDef>
+
                                 <!-- End of Carbon Commons Features -->
 
                                 <!-- API Manager related features -->
@@ -178,7 +179,7 @@
 
                                 <!-- Identity Features -->
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.security.mgt.feature:${carbon.platform.version}
+                                    org.wso2.carbon.identity:org.wso2.carbon.security.mgt.feature:${carbon.identity.version}
                                 </featureArtifactDef>
                                 <!--featureArtifactDef>
                                     org.wso2.carbon.identity:org.wso2.carbon.um.ws.service.server.feature:${carbon.identity.version}
@@ -250,13 +251,13 @@
 
                                 <!-- Governance Features -->
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.governance.metadata.feature:${carbon.governance.version}
+                                    org.wso2.carbon.governance:org.wso2.carbon.governance.metadata.feature:${carbon.governance.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.governance.lifecycle.management.feature:${carbon.governance.version}
+                                    org.wso2.carbon.governance:org.wso2.carbon.governance.lifecycle.management.feature:${carbon.governance.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.registry.extensions.feature:${carbon.governance.version}
+                                    org.wso2.carbon.governance:org.wso2.carbon.registry.extensions.feature:${carbon.governance.version}
                                 </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
@@ -328,12 +329,17 @@
                                     <id>org.wso2.carbon.webapp.mgt.feature.group</id>
                                     <version>${carbon.deployment.version}</version>
                                 </feature>
-                                <!-- End of Carbon Deployment Features -->
-
+                                <feature>
+                                    <id>org.wso2.carbon.webapp.mgt.server.feature.group</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.as.runtimes.cxf.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
+                                    <version>${carbon.deployment.version}</version>
                                 </feature>
+                                <!-- End of Carbon Deployment Features -->
+
+
 
                                 <!-- Carbon Utils Features -->
                                 <!-- End of Carbon Utils Features -->
@@ -351,10 +357,7 @@
                                     <id>org.wso2.carbon.logging.mgt.feature.group</id>
                                     <version>${carbon.commons.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.transport.mgt.feature.group</id>
-                                    <version>${carbon.transport.mgt.version}</version>
-                                </feature>
+
                                  <!--End of Carbon Commons Features-->
 
                                 <!-- API Manager Features -->
@@ -374,7 +377,7 @@
                                 <!-- Identity Features -->
                                 <feature>
                                     <id>org.wso2.carbon.security.mgt.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
+                                    <version>${carbon.identity.version}</version>
                                 </feature>
                                 <!--feature>
                                     <id>org.wso2.carbon.identity.application.authentication.framework.server.feature.group</id>

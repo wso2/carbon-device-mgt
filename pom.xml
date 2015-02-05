@@ -544,30 +544,21 @@
             </dependency>
             <!-- End of Carbon Kernel dependencies -->
 
+            <!-- Orbit dependencies -->
+
             <dependency>
                 <groupId>com.h2database.wso2</groupId>
                 <artifactId>h2-database-engine</artifactId>
                 <version>${orbit.version.h2.engine}</version>
             </dependency>
 
-            <!-- API Manager dependencies -->
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.apimgt.core</artifactId>
-                <version>${apim.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
-                <version>${apim.version}</version>
-            </dependency>
-            <!-- End of API Manager dependencies -->
-
             <dependency>
                 <groupId>org.apache.tomcat.wso2</groupId>
                 <artifactId>jdbc-pool</artifactId>
                 <version>${tomcat.jdbc.pooling.version}</version>
             </dependency>
+
+            <!-- End of Orbit dependencies -->
 
         </dependencies>
     </dependencyManagement>
@@ -757,26 +748,19 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-        <repository>
-            <id>nexus-releases</id>
-            <name>WSO2 Release Distribution Repository</name>
-            <url>http://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
-        </repository>
     </repositories>
 
     <properties>
         <testng.version>6.1.1</testng.version>
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <maven-buildnumber-plugin.version>1.3</maven-buildnumber-plugin.version>
         <axis2.osgi.version.range>[1.6.1.wso2v11, 1.7.0)</axis2.osgi.version.range>
         <jboss-transaction-api.version>1.0.0.Final</jboss-transaction-api.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
-        <cdm.version>1.0.0-SNAPSHOT</cdm.version>
 
         <!--Jaggery -->
-        <jaggery.version>0.9.0.ALPHA6</jaggery.version>
+        <jaggery.version>0.9.0</jaggery.version>
         <jaggery.extensions.version>1.0.0</jaggery.extensions.version>
         <jaggery.extensions.sso.version>1.2.0</jaggery.extensions.sso.version>
         <jaggery.extensions.carbon.version>1.1.0</jaggery.extensions.carbon.version>

@@ -81,5 +81,6 @@ public final class DeviceManagementConstants {
         public static final String VALID_FROM = "overview_validityFrom";
         public static final String VALID_TO = "overview_validityTo";
         public static final String LICENSE = "overview_license";
+        public static final String LICENSE_REGISTRY_KEY = "license";
     }
 }

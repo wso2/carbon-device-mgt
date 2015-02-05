@@ -22,6 +22,7 @@ public final class DeviceManagementConstants {
             throw new AssertionError();
         }
         public static final String PROPERTY_SETUP = "setup";
+        public static final String DEFAULT_LICENSE_CONFIG_XML_NAME = "DefaultLicense.xml";
     }
 
 }

@@ -72,7 +72,8 @@
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
-                            org.w3c.dom
+                            org.w3c.dom,
+                            javax.xml.namespace.*;
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.cdm</groupId>
     <artifactId>wso2cdm-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>WSO2 CDM - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager</description>
@@ -567,7 +567,7 @@
         <url>https://github.com/wso2/product-cdm.git</url>
         <developerConnection>scm:git:https://github.com/wso2/product-cdm.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/product-cdm.git</connection>
-        <tag>HEAD</tag>
+        <tag>wso2cdm-1.0.0-M2</tag>
     </scm>
 
 
@@ -802,7 +802,7 @@
         <carbon.governance.version>4.3.0</carbon.governance.version>
 
         <!-- Device Management -->
-        <carbon.device.mgt.version>1.0.0-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>1.0.0</carbon.device.mgt.version>
 
     </properties>
 

@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.cdmserver</groupId>
         <artifactId>wso2cdmserver-product</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 

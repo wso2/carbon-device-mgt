@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.cdm</groupId>
     <artifactId>wso2cdm-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>WSO2 CDM - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager</description>
@@ -780,9 +780,6 @@
         <orbit.version.tomcat>7.0.52.wso2v5</orbit.version.tomcat>
         <tomcat.jdbc.pooling.version>7.0.34.wso2v2</tomcat.jdbc.pooling.version>
 
-        <!-- API Manager -->
-        <apim.version>1.2.4</apim.version>
-
         <!-- Carbon Commons -->
         <carbon.commons.version>4.3.4</carbon.commons.version>
 
@@ -790,7 +787,7 @@
         <carbon.deployment.version>4.3.1</carbon.deployment.version>
 
         <!-- Identity -->
-        <carbon.identity.version>4.3.2</carbon.identity.version>
+        <carbon.identity.version>4.3.3</carbon.identity.version>
 
         <!-- Multi-tenancy -->
         <carbon.multitenancy.version>4.3.3</carbon.multitenancy.version>
@@ -802,7 +799,10 @@
         <carbon.governance.version>4.3.0</carbon.governance.version>
 
         <!-- Device Management -->
-        <carbon.device.mgt.version>1.0.1-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>1.0.0-SNAPSHOT</carbon.device.mgt.version>
+
+        <!--CDM version-->
+        <carbon.cdm.version>1.0.0-SNAPSHOT</carbon.cdm.version>
 
     </properties>
 

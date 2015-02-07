@@ -59,21 +59,11 @@ public final class DeviceManagementConstants {
         public final static String LANGUAGE_CODE_ENGLISH_UK = "en-uk";
     }
 
-    public static final class DefaultLicences {
-
-        private DefaultLicences() {
-            throw new AssertionError();
-        }
-
-        public static final String DEFAULT_LICENSE_CONFIG_XML_NAME = "DefaultLicense.xml";
-    }
-
     public static final class LicenseProperties {
 
         private LicenseProperties() {
             throw new AssertionError();
         }
-
         public static final String OVERVIEW_PROVIDER = "overview_provider";
         public static final String OVERVIEW_NAME = "overview_name";
         public static final String OVERVIEW_LANGUAGE = "overview_language";

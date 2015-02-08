@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.wso2.carbon.cdm</groupId>
         <artifactId>policy-mgt</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.cdm</groupId>
     <artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Policy Management Core</name>
     <description>WSO2 Carbon - Policy Management Core</description>

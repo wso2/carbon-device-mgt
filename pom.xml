@@ -799,10 +799,10 @@
         <carbon.governance.version>4.3.0</carbon.governance.version>
 
         <!-- Device Management -->
-        <carbon.device.mgt.version>${carbon.cdm.version}</carbon.device.mgt.version>
+        <carbon.device.mgt.version>1.0.0-SNAPSHOT</carbon.device.mgt.version>
 
         <!--CDM version-->
-        <carbon.cdm.version>1.0.0-SNAPSHOT</carbon.cdm.version>
+        <carbon.cdm.version>${carbon.device.mgt.version}</carbon.cdm.version>
 
     </properties>
 

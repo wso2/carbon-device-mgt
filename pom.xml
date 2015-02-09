@@ -370,9 +370,9 @@
     </dependencyManagement>
 
     <scm>
-        <url>https://github.com/wso2/product-cdm.git</url>
-        <developerConnection>scm:git:https://github.com/wso2/product-cdm.git</developerConnection>
-        <connection>scm:git:https://github.com/wso2/product-cdm.git</connection>
+        <url>https://github.com/wso2/carbon-device-mgt.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/carbon-device-mgt.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/carbon-device-mgt.git</connection>
         <tag>HEAD</tag>
     </scm>
 

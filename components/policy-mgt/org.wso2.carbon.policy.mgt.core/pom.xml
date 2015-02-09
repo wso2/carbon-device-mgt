@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.wso2.carbon.cdm</groupId>
         <artifactId>policy-mgt</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.cdm</groupId>
     <artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Policy Management Core</name>
     <description>WSO2 Carbon - Policy Management Core</description>
@@ -48,7 +48,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Bundle-Version>${carbon.cdm.version}</Bundle-Version>
                         <Bundle-Description>Policy Management Core Bundle</Bundle-Description>
                         <Private-Package>org.wso2.carbon.policy.mgt.core.internal</Private-Package>
                         <Import-Package>

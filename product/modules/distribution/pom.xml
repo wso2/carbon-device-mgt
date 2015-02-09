@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.cdmserver</groupId>
         <artifactId>wso2cdmserver-product</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -139,8 +139,7 @@
                                 <property name="password" value="wso2carbon" />
                                 <property name="dbURL" value="jdbc:h2:file:${basedir}/${db.dir}/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE" />
 
-                                <sql driver="org.h2.Driver" url="${dbURL}" userid="${userid}" password="${password}"
-                                     autocommit="true" onerror="continue">
+                                <sql driver="org.h2.Driver" url="${dbURL}" userid="${userid}" password="${password}" autocommit="true" onerror="continue">
                                     <classpath refid="maven.dependency.classpath" />
                                     <classpath refid="maven.compile.classpath" />
                                     <classpath refid="maven.runtime.classpath" />
@@ -167,8 +166,7 @@
                                 <property name="password" value="wso2carbon" />
                                 <property name="dbURL" value="jdbc:h2:file:${basedir}/${db.dir}/WSO2AM_DB;DB_CLOSE_ON_EXIT=FALSE" />
 
-                                <sql driver="org.h2.Driver" url="${dbURL}" userid="${userid}" password="${password}"
-                                     autocommit="true" onerror="continue">
+                                <sql driver="org.h2.Driver" url="${dbURL}" userid="${userid}" password="${password}" autocommit="true" onerror="continue">
                                     <classpath refid="maven.dependency.classpath" />
                                     <classpath refid="maven.compile.classpath" />
                                     <classpath refid="maven.runtime.classpath" />
@@ -192,16 +190,16 @@
                                 <!--<property name="shindig.version" value="2.5.0-beta5" />-->
 
                                 <mkdir dir="${tempdir}" />
-                                <mkdir dir="${tempdir}/wso2cdm-${project.version}/repository/components" />
-                                <mkdir dir="${tempdir}/wso2cdm-${project.version}/repository/deployment/server" />
-                                <mkdir dir="${tempdir}/wso2cdm-${project.version}/repository/deployment/server/webapps" />
+                                <mkdir dir="${tempdir}/wso2cdm-${carbon.cdm.version}/repository/components" />
+                                <mkdir dir="${tempdir}/wso2cdm-${carbon.cdm.version}/repository/deployment/server" />
+                                <mkdir dir="${tempdir}/wso2cdm-${carbon.cdm.version}/repository/deployment/server/webapps" />
                                 <unzip dest="${tempdir}">
                                     <fileset dir="target">
-                                        <include name="wso2cdm-${project.version}.zip" />
+                                        <include name="wso2cdm-${carbon.cdm.version}.zip" />
                                     </fileset>
                                 </unzip>
                                 <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components" overwrite="true">
-                                    <fileset dir="${tempdir}/wso2cdm-${project.version}/repository/components" />
+                                    <fileset dir="${tempdir}/wso2cdm-${carbon.cdm.version}/repository/components" />
                                 </copy>
                                 <!--testing -->
                                 <!--<unzip src="target/shindig/WEB-INF/lib/shindig-common-${shindig.version}.jar" dest="${jardir}/shindig-common-${shindig.version}">
@@ -221,7 +219,7 @@
                                     og4j.logger.net.sf.ehcache=ERROR
                                 </concat>
 
-                                <delete file="target/wso2cdm-${project.version}.zip" />
+                                <delete file="target/wso2cdm-${carbon.cdm.version}.zip" />
                                 <delete dir="${tempdir}" />
                             </tasks>
                         </configuration>
@@ -262,7 +260,7 @@
                                 <delete dir="target/maven-archiver" />
                                 <delete dir="target/wso2carbon-core-${carbon.kernel.version}" />
                                 <delete dir="target/wso2carbon-core-${carbon.kernel.version}" />
-                                <delete file="target/wso2cdm-${project.version}.jar" />
+                                <delete file="target/wso2cdm-${carbon.cdm.version}.jar" />
                                 <delete dir="target/sources" />
                                 <delete dir="target/site" />
                                 <delete dir="target/antrun" />
@@ -319,20 +317,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-<!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>auto-clean</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
         </plugins>
     </build>
 

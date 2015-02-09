@@ -68,7 +68,7 @@ public class LicenseManagementServiceComponent {
             LicenseManager licenseManager = new LicenseManagerImpl();
             LicenseManagementDataHolder.getInstance().setLicenseManager(licenseManager);
 
-                        /* If -Dsetup option enabled then create creates default license management */
+            /* If -Dsetup option enabled then create creates default license management */
             String setupOption = System.getProperty(
                     org.wso2.carbon.device.mgt.core.DeviceManagementConstants.Common.PROPERTY_SETUP);
 
@@ -81,7 +81,6 @@ public class LicenseManagementServiceComponent {
                         .getLicenseMgtConfig();
                 addDefaultLicenses(licenseManagementConfig);
             }
-
             if (log.isDebugEnabled()) {
                 log.debug("Registering OSGi service LicenseManagementService");
             }

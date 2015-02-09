@@ -68,7 +68,8 @@ public class LicenseManagerImpl implements LicenseManager {
 
         try {
             GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
-            GenericArtifactManager artifactManager = new GenericArtifactManager(registry, "license");
+            GenericArtifactManager artifactManager = new GenericArtifactManager(registry,
+                    DeviceManagementConstants.LicenseProperties.LICENSE_REGISTRY_KEY);
 
             filteredArtifacts = artifactManager.findGenericArtifacts(
                     new GenericArtifactFilter() {

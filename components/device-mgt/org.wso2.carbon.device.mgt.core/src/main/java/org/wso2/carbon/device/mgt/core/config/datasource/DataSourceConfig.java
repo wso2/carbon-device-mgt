@@ -21,7 +21,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Class for holding data source configuration in malformed-cdm-config-no-mgt-repo.xml at parsing with JAXB
+ * Class for holding data source configuration in malformed-cdm-config-no-mgt-repo.xml at parsing
+ * with JAXB.
  */
 @XmlRootElement(name = "DataSourceConfiguration")
 public class DataSourceConfig {

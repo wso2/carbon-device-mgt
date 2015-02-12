@@ -40,121 +40,124 @@ import java.util.Hashtable;
 
 public final class DeviceManagementDAOUtil {
 
-    private static final Log log = LogFactory.getLog(DeviceManagementDAOUtil.class);
+	private static final Log log = LogFactory.getLog(DeviceManagementDAOUtil.class);
 
-    public static void cleanupResources(Connection conn, PreparedStatement stmt, ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                log.warn("Error occurred while closing result set", e);
-            }
-        }
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-                log.warn("Error occurred while closing prepared statement", e);
-            }
-        }
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                log.warn("Error occurred while closing database connection", e);
-            }
-        }
-    }
+	public static void cleanupResources(Connection conn, PreparedStatement stmt, ResultSet rs) {
+		if (rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				log.warn("Error occurred while closing result set", e);
+			}
+		}
+		if (stmt != null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				log.warn("Error occurred while closing prepared statement", e);
+			}
+		}
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				log.warn("Error occurred while closing database connection", e);
+			}
+		}
+	}
 
-    /**
-     * Get id of the current tenant.
-     *
-     * @return tenant id
-     * @throws DeviceManagementDAOException if an error is observed when getting tenant id
-     */
-    public static int getTenantId() throws DeviceManagementDAOException {
-        CarbonContext context = CarbonContext.getThreadLocalCarbonContext();
-        int tenantId = context.getTenantId();
-        if (tenantId != MultitenantConstants.INVALID_TENANT_ID) {
-            return tenantId;
-        }
-        String tenantDomain = context.getTenantDomain();
-        if (tenantDomain == null) {
-            String msg = "Tenant domain is not properly set and thus, is null";
-            throw new DeviceManagementDAOException(msg);
-        }
-        TenantManager tenantManager = DeviceManagementDataHolder.getInstance().getTenantManager();
-        try {
-            tenantId = tenantManager.getTenantId(tenantDomain);
-        } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving id from the domain of tenant " + tenantDomain;
-            throw new DeviceManagementDAOException(msg);
-        }
-        return tenantId;
-    }
+	/**
+	 * Get id of the current tenant.
+	 *
+	 * @return tenant id
+	 * @throws DeviceManagementDAOException if an error is observed when getting tenant id
+	 */
+	public static int getTenantId() throws DeviceManagementDAOException {
+		CarbonContext context = CarbonContext.getThreadLocalCarbonContext();
+		int tenantId = context.getTenantId();
+		if (tenantId != MultitenantConstants.INVALID_TENANT_ID) {
+			return tenantId;
+		}
+		String tenantDomain = context.getTenantDomain();
+		if (tenantDomain == null) {
+			String msg = "Tenant domain is not properly set and thus, is null";
+			throw new DeviceManagementDAOException(msg);
+		}
+		TenantManager tenantManager = DeviceManagementDataHolder.getInstance().getTenantManager();
+		try {
+			tenantId = tenantManager.getTenantId(tenantDomain);
+		} catch (UserStoreException e) {
+			String msg =
+					"Error occurred while retrieving id from the domain of tenant " + tenantDomain;
+			throw new DeviceManagementDAOException(msg);
+		}
+		return tenantId;
+	}
 
-    public static DataSource lookupDataSource(String dataSourceName, final Hashtable<Object, Object> jndiProperties) {
-        try {
-            if (jndiProperties == null || jndiProperties.isEmpty()) {
-                return (DataSource) InitialContext.doLookup(dataSourceName);
-            }
-            final InitialContext context = new InitialContext(jndiProperties);
-            return (DataSource) context.lookup(dataSourceName);
-        } catch (Exception e) {
-            throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
-        }
-    }
+	public static DataSource lookupDataSource(String dataSourceName,
+	                                          final Hashtable<Object, Object> jndiProperties) {
+		try {
+			if (jndiProperties == null || jndiProperties.isEmpty()) {
+				return (DataSource) InitialContext.doLookup(dataSourceName);
+			}
+			final InitialContext context = new InitialContext(jndiProperties);
+			return (DataSource) context.lookup(dataSourceName);
+		} catch (Exception e) {
+			throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
+		}
+	}
 
-    /**
-     * @param device - The DTO device object.
-     * @param deviceType - The DeviceType object associated with the device
-     * @return A Business Object.
-     */
-    public static org.wso2.carbon.device.mgt.common.Device convertDevice(Device device, DeviceType deviceType){
-        org.wso2.carbon.device.mgt.common.Device deviceBO =
-                new org.wso2.carbon.device.mgt.common.Device();
-        deviceBO.setDateOfEnrolment(device.getDateOfEnrollment());
-        deviceBO.setDateOfLastUpdate(device.getDateOfLastUpdate());
-        deviceBO.setDescription(device.getDescription());
-        deviceBO.setDeviceIdentifier(device.getDeviceIdentificationId());
-        deviceBO.setDeviceTypeId(device.getDeviceTypeId());
-        deviceBO.setType(deviceType.getName());
-        deviceBO.setName(device.getName());
-        deviceBO.setId(device.getId());
-        deviceBO.setOwner(device.getOwnerId());
-        deviceBO.setOwnership(device.getOwnerShip());
-        if (device.getStatus() == Status.ACTIVE) {
-            deviceBO.setStatus(true);
-        } else if (device.getStatus() == Status.INACTIVE) {
-            deviceBO.setStatus(false);
-        }
-        return deviceBO;
-    }
+	/**
+	 * @param device     - The DTO device object.
+	 * @param deviceType - The DeviceType object associated with the device
+	 * @return A Business Object.
+	 */
+	public static org.wso2.carbon.device.mgt.common.Device convertDevice(Device device,
+	                                                                     DeviceType deviceType) {
+		org.wso2.carbon.device.mgt.common.Device deviceBO =
+				new org.wso2.carbon.device.mgt.common.Device();
+		deviceBO.setDateOfEnrolment(device.getDateOfEnrollment());
+		deviceBO.setDateOfLastUpdate(device.getDateOfLastUpdate());
+		deviceBO.setDescription(device.getDescription());
+		deviceBO.setDeviceIdentifier(device.getDeviceIdentificationId());
+		deviceBO.setDeviceTypeId(device.getDeviceTypeId());
+		deviceBO.setType(deviceType.getName());
+		deviceBO.setName(device.getName());
+		deviceBO.setId(device.getId());
+		deviceBO.setOwner(device.getOwnerId());
+		deviceBO.setOwnership(device.getOwnerShip());
+		if (device.getStatus() == Status.ACTIVE) {
+			deviceBO.setStatus(true);
+		} else if (device.getStatus() == Status.INACTIVE) {
+			deviceBO.setStatus(false);
+		}
+		return deviceBO;
+	}
 
-    public static Device convertDevice(org.wso2.carbon.device.mgt.common.Device
-                                               device) throws DeviceManagementDAOException {
-        Device deviceBO = new Device();
-        deviceBO.setDescription(device.getDescription());
-        deviceBO.setName(device.getName());
-        deviceBO.setDateOfEnrollment(device.getDateOfEnrolment());
-        deviceBO.setDateOfLastUpdate(device.getDateOfLastUpdate());
+	public static Device convertDevice(org.wso2.carbon.device.mgt.common.Device
+			                                   device) throws DeviceManagementDAOException {
+		Device deviceBO = new Device();
+		deviceBO.setDescription(device.getDescription());
+		deviceBO.setName(device.getName());
+		deviceBO.setDateOfEnrollment(device.getDateOfEnrolment());
+		deviceBO.setDateOfLastUpdate(device.getDateOfLastUpdate());
 
-        if (!device.isStatus()){
-            deviceBO.setStatus(Status.INACTIVE);
-        }else{
-            deviceBO.setStatus(Status.ACTIVE);
-        }
-        deviceBO.setOwnerId(device.getOwner());
-        deviceBO.setOwnerShip(device.getOwnership());
-        deviceBO.setTenantId(DeviceManagementDAOUtil.getTenantId());
-        deviceBO.setDeviceIdentificationId(device.getDeviceIdentifier());
-        return deviceBO;
-    }
+		if (!device.isStatus()) {
+			deviceBO.setStatus(Status.INACTIVE);
+		} else {
+			deviceBO.setStatus(Status.ACTIVE);
+		}
+		deviceBO.setOwnerId(device.getOwner());
+		deviceBO.setOwnerShip(device.getOwnership());
+		deviceBO.setTenantId(DeviceManagementDAOUtil.getTenantId());
+		deviceBO.setDeviceIdentificationId(device.getDeviceIdentifier());
+		return deviceBO;
+	}
 
-    public static DeviceIdentifier createDeviceIdentifier(Device device, DeviceType deviceType) {
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setType(deviceType.getName());
-        deviceIdentifier.setId(device.getDeviceIdentificationId());
-        return deviceIdentifier;
-    }
+	public static DeviceIdentifier createDeviceIdentifier(Device device, DeviceType deviceType) {
+		DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+		deviceIdentifier.setType(deviceType.getName());
+		deviceIdentifier.setId(device.getDeviceIdentificationId());
+		return deviceIdentifier;
+	}
 }

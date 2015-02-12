@@ -22,20 +22,21 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import java.util.List;
 
 /**
- * This class represents the key operations associated with persisting device type related information
+ * This class represents the key operations associated with persisting device type related
+ * information.
  */
 public interface DeviceTypeDAO {
 
-    void addDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
+	void addDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
 
-    void updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
+	void updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
 
-    List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
+	List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
 
-    DeviceType getDeviceType(Integer id) throws DeviceManagementDAOException;
+	DeviceType getDeviceType(Integer id) throws DeviceManagementDAOException;
 
-    Integer getDeviceTypeIdByDeviceTypeName(String type) throws DeviceManagementDAOException;
+	Integer getDeviceTypeIdByDeviceTypeName(String type) throws DeviceManagementDAOException;
 
-    void removeDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
+	void removeDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
 
 }

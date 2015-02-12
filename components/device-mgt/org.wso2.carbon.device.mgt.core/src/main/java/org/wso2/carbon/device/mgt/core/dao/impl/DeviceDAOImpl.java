@@ -44,15 +44,16 @@ public class DeviceDAOImpl implements DeviceDAO {
 		this.dataSource = dataSource;
 	}
 
-	@Override public void addDevice(Device device) throws DeviceManagementDAOException {
+	@Override
+	public void addDevice(Device device) throws DeviceManagementDAOException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
 			conn = this.getConnection();
 			String createDBQuery =
-					"INSERT INTO DM_DEVICE(DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNERSHIP," +
-					"STATUS, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION, OWNER, TENANT_ID) VALUES " +
-					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					"INSERT INTO DM_DEVICE(DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, " +
+					"OWNERSHIP, STATUS, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION, OWNER, TENANT_ID) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			stmt = conn.prepareStatement(createDBQuery);
 			stmt.setString(1, device.getDescription());
@@ -75,23 +76,29 @@ public class DeviceDAOImpl implements DeviceDAO {
 		}
 	}
 
-	@Override public void updateDevice(Device device) throws DeviceManagementDAOException {
+	@Override
+	public void updateDevice(Device device) throws DeviceManagementDAOException {
 
 	}
 
-	@Override public void updateDeviceStatus(Long deviceId, Status status) throws DeviceManagementDAOException {
+	@Override
+	public void updateDeviceStatus(Long deviceId, Status status)
+			throws DeviceManagementDAOException {
 
 	}
 
-	@Override public void deleteDevice(Long deviceId) throws DeviceManagementDAOException {
+	@Override
+	public void deleteDevice(Long deviceId) throws DeviceManagementDAOException {
 
 	}
 
-	@Override public Device getDeviceByDeviceId(Long deviceId) throws DeviceManagementDAOException {
+	@Override
+	public Device getDeviceByDeviceId(Long deviceId) throws DeviceManagementDAOException {
 		return null;
 	}
 
-	@Override public Device getDeviceByDeviceIdentifier(Integer type, String identifier)
+	@Override
+	public Device getDeviceByDeviceIdentifier(Integer type, String identifier)
 			throws DeviceManagementDAOException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -102,7 +109,8 @@ public class DeviceDAOImpl implements DeviceDAO {
 			String selectDBQueryForType = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
 			                              "DATE_OF_LAST_UPDATE, OWNERSHIP, STATUS, DEVICE_TYPE_ID, " +
 			                              "DEVICE_IDENTIFICATION, OWNER, TENANT_ID FROM DM_DEVICE " +
-			                              "WHERE DM_DEVICE.DEVICE_TYPE_ID=? AND DM_DEVICE.DEVICE_IDENTIFICATION=?";
+			                              "WHERE DM_DEVICE.DEVICE_TYPE_ID=? AND " +
+			                              "DM_DEVICE.DEVICE_IDENTIFICATION=?";
 			stmt = conn.prepareStatement(selectDBQueryForType);
 			stmt.setInt(1, type);
 			stmt.setString(2, identifier);
@@ -132,11 +140,13 @@ public class DeviceDAOImpl implements DeviceDAO {
 		return device;
 	}
 
-	@Override public List<Device> getDevices() throws DeviceManagementDAOException {
+	@Override
+	public List<Device> getDevices() throws DeviceManagementDAOException {
 		return null;
 	}
 
-	@Override public List<Device> getDevices(Integer type) throws DeviceManagementDAOException {
+	@Override
+	public List<Device> getDevices(Integer type) throws DeviceManagementDAOException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet resultSet = null;
@@ -181,8 +191,9 @@ public class DeviceDAOImpl implements DeviceDAO {
 		try {
 			return dataSource.getConnection();
 		} catch (SQLException e) {
-			throw new DeviceManagementDAOException("Error occurred while obtaining a connection from the device " +
-			                                       "management metadata repository datasource", e);
+			throw new DeviceManagementDAOException(
+					"Error occurred while obtaining a connection from the device " +
+					"management metadata repository datasource", e);
 		}
 	}
 

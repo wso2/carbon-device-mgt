@@ -31,26 +31,28 @@ import java.util.List;
  */
 public interface DeviceManager {
 
-    public boolean enrollDevice(Device device) throws DeviceManagementException;
+	public boolean enrollDevice(Device device) throws DeviceManagementException;
 
-    public boolean modifyEnrollment(Device device) throws DeviceManagementException;
+	public boolean modifyEnrollment(Device device) throws DeviceManagementException;
 
-    public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+	public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
-    public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException;
+	public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException;
 
-    public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException;
+	public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException;
 
-    public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
+	public boolean setActive(DeviceIdentifier deviceId, boolean status)
+			throws DeviceManagementException;
 
-    public List<Device> getAllDevices(String type) throws DeviceManagementException;
+	public List<Device> getAllDevices(String type) throws DeviceManagementException;
 
-    public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+	public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
-    public boolean updateDeviceInfo(Device device) throws DeviceManagementException;
+	public boolean updateDeviceInfo(Device device) throws DeviceManagementException;
 
-    public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
+	public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
+			throws DeviceManagementException;
 
-    public OperationManager getOperationManager(String type) throws DeviceManagementException;
+	public OperationManager getOperationManager(String type) throws DeviceManagementException;
 
 }

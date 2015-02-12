@@ -24,7 +24,7 @@ import org.wso2.carbon.device.mgt.core.dto.Status;
 import java.util.List;
 
 /**
- * This class represents the key operations associated with persisting device related information
+ * This class represents the key operations associated with persisting device related information.
  */
 public interface DeviceDAO {
 
@@ -44,7 +44,8 @@ public interface DeviceDAO {
 	 * @return the Device object which matches given data
 	 * @throws DeviceManagementDAOException
 	 */
-	Device getDeviceByDeviceIdentifier(Integer type, String identifier) throws DeviceManagementDAOException;
+	Device getDeviceByDeviceIdentifier(Integer type, String identifier)
+			throws DeviceManagementDAOException;
 
 	List<Device> getDevices() throws DeviceManagementDAOException;
 

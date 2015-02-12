@@ -50,8 +50,9 @@ public final class DeviceManagerUtil {
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
 			return docBuilder.parse(file);
 		} catch (Exception e) {
-			throw new DeviceManagementException("Error occurred while parsing file, while converting " +
-			                                    "to a org.w3c.dom.Document : " + e.getMessage(), e);
+			throw new DeviceManagementException(
+					"Error occurred while parsing file, while converting " +
+					"to a org.w3c.dom.Document : " + e.getMessage(), e);
 		}
 	}
 
@@ -65,23 +66,28 @@ public final class DeviceManagerUtil {
 		DataSource dataSource = null;
 		if (config == null) {
 			throw new RuntimeException(
-					"Device Management Repository data source configuration " + "is null and thus, is not initialized");
+					"Device Management Repository data source configuration " +
+					"is null and thus, is not initialized");
 		}
 		JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
 		if (jndiConfig != null) {
 			if (log.isDebugEnabled()) {
 				log.debug(
-						"Initializing Device Management Repository data source using the JNDI " + "Lookup Definition");
+						"Initializing Device Management Repository data source using the JNDI " +
+						"Lookup Definition");
 			}
-			List<JNDILookupDefinition.JNDIProperty> jndiPropertyList = jndiConfig.getJndiProperties();
+			List<JNDILookupDefinition.JNDIProperty> jndiPropertyList =
+					jndiConfig.getJndiProperties();
 			if (jndiPropertyList != null) {
 				Hashtable<Object, Object> jndiProperties = new Hashtable<Object, Object>();
 				for (JNDILookupDefinition.JNDIProperty prop : jndiPropertyList) {
 					jndiProperties.put(prop.getName(), prop.getValue());
 				}
-				dataSource = DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), jndiProperties);
+				dataSource = DeviceManagementDAOUtil
+						.lookupDataSource(jndiConfig.getJndiName(), jndiProperties);
 			} else {
-				dataSource = DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
+				dataSource =
+						DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
 			}
 		}
 		return dataSource;

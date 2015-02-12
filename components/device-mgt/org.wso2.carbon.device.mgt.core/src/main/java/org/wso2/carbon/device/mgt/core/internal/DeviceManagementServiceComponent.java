@@ -52,112 +52,123 @@ import org.wso2.carbon.user.core.service.RealmService;
  */
 public class DeviceManagementServiceComponent {
 
-    private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
-    private DeviceManagementRepository pluginRepository = new DeviceManagementRepository();
+	private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
+	private DeviceManagementRepository pluginRepository = new DeviceManagementRepository();
 
-    protected void activate(ComponentContext componentContext) {
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("Initializing device management core bundle");
-            }
-            /* Initializing Device Management Configuration */
-            DeviceConfigurationManager.getInstance().initConfig();
-            DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+	protected void activate(ComponentContext componentContext) {
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug("Initializing device management core bundle");
+			}
+	        /* Initializing Device Management Configuration */
+			DeviceConfigurationManager.getInstance().initConfig();
+			DeviceManagementConfig config =
+					DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
 
-            DataSourceConfig dsConfig = config.getDeviceMgtRepository().getDataSourceConfig();
-            DeviceManagementDAOFactory.init(dsConfig);
+			DataSourceConfig dsConfig = config.getDeviceMgtRepository().getDataSourceConfig();
+			DeviceManagementDAOFactory.init(dsConfig);
 
-            DeviceManager deviceManager = new DeviceManagerImpl(config, this.getPluginRepository());
-            DeviceManagementDataHolder.getInstance().setDeviceManager(deviceManager);
+			DeviceManager deviceManager = new DeviceManagerImpl(config, this.getPluginRepository());
+			DeviceManagementDataHolder.getInstance().setDeviceManager(deviceManager);
 
             /* If -Dsetup option enabled then create device management database schema */
-            String setupOption = System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
-            if (setupOption != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("-Dsetup is enabled. Device management repository schema initialization is about " +
-                            "to begin");
-                }
-                this.setupDeviceManagementSchema(dsConfig);
-            }
+			String setupOption =
+					System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
+			if (setupOption != null) {
+				if (log.isDebugEnabled()) {
+					log.debug(
+							"-Dsetup is enabled. Device management repository schema initialization " +
+							"is about to begin");
+				}
+				this.setupDeviceManagementSchema(dsConfig);
+			}
 
-            if (log.isDebugEnabled()) {
-                log.debug("Registering OSGi service DeviceManagementService");
-            }
-            BundleContext bundleContext = componentContext.getBundleContext();
-            bundleContext.registerService(DeviceManagementService.class.getName(),
-                    new DeviceManagementService(), null);
-            if (log.isDebugEnabled()) {
-                log.debug("Device management core bundle has been successfully initialized");
-            }
-        } catch (Throwable e) {
-            String msg = "Error occurred while initializing device management core bundle";
-            log.error(msg, e);
-        }
-    }
+			if (log.isDebugEnabled()) {
+				log.debug("Registering OSGi service DeviceManagementService");
+			}
+			BundleContext bundleContext = componentContext.getBundleContext();
+			bundleContext.registerService(DeviceManagementService.class.getName(),
+			                              new DeviceManagementService(), null);
+			if (log.isDebugEnabled()) {
+				log.debug("Device management core bundle has been successfully initialized");
+			}
+		} catch (Throwable e) {
+			String msg = "Error occurred while initializing device management core bundle";
+			log.error(msg, e);
+		}
+	}
 
-    private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {
-        DeviceManagementSchemaInitializer initializer = new DeviceManagementSchemaInitializer(config);
-        log.info("Initializing device management repository database schema");
+	private void setupDeviceManagementSchema(DataSourceConfig config)
+			throws DeviceManagementException {
+		DeviceManagementSchemaInitializer initializer =
+				new DeviceManagementSchemaInitializer(config);
+		log.info("Initializing device management repository database schema");
 
-        try {
-            initializer.createRegistryDatabase();
-        } catch (Exception e) {
-            throw new DeviceManagementException("Error occurred while initializing Device Management " +
-                    "database schema", e);
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Device management metadata repository schema has been successfully initialized");
-        }
-    }
+		try {
+			initializer.createRegistryDatabase();
+		} catch (Exception e) {
+			throw new DeviceManagementException(
+					"Error occurred while initializing Device Management " +
+					"database schema", e);
+		}
+		if (log.isDebugEnabled()) {
+			log.debug(
+					"Device management metadata repository schema has been successfully initialized");
+		}
+	}
 
-    /**
-     * Sets Device Manager service.
-     * @param deviceManagerService An instance of DeviceManagerService
-     */
-    protected void setDeviceManagerService(DeviceManagerService deviceManagerService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting Device Management Service Provider : '" +
-                    deviceManagerService.getProviderType() + "'");
-        }
-        this.getPluginRepository().addDeviceManagementProvider(deviceManagerService);
-    }
+	/**
+	 * Sets Device Manager service.
+	 *
+	 * @param deviceManagerService An instance of DeviceManagerService
+	 */
+	protected void setDeviceManagerService(DeviceManagerService deviceManagerService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting Device Management Service Provider : '" +
+			          deviceManagerService.getProviderType() + "'");
+		}
+		this.getPluginRepository().addDeviceManagementProvider(deviceManagerService);
+	}
 
-    /**
-     * Unsets Device Management service.
-     * @param deviceManagerService An Instance of DeviceManagerService
-     */
-    protected void unsetDeviceManagerService(DeviceManagerService deviceManagerService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unsetting Device Management Service Provider : '" +
-                    deviceManagerService.getProviderType() + "'");
-        }
-        this.getPluginRepository().removeDeviceManagementProvider(deviceManagerService);
-    }
+	/**
+	 * Unsets Device Management service.
+	 *
+	 * @param deviceManagerService An Instance of DeviceManagerService
+	 */
+	protected void unsetDeviceManagerService(DeviceManagerService deviceManagerService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Unsetting Device Management Service Provider : '" +
+			          deviceManagerService.getProviderType() + "'");
+		}
+		this.getPluginRepository().removeDeviceManagementProvider(deviceManagerService);
+	}
 
-    /**
-     * Sets Realm Service.
-     * @param realmService An instance of RealmService
-     */
-    protected void setRealmService(RealmService realmService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting Realm Service");
-        }
-        DeviceManagementDataHolder.getInstance().setRealmService(realmService);
-    }
+	/**
+	 * Sets Realm Service.
+	 *
+	 * @param realmService An instance of RealmService
+	 */
+	protected void setRealmService(RealmService realmService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting Realm Service");
+		}
+		DeviceManagementDataHolder.getInstance().setRealmService(realmService);
+	}
 
-    /**
-     * Unsets Realm Service.
-     * @param realmService An instance of RealmService
-     */
-    protected void unsetRealmService(RealmService realmService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unsetting Realm Service");
-        }
-        DeviceManagementDataHolder.getInstance().setRealmService(null);
-    }
+	/**
+	 * Unsets Realm Service.
+	 *
+	 * @param realmService An instance of RealmService
+	 */
+	protected void unsetRealmService(RealmService realmService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Unsetting Realm Service");
+		}
+		DeviceManagementDataHolder.getInstance().setRealmService(null);
+	}
 
-    private DeviceManagementRepository getPluginRepository() {
-        return pluginRepository;
-    }
+	private DeviceManagementRepository getPluginRepository() {
+		return pluginRepository;
+	}
 
 }

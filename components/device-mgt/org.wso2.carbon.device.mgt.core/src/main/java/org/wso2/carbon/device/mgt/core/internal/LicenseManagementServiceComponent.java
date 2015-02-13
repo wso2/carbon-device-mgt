@@ -124,9 +124,9 @@ public class LicenseManagementServiceComponent {
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.OVERVIEW_PROVIDER,
                         license.getProvider());
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO,
-                        license.getValidTo().toString());
+                        license.getValidTo());
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM,
-                        license.getValidFrom().toString());
+                        license.getValidFrom());
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LICENSE,license.getLicense());
                 artifactManager.addGenericArtifact(artifact);
             }

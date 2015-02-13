@@ -37,6 +37,7 @@
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Policy Information Point Bundle</Bundle-Description>
                         <Private-Package>org.wso2.carbon.policy.information.point.internal</Private-Package>
+                        <Bundle-Activator>org.wso2.carbon.policy.information.point.internal.PolicyInformationPointBundleActivator</Bundle-Activator>
                         <Export-Package>
                             org.wso2.carbon.policy.information.point.*
                         </Export-Package>

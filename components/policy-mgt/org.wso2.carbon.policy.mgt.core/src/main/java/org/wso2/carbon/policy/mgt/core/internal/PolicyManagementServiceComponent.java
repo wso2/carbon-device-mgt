@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.policy.mgt.common.PolicyInformationService;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyManagementConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
@@ -28,13 +29,19 @@ import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
- * @scr.component name="org.wso2.carbon.policy.manager" immediate="true"
+ * @scr.component name="org.wso2.carbon.devicemgt.policy.manager" immediate="true"
  * @scr.reference name="user.realmservice.default"
  * interface="org.wso2.carbon.user.core.service.RealmService"
  * cardinality="1..1"
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
+ * @scr.reference name="org.wso2.carbon.devicemgt.policy.information.point.default"
+ * interface="org.wso2.carbon.policy.mgt.common.PolicyInformationService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setPIPService"
+ * unbind="unsetPIPService"
  */
 
 public class PolicyManagementServiceComponent {
@@ -79,6 +86,19 @@ public class PolicyManagementServiceComponent {
             log.debug("Unsetting Realm Service");
         }
         PolicyManagementDataHolder.getInstance().setRealmService(null);
+    }
+
+
+    protected void setPIPService(PolicyInformationService policyInformationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Policy Information Service");
+        }
+    }
+
+    protected void unsetPIPService(PolicyInformationService policyInformationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Policy Information Service");
+        }
     }
 
 }

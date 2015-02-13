@@ -22,7 +22,7 @@ package org.wso2.carbon.policy.mgt.common;
  * This interface defines the policy management which should be implemented by the plugins
  */
 
-public interface PolicyManagerService {
+public interface PolicyAdministratorService {
 
     /**
      * This method adds a policy to the platform
@@ -100,11 +100,32 @@ public interface PolicyManagerService {
     Policy getPolicyOfRole(String roleName) throws FeatureManagementException, PolicyManagementException;
 
 
+    /**
+     * This method checks weather a policy is available for a device.
+     * @param deviceId
+     * @param deviceType
+     * @return
+     * @throws PolicyManagementException
+     */
     boolean isPolicyAvailableForDevice(String deviceId, String deviceType) throws PolicyManagementException;
 
 
+    /**
+     * This method checks weather a policy is used by a particular device.
+     * @param deviceId
+     * @param deviceType
+     * @return
+     * @throws PolicyManagementException
+     */
     boolean isPolicyUsed(String deviceId, String deviceType) throws PolicyManagementException;
 
 
+    /**
+     *
+     * @param deviceId
+     * @param deviceType
+     * @param policy
+     * @throws PolicyManagementException
+     */
     void setPolicyUsed(String deviceId, String deviceType, Policy policy) throws PolicyManagementException;
 }

@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
- * Class for hold JndiLookupDefinition of rss-manager.xml at parsing with JAXB
+ * Class for hold JndiLookupDefinition of rss-manager.xml at parsing with JAXB.
  */
 @XmlRootElement(name = "JndiLookupDefinition")
 public class JNDILookupDefinition {

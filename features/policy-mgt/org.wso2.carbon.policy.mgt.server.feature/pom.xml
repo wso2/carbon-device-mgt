@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -47,7 +48,11 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.policy.evaluator</artifactId>
+            <artifactId>org.wso2.carbon.complex.policy.decision.point</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.policy.information.point</artifactId>
         </dependency>
     </dependencies>
 
@@ -99,11 +104,17 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.policy.mgt.core:${carbon.device.mgt.version}
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.policy.mgt.core:${carbon.device.mgt.version}
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.policy.mgt.common:${carbon.device.mgt.version}
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.policy.mgt.common:${carbon.device.mgt.version}
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.policy.evaluator:${carbon.device.mgt.version}
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.complex.policy.decision.point:${carbon.device.mgt.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.policy.information.point:${carbon.device.mgt.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>

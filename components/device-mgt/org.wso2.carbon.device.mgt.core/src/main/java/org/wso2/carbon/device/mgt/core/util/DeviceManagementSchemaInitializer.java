@@ -29,20 +29,21 @@ import java.io.File;
 
 public final class DeviceManagementSchemaInitializer extends DatabaseCreator {
 
-    private static final Log log = LogFactory.getLog(DeviceManagementSchemaInitializer.class);
-    private static final String setupSQLScriptBaseLocation =
-            CarbonUtils.getCarbonHome() + File.separator + "dbscripts" + File.separator + "cdm" + File.separator;
+	private static final Log log = LogFactory.getLog(DeviceManagementSchemaInitializer.class);
+	private static final String setupSQLScriptBaseLocation =
+			CarbonUtils.getCarbonHome() + File.separator + "dbscripts" + File.separator + "cdm" +
+			File.separator;
 
-    public DeviceManagementSchemaInitializer(DataSourceConfig config) {
-        super(DeviceManagerUtil.resolveDataSource(config));
-    }
+	public DeviceManagementSchemaInitializer(DataSourceConfig config) {
+		super(DeviceManagerUtil.resolveDataSource(config));
+	}
 
-    protected String getDbScriptLocation(String databaseType) {
-        String scriptName = databaseType + ".sql";
-        if (log.isDebugEnabled()) {
-            log.debug("Loading database script from :" + scriptName);
-        }
-        return setupSQLScriptBaseLocation.replaceFirst("DBTYPE", databaseType) + scriptName;
-    }
+	protected String getDbScriptLocation(String databaseType) {
+		String scriptName = databaseType + ".sql";
+		if (log.isDebugEnabled()) {
+			log.debug("Loading database script from :" + scriptName);
+		}
+		return setupSQLScriptBaseLocation.replaceFirst("DBTYPE", databaseType) + scriptName;
+	}
 
 }

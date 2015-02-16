@@ -30,45 +30,46 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 
 /**
- * Class responsible for the cdm manager configuration initialization
+ * Class responsible for the cdm manager configuration initialization.
  */
 public class DeviceConfigurationManager {
 
-    private DeviceManagementConfig currentDeviceConfig;
-    private static DeviceConfigurationManager deviceConfigManager;
+	private DeviceManagementConfig currentDeviceConfig;
+	private static DeviceConfigurationManager deviceConfigManager;
 
-    private static final String deviceMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath() + File.separator  +
-            DeviceManagementConstants.DataSourceProperties.DEVICE_CONFIG_XML_NAME;
+	private static final String deviceMgtConfigXMLPath =
+			CarbonUtils.getCarbonConfigDirPath() + File.separator +
+			DeviceManagementConstants.DataSourceProperties.DEVICE_CONFIG_XML_NAME;
 
-    public static DeviceConfigurationManager getInstance() {
-        if (deviceConfigManager == null) {
-            synchronized (DeviceConfigurationManager.class) {
-                if (deviceConfigManager == null) {
-                    deviceConfigManager = new DeviceConfigurationManager();
-                }
-            }
-        }
-        return deviceConfigManager;
-    }
+	public static DeviceConfigurationManager getInstance() {
+		if (deviceConfigManager == null) {
+			synchronized (DeviceConfigurationManager.class) {
+				if (deviceConfigManager == null) {
+					deviceConfigManager = new DeviceConfigurationManager();
+				}
+			}
+		}
+		return deviceConfigManager;
+	}
 
-    public synchronized void initConfig() throws DeviceManagementException {
+	public synchronized void initConfig() throws DeviceManagementException {
 
-        //catch generic exception.if any exception occurs wrap and throw DeviceManagementException
-        try {
-            File deviceMgtConfig = new File(deviceMgtConfigXMLPath);
-            Document doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
+		//catch generic exception.if any exception occurs wrap and throw DeviceManagementException
+		try {
+			File deviceMgtConfig = new File(deviceMgtConfigXMLPath);
+			Document doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
 
             /* Un-marshaling Device Management configuration */
-            JAXBContext cdmContext = JAXBContext.newInstance(DeviceManagementConfig.class);
-            Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-            this.currentDeviceConfig = (DeviceManagementConfig) unmarshaller.unmarshal(doc);
-        } catch (Exception e) {
-            throw new DeviceManagementException("Error occurred while initializing RSS config", e);
-        }
-    }
+			JAXBContext cdmContext = JAXBContext.newInstance(DeviceManagementConfig.class);
+			Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
+			this.currentDeviceConfig = (DeviceManagementConfig) unmarshaller.unmarshal(doc);
+		} catch (Exception e) {
+			throw new DeviceManagementException("Error occurred while initializing RSS config", e);
+		}
+	}
 
-    public DeviceManagementConfig getDeviceManagementConfig() {
-        return currentDeviceConfig;
-    }
+	public DeviceManagementConfig getDeviceManagementConfig() {
+		return currentDeviceConfig;
+	}
 
 }

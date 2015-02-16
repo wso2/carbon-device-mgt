@@ -20,12 +20,8 @@
 
 package org.wso2.carbon.device.mgt.core.config.license;
 
-import org.wso2.carbon.device.mgt.core.util.DateAdapter;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Date;
 
 @XmlRootElement(name = "License")
 public class License {
@@ -34,8 +30,9 @@ public class License {
     private String name;
     private String version;
     private String language;
-    private Date validFrom;
-    private Date validTo;
+
+    private String validFrom;
+    private String validTo;
     private String license;
 
     @XmlElement(name = "provider")
@@ -74,24 +71,6 @@ public class License {
         this.language = language;
     }
 
-    @XmlJavaTypeAdapter(DateAdapter.class)
-    public Date getValidFrom() {
-        return validFrom;
-    }
-
-    public void setValidFrom(Date validFrom) {
-        this.validFrom = validFrom;
-    }
-
-    @XmlJavaTypeAdapter(DateAdapter.class)
-    public Date getValidTo() {
-        return validTo;
-    }
-
-    public void setValidTo(Date validTo) {
-        this.validTo = validTo;
-    }
-    
     @XmlElement(name = "license")
     public String getLicense() {
         return license;
@@ -101,4 +80,21 @@ public class License {
         this.license = license;
     }
 
+    @XmlElement(name = "validFrom")
+    public String getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(String validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    @XmlElement(name = "validTo")
+    public String getValidTo() {
+        return validTo;
+    }
+
+    public void setValidTo(String validTo) {
+        this.validTo = validTo;
+    }
 }

@@ -28,7 +28,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
-    <artifactId>org.wso2.carbon.policy.evaluator</artifactId>
+    <artifactId>org.wso2.carbon.complex.policy.decision.point</artifactId>
     <version>0.9.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Policy Decision Point</name>
@@ -51,10 +51,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Policy Management Common Bundle</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.policy.evaluator</Private-Package>
+                        <Bundle-Description>Complex Policy Decision Point Bundle</Bundle-Description>
+                        <Private-Package>org.wso2.carbon.complex.policy.decision.point.internal</Private-Package>
                         <Export-Package>
-                            org.wso2.carbon.policy.evaluator.*
+                            org.wso2.carbon.complex.policy.decision.point.*
                         </Export-Package>
                     </instructions>
                 </configuration>

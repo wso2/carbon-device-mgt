@@ -32,42 +32,42 @@ import java.io.File;
 
 public class LicenseConfigurationManager {
 
-    private LicenseManagementConfig licenseMgtConfig;
-    private static LicenseConfigurationManager licenseConfigManager;
+	private LicenseManagementConfig licenseMgtConfig;
+	private static LicenseConfigurationManager licenseConfigManager;
 
-    private static final String licenseMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath() + File.separator +
-            DeviceManagementConstants.Common.DEFAULT_LICENSE_CONFIG_XML_NAME;
+	private static final String licenseMgtConfigXMLPath =
+			CarbonUtils.getCarbonConfigDirPath() + File.separator +
+			DeviceManagementConstants.Common.DEFAULT_LICENSE_CONFIG_XML_NAME;
 
-    public static LicenseConfigurationManager getInstance() {
-        if (licenseConfigManager == null) {
-            synchronized (LicenseConfigurationManager.class) {
-                if (licenseConfigManager == null) {
-                    licenseConfigManager = new LicenseConfigurationManager();
-                }
-            }
-        }
-        return licenseConfigManager;
-    }
+	public static LicenseConfigurationManager getInstance() {
+		if (licenseConfigManager == null) {
+			synchronized (LicenseConfigurationManager.class) {
+				if (licenseConfigManager == null) {
+					licenseConfigManager = new LicenseConfigurationManager();
+				}
+			}
+		}
+		return licenseConfigManager;
+	}
 
-    public synchronized void initConfig() throws LicenseManagementException {
+	public synchronized void initConfig() throws LicenseManagementException {
 
-        //catch generic exception.if any exception occurs wrap and throw LicenseManagementException
-        try {
-            File licenseMgtConfig = new File(licenseMgtConfigXMLPath);
-            Document doc = DeviceManagerUtil.convertToDocument(licenseMgtConfig);
+		//catch generic exception.if any exception occurs wrap and throw LicenseManagementException
+		try {
+			File licenseMgtConfig = new File(licenseMgtConfigXMLPath);
+			Document doc = DeviceManagerUtil.convertToDocument(licenseMgtConfig);
 
             /* Un-marshaling License Management configuration */
-            JAXBContext cdmContext = JAXBContext.newInstance(LicenseManagementConfig.class);
-            Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-            this.licenseMgtConfig = (LicenseManagementConfig) unmarshaller.unmarshal(doc);
-        } catch (Exception e) {
-            throw new LicenseManagementException("Error occurred while initializing RSS config", e);
-        }
-    }
+			JAXBContext cdmContext = JAXBContext.newInstance(LicenseManagementConfig.class);
+			Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
+			this.licenseMgtConfig = (LicenseManagementConfig) unmarshaller.unmarshal(doc);
+		} catch (Exception e) {
+			throw new LicenseManagementException("Error occurred while initializing RSS config", e);
+		}
+	}
 
-    public LicenseManagementConfig getLicenseMgtConfig() {
-        return licenseMgtConfig;
-    }
-
+	public LicenseManagementConfig getLicenseMgtConfig() {
+		return licenseMgtConfig;
+	}
 
 }

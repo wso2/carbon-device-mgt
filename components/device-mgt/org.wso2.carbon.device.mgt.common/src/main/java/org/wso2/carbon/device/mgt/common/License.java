@@ -15,37 +15,74 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.carbon.device.mgt.common;
+
+import java.util.Date;
 
 public class License {
 
-    private String licenseName;
-    private String licenseText;
-    private String licenseVersion;
+    private String name;
+    private String version;
+    private String language;
+    private String provider;
+    private Date validTo;
+    private Date validFrom;
+    private String text;
 
-    public String getLicenseName() {
-        return licenseName;
+    public String getName() {
+        return name;
     }
 
-    public void setLicenseName(String licenseName) {
-        this.licenseName = licenseName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLicenseText() {
-        return licenseText;
+    public String getVersion() {
+        return version;
     }
 
-    public void setLicenseText(String licenseText) {
-        this.licenseText = licenseText;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
-    public String getLicenseVersion() {
-        return licenseVersion;
+    public String getLanguage() {
+        return language;
     }
 
-    public void setLicenseVersion(String licenseVersion) {
-        this.licenseVersion = licenseVersion;
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public Date getValidTo() {
+        return validTo;
+    }
+
+    public void setValidTo(Date validTo) {
+        this.validTo = validTo;
+    }
+
+    public Date getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
 }

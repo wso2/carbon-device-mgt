@@ -20,22 +20,26 @@
 
 package org.wso2.carbon.device.mgt.core.config;
 
-import org.wso2.carbon.device.mgt.core.config.license.License;
+import org.wso2.carbon.device.mgt.common.License;
+
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement(name = "DefaultLicense")
 public class LicenseManagementConfig {
 
-    private List<License> licenseList;
+    private List<License> licenses;
 
+    @XmlElementWrapper(name = "Licenses")
     @XmlElement(name = "License")
-    public List<License> getLicenseList() {
-        return licenseList;
+    public List<License> getLicenses() {
+        return licenses;
     }
 
-    public void setLicenseList(List<License> licenseList) {
-        this.licenseList = licenseList;
+    public void setLicenses(List<License> licenses) {
+        this.licenses = licenses;
     }
+
 }

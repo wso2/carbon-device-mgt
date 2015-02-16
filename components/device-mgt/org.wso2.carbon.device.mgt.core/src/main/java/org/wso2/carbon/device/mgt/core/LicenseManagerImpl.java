@@ -21,19 +21,18 @@ package org.wso2.carbon.device.mgt.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.License;
 import org.wso2.carbon.device.mgt.common.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.internal.LicenseManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.license.mgt.GenericArtifactManagerFactory;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactFilter;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import java.text.DateFormat;
@@ -51,25 +50,15 @@ public class LicenseManagerImpl implements LicenseManager {
     public License getLicense(final String deviceType, final String languageCodes) throws LicenseManagementException {
 
         if (log.isDebugEnabled()) {
-            log.debug("entered get License in license manager impl");
+            log.debug("Retrieving the license configured upon Device Type: '" + deviceType + "' and Language Code: '" +
+                    languageCodes + "'");
         }
-        // TODO: After completes JAX-RX user login, this need to be change to CarbonContext
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername("admin");
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-        Registry registry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                .getRegistry(RegistryType.USER_GOVERNANCE);
-
+        License license = null;
         GenericArtifact[] filteredArtifacts;
-        License license = new License();
-
         try {
-            GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
-            GenericArtifactManager artifactManager = new GenericArtifactManager(registry,
-                    DeviceManagementConstants.LicenseProperties.LICENSE_REGISTRY_KEY);
+            GenericArtifactManager artifactManager =
+                    GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager();
 
             filteredArtifacts = artifactManager.findGenericArtifacts(
                     new GenericArtifactFilter() {
@@ -82,6 +71,7 @@ public class LicenseManagerImpl implements LicenseManager {
                                     (deviceType) && attributeLangVal.equals(languageCodes));
                         }
                     });
+
             String validFrom;
             String validTo;
             Date fromDate;
@@ -102,26 +92,25 @@ public class LicenseManagerImpl implements LicenseManager {
                 }
                 validFrom = artifact.getAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM);
                 validTo = artifact.getAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO);
-                try {
-                    fromDate = format.parse(validFrom);
-                    toDate = format.parse(validTo);
-                    if (fromDate.getTime() <= new Date().getTime() && new Date().getTime() <= toDate.getTime()) {
-                        license.setLicenseText(
-                                artifact.getAttribute(DeviceManagementConstants.LicenseProperties.LICENSE));
-                    }
-                } catch (ParseException e) {
-                    log.error("Valid from: " + validFrom);
-                    log.error("Valid to: " + validTo);
-                    log.error("Valid date parse error: ", e);
+
+                fromDate = format.parse(validFrom);
+                toDate = format.parse(validTo);
+
+                license = new License();
+                if (fromDate.getTime() <= new Date().getTime() && new Date().getTime() <= toDate.getTime()) {
+                    license.setText(artifact.getAttribute(DeviceManagementConstants.LicenseProperties.LICENSE));
                 }
             }
-        } catch (RegistryException regEx) {
-            String errorMsg = "Registry error occurred: ";
-            log.error(errorMsg, regEx);
-            throw new LicenseManagementException(errorMsg, regEx);
-        } finally {
-            PrivilegedCarbonContext.endTenantFlow();
+        } catch (RegistryException e) {
+            String msg = "Error occurred while initializing generic artifact manager associated with retrieving " +
+                    "license data stored in registry";
+            throw new LicenseManagementException(msg, e);
+        } catch (ParseException e) {
+            String msg = "Error occurred while parsing the date string";
+            log.error(msg, e);
+            throw new LicenseManagementException(msg, e);
         }
         return license;
     }
+
 }

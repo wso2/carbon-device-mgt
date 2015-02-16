@@ -22,23 +22,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.common.License;
 import org.wso2.carbon.device.mgt.common.LicenseManagementException;
 import org.wso2.carbon.device.mgt.core.LicenseManager;
 import org.wso2.carbon.device.mgt.core.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.config.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.LicenseManagementConfig;
+import org.wso2.carbon.device.mgt.core.license.mgt.GenericArtifactManagerFactory;
 import org.wso2.carbon.device.mgt.core.service.LicenseManagementService;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.xml.namespace.QName;
@@ -60,7 +56,6 @@ public class LicenseManagementServiceComponent {
     private static Log log = LogFactory.getLog(LicenseManagementServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
-
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing license management core bundle");
@@ -97,23 +92,12 @@ public class LicenseManagementServiceComponent {
     }
 
     private void addDefaultLicenses(LicenseManagementConfig licenseManagementConfig) throws LicenseManagementException {
-
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername("admin");
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-        Registry registry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext().getRegistry(
-                RegistryType.USER_GOVERNANCE);
         try {
-            GenericArtifactManager artifactManager = new GenericArtifactManager(registry,
-                    DeviceManagementConstants.LicenseProperties.LICENSE_REGISTRY_KEY);
+            GenericArtifactManager artifactManager =
+                    GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager();
+
             GenericArtifact artifact;
-
-            for (org.wso2.carbon.device.mgt.core.config.license.License license : licenseManagementConfig
-                    .getLicenseList()) {
-
+            for (License license : licenseManagementConfig.getLicenses()) {
                 artifact = artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com",
                         DeviceManagementConstants.LicenseProperties.LICENSE_REGISTRY_KEY));
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.OVERVIEW_NAME, license.getName());
@@ -127,21 +111,18 @@ public class LicenseManagementServiceComponent {
                         license.getValidTo().toString());
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM,
                         license.getValidFrom().toString());
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LICENSE,license.getLicense());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LICENSE, license.getText());
                 artifactManager.addGenericArtifact(artifact);
             }
-        } catch (GovernanceException govEx) {
-            String errorMsg = "Governance error";
-            log.error(errorMsg);
-            throw new LicenseManagementException(errorMsg, govEx);
-        } catch (RegistryException regEx) {
-            String errorMsg = "Registry error";
-            throw new LicenseManagementException(errorMsg, regEx);
+        } catch (GovernanceException e) {
+            String msg = "Error occurred while initializing default licences";
+            throw new LicenseManagementException(msg, e);
         }
     }
 
     /**
      * Sets Realm Service.
+     *
      * @param realmService An instance of RealmService
      */
     protected void setRealmService(RealmService realmService) {
@@ -153,6 +134,7 @@ public class LicenseManagementServiceComponent {
 
     /**
      * Unsets Realm Service.
+     *
      * @param realmService An instance of RealmService
      */
     protected void unsetRealmService(RealmService realmService) {
@@ -162,11 +144,28 @@ public class LicenseManagementServiceComponent {
         LicenseManagementDataHolder.getInstance().setRealmService(null);
     }
 
+    /**
+     * Sets Registry Service.
+     *
+     * @param registryService An instance of RegistryService
+     */
     protected void setRegistryService(RegistryService registryService) {
-        //  CommonUtil.setRegistryService(registryService);
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Registry Service");
+        }
+        LicenseManagementDataHolder.getInstance().setRegistryService(registryService);
     }
 
+    /**
+     * Unsets Registry Service.
+     *
+     * @param registryService An instance of RegistryService
+     */
     protected void unsetRegistryService(RegistryService registryService) {
-        //CommonUtil.setRegistryService(null);
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Registry Service");
+        }
+        LicenseManagementDataHolder.getInstance().setRegistryService(null);
     }
+
 }

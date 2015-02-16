@@ -17,10 +17,10 @@
  *   under the License.
  *
  */
-
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.wso2.carbon.device.mgt.core.LicenseManager;
+import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
@@ -29,6 +29,8 @@ public class LicenseManagementDataHolder {
     private RealmService realmService;
     private TenantManager tenantManager;
     private LicenseManager licenseManager;
+    private RegistryService registryService;
+
     private static LicenseManagementDataHolder thisInstance = new LicenseManagementDataHolder();
 
     public RealmService getRealmService() {
@@ -40,7 +42,7 @@ public class LicenseManagementDataHolder {
     }
 
     public TenantManager getTenantManager() {
-        return tenantManager;
+        return this.tenantManager;
     }
 
     public void setTenantManager(TenantManager tenantManager) {
@@ -54,10 +56,19 @@ public class LicenseManagementDataHolder {
         return thisInstance;
     }
     public LicenseManager getLicenseManager() {
-        return licenseManager;
+        return this.licenseManager;
     }
 
     public void setLicenseManager(LicenseManager licenseManager) {
         this.licenseManager = licenseManager;
     }
+
+    public void setRegistryService(RegistryService registryService) {
+        this.registryService = registryService;
+    }
+
+    public RegistryService getRegistryService() {
+        return this.registryService;
+    }
+
 }

@@ -18,10 +18,10 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core.config;
+package org.wso2.carbon.device.mgt.core.config.license;
 
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.common.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.LicenseManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -32,11 +32,11 @@ import java.io.File;
 
 public class LicenseConfigurationManager {
 
-	private LicenseManagementConfig licenseMgtConfig;
+	private LicenseConfig licenseConfig;
 	private static LicenseConfigurationManager licenseConfigManager;
 
-	private static final String licenseMgtConfigXMLPath =
-			CarbonUtils.getCarbonConfigDirPath() + File.separator +
+	private static final String LICENSE_CONFIG_PATH =
+			CarbonUtils.getEtcCarbonConfigDirPath() + File.separator +
 			DeviceManagementConstants.Common.DEFAULT_LICENSE_CONFIG_XML_NAME;
 
 	public static LicenseConfigurationManager getInstance() {
@@ -51,23 +51,23 @@ public class LicenseConfigurationManager {
 	}
 
 	public synchronized void initConfig() throws LicenseManagementException {
-
-		//catch generic exception.if any exception occurs wrap and throw LicenseManagementException
 		try {
-			File licenseMgtConfig = new File(licenseMgtConfigXMLPath);
+			File licenseMgtConfig = new File(LicenseConfigurationManager.LICENSE_CONFIG_PATH);
 			Document doc = DeviceManagerUtil.convertToDocument(licenseMgtConfig);
 
             /* Un-marshaling License Management configuration */
-			JAXBContext cdmContext = JAXBContext.newInstance(LicenseManagementConfig.class);
+			JAXBContext cdmContext = JAXBContext.newInstance(LicenseConfig.class);
 			Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-			this.licenseMgtConfig = (LicenseManagementConfig) unmarshaller.unmarshal(doc);
+			this.licenseConfig = (LicenseConfig) unmarshaller.unmarshal(doc);
 		} catch (Exception e) {
-			throw new LicenseManagementException("Error occurred while initializing RSS config", e);
-		}
-	}
+            /* Catches generic exception as there's no specific task to be carried out catching a particular
+            exception */
+            throw new LicenseManagementException("Error occurred while initializing License Configurations", e);
+        }
+    }
 
-	public LicenseManagementConfig getLicenseMgtConfig() {
-		return licenseMgtConfig;
+	public LicenseConfig getLicenseConfig() {
+		return licenseConfig;
 	}
 
 }

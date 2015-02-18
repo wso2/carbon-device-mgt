@@ -57,11 +57,9 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging,
-                            javax.xml.bind.*,
                             javax.naming,
+                            javax.xml.*,
                             javax.sql,
-                            javax.xml.parsers,
-                            javax.transaction.*,
                             org.wso2.carbon.governance.api.*,
                             org.wso2.carbon.base,
                             org.wso2.carbon.context,
@@ -72,8 +70,7 @@
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
-                            org.w3c.dom,
-                            javax.xml.namespace.*;
+                            org.w3c.dom
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

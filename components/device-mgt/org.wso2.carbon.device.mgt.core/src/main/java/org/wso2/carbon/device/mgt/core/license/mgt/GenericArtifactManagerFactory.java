@@ -19,12 +19,14 @@
 package org.wso2.carbon.device.mgt.core.license.mgt;
 
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.common.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.internal.LicenseManagementDataHolder;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
+import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,18 +39,30 @@ public class GenericArtifactManagerFactory {
 
     public static GenericArtifactManager getTenantAwareGovernanceArtifactManager() throws
             LicenseManagementException {
-        Registry registry = CarbonContext.getThreadLocalCarbonContext().getRegistry(RegistryType.USER_GOVERNANCE);
+        Registry registry;
+        int tenantId;
+        try {
+            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            registry =
+                    LicenseManagementDataHolder.getInstance().getRegistryService().getGovernanceSystemRegistry(
+                            tenantId);
+        } catch (RegistryException e) {
+            throw new LicenseManagementException("Error occurred while initializing tenant system registry " +
+                    "to be used to manipulate License artifacts", e);
+        }
+
         try {
             GenericArtifactManager artifactManager;
             synchronized (lock) {
                 artifactManager =
-                        tenantArtifactManagers.get(CarbonContext.getThreadLocalCarbonContext().getTenantId());
+                        tenantArtifactManagers.get(tenantId);
                 if (artifactManager == null) {
+                    /* Hack, to fix https://wso2.org/jira/browse/REGISTRY-2427 */
+                    //GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
                     artifactManager =
                             new GenericArtifactManager((org.wso2.carbon.registry.core.Registry) registry,
                                     DeviceManagementConstants.LicenseProperties.LICENSE_REGISTRY_KEY);
-                    tenantArtifactManagers.put(CarbonContext.getThreadLocalCarbonContext().getTenantId(),
-                            artifactManager);
+                    tenantArtifactManagers.put(tenantId, artifactManager);
                 }
             }
             return artifactManager;

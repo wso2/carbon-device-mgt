@@ -18,17 +18,15 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core.config;
-
-import org.wso2.carbon.device.mgt.common.License;
+package org.wso2.carbon.device.mgt.core.config.license;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement(name = "DefaultLicense")
-public class LicenseManagementConfig {
+@XmlRootElement(name = "LicenseConfig")
+public class LicenseConfig {
 
     private List<License> licenses;
 

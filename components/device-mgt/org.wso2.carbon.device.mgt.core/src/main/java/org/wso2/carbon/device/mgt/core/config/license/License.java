@@ -22,6 +22,7 @@ package org.wso2.carbon.device.mgt.core.config.license;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @XmlRootElement(name = "License")
 public class License {
@@ -30,12 +31,11 @@ public class License {
     private String name;
     private String version;
     private String language;
+    private Date validFrom;
+    private Date validTo;
+    private String text;
 
-    private String validFrom;
-    private String validTo;
-    private String license;
-
-    @XmlElement(name = "provider")
+    @XmlElement(name = "Provider", required = true)
     public String getProvider() {
         return provider;
     }
@@ -44,7 +44,7 @@ public class License {
         this.provider = provider;
     }
 
-    @XmlElement(name = "name")
+    @XmlElement(name = "Name", required = true)
     public String getName() {
         return name;
     }
@@ -53,7 +53,7 @@ public class License {
         this.name = name;
     }
 
-    @XmlElement(name = "version")
+    @XmlElement(name = "Version", required = true)
     public String getVersion() {
         return version;
     }
@@ -62,7 +62,7 @@ public class License {
         this.version = version;
     }
 
-    @XmlElement(name = "language")
+    @XmlElement(name = "Language", required = true)
     public String getLanguage() {
         return language;
     }
@@ -71,30 +71,31 @@ public class License {
         this.language = language;
     }
 
-    @XmlElement(name = "license")
-    public String getLicense() {
-        return license;
+    @XmlElement(name = "Text", required = true)
+    public String getText() {
+        return text;
     }
 
-    public void setLicense(String license) {
-        this.license = license;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    @XmlElement(name = "validFrom")
-    public String getValidFrom() {
+    @XmlElement(name = "ValidFrom")
+    public Date getValidFrom() {
         return validFrom;
     }
 
-    public void setValidFrom(String validFrom) {
+    public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
     }
 
-    @XmlElement(name = "validTo")
-    public String getValidTo() {
+    @XmlElement(name = "ValidTo")
+    public Date getValidTo() {
         return validTo;
     }
 
-    public void setValidTo(String validTo) {
+    public void setValidTo(Date validTo) {
         this.validTo = validTo;
     }
+
 }

@@ -20,8 +20,10 @@
 
 package org.wso2.carbon.device.mgt.core;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.core.config.license.License;
 
 public interface LicenseManager {
-    public License getLicense(String deviceType,String languageCodes) throws LicenseManagementException;
+
+    License getLicense(String deviceType,String languageCodes) throws LicenseManagementException;
+
 }

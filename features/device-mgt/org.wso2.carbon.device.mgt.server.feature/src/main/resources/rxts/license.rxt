@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <artifactType type="application/vnd.wso2-license+xml" shortName="license" singularLabel="License" pluralLabel="Licenses"
               hasNamespace="false" iconSet="10">
-    <storagePath>/license/@{overview_provider}/@{overview_name}/@{overview_language}/@{overview_version}</storagePath>
+    <storagePath>/device-mgt/license/@{overview_name}/@{overview_language}/@{overview_version}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
     <ui>
         <list>

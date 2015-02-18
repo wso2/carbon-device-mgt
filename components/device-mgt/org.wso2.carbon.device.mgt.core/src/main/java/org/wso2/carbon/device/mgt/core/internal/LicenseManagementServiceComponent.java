@@ -22,35 +22,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.common.License;
-import org.wso2.carbon.device.mgt.common.LicenseManagementException;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.LicenseManager;
 import org.wso2.carbon.device.mgt.core.LicenseManagerImpl;
-import org.wso2.carbon.device.mgt.core.config.LicenseConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.LicenseManagementConfig;
-import org.wso2.carbon.device.mgt.core.license.mgt.GenericArtifactManagerFactory;
+import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
+import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.service.LicenseManagementService;
-import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
-import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
+import org.wso2.carbon.device.mgt.core.util.LicenseManagerUtil;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
-import javax.xml.namespace.QName;
-
-/**
- * @scr.component name="org.wso2.carbon.license.manager" immediate="true"
- * @scr.reference name="user.realmservice.default"
- * interface="org.wso2.carbon.user.core.service.RealmService"
- * cardinality="1..1"
- * policy="dynamic"
- * bind="setRealmService"
- * unbind="unsetRealmService"
- * @scr.reference name="registryService.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- */
 public class LicenseManagementServiceComponent {
 
     private static Log log = LogFactory.getLog(LicenseManagementServiceComponent.class);
@@ -63,21 +46,36 @@ public class LicenseManagementServiceComponent {
             LicenseManager licenseManager = new LicenseManagerImpl();
             LicenseManagementDataHolder.getInstance().setLicenseManager(licenseManager);
 
-            /* If -Dsetup option enabled then create creates default license management */
-            String setupOption = System.getProperty(
-                    org.wso2.carbon.device.mgt.core.DeviceManagementConstants.Common.PROPERTY_SETUP);
+            if (log.isDebugEnabled()) {
+                log.debug("Configuring default licenses to be used for device enrolment");
+            }
+            LicenseConfigurationManager.getInstance().initConfig();
+            LicenseConfig licenseConfig = LicenseConfigurationManager.getInstance().getLicenseConfig();
 
+             /* If -Dsetup option enabled then configure device management related default licenses  */
+            String setupOption =
+                    System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
             if (setupOption != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("-Dsetup is enabled.Check default licenses and  add if not exists in registry");
+                    log.debug(
+                            "-Dsetup is enabled. Configuring default device management licenses " +
+                                    "is about to begin");
                 }
-                LicenseConfigurationManager.getInstance().initConfig();
-                LicenseManagementConfig licenseManagementConfig = LicenseConfigurationManager.getInstance()
-                        .getLicenseMgtConfig();
-                addDefaultLicenses(licenseManagementConfig);
+                /* It is required to specifically run the following code snippet as Super Tenant in order to use
+             * Super tenant registry to initialize the underlying GenericArtifactManager corresponding to the same */
+                try {
+                    PrivilegedCarbonContext.startTenantFlow();
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain
+                            (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                    LicenseManagerUtil.addDefaultLicenses(licenseConfig);
+                } finally {
+                    PrivilegedCarbonContext.endTenantFlow();
+                }
             }
+
             if (log.isDebugEnabled()) {
-                log.debug("Registering OSGi service LicenseManagementService");
+                log.debug("Registering OSGi service 'LicenseManagementService'");
             }
             BundleContext bundleContext = componentContext.getBundleContext();
             bundleContext
@@ -85,38 +83,9 @@ public class LicenseManagementServiceComponent {
             if (log.isDebugEnabled()) {
                 log.debug("License management core bundle has been successfully initialized");
             }
-        } catch (Throwable throwable) {
+        } catch (Throwable e) {
             String msg = "Error occurred while initializing license management core bundle";
-            log.error(msg, throwable);
-        }
-    }
-
-    private void addDefaultLicenses(LicenseManagementConfig licenseManagementConfig) throws LicenseManagementException {
-        try {
-            GenericArtifactManager artifactManager =
-                    GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager();
-
-            GenericArtifact artifact;
-            for (License license : licenseManagementConfig.getLicenses()) {
-                artifact = artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com",
-                        DeviceManagementConstants.LicenseProperties.LICENSE_REGISTRY_KEY));
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.OVERVIEW_NAME, license.getName());
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.OVERVIEW_VERSION,
-                        license.getVersion());
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.OVERVIEW_LANGUAGE,
-                        license.getLanguage());
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.OVERVIEW_PROVIDER,
-                        license.getProvider());
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO,
-                        license.getValidTo().toString());
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM,
-                        license.getValidFrom().toString());
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LICENSE, license.getText());
-                artifactManager.addGenericArtifact(artifact);
-            }
-        } catch (GovernanceException e) {
-            String msg = "Error occurred while initializing default licences";
-            throw new LicenseManagementException(msg, e);
+            log.error(msg, e);
         }
     }
 

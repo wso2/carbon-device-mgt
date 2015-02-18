@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.common;
 public final class DeviceManagementConstants {
 
     public static final class DataSourceProperties {
-
         private DataSourceProperties() {
             throw new AssertionError();
         }
@@ -31,7 +30,6 @@ public final class DeviceManagementConstants {
     }
 
     public static final class SecureValueProperties {
-
         private SecureValueProperties() {
             throw new AssertionError();
         }
@@ -41,7 +39,6 @@ public final class DeviceManagementConstants {
     }
 
     public static final class MobileDeviceTypes {
-
         private MobileDeviceTypes() {
             throw new AssertionError();
         }
@@ -52,7 +49,6 @@ public final class DeviceManagementConstants {
     }
 
     public static final class LanguageCodes {
-
         private LanguageCodes() {
             throw new AssertionError();
         }
@@ -62,7 +58,6 @@ public final class DeviceManagementConstants {
     }
 
     public static final class LicenseProperties {
-
         private LicenseProperties() {
             throw new AssertionError();
         }
@@ -75,4 +70,5 @@ public final class DeviceManagementConstants {
         public static final String LICENSE = "overview_license";
         public static final String LICENSE_REGISTRY_KEY = "license";
     }
+
 }

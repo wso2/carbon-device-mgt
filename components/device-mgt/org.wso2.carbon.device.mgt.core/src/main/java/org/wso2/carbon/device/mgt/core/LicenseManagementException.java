@@ -18,7 +18,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.common;
+package org.wso2.carbon.device.mgt.core;
 
 public class LicenseManagementException extends Exception{
 

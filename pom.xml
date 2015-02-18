@@ -612,7 +612,6 @@
         <!-- Device Management -->
         <carbon.device.mgt.version>0.9.1-SNAPSHOT</carbon.device.mgt.version>
 
-
     </properties>
 
 </project>

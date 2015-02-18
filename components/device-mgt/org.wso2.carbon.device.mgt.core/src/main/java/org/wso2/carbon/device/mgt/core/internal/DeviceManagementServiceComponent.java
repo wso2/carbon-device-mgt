@@ -32,6 +32,7 @@ import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.LicenseManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -87,8 +88,8 @@ public class DeviceManagementServiceComponent {
 				log.debug("Registering OSGi service DeviceManagementService");
 			}
 			BundleContext bundleContext = componentContext.getBundleContext();
-			bundleContext.registerService(DeviceManagementService.class.getName(),
-			                              new DeviceManagementService(), null);
+			bundleContext.registerService(DeviceManagementService.class.getName(), new DeviceManagementService(), null);
+            bundleContext.registerService(LicenseManagementService.class.getName(), new LicenseManagementService(), null);
 			if (log.isDebugEnabled()) {
 				log.debug("Device management core bundle has been successfully initialized");
 			}

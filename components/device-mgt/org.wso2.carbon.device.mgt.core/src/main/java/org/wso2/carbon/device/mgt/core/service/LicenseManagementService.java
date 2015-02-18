@@ -17,20 +17,19 @@
  *   under the License.
  *
  */
-
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.License;
-import org.wso2.carbon.device.mgt.common.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.LicenseManagementException;
 import org.wso2.carbon.device.mgt.core.LicenseManager;
+import org.wso2.carbon.device.mgt.core.config.license.License;
 import org.wso2.carbon.device.mgt.core.internal.LicenseManagementDataHolder;
 
 public class LicenseManagementService implements LicenseManager {
 
-	@Override
-	public License getLicense(String deviceType, String languageCode)
-			throws LicenseManagementException {
-		return LicenseManagementDataHolder.getInstance().getLicenseManager()
-		                                  .getLicense(deviceType, languageCode);
-	}
+    @Override
+    public License getLicense(String deviceType, String languageCode)
+            throws LicenseManagementException {
+        return LicenseManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
+    }
+
 }

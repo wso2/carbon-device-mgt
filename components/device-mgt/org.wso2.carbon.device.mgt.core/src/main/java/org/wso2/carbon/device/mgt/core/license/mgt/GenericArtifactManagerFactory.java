@@ -20,13 +20,10 @@ package org.wso2.carbon.device.mgt.core.license.mgt;
 
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.LicenseManagementException;
-import org.wso2.carbon.device.mgt.core.internal.LicenseManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
-import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +41,7 @@ public class GenericArtifactManagerFactory {
         try {
             tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             registry =
-                    LicenseManagementDataHolder.getInstance().getRegistryService().getGovernanceSystemRegistry(
+                    DeviceManagementDataHolder.getInstance().getRegistryService().getGovernanceSystemRegistry(
                             tenantId);
         } catch (RegistryException e) {
             throw new LicenseManagementException("Error occurred while initializing tenant system registry " +

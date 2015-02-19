@@ -61,13 +61,13 @@ public final class DeviceManagementConstants {
         private LicenseProperties() {
             throw new AssertionError();
         }
-        public static final String OVERVIEW_PROVIDER = "overview_provider";
-        public static final String OVERVIEW_NAME = "overview_name";
-        public static final String OVERVIEW_LANGUAGE = "overview_language";
-        public static final String OVERVIEW_VERSION = "overview_version";
+        public static final String PROVIDER = "overview_provider";
+        public static final String NAME = "overview_name";
+        public static final String LANGUAGE = "overview_language";
+        public static final String VERSION = "overview_version";
         public static final String VALID_FROM = "overview_validityFrom";
         public static final String VALID_TO = "overview_validityTo";
-        public static final String LICENSE = "overview_license";
+        public static final String TEXT = "overview_license";
         public static final String LICENSE_REGISTRY_KEY = "license";
     }
 

@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
@@ -17,16 +16,19 @@
  *   under the License.
  *
  */
+package org.wso2.carbon.device.mgt.core.license.mgt;
 
-package org.wso2.carbon.device.mgt.core;
+public class LicenseManagementException extends Exception {
 
-public class LicenseManagementException extends Exception{
-
-    private static final long serialVersionUID = 8606378077242945475L;
+    private static final long serialVersionUID = -8933146283800122660L;
     private String errorMessage;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public LicenseManagementException(String msg, Exception nestedEx) {
@@ -52,11 +54,4 @@ public class LicenseManagementException extends Exception{
         super(cause);
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
 }

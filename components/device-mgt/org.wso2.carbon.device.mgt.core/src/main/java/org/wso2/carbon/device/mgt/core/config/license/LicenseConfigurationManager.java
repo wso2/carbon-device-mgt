@@ -21,8 +21,8 @@
 package org.wso2.carbon.device.mgt.core.config.license;
 
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.core.LicenseManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 

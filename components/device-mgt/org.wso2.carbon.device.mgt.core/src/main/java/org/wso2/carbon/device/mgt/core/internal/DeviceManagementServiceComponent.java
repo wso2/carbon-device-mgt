@@ -30,10 +30,17 @@ import org.wso2.carbon.device.mgt.core.DeviceManagerImpl;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
+import org.wso2.carbon.device.mgt.core.config.license.License;
+import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
+import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementService;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
-import org.wso2.carbon.device.mgt.core.service.LicenseManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -50,6 +57,12 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setDeviceManagerService"
  * unbind="unsetDeviceManagerService"
+ * @scr.reference name="registry.service"
+ * interface="org.wso2.carbon.registry.core.service.RegistryService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setRegistryService"
+ * unbind="unsetRegistryService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -72,6 +85,12 @@ public class DeviceManagementServiceComponent {
 			DeviceManager deviceManager = new DeviceManagerImpl(config, this.getPluginRepository());
 			DeviceManagementDataHolder.getInstance().setDeviceManager(deviceManager);
 
+            LicenseConfigurationManager.getInstance().initConfig();
+            LicenseConfig licenseConfig = LicenseConfigurationManager.getInstance().getLicenseConfig();
+
+            LicenseManager licenseManager = new LicenseManagerImpl();
+            DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
+
             /* If -Dsetup option enabled then create device management database schema */
 			String setupOption =
 					System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
@@ -82,14 +101,18 @@ public class DeviceManagementServiceComponent {
 							"is about to begin");
 				}
 				this.setupDeviceManagementSchema(dsConfig);
+                this.setupDefaultLicenses(licenseConfig);
 			}
 
 			if (log.isDebugEnabled()) {
 				log.debug("Registering OSGi service DeviceManagementService");
 			}
+            /* Registering Device Management service */
 			BundleContext bundleContext = componentContext.getBundleContext();
 			bundleContext.registerService(DeviceManagementService.class.getName(), new DeviceManagementService(), null);
-            bundleContext.registerService(LicenseManagementService.class.getName(), new LicenseManagementService(), null);
+            /* Registering License Management service */
+            bundleContext.registerService(LicenseManagementService.class.getName(),
+                    new LicenseManagementService(), null);
 			if (log.isDebugEnabled()) {
 				log.debug("Device management core bundle has been successfully initialized");
 			}
@@ -117,6 +140,17 @@ public class DeviceManagementServiceComponent {
 					"Device management metadata repository schema has been successfully initialized");
 		}
 	}
+
+    private void setupDefaultLicenses(LicenseConfig licenseConfig) throws LicenseManagementException {
+        LicenseManager licenseManager = DeviceManagementDataHolder.getInstance().getLicenseManager();
+        for (License license : licenseConfig.getLicenses()) {
+            License extLicense = licenseManager.getLicense(license.getName(), license.getLanguage());
+            if (extLicense != null) {
+                continue;
+            }
+            licenseManager.addLicense(license);
+        }
+    }
 
 	/**
 	 * Sets Device Manager service.
@@ -167,6 +201,30 @@ public class DeviceManagementServiceComponent {
 		}
 		DeviceManagementDataHolder.getInstance().setRealmService(null);
 	}
+
+    /**
+     * Sets Registry Service.
+     *
+     * @param registryService An instance of RegistryService
+     */
+    protected void setRegistryService(RegistryService registryService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Registry Service");
+        }
+        DeviceManagementDataHolder.getInstance().setRegistryService(registryService);
+    }
+
+    /**
+     * Unsets Registry Service.
+     *
+     * @param registryService An instance of RegistryService
+     */
+    protected void unsetRegistryService(RegistryService registryService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Registry Service");
+        }
+        DeviceManagementDataHolder.getInstance().setRegistryService(null);
+    }
 
 	private DeviceManagementRepository getPluginRepository() {
 		return pluginRepository;

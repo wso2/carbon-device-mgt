@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
@@ -17,13 +16,14 @@
  *   under the License.
  *
  */
-
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.license.mgt;
 
 import org.wso2.carbon.device.mgt.core.config.license.License;
 
 public interface LicenseManager {
 
-    License getLicense(String deviceType,String languageCodes) throws LicenseManagementException;
+    License getLicense(final String deviceType, final String languageCode) throws LicenseManagementException;
+
+    void addLicense(License license) throws LicenseManagementException;
 
 }

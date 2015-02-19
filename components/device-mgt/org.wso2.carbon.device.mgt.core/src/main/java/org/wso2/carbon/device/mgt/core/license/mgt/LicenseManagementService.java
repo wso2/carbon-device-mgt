@@ -1,5 +1,4 @@
 /*
- *
  *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
@@ -17,19 +16,20 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.service;
+package org.wso2.carbon.device.mgt.core.license.mgt;
 
-import org.wso2.carbon.device.mgt.core.LicenseManagementException;
-import org.wso2.carbon.device.mgt.core.LicenseManager;
 import org.wso2.carbon.device.mgt.core.config.license.License;
-import org.wso2.carbon.device.mgt.core.internal.LicenseManagementDataHolder;
 
 public class LicenseManagementService implements LicenseManager {
 
     @Override
-    public License getLicense(String deviceType, String languageCode)
-            throws LicenseManagementException {
-        return LicenseManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
+    public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
+        return null;
+    }
+
+    @Override
+    public void addLicense(License license) throws LicenseManagementException {
+
     }
 
 }

@@ -19,17 +19,18 @@
 package org.wso2.carbon.device.mgt.core.license.mgt;
 
 import org.wso2.carbon.device.mgt.core.config.license.License;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 public class LicenseManagementService implements LicenseManager {
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
     }
 
     @Override
     public void addLicense(License license) throws LicenseManagementException {
-
+        DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(license);
     }
 
 }

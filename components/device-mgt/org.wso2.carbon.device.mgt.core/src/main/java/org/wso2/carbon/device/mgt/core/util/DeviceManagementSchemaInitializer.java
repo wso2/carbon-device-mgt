@@ -24,7 +24,6 @@ import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.dbcreator.DatabaseCreator;
 
-import javax.sql.DataSource;
 import java.io.File;
 
 public final class DeviceManagementSchemaInitializer extends DatabaseCreator {

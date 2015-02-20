@@ -74,7 +74,7 @@ public class DeviceManagementServiceComponent {
 			if (log.isDebugEnabled()) {
 				log.debug("Initializing device management core bundle");
 			}
-	        /* Initializing Device Management Configuration */
+		    /* Initializing Device Management Configuration */
 			DeviceConfigurationManager.getInstance().initConfig();
 			DeviceManagementConfig config =
 					DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
@@ -85,11 +85,13 @@ public class DeviceManagementServiceComponent {
 			DeviceManager deviceManager = new DeviceManagerImpl(config, this.getPluginRepository());
 			DeviceManagementDataHolder.getInstance().setDeviceManager(deviceManager);
 
-            LicenseConfigurationManager.getInstance().initConfig();
-            LicenseConfig licenseConfig = LicenseConfigurationManager.getInstance().getLicenseConfig();
+			LicenseConfigurationManager.getInstance().initConfig();
+			LicenseConfig licenseConfig =
+					LicenseConfigurationManager.getInstance().getLicenseConfig();
 
-            LicenseManager licenseManager = new LicenseManagerImpl();
-            DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
+			LicenseManager licenseManager = new LicenseManagerImpl();
+			DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
+			DeviceManagementDataHolder.getInstance().setLicenseConfig(licenseConfig);
 
             /* If -Dsetup option enabled then create device management database schema */
 			String setupOption =
@@ -101,7 +103,7 @@ public class DeviceManagementServiceComponent {
 							"is about to begin");
 				}
 				this.setupDeviceManagementSchema(dsConfig);
-                this.setupDefaultLicenses(licenseConfig);
+				// this.setupDefaultLicenses(licenseConfig);
 			}
 
 			if (log.isDebugEnabled()) {
@@ -109,10 +111,11 @@ public class DeviceManagementServiceComponent {
 			}
             /* Registering Device Management service */
 			BundleContext bundleContext = componentContext.getBundleContext();
-			bundleContext.registerService(DeviceManagementService.class.getName(), new DeviceManagementService(), null);
+			bundleContext.registerService(DeviceManagementService.class.getName(),
+			                              new DeviceManagementService(), null);
             /* Registering License Management service */
-            bundleContext.registerService(LicenseManagementService.class.getName(),
-                    new LicenseManagementService(), null);
+			bundleContext.registerService(LicenseManagementService.class.getName(),
+			                              new LicenseManagementService(), null);
 			if (log.isDebugEnabled()) {
 				log.debug("Device management core bundle has been successfully initialized");
 			}
@@ -141,16 +144,19 @@ public class DeviceManagementServiceComponent {
 		}
 	}
 
-    private void setupDefaultLicenses(LicenseConfig licenseConfig) throws LicenseManagementException {
-        LicenseManager licenseManager = DeviceManagementDataHolder.getInstance().getLicenseManager();
-        for (License license : licenseConfig.getLicenses()) {
-            License extLicense = licenseManager.getLicense(license.getName(), license.getLanguage());
-            if (extLicense != null) {
-                continue;
-            }
-            licenseManager.addLicense(license);
-        }
-    }
+	private void setupDefaultLicenses(LicenseConfig licenseConfig)
+			throws LicenseManagementException {
+		LicenseManager licenseManager =
+				DeviceManagementDataHolder.getInstance().getLicenseManager();
+		for (License license : licenseConfig.getLicenses()) {
+			License extLicense =
+					licenseManager.getLicense(license.getName(), license.getLanguage());
+			if (extLicense != null) {
+				continue;
+			}
+			licenseManager.addLicense(license);
+		}
+	}
 
 	/**
 	 * Sets Device Manager service.
@@ -202,29 +208,29 @@ public class DeviceManagementServiceComponent {
 		DeviceManagementDataHolder.getInstance().setRealmService(null);
 	}
 
-    /**
-     * Sets Registry Service.
-     *
-     * @param registryService An instance of RegistryService
-     */
-    protected void setRegistryService(RegistryService registryService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting Registry Service");
-        }
-        DeviceManagementDataHolder.getInstance().setRegistryService(registryService);
-    }
+	/**
+	 * Sets Registry Service.
+	 *
+	 * @param registryService An instance of RegistryService
+	 */
+	protected void setRegistryService(RegistryService registryService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting Registry Service");
+		}
+		DeviceManagementDataHolder.getInstance().setRegistryService(registryService);
+	}
 
-    /**
-     * Unsets Registry Service.
-     *
-     * @param registryService An instance of RegistryService
-     */
-    protected void unsetRegistryService(RegistryService registryService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unsetting Registry Service");
-        }
-        DeviceManagementDataHolder.getInstance().setRegistryService(null);
-    }
+	/**
+	 * Unsets Registry Service.
+	 *
+	 * @param registryService An instance of RegistryService
+	 */
+	protected void unsetRegistryService(RegistryService registryService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Unsetting Registry Service");
+		}
+		DeviceManagementDataHolder.getInstance().setRegistryService(null);
+	}
 
 	private DeviceManagementRepository getPluginRepository() {
 		return pluginRepository;

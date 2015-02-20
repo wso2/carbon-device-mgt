@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.core.config;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 

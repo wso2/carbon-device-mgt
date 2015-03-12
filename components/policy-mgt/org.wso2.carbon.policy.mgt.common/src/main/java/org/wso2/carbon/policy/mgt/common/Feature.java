@@ -23,8 +23,17 @@ public class Feature {
     private int id;
     private String code;
     private String name;
+    private String description;
     private Object attribute;
     private String ruleValue;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getRuleValue() {
         return ruleValue;

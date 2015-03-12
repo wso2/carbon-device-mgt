@@ -18,10 +18,7 @@
 
 package org.wso2.carbon.policy.mgt.common.impl;
 
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorService;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 
 public class PolicyManagement implements PolicyAdministratorService {
     @Override
@@ -76,6 +73,16 @@ public class PolicyManagement implements PolicyAdministratorService {
 
     @Override
     public void setPolicyUsed(String deviceId, String deviceType, Policy policy) throws PolicyManagementException {
+
+    }
+
+    @Override
+    public void addProfile(Profile profile) throws PolicyManagementException {
+
+    }
+
+    @Override
+    public void deleteProfile(int profileId) throws PolicyManagementException {
 
     }
 }

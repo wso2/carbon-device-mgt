@@ -18,7 +18,12 @@
 
 package org.wso2.carbon.policy.mgt.core.dao;
 
+import org.wso2.carbon.policy.mgt.common.Feature;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.Profile;
+
+import java.util.List;
 
 public interface PolicyDAO {
 
@@ -35,4 +40,24 @@ public interface PolicyDAO {
     Policy getPolicy(String deviceType) throws PolicyManagerDAOException;
 
     Policy getPolicy(String deviceID, String deviceType) throws PolicyManagerDAOException;
+
+    void deletePolicy(Policy policy) throws PolicyManagerDAOException;
+
+    void addProfile(Profile profile) throws PolicyManagerDAOException;
+
+    void deleteProfile(Profile profile) throws PolicyManagerDAOException;
+
+    List<Profile> getAllProfiles() throws PolicyManagerDAOException;
+
+    List<Profile> getProfilesOfDeviceType(String deviceType) throws PolicyManagerDAOException;
+
+    List<Feature> getAllFeatures() throws PolicyManagerDAOException;
+
+    List<Feature> getFeaturesForProfile(int ProfileId) throws PolicyManagerDAOException;
+
+    void deleteFeature(int featureId) throws PolicyManagerDAOException;
+
+    void deleteFeaturesOfProfile(Profile profile) throws PolicyManagerDAOException;
+
+    Feature addFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;
 }

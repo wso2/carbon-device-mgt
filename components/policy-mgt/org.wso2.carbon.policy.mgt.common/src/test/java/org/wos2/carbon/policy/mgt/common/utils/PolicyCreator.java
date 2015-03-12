@@ -20,6 +20,7 @@ package org.wos2.carbon.policy.mgt.common.utils;
 
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,14 @@ public class PolicyCreator {
         List<Feature> featureList = new ArrayList<Feature>();
         featureList.add(feature);
 
-        policy.setFeaturesList(featureList);
+        Profile profile = new Profile();
+        profile.setProfileId(1);
+        profile.setProfileName("Test-01");
+        profile.setTenantId(-1234);
+
+        policy.setProfile(profile);
+        profile.setFeaturesList(featureList);
+
         policy.setPolicyName("Camera_related_policy");
 
         return policy;

@@ -36,8 +36,8 @@
     <url>http://wso2.org</url>
 
     <modules>
-        <module>org.wso2.carbon.policy.mgt.core</module>
         <module>org.wso2.carbon.policy.mgt.common</module>
+        <module>org.wso2.carbon.policy.mgt.core</module>
         <module>org.wso2.carbon.policy.information.point</module>
         <module>org.wso2.carbon.simple.policy.decision.point</module>
         <module>org.wso2.carbon.complex.policy.decision.point</module>

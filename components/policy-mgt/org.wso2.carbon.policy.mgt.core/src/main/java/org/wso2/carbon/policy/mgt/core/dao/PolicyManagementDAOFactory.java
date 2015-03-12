@@ -35,12 +35,20 @@ public class PolicyManagementDAOFactory {
     private static final Log log = LogFactory.getLog(PolicyManagementDAOFactory.class);
 
 
-    public static PolicyDAO getDeviceTypeDAO() {
-        return new PolicyDAOImpl(dataSource);
-    }
 
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
+    }
+
+    public static void init(DataSource dtSource) {
+        dataSource = dtSource;
+    }
+
+    public static DataSource getDataSource() {
+        if (dataSource != null) {
+            return dataSource;
+        }
+        throw new RuntimeException("Data source is not yet configured.");
     }
 
     /**

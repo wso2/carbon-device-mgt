@@ -102,6 +102,7 @@ public interface PolicyAdministratorService {
 
     /**
      * This method checks weather a policy is available for a device.
+     *
      * @param deviceId
      * @param deviceType
      * @return
@@ -112,6 +113,7 @@ public interface PolicyAdministratorService {
 
     /**
      * This method checks weather a policy is used by a particular device.
+     *
      * @param deviceId
      * @param deviceType
      * @return
@@ -121,11 +123,19 @@ public interface PolicyAdministratorService {
 
 
     /**
-     *
      * @param deviceId
      * @param deviceType
      * @param policy
      * @throws PolicyManagementException
      */
     void setPolicyUsed(String deviceId, String deviceType, Policy policy) throws PolicyManagementException;
+
+    /**
+     * This method will add the profile to database,
+     * @param profile
+     * @throws PolicyManagementException
+     */
+    void addProfile(Profile profile) throws PolicyManagementException;
+
+    void deleteProfile(int profileId) throws PolicyManagementException;
 }

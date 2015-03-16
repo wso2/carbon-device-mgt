@@ -34,6 +34,15 @@ public class Device implements Serializable {
     private String ownerShip;
     private int tenantId;
     private Integer deviceTypeId;
+	private DeviceType deviceType;
+
+	public DeviceType getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(DeviceType deviceType) {
+		this.deviceType = deviceType;
+	}
 
     public Integer getDeviceTypeId() {
         return deviceTypeId;

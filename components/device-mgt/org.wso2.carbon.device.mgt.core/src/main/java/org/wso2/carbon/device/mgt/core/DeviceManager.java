@@ -55,4 +55,7 @@ public interface DeviceManager {
 
 	public OperationManager getOperationManager(String type) throws DeviceManagementException;
 
+	public List<Device> getDeviceListOfUser(String username)
+			throws DeviceManagementException, DeviceManagementDAOException;
+
 }

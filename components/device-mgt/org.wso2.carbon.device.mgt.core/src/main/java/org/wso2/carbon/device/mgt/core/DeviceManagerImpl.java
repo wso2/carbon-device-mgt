@@ -203,4 +203,21 @@ public class DeviceManagerImpl implements DeviceManager {
 	public DeviceManagementRepository getPluginRepository() {
 		return pluginRepository;
 	}
+
+	@Override
+	public List<Device> getDeviceListOfUser(String username)
+			throws DeviceManagementException, DeviceManagementDAOException {
+		List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO.getDeviceListOfUser(username);
+		List<Device> devicesOfUser=new ArrayList<Device>();
+		for(int x=0;x<devicesList.size();x++){
+			DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(
+					devicesList.get(x).getDeviceType().getName());
+			DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+			deviceIdentifier.setId(devicesList.get(x).getDeviceIdentificationId());
+			deviceIdentifier.setType(devicesList.get(x).getDeviceType().getName());
+			Device dv=dms.getDevice(deviceIdentifier);
+			devicesOfUser.add(dv);
+		}
+		return devicesOfUser;
+	}
 }

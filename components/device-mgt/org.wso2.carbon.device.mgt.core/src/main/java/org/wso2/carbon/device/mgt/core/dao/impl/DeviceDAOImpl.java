@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.Status;
 
 import javax.sql.DataSource;
@@ -74,6 +75,39 @@ public class DeviceDAOImpl implements DeviceDAO {
 		} finally {
 			DeviceManagementDAOUtil.cleanupResources(conn, stmt, null);
 		}
+	}
+
+	@Override public List<Device> getDeviceListOfUser(String username)
+			throws DeviceManagementDAOException {
+		Connection conn = this.getConnection();
+		PreparedStatement stmt = null;
+		List<Device> deviceList = new ArrayList<Device>();
+		try {
+			stmt = conn.prepareStatement(
+					"SELECT DM_DEVICE_TYPE.ID, DM_DEVICE_TYPE.NAME, DM_DEVICE.ID, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION FROM DM_DEVICE, DM_DEVICE_TYPE WHERE DM_DEVICE.DEVICE_TYPE_ID =DM_DEVICE_TYPE.ID AND DM_DEVICE.OWNER =?");
+			stmt.setString(1, username);
+			ResultSet results = stmt.executeQuery();
+
+			while (results.next()) {
+				Device device = new Device();
+				DeviceType deviceType=new DeviceType();
+				int id=results.getInt(results.getInt(1));
+				deviceType.setId((long) id);
+				deviceType.setName(results.getString(2));
+				device.setId(results.getInt(3));
+				device.setDeviceType(deviceType);
+				device.setDeviceTypeId(results.getInt(4));
+				device.setDeviceIdentificationId(results.getString(5));
+				deviceList.add(device);
+			}
+		} catch (SQLException e) {
+			String msg = "Error occurred while fetching the list of devices belongs to " + username;
+			log.error(msg, e);
+			throw new DeviceManagementDAOException(msg, e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(conn, stmt, null);
+		}
+		return deviceList;
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.OperationManager;
 import org.wso2.carbon.device.mgt.core.DeviceManager;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 import java.util.List;
@@ -91,6 +92,11 @@ public class DeviceManagementService implements DeviceManager {
 	public OperationManager getOperationManager(String type) throws DeviceManagementException {
 		return DeviceManagementDataHolder.getInstance().getDeviceManager().
 				getOperationManager(type);
+	}
+
+
+	@Override public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException,DeviceManagementDAOException {
+		return DeviceManagementDataHolder.getInstance().getDeviceManager().getDeviceListOfUser(username);
 	}
 
 }

@@ -55,4 +55,12 @@ public interface DeviceDAO {
 	 * @throws DeviceManagementDAOException
 	 */
 	List<Device> getDevices(Integer type) throws DeviceManagementDAOException;
+
+	/**
+	 * Get the list of devices belongs to a user.
+	 * @param username Requested user.
+	 * @return List of devices of the user.
+	 * @throws DeviceManagementDAOException
+	 */
+	List<Device> getDeviceListOfUser(String username) throws DeviceManagementDAOException;
 }

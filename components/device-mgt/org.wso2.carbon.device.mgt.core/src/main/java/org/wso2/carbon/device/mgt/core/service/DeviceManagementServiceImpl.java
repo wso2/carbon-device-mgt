@@ -20,13 +20,13 @@ package org.wso2.carbon.device.mgt.core.service;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.OperationManager;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.DeviceManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 import java.util.List;
 
-public class DeviceManagementService implements DeviceManager {
+public class DeviceManagementServiceImpl implements DeviceManager {
 
 	@Override
 	public boolean enrollDevice(Device device) throws DeviceManagementException {
@@ -40,8 +40,7 @@ public class DeviceManagementService implements DeviceManager {
 
 	@Override
 	public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager()
-		                                 .disenrollDevice(deviceId);
+		return DeviceManagementDataHolder.getInstance().getDeviceManager().disenrollDevice(deviceId);
 	}
 
 	@Override
@@ -55,10 +54,8 @@ public class DeviceManagementService implements DeviceManager {
 	}
 
 	@Override
-	public boolean setActive(DeviceIdentifier deviceId, boolean status)
-			throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager()
-		                                 .setActive(deviceId, status);
+	public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
+		return DeviceManagementDataHolder.getInstance().getDeviceManager().setActive(deviceId, status);
 	}
 
 	@Override
@@ -69,10 +66,7 @@ public class DeviceManagementService implements DeviceManager {
 	@Override
 	public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
 			throws DeviceManagementException {
-
-		Device device =
-				DeviceManagementDataHolder.getInstance().getDeviceManager().getDevice(deviceId);
-		return device;
+        return DeviceManagementDataHolder.getInstance().getDeviceManager().getDevice(deviceId);
 	}
 
 	@Override
@@ -81,16 +75,13 @@ public class DeviceManagementService implements DeviceManager {
 	}
 
 	@Override
-	public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
-			throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager()
-		                                 .setOwnership(deviceId, ownershipType);
+	public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
+		return DeviceManagementDataHolder.getInstance().getDeviceManager().setOwnership(deviceId, ownershipType);
 	}
 
 	@Override
 	public OperationManager getOperationManager(String type) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().
-				getOperationManager(type);
+		return DeviceManagementDataHolder.getInstance().getDeviceManager().getOperationManager(type);
 	}
 
 }

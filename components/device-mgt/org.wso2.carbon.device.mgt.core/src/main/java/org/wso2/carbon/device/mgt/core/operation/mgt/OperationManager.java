@@ -15,7 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.mgt.common;
+package org.wso2.carbon.device.mgt.core.operation.mgt;
+
+import org.wso2.carbon.device.mgt.common.*;
 
 import java.util.List;
 
@@ -30,7 +32,7 @@ public interface OperationManager {
 	 *
 	 * @param operation Operation to be added
 	 * @param devices   List of DeviceIdentifiers to execute the operation
-	 * @throws OperationManagementException If some unusual behaviour is observed while adding the
+	 * @throws org.wso2.carbon.device.mgt.common.OperationManagementException If some unusual behaviour is observed while adding the
 	 * operation
 	 */
 	public boolean addOperation(Operation operation, List<DeviceIdentifier> devices)
@@ -60,7 +62,7 @@ public interface OperationManager {
 	 * TODO: Move this into a separate FeatureManager
 	 * @param deviceType - Device type
 	 * @return a list of Feature objects.
-	 * @throws FeatureManagementException
+	 * @throws org.wso2.carbon.device.mgt.common.FeatureManagementException
 	 */
 	public List<Feature> getFeaturesForDeviceType(String deviceType) throws FeatureManagementException;
 

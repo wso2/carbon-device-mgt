@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.common.spi;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.OperationManager;
 
 import java.util.List;
 
@@ -29,10 +28,10 @@ import java.util.List;
  * This represents the service provider interface that has to be implemented by any of new
  * device type plugin implementation intended to be managed through CDM.
  */
-public interface DeviceManagerService {
+public interface DeviceManager {
 
     /**
-     * Method to retrieve the provider type that implements DeviceManagerService interface.
+     * Method to retrieve the provider type that implements DeviceManager interface.
      *
      * @return  Returns provider type
      */
@@ -128,13 +127,5 @@ public interface DeviceManagerService {
      * of the device
      */
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
-
-    /**
-     * Method to retrieve the Operation manager implementation associated with a given plugin.
-     *
-     * @return  An appropriate instance of the underlying operation management implementation
-     * @throws DeviceManagementException
-     */
-    OperationManager getOperationManager() throws DeviceManagementException;
 
 }

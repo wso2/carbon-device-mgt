@@ -22,7 +22,11 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.OperationManager;
+import org.wso2.carbon.device.mgt.core.config.license.License;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagerService;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
@@ -32,24 +36,26 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.Status;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class DeviceManagerImpl implements DeviceManager {
+public class DeviceManagementServiceProviderImpl implements DeviceManager  {
 
-	private static Log log = LogFactory.getLog(DeviceManagerImpl.class);
 	private DeviceDAO deviceDAO;
 	private DeviceTypeDAO deviceTypeDAO;
-	private DeviceManagementConfig config;
 	private DeviceManagementRepository pluginRepository;
+    private OperationManager operationManager;
+    private LicenseManager licenseManager;
 
-	public DeviceManagerImpl(DeviceManagementConfig config,
-	                         DeviceManagementRepository pluginRepository) {
-		this.config = config;
+	public DeviceManagementServiceProviderImpl(DeviceManagementRepository pluginRepository) {
 		this.pluginRepository = pluginRepository;
 		this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
 		this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        this.operationManager = new OperationManagerImpl();
+        this.licenseManager = new LicenseManagerImpl();
 	}
 
 	@Override
@@ -66,9 +72,8 @@ public class DeviceManagerImpl implements DeviceManager {
 			deviceDto.setDeviceTypeId(deviceTypeId);
 			this.getDeviceDAO().addDevice(deviceDto);
 		} catch (DeviceManagementDAOException e) {
-			throw new DeviceManagementException(
-					"Error occurred while enrolling the device '" + device.getId() + "'",
-					e);
+			throw new DeviceManagementException("Error occurred while enrolling the device '" + device.getId() +
+                    "'", e);
 		}
 		return status;
 	}
@@ -81,9 +86,8 @@ public class DeviceManagerImpl implements DeviceManager {
 		try {
 			this.getDeviceDAO().updateDevice(DeviceManagementDAOUtil.convertDevice(device));
 		} catch (DeviceManagementDAOException e) {
-			throw new DeviceManagementException(
-					"Error occurred while modifying the device '" + device.getId() + "'",
-					e);
+			throw new DeviceManagementException("Error occurred while modifying the device '" + device.getId() +
+                    "'", e);
 		}
 		return status;
 	}
@@ -139,8 +143,8 @@ public class DeviceManagerImpl implements DeviceManager {
 				devicesList.add(convertedDevice);
 			}
 		} catch (DeviceManagementDAOException e) {
-			throw new DeviceManagementException(
-					"Error occurred while obtaining the device for type '" + type + "'", e);
+			throw new DeviceManagementException("Error occurred while obtaining the device for type '" + type +
+                    "'", e);
 		}
 		return devicesList;
 	}
@@ -165,9 +169,8 @@ public class DeviceManagerImpl implements DeviceManager {
 				}
 			}
 		} catch (DeviceManagementDAOException e) {
-			throw new DeviceManagementException(
-					"Error occurred while obtaining the device for id '" + deviceId.getId() + "'",
-					e);
+			throw new DeviceManagementException("Error occurred while obtaining the device for id '" +
+                    deviceId.getId() + "'", e);
 		}
 		return convertedDevice;
 	}
@@ -188,11 +191,31 @@ public class DeviceManagerImpl implements DeviceManager {
 	}
 
 	public OperationManager getOperationManager(String type) throws DeviceManagementException {
-		DeviceManagerService dms = this.getPluginRepository().getDeviceManagementProvider(type);
-		return dms.getOperationManager();
+		return operationManager;
 	}
 
-	public DeviceDAO getDeviceDAO() {
+    @Override
+    public License getLicense(String type) throws DeviceManagementException {
+        try {
+            return licenseManager.getLicense(type, Locale.ENGLISH.getLanguage());
+        } catch (LicenseManagementException e) {
+            throw new DeviceManagementException("Error occurred while retrieving license configured for " +
+                    "device type '" + type + "'", e);
+        }
+    }
+
+    @Override
+    public boolean addLicense(String type, License license) throws DeviceManagementException {
+        try {
+            return licenseManager.addLicense(type, license);
+        } catch (LicenseManagementException e) {
+            throw new DeviceManagementException("Error occurred while adding license for device type '" +
+                    type + "'", e);
+
+        }
+    }
+
+    public DeviceDAO getDeviceDAO() {
 		return deviceDAO;
 	}
 
@@ -203,4 +226,5 @@ public class DeviceManagerImpl implements DeviceManager {
 	public DeviceManagementRepository getPluginRepository() {
 		return pluginRepository;
 	}
+
 }

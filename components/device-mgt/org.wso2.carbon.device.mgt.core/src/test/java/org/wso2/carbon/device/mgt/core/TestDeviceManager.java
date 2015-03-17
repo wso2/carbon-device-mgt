@@ -20,18 +20,17 @@ package org.wso2.carbon.device.mgt.core;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.OperationManager;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManagerService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 
 import java.util.List;
 
-public class TestDeviceManagerService implements DeviceManagerService {
+public class TestDeviceManager implements DeviceManager {
 
     public static final String DEVICE_TYPE_TEST = "Test";
 
     @Override
     public String getProviderType() {
-        return TestDeviceManagerService.DEVICE_TYPE_TEST;
+        return TestDeviceManager.DEVICE_TYPE_TEST;
     }
 
     @Override
@@ -82,11 +81,6 @@ public class TestDeviceManagerService implements DeviceManagerService {
     @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
         return false;
-    }
-
-    @Override
-    public OperationManager getOperationManager() throws DeviceManagementException {
-        return null;
     }
 
 }

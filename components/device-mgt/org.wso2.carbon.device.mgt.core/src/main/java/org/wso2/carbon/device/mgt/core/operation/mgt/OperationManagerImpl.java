@@ -66,7 +66,7 @@ public class OperationManagerImpl implements OperationManager {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();
             } catch (OperationManagementDAOException e1) {
-                log.warn("Error occurred while roll-backing the transaction", e);
+                log.warn("Error occurred while roll-backing the transaction", e1);
             }
             throw new OperationManagementException("Error occurred while adding operation", e);
         }

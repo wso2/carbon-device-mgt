@@ -33,10 +33,6 @@ import java.util.List;
 
 public class CommandOperationDAOImpl extends AbstractOperationDAO {
 
-    public CommandOperationDAOImpl(DataSource dataSource) {
-        super(dataSource);
-    }
-
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
         int operationId = super.addOperation(operation);

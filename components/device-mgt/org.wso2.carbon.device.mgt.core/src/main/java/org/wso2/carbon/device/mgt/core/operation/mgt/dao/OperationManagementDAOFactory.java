@@ -41,15 +41,15 @@ public class OperationManagementDAOFactory {
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static OperationDAO getCommandOperationDAO() {
-        return new CommandOperationDAOImpl(dataSource);
+        return new CommandOperationDAOImpl();
     }
 
     public static OperationDAO getConfigOperationDAO() {
-        return new ConfigOperationDAOImpl(dataSource);
+        return new ConfigOperationDAOImpl();
     }
 
     public static OperationDAO getSimpleOperationDAO() {
-        return new SimpleOperationDAOImpl(dataSource);
+        return new SimpleOperationDAOImpl();
     }
 
     public static OperationMappingDAO getOperationMappingDAO() {

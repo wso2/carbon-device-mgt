@@ -125,7 +125,7 @@ public class DeviceManagementServiceComponent {
         }
         /* Registering Device Management Service */
         BundleContext bundleContext = componentContext.getBundleContext();
-        bundleContext.registerService(DeviceManagementServiceImpl.class.getName(),
+        bundleContext.registerService(DeviceManagementService.class.getName(),
                 new DeviceManagementServiceImpl(), null);
     }
 

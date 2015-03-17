@@ -31,16 +31,6 @@ import java.sql.SQLException;
 
 public abstract class AbstractOperationDAO implements OperationDAO {
 
-    private DataSource dataSource;
-
-    public AbstractOperationDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
     public int addOperation(Operation operation) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;

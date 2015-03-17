@@ -26,10 +26,6 @@ import java.util.List;
 
 public class SimpleOperationDAOImpl extends AbstractOperationDAO {
 
-    public SimpleOperationDAOImpl(DataSource dataSource) {
-        super(dataSource);
-    }
-
     @Override
     public int updateOperation(Operation operation) throws OperationManagementDAOException {
         return 0;

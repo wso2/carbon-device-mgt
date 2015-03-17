@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.Status;
 
 import javax.sql.DataSource;
@@ -37,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DeviceDAOImpl implements DeviceDAO {
+
 
     private DataSource dataSource;
     private static final Log log = LogFactory.getLog(DeviceDAOImpl.class);
@@ -208,6 +210,11 @@ public class DeviceDAOImpl implements DeviceDAO {
             DeviceManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
         }
         return devicesList;
+    }
+
+    @Override
+    public List<Device> getDeviceListOfUser(String username) throws DeviceManagementDAOException {
+        return null;
     }
 
     private Connection getConnection() throws DeviceManagementDAOException {

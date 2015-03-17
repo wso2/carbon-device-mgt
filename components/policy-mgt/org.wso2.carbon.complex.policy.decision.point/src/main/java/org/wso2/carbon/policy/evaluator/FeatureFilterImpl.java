@@ -51,7 +51,7 @@ public class FeatureFilterImpl implements FeatureFilter {
     public List<Feature> extractFeatures(List<Policy> policyList) {
         List<Feature> featureList = new ArrayList<Feature>();
         for (Policy policy : policyList) {
-            featureList.addAll(policy.getFeaturesList());
+            featureList.addAll(policy.getProfile().getFeaturesList());
         }
         return featureList;
     }

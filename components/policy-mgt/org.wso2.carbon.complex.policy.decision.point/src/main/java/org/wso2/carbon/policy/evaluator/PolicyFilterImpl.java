@@ -63,7 +63,7 @@ public class PolicyFilterImpl implements PolicyFilter {
         List<Policy> policies = new ArrayList<Policy>();
 
         for (Policy policy : policyList) {
-            if (policy.getDeviceType().equalsIgnoreCase(deviceType)) {
+            if (policy.getProfile().getDeviceType().getName().equalsIgnoreCase(deviceType)) {
                 policies.add(policy);
             }
         }

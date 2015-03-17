@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.service;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.core.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.config.license.License;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagementException;
@@ -66,7 +67,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public List<Device> getAllDevices() throws DeviceManagementException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
@@ -74,7 +75,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getAllDevices(type);
 	}
 
-	@Override
+    @Override
+    public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException{
+        return null;
+    }
+
+    @Override
 	public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
 			throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId);
@@ -119,9 +125,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public List<Feature> getFeaturesForDeviceType(String deviceType) throws FeatureManagementException {
-        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getFeaturesForDeviceType(
-                deviceType);
+    public List<Feature> getFeatures(String deviceType) throws FeatureManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getFeatures(deviceType);
     }
 
 }

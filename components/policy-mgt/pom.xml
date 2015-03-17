@@ -23,21 +23,21 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>carbon-devicemgt</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>policy-mgt</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Policy Management Component</name>
     <url>http://wso2.org</url>
 
     <modules>
-        <module>org.wso2.carbon.policy.mgt.core</module>
         <module>org.wso2.carbon.policy.mgt.common</module>
+        <module>org.wso2.carbon.policy.mgt.core</module>
         <module>org.wso2.carbon.policy.information.point</module>
         <module>org.wso2.carbon.simple.policy.decision.point</module>
         <module>org.wso2.carbon.complex.policy.decision.point</module>

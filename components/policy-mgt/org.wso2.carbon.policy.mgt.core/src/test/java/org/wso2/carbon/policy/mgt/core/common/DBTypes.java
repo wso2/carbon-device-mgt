@@ -4,9 +4,9 @@
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,19 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.policy.mgt.common;
+package org.wso2.carbon.policy.mgt.core.common;
 
-import java.util.List;
 
-public interface FeatureManagerService {
+public enum DBTypes {
+    Oracle("Oracle"),H2("H2"),MySql("MySql");
 
-    void addFeature(Feature feature) throws FeatureManagementException;
-
-    void editFeature(Feature feature) throws FeatureManagementException;
-
-    void removeFeature(int featureId) throws FeatureManagementException;
-
-    List<Feature> getFeatures() throws FeatureManagementException;
-
-    List<Feature> getFeaturesOfPolicy(int profileId) throws FeatureManagementException;
+    String dbName ;
+    DBTypes(String dbStrName) {
+        dbName = dbStrName;
+    }
 }

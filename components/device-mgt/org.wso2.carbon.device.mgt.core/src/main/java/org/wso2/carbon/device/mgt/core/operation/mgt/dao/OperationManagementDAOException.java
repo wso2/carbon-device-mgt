@@ -20,4 +20,40 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 public class OperationManagementDAOException extends Exception {
 
+    private static final long serialVersionUID = -3151279311929070299L;
+
+    private String errorMessage;
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public OperationManagementDAOException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+        setErrorMessage(msg);
+    }
+
+    public OperationManagementDAOException(String message, Throwable cause) {
+        super(message, cause);
+        setErrorMessage(message);
+    }
+
+    public OperationManagementDAOException(String msg) {
+        super(msg);
+        setErrorMessage(msg);
+    }
+
+    public OperationManagementDAOException() {
+        super();
+    }
+
+    public OperationManagementDAOException(Throwable cause) {
+        super(cause);
+    }
+
+
 }

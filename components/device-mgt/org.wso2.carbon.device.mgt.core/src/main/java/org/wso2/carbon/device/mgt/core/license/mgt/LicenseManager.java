@@ -22,8 +22,8 @@ import org.wso2.carbon.device.mgt.core.config.license.License;
 
 public interface LicenseManager {
 
-    License getLicense(final String deviceType, final String languageCode) throws LicenseManagementException;
+    License getLicense(String deviceType, String languageCode) throws LicenseManagementException;
 
-    void addLicense(License license) throws LicenseManagementException;
+    boolean addLicense(String deviceType, License license) throws LicenseManagementException;
 
 }

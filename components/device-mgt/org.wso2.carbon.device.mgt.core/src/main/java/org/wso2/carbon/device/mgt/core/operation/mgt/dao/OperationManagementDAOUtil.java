@@ -18,5 +18,32 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class OperationManagementDAOUtil {
+
+    private static final Log log = LogFactory.getLog(OperationManagementDAOUtil.class);
+
+    public static void cleanupResources(Statement stmt, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing the result set", e);
+            }
+        }
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing the statement", e);
+            }
+        }
+    }
+
 }

@@ -18,5 +18,14 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
-public class OperationMappingDAO {
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+
+import java.util.List;
+
+public interface OperationMappingDAO {
+
+    void addOperationMapping(int operationId, List<Integer> deviceIds) throws OperationManagementDAOException;
+
+    void removeOperationMapping(int operationId, List<Integer> deviceIds) throws OperationManagementDAOException;
+
 }

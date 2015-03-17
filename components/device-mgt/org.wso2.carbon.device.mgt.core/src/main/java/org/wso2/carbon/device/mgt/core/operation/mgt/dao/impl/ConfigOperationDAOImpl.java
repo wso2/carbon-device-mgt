@@ -18,5 +18,42 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-public class ConfigOperationDAOImpl {
+import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
+
+import javax.sql.DataSource;
+import java.util.List;
+
+public class ConfigOperationDAOImpl extends AbstractOperationDAO {
+
+    public ConfigOperationDAOImpl(DataSource dataSource) {
+        super(dataSource);
+    }
+
+    @Override
+    public int addOperation(Operation operation) throws OperationManagementDAOException {
+        return 0;
+    }
+
+    @Override
+    public int updateOperation(Operation operation) throws OperationManagementDAOException {
+        return 0;
+    }
+
+    @Override
+    public int deleteOperation(int id) throws OperationManagementDAOException {
+        return 0;
+    }
+
+    @Override
+    public Operation getOperation(int id) throws OperationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public List<Operation> getOperations() throws OperationManagementDAOException {
+        return null;
+    }
+
 }

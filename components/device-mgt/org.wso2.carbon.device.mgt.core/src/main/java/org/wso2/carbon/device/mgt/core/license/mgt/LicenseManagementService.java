@@ -29,8 +29,8 @@ public class LicenseManagementService implements LicenseManager {
     }
 
     @Override
-    public void addLicense(License license) throws LicenseManagementException {
-        DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(license);
+    public boolean addLicense(String deviceType, License license) throws LicenseManagementException {
+        return DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(deviceType, license);
     }
 
 }

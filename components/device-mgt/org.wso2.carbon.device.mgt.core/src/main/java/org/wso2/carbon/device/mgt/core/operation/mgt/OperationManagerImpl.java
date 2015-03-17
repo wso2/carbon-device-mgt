@@ -18,25 +18,56 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 
 import java.util.List;
 
+/**
+ * This class implements all the functionalities exposed as part of the OperationManager. Any transaction initiated
+ * upon persisting information related to operation state, etc has to be managed, demarcated and terminated via the
+ * methods available in OperationManagementDAOFactory.
+ */
 public class OperationManagerImpl implements OperationManager {
 
-    private OperationDAO commandOperationDAO = OperationManagementDAOFactory.getCommandOperationDAO();
-    private OperationDAO configOperationDAO = OperationManagementDAOFactory.getConfigOperationDAO();
-    private OperationDAO simpleOperationDAO = OperationManagementDAOFactory.getSimpleOperationDAO();
+    private static final Log log = LogFactory.getLog(OperationManagerImpl.class);
+
+    private OperationDAO commandOperationDAO;
+    private OperationDAO configOperationDAO;
+    private OperationDAO simpleOperationDAO;
+    private OperationMappingDAO operationMappingDAO;
+    private DeviceDAO deviceDAO;
+
+    public OperationManagerImpl() {
+        commandOperationDAO = OperationManagementDAOFactory.getCommandOperationDAO();
+        configOperationDAO = OperationManagementDAOFactory.getConfigOperationDAO();
+        simpleOperationDAO = OperationManagementDAOFactory.getSimpleOperationDAO();
+        operationMappingDAO = OperationManagementDAOFactory.getOperationMappingDAO();
+        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+    }
 
     @Override
     public boolean addOperation(Operation operation,
                                 List<DeviceIdentifier> devices) throws OperationManagementException {
         try {
-            return this.lookupOperationDAO(operation).addOperation(operation);
+            OperationManagementDAOFactory.beginTransaction();
+            int operationId = this.lookupOperationDAO(operation).addOperation(operation);
+            operationMappingDAO.addOperationMapping(operationId, null);
+            OperationManagementDAOFactory.commitTransaction();
+            return true;
         } catch (OperationManagementDAOException e) {
+            try {
+                OperationManagementDAOFactory.rollbackTransaction();
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the transaction", e);
+            }
             throw new OperationManagementException("Error occurred while adding operation", e);
         }
     }
@@ -52,7 +83,7 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public List<Feature> getFeaturesForDeviceType(String deviceType) throws FeatureManagementException {
+    public List<Feature> getFeatures(String deviceType) throws FeatureManagementException {
         return null;
     }
 

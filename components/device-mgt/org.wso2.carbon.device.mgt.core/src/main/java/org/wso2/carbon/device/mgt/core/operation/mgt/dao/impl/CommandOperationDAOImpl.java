@@ -18,11 +18,17 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-import org.wso2.carbon.device.mgt.common.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class CommandOperationDAOImpl extends AbstractOperationDAO {
@@ -32,20 +38,34 @@ public class CommandOperationDAOImpl extends AbstractOperationDAO {
     }
 
     @Override
-    public boolean addOperation(Operation operation) throws OperationManagementDAOException {
-        CommandOperation booleanOp = (CommandOperation) operation;
-        addOperationMetadata();
-        return false;
+    public int addOperation(Operation operation) throws OperationManagementDAOException {
+        int operationId = super.addOperation(operation);
+        CommandOperation commandOp = (CommandOperation) operation;
+        Connection conn = OperationManagementDAOFactory.getConnection();
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement("INSERT INTO DM_COMMAND_OPERATION(OPERATION_ID, ENABLED) VALUES(?, ?)");
+            stmt.setInt(1, operationId);
+            stmt.setBoolean(2, commandOp.isEnabled());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding command operation", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return operationId;
     }
 
     @Override
-    public boolean updateOperation(Operation operation) throws OperationManagementDAOException {
-        return false;
+    public int updateOperation(Operation operation) throws OperationManagementDAOException {
+        return 0;
     }
 
     @Override
-    public boolean deleteOperation(int id) throws OperationManagementDAOException {
-        return false;
+    public int deleteOperation(int id) throws OperationManagementDAOException {
+        return 0;
     }
 
     @Override

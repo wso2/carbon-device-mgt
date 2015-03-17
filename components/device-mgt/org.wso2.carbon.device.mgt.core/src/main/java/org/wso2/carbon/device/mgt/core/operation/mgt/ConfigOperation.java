@@ -18,5 +18,59 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
-public class ConfigOperation {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ConfigOperation extends Operation {
+
+    private List<Property> properties;
+
+    public ConfigOperation() {
+        properties = new ArrayList<Property>();
+    }
+
+    public List<Property> getConfigProperties() {
+        return properties;
+    }
+
+    public void addConfigProperty(String name, Object value, Class<?> type) {
+        properties.add(new Property(name, value, type));
+    }
+
+    public class Property {
+        private String name;
+        private Object value;
+        private Class<?> type;
+
+        public Property(String name, Object value, Class<?> type) {
+            this.name = name;
+            this.value = value;
+            this.type = type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
+        }
+
+        public Class<?> getType() {
+            return type;
+        }
+
+        public void setType(Class<?> type) {
+            this.type = type;
+        }
+    }
+
 }

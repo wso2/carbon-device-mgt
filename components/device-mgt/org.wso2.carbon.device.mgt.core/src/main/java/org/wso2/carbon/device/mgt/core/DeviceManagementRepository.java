@@ -20,7 +20,8 @@ package org.wso2.carbon.device.mgt.core;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManagerService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.HashMap;
@@ -28,35 +29,36 @@ import java.util.Map;
 
 public class DeviceManagementRepository {
 
-    private static final Log log = LogFactory.getLog(DeviceManagerUtil.class);
-    private Map<String, DeviceManagerService> providers;
+    private Map<String, DeviceManager> providers;
 
     public DeviceManagementRepository() {
-        providers = new HashMap<String, DeviceManagerService>();
+        providers = new HashMap<String, DeviceManager>();
     }
 
-    public void addDeviceManagementProvider(DeviceManagerService provider) {
+    public void addDeviceManagementProvider(DeviceManager provider) throws DeviceManagementException {
         String deviceType = provider.getProviderType();
         try {
             DeviceManagerUtil.registerDeviceType(deviceType);
         } catch (DeviceManagementException e) {
-            log.error("Exception occurred while registering the device type.", e);
+            throw new DeviceManagementException("Error occurred while adding device management provider '" +
+                    deviceType + "'");
         }
         providers.put(deviceType, provider);
     }
 
-    public void removeDeviceManagementProvider(DeviceManagerService provider) {
+    public void removeDeviceManagementProvider(DeviceManager provider) throws DeviceManagementException {
         String deviceType = provider.getProviderType();
-
         try {
             DeviceManagerUtil.unregisterDeviceType(deviceType);
         } catch (DeviceManagementException e) {
-            log.error("Exception occurred while registering the device type.", e);
+            throw new DeviceManagementException("Error occurred while removing device management provider '" +
+                    deviceType + "'", e);
         }
         providers.remove(deviceType);
     }
 
-    public DeviceManagerService getDeviceManagementProvider(String type) {
+    public DeviceManager getDeviceManagementProvider(String type) {
         return providers.get(type);
     }
+
 }

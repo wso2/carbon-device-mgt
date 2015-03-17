@@ -18,5 +18,59 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
-public class DeviceOperationManagementTests {
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.device.mgt.core.operation.mgt.*;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
+
+    private OperationManager operationManager;
+
+    @BeforeClass(alwaysRun = true)
+    public void init() {
+        super.init();
+        this.initOperationManager();
+        OperationManagementDAOFactory.init(this.getDataSource());
+    }
+
+    public void initOperationManager() {
+        this.operationManager = new OperationManagerImpl();
+    }
+
+    @Test
+    public void testAddOperation() throws Exception {
+
+        CommandOperation op = new CommandOperation();
+        op.setEnabled(true);
+        op.setType(Operation.Type.COMMAND);
+
+        List<DeviceIdentifier> deviceIds = new ArrayList<DeviceIdentifier>();
+        DeviceIdentifier deviceId = new DeviceIdentifier();
+        deviceId.setId("Test");
+        deviceId.setType("Android");
+        deviceIds.add(deviceId);
+
+        try {
+            operationManager.addOperation(op, deviceIds);
+        } catch (OperationManagementException e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }
+    }
+
+    public void testGetOperations() {
+        try {
+            operationManager.getOperations(null);
+        } catch (OperationManagementException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

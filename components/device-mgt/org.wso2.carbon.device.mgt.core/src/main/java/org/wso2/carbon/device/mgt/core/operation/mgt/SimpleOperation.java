@@ -18,5 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
-public class SimpleOperation {
+import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
+
+public class SimpleOperation extends Operation {
 }

@@ -18,5 +18,51 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-public class OperationMappingDAOImpl {
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+public class OperationMappingDAOImpl implements OperationMappingDAO {
+
+    @Override
+    public void addOperationMapping(int operationId, List<Integer> deviceIds) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "INSERT INTO DEVICE_OPERATION_MAPPING(DEVICE_ID, OPERATION_ID) VALUES(?, ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, 0);
+            stmt.setInt(2, operationId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while persisting device operation mappings", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public void removeOperationMapping(int operationId,
+                                       List<Integer> deviceIds) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "DELETE FROM DEVICE_OPERATION_MAPPING WHERE DEVICE_ID = ? AND OPERATION_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, 0);
+            stmt.setInt(2, operationId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while persisting device operation mappings", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
 }

@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.device.mgt.core.internal;
 
-import org.wso2.carbon.device.mgt.core.DeviceManager;
+import org.wso2.carbon.device.mgt.core.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -30,7 +30,7 @@ public class DeviceManagementDataHolder {
 
     private RealmService realmService;
     private TenantManager tenantManager;
-    private DeviceManager deviceManager;
+    private DeviceManagementService deviceManagerProvider;
     private LicenseManager licenseManager;
     private RegistryService registryService;
     private LicenseConfig licenseConfig;
@@ -64,12 +64,12 @@ public class DeviceManagementDataHolder {
         return tenantManager;
     }
 
-    public DeviceManager getDeviceManager() {
-        return deviceManager;
+    public DeviceManagementService getDeviceManagementProvider() {
+        return deviceManagerProvider;
     }
 
-    public void setDeviceManager(DeviceManager deviceManager) {
-        this.deviceManager = deviceManager;
+    public void setDeviceManagementProvider(DeviceManagementService deviceManagerProvider) {
+        this.deviceManagerProvider = deviceManagerProvider;
     }
 
     public RegistryService getRegistryService() {

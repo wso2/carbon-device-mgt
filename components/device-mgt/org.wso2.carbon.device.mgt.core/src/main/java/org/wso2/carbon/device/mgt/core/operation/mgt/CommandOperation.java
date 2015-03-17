@@ -18,10 +18,18 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
 
 public class CommandOperation extends Operation {
 
+    private boolean enabled;
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
 }

@@ -50,11 +50,10 @@ public final class DeviceManagerUtil {
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
 			return docBuilder.parse(file);
 		} catch (Exception e) {
-			throw new DeviceManagementException(
-					"Error occurred while parsing file, while converting " +
-					"to a org.w3c.dom.Document : " + e.getMessage(), e);
+			throw new DeviceManagementException("Error occurred while parsing file, while converting " +
+					"to a org.w3c.dom.Document", e);
 		}
-	}
+    }
 
 	/**
 	 * Resolve data source from the data source definition.
@@ -65,16 +64,13 @@ public final class DeviceManagerUtil {
 	public static DataSource resolveDataSource(DataSourceConfig config) {
 		DataSource dataSource = null;
 		if (config == null) {
-			throw new RuntimeException(
-					"Device Management Repository data source configuration " +
-					"is null and thus, is not initialized");
+			throw new RuntimeException("Device Management Repository data source configuration is null and thus, " +
+                    "is not initialized");
 		}
 		JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
 		if (jndiConfig != null) {
 			if (log.isDebugEnabled()) {
-				log.debug(
-						"Initializing Device Management Repository data source using the JNDI " +
-						"Lookup Definition");
+				log.debug("Initializing Device Management Repository data source using the JNDI Lookup Definition");
 			}
 			List<JNDILookupDefinition.JNDIProperty> jndiPropertyList =
 					jndiConfig.getJndiProperties();
@@ -83,11 +79,9 @@ public final class DeviceManagerUtil {
 				for (JNDILookupDefinition.JNDIProperty prop : jndiPropertyList) {
 					jndiProperties.put(prop.getName(), prop.getValue());
 				}
-				dataSource = DeviceManagementDAOUtil
-						.lookupDataSource(jndiConfig.getJndiName(), jndiProperties);
+				dataSource = DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), jndiProperties);
 			} else {
-				dataSource =
-						DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
+				dataSource = DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
 			}
 		}
 		return dataSource;
@@ -103,7 +97,7 @@ public final class DeviceManagerUtil {
 		boolean status;
 		try {
 			DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-			Integer deviceTypeId = deviceTypeDAO.getDeviceTypeIdByDeviceTypeName(deviceType);
+			DeviceType deviceTypeId = deviceTypeDAO.getDeviceType(deviceType);
 			if (deviceTypeId == null) {
 				DeviceType dt = new DeviceType();
 				dt.setName(deviceType);
@@ -111,14 +105,14 @@ public final class DeviceManagerUtil {
 			}
 			status = true;
 		} catch (DeviceManagementDAOException e) {
-			String msg = "Error occurred while registering the device type " + deviceType;
-			throw new DeviceManagementException(msg, e);
+			throw new DeviceManagementException("Error occurred while registering the device type '" +
+                    deviceType + "'", e);
 		}
 		return status;
 	}
 
 	/**
-	 * Unregisters an existing device type from the device management metadata repository.
+	 * Un-registers an existing device type from the device management metadata repository.
 	 *
 	 * @param deviceType device type
 	 * @return status of the operation
@@ -126,25 +120,17 @@ public final class DeviceManagerUtil {
 	public static boolean unregisterDeviceType(String deviceType) throws DeviceManagementException {
 		try {
 			DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-			Integer deviceTypeId = deviceTypeDAO.getDeviceTypeIdByDeviceTypeName(deviceType);
+			DeviceType deviceTypeId = deviceTypeDAO.getDeviceType(deviceType);
 			if (deviceTypeId == null) {
 				DeviceType dt = new DeviceType();
 				dt.setName(deviceType);
-				deviceTypeDAO.removeDeviceType(dt);
+				deviceTypeDAO.removeDeviceType(deviceType);
 			}
 			return true;
 		} catch (DeviceManagementDAOException e) {
-			String msg = "Error occurred while registering the device type " + deviceType;
-			throw new DeviceManagementException(msg, e);
+			throw new DeviceManagementException("Error occurred while registering the device type '" +
+                    deviceType + "'", e);
 		}
-	}
-
-	public static Map<String, String> convertPropertiesToMap(List<Device.Property> properties) {
-		Map<String, String> propertiesMap = new HashMap<String, String>();
-		for (Device.Property prop : properties) {
-			propertiesMap.put(prop.getName(), prop.getValue());
-		}
-		return propertiesMap;
 	}
 
 }

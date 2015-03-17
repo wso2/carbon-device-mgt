@@ -28,6 +28,7 @@
             <class name="org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.DeviceOperationManagementTests"/>
         </classes>
     </test>
 </suite>

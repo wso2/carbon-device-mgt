@@ -93,7 +93,7 @@
                 <artifactId>org.wso2.carbon.base</artifactId>
                 <version>${carbon.kernel.version}</version>
             </dependency>
-            <!--dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.api</artifactId>
                 <version>${carbon.governance.version}</version>
@@ -143,7 +143,7 @@
                         <artifactId>org.wso2.carbon.registry.extensions</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency-->
+            </dependency>
             <!-- End of Governance dependencies -->
 
             <!-- OSGi dependencies-->

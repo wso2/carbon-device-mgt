@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.config.license.License;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManager;
@@ -31,32 +32,8 @@ import java.util.List;
  * Proxy class for all Device Management related operations that take the corresponding plugin type in
  * and resolve the appropriate plugin implementation
  */
-public interface DeviceManagementService {
-
-    boolean enrollDevice(Device device) throws DeviceManagementException;
-
-    boolean modifyEnrollment(Device device) throws DeviceManagementException;
-
-    boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
-
-    boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException;
-
-    boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException;
-
-    boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
+public interface DeviceManagementService extends DeviceManager, LicenseManager, OperationManager {
 
     List<Device> getAllDevices(String type) throws DeviceManagementException;
-
-    Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
-
-    boolean updateDeviceInfo(Device device) throws DeviceManagementException;
-
-    boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
-
-    OperationManager getOperationManager(String type) throws DeviceManagementException;
-
-    License getLicense(String type) throws DeviceManagementException;
-
-    boolean addLicense(String type, License license) throws DeviceManagementException;
 
 }

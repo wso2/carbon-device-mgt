@@ -18,5 +18,20 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
-public class OperationDAO {
+import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
+
+import java.util.List;
+
+public interface OperationDAO {
+
+    int addOperation(Operation operation) throws OperationManagementDAOException;
+
+    int updateOperation(Operation operation) throws OperationManagementDAOException;
+
+    int deleteOperation(int id) throws OperationManagementDAOException;
+
+    Operation getOperation(int id) throws OperationManagementDAOException;
+
+    List<Operation> getOperations() throws OperationManagementDAOException;
+
 }

@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.dao;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.dto.Status;
 
@@ -32,27 +33,22 @@ public interface DeviceDAO {
 
 	void updateDevice(Device device) throws DeviceManagementDAOException;
 
-	void updateDeviceStatus(Long deviceId, Status status) throws DeviceManagementDAOException;
+	void updateDeviceStatus(int deviceId, Status status) throws DeviceManagementDAOException;
 
-	void deleteDevice(Long deviceId) throws DeviceManagementDAOException;
+	void deleteDevice(int deviceId) throws DeviceManagementDAOException;
 
-	Device getDeviceByDeviceId(Long deviceId) throws DeviceManagementDAOException;
+	Device getDevice(int deviceId) throws DeviceManagementDAOException;
 
-	/**
-	 * @param type       - Device type.
-	 * @param identifier - Device identifier.
-	 * @return the Device object which matches given data
-	 * @throws DeviceManagementDAOException
-	 */
-	Device getDeviceByDeviceIdentifier(Integer type, String identifier)
-			throws DeviceManagementDAOException;
+    Device getDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementDAOException;
 
 	List<Device> getDevices() throws DeviceManagementDAOException;
+
+    List<Integer> getDeviceIds(List<DeviceIdentifier> devices) throws DeviceManagementDAOException;
 
 	/**
 	 * @param type - The device type id.
 	 * @return a list of devices based on the type id.
 	 * @throws DeviceManagementDAOException
 	 */
-	List<Device> getDevices(Integer type) throws DeviceManagementDAOException;
+	List<Device> getDevices(int type) throws DeviceManagementDAOException;
 }

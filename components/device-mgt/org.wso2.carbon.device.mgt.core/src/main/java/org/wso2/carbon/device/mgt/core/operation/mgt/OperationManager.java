@@ -18,6 +18,7 @@
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public interface OperationManager {
 	 *
 	 * @param operation Operation to be added
 	 * @param devices   List of DeviceIdentifiers to execute the operation
-	 * @throws org.wso2.carbon.device.mgt.common.OperationManagementException If some unusual behaviour is observed while adding the
+	 * @throws OperationManagementException If some unusual behaviour is observed while adding the
 	 * operation
 	 */
 	public boolean addOperation(Operation operation, List<DeviceIdentifier> devices)
@@ -64,6 +65,6 @@ public interface OperationManager {
 	 * @return a list of Feature objects.
 	 * @throws org.wso2.carbon.device.mgt.common.FeatureManagementException
 	 */
-	public List<Feature> getFeaturesForDeviceType(String deviceType) throws FeatureManagementException;
+	public List<Feature> getFeatures(String deviceType) throws FeatureManagementException;
 
 }

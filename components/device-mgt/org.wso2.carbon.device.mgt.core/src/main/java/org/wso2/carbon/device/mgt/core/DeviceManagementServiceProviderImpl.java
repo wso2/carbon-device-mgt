@@ -154,6 +154,11 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
+    public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException {
+        return null;
+    }
+
+    @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());

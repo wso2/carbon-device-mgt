@@ -20,7 +20,8 @@ package org.wso2.carbon.device.mgt.core;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManagerService;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 
 public class DeviceManagementRepositoryTests {
 
@@ -33,23 +34,27 @@ public class DeviceManagementRepositoryTests {
 
     @Test
     public void testAddDeviceManagementService() {
-        DeviceManagerService sourceProvider = new TestDeviceManagerService();
-        this.getRepository().addDeviceManagementProvider(sourceProvider);
-
-        DeviceManagerService targetProvider =
-                this.getRepository().getDeviceManagementProvider(TestDeviceManagerService.DEVICE_TYPE_TEST);
-
+        DeviceManager sourceProvider = new TestDeviceManager();
+        try {
+            this.getRepository().addDeviceManagementProvider(sourceProvider);
+        } catch (DeviceManagementException e) {
+            Assert.fail("Unexpected error occurred while invoking addDeviceManagementProvider functionality", e);
+        }
+        DeviceManager targetProvider =
+                this.getRepository().getDeviceManagementProvider(TestDeviceManager.DEVICE_TYPE_TEST);
         Assert.assertEquals(targetProvider.getProviderType(), sourceProvider.getProviderType());
     }
 
     @Test(dependsOnMethods = "testAddDeviceManagementService")
     public void testRemoveDeviceManagementService() {
-        DeviceManagerService sourceProvider = new TestDeviceManagerService();
-        this.getRepository().removeDeviceManagementProvider(sourceProvider);
-
-        DeviceManagerService targetProvider =
-                this.getRepository().getDeviceManagementProvider(TestDeviceManagerService.DEVICE_TYPE_TEST);
-
+        DeviceManager sourceProvider = new TestDeviceManager();
+        try {
+            this.getRepository().removeDeviceManagementProvider(sourceProvider);
+        } catch (DeviceManagementException e) {
+            Assert.fail("Unexpected error occurred while invoking removeDeviceManagementProvider functionality", e);
+        }
+        DeviceManager targetProvider =
+                this.getRepository().getDeviceManagementProvider(TestDeviceManager.DEVICE_TYPE_TEST);
         Assert.assertNull(targetProvider);
     }
 

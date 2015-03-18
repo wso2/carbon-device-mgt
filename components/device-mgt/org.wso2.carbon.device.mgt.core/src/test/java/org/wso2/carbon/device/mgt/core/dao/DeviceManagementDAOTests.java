@@ -114,17 +114,17 @@ public class DeviceManagementDAOTests {
         deviceType.setName("IOS");
         deviceTypeMgtDAO.addDeviceType(deviceType);
 
-        Long id = null;
+        int id = -1;
         Connection conn = null;
         PreparedStatement stmt = null;
-        String sql = "SELECT ID, NAME from DM_DEVICE_TYPE DType where DType.NAME='IOS'";
+        String sql = "SELECT dt.ID, dt.NAME FROM DM_DEVICE_TYPE dt where dt.NAME = 'IOS'";
         try {
             conn = this.getDataSource().getConnection();
             stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                id = rs.getLong("ID");
+                id = rs.getInt("ID");
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("error in fetch device type by name IOS", e);
@@ -147,9 +147,9 @@ public class DeviceManagementDAOTests {
         device.setDeviceIdentificationId("111");
 
         DeviceType deviceType = new DeviceType();
-        deviceType.setId(Long.parseLong("1"));
+        deviceType.setId(Integer.parseInt("1"));
 
-        device.setDeviceTypeId(deviceType.getId().intValue());
+        device.setDeviceTypeId(deviceType.getId());
         device.setOwnerShip(OwnerShip.BYOD.toString());
         device.setOwnerId("111");
         device.setTenantId(-1234);

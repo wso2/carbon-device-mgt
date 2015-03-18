@@ -90,4 +90,5 @@ public class DeviceManagementDAOFactory {
 	public static DataSource getDataSource() {
 		return dataSource;
 	}
+
 }

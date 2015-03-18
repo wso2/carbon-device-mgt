@@ -54,7 +54,9 @@
                         <Bundle-Description>Policy Management Common Bundle</Bundle-Description>
                         <Private-Package>org.wso2.carbon.policy.mgt.common.internal</Private-Package>
                         <Import-Package>
-                            org.apache.commons.logging
+                            org.apache.commons.logging,
+                            org.wso2.carbon.device.mgt.common.*,
+                            org.wso2.carbon.device.mgt.core.dto.*
                         </Import-Package>
                         <Export-Package>
                             org.wso2.carbon.policy.mgt.common.*
@@ -81,6 +83,10 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
     </dependencies>
 

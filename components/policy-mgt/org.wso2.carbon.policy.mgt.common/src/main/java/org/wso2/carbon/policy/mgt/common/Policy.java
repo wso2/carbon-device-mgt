@@ -28,13 +28,12 @@ import java.util.Map;
 public class Policy {
     private int id;                         // Identifier of the policy.
     private int priorityId;                 // Priority of the policies. This will be used only for simple evaluation.
+    private Profile profile;                  // Profile id
     private String policyName;              // Name of the policy.
-    private List<Feature> featuresList;     // Features included in the policies.
     private boolean generic;                // If true, this should be applied to all related device.
     private List<String> roleList;          // Roles which this policy should be applied.
     private String ownershipType;           // Ownership type (COPE, BYOD, CPE)
     private List<String> DeviceList;        // Individual devices this policy should be applied
-    private String deviceType;              // Device type to apply the policy.
 
     /*Dynamic policy attributes*/
 
@@ -71,20 +70,20 @@ public class Policy {
         this.priorityId = priorityId;
     }
 
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
     public String getPolicyName() {
         return policyName;
     }
 
     public void setPolicyName(String policyName) {
         this.policyName = policyName;
-    }
-
-    public List<Feature> getFeaturesList() {
-        return featuresList;
-    }
-
-    public void setFeaturesList(List<Feature> featuresList) {
-        this.featuresList = featuresList;
     }
 
     public boolean isGeneric() {
@@ -117,14 +116,6 @@ public class Policy {
 
     public void setDeviceList(List<String> deviceList) {
         DeviceList = deviceList;
-    }
-
-    public String getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
     }
 
     public int getStartTime() {

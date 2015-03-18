@@ -4,9 +4,9 @@
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,79 +18,21 @@
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.OperationManager;
-import org.wso2.carbon.device.mgt.core.DeviceManager;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 
 import java.util.List;
 
-public class DeviceManagementService implements DeviceManager {
+/**
+ * Proxy class for all Device Management related operations that take the corresponding plugin type in
+ * and resolve the appropriate plugin implementation
+ */
+public interface DeviceManagementService extends DeviceManager, LicenseManager, OperationManager {
 
-	@Override
-	public boolean enrollDevice(Device device) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().enrollDevice(device);
-	}
+    List<Device> getAllDevices(String type) throws DeviceManagementException;
 
-	@Override
-	public boolean modifyEnrollment(Device device) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().modifyEnrollment(device);
-	}
-
-	@Override
-	public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager()
-		                                 .disenrollDevice(deviceId);
-	}
-
-	@Override
-	public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().isEnrolled(deviceId);
-	}
-
-	@Override
-	public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().isActive(deviceId);
-	}
-
-	@Override
-	public boolean setActive(DeviceIdentifier deviceId, boolean status)
-			throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager()
-		                                 .setActive(deviceId, status);
-	}
-
-	@Override
-	public List<Device> getAllDevices(String type) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().getAllDevices(type);
-	}
-
-	@Override
-	public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
-			throws DeviceManagementException {
-
-		Device device =
-				DeviceManagementDataHolder.getInstance().getDeviceManager().getDevice(deviceId);
-		return device;
-	}
-
-	@Override
-	public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().updateDeviceInfo(device);
-	}
-
-	@Override
-	public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
-			throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager()
-		                                 .setOwnership(deviceId, ownershipType);
-	}
-
-	@Override
-	public OperationManager getOperationManager(String type) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManager().
-				getOperationManager(type);
-	}
+    List<Device> getDeviceListOfUser(String username) throws DeviceManagementException;
 
 }

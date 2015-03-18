@@ -18,21 +18,22 @@
 
 package org.wso2.carbon.simple.policy.decision.point;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.PIPDeviceData;
 import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationService;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 
 import java.util.List;
 
-public class PolicyEvaluationServiceImpl implements PolicyEvaluationService {
+public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
     @Override
-    public Policy getEffectivePolicy(PIPDeviceData pipDeviceData) {
+    public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) {
         return null;
     }
 
     @Override
-    public List<Feature> getEffectiveFeatures(PIPDeviceData pipDeviceData) {
+    public List<Feature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) {
         return null;
     }
 }

@@ -19,9 +19,8 @@ package org.wso2.carbon.device.mgt.common;
 
 public class DeviceIdentifier {
 
-    private String type;
-
     private String id;
+    private String type;
 
     public String getType() {
         return type;

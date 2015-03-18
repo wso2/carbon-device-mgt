@@ -22,23 +22,22 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManagerService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
-import org.wso2.carbon.device.mgt.core.DeviceManager;
-import org.wso2.carbon.device.mgt.core.DeviceManagerImpl;
+import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.mgt.core.config.license.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementException;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementService;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.email.verification.util.EmailVerifcationSubscriber;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -53,11 +52,11 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setRealmService"
  * unbind="unsetRealmService"
  * @scr.reference name="device.manager.service"
- * interface="org.wso2.carbon.device.mgt.common.spi.DeviceManagerService"
+ * interface="org.wso2.carbon.device.mgt.common.spi.DeviceManager"
  * cardinality="0..n"
  * policy="dynamic"
- * bind="setDeviceManagerService"
- * unbind="unsetDeviceManagerService"
+ * bind="setDeviceManager"
+ * unbind="unsetDeviceManager"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1"
@@ -75,6 +74,7 @@ public class DeviceManagementServiceComponent {
 			if (log.isDebugEnabled()) {
 				log.debug("Initializing device management core bundle");
 			}
+
 		    /* Initializing Device Management Configuration */
 			DeviceConfigurationManager.getInstance().initConfig();
 			DeviceManagementConfig config =
@@ -83,8 +83,9 @@ public class DeviceManagementServiceComponent {
 			DataSourceConfig dsConfig = config.getDeviceMgtRepository().getDataSourceConfig();
 			DeviceManagementDAOFactory.init(dsConfig);
 
-			DeviceManager deviceManager = new DeviceManagerImpl(config, this.getPluginRepository());
-			DeviceManagementDataHolder.getInstance().setDeviceManager(deviceManager);
+			DeviceManagementService deviceManagementProvider =
+                    new DeviceManagementServiceProviderImpl(this.getPluginRepository());
+			DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
 
 			LicenseConfigurationManager.getInstance().initConfig();
 			LicenseConfig licenseConfig =
@@ -99,25 +100,17 @@ public class DeviceManagementServiceComponent {
 					System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
 			if (setupOption != null) {
 				if (log.isDebugEnabled()) {
-					log.debug(
-							"-Dsetup is enabled. Device management repository schema initialization " +
-							"is about to begin");
+					log.debug("-Dsetup is enabled. Device management repository schema initialization is about to " +
+                            "begin");
 				}
 				this.setupDeviceManagementSchema(dsConfig);
-				// this.setupDefaultLicenses(licenseConfig);
+				this.setupDefaultLicenses(licenseConfig);
 			}
 
-			if (log.isDebugEnabled()) {
-				log.debug("Registering OSGi service DeviceManagementService");
-			}
-            /* Registering Device Management service */
-			BundleContext bundleContext = componentContext.getBundleContext();
-			bundleContext.registerService(DeviceManagementService.class.getName(),
-			                              new DeviceManagementService(), null);
-            /* Registering License Management service */
-			bundleContext.registerService(LicenseManagementService.class.getName(),
-			                              new LicenseManagementService(), null);
-			if (log.isDebugEnabled()) {
+            /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
+            this.registerServices(componentContext);
+
+            if (log.isDebugEnabled()) {
 				log.debug("Device management core bundle has been successfully initialized");
 			}
 		} catch (Throwable e) {
@@ -125,6 +118,16 @@ public class DeviceManagementServiceComponent {
 			log.error(msg, e);
 		}
 	}
+
+    private void registerServices(ComponentContext componentContext) {
+        if (log.isDebugEnabled()) {
+            log.debug("Registering OSGi service DeviceManagementServiceImpl");
+        }
+        /* Registering Device Management Service */
+        BundleContext bundleContext = componentContext.getBundleContext();
+        bundleContext.registerService(DeviceManagementService.class.getName(),
+                new DeviceManagementServiceImpl(), null);
+    }
 
 	private void setupDeviceManagementSchema(DataSourceConfig config)
 			throws DeviceManagementException {
@@ -140,50 +143,54 @@ public class DeviceManagementServiceComponent {
 					"database schema", e);
 		}
 		if (log.isDebugEnabled()) {
-			log.debug(
-					"Device management metadata repository schema has been successfully initialized");
+			log.debug("Device management metadata repository schema has been successfully initialized");
 		}
 	}
 
 	private void setupDefaultLicenses(LicenseConfig licenseConfig)
 			throws LicenseManagementException {
-		LicenseManager licenseManager =
-				DeviceManagementDataHolder.getInstance().getLicenseManager();
+		LicenseManager licenseManager = DeviceManagementDataHolder.getInstance().getLicenseManager();
 		for (License license : licenseConfig.getLicenses()) {
-			License extLicense =
-					licenseManager.getLicense(license.getName(), license.getLanguage());
-			if (extLicense != null) {
-				continue;
+			License extLicense = licenseManager.getLicense(license.getName(), license.getLanguage());
+			if (extLicense == null) {
+                licenseManager.addLicense(license.getName(), license);;
 			}
-			licenseManager.addLicense(license);
 		}
 	}
 
 	/**
 	 * Sets Device Manager service.
 	 *
-	 * @param deviceManagerService An instance of DeviceManagerService
+	 * @param deviceManager An instance of DeviceManager
 	 */
-	protected void setDeviceManagerService(DeviceManagerService deviceManagerService) {
+	protected void setDeviceManager(DeviceManager deviceManager) {
 		if (log.isDebugEnabled()) {
-			log.debug("Setting Device Management Service Provider : '" +
-			          deviceManagerService.getProviderType() + "'");
+			log.debug("Setting Device Management Service Provider: '" + deviceManager.getProviderType() + "'");
 		}
-		this.getPluginRepository().addDeviceManagementProvider(deviceManagerService);
-	}
+        try {
+            this.getPluginRepository().addDeviceManagementProvider(deviceManager);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while adding device management provider '" +
+                    deviceManager.getProviderType() + "'");
+        }
+    }
 
 	/**
 	 * Unsets Device Management service.
 	 *
-	 * @param deviceManagerService An Instance of DeviceManagerService
+	 * @param deviceManager An Instance of DeviceManager
 	 */
-	protected void unsetDeviceManagerService(DeviceManagerService deviceManagerService) {
+	protected void unsetDeviceManager(DeviceManager deviceManager) {
 		if (log.isDebugEnabled()) {
-			log.debug("Unsetting Device Management Service Provider : '" +
-			          deviceManagerService.getProviderType() + "'");
+			log.debug("Unsetting Device Management Service Provider : '" + deviceManager.getProviderType() + "'");
 		}
-		this.getPluginRepository().removeDeviceManagementProvider(deviceManagerService);
-	}
+        try {
+            this.getPluginRepository().removeDeviceManagementProvider(deviceManager);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while removing device management provider '" +
+                    deviceManager.getProviderType() + "'");
+        }
+    }
 
 	/**
 	 * Sets Realm Service.

@@ -30,5 +30,5 @@ public interface FeatureManagerService {
 
     List<Feature> getFeatures() throws FeatureManagementException;
 
-    List<Feature> getFeaturesOfPolicy(int policyId) throws FeatureManagementException;
+    List<Feature> getFeaturesOfPolicy(int profileId) throws FeatureManagementException;
 }

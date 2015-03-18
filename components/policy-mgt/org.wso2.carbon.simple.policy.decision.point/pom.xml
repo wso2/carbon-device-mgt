@@ -59,5 +59,9 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.policy.mgt.common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
+        </dependency>
     </dependencies>
 </project>

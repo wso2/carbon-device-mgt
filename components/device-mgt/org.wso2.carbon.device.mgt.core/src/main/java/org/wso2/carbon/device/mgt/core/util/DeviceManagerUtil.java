@@ -39,6 +39,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+
 public final class DeviceManagerUtil {
 
 	private static final Log log = LogFactory.getLog(DeviceManagerUtil.class);
@@ -146,5 +147,9 @@ public final class DeviceManagerUtil {
 		}
 		return propertiesMap;
 	}
+
+    public static void sendEmail(){
+
+    }
 
 }

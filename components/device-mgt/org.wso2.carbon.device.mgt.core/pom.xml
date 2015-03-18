@@ -71,7 +71,8 @@
                             org.wso2.carbon.registry.core.exceptions,
                             org.wso2.carbon.registry.core.service,
                             org.wso2.carbon.registry.core.session,
-                            org.w3c.dom
+                            org.w3c.dom,
+                            org.wso2.carbon.email.verification.util
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

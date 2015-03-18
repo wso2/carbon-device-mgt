@@ -40,6 +40,7 @@ import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.email.verification.util.EmailVerifcationSubscriber;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -227,7 +228,7 @@ public class DeviceManagementServiceComponent {
 	 */
 	protected void unsetRegistryService(RegistryService registryService) {
 		if (log.isDebugEnabled()) {
-			log.debug("Unsetting Registry Service");
+			log.debug("Un setting Registry Service");
 		}
 		DeviceManagementDataHolder.getInstance().setRegistryService(null);
 	}

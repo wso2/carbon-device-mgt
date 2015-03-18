@@ -37,8 +37,10 @@
     <modules>
         <module>components/device-mgt</module>
         <module>components/policy-mgt</module>
+        <module>components/user-mgt</module>
         <module>features/device-mgt</module>
         <module>features/policy-mgt</module>
+        <module>features/user-mgt</module>
     </modules>
 
     <dependencyManagement>
@@ -73,6 +75,21 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.policy.information.point</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.user.core</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.user.common</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.user.common</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->
@@ -590,9 +607,6 @@
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
         <orbit.version.tomcat>7.0.52.wso2v5</orbit.version.tomcat>
         <tomcat.jdbc.pooling.version>7.0.34.wso2v2</tomcat.jdbc.pooling.version>
-
-        <!-- Carbon Commons -->
-        <carbon.commons.version>4.3.4</carbon.commons.version>
 
         <!-- Carbon Deployment -->
         <carbon.deployment.version>4.3.1</carbon.deployment.version>

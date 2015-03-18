@@ -18,5 +18,16 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import java.util.List;
+
 public interface FeatureManager {
+
+    boolean addFeature(Feature feature) throws DeviceManagementException;
+
+    boolean getFeature(String name) throws DeviceManagementException;
+
+    List<Feature> getFeatures() throws DeviceManagementException;
+
+    boolean removeFeature(String name) throws DeviceManagementException;
+
 }

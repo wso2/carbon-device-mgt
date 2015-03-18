@@ -18,9 +18,7 @@
 
 package org.wso2.carbon.device.mgt.common.spi;
 
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.*;
 
 import java.util.List;
 
@@ -36,6 +34,13 @@ public interface DeviceManager {
      * @return  Returns provider type
      */
     String getProviderType();
+
+    /**
+     * Method to return feature manager implementation associated with a particular platform-specific plugin.
+     *
+     * @return  Returns an instance of feature manager
+     */
+    FeatureManager getFeatureManager();
 
     /**
      * Method to enrolling a particular device of type mobile, IoT, etc within CDM.
@@ -127,5 +132,6 @@ public interface DeviceManager {
      * of the device
      */
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
+
 
 }

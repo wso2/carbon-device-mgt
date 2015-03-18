@@ -18,13 +18,10 @@
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
-import org.wso2.carbon.device.mgt.core.config.license.License;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 
 import java.util.List;
 

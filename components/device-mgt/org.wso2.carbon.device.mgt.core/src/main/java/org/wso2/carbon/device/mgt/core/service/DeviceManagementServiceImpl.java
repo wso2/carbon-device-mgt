@@ -18,12 +18,10 @@
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
-import org.wso2.carbon.device.mgt.core.config.license.License;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementException;
-import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 import java.util.List;
@@ -32,6 +30,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public String getProviderType() {
+        return null;
+    }
+
+    @Override
+    public FeatureManager getFeatureManager() {
         return null;
     }
 

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 
 import java.util.List;
@@ -31,6 +32,11 @@ public class TestDeviceManager implements DeviceManager {
     @Override
     public String getProviderType() {
         return TestDeviceManager.DEVICE_TYPE_TEST;
+    }
+
+    @Override
+    public FeatureManager getFeatureManager() {
+        return null;
     }
 
     @Override

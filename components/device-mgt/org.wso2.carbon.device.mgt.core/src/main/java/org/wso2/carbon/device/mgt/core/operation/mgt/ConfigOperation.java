@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+
 import java.util.ArrayList;
 import java.util.List;
 

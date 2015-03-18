@@ -18,7 +18,6 @@
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.List;
 

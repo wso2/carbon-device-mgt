@@ -42,13 +42,13 @@ public class PolicyDAOImpl implements PolicyDAO {
 
 
     @Override
-    public int addPolicy(Policy policy) throws PolicyManagerDAOException {
+    public Policy  addPolicy(Policy policy) throws PolicyManagerDAOException {
         persistPolicy(policy);
-        return policy.getId();
+        return policy;
     }
 
     @Override
-    public int addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException {
+    public Policy addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException {
 
         // First persist the policy to the data base.
         persistPolicy(policy);
@@ -73,12 +73,17 @@ public class PolicyDAOImpl implements PolicyDAO {
             PolicyManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
         }
 
-        return policy.getId();
+        return policy;
 
     }
 
     @Override
-    public int addPolicy(String deviceID, String deviceType, Policy policy) throws PolicyManagerDAOException {
+    public Policy addPolicyToRole(String roleName, Policy policy) throws PolicyManagerDAOException {
+        return null;
+    }
+
+    @Override
+    public Policy addPolicy(String deviceID, String deviceType, Policy policy) throws PolicyManagerDAOException {
 
         // First persist the policy to the data base.
         persistPolicy(policy);
@@ -96,11 +101,11 @@ public class PolicyDAOImpl implements PolicyDAO {
             PolicyManagementDAOUtil.cleanupResources(conn, stmt, generatedKeys);
         }
 
-        return 0;
+        return policy;
     }
 
     @Override
-    public void updatePolicy(int id, Policy policy) throws PolicyManagerDAOException {
+    public Policy updatePolicy(Policy policy) throws PolicyManagerDAOException {
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -114,6 +119,8 @@ public class PolicyDAOImpl implements PolicyDAO {
         } finally {
             PolicyManagementDAOUtil.cleanupResources(conn, stmt, generatedKeys);
         }
+
+        return policy;
     }
 
     @Override
@@ -219,7 +226,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = -1234;
         try {
             conn = this.getConnection();
-            String query = "IINSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID) VALUES (?, ?, ?)";
+            String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(query, stmt.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, policy.getPolicyName());
@@ -276,7 +283,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         }
     }
 
-    public void addProfile(Profile profile) throws PolicyManagerDAOException {
+    public Profile addProfile(Profile profile) throws PolicyManagerDAOException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
@@ -319,6 +326,13 @@ public class PolicyDAOImpl implements PolicyDAO {
         } finally {
             PolicyManagementDAOUtil.cleanupResources(conn, stmt, generatedKeys);
         }
+
+        return profile;
+    }
+
+
+    public Profile updateProfile(Profile profile) throws PolicyManagerDAOException {
+        return profile;
     }
 
     @Override
@@ -395,6 +409,12 @@ public class PolicyDAOImpl implements PolicyDAO {
         } finally {
             PolicyManagementDAOUtil.cleanupResources(conn, stmt, generatedKeys);
         }
+        return feature;
+    }
+
+
+    @Override
+    public Feature updateFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException {
         return feature;
     }
 

@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
+
+
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.sql.Timestamp;

@@ -21,11 +21,13 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationService;
+import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
+import org.wso2.carbon.policy.mgt.core.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyManagementConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
+import org.wso2.carbon.policy.mgt.core.service.PolicyManagementService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -37,7 +39,7 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setRealmService"
  * unbind="unsetRealmService"
  * @scr.reference name="org.wso2.carbon.devicemgt.policy.information.point.default"
- * interface="org.wso2.carbon.policy.mgt.common.PolicyInformationService"
+ * interface="org.wso2.carbon.policy.mgt.common.PolicyInformationPoint"
  * cardinality="1..1"
  * policy="dynamic"
  * bind="setPIPService"
@@ -55,6 +57,9 @@ public class PolicyManagementServiceComponent {
             PolicyManagementConfig config = PolicyConfigurationManager.getInstance().getPolicyManagementConfig();
             DataSourceConfig dsConfig = config.getPolicyManagementRepository().getDataSourceConfig();
             PolicyManagementDAOFactory.init(dsConfig);
+
+            componentContext.getBundleContext().registerService(
+                    PolicyManager.class.getName(), new PolicyManagementService(), null);
 
         } catch (Throwable t) {
             String msg = "Error occurred while initializing the Policy management core.";
@@ -89,13 +94,13 @@ public class PolicyManagementServiceComponent {
     }
 
 
-    protected void setPIPService(PolicyInformationService policyInformationService) {
+    protected void setPIPService(PolicyInformationPoint policyInformationService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Policy Information Service");
         }
     }
 
-    protected void unsetPIPService(PolicyInformationService policyInformationService) {
+    protected void unsetPIPService(PolicyInformationPoint policyInformationService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting Policy Information Service");
         }

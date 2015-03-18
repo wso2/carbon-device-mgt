@@ -22,7 +22,7 @@ package org.wso2.carbon.policy.mgt.common;
  * This interface defines the policy management which should be implemented by the plugins
  */
 
-public interface PolicyAdministratorService {
+public interface PolicyAdministratorPoint {
 
     /**
      * This method adds a policy to the platform
@@ -31,7 +31,10 @@ public interface PolicyAdministratorService {
      * @return primary key (generated key)
      */
 
-    int addPolicy(Policy policy);
+    Policy addPolicy(Policy policy) throws PolicyManagementException;
+
+
+    Policy updatePolicy(Policy policy) throws PolicyManagementException;
 
     /**
      * This method adds a policy per device which should be implemented by the related plugins.
@@ -42,17 +45,7 @@ public interface PolicyAdministratorService {
      * @return primary key (generated key)
      */
 
-    int addPolicyToDevice(String deviceId, String deviceType, Policy policy) throws FeatureManagementException, PolicyManagementException;
-
-    /**
-     * This method adds a policy to device type by the related device type plugins.
-     *
-     * @param deviceType
-     * @param policy
-     * @return primary key (generated key)
-     */
-
-    int addPolicyToDeviceType(String deviceType, Policy policy) throws FeatureManagementException, PolicyManagementException;
+    Policy addPolicyToDevice(String deviceId, String deviceType, Policy policy) throws FeatureManagementException, PolicyManagementException;
 
     /**
      * This method adds the policy to specific role.
@@ -61,7 +54,7 @@ public interface PolicyAdministratorService {
      * @param policy
      * @return primary key (generated key)
      */
-    int addPolicyToRole(String roleName, Policy policy) throws FeatureManagementException, PolicyManagementException;
+    Policy addPolicyToRole(String roleName, Policy policy) throws FeatureManagementException, PolicyManagementException;
 
     /**
      * This method returns the policy of whole platform
@@ -119,7 +112,7 @@ public interface PolicyAdministratorService {
      * @return
      * @throws PolicyManagementException
      */
-    boolean isPolicyUsed(String deviceId, String deviceType) throws PolicyManagementException;
+    boolean isPolicyApplied(String deviceId, String deviceType) throws PolicyManagementException;
 
 
     /**
@@ -135,7 +128,16 @@ public interface PolicyAdministratorService {
      * @param profile
      * @throws PolicyManagementException
      */
-    void addProfile(Profile profile) throws PolicyManagementException;
+    Profile addProfile(Profile profile) throws PolicyManagementException;
 
-    void deleteProfile(int profileId) throws PolicyManagementException;
+    boolean deleteProfile(int profileId) throws PolicyManagementException;
+
+    Profile updateProfile(Profile profile) throws PolicyManagementException;
+
+    Feature addFeature(Feature feature) throws  FeatureManagementException;
+
+    Feature updateFeature(Feature feature) throws  FeatureManagementException;
+
+    void deleteFeature(int featureId)   throws  FeatureManagementException;
+
 }

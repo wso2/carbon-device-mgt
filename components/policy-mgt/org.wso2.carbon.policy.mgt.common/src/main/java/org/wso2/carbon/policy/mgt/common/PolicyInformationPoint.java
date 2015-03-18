@@ -19,26 +19,30 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.core.dto.Device;
+
 import java.util.List;
 
 /**
  * This will be used retrieve data database. This interface has to be implemented by PIP. PIP will be plug-able.
  */
-public interface PolicyInformationService {
+public interface PolicyInformationPoint {
 
     /**
      * This method will return the data related Device, Some of the device data will provided in the initial pipDeviceData object such as
      * device id, device time and location, Other data such as roles, owned users and ownership type will be filled by this method.
-     * @param pipDeviceData device data.
+     * @param  deviceIdentifier device data.
+     * @return   PIPDeviceData
      */
-    void getDeviceData(PIPDeviceData pipDeviceData);
+    PIPDeviceData getDeviceData(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
     /**
      * This method will retrieve the policies related given device Data.
      * @param pipDeviceData
      * @return
      */
-    List<Policy> getRelatedPolicies(PIPDeviceData pipDeviceData);
+    List<Policy> getRelatedPolicies(PIPDeviceData pipDeviceData) throws PolicyManagementException;
 
     /**
      * This is will retrieve the features related to device type. This feature list will be used for dynamically
@@ -46,5 +50,5 @@ public interface PolicyInformationService {
      * @param deviceType
      * @return
      */
-    List<Feature> getRelatedFeatures(String deviceType);
+    List<Feature> getRelatedFeatures(String deviceType) throws FeatureManagementException;
 }

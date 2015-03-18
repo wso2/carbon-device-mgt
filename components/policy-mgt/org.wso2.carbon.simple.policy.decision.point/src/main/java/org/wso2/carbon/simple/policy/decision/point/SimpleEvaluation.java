@@ -16,24 +16,16 @@
 * under the License.
 */
 
+
 package org.wso2.carbon.simple.policy.decision.point;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.PIPDeviceData;
 import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 
-import java.util.List;
+public interface SimpleEvaluation  {
 
-public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
-    @Override
-    public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) {
-        return null;
-    }
+    void sortPolicy(Policy policy) throws PolicyEvaluationException;
 
-    @Override
-    public List<Feature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) {
-        return null;
-    }
+    Policy getEffectivePolicy(PIPDeviceData pipDeviceData)  throws PolicyEvaluationException;
+
 }

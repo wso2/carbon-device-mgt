@@ -18,22 +18,30 @@
 
 package org.wso2.carbon.simple.policy.decision.point;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Feature;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.policy.mgt.common.PIPDeviceData;
 import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
+import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 
-import java.util.List;
+public class SimpleEvaluationImpl implements SimpleEvaluation {
 
-public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
-    @Override
-    public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) {
-        return null;
+    private static final Log log = LogFactory.getLog(SimpleEvaluationImpl.class);
+
+    PolicyDAOImpl policyDAO;
+
+
+    public SimpleEvaluationImpl() {
+        policyDAO = new PolicyDAOImpl();
     }
 
     @Override
-    public List<Feature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) {
+    public void sortPolicy(Policy policy) throws PolicyEvaluationException {
+
+    }
+
+    @Override
+    public Policy getEffectivePolicy(PIPDeviceData pipDeviceData) throws PolicyEvaluationException {
         return null;
     }
 }

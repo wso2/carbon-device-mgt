@@ -27,13 +27,15 @@ import java.util.List;
 
 public interface PolicyDAO {
 
-    int addPolicy(Policy policy) throws PolicyManagerDAOException;
+    Policy addPolicy(Policy policy) throws PolicyManagerDAOException;
 
-    int addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException;
+    Policy addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException;
 
-    int addPolicy(String deviceID, String deviceType, Policy policy) throws PolicyManagerDAOException;
+    Policy addPolicyToRole(String roleName, Policy policy) throws PolicyManagerDAOException;
 
-    void updatePolicy(int id, Policy policy) throws PolicyManagerDAOException;
+    Policy addPolicy(String deviceID, String deviceType, Policy policy) throws PolicyManagerDAOException;
+
+    Policy updatePolicy(Policy policy) throws PolicyManagerDAOException;
 
     Policy getPolicy() throws PolicyManagerDAOException;
 
@@ -43,7 +45,9 @@ public interface PolicyDAO {
 
     void deletePolicy(Policy policy) throws PolicyManagerDAOException;
 
-    void addProfile(Profile profile) throws PolicyManagerDAOException;
+    Profile addProfile(Profile profile) throws PolicyManagerDAOException;
+
+    Profile updateProfile(Profile profile) throws PolicyManagerDAOException;
 
     void deleteProfile(Profile profile) throws PolicyManagerDAOException;
 
@@ -60,4 +64,6 @@ public interface PolicyDAO {
     void deleteFeaturesOfProfile(Profile profile) throws PolicyManagerDAOException;
 
     Feature addFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;
+
+    Feature updateFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;
 }

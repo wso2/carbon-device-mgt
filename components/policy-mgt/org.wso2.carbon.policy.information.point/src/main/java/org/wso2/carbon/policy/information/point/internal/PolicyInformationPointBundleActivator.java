@@ -24,7 +24,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.wso2.carbon.policy.information.point.PolicyInformationServiceImpl;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationService;
+import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 
 public class PolicyInformationPointBundleActivator implements BundleActivator {
 
@@ -38,7 +38,7 @@ public class PolicyInformationPointBundleActivator implements BundleActivator {
                 log.debug("Activating Policy information Point bundle.");
             }
 
-            pipServiceRegRef = bundleContext.registerService(PolicyInformationService.class.getName(),
+            pipServiceRegRef = bundleContext.registerService(PolicyInformationPoint.class.getName(),
                     new PolicyInformationServiceImpl(), null);
 
             if (log.isDebugEnabled()) {

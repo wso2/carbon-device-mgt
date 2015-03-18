@@ -19,26 +19,28 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+
 import java.util.List;
 
 /**
  * This is the interface which will be used to create plug-able policy decision points.
  */
-public interface PolicyEvaluationService {
+public interface PolicyEvaluationPoint {
 
 
     /**
      * This method returns the effective policy from the list.
-     * @param pipDeviceData  device  information.
+     * @param deviceIdentifier  device  information.
      * @return returns the effective policy.
      */
-    Policy getEffectivePolicy(PIPDeviceData pipDeviceData);
+    Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier);
 
 
     /**
      * This class will return the effective feature set from the list.
-     * @param pipDeviceData   device  information.
+     * @param deviceIdentifier   device  information.
      * @return   returns the effective feature set.
      */
-    List<Feature> getEffectiveFeatures(PIPDeviceData pipDeviceData);
+    List<Feature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier);
 }

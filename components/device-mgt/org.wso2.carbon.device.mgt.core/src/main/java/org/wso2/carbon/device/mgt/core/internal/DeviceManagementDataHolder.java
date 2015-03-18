@@ -36,14 +36,6 @@ public class DeviceManagementDataHolder {
     private RegistryService registryService;
     private LicenseConfig licenseConfig;
 
-    public static EmailVerifcationSubscriber getEmailVerificationSubscriber() {
-        return emailVerificationSubscriber;
-    }
-
-    public static void setEmailVerificationSubscriber(EmailVerifcationSubscriber emailVerificationSubscriber) {
-        DeviceManagementDataHolder.emailVerificationSubscriber = emailVerificationSubscriber;
-    }
-
     private static EmailVerifcationSubscriber emailVerificationSubscriber;
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 

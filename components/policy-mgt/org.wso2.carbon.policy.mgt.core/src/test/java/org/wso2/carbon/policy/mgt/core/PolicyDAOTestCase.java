@@ -31,8 +31,10 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.common.DBTypes;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfiguration;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfigurations;
+import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
+import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 import org.wso2.carbon.policy.mgt.core.util.FeatureCreator;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
@@ -144,9 +146,9 @@ public class PolicyDAOTestCase {
     }
 
     @Test
-    public void addFeatures() throws PolicyManagerDAOException, PolicyManagementException, FeatureManagementException {
+    public void addFeatures() throws FeatureManagerDAOException {
 
-        PolicyDAOImpl policyDAO = new PolicyDAOImpl();
+        FeatureDAOImpl policyDAO = new FeatureDAOImpl();
         List<Feature> featureList = FeatureCreator.getFeatureList();
         for (Feature feature : featureList) {
             policyDAO.addFeature(feature);

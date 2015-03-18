@@ -45,7 +45,13 @@ public interface PolicyDAO {
 
     void deletePolicy(Policy policy) throws PolicyManagerDAOException;
 
-    Profile addProfile(Profile profile) throws PolicyManagerDAOException;
+
+
+
+
+
+
+ /*   Profile addProfile(Profile profile) throws PolicyManagerDAOException;
 
     Profile updateProfile(Profile profile) throws PolicyManagerDAOException;
 
@@ -54,6 +60,9 @@ public interface PolicyDAO {
     List<Profile> getAllProfiles() throws PolicyManagerDAOException;
 
     List<Profile> getProfilesOfDeviceType(String deviceType) throws PolicyManagerDAOException;
+
+
+
 
     List<Feature> getAllFeatures() throws PolicyManagerDAOException;
 
@@ -65,5 +74,5 @@ public interface PolicyDAO {
 
     Feature addFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;
 
-    Feature updateFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;
+    Feature updateFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;*/
 }

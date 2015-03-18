@@ -26,16 +26,25 @@ import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
+import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
+import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
+import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
 
 public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     private static final Log log = LogFactory.getLog(PolicyAdministratorPointImpl.class);
+
     PolicyDAOImpl policyDAO;
+    FeatureDAOImpl featureDAO;
+    ProfileDAOImpl profileDAO;
 
     public PolicyAdministratorPointImpl() {
         policyDAO = new PolicyDAOImpl();
+        featureDAO = new FeatureDAOImpl();
+        profileDAO = new ProfileDAOImpl();
     }
 
     @Override
@@ -128,8 +137,8 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Profile addProfile(Profile profile) throws PolicyManagementException {
         try {
-            profile = policyDAO.addProfile(profile);
-        } catch (PolicyManagerDAOException e) {
+            profile = profileDAO.addProfile(profile);
+        } catch (ProfileManagerDAOException e) {
             String msg = "Error occurred while persisting the policy.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -146,8 +155,8 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Profile updateProfile(Profile profile) throws PolicyManagementException {
         try {
-            profile = policyDAO.updateProfile(profile);
-        } catch (PolicyManagerDAOException e) {
+            profile = profileDAO.updateProfile(profile);
+        } catch (ProfileManagerDAOException e) {
             String msg = "Error occurred while persisting the profile.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -159,12 +168,8 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
         try {
-            feature = policyDAO.addFeature(feature);
-        } catch (FeatureManagementException e) {
-            String msg = "Error occurred while persisting the feature.";
-            log.error(msg, e);
-            throw new FeatureManagementException(msg, e);
-        } catch (PolicyManagerDAOException e) {
+            feature = featureDAO.addFeature(feature);
+        } catch (FeatureManagerDAOException e) {
             String msg = "Error occurred while persisting the feature.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
@@ -176,12 +181,8 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Feature updateFeature(Feature feature) throws FeatureManagementException {
         try {
-            feature = policyDAO.updateFeature(feature);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while persisting the feature.";
-            log.error(msg, e);
-            throw new FeatureManagementException(msg, e);
-        } catch (FeatureManagementException e) {
+            feature = featureDAO.updateFeature(feature);
+        } catch (FeatureManagerDAOException e) {
             String msg = "Error occurred while persisting the feature.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);

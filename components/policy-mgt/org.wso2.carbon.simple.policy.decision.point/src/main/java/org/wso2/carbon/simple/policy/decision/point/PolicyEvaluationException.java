@@ -20,29 +20,29 @@ package org.wso2.carbon.simple.policy.decision.point;
 
 public class PolicyEvaluationException extends Exception {
 
-    private String policyErrorMessage;
+    private String policyEvaluationErrorMessage;
 
-    public String getPolicyErrorMessage() {
-        return policyErrorMessage;
+    public String getPolicyEvaluationErrorMessage() {
+        return policyEvaluationErrorMessage;
     }
 
-    public void setPolicyErrorMessage(String policyErrorMessage) {
-        this.policyErrorMessage = policyErrorMessage;
+    public void setPolicyEvaluationErrorMessage(String policyEvaluationErrorMessage) {
+        this.policyEvaluationErrorMessage = policyEvaluationErrorMessage;
     }
 
     public PolicyEvaluationException(String message) {
         super(message);
-        setPolicyErrorMessage(message);
+        setPolicyEvaluationErrorMessage(message);
     }
 
     public PolicyEvaluationException(String message, Exception ex) {
         super(message, ex);
-        setPolicyErrorMessage(message);
+        setPolicyEvaluationErrorMessage(message);
     }
 
     public PolicyEvaluationException(String message, Throwable cause) {
         super(message, cause);
-        setPolicyErrorMessage(message);
+        setPolicyEvaluationErrorMessage(message);
     }
 
     public PolicyEvaluationException() {

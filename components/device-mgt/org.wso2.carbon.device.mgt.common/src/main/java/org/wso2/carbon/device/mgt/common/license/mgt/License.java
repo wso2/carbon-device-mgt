@@ -18,7 +18,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core.config.license;
+package org.wso2.carbon.device.mgt.common.license.mgt;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

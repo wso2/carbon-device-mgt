@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.license.mgt;
+package org.wso2.carbon.device.mgt.common.license.mgt;
 
 import org.wso2.carbon.device.mgt.core.config.license.License;
 

@@ -15,11 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.mgt.core.operation.mgt;
+package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-public class OperationExecutionException extends Exception {
+public class OperationManagementException extends Exception {
 
-    private static final long serialVersionUID = -3151279311929070299L;
+    private static final long serialVersionUID = -3151279311929070298L;
 
     private String errorMessage;
 
@@ -31,26 +31,26 @@ public class OperationExecutionException extends Exception {
         this.errorMessage = errorMessage;
     }
 
-    public OperationExecutionException(String msg, Exception nestedEx) {
+    public OperationManagementException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
         setErrorMessage(msg);
     }
 
-    public OperationExecutionException(String message, Throwable cause) {
+    public OperationManagementException(String message, Throwable cause) {
         super(message, cause);
         setErrorMessage(message);
     }
 
-    public OperationExecutionException(String msg) {
+    public OperationManagementException(String msg) {
         super(msg);
         setErrorMessage(msg);
     }
 
-    public OperationExecutionException() {
+    public OperationManagementException() {
         super();
     }
 
-    public OperationExecutionException(Throwable cause) {
+    public OperationManagementException(Throwable cause) {
         super(cause);
     }
 

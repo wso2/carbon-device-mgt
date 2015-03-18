@@ -35,8 +35,8 @@ public interface OperationManager {
 	 * @throws OperationManagementException If some unusual behaviour is observed while adding the
 	 * operation
 	 */
-	public boolean addOperation(Operation operation, List<DeviceIdentifier> devices)
-			throws OperationManagementException;
+	public boolean addOperation(Operation operation,
+                                List<DeviceIdentifier> devices) throws OperationManagementException;
 
 	/**
 	 * Method to retrieve the list of all operations to a device.
@@ -45,8 +45,7 @@ public interface OperationManager {
 	 * @throws OperationManagementException If some unusual behaviour is observed while fetching the
 	 * operation list.
 	 */
-	public List<Operation> getOperations(DeviceIdentifier deviceId)
-			throws OperationManagementException;
+	public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
 	/**
 	 * Method to retrieve the list of available operations to a device.
@@ -55,15 +54,6 @@ public interface OperationManager {
 	 * @throws OperationManagementException If some unusual behaviour is observed while fetching the
 	 * operation list.
 	 */
-	public List<Operation> getPendingOperations(DeviceIdentifier deviceId)
-			throws OperationManagementException;
-
-	/**
-	 * TODO: Move this into a separate FeatureManager
-	 * @param deviceType - Device type
-	 * @return a list of Feature objects.
-	 * @throws org.wso2.carbon.device.mgt.common.FeatureManagementException
-	 */
-	public List<Feature> getFeatures(String deviceType) throws FeatureManagementException;
+	public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
 }

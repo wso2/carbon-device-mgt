@@ -247,9 +247,4 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         return operationManager.getPendingOperations(deviceId);
     }
 
-    @Override
-    public List<Feature> getFeatures(String deviceType) throws FeatureManagementException {
-        return operationManager.getFeatures(deviceType);
-    }
-
 }

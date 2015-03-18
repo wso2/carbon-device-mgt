@@ -127,9 +127,4 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getPendingOperations(deviceId);
     }
 
-    @Override
-    public List<Feature> getFeatures(String deviceType) throws FeatureManagementException {
-        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getFeatures(deviceType);
-    }
-
 }

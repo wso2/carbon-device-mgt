@@ -85,11 +85,6 @@ public class OperationManagerImpl implements OperationManager {
         return null;
     }
 
-    @Override
-    public List<Feature> getFeatures(String deviceType) throws FeatureManagementException {
-        return null;
-    }
-
     private OperationDAO lookupOperationDAO(Operation operation) {
         if (operation instanceof CommandOperation) {
             return commandOperationDAO;

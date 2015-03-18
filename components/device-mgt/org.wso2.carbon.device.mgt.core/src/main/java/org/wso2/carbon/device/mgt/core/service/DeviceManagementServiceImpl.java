@@ -18,7 +18,7 @@
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.core.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.config.license.License;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementException;

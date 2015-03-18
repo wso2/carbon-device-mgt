@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.device.mgt.core.internal;
 
-import org.wso2.carbon.device.mgt.core.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManager;
 import org.wso2.carbon.registry.core.service.RegistryService;

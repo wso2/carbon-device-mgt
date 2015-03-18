@@ -34,6 +34,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 
 import java.util.ArrayList;
 import java.util.List;

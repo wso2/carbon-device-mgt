@@ -132,5 +132,11 @@ public final class DeviceManagerUtil {
                     deviceType + "'", e);
 		}
 	}
-
+	public static Map<String, String> convertDevicePropertiesToMap(List<Device.Property> properties) {
+		Map<String, String> propertiesMap = new HashMap<String, String>();
+		for (Device.Property prop : properties) {
+			propertiesMap.put(prop.getName(), prop.getValue());
+		}
+		return propertiesMap;
+	}
 }

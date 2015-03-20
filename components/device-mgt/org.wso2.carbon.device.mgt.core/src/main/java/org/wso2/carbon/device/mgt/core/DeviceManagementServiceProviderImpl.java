@@ -18,22 +18,24 @@
 package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.EnrolmentNotifications;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.carbon.device.mgt.core.dto.*;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.dto.Status;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
@@ -188,7 +190,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         List<Device> devicesOfUser = new ArrayList<Device>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO.getDeviceListOfUser(username, tenantId);
+            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO
+                    .getDeviceListOfUser(username, tenantId);
             for (int x = 0; x < devicesList.size(); x++) {
                 org.wso2.carbon.device.mgt.core.dto.Device device = devicesList.get(x);
                 device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
@@ -207,7 +210,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             }
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining devices for user " +
-                                                "'" + username + "'", e);
+                    "'" + username + "'", e);
         }
         return devicesOfUser;
     }
@@ -215,8 +218,14 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public void sendEnrollInvitation(String emailAddress) throws DeviceManagementException {
         EmailMessageProperties emailMessageProperties = new EmailMessageProperties();
-        emailMessageProperties.setSubject("");
-       // EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail();
+        EnrolmentNotifications enrolmentNotifications = DeviceConfigurationManager.getInstance()
+                .getNotificationMessagesConfig()
+                .getEnrolmentNotifications();
+
+        emailMessageProperties.setMailTo(new String[]{emailAddress});
+        emailMessageProperties.setSubject(enrolmentNotifications.getSubject());
+        emailMessageProperties.setMessageBody(enrolmentNotifications.getMessage());
+        EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
     }
 
     @Override
@@ -288,7 +297,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public boolean addOperation(Operation operation,
-                                List<DeviceIdentifier> devices) throws OperationManagementException {
+            List<DeviceIdentifier> devices) throws OperationManagementException {
         return operationManager.addOperation(operation, devices);
     }
 

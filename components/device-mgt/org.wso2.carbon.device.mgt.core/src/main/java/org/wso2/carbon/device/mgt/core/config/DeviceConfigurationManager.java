@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 
@@ -33,42 +34,64 @@ import java.io.File;
  */
 public class DeviceConfigurationManager {
 
-	private DeviceManagementConfig currentDeviceConfig;
-	private static DeviceConfigurationManager deviceConfigManager;
+    private DeviceManagementConfig currentDeviceConfig;
+    private NotificationMessagesConfig notificationMessagesConfig;
+    private static DeviceConfigurationManager deviceConfigManager;
 
-	private static final String deviceMgtConfigXMLPath =
-			CarbonUtils.getCarbonConfigDirPath() + File.separator +
-			DeviceManagementConstants.DataSourceProperties.DEVICE_CONFIG_XML_NAME;
+    private static final String deviceMgtConfigXMLPath =
+            CarbonUtils.getCarbonConfigDirPath() + File.separator +
+                    DeviceManagementConstants.DataSourceProperties.DEVICE_CONFIG_XML_NAME;
+    private static final String notificationMessagesConfigXMLPath =
+            CarbonUtils.getCarbonConfigDirPath() + File.separator +
+                    DeviceManagementConstants.NotificationProperties.NOTIFICATION_CONFIG_FILE;
 
-	public static DeviceConfigurationManager getInstance() {
-		if (deviceConfigManager == null) {
-			synchronized (DeviceConfigurationManager.class) {
-				if (deviceConfigManager == null) {
-					deviceConfigManager = new DeviceConfigurationManager();
-				}
-			}
-		}
-		return deviceConfigManager;
-	}
+    public static DeviceConfigurationManager getInstance() {
+        if (deviceConfigManager == null) {
+            synchronized (DeviceConfigurationManager.class) {
+                if (deviceConfigManager == null) {
+                    deviceConfigManager = new DeviceConfigurationManager();
+                }
+            }
+        }
+        return deviceConfigManager;
+    }
 
-	public synchronized void initConfig() throws DeviceManagementException {
+    public synchronized void initConfig() throws DeviceManagementException {
 
-		//catch generic exception.if any exception occurs wrap and throw DeviceManagementException
-		try {
-			File deviceMgtConfig = new File(deviceMgtConfigXMLPath);
-			Document doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
+        //catch generic exception.if any exception occurs wrap and throw DeviceManagementException
+        try {
+            File deviceMgtConfig = new File(deviceMgtConfigXMLPath);
+            Document doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
 
             /* Un-marshaling Device Management configuration */
-			JAXBContext cdmContext = JAXBContext.newInstance(DeviceManagementConfig.class);
-			Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-			this.currentDeviceConfig = (DeviceManagementConfig) unmarshaller.unmarshal(doc);
-		} catch (Exception e) {
-			throw new DeviceManagementException("Error occurred while initializing RSS config", e);
-		}
-	}
+            JAXBContext cdmContext = JAXBContext.newInstance(DeviceManagementConfig.class);
+            Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
+            this.currentDeviceConfig = (DeviceManagementConfig) unmarshaller.unmarshal(doc);
+        } catch (JAXBException jaxbEx) {
+            throw new DeviceManagementException("Error occurred while initializing Data Source config", jaxbEx);
+        }
 
-	public DeviceManagementConfig getDeviceManagementConfig() {
-		return currentDeviceConfig;
-	}
+        try {
+            File notificationConfig = new File(notificationMessagesConfigXMLPath);
+            Document doc = DeviceManagerUtil.convertToDocument(notificationConfig);
+
+            /* Un-marshaling Notifications Management configuration */
+            JAXBContext notificationContext = JAXBContext.newInstance(NotificationMessagesConfig.class);
+            Unmarshaller unmarshaller = notificationContext.createUnmarshaller();
+            this.notificationMessagesConfig = (NotificationMessagesConfig) unmarshaller.unmarshal(doc);
+        }catch(JAXBException jaxbEx){
+            throw new DeviceManagementException("Error occurred while initializing Notification settings config",
+                    jaxbEx);
+        }
+
+    }
+
+    public DeviceManagementConfig getDeviceManagementConfig() {
+        return currentDeviceConfig;
+    }
+
+    public NotificationMessagesConfig getNotificationMessagesConfig() {
+        return notificationMessagesConfig;
+    }
 
 }

@@ -71,4 +71,10 @@ public final class DeviceManagementConstants {
         public static final String LICENSE_REGISTRY_KEY = "license";
     }
 
+    public static final class NotificationProperties {
+        private NotificationProperties() {
+            throw new AssertionError();
+        }
+        public static final String NOTIFICATION_CONFIG_FILE = "notification-messages.xml";
+    }
 }

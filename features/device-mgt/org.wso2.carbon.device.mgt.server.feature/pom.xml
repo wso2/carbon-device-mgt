@@ -44,6 +44,10 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.email.verification</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -97,6 +101,9 @@
                                 <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.commons:org.wso2.carbon.email.verification
                                 </bundleDef>
                             </bundles>
                             <importFeatures>

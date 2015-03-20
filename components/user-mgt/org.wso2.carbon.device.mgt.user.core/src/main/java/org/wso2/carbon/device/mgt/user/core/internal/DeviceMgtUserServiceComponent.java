@@ -29,7 +29,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 
 
 /**
- * @scr.component name="org.wso2.carbon.device.manager" immediate="true"
+ * @scr.component name="org.wso2.carbon.device.usermanager" immediate="true"
  * @scr.reference name="user.realmservice.default"
  * interface="org.wso2.carbon.user.core.service.RealmService"
  * cardinality="1..1"

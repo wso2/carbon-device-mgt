@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
@@ -40,6 +42,8 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +54,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     private DeviceManagementRepository pluginRepository;
     private OperationManager operationManager;
     private LicenseManager licenseManager;
+
+    private static Log log = LogFactory.getLog(DeviceManagementServiceProviderImpl.class);
 
     public DeviceManagementServiceProviderImpl(DeviceManagementRepository pluginRepository) {
         this.pluginRepository = pluginRepository;
@@ -216,16 +222,45 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public void sendEnrollInvitation(String emailAddress) throws DeviceManagementException {
+    public void sendEnrollInvitation(String title, String userName, String emailAddress, String enrolUrl) throws
+            DeviceManagementException {
+
         EmailMessageProperties emailMessageProperties = new EmailMessageProperties();
         EnrolmentNotifications enrolmentNotifications = DeviceConfigurationManager.getInstance()
-                .getNotificationMessagesConfig()
-                .getEnrolmentNotifications();
+                .getNotificationMessagesConfig().getEnrolmentNotifications();
 
-        emailMessageProperties.setMailTo(new String[]{emailAddress});
+        emailMessageProperties.setMailTo(new String[] { emailAddress });
         emailMessageProperties.setSubject(enrolmentNotifications.getSubject());
-        emailMessageProperties.setMessageBody(enrolmentNotifications.getMessage());
+
+        String messageHeader = enrolmentNotifications.getHeader();
+        String messageBody = enrolmentNotifications.getBody();
+        String messageFooter = enrolmentNotifications.getFooter();
+
+        StringBuilder messageBuilder = new StringBuilder();
+
+        try {
+            messageHeader = messageHeader.replaceAll("\\{title\\}",
+                    URLEncoder.encode(title, "UTF-8"));
+
+            messageHeader = messageHeader.replaceAll("\\{user-name\\}",
+                    URLEncoder.encode(userName, "UTF-8"));
+
+            messageBody = messageBody+ System.getProperty("line.separator") +  enrolmentNotifications.getUrl()
+                    .replaceAll("\\{downloadUrl\\}", URLEncoder.encode(enrolUrl, "UTF-8"));
+
+            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
+                    .append(System.getProperty("line.separator"));
+
+            messageBuilder.append(messageBody).append(System.getProperty("line.separator"))
+                    .append(System.getProperty("line.separator")).append(messageFooter);
+        } catch (IOException ioEx) {
+            String errorMsg = "Error replacing tags in email template" + title;
+            log.error(errorMsg, ioEx);
+            throw new DeviceManagementException(errorMsg, ioEx);
+        }
+        emailMessageProperties.setMessageBody(messageBuilder.toString());
         EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
+
     }
 
     @Override

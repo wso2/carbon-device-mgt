@@ -26,7 +26,6 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 
 import java.util.List;
 
@@ -87,8 +86,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public void sendEnrollInvitation(String emailAddress) throws DeviceManagementException {
-        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().sendEnrollInvitation(emailAddress);
+    public void sendEnrollInvitation(String title, String userName, String emailAddress, String enrolUrl)
+            throws DeviceManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                .sendEnrollInvitation(title, userName, emailAddress, enrolUrl);
     }
 
     @Override

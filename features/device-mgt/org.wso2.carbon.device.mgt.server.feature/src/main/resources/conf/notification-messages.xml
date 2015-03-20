@@ -20,7 +20,14 @@
 
 <Notifications>
     <EnrolmentNotifications>
-            <message>Please enroll your device</message>
-            <subject>Enroll your device</subject>
+            <Header>Dear {title} {user-name},</Header>
+            <Body>Please go to the following url and enrol your device</Body>
+            <Url>{downloadUrl}</Url>
+            <Footer>
+ Best Regards,
+ WSO2 Carbon Team
+ http://www.wso2.com
+            </Footer>
+            <Subject>Enrol your device</Subject>
     </EnrolmentNotifications>
 </Notifications>

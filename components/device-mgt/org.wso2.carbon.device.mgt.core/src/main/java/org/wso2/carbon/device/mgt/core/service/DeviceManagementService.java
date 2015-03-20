@@ -38,6 +38,6 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
 
     List<Device> getDeviceListOfUser(String username) throws DeviceManagementException;
 
-    void sendEnrollInvitation(String emailAddress) throws DeviceManagementException;
+    void sendEnrollInvitation(String title, String userName, String emailAddress, String enrolUrl) throws DeviceManagementException;
 
 }

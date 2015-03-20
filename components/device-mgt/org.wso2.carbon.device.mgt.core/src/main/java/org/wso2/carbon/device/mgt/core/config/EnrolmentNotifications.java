@@ -24,24 +24,52 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "EnrolmentNotifications")
 public class EnrolmentNotifications {
 
-    private String message;
+    private String header;
+    private String body;
+    private String footer;
     private String subject;
+    private String url;
 
-    @XmlElement(name = "message", required = true)
-    public String getMessage() {
-        return message;
+    @XmlElement(name = "Header", required = true)
+    public String getHeader() {
+        return header;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setHeader(String header) {
+        this.header = header;
     }
 
-    @XmlElement(name = "subject", required = true)
+    @XmlElement(name = "Body", required = true)
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    @XmlElement(name = "Footer", required = true)
+    public String getFooter() {
+        return footer;
+    }
+
+    public void setFooter(String footer) {
+        this.footer = footer;
+    }
+    @XmlElement(name = "Subject", required = true)
     public String getSubject() {
         return subject;
     }
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+    @XmlElement(name = "Url", required = true)
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

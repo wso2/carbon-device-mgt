@@ -24,7 +24,7 @@ public interface FeatureManager {
 
     boolean addFeature(Feature feature) throws DeviceManagementException;
 
-    boolean getFeature(String name) throws DeviceManagementException;
+    Feature getFeature(String name) throws DeviceManagementException;
 
     List<Feature> getFeatures() throws DeviceManagementException;
 

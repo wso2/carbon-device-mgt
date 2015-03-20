@@ -17,7 +17,10 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -70,7 +73,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public List<Device> getAllDevices() throws DeviceManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getAllDevices();
     }
 
     @Override
@@ -78,9 +81,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getAllDevices(type);
     }
 
-    @Override
     public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDeviceListOfUser(username);
     }
 
     @Override
@@ -125,11 +127,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Override
     public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getPendingOperations(deviceId);
-    }
-
-    @Override
-    public List<Feature> getFeatures(String deviceType) throws FeatureManagementException {
-        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getFeatures(deviceType);
     }
 
 }

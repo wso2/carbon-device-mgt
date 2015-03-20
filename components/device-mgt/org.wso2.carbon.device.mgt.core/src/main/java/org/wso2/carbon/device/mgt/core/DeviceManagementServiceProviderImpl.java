@@ -18,6 +18,7 @@
 package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
@@ -25,8 +26,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.dto.Status;
+import org.wso2.carbon.device.mgt.core.dto.*;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
@@ -35,6 +35,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +129,29 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public List<Device> getAllDevices() throws DeviceManagementException {
-        return null;
+        List<Device> convertedDevicesList = new ArrayList<Device>();
+        try {
+            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO.getDevices();
+            for (int x = 0; x < devicesList.size(); x++) {
+                org.wso2.carbon.device.mgt.core.dto.Device device = devicesList.get(x);
+                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
+                DeviceManager dms =
+                        this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
+                DeviceType deviceType = this.deviceTypeDAO.getDeviceType(device.getDeviceTypeId());
+                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, deviceType);
+                DeviceIdentifier deviceIdentifier =
+                        DeviceManagementDAOUtil.createDeviceIdentifier(device, deviceType);
+                Device dmsDevice = dms.getDevice(deviceIdentifier);
+                if (dmsDevice != null) {
+                    convertedDevice.setProperties(dmsDevice.getProperties());
+                    convertedDevice.setFeatures(dmsDevice.getFeatures());
+                }
+                convertedDevicesList.add(convertedDevice);
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining devices all devices", e);
+        }
+        return convertedDevicesList;
     }
 
     @Override
@@ -161,7 +184,31 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException {
-        return null;
+        List<Device> devicesOfUser = new ArrayList<Device>();
+        try {
+            int tenantId = DeviceManagerUtil.getTenantId();
+            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO.getDeviceListOfUser(username, tenantId);
+            for (int x = 0; x < devicesList.size(); x++) {
+                org.wso2.carbon.device.mgt.core.dto.Device device = devicesList.get(x);
+                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
+                DeviceManager dms =
+                        this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
+                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(device.getDeviceIdentificationId());
+                deviceIdentifier.setType(device.getDeviceType().getName());
+                Device dmsDevice = dms.getDevice(deviceIdentifier);
+                if (dmsDevice != null) {
+                    convertedDevice.setProperties(dmsDevice.getProperties());
+                    convertedDevice.setFeatures(dmsDevice.getFeatures());
+                }
+                devicesOfUser.add(convertedDevice);
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining devices for user " +
+                                                "'" + username + "'", e);
+        }
+        return devicesOfUser;
     }
 
     @Override
@@ -245,11 +292,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         return operationManager.getPendingOperations(deviceId);
-    }
-
-    @Override
-    public List<Feature> getFeatures(String deviceType) throws FeatureManagementException {
-        return operationManager.getFeatures(deviceType);
     }
 
 }

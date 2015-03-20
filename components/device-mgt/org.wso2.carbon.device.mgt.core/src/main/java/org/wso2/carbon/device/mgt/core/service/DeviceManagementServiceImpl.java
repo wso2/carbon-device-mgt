@@ -17,7 +17,10 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -39,66 +42,65 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-	public boolean enrollDevice(Device device) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().enrollDevice(device);
-	}
+    public boolean enrollDevice(Device device) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().enrollDevice(device);
+    }
 
-	@Override
-	public boolean modifyEnrollment(Device device) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().modifyEnrollment(device);
-	}
+    @Override
+    public boolean modifyEnrollment(Device device) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().modifyEnrollment(device);
+    }
 
-	@Override
-	public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().disenrollDevice(deviceId);
-	}
+    @Override
+    public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().disenrollDevice(deviceId);
+    }
 
-	@Override
-	public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().isEnrolled(deviceId);
-	}
+    @Override
+    public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().isEnrolled(deviceId);
+    }
 
-	@Override
-	public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().isActive(deviceId);
-	}
+    @Override
+    public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().isActive(deviceId);
+    }
 
-	@Override
-	public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().setActive(deviceId, status);
-	}
+    @Override
+    public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().setActive(deviceId, status);
+    }
 
     @Override
     public List<Device> getAllDevices() throws DeviceManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getAllDevices();
     }
 
     @Override
-	public List<Device> getAllDevices(String type) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getAllDevices(type);
-	}
+    public List<Device> getAllDevices(String type) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getAllDevices(type);
+    }
 
-    @Override
-    public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException{
-        return null;
+    public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDeviceListOfUser(username);
     }
 
     @Override
-	public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
-			throws DeviceManagementException {
+    public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
+            throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId);
-	}
+    }
 
-	@Override
-	public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().updateDeviceInfo(device);
-	}
+    @Override
+    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().updateDeviceInfo(device);
+    }
 
-	@Override
-	public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
-		return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().setOwnership(deviceId,
+    @Override
+    public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().setOwnership(deviceId,
                 ownershipType);
-	}
+    }
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
@@ -113,7 +115,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public boolean addOperation(Operation operation,
-                                List<DeviceIdentifier> devices) throws OperationManagementException {
+            List<DeviceIdentifier> devices) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, devices);
     }
 

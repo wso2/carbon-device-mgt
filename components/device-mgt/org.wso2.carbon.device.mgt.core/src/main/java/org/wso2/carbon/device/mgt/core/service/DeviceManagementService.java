@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -32,6 +33,8 @@ import java.util.List;
 public interface DeviceManagementService extends DeviceManager, LicenseManager, OperationManager {
 
     List<Device> getAllDevices(String type) throws DeviceManagementException;
+
+    List<Device> getAllDevices() throws DeviceManagementException;
 
     List<Device> getDeviceListOfUser(String username) throws DeviceManagementException;
 

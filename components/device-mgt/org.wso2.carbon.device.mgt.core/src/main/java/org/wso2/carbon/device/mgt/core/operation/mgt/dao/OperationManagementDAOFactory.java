@@ -59,6 +59,9 @@ public class OperationManagementDAOFactory {
     public static void init(DataSource dtSource) {
         dataSource = dtSource;
     }
+    public static void init(DataSourceConfig config) {
+        dataSource = resolveDataSource(config);
+    }
 
     public static void beginTransaction() throws OperationManagementDAOException {
         try {

@@ -62,8 +62,10 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public FeatureManager getFeatureManager() {
-        return null;
+    public FeatureManager getFeatureManager(String type) {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementProvider(type);
+        return dms.getFeatureManager();
     }
 
     @Override

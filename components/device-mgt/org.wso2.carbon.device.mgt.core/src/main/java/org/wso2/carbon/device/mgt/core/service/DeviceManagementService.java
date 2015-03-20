@@ -38,4 +38,6 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
 
     List<Device> getDeviceListOfUser(String username) throws DeviceManagementException;
 
+
+
 }

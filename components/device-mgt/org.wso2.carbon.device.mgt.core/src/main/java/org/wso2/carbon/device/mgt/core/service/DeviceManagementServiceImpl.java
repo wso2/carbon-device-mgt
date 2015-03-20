@@ -70,7 +70,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public List<Device> getAllDevices() throws DeviceManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getAllDevices();
     }
 
     @Override
@@ -80,11 +80,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException{
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDeviceListOfUser(username);
     }
 
-    @Override
-	public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
+    @Override public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
 			throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId);
 	}

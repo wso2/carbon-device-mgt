@@ -22,21 +22,22 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -93,6 +94,8 @@ public class DeviceManagementServiceComponent {
 			LicenseManager licenseManager = new LicenseManagerImpl();
 			DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
 			DeviceManagementDataHolder.getInstance().setLicenseConfig(licenseConfig);
+
+			OperationManagementDAOFactory.init(dsConfig);
 
             /* If -Dsetup option enabled then create device management database schema */
 			String setupOption =

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -138,5 +139,9 @@ public final class DeviceManagerUtil {
 			propertiesMap.put(prop.getName(), prop.getValue());
 		}
 		return propertiesMap;
+	}
+	public static int getTenantId(){
+		PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+		return ctx.getTenantId();
 	}
 }

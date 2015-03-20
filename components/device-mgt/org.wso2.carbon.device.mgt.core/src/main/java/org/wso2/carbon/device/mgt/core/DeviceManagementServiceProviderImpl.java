@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.*;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -209,6 +210,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                                                 "'" + username + "'", e);
         }
         return devicesOfUser;
+    }
+
+    @Override
+    public void sendEnrollInvitation(String emailAddress) throws DeviceManagementException {
+        EmailMessageProperties emailMessageProperties = new EmailMessageProperties();
+        emailMessageProperties.setSubject("");
+       // EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail();
     }
 
     @Override

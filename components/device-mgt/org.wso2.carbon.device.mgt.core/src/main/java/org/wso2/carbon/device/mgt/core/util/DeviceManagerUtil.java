@@ -146,5 +146,5 @@ public final class DeviceManagerUtil {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         return ctx.getTenantId();
     }
-    
+
 }

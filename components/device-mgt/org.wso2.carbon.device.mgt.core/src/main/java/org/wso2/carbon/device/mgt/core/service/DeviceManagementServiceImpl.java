@@ -85,11 +85,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDeviceListOfUser(username);
     }
 
-    @Override
-    public void sendEnrollInvitation(String title, String userName, String emailAddress, String enrolUrl)
-            throws DeviceManagementException {
-        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                .sendEnrollInvitation(title, userName, emailAddress, enrolUrl);
+    public FeatureManager getFeatureManager(String type) throws DeviceManagementException {
+        return null;
     }
 
     @Override
@@ -136,4 +133,15 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getPendingOperations(deviceId);
     }
 
+    @Override
+    public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+        return null;
+    }
+
+    @Override
+    public void sendEnrollInvitation(String title, String userName, String emailAddress, String enrolUrl)
+            throws DeviceManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                .sendEnrollInvitation(title, userName, emailAddress, enrolUrl);
+    }
 }

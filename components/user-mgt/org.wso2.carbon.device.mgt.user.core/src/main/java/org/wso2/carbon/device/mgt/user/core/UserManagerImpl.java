@@ -20,12 +20,10 @@ package org.wso2.carbon.device.mgt.user.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.user.common.Claims;
 import org.wso2.carbon.device.mgt.user.common.Role;
 import org.wso2.carbon.device.mgt.user.common.User;
 import org.wso2.carbon.device.mgt.user.common.UserManagementException;
 import org.wso2.carbon.device.mgt.user.core.internal.DeviceMgtUserDataHolder;
-import org.wso2.carbon.user.api.Claim;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.UserCoreConstants;
@@ -148,8 +146,24 @@ public class UserManagerImpl implements UserManager {
         return usersList;
     }
 
-    private void setUserClaims(User newUser, Map<String, String> claimMap) {
+    @Override public User getUser(String username, int tenantId) throws UserManagementException {
+        UserStoreManager userStoreManager;
+        User user;
+        try {
+            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                                                      .getUserStoreManager();
+            user = new User(username);
+            setUserClaims(user, userStoreManager
+                    .getUserClaimValues(username, DEFAULT_CLAIM_ARR, UserCoreConstants.DEFAULT_PROFILE));
+        } catch (UserStoreException userStoreEx) {
+            String errorMsg = "User store error in fetching user " + username;
+            log.error(errorMsg, userStoreEx);
+            throw new UserManagementException(errorMsg, userStoreEx);
+        }
+        return user;
+    }
 
+    private void setUserClaims(User newUser, Map<String, String> claimMap) {
         newUser.setRoleName(UserCoreConstants.ClaimTypeURIs.ROLE);
         newUser.setAccountStatus(claimMap.get(ACCOUNT_STATUS));
         newUser.setChallengeQuestion(claimMap.get(CHALLENGE_QUESTION_URI));

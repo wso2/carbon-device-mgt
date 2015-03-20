@@ -85,6 +85,11 @@ public class OperationManagerImpl implements OperationManager {
         return null;
     }
 
+    @Override
+    public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+        return null;
+    }
+
     private OperationDAO lookupOperationDAO(Operation operation) {
         if (operation instanceof CommandOperation) {
             return commandOperationDAO;

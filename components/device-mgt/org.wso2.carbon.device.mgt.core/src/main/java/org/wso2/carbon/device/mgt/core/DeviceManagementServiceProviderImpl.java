@@ -76,6 +76,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
+    public FeatureManager getFeatureManager(String type) {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementProvider(type);
+        return dms.getFeatureManager();
+    }
+
+    @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(device.getType());
@@ -344,6 +351,11 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         return operationManager.getPendingOperations(deviceId);
+    }
+
+    @Override
+    public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+        return null;
     }
 
 }

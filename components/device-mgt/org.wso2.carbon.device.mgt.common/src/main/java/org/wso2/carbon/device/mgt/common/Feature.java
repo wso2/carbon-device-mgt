@@ -22,6 +22,7 @@ import java.util.List;
 public class Feature {
 
     private int id;
+    private String code;
     private String name;
     private String description;
     private String deviceType;
@@ -33,6 +34,14 @@ public class Feature {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {

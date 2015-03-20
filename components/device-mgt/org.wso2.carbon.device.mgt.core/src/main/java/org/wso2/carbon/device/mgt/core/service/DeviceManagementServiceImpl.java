@@ -127,4 +127,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getPendingOperations(deviceId);
     }
 
+    @Override
+    public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+        return null;
+    }
+
 }

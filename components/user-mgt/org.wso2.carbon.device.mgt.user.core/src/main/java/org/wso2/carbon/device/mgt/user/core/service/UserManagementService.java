@@ -43,4 +43,9 @@ public class UserManagementService implements UserManager{
     public List<User> getUsersForTenant(int tenantId) throws UserManagementException {
         return DeviceMgtUserDataHolder.getInstance().getUserManager().getUsersForTenant(tenantId);
     }
+
+    @Override public User getUser(String username, int tenantId) throws UserManagementException {
+        return DeviceMgtUserDataHolder.getInstance().getUserManager().getUser(username, tenantId);
+    }
+
 }

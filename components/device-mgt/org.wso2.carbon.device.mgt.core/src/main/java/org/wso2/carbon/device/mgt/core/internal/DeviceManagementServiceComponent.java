@@ -21,6 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
+import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
@@ -29,6 +31,9 @@ import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
+import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
+import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
+import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -63,6 +68,12 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setRegistryService"
  * unbind="unsetRegistryService"
+ * @scr.reference name="api.manager.config.service"
+ * interface="org.wso2.carbon.apimgt.impl.APIManagerConfigurationService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setAPIManagerConfigurationService"
+ * unbind="unsetAPIManagerConfigurationService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -129,6 +140,12 @@ public class DeviceManagementServiceComponent {
         BundleContext bundleContext = componentContext.getBundleContext();
         bundleContext.registerService(DeviceManagementService.class.getName(),
                 new DeviceManagementServiceImpl(), null);
+
+        APIPublisherService publisher = new APIPublisherServiceImpl();
+        DeviceManagementDataHolder.getInstance().setApiPublisherService(publisher);
+        bundleContext.registerService(APIPublisherService.class, publisher, null);
+
+        bundleContext.registerService(ServerStartupObserver.class, new APIRegistrationStartupObserver(), null);
     }
 
 	private void setupDeviceManagementSchema(DataSourceConfig config)
@@ -245,5 +262,13 @@ public class DeviceManagementServiceComponent {
 	private DeviceManagementRepository getPluginRepository() {
 		return pluginRepository;
 	}
+
+    protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {
+        //do nothing
+    }
+
+    protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService service) {
+        //do nothing
+    }
 
 }

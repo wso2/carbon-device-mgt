@@ -20,6 +20,7 @@
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -34,6 +35,7 @@ public class DeviceManagementDataHolder {
     private LicenseManager licenseManager;
     private RegistryService registryService;
     private LicenseConfig licenseConfig;
+    private APIPublisherService apiPublisherService;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -94,6 +96,14 @@ public class DeviceManagementDataHolder {
 
     public void setLicenseConfig(LicenseConfig licenseConfig) {
         this.licenseConfig = licenseConfig;
+    }
+
+    public APIPublisherService getApiPublisherService() {
+        return apiPublisherService;
+    }
+
+    public void setApiPublisherService(APIPublisherService apiPublisherService) {
+        this.apiPublisherService = apiPublisherService;
     }
 
 }

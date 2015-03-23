@@ -16,17 +16,15 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-
-<Notifications>
-    <EnrolmentNotifications>
-            <Header>Dear {title} {user-name},</Header>
-            <Body>You have been registered to the WSO2 MDM. Below is the link to enroll.</Body>
-            <Url>{downloadUrl}</Url>
-            <Footer>
- Best Regards,
- WSO2 Carbon Team
- http://www.wso2.com
-            </Footer>
-            <Subject>Enrol your device</Subject>
-    </EnrolmentNotifications>
-</Notifications>
+<APIPublisherConfig>
+        <APIs>
+            <API>
+               <Name>appmanager</Name>
+               <Owner>admin</Owner>
+               <Context>enrollment</Context>
+               <Version>1.0.0</Version>
+               <Endpoint>http://localhost:9763/</Endpoint>
+               <Transports>http,https</Transports>
+            </API>
+        </APIs>
+</APIPublisherConfig>

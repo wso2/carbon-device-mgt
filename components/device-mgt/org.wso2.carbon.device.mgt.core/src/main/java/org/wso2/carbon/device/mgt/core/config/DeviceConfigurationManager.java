@@ -58,7 +58,6 @@ public class DeviceConfigurationManager {
 
     public synchronized void initConfig() throws DeviceManagementException {
 
-        //catch generic exception.if any exception occurs wrap and throw DeviceManagementException
         try {
             File deviceMgtConfig = new File(deviceMgtConfigXMLPath);
             Document doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
@@ -67,8 +66,8 @@ public class DeviceConfigurationManager {
             JAXBContext cdmContext = JAXBContext.newInstance(DeviceManagementConfig.class);
             Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
             this.currentDeviceConfig = (DeviceManagementConfig) unmarshaller.unmarshal(doc);
-        } catch (JAXBException jaxbEx) {
-            throw new DeviceManagementException("Error occurred while initializing Data Source config", jaxbEx);
+        } catch (JAXBException e) {
+            throw new DeviceManagementException("Error occurred while initializing Data Source config", e);
         }
 
         try {
@@ -79,9 +78,8 @@ public class DeviceConfigurationManager {
             JAXBContext notificationContext = JAXBContext.newInstance(NotificationMessagesConfig.class);
             Unmarshaller unmarshaller = notificationContext.createUnmarshaller();
             this.notificationMessagesConfig = (NotificationMessagesConfig) unmarshaller.unmarshal(doc);
-        }catch(JAXBException jaxbEx){
-            throw new DeviceManagementException("Error occurred while initializing Notification settings config",
-                    jaxbEx);
+        } catch(JAXBException e){
+            throw new DeviceManagementException("Error occurred while initializing Notification settings config", e);
         }
 
     }

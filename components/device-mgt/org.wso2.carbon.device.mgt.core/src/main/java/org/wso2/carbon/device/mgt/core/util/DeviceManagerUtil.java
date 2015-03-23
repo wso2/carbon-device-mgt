@@ -20,9 +20,17 @@ package org.wso2.carbon.device.mgt.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.wso2.carbon.apimgt.api.APIManagementException;
+import org.wso2.carbon.apimgt.api.APIProvider;
+import org.wso2.carbon.apimgt.api.model.API;
+import org.wso2.carbon.apimgt.api.model.APIIdentifier;
+import org.wso2.carbon.apimgt.api.model.APIStatus;
+import org.wso2.carbon.apimgt.api.model.URITemplate;
+import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.core.api.mgt.APIConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
@@ -35,14 +43,26 @@ import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class DeviceManagerUtil {
 
     private static final Log log = LogFactory.getLog(DeviceManagerUtil.class);
+
+    enum HTTPMethod {
+        GET, POST, DELETE, PUT, OPTIONS
+    }
+
+    private static List<HTTPMethod> httpMethods;
+
+    static {
+        httpMethods = new ArrayList<HTTPMethod>();
+        httpMethods.add(HTTPMethod.GET);
+        httpMethods.add(HTTPMethod.POST);
+        httpMethods.add(HTTPMethod.DELETE);
+        httpMethods.add(HTTPMethod.PUT);
+        httpMethods.add(HTTPMethod.OPTIONS);
+    }
 
     public static Document convertToDocument(File file) throws DeviceManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -145,6 +165,65 @@ public final class DeviceManagerUtil {
     public static int getTenantId() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         return ctx.getTenantId();
+    }
+
+    public static void publishAPI(APIConfig config) throws DeviceManagementException {
+        APIProvider provider = config.getProvider();
+        APIIdentifier id = new APIIdentifier(config.getOwner(), config.getName(), config.getVersion());
+        API api = new API(id);
+        try {
+            api.setContext(config.getContext());
+            api.setUrl(config.getVersion());
+            api.setUriTemplates(getURITemplates(config.getEndpoint(),
+                    APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
+            api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);
+            api.addAvailableTiers(provider.getTiers());
+            api.setEndpointSecured(false);
+            api.setStatus(APIStatus.PUBLISHED);
+            api.setTransports(config.getTransports());
+
+            provider.addAPI(api);
+        } catch (APIManagementException e) {
+            throw new DeviceManagementException("Error occurred while registering the API", e);
+        }
+    }
+
+    public static void removeAPI(APIConfig config) throws DeviceManagementException {
+        try {
+            APIProvider provider = config.getProvider();
+            APIIdentifier id = new APIIdentifier(config.getOwner(), config.getName(), config.getVersion());
+            provider.deleteAPI(id);
+        } catch (APIManagementException e) {
+            throw new DeviceManagementException("Error occurred while removing API", e);
+        }
+    }
+
+    private static Set<URITemplate> getURITemplates(String endpoint, String authType) {
+        Set<URITemplate> uriTemplates = new LinkedHashSet<URITemplate>();
+        if (APIConstants.AUTH_NO_AUTHENTICATION.equals(authType)) {
+            for (HTTPMethod method : httpMethods) {
+                URITemplate template = new URITemplate();
+                template.setAuthType(APIConstants.AUTH_NO_AUTHENTICATION);
+                template.setHTTPVerb(method.toString());
+                template.setResourceURI(endpoint);
+                template.setUriTemplate("/*");
+                uriTemplates.add(template);
+            }
+        } else {
+            for (HTTPMethod method : httpMethods) {
+                URITemplate template = new URITemplate();
+                if (HTTPMethod.OPTIONS.equals(method)) {
+                    template.setAuthType(APIConstants.AUTH_NO_AUTHENTICATION);
+                } else {
+                    template.setAuthType(APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN);
+                }
+                template.setHTTPVerb(method.toString());
+                template.setResourceURI(endpoint);
+                template.setUriTemplate("/*");
+                uriTemplates.add(template);
+            }
+        }
+        return uriTemplates;
     }
 
 }

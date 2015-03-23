@@ -25,6 +25,8 @@ public class EmailMessageProperties {
     private String[] ccList;
     private String[] bccList;
     private String subject;
+    private String firstName;
+    private String enrolmentUrl;
 
     public String getMessageBody() {
         return messageBody;
@@ -64,5 +66,21 @@ public class EmailMessageProperties {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getEnrolmentUrl() {
+        return enrolmentUrl;
+    }
+
+    public void setEnrolmentUrl(String enrolmentUrl) {
+        this.enrolmentUrl = enrolmentUrl;
     }
 }

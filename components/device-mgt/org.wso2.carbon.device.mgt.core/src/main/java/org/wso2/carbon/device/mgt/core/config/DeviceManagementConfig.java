@@ -26,15 +26,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "DeviceMgtConfiguration")
 public final class DeviceManagementConfig {
 
-    private DeviceManagementRepository deviceMgtRepository;
+    private DeviceManagementConfigRepository deviceManagementConfigRepository;
 
     @XmlElement(name = "ManagementRepository", required = true)
-    public DeviceManagementRepository getDeviceMgtRepository() {
-        return deviceMgtRepository;
+    public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
+        return deviceManagementConfigRepository;
     }
 
-    public void setDeviceMgtRepository(DeviceManagementRepository deviceMgtRepository) {
-        this.deviceMgtRepository = deviceMgtRepository;
+    public void setDeviceManagementConfigRepository(DeviceManagementConfigRepository deviceManagementConfigRepository) {
+        this.deviceManagementConfigRepository = deviceManagementConfigRepository;
     }
 
 }

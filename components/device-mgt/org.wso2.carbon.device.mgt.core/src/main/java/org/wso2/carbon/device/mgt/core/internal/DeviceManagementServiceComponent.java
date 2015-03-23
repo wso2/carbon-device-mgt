@@ -80,7 +80,7 @@ public class DeviceManagementServiceComponent {
 			DeviceManagementConfig config =
 					DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
 
-			DataSourceConfig dsConfig = config.getDeviceMgtRepository().getDataSourceConfig();
+			DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
 			DeviceManagementDAOFactory.init(dsConfig);
 
 			DeviceManagementService deviceManagementProvider =

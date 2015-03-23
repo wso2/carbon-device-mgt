@@ -28,7 +28,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.EnrolmentNotifications;
+import org.wso2.carbon.device.mgt.core.config.email.EnrolmentNotifications;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -36,7 +36,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.Status;
-import org.wso2.carbon.device.mgt.core.email.sender.EmailConfig;
+import org.wso2.carbon.device.mgt.core.email.EmailConstants;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
@@ -231,14 +231,10 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public void sendEnrollInvitation(EmailConfig config) throws DeviceManagementException {
+    public void sendEnrollInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
 
-        EmailMessageProperties emailMessageProperties = new EmailMessageProperties();
         EnrolmentNotifications enrolmentNotifications = DeviceConfigurationManager.getInstance()
                 .getNotificationMessagesConfig().getEnrolmentNotifications();
-
-        emailMessageProperties.setMailTo(new String[] { config.getAddress() });
-        emailMessageProperties.setSubject(enrolmentNotifications.getSubject());
 
         String messageHeader = enrolmentNotifications.getHeader();
         String messageBody = enrolmentNotifications.getBody();
@@ -247,22 +243,29 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
-            messageHeader = messageHeader.replaceAll("\\{title\\}", URLEncoder.encode(config.getSubject(), "UTF-8"));
+            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.TITLE + "\\}",
+                    URLEncoder.encode(emailMessageProperties.getSubject(),
+                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageHeader =
-                    messageHeader.replaceAll("\\{user-name\\}", URLEncoder.encode(config.getFirstName(), "UTF-8"));
+                    messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.USERNAME + "\\}",
+                            URLEncoder.encode(emailMessageProperties.getFirstName(),
+                                    EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + enrolmentNotifications.getUrl()
-                    .replaceAll("\\{downloadUrl\\}", URLEncoder.encode(config.getEnrollmentUrl(), "UTF-8"));
+                    .replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.DOwN_LOAD_URL + "\\}",
+                            URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
+                                    EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator")).append(
                     System.getProperty("line.separator"));
 
             messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
                     System.getProperty("line.separator")).append(messageFooter);
+
         } catch (IOException e) {
             throw new DeviceManagementException("Error replacing tags in email template '" +
-                    config.getSubject() + "'", e);
+                    emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
         EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);

@@ -17,15 +17,11 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.core.email.sender.EmailConfig;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 import java.util.List;
@@ -140,8 +136,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public void sendEnrollInvitation(EmailConfig config) throws DeviceManagementException {
-        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().sendEnrollInvitation(config);
+    public void sendEnrollInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                .sendEnrollInvitation(emailMessageProperties);
     }
 
 }

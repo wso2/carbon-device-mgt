@@ -33,6 +33,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.service.EmailService;
 
@@ -45,9 +48,6 @@ import java.util.concurrent.TimeUnit;
 public class EmailServiceProviderImpl implements EmailService {
 
     private static ThreadPoolExecutor threadPoolExecutor;
-    private static final int MIN_THREAD = 8;
-    private static final int MAX_THREAD = 100;
-    private static final long DEFAULT_KEEP_ALIVE_TIME = 20;
     private static final String EMAIL_URI_SCHEME = "mailto:";
 
     private static Log log = LogFactory.getLog(EmailServiceProviderImpl.class);
@@ -58,14 +58,20 @@ public class EmailServiceProviderImpl implements EmailService {
 
     private void init() {
         if (threadPoolExecutor == null) {
-            threadPoolExecutor = new ThreadPoolExecutor(MIN_THREAD, MAX_THREAD, DEFAULT_KEEP_ALIVE_TIME,
-                    TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1000));
+            DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+            EmailConfigurations emailConfigurations = config.getDeviceManagementConfigRepository()
+                    .getEmailConfigurations();
+
+
+            threadPoolExecutor = new ThreadPoolExecutor(emailConfigurations.getMinNumOfThread(),
+                    emailConfigurations.getMaxNumOfThread(), emailConfigurations.getKeepAliveTime(),TimeUnit.SECONDS,
+                    new LinkedBlockingQueue<Runnable>(emailConfigurations.getThreadQueueCapacity()));
         }
     }
 
     @Override
     public void sendEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
-        for(String toAddr:emailMessageProperties.getMailTo()) {
+        for (String toAddr : emailMessageProperties.getMailTo()) {
             threadPoolExecutor
                     .submit(new EmailSender(toAddr, emailMessageProperties.getSubject(),
                             emailMessageProperties.getMessageBody()));
@@ -73,6 +79,7 @@ public class EmailServiceProviderImpl implements EmailService {
     }
 
     class EmailSender implements Runnable {
+
         String to;
         String subject;
         String body;

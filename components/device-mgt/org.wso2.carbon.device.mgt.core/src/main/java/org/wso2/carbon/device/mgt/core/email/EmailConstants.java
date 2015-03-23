@@ -15,24 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.device.mgt.core.email;
 
-package org.wso2.carbon.device.mgt.core.config;
+public final class EmailConstants {
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "Notifications")
-public class NotificationMessagesConfig {
-
-    private EnrolmentNotifications enrolmentNotifications;
-
-    @XmlElement(name = "EnrolmentNotifications", required = true)
-    public EnrolmentNotifications getEnrolmentNotifications() {
-        return enrolmentNotifications;
-    }
-
-    public void setEnrolmentNotifications(EnrolmentNotifications enrolmentNotifications) {
-        this.enrolmentNotifications = enrolmentNotifications;
+    public static final class EnrolmentEmailConstants {
+        public static final String TITLE = "title";
+        public static final String USERNAME = "user-name";
+        public static final String DOwN_LOAD_URL = "downloadUrl";
+        public static final String ENCODED_SCHEME = "UTF-8";
     }
 
 }

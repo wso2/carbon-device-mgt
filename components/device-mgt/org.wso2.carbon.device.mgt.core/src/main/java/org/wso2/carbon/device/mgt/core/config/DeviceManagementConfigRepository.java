@@ -18,6 +18,8 @@
 package org.wso2.carbon.device.mgt.core.config;
 
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
+import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,9 +27,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Class for holding management repository data.
  */
 @XmlRootElement(name = "ManagementRepository")
-public class DeviceManagementRepository {
+public class DeviceManagementConfigRepository {
 
     private DataSourceConfig dataSourceConfig;
+    private EmailConfigurations emailConfigurations;
 
 	@XmlElement(name = "DataSourceConfiguration", required = true)
 	public DataSourceConfig getDataSourceConfig() {
@@ -37,5 +40,13 @@ public class DeviceManagementRepository {
 	public void setDataSourceConfig(DataSourceConfig dataSourceConfig) {
 		this.dataSourceConfig = dataSourceConfig;
 	}
+    
+    @XmlElement(name = "EmailClientConfiguration", required = true)
+    public EmailConfigurations getEmailConfigurations() {
+        return emailConfigurations;
+    }
 
+    public void setEmailConfigurations(EmailConfigurations emailConfigurations) {
+        this.emailConfigurations = emailConfigurations;
+    }
 }

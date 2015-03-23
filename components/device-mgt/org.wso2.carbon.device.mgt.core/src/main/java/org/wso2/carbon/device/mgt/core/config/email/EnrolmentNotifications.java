@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.config;
+package org.wso2.carbon.device.mgt.core.config.email;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -56,6 +56,7 @@ public class EnrolmentNotifications {
     public void setFooter(String footer) {
         this.footer = footer;
     }
+
     @XmlElement(name = "Subject", required = true)
     public String getSubject() {
         return subject;
@@ -64,6 +65,7 @@ public class EnrolmentNotifications {
     public void setSubject(String subject) {
         this.subject = subject;
     }
+
     @XmlElement(name = "Url", required = true)
     public String getUrl() {
         return url;

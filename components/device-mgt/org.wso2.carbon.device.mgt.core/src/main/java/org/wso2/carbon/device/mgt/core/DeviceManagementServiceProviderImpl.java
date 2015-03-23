@@ -43,6 +43,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -253,7 +254,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     URLEncoder.encode(userName, "UTF-8"));
 
             messageBody = messageBody+ System.getProperty("line.separator") +  enrolmentNotifications.getUrl()
-                    .replaceAll("\\{downloadUrl\\}", URLEncoder.encode(enrolUrl, "UTF-8"));
+                    .replaceAll("\\{downloadUrl\\}", URLDecoder.decode(enrolUrl, "UTF-8"));
+
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
                     .append(System.getProperty("line.separator"));

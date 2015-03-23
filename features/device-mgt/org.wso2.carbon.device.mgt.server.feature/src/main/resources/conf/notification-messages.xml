@@ -21,7 +21,7 @@
 <Notifications>
     <EnrolmentNotifications>
             <Header>Dear {title} {user-name},</Header>
-            <Body>Please go to the following url and enrol your device</Body>
+            <Body>You have been registered to the WSO2 MDM. Below is the link to enroll.</Body>
             <Url>{downloadUrl}</Url>
             <Footer>
  Best Regards,

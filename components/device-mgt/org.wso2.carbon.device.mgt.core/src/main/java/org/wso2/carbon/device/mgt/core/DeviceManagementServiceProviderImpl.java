@@ -36,6 +36,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.Status;
+import org.wso2.carbon.device.mgt.core.email.sender.EmailConfig;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
@@ -229,14 +230,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public void sendEnrollInvitation(String title, String userName, String emailAddress, String enrolUrl) throws
-            DeviceManagementException {
+    public void sendEnrollInvitation(EmailConfig config) throws DeviceManagementException {
 
         EmailMessageProperties emailMessageProperties = new EmailMessageProperties();
         EnrolmentNotifications enrolmentNotifications = DeviceConfigurationManager.getInstance()
                 .getNotificationMessagesConfig().getEnrolmentNotifications();
 
-        emailMessageProperties.setMailTo(new String[] { emailAddress });
+        emailMessageProperties.setMailTo(new String[] { config.getAddress() });
         emailMessageProperties.setSubject(enrolmentNotifications.getSubject());
 
         String messageHeader = enrolmentNotifications.getHeader();
@@ -246,28 +246,25 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
-            messageHeader = messageHeader.replaceAll("\\{title\\}",
-                    URLEncoder.encode(title, "UTF-8"));
+            messageHeader = messageHeader.replaceAll("\\{title\\}", URLEncoder.encode(config.getSubject(), "UTF-8"));
 
-            messageHeader = messageHeader.replaceAll("\\{user-name\\}",
-                    URLEncoder.encode(userName, "UTF-8"));
+            messageHeader =
+                    messageHeader.replaceAll("\\{user-name\\}", URLEncoder.encode(config.getFirstName(), "UTF-8"));
 
-            messageBody = messageBody+ System.getProperty("line.separator") +  enrolmentNotifications.getUrl()
-                    .replaceAll("\\{downloadUrl\\}", URLEncoder.encode(enrolUrl, "UTF-8"));
+            messageBody = messageBody + System.getProperty("line.separator") + enrolmentNotifications.getUrl()
+                    .replaceAll("\\{downloadUrl\\}", URLEncoder.encode(config.getEnrollmentUrl(), "UTF-8"));
 
-            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
-                    .append(System.getProperty("line.separator"));
+            messageBuilder.append(messageHeader).append(System.getProperty("line.separator")).append(
+                    System.getProperty("line.separator"));
 
-            messageBuilder.append(messageBody).append(System.getProperty("line.separator"))
-                    .append(System.getProperty("line.separator")).append(messageFooter);
-        } catch (IOException ioEx) {
-            String errorMsg = "Error replacing tags in email template" + title;
-            log.error(errorMsg, ioEx);
-            throw new DeviceManagementException(errorMsg, ioEx);
+            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
+                    System.getProperty("line.separator")).append(messageFooter);
+        } catch (IOException e) {
+            throw new DeviceManagementException("Error replacing tags in email template '" +
+                    config.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
         EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
-
     }
 
     @Override

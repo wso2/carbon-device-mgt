@@ -164,7 +164,6 @@
             <groupId>org.apache.axis2.transport</groupId>
             <artifactId>axis2-transport-mail</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-api</artifactId>

@@ -22,8 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
-import org.wso2.carbon.device.mgt.core.EmailServiceProviderImpl;
+import org.wso2.carbon.device.mgt.core.email.sender.EmailServiceProviderImpl;
 import org.wso2.carbon.device.mgt.core.service.EmailService;
 import org.wso2.carbon.device.mgt.core.service.EmailServiceImpl;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -60,8 +59,7 @@ public class EmailServiceComponent {
                 log.debug("Email management core bundle has been successfully initialized");
             }
         } catch (Throwable e) {
-            String msg = "Error occurred while initializing device management core bundle";
-            log.error(msg, e);
+            log.error("Error occurred while initializing device management core bundle", e);
         }
     }
     protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
@@ -77,7 +75,7 @@ public class EmailServiceComponent {
         }
         /* Registering Email Service */
         BundleContext bundleContext = componentContext.getBundleContext();
-        bundleContext.registerService(EmailService.class.getName(),
-                new EmailServiceImpl(), null);
+        bundleContext.registerService(EmailService.class.getName(), new EmailServiceImpl(), null);
     }
+
 }

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.email.sender;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -73,7 +73,6 @@ public class EmailServiceProviderImpl implements EmailService {
     }
 
     class EmailSender implements Runnable {
-
         String to;
         String subject;
         String body;
@@ -110,14 +109,7 @@ public class EmailServiceProviderImpl implements EmailService {
                 serviceClient.fireAndForget(payload);
                 log.debug("Sending confirmation mail to " + to);
             } catch (AxisFault e) {
-                String msg = "Error in delivering the message, " +
-                        "subject: " + subject + ", to: " + to + ".";
-                log.error(msg);
-            } catch (Throwable t) {
-                String msg = "Error in delivering the message, " +
-                        "subject: " + subject + ", to: " + to + ".";
-                log.error(msg);
-                log.error(t);
+                log.error("Error in delivering the message, subject: '" + subject + "', to: '" + to + "'", e);
             }
         }
     }

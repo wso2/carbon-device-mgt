@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.email.sender.EmailConfig;
 
 import java.util.List;
 
@@ -39,8 +40,7 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
 
     List<Device> getDeviceListOfUser(String username) throws DeviceManagementException;
 
-    void sendEnrollInvitation(String title, String firstName, String emailAddress,
-            String enrolUrl) throws DeviceManagementException;
+    void sendEnrollInvitation(EmailConfig config) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String type) throws DeviceManagementException;
 

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -49,6 +50,13 @@ public class DeviceManagementDAOTests {
 
     private DataSource dataSource;
     private static final Log log = LogFactory.getLog(DeviceManagementDAOTests.class);
+
+    @AfterClass
+    public void deleteData() throws Exception{
+        Connection connection = dataSource.getConnection();
+        connection.createStatement().execute("DELETE FROM DM_DEVICE");
+        connection.createStatement().execute("DELETE FROM DM_DEVICE_TYPE");
+    }
 
     @BeforeClass
     @Parameters("dbType")

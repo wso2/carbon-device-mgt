@@ -20,17 +20,19 @@ package org.wso2.carbon.device.mgt.core.operation.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -62,10 +64,21 @@ public class OperationManagerImpl implements OperationManager {
         try {
             OperationManagementDAOFactory.beginTransaction();
             int operationId = this.lookupOperationDAO(operation).addOperation(operation);
-            operationMappingDAO.addOperationMapping(operationId, null);
+            for(Iterator<DeviceIdentifier> i = devices.iterator(); i.hasNext(); ) {
+                DeviceIdentifier deviceIdentifier = i.next();
+                org.wso2.carbon.device.mgt.core.dto.Device device = deviceDAO.getDevice(deviceIdentifier);
+                operationMappingDAO.addOperationMapping(operationId, device.getId());
+            }
             OperationManagementDAOFactory.commitTransaction();
             return true;
         } catch (OperationManagementDAOException e) {
+            try {
+                OperationManagementDAOFactory.rollbackTransaction();
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the transaction", e1);
+            }
+            throw new OperationManagementException("Error occurred while adding operation", e);
+        } catch (DeviceManagementDAOException e) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();
             } catch (OperationManagementDAOException e1) {

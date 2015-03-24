@@ -18,14 +18,17 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.core.dto.Device;
-import org.wso2.carbon.device.mgt.core.operation.mgt.*;
+import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 
 import java.util.ArrayList;
@@ -34,33 +37,44 @@ import java.util.List;
 public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
 
     private OperationManager operationManager;
+    private static final Log log = LogFactory.getLog(DeviceOperationManagementTests.class);
 
     @BeforeClass(alwaysRun = true)
-    public void init() {
-        super.init();
-        this.initOperationManager();
+    public void init() throws Exception{
         OperationManagementDAOFactory.init(this.getDataSource());
+        this.initOperationManager();
+        this.setupData();
     }
 
-    public void initOperationManager() {
+    private void setupData() throws Exception {
+        String deviceSql = "INSERT INTO DM_DEVICE(DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, " +
+                     "OWNERSHIP, STATUS, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION, OWNER, TENANT_ID) " +
+                     "VALUES ('Galaxy Tab', 'Samsung', 1425467382, 1425467382, 'BYOD', 'ACTIVE', 1, " +
+                     "'4892813d-0b18-4a02-b7b1-61775257400e', 'admin@wso2.com', '-1234');";
+        String typeSql = "Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (1, 'android');";
+        this.getDataSource().getConnection().createStatement().execute(typeSql);
+        this.getDataSource().getConnection().createStatement().execute(deviceSql);
+    }
+
+    private void initOperationManager() {
         this.operationManager = new OperationManagerImpl();
     }
 
     @Test
     public void testAddOperation() throws Exception {
-
         CommandOperation op = new CommandOperation();
         op.setEnabled(true);
         op.setType(Operation.Type.COMMAND);
 
         List<DeviceIdentifier> deviceIds = new ArrayList<DeviceIdentifier>();
         DeviceIdentifier deviceId = new DeviceIdentifier();
-        deviceId.setId("Test");
-        deviceId.setType("Android");
+        deviceId.setId("4892813d-0b18-4a02-b7b1-61775257400e");
+        deviceId.setType("android");
         deviceIds.add(deviceId);
 
         try {
-            operationManager.addOperation(op, deviceIds);
+            boolean isAdded = operationManager.addOperation(op, deviceIds);
+            Assert.assertTrue(isAdded);
         } catch (OperationManagementException e) {
             e.printStackTrace();
             throw new Exception(e);
@@ -69,7 +83,14 @@ public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
 
     public void testGetOperations() {
         try {
-            operationManager.getOperations(null);
+            //TODO:- operationManager.getOperations is not implemented
+            DeviceIdentifier deviceId = new DeviceIdentifier();
+            deviceId.setId("4892813d-0b18-4a02-b7b1-61775257400e");
+            deviceId.setType("android");
+            List<Operation> operations = operationManager.getOperations(deviceId);
+            Assert.assertNotNull(operations);
+            boolean notEmpty = operations.size() > 0;
+            Assert.assertTrue(notEmpty);
         } catch (OperationManagementException e) {
             e.printStackTrace();
         }

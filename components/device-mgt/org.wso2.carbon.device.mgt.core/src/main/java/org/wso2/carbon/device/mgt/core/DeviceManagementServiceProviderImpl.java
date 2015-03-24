@@ -268,7 +268,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
-        emailMessageProperties.setSubject(EmailConstants.EnrolmentEmailConstants.ENROLMENT_MAIL_SUBJECT);
+        emailMessageProperties.setSubject(enrolmentNotifications.getSubject());
         EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
     }
 

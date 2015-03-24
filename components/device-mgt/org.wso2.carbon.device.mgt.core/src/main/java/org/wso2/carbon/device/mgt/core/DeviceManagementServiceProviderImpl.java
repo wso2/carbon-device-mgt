@@ -231,7 +231,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public void sendEnrollInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
 
         EnrolmentNotifications enrolmentNotifications = DeviceConfigurationManager.getInstance()
                 .getNotificationMessagesConfig().getEnrolmentNotifications();
@@ -243,20 +243,19 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
+            String title = "";
+            if (emailMessageProperties.getTitle() != null){
+                title = emailMessageProperties.getTitle();
+            }
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.TITLE + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getSubject(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-
-            messageHeader =
-                    messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.USERNAME + "\\}",
+                    URLEncoder.encode(title, EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.USERNAME + "\\}",
                             URLEncoder.encode(emailMessageProperties.getFirstName(),
                                     EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-
             messageBody = messageBody + System.getProperty("line.separator") + enrolmentNotifications.getUrl()
                     .replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.DOwN_LOAD_URL + "\\}",
                             URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                                     EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator")).append(
                     System.getProperty("line.separator"));
 
@@ -264,10 +263,12 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     System.getProperty("line.separator")).append(messageFooter);
 
         } catch (IOException e) {
+            log.error("IO error in processing enrol email message "+emailMessageProperties);
             throw new DeviceManagementException("Error replacing tags in email template '" +
                     emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
+        emailMessageProperties.setSubject(EmailConstants.EnrolmentEmailConstants.ENROLMENT_MAIL_SUBJECT);
         EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
     }
 

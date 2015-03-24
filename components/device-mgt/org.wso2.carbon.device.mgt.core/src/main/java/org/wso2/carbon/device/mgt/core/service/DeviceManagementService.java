@@ -38,7 +38,7 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
 
     List<Device> getDeviceListOfUser(String username) throws DeviceManagementException;
 
-    void sendEnrollInvitation(EmailMessageProperties config) throws DeviceManagementException;
+    void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String type) throws DeviceManagementException;
 

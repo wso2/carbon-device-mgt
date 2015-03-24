@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import java.util.Arrays;
 
 public class EmailMessageProperties {
 
@@ -27,6 +28,7 @@ public class EmailMessageProperties {
     private String subject;
     private String firstName;
     private String enrolmentUrl;
+    private String title;
 
     public String getMessageBody() {
         return messageBody;
@@ -82,5 +84,27 @@ public class EmailMessageProperties {
 
     public void setEnrolmentUrl(String enrolmentUrl) {
         this.enrolmentUrl = enrolmentUrl;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public String toString() {
+        return "EmailMessageProperties{" +
+                "messageBody='" + messageBody + '\'' +
+                ", mailTo=" + Arrays.toString(mailTo) +
+                ", ccList=" + Arrays.toString(ccList) +
+                ", bccList=" + Arrays.toString(bccList) +
+                ", subject='" + subject + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", enrolmentUrl='" + enrolmentUrl + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 }

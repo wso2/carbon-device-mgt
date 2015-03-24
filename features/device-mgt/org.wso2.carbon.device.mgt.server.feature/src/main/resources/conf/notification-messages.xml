@@ -23,9 +23,9 @@
             <Body>You have been registered to the WSO2 MDM. Below is the link to enroll.</Body>
             <Url>{downloadUrl}</Url>
             <Footer>
- Best Regards,
- WSO2 Carbon Team
- http://www.wso2.com
+Best Regards,
+WSO2 Carbon Team
+http://www.wso2.com
             </Footer>
             <Subject>Enrol your device</Subject>
     </EnrolmentNotifications>

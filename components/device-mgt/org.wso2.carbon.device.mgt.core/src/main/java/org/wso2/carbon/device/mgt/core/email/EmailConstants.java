@@ -24,6 +24,7 @@ public final class EmailConstants {
         public static final String USERNAME = "user-name";
         public static final String DOwN_LOAD_URL = "downloadUrl";
         public static final String ENCODED_SCHEME = "UTF-8";
+        public static final String ENROLMENT_MAIL_SUBJECT = "Enrol Your Device with wso2 MDM";
     }
 
 }

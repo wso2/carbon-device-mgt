@@ -46,12 +46,11 @@ public class EmailConfigurations {
         this.maxNumOfThread = maxNumOfThread;
     }
 
-    @XmlElement(name = "maximumThread", required = true)
+    @XmlElement(name = "keepAliveTime", required = true)
     public int getKeepAliveTime() {
         return keepAliveTime;
     }
 
-    @XmlElement(name = "keepAliveTime", required = true)
     public void setKeepAliveTime(int keepAliveTime) {
         this.keepAliveTime = keepAliveTime;
     }

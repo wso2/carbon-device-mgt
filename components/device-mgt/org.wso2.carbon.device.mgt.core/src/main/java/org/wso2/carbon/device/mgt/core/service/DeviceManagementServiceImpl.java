@@ -136,9 +136,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public void sendEnrollInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
         DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                .sendEnrollInvitation(emailMessageProperties);
+                .sendEnrolmentInvitation(emailMessageProperties);
     }
 
 }

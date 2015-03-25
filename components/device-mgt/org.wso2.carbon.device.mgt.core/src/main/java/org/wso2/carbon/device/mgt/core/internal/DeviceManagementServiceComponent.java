@@ -132,6 +132,10 @@ public class DeviceManagementServiceComponent {
 		}
 	}
 
+    protected void deactivate(ComponentContext componentContext) {
+        //do nothing
+    }
+
     private void registerServices(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
             log.debug("Registering OSGi service DeviceManagementServiceImpl");

@@ -30,6 +30,11 @@
             <keepAliveTime>20</keepAliveTime>
             <ThreadQueueCapacity>1000</ThreadQueueCapacity>
         </EmailClientConfiguration>
+        <IdentityConfiguration>
+            <ServerUrl>https://localhost:9443</ServerUrl>
+            <AdminUsername>admin</AdminUsername>
+            <AdminPassword>admin</AdminPassword>
+        </IdentityConfiguration>
     </ManagementRepository>
 </DeviceMgtConfiguration>
 

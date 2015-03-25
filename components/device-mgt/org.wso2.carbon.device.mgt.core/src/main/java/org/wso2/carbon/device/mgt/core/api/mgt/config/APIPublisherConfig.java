@@ -77,7 +77,7 @@ public class APIPublisherConfig {
             Document doc = DeviceManagerUtil.convertToDocument(publisherConfig);
 
             /* Un-marshaling Device Management configuration */
-            JAXBContext ctx = JAXBContext.newInstance(DeviceManagementConfig.class);
+            JAXBContext ctx = JAXBContext.newInstance(APIPublisherConfig.class);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             config = (APIPublisherConfig) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {

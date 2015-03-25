@@ -34,14 +34,19 @@ import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
+import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerImplHttp;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
+import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.service.AppManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.AppManager;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
@@ -106,6 +111,13 @@ public class DeviceManagementServiceComponent {
 			DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
 			DeviceManagementDataHolder.getInstance().setLicenseConfig(licenseConfig);
 
+			AppManagementConfigurationManager.getInstance().initConfig();
+			AppManagementConfig appConfig =
+					AppManagementConfigurationManager.getInstance().getAppManagementConfig();
+			DeviceManagementDataHolder.getInstance().setAppManagerConfig(appConfig);
+			AppManagerImplHttp appManager = new AppManagerImplHttp(appConfig);
+			DeviceManagementDataHolder.getInstance().setAppManager(appManager);
+
 			OperationManagementDAOFactory.init(dsConfig);
 
             /* If -Dsetup option enabled then create device management database schema */
@@ -146,6 +158,11 @@ public class DeviceManagementServiceComponent {
         bundleContext.registerService(APIPublisherService.class, publisher, null);
 
         bundleContext.registerService(ServerStartupObserver.class, new APIRegistrationStartupObserver(), null);
+
+
+	     /* Registering App Management service */
+	    bundleContext.registerService(AppManager.class.getName(),
+	                                  new AppManagementServiceImpl(), null);
     }
 
 	private void setupDeviceManagementSchema(DataSourceConfig config)

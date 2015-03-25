@@ -154,6 +154,12 @@
                 <artifactId>org.wso2.carbon.device.mgt.user.common</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.identity</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
+                <version>${carbon.identity.version}</version>
+            </dependency>
             <!-- Device Management dependencies -->
 
             <!-- Governance dependencies -->
@@ -1055,6 +1061,7 @@
 
         <!-- Identity -->
         <carbon.identity.version>4.3.3</carbon.identity.version>
+
 
         <!-- Multi-tenancy -->
         <carbon.multitenancy.version>4.3.3</carbon.multitenancy.version>

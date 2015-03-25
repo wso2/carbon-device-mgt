@@ -28,4 +28,15 @@ public final class DeviceManagementConstants {
         public static final String DEFAULT_LICENSE_CONFIG_XML_NAME = "license-config.xml";
     }
 
+	public static final class AppManagement {
+		private AppManagement() {
+			throw new AssertionError();
+		}
+
+		public static final String OAUTH_APPLICATION_NAME = "app_management_application";
+		public static final String OAUTH2_GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials";
+		public final static String OAUTH_VERSION_2 = "oauth-2.0";
+		public final static String OAUTH_ADMIN_SERVICE = "/services/OAuthAdminService";
+	}
+
 }

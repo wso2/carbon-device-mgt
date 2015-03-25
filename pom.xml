@@ -38,10 +38,11 @@
         <module>components/device-mgt</module>
         <module>components/policy-mgt</module>
         <module>components/user-mgt</module>
-	<module>components/key-mgt</module>
+	    <module>components/webapp-authenticator-framework</module>
         <module>features/device-mgt</module>
         <module>features/policy-mgt</module>
         <module>features/user-mgt</module>
+        <module>features/webapp-authenticator-framework</module>
     </modules>
 
     <dependencyManagement>
@@ -510,10 +511,14 @@
                 <artifactId>org.wso2.carbon.logging</artifactId>
                 <version>${carbon.kernel.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core.services</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
             <!-- End of Carbon Kernel dependencies -->
 
             <!-- Orbit dependencies -->
-
             <dependency>
                 <groupId>com.h2database.wso2</groupId>
                 <artifactId>h2-database-engine</artifactId>

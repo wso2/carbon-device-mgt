@@ -15,25 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.key.mgt.handler.valve;
+package org.wso2.carbon.webapp.authenticator.framework;
 
-public class APIFaultException extends Exception {
+public class HandlerConstants {
 
-    private static final long serialVersionUID = 1L;
-    private int errorCode;
+    public static final String HEADER_AUTHORIZATION = "Authorization";
+    public static final String TOKEN_NAME_BEARER = "Bearer";
 
-    public APIFaultException(int errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-
-    public APIFaultException(int errorCode, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
-    }
+    public static final String NO_MATCHING_AUTH_SCHEME = "noMatchedAuthScheme";
 
 }

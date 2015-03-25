@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.key.mgt.handler.valve;
+package org.wso2.carbon.webapp.authenticator.framework;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -38,7 +38,6 @@ import java.io.IOException;
 
 public class HandlerUtil {
 
-    private static APIKeyValidationInfoDTO apiKeyValidationDTO;
     private static final Log log = LogFactory.getLog(HandlerUtil.class);
 
     /**
@@ -71,7 +70,8 @@ public class HandlerUtil {
                                                                  String version, String context ) {
         String errMsg = "Resource is not matched for HTTP Verb " + httpVerb + ". API context " + context +
                 ",version " + version + ", request " + reqUri;
-        APIFaultException e = new APIFaultException( APIManagerErrorConstants.API_AUTH_INCORRECT_API_RESOURCE, errMsg);
+        AuthenticationException e =
+                new AuthenticationException(APIManagerErrorConstants.API_AUTH_INCORRECT_API_RESOURCE, errMsg);
         String faultPayload = getFaultPayload(e, APIManagerErrorConstants.API_SECURITY_NS,
                 APIManagerErrorConstants.API_SECURITY_NS_PREFIX).toString();
         handleRestFailure(response, faultPayload);
@@ -80,13 +80,13 @@ public class HandlerUtil {
     public static boolean doAuthenticate(String context, String version, String accessToken,
                                          String requiredAuthenticationLevel, String clientDomain)
             throws APIManagementException,
-            APIFaultException {
+            AuthenticationException {
 
         if (APIConstants.AUTH_NO_AUTHENTICATION.equals(requiredAuthenticationLevel)) {
             return true;
         }
         APITokenValidator tokenValidator = new APITokenValidator();
-        apiKeyValidationDTO = tokenValidator.validateKey(context, version, accessToken,
+        APIKeyValidationInfoDTO apiKeyValidationDTO = tokenValidator.validateKey(context, version, accessToken,
                 requiredAuthenticationLevel, clientDomain);
         if (apiKeyValidationDTO.isAuthorized()) {
             String userName = apiKeyValidationDTO.getEndUserName();
@@ -101,7 +101,7 @@ public class HandlerUtil {
             }
             return true;
         } else {
-            throw new APIFaultException(apiKeyValidationDTO.getValidationStatus(),
+            throw new AuthenticationException(apiKeyValidationDTO.getValidationStatus(),
                     "Access failure for API: " + context + ", version: " +
                             version + " with key: " + accessToken);
         }
@@ -118,7 +118,7 @@ public class HandlerUtil {
         }
     }
 
-    public static OMElement getFaultPayload(APIFaultException exception, String FaultNS,
+    public static OMElement getFaultPayload(AuthenticationException exception, String FaultNS,
                                             String FaultNSPrefix) {
         OMFactory fac = OMAbstractFactory.getOMFactory();
         OMNamespace ns = fac.createOMNamespace(FaultNS, FaultNSPrefix);

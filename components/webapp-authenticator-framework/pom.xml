@@ -30,14 +30,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
-    <artifactId>key-mgt</artifactId>
+    <artifactId>webapp-authenticator-framework</artifactId>
     <version>0.9.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Device Management Component</name>
     <url>http://wso2.org</url>
 
     <modules>
-        <module>org.wso2.carbon.key.mgt.handler.valve</module>
+        <module>org.wso2.carbon.webapp.authenticator.framework</module>
     </modules>
 
     <build>

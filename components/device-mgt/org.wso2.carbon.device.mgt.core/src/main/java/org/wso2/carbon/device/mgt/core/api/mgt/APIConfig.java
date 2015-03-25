@@ -21,8 +21,10 @@ package org.wso2.carbon.device.mgt.core.api.mgt;
 import org.wso2.carbon.apimgt.api.APIProvider;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+@XmlRootElement(name = "API")
 public class APIConfig {
 
     private String name;

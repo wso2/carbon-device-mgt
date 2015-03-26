@@ -360,4 +360,10 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         return null;
     }
 
+    @Override
+    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier,
+            String responsePayLoad) throws OperationManagementException {
+        return null;
+    }
+
 }

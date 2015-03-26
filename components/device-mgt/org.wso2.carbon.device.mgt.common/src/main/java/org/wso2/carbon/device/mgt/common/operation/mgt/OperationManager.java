@@ -17,8 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.*;
-
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import java.util.List;
 
 /**
@@ -27,35 +26,37 @@ import java.util.List;
  */
 public interface OperationManager {
 
-	/**
-	 * Method to add a operation to a device or a set of devices.
-	 *
-	 * @param operation Operation to be added
-	 * @param devices   List of DeviceIdentifiers to execute the operation
-	 * @throws OperationManagementException If some unusual behaviour is observed while adding the
-	 * operation
-	 */
-	public boolean addOperation(Operation operation,
-                                List<DeviceIdentifier> devices) throws OperationManagementException;
+    /**
+     * Method to add a operation to a device or a set of devices.
+     *
+     * @param operation Operation to be added
+     * @param devices   List of DeviceIdentifiers to execute the operation
+     * @throws OperationManagementException If some unusual behaviour is observed while adding the
+     * operation
+     */
+    public boolean addOperation(Operation operation,
+            List<DeviceIdentifier> devices) throws OperationManagementException;
 
-	/**
-	 * Method to retrieve the list of all operations to a device.
-	 *
-	 * @param deviceId DeviceIdentifier of the device
-	 * @throws OperationManagementException If some unusual behaviour is observed while fetching the
-	 * operation list.
-	 */
-	public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+    /**
+     * Method to retrieve the list of all operations to a device.
+     *
+     * @param deviceId DeviceIdentifier of the device
+     * @throws OperationManagementException If some unusual behaviour is observed while fetching the
+     * operation list.
+     */
+    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
-	/**
-	 * Method to retrieve the list of available operations to a device.
-	 *
-	 * @param deviceId DeviceIdentifier of the device
-	 * @throws OperationManagementException If some unusual behaviour is observed while fetching the
-	 * operation list.
-	 */
-	public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+    /**
+     * Method to retrieve the list of available operations to a device.
+     *
+     * @param deviceId DeviceIdentifier of the device
+     * @throws OperationManagementException If some unusual behaviour is observed while fetching the
+     * operation list.
+     */
+    public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
     public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
+    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier, String responsePayLoad)
+            throws OperationManagementException;
 }

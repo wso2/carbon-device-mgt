@@ -28,11 +28,16 @@ public class Operation {
 	public enum Type {
 		CONFIG, MESSAGE, INFO, COMMAND
 	}
+    public enum OperationStatuses {
+        INPROGRES,PENDING,COMPLETED,ERROR
+    }
 
 	private String code;
 	private Properties properties;
 	private Type type;
     private Long operationId;
+    private String payLoad;
+    private OperationStatuses operationStates;
 
 	@XmlElement
 	public String getCode() {
@@ -69,5 +74,19 @@ public class Operation {
         this.operationId = operationId;
     }
 
+    public String getPayLoad() {
+        return payLoad;
+    }
 
+    public void setPayLoad(String payLoad) {
+        this.payLoad = payLoad;
+    }
+
+    public OperationStatuses getOperationStates() {
+        return operationStates;
+    }
+
+    public void setOperationStates(OperationStatuses operationStates) {
+        this.operationStates = operationStates;
+    }
 }

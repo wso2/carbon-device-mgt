@@ -91,11 +91,6 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         return null;
-        try{
-            this.lookupOperationDAO(operation)
-
-
-        }catch(OperationManagementDAOException ex){}
     }
 
     @Override

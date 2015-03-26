@@ -173,7 +173,7 @@ public final class DeviceManagerUtil {
         API api = new API(id);
         try {
             api.setContext(config.getContext());
-            api.setUrl(config.getVersion());
+            api.setUrl(config.getEndpoint());
             api.setUriTemplates(getURITemplates(config.getEndpoint(),
                     APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
             api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);

@@ -53,6 +53,9 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @scr.component name="org.wso2.carbon.device.manager" immediate="true"
  * @scr.reference name="user.realmservice.default"
@@ -84,6 +87,10 @@ public class DeviceManagementServiceComponent {
 
 	private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
 	private DeviceManagementRepository pluginRepository = new DeviceManagementRepository();
+
+    private static final Object LOCK = new Object();
+    private boolean isInitialized;
+    private List<DeviceManager> deviceManagers = new ArrayList<DeviceManager>();
 
 	protected void activate(ComponentContext componentContext) {
 		try {
@@ -132,6 +139,13 @@ public class DeviceManagementServiceComponent {
 				this.setupDefaultLicenses(licenseConfig);
 			}
 
+            synchronized (LOCK) {
+                for (DeviceManager deviceManager : deviceManagers) {
+                    this.registerDeviceManagementProvider(deviceManager);
+                }
+                this.isInitialized = true;
+            }
+
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
             this.registerServices(componentContext);
 
@@ -139,8 +153,7 @@ public class DeviceManagementServiceComponent {
 				log.debug("Device management core bundle has been successfully initialized");
 			}
 		} catch (Throwable e) {
-			String msg = "Error occurred while initializing device management core bundle";
-			log.error(msg, e);
+			log.error("Error occurred while initializing device management core bundle", e);
 		}
 	}
 
@@ -163,10 +176,8 @@ public class DeviceManagementServiceComponent {
 
         bundleContext.registerService(ServerStartupObserver.class, new APIRegistrationStartupObserver(), null);
 
-
 	     /* Registering App Management service */
-	    bundleContext.registerService(AppManager.class.getName(),
-	                                  new AppManagementServiceImpl(), null);
+	    bundleContext.registerService(AppManager.class.getName(), new AppManagementServiceImpl(), null);
     }
 
 	private void setupDeviceManagementSchema(DataSourceConfig config)
@@ -193,10 +204,19 @@ public class DeviceManagementServiceComponent {
 		for (License license : licenseConfig.getLicenses()) {
 			License extLicense = licenseManager.getLicense(license.getName(), license.getLanguage());
 			if (extLicense == null) {
-                licenseManager.addLicense(license.getName(), license);;
+                licenseManager.addLicense(license.getName(), license);
 			}
 		}
 	}
+
+    private void registerDeviceManagementProvider(DeviceManager deviceManager) {
+        try {
+            this.getPluginRepository().addDeviceManagementProvider(deviceManager);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while adding device management provider '" +
+                    deviceManager.getProviderType() + "'");
+        }
+    }
 
 	/**
 	 * Sets Device Manager service.
@@ -204,14 +224,14 @@ public class DeviceManagementServiceComponent {
 	 * @param deviceManager An instance of DeviceManager
 	 */
 	protected void setDeviceManager(DeviceManager deviceManager) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting Device Management Service Provider: '" + deviceManager.getProviderType() + "'");
-		}
-        try {
-            this.getPluginRepository().addDeviceManagementProvider(deviceManager);
-        } catch (DeviceManagementException e) {
-            log.error("Error occurred while adding device management provider '" +
-                    deviceManager.getProviderType() + "'");
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Device Management Service Provider: '" + deviceManager.getProviderType() + "'");
+        }
+        synchronized (LOCK) {
+            if (isInitialized) {
+                this.registerDeviceManagementProvider(deviceManager);
+            }
+            deviceManagers.add(deviceManager);
         }
     }
 

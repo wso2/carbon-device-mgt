@@ -80,7 +80,8 @@
                             org.wso2.carbon.apimgt.api.model,
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.identity.oauth.stub,
-                            org.wso2.carbon.identity.oauth.stub.dto
+                            org.wso2.carbon.identity.oauth.stub.dto,
+                            org.wso2.carbon.ndatasource.core
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -131,6 +132,10 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ndatasource.core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.h2database.wso2</groupId>

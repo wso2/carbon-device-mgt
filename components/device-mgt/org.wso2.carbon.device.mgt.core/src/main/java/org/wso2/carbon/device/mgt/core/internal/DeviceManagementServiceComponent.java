@@ -50,6 +50,7 @@ import org.wso2.carbon.device.mgt.core.service.AppManager;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -82,6 +83,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setAPIManagerConfigurationService"
  * unbind="unsetAPIManagerConfigurationService"
+ * @scr.reference name="org.wso2.carbon.ndatasource"
+ * interface="org.wso2.carbon.ndatasource.core.DataSourceService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setDataSourceService"
+ * unbind="unsetDataSourceService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -312,4 +319,15 @@ public class DeviceManagementServiceComponent {
         //do nothing
     }
 
+    protected void setDataSourceService(DataSourceService dataSourceService) {
+        /* This is to avoid mobile device management component getting initialized before the underlying datasources
+        are registered */
+        if (log.isDebugEnabled()) {
+            log.debug("Data source service set to mobile service component");
+        }
+    }
+
+    protected void unsetDataSourceService(DataSourceService dataSourceService) {
+        //do nothing
+    }
 }

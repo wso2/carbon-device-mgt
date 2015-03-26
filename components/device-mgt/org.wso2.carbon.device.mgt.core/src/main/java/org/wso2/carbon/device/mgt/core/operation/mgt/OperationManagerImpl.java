@@ -103,6 +103,12 @@ public class OperationManagerImpl implements OperationManager {
         return null;
     }
 
+    @Override
+    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier,
+            String responsePayLoad) throws OperationManagementException {
+        return null;
+    }
+
     private OperationDAO lookupOperationDAO(Operation operation) {
         if (operation instanceof CommandOperation) {
             return commandOperationDAO;
@@ -112,5 +118,4 @@ public class OperationManagerImpl implements OperationManager {
             return simpleOperationDAO;
         }
     }
-
 }

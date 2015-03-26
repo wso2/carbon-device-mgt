@@ -32,6 +32,7 @@ public class Operation {
 	private String code;
 	private Properties properties;
 	private Type type;
+    private Long operationId;
 
 	@XmlElement
 	public String getCode() {
@@ -59,4 +60,14 @@ public class Operation {
 	public void setType(Type type) {
 		this.type = type;
 	}
+
+    public Long getOperationId() {
+        return operationId;
+    }
+
+    public void setOperationId(Long operationId) {
+        this.operationId = operationId;
+    }
+
+
 }

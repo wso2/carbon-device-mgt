@@ -67,7 +67,7 @@ public class APIPublisherConfig {
         return apiConfigs;
     }
 
-    public void setApiConfig(List<APIConfig> apiConfigs) {
+    public void setApiConfigs(List<APIConfig> apiConfigs) {
         this.apiConfigs = apiConfigs;
     }
 

@@ -21,7 +21,7 @@
             <API>
                <Name>appmanager</Name>
                <Owner>admin</Owner>
-               <Context>enrollment</Context>
+               <Context>devices</Context>
                <Version>1.0.0</Version>
                <Endpoint>http://localhost:9763/</Endpoint>
                <Transports>http,https</Transports>

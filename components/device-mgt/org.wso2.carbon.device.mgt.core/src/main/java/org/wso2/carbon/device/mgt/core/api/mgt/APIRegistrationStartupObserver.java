@@ -30,6 +30,16 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.List;
 
+/**
+ * This particular class corresponding to the ServerStartupObserver written for publishing the set of APIs used by
+ * the device management related components.
+ *
+ * Note: Using this particular approach is not a must, had there been a proper programming interface provided by the
+ * underlying API-Management infrastructure for manipulating the APIs. Even though, there's one, its concrete
+ * implementation consumes a set of OSGi declarative services for initializing some of its internal states, which
+ * prevents us from, simply, instantiating the APIPublisher implementation and using for device management related
+ * tasks. The aforesaid complication lead us to go for this alternative approach to get the same done.
+ */
 public class APIRegistrationStartupObserver implements ServerStartupObserver {
 
     private static final Log log = LogFactory.getLog(APIRegistrationStartupObserver.class);

@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -64,9 +65,8 @@ public class OperationManagerImpl implements OperationManager {
         try {
             OperationManagementDAOFactory.beginTransaction();
             int operationId = this.lookupOperationDAO(operation).addOperation(operation);
-            for(Iterator<DeviceIdentifier> i = devices.iterator(); i.hasNext(); ) {
-                DeviceIdentifier deviceIdentifier = i.next();
-                org.wso2.carbon.device.mgt.core.dto.Device device = deviceDAO.getDevice(deviceIdentifier);
+            for (DeviceIdentifier deviceIdentifier : devices) {
+                Device device = deviceDAO.getDevice(deviceIdentifier);
                 operationMappingDAO.addOperationMapping(operationId, device.getId());
             }
             OperationManagementDAOFactory.commitTransaction();

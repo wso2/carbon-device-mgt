@@ -28,6 +28,10 @@ import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 
 import java.util.List;
 
+/**
+ * This class represents the concrete implementation of the APIPublisherService that corresponds to providing all
+ * API publishing related operations.
+ */
 public class APIPublisherServiceImpl implements APIPublisherService {
 
     private static final Log log = LogFactory.getLog(APIPublisherServiceImpl.class);

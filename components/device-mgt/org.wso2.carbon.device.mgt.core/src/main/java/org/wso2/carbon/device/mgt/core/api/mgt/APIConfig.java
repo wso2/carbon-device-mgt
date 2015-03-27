@@ -24,6 +24,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * This bean class carries the properties used by some API that needs to be published within the underlying
+ * API-Management infrastructure.
+ */
 @XmlRootElement(name = "API")
 public class APIConfig {
 

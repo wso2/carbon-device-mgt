@@ -67,10 +67,14 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             log.debug("Publishing a batch of APIs");
         }
         for (API api : apis) {
-            this.publishAPI(api);
+            try {
+                this.publishAPI(api);
+            } catch (APIManagementException e) {
+                log.error("Error occurred while publishing API '" + api.getId().getApiName() + "'", e);
+            }
         }
         if (log.isDebugEnabled()) {
-            log.debug("Successfully published the batch of APIs");
+            log.debug("End of publishing the batch of APIs");
         }
     }
 

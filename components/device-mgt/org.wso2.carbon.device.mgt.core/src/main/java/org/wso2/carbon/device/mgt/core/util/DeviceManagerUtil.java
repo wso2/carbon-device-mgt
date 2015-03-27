@@ -167,37 +167,22 @@ public final class DeviceManagerUtil {
         return ctx.getTenantId();
     }
 
-    public static void publishAPI(APIConfig config) throws DeviceManagementException {
+    public static API getAPI(APIConfig config) throws APIManagementException {
         APIProvider provider = config.getProvider();
         APIIdentifier id = new APIIdentifier(config.getOwner(), config.getName(), config.getVersion());
         API api = new API(id);
-        try {
-	        if(!provider.isAPIAvailable(id)) {
-		        api.setContext(config.getContext());
-		        api.setUrl(config.getEndpoint());
-		        api.setUriTemplates(getURITemplates(config.getEndpoint(),
-		                                            APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
-		        api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);
-		        api.addAvailableTiers(provider.getTiers());
-		        api.setEndpointSecured(false);
-		        api.setStatus(APIStatus.PUBLISHED);
-		        api.setTransports(config.getTransports());
-
-		        provider.addAPI(api);
-	        }
-        } catch (APIManagementException e) {
-            throw new DeviceManagementException("Error occurred while registering the API", e);
+        if (!provider.isAPIAvailable(id)) {
+            api.setContext(config.getContext());
+            api.setUrl(config.getEndpoint());
+            api.setUriTemplates(
+                    getURITemplates(config.getEndpoint(), APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
+            api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);
+            api.addAvailableTiers(provider.getTiers());
+            api.setEndpointSecured(false);
+            api.setStatus(APIStatus.PUBLISHED);
+            api.setTransports(config.getTransports());
         }
-    }
-
-    public static void removeAPI(APIConfig config) throws DeviceManagementException {
-        try {
-            APIProvider provider = config.getProvider();
-            APIIdentifier id = new APIIdentifier(config.getOwner(), config.getName(), config.getVersion());
-            provider.deleteAPI(id);
-        } catch (APIManagementException e) {
-            throw new DeviceManagementException("Error occurred while removing API", e);
-        }
+        return api;
     }
 
     private static Set<URITemplate> getURITemplates(String endpoint, String authType) {

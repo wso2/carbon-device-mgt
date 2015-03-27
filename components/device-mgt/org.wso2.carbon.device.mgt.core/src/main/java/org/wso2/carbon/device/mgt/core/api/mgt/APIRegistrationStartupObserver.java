@@ -22,10 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
+import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.api.mgt.config.APIPublisherConfig;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.List;
@@ -51,43 +53,26 @@ public class APIRegistrationStartupObserver implements ServerStartupObserver {
 
     @Override
     public void completedServerStartup() {
-        try {
-            this.initAPIConfigs();
-	        /* Publish all mobile device management related JAX-RS services as APIs */
-            this.publishAPIs();
-        } catch (DeviceManagementException e) {
-            log.error("Error occurred while publishing Mobile Device Management related APIs", e);
-        }
-    }
-
-    private void initAPIConfigs() throws DeviceManagementException {
+        /* Publish all mobile device management related JAX-RS services as APIs */
         if (log.isDebugEnabled()) {
-            log.debug("Initializing Mobile Device Management related APIs");
+            log.debug("Publishing all mobile device management related JAX-RS services as APIs");
         }
         List<APIConfig> apiConfigs = APIPublisherConfig.getInstance().getApiConfigs();
         for (APIConfig apiConfig : apiConfigs) {
             try {
-                APIProvider provider =
-                        APIManagerFactory.getInstance().getAPIProvider(apiConfig.getOwner());
-                apiConfig.init(provider);
+                API api = DeviceManagerUtil.getAPI(apiConfig);
+                DeviceManagementDataHolder.getInstance().getApiPublisherService().publishAPI(api);
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully published API '" + apiConfig.getName() + "' with the context '" +
+                            apiConfig.getContext() + "' and version '" + apiConfig.getVersion() + "'");
+                }
             } catch (APIManagementException e) {
-                throw new DeviceManagementException("Error occurred while initializing API Config '" +
-                        apiConfig.getName() + "'", e);
-            }
-        }
-    }
-
-    private void publishAPIs() throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Publishing Mobile Device Management related APIs");
-        }
-        List<APIConfig> apiConfigs = APIPublisherConfig.getInstance().getApiConfigs();
-        for (APIConfig apiConfig : apiConfigs) {
-            DeviceManagerUtil.publishAPI(apiConfig);
-            if (log.isDebugEnabled()) {
-                log.debug("Successfully published API '" + apiConfig.getName() + "' with the context '" +
+                log.error("Error occurred while publishing API '" + apiConfig.getName() + "' with the context '" +
                         apiConfig.getContext() + "' and version '" + apiConfig.getVersion() + "'");
             }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("End of publishing all mobile device management related JAX-RS services as APIs");
         }
     }
 

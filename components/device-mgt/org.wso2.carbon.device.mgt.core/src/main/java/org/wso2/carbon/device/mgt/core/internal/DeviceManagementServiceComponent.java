@@ -34,6 +34,7 @@ import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
+import org.wso2.carbon.device.mgt.core.app.mgt.AppManagementException;
 import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerImplHttp;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
@@ -117,20 +118,10 @@ public class DeviceManagementServiceComponent {
                     new DeviceManagementServiceProviderImpl(this.getPluginRepository());
 			DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
 
-			LicenseConfigurationManager.getInstance().initConfig();
-			LicenseConfig licenseConfig =
-					LicenseConfigurationManager.getInstance().getLicenseConfig();
-
-			LicenseManager licenseManager = new LicenseManagerImpl();
-			DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
-			DeviceManagementDataHolder.getInstance().setLicenseConfig(licenseConfig);
-
-			AppManagementConfigurationManager.getInstance().initConfig();
-			AppManagementConfig appConfig =
-					AppManagementConfigurationManager.getInstance().getAppManagementConfig();
-			DeviceManagementDataHolder.getInstance().setAppManagerConfig(appConfig);
-			AppManagerImplHttp appManager = new AppManagerImplHttp(appConfig);
-			DeviceManagementDataHolder.getInstance().setAppManager(appManager);
+            /* Initializing license manager */
+            this.initLicenseManager();
+            /* Initializing app manager connector */
+            this.initAppManagerConnector();
 
 			OperationManagementDAOFactory.init(dsConfig);
 
@@ -143,7 +134,7 @@ public class DeviceManagementServiceComponent {
                             "begin");
 				}
 				this.setupDeviceManagementSchema(dsConfig);
-				this.setupDefaultLicenses(licenseConfig);
+				this.setupDefaultLicenses(DeviceManagementDataHolder.getInstance().getLicenseConfig());
 			}
 
             synchronized (LOCK) {
@@ -163,6 +154,25 @@ public class DeviceManagementServiceComponent {
 			log.error("Error occurred while initializing device management core bundle", e);
 		}
 	}
+
+    private void initLicenseManager() throws LicenseManagementException {
+        LicenseConfigurationManager.getInstance().initConfig();
+        LicenseConfig licenseConfig =
+                LicenseConfigurationManager.getInstance().getLicenseConfig();
+
+        LicenseManager licenseManager = new LicenseManagerImpl();
+        DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
+        DeviceManagementDataHolder.getInstance().setLicenseConfig(licenseConfig);
+    }
+
+    private void initAppManagerConnector() throws AppManagementException {
+        AppManagementConfigurationManager.getInstance().initConfig();
+        AppManagementConfig appConfig =
+                AppManagementConfigurationManager.getInstance().getAppManagementConfig();
+        DeviceManagementDataHolder.getInstance().setAppManagerConfig(appConfig);
+        AppManagerImplHttp appManager = new AppManagerImplHttp(appConfig);
+        DeviceManagementDataHolder.getInstance().setAppManager(appManager);
+    }
 
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
@@ -197,8 +207,7 @@ public class DeviceManagementServiceComponent {
 			initializer.createRegistryDatabase();
 		} catch (Exception e) {
 			throw new DeviceManagementException(
-					"Error occurred while initializing Device Management " +
-					"database schema", e);
+					"Error occurred while initializing Device Management database schema", e);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Device management metadata repository schema has been successfully initialized");
@@ -330,4 +339,5 @@ public class DeviceManagementServiceComponent {
     protected void unsetDataSourceService(DataSourceService dataSourceService) {
         //do nothing
     }
+
 }

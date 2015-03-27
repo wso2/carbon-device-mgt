@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIConfig;
-import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -71,6 +70,7 @@ public class APIPublisherConfig {
         return apiConfigs;
     }
 
+    @SuppressWarnings("unused")
     public void setApiConfigs(List<APIConfig> apiConfigs) {
         this.apiConfigs = apiConfigs;
     }

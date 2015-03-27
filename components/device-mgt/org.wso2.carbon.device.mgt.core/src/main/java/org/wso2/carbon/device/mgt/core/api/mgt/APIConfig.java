@@ -74,6 +74,7 @@ public class APIConfig {
         return owner;
     }
 
+    @SuppressWarnings("unused")
     public void setOwner(String owner) {
         this.owner = owner;
     }
@@ -83,6 +84,7 @@ public class APIConfig {
         return context;
     }
 
+    @SuppressWarnings("unused")
     public void setContext(String context) {
         this.context = context;
     }
@@ -92,6 +94,7 @@ public class APIConfig {
         return endpoint;
     }
 
+    @SuppressWarnings("unused")
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
@@ -101,6 +104,7 @@ public class APIConfig {
         return version;
     }
 
+    @SuppressWarnings("unused")
     public void setVersion(String version) {
         this.version = version;
     }
@@ -110,6 +114,7 @@ public class APIConfig {
         return transports;
     }
 
+    @SuppressWarnings("unused")
     public void setTransports(String transports) {
         this.transports = transports;
     }

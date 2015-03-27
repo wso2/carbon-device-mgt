@@ -36,6 +36,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.util.List;
 
+/**
+ * This class carries all API configurations used by device management components, that need to be published within
+ * the underlying API-Management infrastructure.
+ */
 @XmlRootElement(name = "APIPublisherConfig")
 public class APIPublisherConfig {
 

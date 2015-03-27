@@ -27,6 +27,18 @@ import javax.xml.bind.annotation.XmlTransient;
 /**
  * This bean class carries the properties used by some API that needs to be published within the underlying
  * API-Management infrastructure.
+ *
+ * A sample API configuration accepted by this particular bean class would look like what's shown below.
+ * e.g.
+ *
+ * <API>
+ *      <Name>enrollment</Name>
+ *      <Owner>admin</Owner>
+ *      <Context>/enrol</Context>
+ *      <Version>1.0.0</Version>
+ *      <Endpoint>http://localhost:9763/</Endpoint>
+ *      <Transports>http,https</Transports>
+ * </API>
  */
 @XmlRootElement(name = "API")
 public class APIConfig {

@@ -99,7 +99,7 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
         return null;
     }
 
@@ -118,4 +118,5 @@ public class OperationManagerImpl implements OperationManager {
             return simpleOperationDAO;
         }
     }
+
 }

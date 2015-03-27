@@ -356,7 +356,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
         return null;
     }
 

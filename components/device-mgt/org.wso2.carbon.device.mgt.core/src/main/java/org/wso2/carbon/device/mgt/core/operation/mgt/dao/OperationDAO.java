@@ -34,4 +34,6 @@ public interface OperationDAO {
 
     List<Operation> getOperations() throws OperationManagementDAOException;
 
+    List<Operation> getOperations(String status) throws OperationManagementDAOException;
+
 }

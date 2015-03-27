@@ -52,4 +52,9 @@ public class ConfigOperationDAOImpl extends AbstractOperationDAO {
         return null;
     }
 
+    @Override
+    public List<Operation> getOperations(String status) throws OperationManagementDAOException {
+        return null;
+    }
+
 }

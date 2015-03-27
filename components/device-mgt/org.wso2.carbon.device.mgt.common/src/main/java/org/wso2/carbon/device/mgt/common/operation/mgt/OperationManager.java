@@ -55,8 +55,9 @@ public interface OperationManager {
      */
     public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
-    public Operation getPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
+    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
-    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier, String payLoad)
-            throws OperationManagementException;
+    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier,
+                                     String payLoad) throws OperationManagementException;
+
 }

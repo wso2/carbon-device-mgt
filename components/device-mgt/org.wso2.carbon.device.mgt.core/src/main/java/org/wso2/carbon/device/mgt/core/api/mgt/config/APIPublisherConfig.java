@@ -80,7 +80,7 @@ public class APIPublisherConfig {
             File publisherConfig = new File(APIPublisherConfig.USER_DEFINED_API_CONFIG_PATH);
             Document doc = DeviceManagerUtil.convertToDocument(publisherConfig);
 
-            /* Un-marshaling Device Management configuration */
+            /* Un-marshaling API publisher configuration */
             JAXBContext ctx = JAXBContext.newInstance(APIPublisherConfig.class);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             config = (APIPublisherConfig) unmarshaller.unmarshal(doc);

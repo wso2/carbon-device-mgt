@@ -60,7 +60,7 @@ public class APIConfig {
         return provider;
     }
 
-    @XmlElement(name = "Name", nillable = false)
+    @XmlElement(name = "Name", required = true)
     public String getName() {
         return name;
     }
@@ -69,7 +69,7 @@ public class APIConfig {
         this.name = name;
     }
 
-    @XmlElement(name = "Owner", nillable = false)
+    @XmlElement(name = "Owner", required = true)
     public String getOwner() {
         return owner;
     }
@@ -79,7 +79,7 @@ public class APIConfig {
         this.owner = owner;
     }
 
-    @XmlElement(name = "Context", nillable = false)
+    @XmlElement(name = "Context", required = true)
     public String getContext() {
         return context;
     }
@@ -89,7 +89,7 @@ public class APIConfig {
         this.context = context;
     }
 
-    @XmlElement(name = "Endpoint", nillable = false)
+    @XmlElement(name = "Endpoint", required = true)
     public String getEndpoint() {
         return endpoint;
     }
@@ -99,7 +99,7 @@ public class APIConfig {
         this.endpoint = endpoint;
     }
 
-    @XmlElement(name = "Version", nillable = false)
+    @XmlElement(name = "Version", required = false)
     public String getVersion() {
         return version;
     }
@@ -109,7 +109,7 @@ public class APIConfig {
         this.version = version;
     }
 
-    @XmlElement(name = "Transports", nillable = false)
+    @XmlElement(name = "Transports", required = false)
     public String getTransports() {
         return transports;
     }

@@ -29,7 +29,7 @@ public class Operation {
 		CONFIG, MESSAGE, INFO, COMMAND
 	}
     public enum OperationStatuses {
-        INPROGRES,PENDING,COMPLETED,ERROR
+        INPROGRESS,PENDING,COMPLETED,ERROR
     }
 
 	private String code;

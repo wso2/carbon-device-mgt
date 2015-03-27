@@ -83,7 +83,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     public FeatureManager getFeatureManager(String type) throws DeviceManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getFeatureManager(type);
     }
 
     @Override

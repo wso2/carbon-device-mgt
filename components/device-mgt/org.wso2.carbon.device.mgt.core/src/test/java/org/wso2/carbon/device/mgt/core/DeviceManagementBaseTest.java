@@ -89,7 +89,7 @@ public class DeviceManagementBaseTest {
         try {
             conn = this.getDataSource().getConnection();
             stmt = conn.createStatement();
-            stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/CreateH2TestDB.sql'");
+            stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/h2.sql'");
         } catch(Exception e){
             log.error(e);
             throw e;

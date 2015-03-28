@@ -25,9 +25,9 @@ import java.util.Properties;
 @XmlRootElement
 public class Operation {
 
-    public enum Type {
-        CONFIG, MESSAGE, INFO, COMMAND
-    }
+	public enum Type {
+		CONFIG, MESSAGE, INFO, COMMAND
+	}
 
     public enum Status {
         IN_PROGRES, PENDING, COMPLETED, ERROR

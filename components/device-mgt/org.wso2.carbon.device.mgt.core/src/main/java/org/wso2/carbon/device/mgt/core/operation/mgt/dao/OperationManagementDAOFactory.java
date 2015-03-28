@@ -23,10 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.CommandOperationDAOImpl;
-import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.ConfigOperationDAOImpl;
-import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.OperationMappingDAOImpl;
-import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.SimpleOperationDAOImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.*;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -48,12 +45,16 @@ public class OperationManagementDAOFactory {
         return new ConfigOperationDAOImpl();
     }
 
-    public static OperationDAO getSimpleOperationDAO() {
-        return new SimpleOperationDAOImpl();
+    public static OperationDAO getProfileOperationDAO() {
+        return new ProfileOperationDAOImpl();
     }
 
     public static OperationMappingDAO getOperationMappingDAO() {
         return new OperationMappingDAOImpl();
+    }
+
+    public static OperationDAO getOperationDAO() {
+        return new OperationDAOImpl();
     }
 
     public static void init(DataSource dtSource) {

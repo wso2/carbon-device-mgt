@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.*;
 
@@ -28,8 +29,9 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.sql.SQLException;
+import java.util.List;
 
-public abstract class AbstractOperationDAO implements OperationDAO {
+public class OperationDAOImpl implements OperationDAO {
 
     public int addOperation(Operation operation) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
@@ -55,6 +57,35 @@ public abstract class AbstractOperationDAO implements OperationDAO {
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
+    }
+
+    @Override
+    public int updateOperation(Operation operation) throws OperationManagementDAOException {
+        return 0;
+    }
+
+    @Override
+    public int deleteOperation(int id) throws OperationManagementDAOException {
+        return 0;
+    }
+
+    public Operation getOperation(int id) throws OperationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public List<Operation> getOperations() throws OperationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public List<Operation> getOperations(String status) throws OperationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
+        return null;
     }
 
 }

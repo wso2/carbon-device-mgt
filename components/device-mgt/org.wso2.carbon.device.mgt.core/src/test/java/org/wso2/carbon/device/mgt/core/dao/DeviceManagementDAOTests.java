@@ -108,7 +108,7 @@ public class DeviceManagementDAOTests {
         try {
             conn = this.getDataSource().getConnection();
             stmt = conn.createStatement();
-            stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/CreateH2TestDB.sql'");
+            stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/h2.sql'");
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
         }

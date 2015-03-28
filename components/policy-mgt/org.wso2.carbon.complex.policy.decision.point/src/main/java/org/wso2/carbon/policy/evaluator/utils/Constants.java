@@ -20,11 +20,11 @@ package org.wso2.carbon.policy.evaluator.utils;
 
 public class Constants {
 
-    public static final String DENY_OVERRIDES="deny_overrides";
-    public static final String PERMIT_OVERRIDES="permit_overrides";
-    public static final String FIRST_APPLICABLE="first_applicable";
-    public static final String LAST_APPLICABLE="last_applicable";
-    public static final String ALL_APPLICABLE="all_applicable";
-    public static final String HIGHEST_APPLICABLE="highest_applicable";
-    public static final String LOWEST_APPLICABLE="lowest_applicable";
+    public static final String DENY_OVERRIDES = "deny_overrides";
+    public static final String PERMIT_OVERRIDES = "permit_overrides";
+    public static final String FIRST_APPLICABLE = "first_applicable";
+    public static final String LAST_APPLICABLE = "last_applicable";
+    public static final String ALL_APPLICABLE = "all_applicable";
+    public static final String HIGHEST_APPLICABLE = "highest_applicable";
+    public static final String LOWEST_APPLICABLE = "lowest_applicable";
 }

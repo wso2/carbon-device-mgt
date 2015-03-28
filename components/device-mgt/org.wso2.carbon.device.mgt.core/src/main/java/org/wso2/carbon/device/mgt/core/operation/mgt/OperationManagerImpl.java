@@ -47,16 +47,18 @@ public class OperationManagerImpl implements OperationManager {
 
     private OperationDAO commandOperationDAO;
     private OperationDAO configOperationDAO;
-    private OperationDAO simpleOperationDAO;
+    private OperationDAO profileOperationDAO;
     private OperationMappingDAO operationMappingDAO;
     private DeviceDAO deviceDAO;
+    private OperationDAO operationDAO;
 
     public OperationManagerImpl() {
         commandOperationDAO = OperationManagementDAOFactory.getCommandOperationDAO();
         configOperationDAO = OperationManagementDAOFactory.getConfigOperationDAO();
-        simpleOperationDAO = OperationManagementDAOFactory.getSimpleOperationDAO();
+        profileOperationDAO = OperationManagementDAOFactory.getProfileOperationDAO();
         operationMappingDAO = OperationManagementDAOFactory.getOperationMappingDAO();
         deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        operationDAO = OperationManagementDAOFactory.getOperationDAO();
     }
 
     @Override
@@ -100,7 +102,21 @@ public class OperationManagerImpl implements OperationManager {
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
-        return null;
+        try {
+            OperationManagementDAOFactory.beginTransaction();
+
+            operationDAO.getNextOperation(deviceId);
+
+            OperationManagementDAOFactory.commitTransaction();
+            return null;
+        } catch (OperationManagementDAOException e) {
+            try {
+                OperationManagementDAOFactory.rollbackTransaction();
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the transaction", e1);
+            }
+            throw new OperationManagementException("Error occurred while adding operation", e);
+        }
     }
 
     @Override
@@ -115,7 +131,7 @@ public class OperationManagerImpl implements OperationManager {
         } else if (operation instanceof ConfigOperation) {
             return configOperationDAO;
         } else {
-            return simpleOperationDAO;
+            return profileOperationDAO;
         }
     }
 

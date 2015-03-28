@@ -18,20 +18,20 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class CommandOperationDAOImpl extends AbstractOperationDAO {
+public class CommandOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
@@ -76,6 +76,11 @@ public class CommandOperationDAOImpl extends AbstractOperationDAO {
 
     @Override
     public List<Operation> getOperations(String status) throws OperationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
         return null;
     }
 

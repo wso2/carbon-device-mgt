@@ -18,7 +18,18 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import java.io.Serializable;
 
-public class SimpleOperation extends Operation {
+public class ProfileOperation extends ConfigOperation implements Serializable {
+
+    private Object payload;
+
+    public Object getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Object payload) {
+        this.payload = payload;
+    }
+
 }

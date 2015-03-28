@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 
 import java.util.List;
@@ -28,12 +29,14 @@ public interface OperationDAO {
 
     int updateOperation(Operation operation) throws OperationManagementDAOException;
 
-    int deleteOperation(int id) throws OperationManagementDAOException;
+    int deleteOperation(int operationId) throws OperationManagementDAOException;
 
-    Operation getOperation(int id) throws OperationManagementDAOException;
+    Operation getOperation(int operationId) throws OperationManagementDAOException;
 
     List<Operation> getOperations() throws OperationManagementDAOException;
 
     List<Operation> getOperations(String status) throws OperationManagementDAOException;
+
+    Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException;
 
 }

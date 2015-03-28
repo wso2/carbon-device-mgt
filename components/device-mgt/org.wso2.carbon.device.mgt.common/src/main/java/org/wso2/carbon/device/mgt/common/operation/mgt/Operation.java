@@ -25,46 +25,47 @@ import java.util.Properties;
 @XmlRootElement
 public class Operation {
 
-	public enum Type {
-		CONFIG, MESSAGE, INFO, COMMAND
-	}
-    public enum OperationStatuses {
-        INPROGRES,PENDING,COMPLETED,ERROR
+    public enum Type {
+        CONFIG, MESSAGE, INFO, COMMAND
     }
 
-	private String code;
-	private Properties properties;
-	private Type type;
+    public enum Status {
+        IN_PROGRES, PENDING, COMPLETED, ERROR
+    }
+
+    private String code;
+    private Properties properties;
+    private Type type;
     private Long operationId;
     private String payLoad;
-    private OperationStatuses operationStates;
+    private Status status;
 
-	@XmlElement
-	public String getCode() {
-		return code;
-	}
+    @XmlElement
+    public String getCode() {
+        return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	@XmlElement
-	public Properties getProperties() {
-		return properties;
-	}
+    @XmlElement
+    public Properties getProperties() {
+        return properties;
+    }
 
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 
-	@XmlElement
-	public Type getType() {
-		return type;
-	}
+    @XmlElement
+    public Type getType() {
+        return type;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public Long getOperationId() {
         return operationId;
@@ -82,11 +83,12 @@ public class Operation {
         this.payLoad = payLoad;
     }
 
-    public OperationStatuses getOperationStates() {
-        return operationStates;
+    public Status getOperationStates() {
+        return status;
     }
 
-    public void setOperationStates(OperationStatuses operationStates) {
-        this.operationStates = operationStates;
+    public void setOperationStates(Status status) {
+        this.status = status;
     }
+
 }

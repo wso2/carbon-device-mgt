@@ -34,8 +34,9 @@ import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
-import org.wso2.carbon.device.mgt.core.app.mgt.AppManagementException;
-import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerImplHttp;
+import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.core.app.mgt.RemoteAppManagerConnector;
+import org.wso2.carbon.device.mgt.core.app.mgt.RemoteAppManagerConnector;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -46,8 +47,8 @@ import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManage
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.service.AppManagementServiceImpl;
-import org.wso2.carbon.device.mgt.core.service.AppManager;
+import org.wso2.carbon.device.mgt.core.app.mgt.AppManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerConnector;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
@@ -165,12 +166,12 @@ public class DeviceManagementServiceComponent {
         DeviceManagementDataHolder.getInstance().setLicenseConfig(licenseConfig);
     }
 
-    private void initAppManagerConnector() throws AppManagementException {
+    private void initAppManagerConnector() throws AppManagerConnectorException {
         AppManagementConfigurationManager.getInstance().initConfig();
         AppManagementConfig appConfig =
                 AppManagementConfigurationManager.getInstance().getAppManagementConfig();
         DeviceManagementDataHolder.getInstance().setAppManagerConfig(appConfig);
-        AppManagerImplHttp appManager = new AppManagerImplHttp(appConfig);
+        RemoteAppManagerConnector appManager = new RemoteAppManagerConnector(appConfig);
         DeviceManagementDataHolder.getInstance().setAppManager(appManager);
     }
 
@@ -194,7 +195,7 @@ public class DeviceManagementServiceComponent {
         bundleContext.registerService(ServerStartupObserver.class, new APIRegistrationStartupObserver(), null);
 
 	     /* Registering App Management service */
-	    bundleContext.registerService(AppManager.class.getName(), new AppManagementServiceImpl(), null);
+	    bundleContext.registerService(AppManagerConnector.class.getName(), new AppManagementServiceImpl(), null);
     }
 
 	private void setupDeviceManagementSchema(DataSourceConfig config)

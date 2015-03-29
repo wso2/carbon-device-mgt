@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.core.app.mgt;
 /**
  * Handles the exceptions related to Application management.
  */
-public class AppManagementException extends Exception {
+public class AppManagerConnectorException extends Exception {
 
 	private static final long serialVersionUID = -8933142342423122660L;
 	private String errorMessage;
@@ -34,26 +34,26 @@ public class AppManagementException extends Exception {
 		this.errorMessage = errorMessage;
 	}
 
-	public AppManagementException(String msg, Exception nestedEx) {
+	public AppManagerConnectorException(String msg, Exception nestedEx) {
 		super(msg, nestedEx);
 		setErrorMessage(msg);
 	}
 
-	public AppManagementException(String message, Throwable cause) {
+	public AppManagerConnectorException(String message, Throwable cause) {
 		super(message, cause);
 		setErrorMessage(message);
 	}
 
-	public AppManagementException(String msg) {
+	public AppManagerConnectorException(String msg) {
 		super(msg);
 		setErrorMessage(msg);
 	}
 
-	public AppManagementException() {
+	public AppManagerConnectorException() {
 		super();
 	}
 
-	public AppManagementException(Throwable cause) {
+	public AppManagerConnectorException(Throwable cause) {
 		super(cause);
 	}
 

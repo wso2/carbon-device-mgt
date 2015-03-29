@@ -21,53 +21,30 @@ package org.wso2.carbon.device.mgt.core.app.mgt.oauth;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HttpTransportProperties;
-import org.wso2.carbon.device.mgt.core.app.mgt.AppManagementException;
+import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerConnectorException;
 
 /**
  * Authenticate a given service client.
  */
 public class ServiceAuthenticator {
 
-	private static ServiceAuthenticator instance = null;
-	private String accessUsername = null;
-	private String accessPassword = null;
+    private String username;
+    private String password;
 
-	private ServiceAuthenticator() {
-	}
+    public ServiceAuthenticator(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
-	public static ServiceAuthenticator getInstance() {
-
-		if (instance != null) {
-			return instance;
-		} else {
-			instance = new ServiceAuthenticator();
-			return instance;
-		}
-	}
-
-	public void authenticate(ServiceClient client) throws AppManagementException {
-
-		if (accessUsername != null && accessPassword != null) {
-			Options option = client.getOptions();
-			HttpTransportProperties.Authenticator auth = new HttpTransportProperties.Authenticator();
-			auth.setUsername(accessUsername);
-			auth.setPassword(accessPassword);
-			auth.setPreemptiveAuthentication(true);
-			option.setProperty(org.apache.axis2.transport.http.HTTPConstants.AUTHENTICATE, auth);
-			option.setManageSession(true);
-
-		} else {
-			throw new AppManagementException("Authentication username or password not set");
-		}
-	}
-
-	public void setAccessUsername(String accessUsername) {
-		this.accessUsername = accessUsername;
-	}
-
-	public void setAccessPassword(String accessPassword) {
-		this.accessPassword = accessPassword;
-	}
+    public void authenticate(ServiceClient client) throws AppManagerConnectorException {
+        Options option = client.getOptions();
+        HttpTransportProperties.Authenticator auth = new HttpTransportProperties.Authenticator();
+        auth.setUsername(username);
+        auth.setPassword(password);
+        auth.setPreemptiveAuthentication(true);
+        option.setProperty(org.apache.axis2.transport.http.HTTPConstants.AUTHENTICATE, auth);
+        option.setManageSession(true);
+    }
 
 }
 

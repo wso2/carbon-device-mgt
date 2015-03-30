@@ -104,9 +104,7 @@ public class OperationManagerImpl implements OperationManager {
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
         try {
             OperationManagementDAOFactory.beginTransaction();
-
-            operationDAO.getNextOperation(deviceId);
-
+            profileOperationDAO.getNextOperation(deviceId);
             OperationManagementDAOFactory.commitTransaction();
             return null;
         } catch (OperationManagementDAOException e) {

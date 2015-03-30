@@ -27,8 +27,7 @@ public class AppManagementServiceImpl implements AppManagerConnector {
     @Override
     public Application[] getApplicationList(String domain, int pageNumber,
                                             int size) throws AppManagerConnectorException {
-        return DeviceManagementDataHolder.getInstance().getAppManager()
-                .getApplicationList(domain, pageNumber, size);
+        return DeviceManagementDataHolder.getInstance().getAppManager().getApplicationList(domain, pageNumber, size);
     }
 
     @Override
@@ -48,4 +47,5 @@ public class AppManagementServiceImpl implements AppManagerConnector {
     public Credential getClientCredentials() throws AppManagerConnectorException {
         return DeviceManagementDataHolder.getInstance().getAppManager().getClientCredentials();
     }
+
 }

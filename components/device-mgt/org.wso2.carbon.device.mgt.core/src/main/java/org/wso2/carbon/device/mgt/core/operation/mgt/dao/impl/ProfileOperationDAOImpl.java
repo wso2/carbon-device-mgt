@@ -107,7 +107,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             if (rs.next()) {
                 payload = rs.getBytes("PAYLOAD");
             }
-
             bais = new ByteArrayInputStream(payload);
             ois = new ObjectInputStream(bais);
             return (ProfileOperation) ois.readObject();
@@ -149,7 +148,41 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
-        return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            stmt = connection.prepareStatement(
+                    "SELECT o.ID AS OPERATION_ID, o.CREATED_TIMESTAMP AS CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP AS " +
+                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD FROM DM_OPERATION o " +
+                            "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.ID IN (" +
+                            "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
+                            "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND " +
+                            "d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN DM_DEVICE_OPERATION_MAPPING dom " +
+                            "ON d1.ID = dom.DEVICE_ID) ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1;");
+            stmt.setString(1, deviceId.getType());
+            stmt.setString(2, deviceId.getId());
+            rs = stmt.executeQuery();
+
+            byte[] payload = new byte[0];
+            if (rs.next()) {
+                payload = rs.getBytes("PAYLOAD");
+            }
+            bais = new ByteArrayInputStream(payload);
+            ois = new ObjectInputStream(bais);
+            return (ProfileOperation) ois.readObject();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
+        } catch (ClassNotFoundException e) {
+            throw new OperationManagementDAOException("Error occurred while casting retrieved payload as a " +
+                    "ProfileOperation object", e);
+        } catch (IOException e) {
+            throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
     }
 
 }

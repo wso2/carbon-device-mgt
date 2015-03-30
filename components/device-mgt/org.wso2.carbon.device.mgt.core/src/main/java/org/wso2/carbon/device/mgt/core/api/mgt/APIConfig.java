@@ -18,7 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.core.api.mgt;
 
+import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
+import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -51,8 +54,12 @@ public class APIConfig {
     private String transports;
     private APIProvider provider;
 
-    public void init(APIProvider provider) {
-        this.provider = provider;
+    public void init() throws DeviceManagementException {
+        try {
+            this.provider = APIManagerFactory.getInstance().getAPIProvider(this.getOwner());
+        } catch (APIManagementException e) {
+            throw new DeviceManagementException("Error occurred while initializing API provider", e);
+        }
     }
 
     @XmlTransient

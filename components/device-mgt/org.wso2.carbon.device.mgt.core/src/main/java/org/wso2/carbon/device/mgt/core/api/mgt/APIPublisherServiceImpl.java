@@ -42,10 +42,15 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             log.debug("Publishing API '" + api.getId() + "'");
         }
         APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
-        provider.addAPI(api);
-        if (log.isDebugEnabled()) {
-            log.debug("Successfully published API '" + api.getId() + "' with the context '" +
-                    api.getContext() + "'");
+        if (provider != null) {
+            provider.addAPI(api);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully published API '" + api.getId() + "' with the context '" +
+                        api.getContext() + "'");
+            }
+        } else {
+            log.error("API provider configured for the given API configuration is null. Thus, the API is not " +
+                    "published");
         }
     }
 

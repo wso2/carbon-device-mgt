@@ -60,14 +60,21 @@ public class APIRegistrationStartupObserver implements ServerStartupObserver {
         List<APIConfig> apiConfigs = APIPublisherConfig.getInstance().getApiConfigs();
         for (APIConfig apiConfig : apiConfigs) {
             try {
+                /* API Config is initialized at this point in order to avoid OSGi declarative services which
+                the APIManagerComponent depend on, are deployed and initialized before invoking methods in
+                APIManagerFactory  */
+                apiConfig.init();
+
                 API api = DeviceManagerUtil.getAPI(apiConfig);
                 DeviceManagementDataHolder.getInstance().getApiPublisherService().publishAPI(api);
 
                 log.info("Successfully published API '" + apiConfig.getName() + "' with the context '" +
-                            apiConfig.getContext() + "' and version '" + apiConfig.getVersion() + "'");
-            } catch (APIManagementException e) {
-                log.error("Error occurred while publishing API '" + apiConfig.getName() + "' with the context '" +
                         apiConfig.getContext() + "' and version '" + apiConfig.getVersion() + "'");
+            } catch (Throwable e) {
+                /* Throwable is caught as none of the RuntimeExceptions that can potentially occur at this point
+                does not seem to be logged anywhere else within the framework */
+                log.error("Error occurred while publishing API '" + apiConfig.getName() + "' with the context '" +
+                        apiConfig.getContext() + "' and version '" + apiConfig.getVersion() + "'", e);
             }
         }
         if (log.isDebugEnabled()) {

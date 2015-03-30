@@ -44,8 +44,6 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
 
     private ConfigurationContext configCtx;
     private ServiceAuthenticator authenticator;
-    private AppManagementConfig appManagementConfig;
-    private IdentityConfigurations identityConfig;
     private String oAuthAdminServiceUrl;
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
@@ -53,12 +51,10 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
     private static final Log log = LogFactory.getLog(RemoteAppManagerConnector.class);
 
     public RemoteAppManagerConnector(AppManagementConfig appManagementConfig) {
-        this.appManagementConfig = appManagementConfig;
+        IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                getDeviceManagementConfigRepository().getIdentityConfigurations();
         this.authenticator =
                 new ServiceAuthenticator(identityConfig.getAdminUsername(), identityConfig.getAdminPassword());
-        this.identityConfig =
-                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                        getDeviceManagementConfigRepository().getIdentityConfigurations();
         this.oAuthAdminServiceUrl =
                 identityConfig.getServerUrl() + DeviceManagementConstants.AppManagement.OAUTH_ADMIN_SERVICE;
         try {

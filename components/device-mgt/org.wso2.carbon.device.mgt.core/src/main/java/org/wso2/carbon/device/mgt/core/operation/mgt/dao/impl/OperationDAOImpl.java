@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.sql.SQLException;
 import java.util.List;
@@ -75,7 +76,33 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    public List<Operation> getOperations() throws OperationManagementDAOException {
+    public Operation getOperation(DeviceIdentifier deviceId, int operationId) throws OperationManagementDAOException {
+
+        return null;
+    }
+
+    @Override
+    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
+        Connection conn = OperationManagementDAOFactory.getConnection();
+        String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS FROM DM_OPERATION o " +
+                "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
+                "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 " +
+                "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON o.ID = ois.OP_ID";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceId.getType());
+            stmt.setString(2, deviceId.getId());
+
+            List<Operation> operations = new ArrayList<Operation>();
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Operation operation = new Operation();
+                //operation.setType();
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while retrieving the operation list " +
+                    "available for the '" + deviceId.getType() + "' with id '" + deviceId.getId() + "'" , e);
+        }
         return null;
     }
 

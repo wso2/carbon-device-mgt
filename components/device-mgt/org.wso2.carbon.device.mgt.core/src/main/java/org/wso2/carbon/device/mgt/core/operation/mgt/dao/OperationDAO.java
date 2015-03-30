@@ -33,7 +33,9 @@ public interface OperationDAO {
 
     Operation getOperation(int operationId) throws OperationManagementDAOException;
 
-    List<Operation> getOperations() throws OperationManagementDAOException;
+    Operation getOperation(DeviceIdentifier deviceId, int operationId) throws OperationManagementDAOException;
+
+    List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException;
 
     List<Operation> getOperations(String status) throws OperationManagementDAOException;
 

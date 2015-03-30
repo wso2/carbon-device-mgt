@@ -47,7 +47,12 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public List<Operation> getOperations() throws OperationManagementDAOException {
+    public Operation getOperation(DeviceIdentifier deviceId, int operationId) throws OperationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
         return null;
     }
 

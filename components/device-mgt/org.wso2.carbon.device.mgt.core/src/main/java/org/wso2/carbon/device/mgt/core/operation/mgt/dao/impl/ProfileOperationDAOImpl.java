@@ -137,7 +137,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public List<Operation> getOperations() throws OperationManagementDAOException {
+    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
         return null;
     }
 

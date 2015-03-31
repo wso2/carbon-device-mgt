@@ -43,10 +43,14 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         }
         APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
         if (provider != null) {
-            provider.addAPI(api);
-            if (log.isDebugEnabled()) {
-                log.debug("Successfully published API '" + api.getId() + "' with the context '" +
-                        api.getContext() + "'");
+            if (!provider.isAPIAvailable(api.getId())) {
+                provider.addAPI(api);
+                log.info("Successfully published API '" + api.getId().getApiName() + "' with context '" +
+                        api.getContext() + "' and version '" + api.getId().getVersion() + "'");
+            } else {
+                log.info("An API already exists with the name '" + api.getId() + "', context '" +
+                        api.getContext() + "' and verison '" + api.getId().getVersion() +
+                        "'. Thus, the API config is not re-published");
             }
         } else {
             log.error("API provider configured for the given API configuration is null. Thus, the API is not " +

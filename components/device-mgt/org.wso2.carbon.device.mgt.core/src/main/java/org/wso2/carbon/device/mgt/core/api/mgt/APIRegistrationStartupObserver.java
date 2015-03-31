@@ -67,9 +67,6 @@ public class APIRegistrationStartupObserver implements ServerStartupObserver {
 
                 API api = DeviceManagerUtil.getAPI(apiConfig);
                 DeviceManagementDataHolder.getInstance().getApiPublisherService().publishAPI(api);
-
-                log.info("Successfully published API '" + apiConfig.getName() + "' with the context '" +
-                        apiConfig.getContext() + "' and version '" + apiConfig.getVersion() + "'");
             } catch (Throwable e) {
                 /* Throwable is caught as none of the RuntimeExceptions that can potentially occur at this point
                 does not seem to be logged anywhere else within the framework */

@@ -35,7 +35,7 @@ public interface OperationManager {
      * operation
      */
     public boolean addOperation(Operation operation,
-            List<DeviceIdentifier> devices) throws OperationManagementException;
+                                List<DeviceIdentifier> devices) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of all operations to a device.
@@ -44,7 +44,7 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      * operation list.
      */
-    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of available operations to a device.
@@ -53,11 +53,12 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      * operation list.
      */
-    public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+    public List<? extends Operation> getPendingOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException;
 
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
-    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier,
-                                     String payLoad) throws OperationManagementException;
+    public Operation updateOperation(
+            int id, DeviceIdentifier deviceIdentifier, String payLoad) throws OperationManagementException;
 
 }

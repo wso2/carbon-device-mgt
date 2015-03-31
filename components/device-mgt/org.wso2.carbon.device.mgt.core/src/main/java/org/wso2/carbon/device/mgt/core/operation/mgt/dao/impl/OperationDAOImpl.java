@@ -24,6 +24,9 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.*;
 
 import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -82,38 +85,92 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
-        Connection conn = OperationManagementDAOFactory.getConnection();
-        String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS FROM DM_OPERATION o " +
-                "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
-                "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 " +
-                "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON o.ID = ois.OP_ID";
-        try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceId.getType());
-            stmt.setString(2, deviceId.getId());
-
-            List<Operation> operations = new ArrayList<Operation>();
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Operation operation = new Operation();
-                //operation.setType();
-            }
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while retrieving the operation list " +
-                    "available for the '" + deviceId.getType() + "' with id '" + deviceId.getId() + "'" , e);
-        }
+    public Operation getOperation(DeviceIdentifier deviceId,
+                                  Operation.Status status) throws OperationManagementDAOException {
         return null;
     }
 
     @Override
-    public List<Operation> getOperations(String status) throws OperationManagementDAOException {
+    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
+        List<Operation> operations;
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS FROM DM_OPERATION o " +
+                    "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
+                    "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 " +
+                    "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON o.ID = ois.OP_ID";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceId.getType());
+            stmt.setString(2, deviceId.getId());
+            rs = stmt.executeQuery();
+
+            operations = new ArrayList<Operation>();
+            while (rs.next()) {
+                Operation operation = new Operation();
+                operation.setId(rs.getInt("ID"));
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while retrieving the operation list " +
+                    "available for the '" + deviceId.getType() + "' with id '" + deviceId.getId() + "'", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return operations;
+    }
+
+    @Override
+    public List<? extends Operation> getOperations(DeviceIdentifier deviceId,
+                                                   Operation.Status status) throws OperationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public List<? extends Operation> getOperations(Operation.Status status) throws OperationManagementDAOException {
         return null;
     }
 
     @Override
     public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            stmt = connection.prepareStatement(
+                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS FROM DM_OPERATION o " +
+                            "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID " +
+                            "FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND " +
+                            "dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN " +
+                            "DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON o.ID = ois.OP_ID " +
+                            "ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
+            stmt.setString(1, deviceId.getType());
+            stmt.setString(2, deviceId.getId());
+            rs = stmt.executeQuery();
+
+            Operation operation = null;
+            if (rs.next()) {
+                operation = new Operation();
+                operation.setType(this.getType(rs.getString("TYPE")));
+                operation.setStatus(this.getStatus(rs.getString("STATUS")));
+                operation.setId(rs.getInt("ID"));
+            }
+            return operation;
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
+    private Operation.Status getStatus(String status) {
         return null;
     }
+
+    private Operation.Type getType(String type) {
+        return null;
+    }
+
 
 }

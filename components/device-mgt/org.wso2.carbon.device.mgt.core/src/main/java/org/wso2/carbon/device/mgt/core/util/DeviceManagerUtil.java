@@ -170,18 +170,19 @@ public final class DeviceManagerUtil {
     public static API getAPI(APIConfig config) throws APIManagementException {
         APIProvider provider = config.getProvider();
         APIIdentifier id = new APIIdentifier(config.getOwner(), config.getName(), config.getVersion());
+
         API api = new API(id);
-        if (!provider.isAPIAvailable(id)) {
-            api.setContext(config.getContext());
-            api.setUrl(config.getEndpoint());
-            api.setUriTemplates(
-                    getURITemplates(config.getEndpoint(), APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
-            api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);
-            api.addAvailableTiers(provider.getTiers());
-            api.setEndpointSecured(false);
-            api.setStatus(APIStatus.PUBLISHED);
-            api.setTransports(config.getTransports());
-        }
+        api.setApiOwner(config.getOwner());
+        api.setContext(config.getContext());
+        api.setUrl(config.getEndpoint());
+        api.setUriTemplates(
+                getURITemplates(config.getEndpoint(), APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
+        api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);
+        api.addAvailableTiers(provider.getTiers());
+        api.setEndpointSecured(false);
+        api.setStatus(APIStatus.PUBLISHED);
+        api.setTransports(config.getTransports());
+
         return api;
     }
 

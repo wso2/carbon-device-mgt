@@ -346,12 +346,12 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
+    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         return operationManager.getOperations(deviceId);
     }
 
     @Override
-    public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
+    public List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         return operationManager.getPendingOperations(deviceId);
     }
 
@@ -361,8 +361,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier,
-            String responsePayLoad) throws OperationManagementException {
+    public Operation updateOperation(int id, DeviceIdentifier deviceIdentifier,
+                                     String payLoad) throws OperationManagementException {
         return null;
     }
 

@@ -31,9 +31,11 @@ import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
+import org.wso2.carbon.device.mgt.core.api.mgt.APIConfig;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
+import org.wso2.carbon.device.mgt.core.api.mgt.config.APIPublisherConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerConnectorException;
 import org.wso2.carbon.device.mgt.core.app.mgt.RemoteAppManagerConnector;
 import org.wso2.carbon.device.mgt.core.app.mgt.RemoteAppManagerConnector;
@@ -156,6 +158,10 @@ public class DeviceManagementServiceComponent {
 		}
 	}
 
+    protected void deactivate(ComponentContext componentContext) {
+        //do nothing
+    }
+
     private void initLicenseManager() throws LicenseManagementException {
         LicenseConfigurationManager.getInstance().initConfig();
         LicenseConfig licenseConfig =
@@ -175,9 +181,11 @@ public class DeviceManagementServiceComponent {
         DeviceManagementDataHolder.getInstance().setAppManager(appManager);
     }
 
-    protected void deactivate(ComponentContext componentContext) {
-        //do nothing
-    }
+//    private void initAPIProviders() throws DeviceManagementException {
+//        for (APIConfig config : APIPublisherConfig.getInstance().getApiConfigs()) {
+//            config.init();
+//        }
+//    }
 
     private void registerServices(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {

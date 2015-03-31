@@ -33,6 +33,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOE
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,35 +92,74 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
-        return null;
-    }
-
-    @Override
-    public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
-        return null;
-    }
-
-    @Override
-    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         try {
+            List<Operation> operations = new ArrayList<Operation>();
+
             OperationManagementDAOFactory.beginTransaction();
-            profileOperationDAO.getNextOperation(deviceId);
+            operations.addAll(profileOperationDAO.getOperations(deviceId));
+            operations.addAll(configOperationDAO.getOperations(deviceId));
+            operations.addAll(commandOperationDAO.getOperations(deviceId));
             OperationManagementDAOFactory.commitTransaction();
-            return null;
+
+            return operations;
         } catch (OperationManagementDAOException e) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();
             } catch (OperationManagementDAOException e1) {
                 log.warn("Error occurred while roll-backing the transaction", e1);
             }
-            throw new OperationManagementException("Error occurred while adding operation", e);
+            throw new OperationManagementException("Error occurred while retrieving the list of " +
+                    "operations assigned for '" + deviceId.getType() + "' device '" + deviceId.getId() + "'", e);
         }
     }
 
     @Override
-    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier,
-            String responsePayLoad) throws OperationManagementException {
+    public List<? extends Operation> getPendingOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException {
+        try {
+            List<Operation> operations = new ArrayList<Operation>();
+
+            OperationManagementDAOFactory.beginTransaction();
+            operations.addAll(profileOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
+            operations.addAll(configOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
+            operations.addAll(commandOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
+            OperationManagementDAOFactory.commitTransaction();
+
+            return operations;
+        } catch (OperationManagementDAOException e) {
+            try {
+                OperationManagementDAOFactory.rollbackTransaction();
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the transaction", e1);
+            }
+            throw new OperationManagementException("Error occurred while retrieving the list of " +
+                    "pending operations assigned for '" + deviceId.getType() + "' device '" +
+                    deviceId.getId() + "'", e);
+        }
+    }
+
+    @Override
+    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+        try {
+            OperationManagementDAOFactory.beginTransaction();
+            Operation operation = operationDAO.getNextOperation(deviceId);
+            operation = this.lookupOperationDAO(operation.getType()).getOperation(operation.getId());
+            OperationManagementDAOFactory.commitTransaction();
+            return operation;
+        } catch (OperationManagementDAOException e) {
+            try {
+                OperationManagementDAOFactory.rollbackTransaction();
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the transaction", e1);
+            }
+            throw new OperationManagementException("Error occurred while retrieving next pending operation", e);
+        }
+    }
+
+    @Override
+    public Operation updateOperation(int id, DeviceIdentifier deviceIdentifier,
+                                     String responsePayLoad) throws OperationManagementException {
         return null;
     }
 
@@ -130,6 +170,19 @@ public class OperationManagerImpl implements OperationManager {
             return configOperationDAO;
         } else {
             return profileOperationDAO;
+        }
+    }
+
+    private OperationDAO lookupOperationDAO(Operation.Type type) {
+        switch (type) {
+            case CONFIG:
+                return configOperationDAO;
+            case PROFILE:
+                return profileOperationDAO;
+            case COMMAND:
+                return commandOperationDAO;
+            default:
+                return commandOperationDAO;
         }
     }
 

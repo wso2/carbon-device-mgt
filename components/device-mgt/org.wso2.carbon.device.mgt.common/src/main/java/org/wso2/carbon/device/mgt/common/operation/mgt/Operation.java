@@ -26,17 +26,17 @@ import java.util.Properties;
 public class Operation {
 
 	public enum Type {
-		CONFIG, MESSAGE, INFO, COMMAND
+		CONFIG, MESSAGE, INFO, COMMAND, PROFILE
 	}
 
     public enum Status {
-        IN_PROGRES, PENDING, COMPLETED, ERROR
+        IN_PROGRESS, PENDING, COMPLETED, ERROR
     }
 
     private String code;
     private Properties properties;
     private Type type;
-    private Long operationId;
+    private int id;
     private String payLoad;
     private Status status;
 
@@ -67,12 +67,12 @@ public class Operation {
         this.type = type;
     }
 
-    public Long getOperationId() {
-        return operationId;
+    public int getId() {
+        return id;
     }
 
-    public void setOperationId(Long operationId) {
-        this.operationId = operationId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getPayLoad() {
@@ -83,11 +83,11 @@ public class Operation {
         this.payLoad = payLoad;
     }
 
-    public Status getOperationStates() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setOperationStates(Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

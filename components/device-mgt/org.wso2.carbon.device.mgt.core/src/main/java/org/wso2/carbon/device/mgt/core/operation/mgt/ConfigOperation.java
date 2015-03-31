@@ -75,4 +75,8 @@ public class ConfigOperation extends Operation {
         }
     }
 
+    public Type getType() {
+        return Type.CONFIG;
+    }
+
 }

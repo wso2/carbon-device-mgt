@@ -81,16 +81,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public int updateOperation(Operation operation) throws OperationManagementDAOException {
-        return 0;
-    }
-
-    @Override
-    public int deleteOperation(int id) throws OperationManagementDAOException {
-        return 0;
-    }
-
-    @Override
     public Operation getOperation(int operationId) throws OperationManagementDAOException {
         Connection conn = OperationManagementDAOFactory.getConnection();
 
@@ -134,16 +124,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             }
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
-    }
-
-    @Override
-    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
-        return null;
-    }
-
-    @Override
-    public List<Operation> getOperations(String status) throws OperationManagementDAOException {
-        return null;
     }
 
     @Override

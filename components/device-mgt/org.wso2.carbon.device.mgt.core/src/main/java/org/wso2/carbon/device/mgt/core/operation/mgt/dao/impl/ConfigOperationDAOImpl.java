@@ -18,52 +18,14 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
-
-import java.util.List;
 
 public class ConfigOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
         return 0;
-    }
-
-    @Override
-    public int updateOperation(Operation operation) throws OperationManagementDAOException {
-        return 0;
-    }
-
-    @Override
-    public int deleteOperation(int id) throws OperationManagementDAOException {
-        return 0;
-    }
-
-    @Override
-    public Operation getOperation(int id) throws OperationManagementDAOException {
-        return null;
-    }
-
-    @Override
-    public Operation getOperation(DeviceIdentifier deviceId, int operationId) throws OperationManagementDAOException {
-        return null;
-    }
-
-    @Override
-    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
-        return null;
-    }
-
-    @Override
-    public List<Operation> getOperations(String status) throws OperationManagementDAOException {
-        return null;
-    }
-
-    @Override
-    public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
-        return null;
     }
 
 }

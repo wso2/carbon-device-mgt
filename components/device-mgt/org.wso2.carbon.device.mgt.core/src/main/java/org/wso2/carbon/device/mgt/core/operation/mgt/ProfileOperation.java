@@ -32,4 +32,8 @@ public class ProfileOperation extends ConfigOperation implements Serializable {
         this.payload = payload;
     }
 
+    public Type getType() {
+        return Type.PROFILE;
+    }
+
 }

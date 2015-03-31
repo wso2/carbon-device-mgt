@@ -32,4 +32,8 @@ public class CommandOperation extends Operation {
         this.enabled = enabled;
     }
 
+    public Type getType() {
+        return Type.COMMAND;
+    }
+
 }

@@ -87,7 +87,7 @@ public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
             DeviceIdentifier deviceId = new DeviceIdentifier();
             deviceId.setId("4892813d-0b18-4a02-b7b1-61775257400e");
             deviceId.setType("android");
-            List<Operation> operations = operationManager.getOperations(deviceId);
+            List<? extends Operation> operations = operationManager.getOperations(deviceId);
             Assert.assertNotNull(operations);
             boolean notEmpty = operations.size() > 0;
             Assert.assertTrue(notEmpty);

@@ -121,12 +121,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public List<Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
+    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getOperations(deviceId);
     }
 
     @Override
-    public List<Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
+    public List<? extends Operation> getPendingOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getPendingOperations(deviceId);
     }
 
@@ -136,13 +137,14 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public Operation updateOperation(Long operationId, DeviceIdentifier deviceIdentifier,
-            String responsePayLoad) throws OperationManagementException {
+    public Operation updateOperation(int operationId, DeviceIdentifier deviceIdentifier,
+                                     String responsePayLoad) throws OperationManagementException {
         return null;
     }
 
     @Override
-    public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(
+            EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
         DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                 .sendEnrolmentInvitation(emailMessageProperties);
     }

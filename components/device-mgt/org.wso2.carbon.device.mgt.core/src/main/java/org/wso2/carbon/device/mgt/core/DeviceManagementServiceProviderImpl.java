@@ -357,13 +357,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
-        return null;
+        return operationManager.getNextPendingOperation(deviceId);
     }
 
     @Override
     public Operation updateOperation(int id, DeviceIdentifier deviceIdentifier,
                                      String payLoad) throws OperationManagementException {
-        return null;
+        return operationManager.updateOperation(id, deviceIdentifier, payLoad);
     }
 
 }

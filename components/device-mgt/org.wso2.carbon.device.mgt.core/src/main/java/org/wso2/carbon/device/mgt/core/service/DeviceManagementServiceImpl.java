@@ -116,7 +116,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public boolean addOperation(Operation operation,
-            List<DeviceIdentifier> devices) throws OperationManagementException {
+                                List<DeviceIdentifier> devices) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, devices);
     }
 
@@ -133,13 +133,14 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getNextPendingOperation(deviceId);
     }
 
     @Override
     public Operation updateOperation(int operationId, DeviceIdentifier deviceIdentifier,
                                      String responsePayLoad) throws OperationManagementException {
-        return null;
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                updateOperation(operationId, deviceIdentifier, responsePayLoad);
     }
 
     @Override

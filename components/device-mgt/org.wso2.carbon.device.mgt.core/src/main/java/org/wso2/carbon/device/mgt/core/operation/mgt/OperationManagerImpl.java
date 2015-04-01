@@ -164,12 +164,15 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     private OperationDAO lookupOperationDAO(Operation operation) {
+
         if (operation instanceof CommandOperation) {
             return commandOperationDAO;
+        } else if (operation instanceof ProfileOperation) {
+            return profileOperationDAO;
         } else if (operation instanceof ConfigOperation) {
             return configOperationDAO;
-        } else {
-            return profileOperationDAO;
+        }else{
+            return operationDAO;
         }
     }
 

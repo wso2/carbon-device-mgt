@@ -128,15 +128,19 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ByteArrayInputStream bais;
         ObjectInputStream ois;
+        int operationId = 0;
+        String operationType = "";
+
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
                     "SELECT o.ID AS OPERATION_ID, o.CREATED_TIMESTAMP AS CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP AS " +
-                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD FROM DM_OPERATION o " +
+                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD,o.TYPE AS TYPE FROM DM_OPERATION o " +
                             "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.ID IN (" +
                             "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
                             "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND " +
@@ -149,10 +153,15 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             byte[] payload = new byte[0];
             if (rs.next()) {
                 payload = rs.getBytes("PAYLOAD");
+                operationId = rs.getInt("OPERATION_ID");
+                operationType = rs.getString("TYPE");
             }
             bais = new ByteArrayInputStream(payload);
             ois = new ObjectInputStream(bais);
-            return (ProfileOperation) ois.readObject();
+            ProfileOperation profileOperation = (ProfileOperation) ois.readObject();
+            profileOperation.setId(operationId);
+            profileOperation.setType(Operation.Type.valueOf(operationType));
+            return profileOperation;
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } catch (ClassNotFoundException e) {

@@ -48,7 +48,7 @@ public class OperationDAOImpl implements OperationDAO {
             stmt.setString(1, operation.getType().toString());
             stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
             stmt.setTimestamp(3, null);
-            stmt.setBoolean(4, false);
+            stmt.setString(4, Operation.Status.PENDING.toString());
             stmt.executeUpdate();
 
             rs = stmt.getGeneratedKeys();

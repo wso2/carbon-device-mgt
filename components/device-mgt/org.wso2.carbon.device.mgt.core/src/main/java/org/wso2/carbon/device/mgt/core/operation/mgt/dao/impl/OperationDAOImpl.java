@@ -20,20 +20,18 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
-import org.wso2.carbon.device.mgt.core.operation.mgt.dao.*;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 
-import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.sql.SQLException;
 import java.util.List;
 
 public class OperationDAOImpl implements OperationDAO {
@@ -165,11 +163,11 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     private Operation.Status getStatus(String status) {
-        return null;
+        return Operation.Status.valueOf(status);
     }
 
     private Operation.Type getType(String type) {
-        return null;
+        return Operation.Type.valueOf(type);
     }
 
 

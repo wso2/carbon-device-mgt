@@ -25,13 +25,17 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIConfig;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.util.List;
 
@@ -48,6 +52,8 @@ public class APIPublisherConfig {
     private static final Log log = LogFactory.getLog(APIPublisherConfig.class);
     private static final String USER_DEFINED_API_CONFIG_PATH =
             CarbonUtils.getEtcCarbonConfigDirPath() + File.separator + "user-api-publisher-config.xml";
+    private static final String USER_DEFINED_API_CONFIG_SCHEMA_PATH =
+            "resources/config/schema/api-publisher-config-schema.xsd";
 
     private static final Object LOCK = new Object();
 
@@ -83,9 +89,21 @@ public class APIPublisherConfig {
             /* Un-marshaling API publisher configuration */
             JAXBContext ctx = JAXBContext.newInstance(APIPublisherConfig.class);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
+            unmarshaller.setSchema(getSchema());
             config = (APIPublisherConfig) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {
             throw new DeviceManagementException("Error occurred while un-marshalling API Publisher Config", e);
+        }
+    }
+
+    private static Schema getSchema() throws DeviceManagementException {
+        try {
+            File deviceManagementSchemaConfig = new File(APIPublisherConfig.USER_DEFINED_API_CONFIG_SCHEMA_PATH);
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            return factory.newSchema(deviceManagementSchemaConfig);
+        } catch (SAXException e) {
+            throw new DeviceManagementException("Error occurred while initializing the schema of " +
+                    "user-api-publisher-config.xml", e);
         }
     }
 

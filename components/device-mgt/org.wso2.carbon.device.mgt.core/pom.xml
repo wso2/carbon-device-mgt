@@ -60,6 +60,7 @@
                             org.apache.commons.logging,
                             javax.naming,
                             javax.xml.*,
+                            org.xml.sax,
                             javax.sql.*,
                             org.wso2.carbon.context,
                             org.wso2.carbon.core,

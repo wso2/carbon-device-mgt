@@ -44,7 +44,7 @@ public class DeviceManagementConfigTests {
     private static final String MALFORMED_TEST_CONFIG_LOCATION_NO_JNDI_CONFIG =
             "./src/test/resources/config/malformed-cdm-config-no-jndi-config.xml";
     private static final String TEST_CONFIG_SCHEMA_LOCATION =
-            "./src/test/resources/config/schema/DeviceManagementConfigSchema.xsd";
+            "./src/test/resources/config/schema/device-mgt-config-schema.xsd";
 
     private Schema schema;
 

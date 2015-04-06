@@ -32,7 +32,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
@@ -134,13 +133,18 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         ByteArrayInputStream bais;
         ObjectInputStream ois;
         int operationId = 0;
+
         String operationType = "";
+        String createdTime;
+        String receivedTime;
+        String operationStatus = "";
 
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
                     "SELECT o.ID AS OPERATION_ID, o.CREATED_TIMESTAMP AS CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP AS " +
-                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD,o.TYPE AS TYPE FROM DM_OPERATION o " +
+                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD,o.TYPE AS TYPE,o.STATUS as STATUS " +
+                            "FROM DM_OPERATION o " +
                             "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.ID IN (" +
                             "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
                             "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND " +
@@ -152,16 +156,22 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
             byte[] payload = new byte[0];
             if (rs.next()) {
-                payload = rs.getBytes("PAYLOAD");
                 operationId = rs.getInt("OPERATION_ID");
+                createdTime = rs.getTimestamp("CREATED_TIMESTAMP").toString();
+                receivedTime = rs.getTimestamp("RECEIVED_TIMESTAMP").toString();
+                payload = rs.getBytes("PAYLOAD");
                 operationType = rs.getString("TYPE");
+                operationStatus = rs.getString("STATUS");
             }
             bais = new ByteArrayInputStream(payload);
             ois = new ObjectInputStream(bais);
-            ProfileOperation profileOperation = (ProfileOperation) ois.readObject();
+            ProfileOperation profileOperation = new ProfileOperation();
+            profileOperation.setPayload(ois.readObject());
             profileOperation.setId(operationId);
             profileOperation.setType(Operation.Type.valueOf(operationType));
+            profileOperation.setStatus(Operation.Status.valueOf(operationStatus));
             return profileOperation;
+
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } catch (ClassNotFoundException e) {
@@ -173,5 +183,4 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
     }
-
 }

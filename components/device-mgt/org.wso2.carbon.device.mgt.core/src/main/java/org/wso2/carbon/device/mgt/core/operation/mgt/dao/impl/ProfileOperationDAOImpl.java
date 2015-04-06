@@ -135,15 +135,16 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         int operationId = 0;
 
         String operationType = "";
-        String createdTime;
-        String receivedTime;
+        String createdTime = "";
+        String receivedTime = "";
         String operationStatus = "";
+        String operationCode = "";
 
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
                     "SELECT o.ID AS OPERATION_ID, o.CREATED_TIMESTAMP AS CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP AS " +
-                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD,o.TYPE AS TYPE,o.STATUS as STATUS " +
+                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD,o.TYPE AS TYPE,o.STATUS as STATUS,o.OPERATIONCODE " +
                             "FROM DM_OPERATION o " +
                             "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.ID IN (" +
                             "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
@@ -162,6 +163,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
                 payload = rs.getBytes("PAYLOAD");
                 operationType = rs.getString("TYPE");
                 operationStatus = rs.getString("STATUS");
+                operationCode = rs.getString("OPERATIONCODE");
             }
             bais = new ByteArrayInputStream(payload);
             ois = new ObjectInputStream(bais);
@@ -170,6 +172,9 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             profileOperation.setId(operationId);
             profileOperation.setType(Operation.Type.valueOf(operationType));
             profileOperation.setStatus(Operation.Status.valueOf(operationStatus));
+            profileOperation.setCreatedTimeStamp(createdTime);
+            profileOperation.setReceivedTimeStamp(receivedTime);
+            profileOperation.setCode(operationCode);
             return profileOperation;
 
         } catch (SQLException e) {

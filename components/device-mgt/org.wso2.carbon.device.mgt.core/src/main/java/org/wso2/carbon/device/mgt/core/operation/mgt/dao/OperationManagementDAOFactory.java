@@ -77,11 +77,10 @@ public class OperationManagementDAOFactory {
     public static Connection getConnection() throws OperationManagementDAOException {
         if (currentConnection.get() == null) {
             synchronized (LOCK) {
-
                 try {
                     currentConnection.set(dataSource.getConnection());
                 } catch (SQLException e) {
-                    throw new OperationManagementDAOException("Error occurred while retrieving datasource connection",
+                    throw new OperationManagementDAOException("Error occurred while retrieving data source connection",
                             e);
                 }
             }

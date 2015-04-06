@@ -39,11 +39,13 @@ public class OperationDAOImpl implements OperationDAO {
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS) VALUES (?, ?, ?, ?)");
+                    "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS,OPERATIONCODE)  " +
+                            "VALUES (?, ?, ?, ?,?)");
             stmt.setString(1, operation.getType().toString());
             stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
             stmt.setTimestamp(3, null);
             stmt.setString(4, Operation.Status.PENDING.toString());
+            stmt.setString(5, operation.getCode());
             stmt.executeUpdate();
 
             rs = stmt.getGeneratedKeys();
@@ -117,11 +119,11 @@ public class OperationDAOImpl implements OperationDAO {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql =
-                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS FROM DM_OPERATION o " +
+                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE FROM DM_OPERATION o " +
                             "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER " +
                             "JOIN " +
                             "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d" +
-                            ".DEVICE_IDENTIFICATION = ?) d1 "+
+                            ".DEVICE_IDENTIFICATION = ?) d1 " +
                             "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois  " +
                             "ON o.ID = ois.OP_ID";
             stmt = conn.prepareStatement(sql);
@@ -133,6 +135,15 @@ public class OperationDAOImpl implements OperationDAO {
             while (rs.next()) {
                 Operation operation = new Operation();
                 operation.setId(rs.getInt("ID"));
+                operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
+                operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                if (rs.getTimestamp("CREATED_TIMESTAMP") == null){
+                    operation.setReceivedTimeStamp("");
+                }else{
+                    operation.setReceivedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                }
+                operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                operation.setCode(rs.getString("OPERATIONCODE"));
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while retrieving the operation list " +
@@ -161,7 +172,8 @@ public class OperationDAOImpl implements OperationDAO {
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS FROM DM_OPERATION o " +
+                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS,o.OPERATIONCODE " +
+                            " FROM DM_OPERATION o " +
                             "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID " +
                             "FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND " +
                             "dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN " +
@@ -173,10 +185,18 @@ public class OperationDAOImpl implements OperationDAO {
 
             Operation operation = null;
             if (rs.next()) {
+
                 operation = new Operation();
                 operation.setType(this.getType(rs.getString("TYPE")));
                 operation.setStatus(this.getStatus(rs.getString("STATUS")));
                 operation.setId(rs.getInt("ID"));
+                operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null){
+                    operation.setReceivedTimeStamp("");
+                }else{
+                    operation.setReceivedTimeStamp(rs.getString("RECEIVED_TIMESTAMP").toString());
+                }
+                operation.setCode(rs.getString("OPERATIONCODE"));
             }
             return operation;
         } catch (SQLException e) {

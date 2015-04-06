@@ -65,6 +65,7 @@ public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
         CommandOperation op = new CommandOperation();
         op.setEnabled(true);
         op.setType(Operation.Type.COMMAND);
+        op.setCode("OPCODE1");
 
         List<DeviceIdentifier> deviceIds = new ArrayList<DeviceIdentifier>();
         DeviceIdentifier deviceId = new DeviceIdentifier();

@@ -71,7 +71,7 @@ public class DeviceConfigurationManager {
             /* Un-marshaling Device Management configuration */
             JAXBContext cdmContext = JAXBContext.newInstance(DeviceManagementConfig.class);
             Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-            unmarshaller.setSchema(getSchema());
+            //unmarshaller.setSchema(getSchema());
             this.currentDeviceConfig = (DeviceManagementConfig) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {
             throw new DeviceManagementException("Error occurred while initializing Data Source config", e);

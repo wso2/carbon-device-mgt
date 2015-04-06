@@ -36,6 +36,7 @@ public class OperationManagementDAOFactory {
     private static DataSource dataSource;
     private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
+    private static final Object LOCK = new Object();
 
     public static OperationDAO getCommandOperationDAO() {
         return new CommandOperationDAOImpl();
@@ -60,6 +61,7 @@ public class OperationManagementDAOFactory {
     public static void init(DataSource dtSource) {
         dataSource = dtSource;
     }
+
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
     }
@@ -72,7 +74,18 @@ public class OperationManagementDAOFactory {
         }
     }
 
-    public static Connection getConnection() {
+    public static Connection getConnection() throws OperationManagementDAOException {
+        if (currentConnection.get() == null) {
+            synchronized (LOCK) {
+
+                try {
+                    currentConnection.set(dataSource.getConnection());
+                } catch (SQLException e) {
+                    throw new OperationManagementDAOException("Error occurred while retrieving datasource connection",
+                            e);
+                }
+            }
+        }
         return currentConnection.get();
     }
 

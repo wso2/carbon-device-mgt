@@ -99,6 +99,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
                     "d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = " +
                     "dom.DEVICE_ID) ois ON o.ID = ois.OP_ID ORDER BY " +
                     "o.CREATED_TIMESTAMP ASC) po ON co.OPERATION_ID = po.OPERATION_ID";
+
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId.getType());
             stmt.setString(1, deviceId.getId());

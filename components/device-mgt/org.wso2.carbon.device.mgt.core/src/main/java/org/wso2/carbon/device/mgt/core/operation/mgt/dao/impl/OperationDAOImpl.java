@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,7 +71,7 @@ public class OperationDAOImpl implements OperationDAO {
 
             stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
             stmt.setString(2, operation.getStatus().toString());
-            stmt.setInt(3,operation.getId());
+            stmt.setInt(3, operation.getId());
             stmt.executeUpdate();
 
             rs = stmt.getGeneratedKeys();
@@ -103,7 +104,7 @@ public class OperationDAOImpl implements OperationDAO {
 
     @Override
     public Operation getOperation(DeviceIdentifier deviceId,
-                                  Operation.Status status) throws OperationManagementDAOException {
+            Operation.Status status) throws OperationManagementDAOException {
         return null;
     }
 
@@ -117,11 +118,12 @@ public class OperationDAOImpl implements OperationDAO {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql =
                     "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS FROM DM_OPERATION o " +
-                            "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN "
-                            +
-                            "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 "
-                            +
-                            "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON o.ID = ois.OP_ID";
+                            "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER " +
+                            "JOIN " +
+                            "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d" +
+                            ".DEVICE_IDENTIFICATION = ?) d1 "+
+                            "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois  " +
+                            "ON o.ID = ois.OP_ID";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId.getType());
             stmt.setString(2, deviceId.getId());

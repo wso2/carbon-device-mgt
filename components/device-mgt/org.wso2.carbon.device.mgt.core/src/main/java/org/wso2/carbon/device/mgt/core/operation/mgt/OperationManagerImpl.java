@@ -142,10 +142,7 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
         try {
-            OperationManagementDAOFactory.beginTransaction();
             Operation operation = operationDAO.getNextOperation(deviceId);
-            operation = this.lookupOperationDAO(operation.getType()).getOperation(operation.getId());
-            OperationManagementDAOFactory.commitTransaction();
             return operation;
         } catch (OperationManagementDAOException e) {
             try {

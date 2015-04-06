@@ -89,7 +89,7 @@ public class APIPublisherConfig {
             /* Un-marshaling API publisher configuration */
             JAXBContext ctx = JAXBContext.newInstance(APIPublisherConfig.class);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            unmarshaller.setSchema(getSchema());
+            //unmarshaller.setSchema(getSchema());
             config = (APIPublisherConfig) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {
             throw new DeviceManagementException("Error occurred while un-marshalling API Publisher Config", e);

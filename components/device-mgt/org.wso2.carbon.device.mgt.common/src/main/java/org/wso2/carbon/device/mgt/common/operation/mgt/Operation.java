@@ -39,6 +39,8 @@ public class Operation {
     private int id;
     private String payLoad;
     private Status status;
+    private String receivedTimeStamp;
+    private String createdTimeStamp;
 
     @XmlElement
     public String getCode() {
@@ -89,6 +91,22 @@ public class Operation {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getReceivedTimeStamp() {
+        return receivedTimeStamp;
+    }
+
+    public void setReceivedTimeStamp(String receivedTimeStamp) {
+        this.receivedTimeStamp = receivedTimeStamp;
+    }
+
+    public String getCreatedTimeStamp() {
+        return createdTimeStamp;
+    }
+
+    public void setCreatedTimeStamp(String createdTimeStamp) {
+        this.createdTimeStamp = createdTimeStamp;
     }
 
 }

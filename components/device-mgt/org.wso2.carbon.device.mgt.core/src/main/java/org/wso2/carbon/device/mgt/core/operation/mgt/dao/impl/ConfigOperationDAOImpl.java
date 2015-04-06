@@ -19,13 +19,35 @@
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ConfigOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
-        return 0;
-    }
+        int operationId = super.addOperation(operation);
+        ConfigOperation commandOp = (ConfigOperation) operation;
 
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            stmt = conn.prepareStatement("INSERT INTO DM_CONFIG_OPERATION(OPERATION_ID) VALUES(?)");
+            stmt.setInt(1, operationId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding command operation", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return operationId;
+    }
 }

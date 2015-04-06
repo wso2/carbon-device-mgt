@@ -24,7 +24,6 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +32,7 @@ import java.util.List;
 public class OperationDAOImpl implements OperationDAO {
 
     public int addOperation(Operation operation) throws OperationManagementDAOException {
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -60,7 +60,30 @@ public class OperationDAOImpl implements OperationDAO {
 
     @Override
     public int updateOperation(Operation operation) throws OperationManagementDAOException {
-        return 0;
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            stmt = connection.prepareStatement(
+                    "UPDATE DM_OPERATION O SET O.RECEIVED_TIMESTAMP=?,O.STATUS=? WHERE O.ID=?");
+
+            stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
+            stmt.setString(2, operation.getStatus().toString());
+            stmt.setInt(3,operation.getId());
+            stmt.executeUpdate();
+
+            rs = stmt.getGeneratedKeys();
+            int id = -1;
+            if (rs.next()) {
+                id = rs.getInt(1);
+            }
+            return id;
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
     }
 
     @Override

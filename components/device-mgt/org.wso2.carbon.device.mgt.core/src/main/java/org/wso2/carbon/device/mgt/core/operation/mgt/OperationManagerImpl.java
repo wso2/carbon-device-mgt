@@ -137,7 +137,7 @@ public class OperationManagerImpl implements OperationManager {
                     "pending operations assigned for '" + deviceId.getType() + "' device '" +
                     deviceId.getId() + "'", e);
         }
-    }
+}
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
@@ -156,7 +156,7 @@ public class OperationManagerImpl implements OperationManager {
 
     @Override
     public Operation updateOperation(int id, DeviceIdentifier deviceIdentifier,
-                                     String responsePayLoad) throws OperationManagementException {
+            String responsePayLoad) throws OperationManagementException {
         return null;
     }
 

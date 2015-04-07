@@ -26,28 +26,42 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOU
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConfigOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
-        int operationId = super.addOperation(operation);
-        ConfigOperation commandOp = (ConfigOperation) operation;
 
+        int operationId = super.addOperation(operation);
         PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
-            Connection conn = OperationManagementDAOFactory.getConnection();
+            Connection conn = OperationManagementDAOFactory.openConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_CONFIG_OPERATION(OPERATION_ID) VALUES(?)");
             stmt.setInt(1, operationId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding command operation", e);
         } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;
+    }
+
+    @Override
+    public void deleteOperation(int id) throws OperationManagementDAOException {
+
+        super.deleteOperation(id);
+        PreparedStatement stmt = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.openConnection();
+            stmt = connection.prepareStatement("DELETE DM_CONFIG_OPERATION WHERE OPERATION_ID=?") ;
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
     }
 }

@@ -45,5 +45,13 @@ public class OperationManagementDAOUtil {
             }
         }
     }
-
+    public static void cleanupResources(Statement stmt) {
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing the statement", e);
+            }
+        }
+    }
 }

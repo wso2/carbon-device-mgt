@@ -41,6 +41,7 @@ public class Operation {
     private Status status;
     private String receivedTimeStamp;
     private String createdTimeStamp;
+    private boolean isEnabled;
 
     @XmlElement
     public String getCode() {
@@ -107,6 +108,14 @@ public class Operation {
 
     public void setCreatedTimeStamp(String createdTimeStamp) {
         this.createdTimeStamp = createdTimeStamp;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
 }

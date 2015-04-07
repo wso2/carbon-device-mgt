@@ -27,9 +27,9 @@ public interface OperationDAO {
 
     int addOperation(Operation operation) throws OperationManagementDAOException;
 
-    int updateOperation(Operation operation) throws OperationManagementDAOException;
+    void updateOperation(Operation operation) throws OperationManagementDAOException;
 
-    int deleteOperation(int operationId) throws OperationManagementDAOException;
+    void deleteOperation(int operationId) throws OperationManagementDAOException;
 
     Operation getOperation(int operationId) throws OperationManagementDAOException;
 

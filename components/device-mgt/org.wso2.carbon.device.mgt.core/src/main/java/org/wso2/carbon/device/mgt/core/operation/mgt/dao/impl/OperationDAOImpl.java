@@ -37,9 +37,9 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
+            Connection connection = OperationManagementDAOFactory.openConnection();
             stmt = connection.prepareStatement(
-                    "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS,OPERATIONCODE)  " +
+                    "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, OPERATIONCODE)  " +
                             "VALUES (?, ?, ?, ?,?)");
             stmt.setString(1, operation.getType().toString());
             stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
@@ -62,12 +62,11 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    public int updateOperation(Operation operation) throws OperationManagementDAOException {
+    public void updateOperation(Operation operation) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
+            Connection connection = OperationManagementDAOFactory.openConnection();
             stmt = connection.prepareStatement(
                     "UPDATE DM_OPERATION O SET O.RECEIVED_TIMESTAMP=?,O.STATUS=? WHERE O.ID=?");
 
@@ -76,22 +75,26 @@ public class OperationDAOImpl implements OperationDAO {
             stmt.setInt(3, operation.getId());
             stmt.executeUpdate();
 
-            rs = stmt.getGeneratedKeys();
-            int id = -1;
-            if (rs.next()) {
-                id = rs.getInt(1);
-            }
-            return id;
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOUtil.cleanupResources(stmt);
         }
     }
 
     @Override
-    public int deleteOperation(int id) throws OperationManagementDAOException {
-        return 0;
+    public void deleteOperation(int id) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.openConnection();
+            stmt = connection.prepareStatement("DELETE DM_OPERATION WHERE ID=?") ;
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
     }
 
     public Operation getOperation(int id) throws OperationManagementDAOException {
@@ -117,9 +120,10 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            Connection conn = OperationManagementDAOFactory.getConnection();
+            Connection conn = OperationManagementDAOFactory.openConnection();
             String sql =
-                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE FROM DM_OPERATION o " +
+                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE FROM " +
+                            "DM_OPERATION o " +
                             "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER " +
                             "JOIN " +
                             "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d" +
@@ -150,6 +154,7 @@ public class OperationDAOImpl implements OperationDAO {
                     "available for the '" + deviceId.getType() + "' with id '" + deviceId.getId() + "'", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
         }
         return operations;
     }
@@ -170,7 +175,7 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
+            Connection connection = OperationManagementDAOFactory.openConnection();
             stmt = connection.prepareStatement(
                     "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS,o.OPERATIONCODE " +
                             " FROM DM_OPERATION o " +
@@ -203,6 +208,7 @@ public class OperationDAOImpl implements OperationDAO {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
         }
     }
 

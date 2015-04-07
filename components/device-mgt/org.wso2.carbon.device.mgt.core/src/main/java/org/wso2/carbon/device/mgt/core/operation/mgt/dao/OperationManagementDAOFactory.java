@@ -74,18 +74,26 @@ public class OperationManagementDAOFactory {
         }
     }
 
-    public static Connection getConnection() throws OperationManagementDAOException {
+    public static Connection openConnection() throws OperationManagementDAOException {
         if (currentConnection.get() == null) {
-            synchronized (LOCK) {
-                try {
-                    currentConnection.set(dataSource.getConnection());
-                } catch (SQLException e) {
-                    throw new OperationManagementDAOException("Error occurred while retrieving data source connection",
-                            e);
-                }
+            try {
+                currentConnection.set(dataSource.getConnection());
+            } catch (SQLException e) {
+                throw new OperationManagementDAOException("Error occurred while retrieving data source connection",
+                        e);
             }
         }
         return currentConnection.get();
+    }
+
+    public static void closeConnection() throws OperationManagementDAOException {
+
+        Connection con = currentConnection.get();
+        try {
+            con.close();
+        } catch (SQLException e) {
+            log.error("Error occurred while close the connection");
+        }
     }
 
     public static void commitTransaction() throws OperationManagementDAOException {
@@ -101,6 +109,8 @@ public class OperationManagementDAOFactory {
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while committing the transaction", e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -117,6 +127,8 @@ public class OperationManagementDAOFactory {
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while rollbacking the transaction", e);
+        } finally {
+            closeConnection();
         }
     }
 

@@ -28,30 +28,31 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
     private static final Log log = LogFactory.getLog(ProfileOperationDAOImpl.class);
 
     public int addOperation(Operation operation) throws OperationManagementDAOException {
+
         int operationId = super.addOperation(operation);
+        operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
+        operation.setId(operationId);
         ProfileOperation profileOp = (ProfileOperation) operation;
-        Connection conn = OperationManagementDAOFactory.getConnection();
+        Connection conn = OperationManagementDAOFactory.openConnection();
 
         PreparedStatement stmt = null;
-        ResultSet rs = null;
         ByteArrayOutputStream bao = null;
         ObjectOutputStream oos = null;
+
         try {
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);
             oos.writeObject(profileOp);
 
-            stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, PAYLOAD) VALUES(?, ?)");
+            stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATIONDETAILS) " +
+                    "VALUES(?, ?)");
             stmt.setInt(1, operationId);
             stmt.setBytes(2, bao.toByteArray());
             stmt.executeUpdate();
@@ -74,29 +75,29 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
                     log.warn("Error occurred while closing ObjectOutputStream", e);
                 }
             }
-            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;
     }
 
     @Override
     public Operation getOperation(int operationId) throws OperationManagementDAOException {
-        Connection conn = OperationManagementDAOFactory.getConnection();
+        Connection conn = OperationManagementDAOFactory.openConnection();
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ByteArrayInputStream bais = null;
         ObjectInputStream ois = null;
         try {
-            stmt = conn.prepareStatement("SELECT PAYLOAD FROM DM_PROFILE_OPERATION WHERE ID = ?");
+            stmt = conn.prepareStatement("SELECT OPERATIONDETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID = ?");
             stmt.setInt(1, operationId);
             rs = stmt.executeQuery();
 
-            byte[] payload = new byte[0];
+            byte[] operationDetails = new byte[0];
             if (rs.next()) {
-                payload = rs.getBytes("PAYLOAD");
+                operationDetails = rs.getBytes("OPERATIONDETAILS");
             }
-            bais = new ByteArrayInputStream(payload);
+            bais = new ByteArrayInputStream(operationDetails);
             ois = new ObjectInputStream(bais);
             return (ProfileOperation) ois.readObject();
         } catch (SQLException e) {
@@ -104,7 +105,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         } catch (IOException e) {
             throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
         } catch (ClassNotFoundException e) {
-            throw new OperationManagementDAOException("Error occurred while casting retrieved payload as a " +
+            throw new OperationManagementDAOException("Error occurred while casting retrieved profile operation as a " +
                     "ProfileOperation object", e);
         } finally {
             if (bais != null) {
@@ -122,6 +123,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
                 }
             }
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
         }
     }
 
@@ -132,51 +134,28 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         ResultSet rs = null;
         ByteArrayInputStream bais;
         ObjectInputStream ois;
-        int operationId = 0;
-
-        String operationType = "";
-        String createdTime = "";
-        String receivedTime = "";
-        String operationStatus = "";
-        String operationCode = "";
 
         try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
+            Connection connection = OperationManagementDAOFactory.openConnection();
             stmt = connection.prepareStatement(
-                    "SELECT o.ID AS OPERATION_ID, o.CREATED_TIMESTAMP AS CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP AS " +
-                            "RECEIVED_TIMESTAMP, po.PAYLOAD AS PAYLOAD,o.TYPE AS TYPE,o.STATUS as STATUS,o.OPERATIONCODE " +
+                    "SELECT po.OPERATIONDETAILS AS OPERATIONDETAILS " +
                             "FROM DM_OPERATION o " +
                             "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.ID IN (" +
                             "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
                             "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND " +
                             "d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN DM_DEVICE_OPERATION_MAPPING dom " +
-                            "ON d1.ID = dom.DEVICE_ID) ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1;");
+                            "ON d1.ID = dom.DEVICE_ID) ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
             stmt.setString(1, deviceId.getType());
             stmt.setString(2, deviceId.getId());
             rs = stmt.executeQuery();
 
-            byte[] payload = new byte[0];
+            byte[] operationObjbyteArr = new byte[0];
             if (rs.next()) {
-                operationId = rs.getInt("OPERATION_ID");
-                createdTime = rs.getTimestamp("CREATED_TIMESTAMP").toString();
-                receivedTime = rs.getTimestamp("RECEIVED_TIMESTAMP").toString();
-                payload = rs.getBytes("PAYLOAD");
-                operationType = rs.getString("TYPE");
-                operationStatus = rs.getString("STATUS");
-                operationCode = rs.getString("OPERATIONCODE");
+                operationObjbyteArr = rs.getBytes("OPERATIONDETAILS");
             }
-            bais = new ByteArrayInputStream(payload);
+            bais = new ByteArrayInputStream(operationObjbyteArr);
             ois = new ObjectInputStream(bais);
-            ProfileOperation profileOperation = new ProfileOperation();
-            profileOperation.setPayload(ois.readObject());
-            profileOperation.setId(operationId);
-            profileOperation.setType(Operation.Type.valueOf(operationType));
-            profileOperation.setStatus(Operation.Status.valueOf(operationStatus));
-            profileOperation.setCreatedTimeStamp(createdTime);
-            profileOperation.setReceivedTimeStamp(receivedTime);
-            profileOperation.setCode(operationCode);
-            return profileOperation;
-
+            return (ProfileOperation) ois.readObject();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } catch (ClassNotFoundException e) {
@@ -186,6 +165,67 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public void updateOperation(Operation operation) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
+
+        try {
+            Connection connection = OperationManagementDAOFactory.openConnection();
+            stmt = connection.prepareStatement(
+                    "UPDATE DM_PROFILE_OPERATION O SET O.OPERATIONDETAILS=? WHERE O.OPERATION_ID=?");
+
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(operation);
+
+            stmt.setBytes(1, bao.toByteArray());
+            stmt.setInt(2, operation.getId());
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while update operation metadata", e);
+        } catch (IOException e) {
+            throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
+        } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+    }
+
+    @Override
+    public void deleteOperation(int id) throws OperationManagementDAOException {
+
+        super.deleteOperation(id);
+        PreparedStatement stmt = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.openConnection();
+            stmt = connection.prepareStatement("DELETE DM_PROFILE_OPERATION WHERE OPERATION_ID=?");
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
         }
     }
 }

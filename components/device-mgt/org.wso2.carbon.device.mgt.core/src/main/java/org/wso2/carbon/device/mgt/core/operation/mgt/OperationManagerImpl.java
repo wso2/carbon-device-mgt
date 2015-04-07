@@ -155,9 +155,19 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public Operation updateOperation(int id, DeviceIdentifier deviceIdentifier,
-            String responsePayLoad) throws OperationManagementException {
-        return null;
+    public void updateOperation(int operationId, Operation.Status operationStatus)
+            throws OperationManagementException {
+        try {
+            OperationManagementDAOFactory.beginTransaction();
+            Operation operation = operationDAO.getOperation(operationId);
+            operation.setStatus(operationStatus);
+            operationDAO.updateOperation(operation);
+            OperationManagementDAOFactory.commitTransaction();
+        }catch(OperationManagementDAOException ex){
+            log.error("Error occurred while updating the operation: "+operationId);
+            throw new OperationManagementException("Error occurred while update operation", ex);
+        }
+
     }
 
     private OperationDAO lookupOperationDAO(Operation operation) {

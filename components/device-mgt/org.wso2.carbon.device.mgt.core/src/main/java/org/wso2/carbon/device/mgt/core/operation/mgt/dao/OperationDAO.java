@@ -35,7 +35,7 @@ public interface OperationDAO {
 
     Operation getOperation(DeviceIdentifier deviceId, int operationId) throws OperationManagementDAOException;
 
-    Operation getOperation(DeviceIdentifier deviceId, Operation.Status status) throws OperationManagementDAOException;
+    Operation getOperation(DeviceIdentifier deviceIdentifier, Operation.Status status) throws OperationManagementDAOException;
 
     List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException;
 

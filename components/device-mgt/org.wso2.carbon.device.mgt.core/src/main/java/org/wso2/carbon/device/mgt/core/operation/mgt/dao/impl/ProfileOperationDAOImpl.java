@@ -157,11 +157,14 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             ois = new ObjectInputStream(bais);
             return (ProfileOperation) ois.readObject();
         } catch (SQLException e) {
+            log.error("SQL error occurred while retrieving profile operation", e);
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } catch (ClassNotFoundException e) {
+            log.error("Class not found error occurred while retrieving profile operation", e);
             throw new OperationManagementDAOException("Error occurred while casting retrieved payload as a " +
                     "ProfileOperation object", e);
         } catch (IOException e) {
+            log.error("IO error occurred while de serialize profile operation", e);
             throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
@@ -178,8 +181,8 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
         try {
             Connection connection = OperationManagementDAOFactory.openConnection();
-            stmt = connection.prepareStatement(
-                    "UPDATE DM_PROFILE_OPERATION O SET O.OPERATIONDETAILS=? WHERE O.OPERATION_ID=?");
+            stmt = connection.prepareStatement("UPDATE DM_PROFILE_OPERATION O SET O.OPERATIONDETAILS=? " +
+                    "WHERE O.OPERATION_ID=?");
 
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);

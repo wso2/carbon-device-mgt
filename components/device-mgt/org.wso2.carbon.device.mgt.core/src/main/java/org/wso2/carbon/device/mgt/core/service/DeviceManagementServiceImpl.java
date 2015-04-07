@@ -116,7 +116,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public boolean addOperation(Operation operation,
-                                List<DeviceIdentifier> devices) throws OperationManagementException {
+            List<DeviceIdentifier> devices) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, devices);
     }
 
@@ -137,10 +137,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public Operation updateOperation(int operationId, DeviceIdentifier deviceIdentifier,
-                                     String responsePayLoad) throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
-                updateOperation(operationId, deviceIdentifier, responsePayLoad);
+    public void updateOperation(int operationId, Operation.Status operationStatus) throws OperationManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().updateOperation(operationId,
+                operationStatus);
     }
 
     @Override
@@ -149,6 +148,5 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                 .sendEnrolmentInvitation(emailMessageProperties);
     }
-
 
 }

@@ -153,9 +153,10 @@ public class OperationManagerImpl implements OperationManager {
     public void updateOperation(int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
         try {
-            OperationManagementDAOFactory.beginTransaction();
+
             Operation operation = operationDAO.getOperation(operationId);
             operation.setStatus(operationStatus);
+            OperationManagementDAOFactory.beginTransaction();
             operationDAO.updateOperation(operation);
             OperationManagementDAOFactory.commitTransaction();
         }catch(OperationManagementDAOException ex){

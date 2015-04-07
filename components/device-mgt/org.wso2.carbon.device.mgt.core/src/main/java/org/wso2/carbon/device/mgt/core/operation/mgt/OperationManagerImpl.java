@@ -145,11 +145,6 @@ public class OperationManagerImpl implements OperationManager {
             Operation operation = operationDAO.getNextOperation(deviceId);
             return operation;
         } catch (OperationManagementDAOException e) {
-            try {
-                OperationManagementDAOFactory.rollbackTransaction();
-            } catch (OperationManagementDAOException e1) {
-                log.warn("Error occurred while roll-backing the transaction", e1);
-            }
             throw new OperationManagementException("Error occurred while retrieving next pending operation", e);
         }
     }
@@ -164,6 +159,11 @@ public class OperationManagerImpl implements OperationManager {
             operationDAO.updateOperation(operation);
             OperationManagementDAOFactory.commitTransaction();
         }catch(OperationManagementDAOException ex){
+            try {
+                OperationManagementDAOFactory.rollbackTransaction();
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the update operation transaction", e1);
+            }
             log.error("Error occurred while updating the operation: "+operationId);
             throw new OperationManagementException("Error occurred while update operation", ex);
         }

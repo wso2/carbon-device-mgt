@@ -143,6 +143,9 @@ public class OperationManagerImpl implements OperationManager {
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
         try {
             Operation operation = operationDAO.getNextOperation(deviceId);
+            if (operation instanceof ProfileOperation){
+                   operation =  profileOperationDAO.getNextOperation(deviceId);
+            }
             return operation;
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving next pending operation", e);
@@ -152,8 +155,8 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public void updateOperation(int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
-        try {
 
+        try {
             Operation operation = operationDAO.getOperation(operationId);
             operation.setStatus(operationStatus);
             OperationManagementDAOFactory.beginTransaction();

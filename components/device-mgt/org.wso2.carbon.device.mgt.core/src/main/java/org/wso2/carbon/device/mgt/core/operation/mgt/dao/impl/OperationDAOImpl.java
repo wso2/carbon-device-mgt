@@ -260,10 +260,11 @@ public class OperationDAOImpl implements OperationDAO {
                             "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID " +
                             "FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND " +
                             "dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN " +
-                            "DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON o.ID = ois.OP_ID " +
+                            "DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON  o.STATUS=? AND o.ID = ois.OP_ID " +
                             "ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
             stmt.setString(1, deviceId.getType());
             stmt.setString(2, deviceId.getId());
+            stmt.setString(3, Operation.Status.PENDING.toString());
             rs = stmt.executeQuery();
 
             Operation operation = null;

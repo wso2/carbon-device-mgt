@@ -143,7 +143,7 @@ public class OperationManagerImpl implements OperationManager {
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
         try {
             Operation operation = operationDAO.getNextOperation(deviceId);
-            if (operation instanceof ProfileOperation){
+            if (operation!=null && operation.getType().equals(Operation.Type.PROFILE)){
                    operation =  profileOperationDAO.getNextOperation(deviceId);
             }
             return operation;

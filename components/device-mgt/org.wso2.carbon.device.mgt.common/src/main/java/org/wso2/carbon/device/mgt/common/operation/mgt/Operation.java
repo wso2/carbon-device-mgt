@@ -41,6 +41,7 @@ public class Operation {
     private String receivedTimeStamp;
     private String createdTimeStamp;
     private boolean isEnabled;
+    private Object payLoad;
 
     @XmlElement
     public String getCode() {
@@ -108,5 +109,14 @@ public class Operation {
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
+
+    public Object getPayLoad() {
+        return payLoad;
+    }
+
+    public void setPayLoad(Object payLoad) {
+        this.payLoad = payLoad;
+    }
+
 
 }

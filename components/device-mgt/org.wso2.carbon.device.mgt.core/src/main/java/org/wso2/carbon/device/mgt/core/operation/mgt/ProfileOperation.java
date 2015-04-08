@@ -22,16 +22,6 @@ import java.io.Serializable;
 
 public class ProfileOperation extends ConfigOperation implements Serializable {
 
-    private Object payload;
-
-    public Object getPayload() {
-        return payload;
-    }
-
-    public void setPayload(Object payload) {
-        this.payload = payload;
-    }
-
     public Type getType() {
         return Type.PROFILE;
     }

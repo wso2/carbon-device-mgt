@@ -20,10 +20,11 @@ package org.wso2.carbon.device.mgt.common.operation.mgt;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Properties;
 
 @XmlRootElement
-public class Operation {
+public class Operation implements Serializable {
 
 	public enum Type {
 		CONFIG, MESSAGE, INFO, COMMAND, PROFILE

@@ -37,7 +37,6 @@ public class Operation {
     private Properties properties;
     private Type type;
     private int id;
-    private String payLoad;
     private Status status;
     private String receivedTimeStamp;
     private String createdTimeStamp;
@@ -76,14 +75,6 @@ public class Operation {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getPayLoad() {
-        return payLoad;
-    }
-
-    public void setPayLoad(String payLoad) {
-        this.payLoad = payLoad;
     }
 
     public Status getStatus() {

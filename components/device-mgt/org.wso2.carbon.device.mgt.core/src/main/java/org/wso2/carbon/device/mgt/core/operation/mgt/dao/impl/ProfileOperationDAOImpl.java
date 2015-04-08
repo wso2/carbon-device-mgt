@@ -51,7 +51,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             oos = new ObjectOutputStream(bao);
             oos.writeObject(profileOp);
 
-            stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATIONDETAILS) " +
+            stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
             stmt.setInt(1, operationId);
             stmt.setBytes(2, bao.toByteArray());
@@ -89,7 +89,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         ByteArrayInputStream bais = null;
         ObjectInputStream ois = null;
         try {
-            stmt = conn.prepareStatement("SELECT OPERATIONDETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID = ?");
+            stmt = conn.prepareStatement("SELECT OPERATION_DETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID = ?");
             stmt.setInt(1, operationId);
             rs = stmt.executeQuery();
 
@@ -138,7 +138,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         try {
             Connection connection = OperationManagementDAOFactory.openConnection();
             stmt = connection.prepareStatement(
-                    "SELECT po.OPERATIONDETAILS AS OPERATIONDETAILS " +
+                    "SELECT po.OPERATION_DETAILS AS OPERATIONDETAILS " +
                             "FROM DM_OPERATION o " +
                             "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.ID IN (" +
                             "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
@@ -181,7 +181,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
         try {
             Connection connection = OperationManagementDAOFactory.openConnection();
-            stmt = connection.prepareStatement("UPDATE DM_PROFILE_OPERATION O SET O.OPERATIONDETAILS=? " +
+            stmt = connection.prepareStatement("UPDATE DM_PROFILE_OPERATION O SET O.OPERATION_DETAILS=? " +
                     "WHERE O.OPERATION_ID=?");
 
             bao = new ByteArrayOutputStream();

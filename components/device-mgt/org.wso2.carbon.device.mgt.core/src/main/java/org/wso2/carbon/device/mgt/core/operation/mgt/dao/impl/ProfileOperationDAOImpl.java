@@ -133,7 +133,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ByteArrayInputStream bais;
-        ObjectInputStream ois;
+        ObjectOutputStream objectOutputStream;
 
         try {
             Connection connection = OperationManagementDAOFactory.openConnection();
@@ -149,13 +149,21 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             stmt.setString(2, deviceId.getId());
             rs = stmt.executeQuery();
 
-            byte[] operationObjbyteArr = new byte[0];
+            byte[] operationObjbyteArr;
+            Blob operationBlob;
+            ByteArrayInputStream in;
+            ObjectInputStream is;
+
             if (rs.next()) {
-                operationObjbyteArr = rs.getBytes("OPERATIONDETAILS");
+                operationBlob = rs.getBlob("OPERATIONDETAILS");
+                operationObjbyteArr = operationBlob.getBytes(1, (int) operationBlob.length());
+                in = new ByteArrayInputStream(operationObjbyteArr);
+                is = new ObjectInputStream(in);
+                return (ProfileOperation) is.readObject();
+            }else{
+                return null;
             }
-            bais = new ByteArrayInputStream(operationObjbyteArr);
-            ois = new ObjectInputStream(bais);
-            return (ProfileOperation) ois.readObject();
+
         } catch (SQLException e) {
             log.error("SQL error occurred while retrieving profile operation", e);
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);

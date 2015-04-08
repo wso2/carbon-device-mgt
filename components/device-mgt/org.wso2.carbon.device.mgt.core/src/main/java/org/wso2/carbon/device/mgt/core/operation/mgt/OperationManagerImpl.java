@@ -120,19 +120,11 @@ public class OperationManagerImpl implements OperationManager {
         try {
             List<Operation> operations = new ArrayList<Operation>();
 
-            OperationManagementDAOFactory.beginTransaction();
             operations.addAll(profileOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
             operations.addAll(configOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
             operations.addAll(commandOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
-            OperationManagementDAOFactory.commitTransaction();
-
             return operations;
         } catch (OperationManagementDAOException e) {
-            try {
-                OperationManagementDAOFactory.rollbackTransaction();
-            } catch (OperationManagementDAOException e1) {
-                log.warn("Error occurred while roll-backing the transaction", e1);
-            }
             throw new OperationManagementException("Error occurred while retrieving the list of " +
                     "pending operations assigned for '" + deviceId.getType() + "' device '" +
                     deviceId.getId() + "'", e);

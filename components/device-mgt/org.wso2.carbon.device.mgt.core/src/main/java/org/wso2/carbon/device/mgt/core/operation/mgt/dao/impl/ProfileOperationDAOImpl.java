@@ -54,7 +54,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
             stmt.setInt(1, operationId);
-            stmt.setBytes(2, bao.toByteArray());
+            stmt.setObject(2, bao.toByteArray());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding profile operation", e);

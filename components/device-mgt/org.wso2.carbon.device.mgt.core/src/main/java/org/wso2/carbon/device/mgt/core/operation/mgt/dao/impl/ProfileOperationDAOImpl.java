@@ -43,38 +43,16 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         Connection conn = OperationManagementDAOFactory.openConnection();
 
         PreparedStatement stmt = null;
-        ByteArrayOutputStream bao = null;
-        ObjectOutputStream oos = null;
 
         try {
-            bao = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(bao);
-            oos.writeObject(profileOp);
-
             stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
             stmt.setInt(1, operationId);
-            stmt.setBytes(2, bao.toByteArray());
+            stmt.setObject(2, profileOp);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding profile operation", e);
-        } catch (IOException e) {
-            throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
         } finally {
-            if (bao != null) {
-                try {
-                    bao.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
-                }
-            }
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ObjectOutputStream", e);
-                }
-            }
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;
@@ -132,8 +110,8 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ByteArrayInputStream bais;
-        ObjectOutputStream objectOutputStream;
+        ByteArrayInputStream bais = null;
+        ObjectInputStream ois = null;
 
         try {
             Connection connection = OperationManagementDAOFactory.openConnection();
@@ -149,21 +127,13 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             stmt.setString(2, deviceId.getId());
             rs = stmt.executeQuery();
 
-            byte[] operationObjbyteArr;
-            Blob operationBlob;
-            ByteArrayInputStream in;
-            ObjectInputStream is;
-
+            byte[] operationDetails = new byte[0];
             if (rs.next()) {
-                operationBlob = rs.getBlob("OPERATIONDETAILS");
-                operationObjbyteArr = operationBlob.getBytes(1, (int) operationBlob.length());
-                in = new ByteArrayInputStream(operationObjbyteArr);
-                is = new ObjectInputStream(in);
-                return (ProfileOperation) is.readObject();
-            }else{
-                return null;
+                operationDetails = rs.getBytes("OPERATIONDETAILS");
             }
-
+            bais = new ByteArrayInputStream(operationDetails);
+            ois = new ObjectInputStream(bais);
+            return (ProfileOperation) ois.readObject();
         } catch (SQLException e) {
             log.error("SQL error occurred while retrieving profile operation", e);
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
@@ -175,6 +145,20 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             log.error("IO error occurred while de serialize profile operation", e);
             throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
         } finally {
+            if (bais != null) {
+                try {
+                    bais.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
         }

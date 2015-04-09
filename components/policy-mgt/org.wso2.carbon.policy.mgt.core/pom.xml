@@ -68,6 +68,8 @@
                             org.wso2.carbon.policy.mgt.common.*,
                             org.wso2.carbon.user.core.*,
                             org.wso2.carbon.utils.*,
+                            org.wso2.carbon.context.*,
+                            org.wso2.carbon.user.api.*,
                             org.wso2.carbon.device.mgt.core.*,
                             org.wso2.carbon.device.mgt.common.*
                         </Import-Package>

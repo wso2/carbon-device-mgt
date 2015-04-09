@@ -20,7 +20,7 @@ package org.wso2.carbon.simple.policy.decision.point;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.policy.mgt.common.PIPDeviceData;
+import org.wso2.carbon.policy.mgt.common.PIPDevice;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 
@@ -41,7 +41,7 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
     }
 
     @Override
-    public Policy getEffectivePolicy(PIPDeviceData pipDeviceData) throws PolicyEvaluationException {
+    public Policy getEffectivePolicy(PIPDevice pipDevice) throws PolicyEvaluationException {
         return null;
     }
 }

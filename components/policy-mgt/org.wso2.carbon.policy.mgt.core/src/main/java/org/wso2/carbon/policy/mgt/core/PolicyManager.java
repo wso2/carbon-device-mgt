@@ -47,4 +47,7 @@ public interface PolicyManager {
 
     List<Feature> getFeatures() throws FeatureManagementException;
 
+    PolicyAdministratorPoint getPAP()  throws PolicyManagementException;
+
+    PolicyInformationPoint getPIP()    throws PolicyManagementException;
 }

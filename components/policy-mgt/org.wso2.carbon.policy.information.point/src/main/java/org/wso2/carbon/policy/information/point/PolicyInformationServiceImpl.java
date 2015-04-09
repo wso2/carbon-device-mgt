@@ -20,7 +20,7 @@ package org.wso2.carbon.policy.information.point;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.PIPDeviceData;
+import org.wso2.carbon.policy.mgt.common.PIPDevice;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 
@@ -28,12 +28,12 @@ import java.util.List;
 
 public class PolicyInformationServiceImpl implements PolicyInformationPoint {
     @Override
-    public PIPDeviceData getDeviceData(DeviceIdentifier deviceIdentifier) {
+    public PIPDevice getDeviceData(DeviceIdentifier deviceIdentifier) {
         return null;
     }
 
     @Override
-    public List<Policy> getRelatedPolicies(PIPDeviceData pipDeviceData) {
+    public List<Policy> getRelatedPolicies(PIPDevice pipDevice) {
         return null;
     }
 

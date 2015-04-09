@@ -22,6 +22,7 @@ package org.wso2.carbon.policy.mgt.core.dao;
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.List;
 
@@ -31,12 +32,22 @@ public interface FeatureDAO {
 
     Feature updateFeature(Feature feature) throws FeatureManagerDAOException;
 
+    ProfileFeature addProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException;
+
+    ProfileFeature updateProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException;
+
+    List<ProfileFeature> addProfileFeatures(List<ProfileFeature> features, int profileId) throws FeatureManagerDAOException;
+
+    List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws FeatureManagerDAOException;
+
     List<Feature> getAllFeatures() throws FeatureManagerDAOException;
 
-    List<Feature> getFeaturesForProfile(int ProfileId) throws FeatureManagerDAOException;
+    List<Feature> getAllFeatures(String deviceType) throws FeatureManagerDAOException;
 
-    void deleteFeature(int featureId) throws FeatureManagerDAOException;
+    List<ProfileFeature> getFeaturesForProfile(int ProfileId) throws FeatureManagerDAOException;
 
-    void deleteFeaturesOfProfile(Profile profile) throws FeatureManagerDAOException;
+    boolean deleteFeature(int featureId) throws FeatureManagerDAOException;
+
+    boolean deleteFeaturesOfProfile(Profile profile) throws FeatureManagerDAOException;
 
 }

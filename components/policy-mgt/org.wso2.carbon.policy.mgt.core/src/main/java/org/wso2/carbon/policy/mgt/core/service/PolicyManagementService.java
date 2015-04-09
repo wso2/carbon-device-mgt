@@ -84,4 +84,14 @@ public class PolicyManagementService implements PolicyManager {
     public List<Feature> getFeatures() throws FeatureManagementException {
         return policyManager.getFeatures();
     }
+
+    @Override
+    public PolicyAdministratorPoint getPAP() throws PolicyManagementException {
+        return policyManager.getPAP();
+    }
+
+    @Override
+    public PolicyInformationPoint getPIP() throws PolicyManagementException {
+        return policyManager.getPIP();
+    }
 }

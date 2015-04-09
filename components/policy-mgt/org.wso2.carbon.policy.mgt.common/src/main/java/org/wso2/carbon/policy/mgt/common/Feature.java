@@ -24,8 +24,9 @@ public class Feature {
     private String code;
     private String name;
     private String description;
-    private Object attribute;
+ //   private Object attribute;
     private String ruleValue;
+    private int deviceTypeId;
 
     public String getDescription() {
         return description;
@@ -67,11 +68,19 @@ public class Feature {
         this.name = name;
     }
 
-    public Object getAttribute() {
+/*    public Object getAttribute() {
         return attribute;
     }
 
     public void setAttribute(Object attribute) {
         this.attribute = attribute;
+    }*/
+
+    public int getDeviceTypeId() {
+        return deviceTypeId;
+    }
+
+    public void setDeviceTypeId(int deviceTypeId) {
+        this.deviceTypeId = deviceTypeId;
     }
 }

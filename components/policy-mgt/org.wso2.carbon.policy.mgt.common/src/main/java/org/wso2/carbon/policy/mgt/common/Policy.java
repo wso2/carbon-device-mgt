@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
+
+import org.wso2.carbon.device.mgt.core.dto.Device;
+
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +36,7 @@ public class Policy {
     private boolean generic;                // If true, this should be applied to all related device.
     private List<String> roleList;          // Roles which this policy should be applied.
     private String ownershipType;           // Ownership type (COPE, BYOD, CPE)
-    private List<String> DeviceList;        // Individual devices this policy should be applied
+    private List<Device> DeviceList;        // Individual devices this policy should be applied
 
     /*Dynamic policy attributes*/
 
@@ -47,8 +50,10 @@ public class Policy {
 
     /*These are related to location based policies*/
 
-    private String altitude;                // Altitude
+    private String latitude;                // Latitude
     private String longitude;               // Longitude
+
+    private int tenantId;
 
     /*This will be used to record attributes which will be used by customer extended PDPs and PIPs*/
 
@@ -110,11 +115,11 @@ public class Policy {
         this.ownershipType = ownershipType;
     }
 
-    public List<String> getDeviceList() {
+    public List<Device> getDeviceList() {
         return DeviceList;
     }
 
-    public void setDeviceList(List<String> deviceList) {
+    public void setDeviceList(List<Device> deviceList) {
         DeviceList = deviceList;
     }
 
@@ -150,12 +155,12 @@ public class Policy {
         this.endDate = endDate;
     }
 
-    public String getAltitude() {
-        return altitude;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setAltitude(String altitude) {
-        this.altitude = altitude;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getLongitude() {
@@ -172,5 +177,13 @@ public class Policy {
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
     }
 }

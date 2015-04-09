@@ -34,7 +34,7 @@ public class PolicyCreator {
         Feature feature = new Feature();
         feature.setName("Camera");
         feature.setCode("502A");
-        feature.setAttribute("disable");
+       // feature.setAttribute("disable");
 
         List<Feature> featureList = new ArrayList<Feature>();
         featureList.add(feature);
@@ -45,7 +45,7 @@ public class PolicyCreator {
         profile.setTenantId(-1234);
 
         policy.setProfile(profile);
-        profile.setFeaturesList(featureList);
+        //profile.setFeaturesList(featureList);
 
         policy.setPolicyName("Camera_related_policy");
 

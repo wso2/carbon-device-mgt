@@ -20,6 +20,7 @@ package org.wso2.carbon.policy.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -32,6 +33,8 @@ import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
+
+import java.util.List;
 
 public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
@@ -71,11 +74,11 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     }
 
     @Override
-    public Policy addPolicyToDevice(String deviceId, String deviceType, Policy policy)
+    public Policy addPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
             throws FeatureManagementException, PolicyManagementException {
 
         try {
-            policy = policyDAO.addPolicy(deviceId, deviceType, policy);
+            policy = policyDAO.addPolicyToDevice(deviceIdentifier, policy);
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while persisting the policy.";
             log.error(msg, e);
@@ -98,39 +101,57 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     }
 
     @Override
-    public Policy getPolicy() {
-        return null;
+    public List<Policy> getPolicies() throws PolicyManagementException {
+        try {
+            return policyDAO.getPolicy();
+        } catch (PolicyManagerDAOException e) {
+            String msg = "Error occurred while getting the policies.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
     }
 
     @Override
-    public Policy getPolicyOfDevice(String deviceId, String deviceType)
+    public List<Policy> getPoliciesOfDevice(String deviceId, String deviceType)
             throws FeatureManagementException, PolicyManagementException {
         return null;
     }
 
     @Override
-    public Policy getPolicyOfDeviceType(String deviceType)
+    public List<Policy> getPoliciesOfDeviceType(String deviceType)
             throws FeatureManagementException, PolicyManagementException {
-        return null;
+        try {
+            return policyDAO.getPolicy(deviceType);
+        } catch (PolicyManagerDAOException e) {
+            String msg = "Error occurred while getting the policy related to device type.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
     }
 
     @Override
-    public Policy getPolicyOfRole(String roleName) throws FeatureManagementException, PolicyManagementException {
-        return null;
+    public List<Policy> getPoliciesOfRole(String roleName) throws FeatureManagementException, PolicyManagementException {
+        try {
+            return policyDAO.getPolicyOfRole(roleName);
+        } catch (PolicyManagerDAOException e) {
+            String msg = "Error occurred while getting the policy related to role name.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
     }
 
     @Override
-    public boolean isPolicyAvailableForDevice(String deviceId, String deviceType) throws PolicyManagementException {
+    public boolean isPolicyAvailableForDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         return false;
     }
 
     @Override
-    public boolean isPolicyApplied(String deviceId, String deviceType) throws PolicyManagementException {
+    public boolean isPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         return false;
     }
 
     @Override
-    public void setPolicyUsed(String deviceId, String deviceType, Policy policy) throws PolicyManagementException {
+    public void setPolicyUsed(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException {
 
     }
 
@@ -192,6 +213,12 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     @Override
     public void deleteFeature(int featureId) throws FeatureManagementException {
-
+        try {
+            featureDAO.deleteFeature(featureId);
+        } catch (FeatureManagerDAOException e) {
+            String msg = "Error occurred while deleting the feature.";
+            log.error(msg, e);
+            throw new FeatureManagementException(msg, e);
+        }
     }
 }

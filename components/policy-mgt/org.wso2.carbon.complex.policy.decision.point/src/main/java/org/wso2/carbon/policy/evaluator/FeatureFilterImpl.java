@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.evaluator;
 import org.wso2.carbon.policy.evaluator.utils.Constants;
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @return
      */
     @Override
-    public List<Feature> evaluate(List<Policy> policyList, List<FeatureRules> featureRulesList) {
+    public List<ProfileFeature> evaluate(List<Policy> policyList, List<FeatureRules> featureRulesList) {
         return evaluateFeatures(extractFeatures(policyList), featureRulesList);
      }
 
@@ -48,10 +49,10 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param policyList
      * @return
      */
-    public List<Feature> extractFeatures(List<Policy> policyList) {
-        List<Feature> featureList = new ArrayList<Feature>();
+    public List<ProfileFeature> extractFeatures(List<Policy> policyList) {
+        List<ProfileFeature> featureList = new ArrayList<ProfileFeature>();
         for (Policy policy : policyList) {
-            featureList.addAll(policy.getProfile().getFeaturesList());
+            featureList.addAll(policy.getProfile().getProfileFeaturesList());
         }
         return featureList;
     }
@@ -62,8 +63,8 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureRulesList
      * @return
      */
-    public List<Feature> evaluateFeatures(List<Feature> featureList, List<FeatureRules> featureRulesList) {
-        List<Feature> effectiveFeatureList = new ArrayList<Feature>();
+    public List<ProfileFeature> evaluateFeatures(List<ProfileFeature> featureList, List<FeatureRules> featureRulesList) {
+        List<ProfileFeature> effectiveFeatureList = new ArrayList<ProfileFeature>();
         for (FeatureRules rule : featureRulesList) {
             String ruleName = rule.getEvaluationCriteria();
             String featureName = rule.getName();
@@ -100,11 +101,11 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureList
      * @param effectiveFeatureList
      */
-    public void getDenyOverridesFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList) {
-        Feature evaluatedFeature = null;
-        for (Feature feature : featureList) {
-            if (feature.getName().equalsIgnoreCase(featureName)) {
-                if (feature.getRuleValue().equalsIgnoreCase("Deny")) {
+    public void getDenyOverridesFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
+        ProfileFeature evaluatedFeature = null;
+        for (ProfileFeature feature : featureList) {
+            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+                if (feature.getFeature().getRuleValue().equalsIgnoreCase("Deny")) {
                     evaluatedFeature = feature;
                     effectiveFeatureList.add(evaluatedFeature);
                     return;
@@ -127,11 +128,11 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureList
      * @param effectiveFeatureList
      */
-    public void getPermitOverridesFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList) {
-        Feature evaluatedFeature = null;
-        for (Feature feature : featureList) {
-            if (feature.getName().equalsIgnoreCase(featureName)) {
-                if (feature.getRuleValue().equalsIgnoreCase("Permit")) {
+    public void getPermitOverridesFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
+        ProfileFeature evaluatedFeature = null;
+        for (ProfileFeature feature : featureList) {
+            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+                if (feature.getFeature().getRuleValue().equalsIgnoreCase("Permit")) {
                     evaluatedFeature = feature;
                     effectiveFeatureList.add(evaluatedFeature);
                     return;
@@ -154,9 +155,9 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureList
      * @param effectiveFeatureList
      */
-    public void getFirstApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList) {
-        for (Feature feature : featureList) {
-            if (feature.getName().equalsIgnoreCase(featureName)) {
+    public void getFirstApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
+        for (ProfileFeature feature : featureList) {
+            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
                 effectiveFeatureList.add(feature);
                 return;
 
@@ -172,10 +173,10 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureList
      * @param effectiveFeatureList
      */
-    public void getLastApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList) {
-        Feature evaluatedFeature = null;
-        for (Feature feature : featureList) {
-            if (feature.getName().equalsIgnoreCase(featureName)) {
+    public void getLastApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
+        ProfileFeature evaluatedFeature = null;
+        for (ProfileFeature feature : featureList) {
+            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
                 evaluatedFeature = feature;
             }
         }
@@ -192,9 +193,9 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureList
      * @param effectiveFeatureList
      */
-    public void getAllApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList) {
-        for (Feature feature : featureList) {
-            if (feature.getName().equalsIgnoreCase(featureName)) {
+    public void getAllApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
+        for (ProfileFeature feature : featureList) {
+            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
                 effectiveFeatureList.add(feature);
             }
         }
@@ -208,13 +209,13 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureList
      * @param effectiveFeatureList
      */
-    public void getHighestApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList) {
-        Feature evaluatedFeature = null;
+    public void getHighestApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
+        ProfileFeature evaluatedFeature = null;
         int intValve = 0;
-        for (Feature feature : featureList) {
-            if (feature.getName().equalsIgnoreCase(featureName)) {
-                if (Integer.parseInt(feature.getRuleValue()) > intValve) {
-                    intValve = Integer.parseInt(feature.getRuleValue());
+        for (ProfileFeature feature : featureList) {
+            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+                if (Integer.parseInt(feature.getFeature().getRuleValue()) > intValve) {
+                    intValve = Integer.parseInt(feature.getFeature().getRuleValue());
                     evaluatedFeature = feature;
                 }
             }
@@ -232,13 +233,13 @@ public class FeatureFilterImpl implements FeatureFilter {
      * @param featureList
      * @param effectiveFeatureList
      */
-    public void getLowestApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList) {
-        Feature evaluatedFeature = null;
+    public void getLowestApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
+        ProfileFeature evaluatedFeature = null;
         int intValve = 0;
-        for (Feature feature : featureList) {
-            if (feature.getName().equalsIgnoreCase(featureName)) {
-                if (Integer.parseInt(feature.getRuleValue()) < intValve) {
-                    intValve = Integer.parseInt(feature.getRuleValue());
+        for (ProfileFeature feature : featureList) {
+            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+                if (Integer.parseInt(feature.getFeature().getRuleValue()) < intValve) {
+                    intValve = Integer.parseInt(feature.getFeature().getRuleValue());
                     evaluatedFeature = feature;
                 }
             }

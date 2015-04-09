@@ -20,7 +20,6 @@ package org.wso2.carbon.simple.policy.decision.point;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.PIPDeviceData;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 

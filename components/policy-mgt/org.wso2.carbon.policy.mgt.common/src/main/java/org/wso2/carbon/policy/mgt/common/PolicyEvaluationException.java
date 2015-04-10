@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.simple.policy.decision.point;
+package org.wso2.carbon.policy.mgt.common;
 
 public class PolicyEvaluationException extends Exception {
 

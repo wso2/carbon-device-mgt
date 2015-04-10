@@ -22,13 +22,15 @@ package org.wso2.carbon.policy.mgt.common;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This class will be the used to create policy object with relevant information for evaluating.
  */
-public class Policy {
+public class Policy implements Comparable<Policy> {
+
     private int id;                         // Identifier of the policy.
     private int priorityId;                 // Priority of the policies. This will be used only for simple evaluation.
     private Profile profile;                  // Profile id
@@ -185,5 +187,28 @@ public class Policy {
 
     public void setTenantId(int tenantId) {
         this.tenantId = tenantId;
+    }
+
+
+ /*   static final Comparator<Policy> PRIORITY_ORDER =
+            new Comparator<Policy>() {
+                public int compare(Policy p1, Policy p2) {
+                    int dateCmp = new Integer(p2.getId()).compareTo(new Integer(p1.getId()));
+                    if (dateCmp != 0)
+                        return dateCmp;
+
+                    return (p1.getId() < p2.getId() ? -1 :
+                            (p1.getId() == p2.getId() ? 0 : 1));
+                }
+            };*/
+
+    @Override
+    public int compareTo(Policy o) {
+        if (this.priorityId == o.priorityId)
+            return 0;
+        else if ((this.priorityId) > o.priorityId)
+            return 1;
+        else
+            return -1;
     }
 }

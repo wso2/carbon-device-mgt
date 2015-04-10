@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 import org.wso2.carbon.policy.mgt.core.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
@@ -44,6 +45,12 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setPIPService"
  * unbind="unsetPIPService"
+ * @scr.reference name="org.wso2.carbon.devicemgt.simple.policy.evaluation.manager"
+ * interface="org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setPEPService"
+ * unbind="unsetPEPService"
  */
 
 public class PolicyManagementServiceComponent {
@@ -94,16 +101,33 @@ public class PolicyManagementServiceComponent {
     }
 
 
-    protected void setPIPService(PolicyInformationPoint policyInformationService) {
+    protected void setPIPService(PolicyInformationPoint pipService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Policy Information Service");
         }
+        PolicyManagementDataHolder.getInstance().setPolicyInformationPoint(pipService);
     }
 
-    protected void unsetPIPService(PolicyInformationPoint policyInformationService) {
+    protected void unsetPIPService(PolicyInformationPoint pipService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting Policy Information Service");
         }
+        PolicyManagementDataHolder.getInstance().setPolicyInformationPoint(null);
+    }
+
+
+    protected void setPEPService(PolicyEvaluationPoint pepService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Policy Information Service");
+        }
+        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(pepService);
+    }
+
+    protected void unsetPEPService(PolicyEvaluationPoint pepService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Policy Information Service");
+        }
+        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(null);
     }
 
 }

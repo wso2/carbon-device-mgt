@@ -20,28 +20,48 @@ package org.wso2.carbon.simple.policy.decision.point;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.PIPDevice;
 import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
+import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.core.PolicyManager;
+import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
+
+import java.util.Collections;
+import java.util.List;
 
 public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     private static final Log log = LogFactory.getLog(SimpleEvaluationImpl.class);
-
-    PolicyDAOImpl policyDAO;
-
+    private PolicyManager policyManager;
+    private List<Policy> policyList;
 
     public SimpleEvaluationImpl() {
-        policyDAO = new PolicyDAOImpl();
+        policyManager = PolicyDecisionPointDataHolder.getInstance().getPolicyManager();
     }
 
     @Override
-    public void sortPolicy(Policy policy) throws PolicyEvaluationException {
+    public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
 
+        try {
+            if (policyManager == null && policyList == null) {
+                PIPDevice pipDevice = policyManager.getPIP().getDeviceData(deviceIdentifier);
+                policyList = policyManager.getPIP().getRelatedPolicies(pipDevice);
+            }
+            sortPolicy();
+        } catch (PolicyManagementException e) {
+            String msg = "Error occurred when retrieving the policy related data from policy management service.";
+            log.error(msg, e);
+            throw new PolicyEvaluationException(msg, e);
+        }
+
+        return policyList.get(0);
     }
 
+
     @Override
-    public Policy getEffectivePolicy(PIPDevice pipDevice) throws PolicyEvaluationException {
-        return null;
+    public void sortPolicy() throws PolicyEvaluationException {
+        Collections.sort(policyList);
     }
 }

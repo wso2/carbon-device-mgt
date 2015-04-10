@@ -641,12 +641,13 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = -1234;
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID) VALUES (?, ?, ?)";
+            String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(query, stmt.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, policy.getPolicyName());
             stmt.setInt(2, policy.getProfile().getProfileId());
             stmt.setInt(3, tenantId);
+            stmt.setInt(4, readHighestPriorityOfPolicies());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -713,6 +714,32 @@ public class PolicyDAOImpl implements PolicyDAO {
             PolicyManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
         }
         return deviceTypeId;
+    }
+
+
+    private int readHighestPriorityOfPolicies()  throws PolicyManagerDAOException {
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        try {
+            conn = this.getConnection();
+            String query = "SELECT MAX(PRIORITY) PRIORITY FROM DM_POLICY;";
+            stmt = conn.prepareStatement(query);
+
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                return resultSet.getInt("PRIORITY");
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while reading the highest priority of the policies.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
+        }
+        return 0;
     }
 
 }

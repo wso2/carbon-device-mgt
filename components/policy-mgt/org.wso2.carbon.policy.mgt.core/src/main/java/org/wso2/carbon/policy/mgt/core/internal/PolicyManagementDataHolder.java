@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.policy.mgt.core.internal;
 
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
+import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
@@ -25,6 +27,8 @@ public class PolicyManagementDataHolder {
 
     private RealmService realmService;
     private TenantManager tenantManager;
+    private PolicyEvaluationPoint policyEvaluationPoint;
+    private PolicyInformationPoint policyInformationPoint;
     private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
 
     private PolicyManagementDataHolder() {}
@@ -53,5 +57,19 @@ public class PolicyManagementDataHolder {
         return tenantManager;
     }
 
+    public PolicyEvaluationPoint getPolicyEvaluationPoint() {
+        return policyEvaluationPoint;
+    }
 
+    public void setPolicyEvaluationPoint(PolicyEvaluationPoint policyEvaluationPoint) {
+        this.policyEvaluationPoint = policyEvaluationPoint;
+    }
+
+    public PolicyInformationPoint getPolicyInformationPoint() {
+        return policyInformationPoint;
+    }
+
+    public void setPolicyInformationPoint(PolicyInformationPoint policyInformationPoint) {
+        this.policyInformationPoint = policyInformationPoint;
+    }
 }

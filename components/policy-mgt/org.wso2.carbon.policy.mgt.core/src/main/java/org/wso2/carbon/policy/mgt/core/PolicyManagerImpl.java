@@ -22,12 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
+import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 
 import java.util.List;
 
@@ -89,5 +86,15 @@ public class PolicyManagerImpl implements PolicyManager {
     @Override
     public List<Feature> getFeatures() throws FeatureManagementException {
         return null;
+    }
+
+    @Override
+    public PolicyAdministratorPoint getPAP() throws PolicyManagementException {
+        return new PolicyAdministratorPointImpl();
+    }
+
+    @Override
+    public PolicyInformationPoint getPIP() throws PolicyManagementException {
+        return new PolicyInformationPointImpl();
     }
 }

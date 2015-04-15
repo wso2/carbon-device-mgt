@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.policy.mgt.core.dao;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -33,46 +34,22 @@ public interface PolicyDAO {
 
     Policy addPolicyToRole(String roleName, Policy policy) throws PolicyManagerDAOException;
 
-    Policy addPolicy(String deviceID, String deviceType, Policy policy) throws PolicyManagerDAOException;
+    Policy addPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagerDAOException;
 
     Policy updatePolicy(Policy policy) throws PolicyManagerDAOException;
 
-    Policy getPolicy() throws PolicyManagerDAOException;
+    Policy getPolicy(int policyId) throws PolicyManagerDAOException;
 
-    Policy getPolicy(String deviceType) throws PolicyManagerDAOException;
+    Policy getPolicyByProfileID(int profileId) throws PolicyManagerDAOException;
 
-    Policy getPolicy(String deviceID, String deviceType) throws PolicyManagerDAOException;
+    List<Policy> getPolicy() throws PolicyManagerDAOException;
+
+    List<Policy> getPolicy(String deviceType) throws PolicyManagerDAOException;
+
+    List<Policy> getPolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagerDAOException;
+
+    List<Policy> getPolicyOfRole(String roleName) throws PolicyManagerDAOException;
 
     void deletePolicy(Policy policy) throws PolicyManagerDAOException;
 
-
-
-
-
-
-
- /*   Profile addProfile(Profile profile) throws PolicyManagerDAOException;
-
-    Profile updateProfile(Profile profile) throws PolicyManagerDAOException;
-
-    void deleteProfile(Profile profile) throws PolicyManagerDAOException;
-
-    List<Profile> getAllProfiles() throws PolicyManagerDAOException;
-
-    List<Profile> getProfilesOfDeviceType(String deviceType) throws PolicyManagerDAOException;
-
-
-
-
-    List<Feature> getAllFeatures() throws PolicyManagerDAOException;
-
-    List<Feature> getFeaturesForProfile(int ProfileId) throws PolicyManagerDAOException;
-
-    void deleteFeature(int featureId) throws PolicyManagerDAOException;
-
-    void deleteFeaturesOfProfile(Profile profile) throws PolicyManagerDAOException;
-
-    Feature addFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;
-
-    Feature updateFeature(Feature feature) throws PolicyManagerDAOException, FeatureManagementException;*/
 }

@@ -33,7 +33,8 @@ public class Profile {
     private DeviceType deviceType;
     private Timestamp createdDate;
     private Timestamp updatedDate;
-    private List<Feature> featuresList;     // Features included in the policies.
+//    private List<Feature> featuresList;     // Features included in the policies.
+    private List<ProfileFeature> profileFeaturesList;     // Features included in the policies.
 
     public DeviceType getDeviceType() {
         return deviceType;
@@ -51,13 +52,13 @@ public class Profile {
         this.tenantId = tenantId;
     }
 
-    public List<Feature> getFeaturesList() {
+/*    public List<Feature> getFeaturesList() {
         return featuresList;
     }
 
     public void setFeaturesList(List<Feature> featuresList) {
         this.featuresList = featuresList;
-    }
+    }*/
 
     public int getProfileId() {
         return profileId;
@@ -89,5 +90,13 @@ public class Profile {
 
     public void setUpdatedDate(Timestamp updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    public List<ProfileFeature> getProfileFeaturesList() {
+        return profileFeaturesList;
+    }
+
+    public void setProfileFeaturesList(List<ProfileFeature> profileFeaturesList) {
+        this.profileFeaturesList = profileFeaturesList;
     }
 }

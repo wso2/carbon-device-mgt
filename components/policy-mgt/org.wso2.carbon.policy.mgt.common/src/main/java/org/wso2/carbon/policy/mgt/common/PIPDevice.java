@@ -19,6 +19,7 @@
 package org.wso2.carbon.policy.mgt.common;
 
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -26,13 +27,14 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
-public class PIPDeviceData {
+public class PIPDevice {
 
     Device device;
     DeviceType deviceType;
+    DeviceIdentifier deviceIdentifier;
     String ownershipType;
     List<String> userIds;
-    List<String> roles;
+    String roles [];
     String altitude;
     String longitude;
     Timestamp timestamp;
@@ -72,11 +74,11 @@ public class PIPDeviceData {
         this.userIds = userIds;
     }
 
-    public List<String> getRoles() {
+    public String[] getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(String roles[]) {
         this.roles = roles;
     }
 
@@ -110,5 +112,13 @@ public class PIPDeviceData {
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
+    }
+
+    public DeviceIdentifier getDeviceIdentifier() {
+        return deviceIdentifier;
+    }
+
+    public void setDeviceIdentifier(DeviceIdentifier deviceIdentifier) {
+        this.deviceIdentifier = deviceIdentifier;
     }
 }

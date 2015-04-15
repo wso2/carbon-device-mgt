@@ -21,29 +21,30 @@ package org.wso2.carbon.policy.evaluator;
 
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.List;
 import java.util.Map;
 
 public interface FeatureFilter {
 
-    List<Feature> evaluate(List<Policy> policyList, List<FeatureRules> featureRulesList);
+    List<ProfileFeature> evaluate(List<Policy> policyList, List<FeatureRules> featureRulesList);
 
-    List<Feature> extractFeatures(List<Policy> policyList);
+    List<ProfileFeature> extractFeatures(List<Policy> policyList);
 
-    List<Feature> evaluateFeatures(List<Feature> featureList, List<FeatureRules> featureRulesList);
+    List<ProfileFeature> evaluateFeatures(List<ProfileFeature> featureList, List<FeatureRules> featureRulesList);
 
-    void getDenyOverridesFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList);
+    void getDenyOverridesFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList);
 
-    void getPermitOverridesFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList);
+    void getPermitOverridesFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList);
 
-    void getFirstApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList);
+    void getFirstApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList);
 
-    void getLastApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList);
+    void getLastApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList);
 
-    void getAllApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList);
+    void getAllApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList);
 
-    void getHighestApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList);
+    void getHighestApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList);
 
-    void getLowestApplicableFeatures(String featureName, List<Feature> featureList, List<Feature> effectiveFeatureList);
+    void getLowestApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList);
 }

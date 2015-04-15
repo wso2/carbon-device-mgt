@@ -31,6 +31,8 @@ public interface ProfileDAO {
 
     void deleteProfile(Profile profile) throws ProfileManagerDAOException;
 
+    Profile getProfiles(int profileId) throws ProfileManagerDAOException;
+
     List<Profile> getAllProfiles() throws ProfileManagerDAOException;
 
     List<Profile> getProfilesOfDeviceType(String deviceType) throws ProfileManagerDAOException;

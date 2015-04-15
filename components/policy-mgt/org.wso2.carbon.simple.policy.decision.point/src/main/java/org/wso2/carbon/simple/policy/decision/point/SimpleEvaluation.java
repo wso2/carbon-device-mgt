@@ -19,13 +19,14 @@
 
 package org.wso2.carbon.simple.policy.decision.point;
 
-import org.wso2.carbon.policy.mgt.common.PIPDeviceData;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 
 public interface SimpleEvaluation  {
 
-    void sortPolicy(Policy policy) throws PolicyEvaluationException;
+    void sortPolicy() throws PolicyEvaluationException;
 
-    Policy getEffectivePolicy(PIPDeviceData pipDeviceData)  throws PolicyEvaluationException;
+    Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier)  throws PolicyEvaluationException;
 
 }

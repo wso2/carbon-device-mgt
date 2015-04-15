@@ -18,14 +18,19 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
+
+import org.wso2.carbon.device.mgt.core.dto.Device;
+
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This class will be the used to create policy object with relevant information for evaluating.
  */
-public class Policy {
+public class Policy implements Comparable<Policy> {
+
     private int id;                         // Identifier of the policy.
     private int priorityId;                 // Priority of the policies. This will be used only for simple evaluation.
     private Profile profile;                  // Profile id
@@ -33,7 +38,7 @@ public class Policy {
     private boolean generic;                // If true, this should be applied to all related device.
     private List<String> roleList;          // Roles which this policy should be applied.
     private String ownershipType;           // Ownership type (COPE, BYOD, CPE)
-    private List<String> DeviceList;        // Individual devices this policy should be applied
+    private List<Device> DeviceList;        // Individual devices this policy should be applied
 
     /*Dynamic policy attributes*/
 
@@ -47,8 +52,10 @@ public class Policy {
 
     /*These are related to location based policies*/
 
-    private String altitude;                // Altitude
+    private String latitude;                // Latitude
     private String longitude;               // Longitude
+
+    private int tenantId;
 
     /*This will be used to record attributes which will be used by customer extended PDPs and PIPs*/
 
@@ -110,11 +117,11 @@ public class Policy {
         this.ownershipType = ownershipType;
     }
 
-    public List<String> getDeviceList() {
+    public List<Device> getDeviceList() {
         return DeviceList;
     }
 
-    public void setDeviceList(List<String> deviceList) {
+    public void setDeviceList(List<Device> deviceList) {
         DeviceList = deviceList;
     }
 
@@ -150,12 +157,12 @@ public class Policy {
         this.endDate = endDate;
     }
 
-    public String getAltitude() {
-        return altitude;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setAltitude(String altitude) {
-        this.altitude = altitude;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getLongitude() {
@@ -172,5 +179,36 @@ public class Policy {
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+
+ /*   static final Comparator<Policy> PRIORITY_ORDER =
+            new Comparator<Policy>() {
+                public int compare(Policy p1, Policy p2) {
+                    int dateCmp = new Integer(p2.getId()).compareTo(new Integer(p1.getId()));
+                    if (dateCmp != 0)
+                        return dateCmp;
+
+                    return (p1.getId() < p2.getId() ? -1 :
+                            (p1.getId() == p2.getId() ? 0 : 1));
+                }
+            };*/
+
+    @Override
+    public int compareTo(Policy o) {
+        if (this.priorityId == o.priorityId)
+            return 0;
+        else if ((this.priorityId) > o.priorityId)
+            return 1;
+        else
+            return -1;
     }
 }

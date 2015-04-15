@@ -18,7 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -36,7 +37,7 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
         int operationId = super.addOperation(operation);
         PreparedStatement stmt = null;
         try {
-            Connection conn = OperationManagementDAOFactory.openConnection();
+            Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_CONFIG_OPERATION(OPERATION_ID) VALUES(?)");
             stmt.setInt(1, operationId);
             stmt.executeUpdate();
@@ -54,7 +55,7 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
         super.deleteOperation(id);
         PreparedStatement stmt = null;
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE DM_CONFIG_OPERATION WHERE OPERATION_ID=?") ;
             stmt.setInt(1, id);
             stmt.executeUpdate();

@@ -74,7 +74,7 @@ public class OperationManagementDAOFactory {
         }
     }
 
-    public static Connection openConnection() throws OperationManagementDAOException {
+    public static Connection getConnection() throws OperationManagementDAOException {
         if (currentConnection.get() == null) {
             try {
                 currentConnection.set(dataSource.getConnection());

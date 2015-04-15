@@ -21,8 +21,8 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
@@ -39,8 +39,9 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         int operationId = super.addOperation(operation);
         operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
         operation.setId(operationId);
+        operation.setEnabled(true);
         ProfileOperation profileOp = (ProfileOperation) operation;
-        Connection conn = OperationManagementDAOFactory.openConnection();
+        Connection conn = OperationManagementDAOFactory.getConnection();
 
         PreparedStatement stmt = null;
 
@@ -59,53 +60,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public Operation getOperation(int operationId) throws OperationManagementDAOException {
-        Connection conn = OperationManagementDAOFactory.openConnection();
-
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        ByteArrayInputStream bais = null;
-        ObjectInputStream ois = null;
-        try {
-            stmt = conn.prepareStatement("SELECT OPERATION_DETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID = ?");
-            stmt.setInt(1, operationId);
-            rs = stmt.executeQuery();
-
-            byte[] operationDetails = new byte[0];
-            if (rs.next()) {
-                operationDetails = rs.getBytes("OPERATIONDETAILS");
-            }
-            bais = new ByteArrayInputStream(operationDetails);
-            ois = new ObjectInputStream(bais);
-            return (ProfileOperation) ois.readObject();
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while adding profile operation", e);
-        } catch (IOException e) {
-            throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
-        } catch (ClassNotFoundException e) {
-            throw new OperationManagementDAOException("Error occurred while casting retrieved profile operation as a " +
-                    "ProfileOperation object", e);
-        } finally {
-            if (bais != null) {
-                try {
-                    bais.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
-                }
-            }
-            if (ois != null) {
-                try {
-                    ois.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ObjectOutputStream", e);
-                }
-            }
-            OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
-        }
-    }
-
-    @Override
     public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
@@ -114,17 +68,18 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         ObjectInputStream ois = null;
 
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
                     "SELECT po.OPERATION_DETAILS AS OPERATIONDETAILS " +
                             "FROM DM_OPERATION o " +
-                            "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.STATUS =? AND o.ID IN (" +
+                            "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.STATUS =? AND o.ID IN ("
+                            +
                             "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
                             "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND " +
                             "d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN DM_DEVICE_OPERATION_MAPPING dom " +
                             "ON d1.ID = dom.DEVICE_ID) ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
 
-            stmt.setString(1,Operation.Status.PENDING.toString());
+            stmt.setString(1, Operation.Status.PENDING.toString());
             stmt.setString(2, deviceId.getType());
             stmt.setString(3, deviceId.getId());
             rs = stmt.executeQuery();
@@ -174,7 +129,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         ObjectOutputStream oos = null;
 
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("UPDATE DM_PROFILE_OPERATION O SET O.OPERATION_DETAILS=? " +
                     "WHERE O.OPERATION_ID=?");
 
@@ -215,7 +170,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         super.deleteOperation(id);
         PreparedStatement stmt = null;
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE DM_PROFILE_OPERATION WHERE OPERATION_ID=?");
             stmt.setInt(1, id);
             stmt.executeUpdate();

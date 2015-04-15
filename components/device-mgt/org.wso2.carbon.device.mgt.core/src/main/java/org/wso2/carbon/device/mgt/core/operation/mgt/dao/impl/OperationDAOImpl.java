@@ -18,13 +18,19 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,14 +38,16 @@ import java.util.List;
 
 public class OperationDAOImpl implements OperationDAO {
 
+    private static final Log log = LogFactory.getLog(OperationDAOImpl.class);
+
     public int addOperation(Operation operation) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, OPERATIONCODE)  " +
+                    "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, OPERATION_CODE)  " +
                             "VALUES (?, ?, ?, ?,?)");
             stmt.setString(1, operation.getType().toString());
             stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
@@ -66,7 +74,7 @@ public class OperationDAOImpl implements OperationDAO {
 
         PreparedStatement stmt = null;
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("UPDATE DM_OPERATION O SET O.RECEIVED_TIMESTAMP=?,O.STATUS=? " +
                     "WHERE O.ID=?");
 
@@ -87,7 +95,7 @@ public class OperationDAOImpl implements OperationDAO {
 
         PreparedStatement stmt = null;
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE DM_OPERATION WHERE ID=?");
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -98,37 +106,64 @@ public class OperationDAOImpl implements OperationDAO {
         }
     }
 
+    @Override
     public Operation getOperation(int id) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Operation operation = null;
+
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+
         try {
-            Connection conn = OperationManagementDAOFactory.openConnection();
-            String sql =
-                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE FROM " +
-                            "DM_OPERATION o WHERE o.ID=?";
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE," +
+                    "po.OPERATION_DETAILS,co.ENABLED from " +
+                    "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, OPERATION_CODE FROM " +
+                    " DM_OPERATION   WHERE id=?)  o" +
+                    "LEFT OUTER JOIN DM_PROFILE_OPERATION po on  o.ID =po.OPERATION_ID" +
+                    "LEFT OUTER JOIN DM_COMMAND_OPERATION co on co.OPERATION_ID=o.ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                operation = new Operation();
-                operation.setId(rs.getInt("ID"));
-                operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
-                operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
-                    operation.setReceivedTimeStamp("");
+                if (rs.getBytes("OPERATION_DETAILS") != null) {
+                    byte[] operationDetails;
+                    operationDetails = rs.getBytes("OPERATION_DETAILS");
+                    bais = new ByteArrayInputStream(operationDetails);
+                    ois = new ObjectInputStream(bais);
+                    operation = (ProfileOperation) ois.readObject();
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation = new Operation();
+                    operation.setId(rs.getInt("ID"));
+                    operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
+                    operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+                        operation.setReceivedTimeStamp("");
+                    } else {
+                        operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    }
+                    operation.setEnabled(rs.getBoolean("ENABLED"));
+                    operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                    operation.setCode(rs.getString("OPERATION_CODE"));
                 }
-                operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
-                operation.setCode(rs.getString("OPERATIONCODE"));
             }
+        } catch (IOException e) {
+            String errorMsg = "IO Error occurred while de serialize the profile operation object";
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } catch (ClassNotFoundException e) {
+            String errorMsg = "Class not found error occurred while de serialize the profile operation object";
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while retrieving the operation object " +
-                    "available for the id '" + id + "'", e);
+            String errorMsg = "SQL Error occurred while retrieving the operation object " +
+                    "available for the id '" + id;
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
@@ -137,115 +172,289 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    public Operation getOperation(DeviceIdentifier deviceIdentifier, int operationId)
+    public Operation getOperationByDeviceAndId(int deviceId, int operationId) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Operation operation = null;
+
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE," +
+                    "po.OPERATION_DETAILS,co.ENABLED from " +
+                    "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, " +
+                    "OPERATION_CODE  FROM DM_OPERATION  WHERE id=?)  o INNER JOIN (Select * from " +
+                    "DM_DEVICE_OPERATION_MAPPING dm where dm.OPERATION_ID=? AND  dm.DEVICE_ID=?)  om " +
+                    "ON o.ID = om.OPERATION_ID " +
+                    "LEFT OUTER JOIN DM_PROFILE_OPERATION po on  o.ID = po.OPERATION_ID " +
+                    "LEFT OUTER JOIN DM_COMMAND_OPERATION co on co.OPERATION_ID=o.ID";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, operationId);
+            stmt.setInt(2, operationId);
+            stmt.setInt(3, deviceId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                if (rs.getBytes("OPERATION_DETAILS") != null) {
+                    byte[] operationDetails;
+                    operationDetails = rs.getBytes("OPERATION_DETAILS");
+                    bais = new ByteArrayInputStream(operationDetails);
+                    ois = new ObjectInputStream(bais);
+                    operation = (ProfileOperation) ois.readObject();
+                } else {
+                    operation = new Operation();
+                    operation.setId(rs.getInt("ID"));
+                    operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
+                    operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    if (rs.getTimestamp("CREATED_TIMESTAMP") == null) {
+                        operation.setReceivedTimeStamp("");
+                    } else {
+                        operation.setReceivedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    }
+                    operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                    operation.setCode(rs.getString("OPERATION_CODE"));
+                }
+            }
+        } catch (IOException ex) {
+            String errorMsg = "IO error occurred while de serializing the profile operation available for the " +
+                    "device:" + deviceId + "' with id '" + operationId;
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
+        } catch (ClassNotFoundException ex) {
+            String errorMsg =
+                    "class not found error occurred while de serializing the profile operation available for " +
+                            "the device:" + deviceId + "' with id '" + operationId;
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
+        } catch (SQLException e) {
+            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + deviceId +
+                    "' with id '" + operationId;
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
+        }
+        return operation;
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
+            Operation.Status status) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Operation operation = null;
+
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+        List<Operation> operationList = new ArrayList<Operation>();
+
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE, " +
+                    "po.OPERATIONDETAILS,co.ENABLED from " +
+                    "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, " +
+                    "OPERATIONCODE  FROM DM_OPERATION  WHERE STATUS=?) o " +
+                    "INNER JOIN (Select * from DM_DEVICE_OPERATION_MAPPING dm " +
+                    "where dm.DEVICE_ID=?) om ON o.ID = om.OPERATION_ID  LEFT OUTER JOIN DM_PROFILE_OPERATION po ON " +
+                    "o.ID =po.OPERATION_ID LEFT OUTER JOIN DM_COMMAND_OPERATION co ON co.OPERATION_ID=o.ID";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, status.toString());
+            stmt.setInt(2, deviceId);
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                if (rs.getBytes("OPERATION_DETAILS") != null) {
+                    byte[] operationDetails;
+                    operationDetails = rs.getBytes("OPERATION_DETAILS");
+                    bais = new ByteArrayInputStream(operationDetails);
+                    ois = new ObjectInputStream(bais);
+                    operation = (ProfileOperation) ois.readObject();
+                } else {
+                    operation = new Operation();
+                    operation.setId(rs.getInt("ID"));
+                    operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
+                    operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    if (rs.getTimestamp("CREATED_TIMESTAMP") == null) {
+                        operation.setReceivedTimeStamp("");
+                    } else {
+                        operation.setReceivedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    }
+                    operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                    operation.setCode(rs.getString("OPERATION_CODE"));
+                }
+                operationList.add(operation);
+            }
+        } catch (IOException ex) {
+            String errorMsg = "IO error occurred while de serializing the profile operation available for the " +
+                    "device:" + deviceId + "' and status '" + status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
+        } catch (ClassNotFoundException ex) {
+            String errorMsg =
+                    "class not found error occurred while de serializing the profile operation available for " +
+                            "the device:" + deviceId + "' with status '" + status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
+        } catch (SQLException e) {
+            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + deviceId +
+                    "' with status '" + status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
+        }
+        return operationList;
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsForDevice(int deviceId)
             throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Operation operation = null;
 
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+        List<Operation> operationList = new ArrayList<Operation>();
+
         try {
-            Connection conn = OperationManagementDAOFactory.openConnection();
-            String sql =
-                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE FROM " +
-                            "DM_OPERATION o " +
-                            "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM " +
-                            "(SELECT d.ID FROM DM_DEVICE d INNER " +
-                            "JOIN " +
-                            "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d" +
-                            ".DEVICE_IDENTIFICATION = ?) d1 " +
-                            "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois  " +
-                            "ON o.ID = ois.OP_ID WHERE o.ID=?";
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE, " +
+                    "po.OPERATIONDETAILS,co.ENABLED from " +
+                    "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, " +
+                    "OPERATIONCODE  FROM DM_OPERATION) o " +
+                    "INNER JOIN (Select * from DM_DEVICE_OPERATION_MAPPING dm " +
+                    "where dm.DEVICE_ID=?) om ON o.ID = om.OPERATION_ID  LEFT OUTER JOIN DM_PROFILE_OPERATION po ON " +
+                    "o.ID =po.OPERATION_ID LEFT OUTER JOIN DM_COMMAND_OPERATION co ON co.OPERATION_ID=o.ID";
+
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceIdentifier.getType());
-            stmt.setString(2, deviceIdentifier.getId());
-            stmt.setInt(3, operationId);
+            stmt.setInt(1, deviceId);
+
             rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                operation = new Operation();
-                operation.setId(rs.getInt("ID"));
-                operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
-                operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("CREATED_TIMESTAMP") == null) {
-                    operation.setReceivedTimeStamp("");
+            while (rs.next()) {
+                if (rs.getBytes("OPERATION_DETAILS") != null) {
+                    byte[] operationDetails;
+                    operationDetails = rs.getBytes("OPERATION_DETAILS");
+                    bais = new ByteArrayInputStream(operationDetails);
+                    ois = new ObjectInputStream(bais);
+                    operation = (ProfileOperation) ois.readObject();
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    operation = new Operation();
+                    operation.setId(rs.getInt("ID"));
+                    operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
+                    operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    if (rs.getTimestamp("CREATED_TIMESTAMP") == null) {
+                        operation.setReceivedTimeStamp("");
+                    } else {
+                        operation.setReceivedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    }
+                    operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                    operation.setCode(rs.getString("OPERATION_CODE"));
                 }
-                operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
-                operation.setCode(rs.getString("OPERATIONCODE"));
+                operationList.add(operation);
             }
+        } catch (IOException ex) {
+            String errorMsg = "IO error occurred while de serializing the profile operation available for the " +
+                    "device:" + deviceId;
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
+        } catch (ClassNotFoundException ex) {
+            String errorMsg =
+                    "class not found error occurred while de serializing the profile operation available for " +
+                            "the device:" + deviceId;
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while retrieving the operation list " +
-                    "available for the '" + deviceIdentifier.getType() + "' with id '" + deviceIdentifier.getId() + "'", e);
+            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + deviceId +
+                    "' with status '";
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
         }
-        return operation;
+        return operationList;
     }
 
     @Override
-    public Operation getOperation(DeviceIdentifier deviceId,
-            Operation.Status status) throws OperationManagementDAOException {
-        return null;
-    }
+    public List<? extends Operation> getOperationsForStatus(Operation.Status status)
+            throws OperationManagementDAOException {
 
-    @Override
-    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementDAOException {
-
-        List<Operation> operations;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        Operation operation = null;
+
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+        List<Operation> operationList = new ArrayList<Operation>();
+
         try {
-            Connection conn = OperationManagementDAOFactory.openConnection();
-            String sql =
-                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE FROM " +
-                            "DM_OPERATION o " +
-                            "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER " +
-                            "JOIN " +
-                            "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND d" +
-                            ".DEVICE_IDENTIFICATION = ?) d1 " +
-                            "INNER JOIN DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois  " +
-                            "ON o.ID = ois.OP_ID";
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE,"+
+                    "po.OPERATION_DETAILS,co.ENABLED from "+
+                    "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS,"+
+                    "OPERATIONCODE  FROM DM_OPERATION  WHERE STATUS=?) o "+
+                    "LEFT OUTER JOIN DM_PROFILE_OPERATION po ON "+
+                    "o.ID =po.OPERATION_ID LEFT OUTER JOIN DM_COMMAND_OPERATION co ON co.OPERATION_ID=o.ID";
+
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceId.getType());
-            stmt.setString(2, deviceId.getId());
+            stmt.setString(1, status.toString());
             rs = stmt.executeQuery();
 
-            operations = new ArrayList<Operation>();
             while (rs.next()) {
-                Operation operation = new Operation();
-                operation.setId(rs.getInt("ID"));
-                operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
-                operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("CREATED_TIMESTAMP") == null) {
-                    operation.setReceivedTimeStamp("");
+                if (rs.getBytes("OPERATION_DETAILS") != null) {
+                    byte[] operationDetails;
+                    operationDetails = rs.getBytes("OPERATION_DETAILS");
+                    bais = new ByteArrayInputStream(operationDetails);
+                    ois = new ObjectInputStream(bais);
+                    operation = (ProfileOperation) ois.readObject();
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    operation = new Operation();
+                    operation.setId(rs.getInt("ID"));
+                    operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
+                    operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    if (rs.getTimestamp("CREATED_TIMESTAMP") == null) {
+                        operation.setReceivedTimeStamp("");
+                    } else {
+                        operation.setReceivedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
+                    }
+                    operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                    operation.setCode(rs.getString("OPERATION_CODE"));
                 }
-                operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
-                operation.setCode(rs.getString("OPERATIONCODE"));
+                operationList.add(operation);
             }
+        } catch (IOException ex) {
+            String errorMsg = "IO error occurred while de serializing the profile operation available for the " +
+                    "status:" + status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
+        } catch (ClassNotFoundException ex) {
+            String errorMsg =
+                    "class not found error occurred while de serializing the profile operation available for " +
+                            "the status:" + status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, ex);
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while retrieving the operation list " +
-                    "available for the '" + deviceId.getType() + "' with id '" + deviceId.getId() + "'", e);
+            String errorMsg = "SQL error occurred while retrieving the operation available for the status:'" +
+                    status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
         }
-        return operations;
-    }
-
-    @Override
-    public List<? extends Operation> getOperations(DeviceIdentifier deviceId,
-            Operation.Status status) throws OperationManagementDAOException {
-        return null;
-    }
-
-    @Override
-    public List<? extends Operation> getOperations(Operation.Status status) throws OperationManagementDAOException {
-        return null;
+        return operationList;
     }
 
     @Override
@@ -253,14 +462,15 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            Connection connection = OperationManagementDAOFactory.openConnection();
+            Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS,o.OPERATIONCODE " +
+                    "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS,o.OPERATION_CODE " +
                             " FROM DM_OPERATION o " +
                             "INNER JOIN (SELECT dom.OPERATION_ID AS OP_ID FROM (SELECT d.ID " +
                             "FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND " +
                             "dm.NAME = ? AND d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN " +
-                            "DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON  o.STATUS=? AND o.ID = ois.OP_ID " +
+                            "DM_DEVICE_OPERATION_MAPPING dom ON d1.ID = dom.DEVICE_ID) ois ON  o.STATUS=? AND" +
+                            " o.ID = ois.OP_ID " +
                             "ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
             stmt.setString(1, deviceId.getType());
             stmt.setString(2, deviceId.getId());
@@ -280,7 +490,7 @@ public class OperationDAOImpl implements OperationDAO {
                 } else {
                     operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
                 }
-                operation.setCode(rs.getString("OPERATIONCODE"));
+                operation.setCode(rs.getString("OPERATION_CODE"));
             }
             return operation;
         } catch (SQLException e) {

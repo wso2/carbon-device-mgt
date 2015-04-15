@@ -33,7 +33,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
     public void addOperationMapping(int operationId, Integer deviceId) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
-            Connection conn = OperationManagementDAOFactory.openConnection();
+            Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "INSERT INTO DM_DEVICE_OPERATION_MAPPING(DEVICE_ID, OPERATION_ID) VALUES(?, ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
@@ -51,7 +51,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
                                        Integer deviceIds) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
-            Connection conn = OperationManagementDAOFactory.openConnection();
+            Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "DELETE FROM DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID = ? AND OPERATION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, 0);

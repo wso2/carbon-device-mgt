@@ -32,9 +32,9 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.util.OperationDAOUtil;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -64,10 +64,14 @@ public class OperationManagerImpl implements OperationManager {
 
     @Override
     public boolean addOperation(Operation operation,
-                                List<DeviceIdentifier> devices) throws OperationManagementException {
+            List<DeviceIdentifier> devices) throws OperationManagementException {
         try {
             OperationManagementDAOFactory.beginTransaction();
-            int operationId = this.lookupOperationDAO(operation).addOperation(operation);
+
+            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto = OperationDAOUtil
+                    .convertOperation(operation);
+            int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
+
             for (DeviceIdentifier deviceIdentifier : devices) {
                 Device device = deviceDAO.getDevice(deviceIdentifier);
                 operationMappingDAO.addOperationMapping(operationId, device.getId());
@@ -95,20 +99,24 @@ public class OperationManagerImpl implements OperationManager {
     public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         try {
             List<Operation> operations = new ArrayList<Operation>();
-
-            OperationManagementDAOFactory.beginTransaction();
-            operations.addAll(profileOperationDAO.getOperations(deviceId));
-            operations.addAll(configOperationDAO.getOperations(deviceId));
-            operations.addAll(commandOperationDAO.getOperations(deviceId));
-            OperationManagementDAOFactory.commitTransaction();
-
+            Device device;
+            try {
+                device = deviceDAO.getDevice(deviceId);
+            } catch (DeviceManagementDAOException deviceDAOException) {
+                String errorMsg = "Error occurred while retrieving the device " +
+                        "for device Identifier type -'" + deviceId.getType() + "' and device Id '" + deviceId.getId();
+                log.error(errorMsg, deviceDAOException);
+                throw new OperationManagementException(errorMsg, deviceDAOException);
+            }
+            List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList = operationDAO
+                    .getOperationsForDevice(device.getId());
+            Operation operation;
+            for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : operationList) {
+                operation = OperationDAOUtil.convertOperation(dtoOperation);
+                operations.add(operation);
+            }
             return operations;
         } catch (OperationManagementDAOException e) {
-            try {
-                OperationManagementDAOFactory.rollbackTransaction();
-            } catch (OperationManagementDAOException e1) {
-                log.warn("Error occurred while roll-backing the transaction", e1);
-            }
             throw new OperationManagementException("Error occurred while retrieving the list of " +
                     "operations assigned for '" + deviceId.getType() + "' device '" + deviceId.getId() + "'", e);
         }
@@ -119,25 +127,28 @@ public class OperationManagerImpl implements OperationManager {
             DeviceIdentifier deviceId) throws OperationManagementException {
         try {
             List<Operation> operations = new ArrayList<Operation>();
+            List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList = operationDAO
+                    .getOperationsForStatus(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING);
+            Operation operation;
+            for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : dtoOperationList) {
+                operation = OperationDAOUtil.convertOperation(dtoOperation);
+                operations.add(operation);
+            }
 
-            operations.addAll(profileOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
-            operations.addAll(configOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
-            operations.addAll(commandOperationDAO.getOperations(deviceId, Operation.Status.PENDING));
             return operations;
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving the list of " +
                     "pending operations assigned for '" + deviceId.getType() + "' device '" +
                     deviceId.getId() + "'", e);
         }
-}
+    }
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
         try {
-            Operation operation = operationDAO.getNextOperation(deviceId);
-            if (operation!=null && operation.getType().equals(Operation.Type.PROFILE)){
-                   operation =  profileOperationDAO.getNextOperation(deviceId);
-            }
+            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
+                    .getNextOperation(deviceId);
+            Operation operation = OperationDAOUtil.convertOperation(dtoOperation);
             return operation;
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving next pending operation", e);
@@ -149,18 +160,20 @@ public class OperationManagerImpl implements OperationManager {
             throws OperationManagementException {
 
         try {
-            Operation operation = operationDAO.getOperation(operationId);
-            operation.setStatus(operationStatus);
+            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.getOperation
+                    (operationId);
+            dtoOperation.setStatus(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf
+                            (operationStatus.toString()));
             OperationManagementDAOFactory.beginTransaction();
-            operationDAO.updateOperation(operation);
+            operationDAO.updateOperation(dtoOperation);
             OperationManagementDAOFactory.commitTransaction();
-        }catch(OperationManagementDAOException ex){
+        } catch (OperationManagementDAOException ex) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();
             } catch (OperationManagementDAOException e1) {
                 log.warn("Error occurred while roll-backing the update operation transaction", e1);
             }
-            log.error("Error occurred while updating the operation: "+operationId);
+            log.error("Error occurred while updating the operation: " + operationId);
             throw new OperationManagementException("Error occurred while update operation", ex);
         }
 
@@ -174,21 +187,21 @@ public class OperationManagerImpl implements OperationManager {
             return profileOperationDAO;
         } else if (operation instanceof ConfigOperation) {
             return configOperationDAO;
-        }else{
+        } else {
             return operationDAO;
         }
     }
 
     private OperationDAO lookupOperationDAO(Operation.Type type) {
         switch (type) {
-            case CONFIG:
-                return configOperationDAO;
-            case PROFILE:
-                return profileOperationDAO;
-            case COMMAND:
-                return commandOperationDAO;
-            default:
-                return commandOperationDAO;
+        case CONFIG:
+            return configOperationDAO;
+        case PROFILE:
+            return profileOperationDAO;
+        case COMMAND:
+            return commandOperationDAO;
+        default:
+            return commandOperationDAO;
         }
     }
 

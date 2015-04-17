@@ -23,4 +23,5 @@ import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
 public interface EmailService {
 
     public void sendEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException;
+
 }

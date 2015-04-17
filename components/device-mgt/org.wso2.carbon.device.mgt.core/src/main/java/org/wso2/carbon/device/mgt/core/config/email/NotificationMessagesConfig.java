@@ -20,19 +20,19 @@ package org.wso2.carbon.device.mgt.core.config.email;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(name = "Notifications")
 public class NotificationMessagesConfig {
 
-    private EnrolmentNotifications enrolmentNotifications;
+    private List<NotificationMessages> notificationMessagesList;
 
-    @XmlElement(name = "EnrolmentNotifications", required = true)
-    public EnrolmentNotifications getEnrolmentNotifications() {
-        return enrolmentNotifications;
+    public List<NotificationMessages> getNotificationMessagesList() {
+        return notificationMessagesList;
     }
 
-    public void setEnrolmentNotifications(EnrolmentNotifications enrolmentNotifications) {
-        this.enrolmentNotifications = enrolmentNotifications;
+    public void setNotificationMessagesList(List<NotificationMessages> notificationMessagesList) {
+        this.notificationMessagesList = notificationMessagesList;
     }
 
 }

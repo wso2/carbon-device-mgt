@@ -40,6 +40,8 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
 
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
+    void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;
+
     FeatureManager getFeatureManager(String type) throws DeviceManagementException;
 
 }

@@ -29,6 +29,17 @@ public class EmailMessageProperties {
     private String firstName;
     private String enrolmentUrl;
     private String title;
+    private String password;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    private String userName;
 
     public String getMessageBody() {
         return messageBody;
@@ -92,6 +103,14 @@ public class EmailMessageProperties {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

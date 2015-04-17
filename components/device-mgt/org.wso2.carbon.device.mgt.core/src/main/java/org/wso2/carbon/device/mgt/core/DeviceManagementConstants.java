@@ -39,4 +39,12 @@ public final class DeviceManagementConstants {
 		public final static String OAUTH_ADMIN_SERVICE = "/services/OAuthAdminService";
 	}
 
+    public static final class EmailNotifications {
+        private EmailNotifications() {
+            throw new AssertionError();
+        }
+
+        public static final String ENROL_NOTIFICATION_TYPE = "enrol";
+        public static final String USER_REGISTRATION_NOTIFICATION_TYPE = "userRegistration";
+    }
 }

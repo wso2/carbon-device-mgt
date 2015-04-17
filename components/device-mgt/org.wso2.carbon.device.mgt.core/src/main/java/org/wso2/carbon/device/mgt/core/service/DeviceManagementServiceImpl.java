@@ -26,7 +26,7 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import java.util.List;
 
-public class DeviceManagementServiceImpl implements DeviceManagementService{
+public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @Override
     public String getProviderType() {
@@ -173,10 +173,15 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
     }
 
     @Override
-    public void sendEnrolmentInvitation(
-            EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties)
+            throws DeviceManagementException {
         DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                 .sendEnrolmentInvitation(emailMessageProperties);
     }
 
+    @Override
+    public void sendRegistrationEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                .sendRegistrationEmail(emailMessageProperties);
+    }
 }

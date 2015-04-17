@@ -28,7 +28,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.email.EnrolmentNotifications;
+import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -233,12 +233,26 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
 
-        EnrolmentNotifications enrolmentNotifications = DeviceConfigurationManager.getInstance()
-                .getNotificationMessagesConfig().getEnrolmentNotifications();
+        List<NotificationMessages> notificationMessages = DeviceConfigurationManager.getInstance()
+                .getNotificationMessagesConfig().getNotificationMessagesList();
 
-        String messageHeader = enrolmentNotifications.getHeader();
-        String messageBody = enrolmentNotifications.getBody();
-        String messageFooter = enrolmentNotifications.getFooter();
+        String messageHeader = "";
+        String messageBody = "";
+        String messageFooter = "";
+        String url = "";
+        String subject = "";
+
+        for(NotificationMessages notificationMessage : notificationMessages){
+            if (notificationMessage.getType().equals(DeviceManagementConstants.EmailNotifications
+                    .ENROL_NOTIFICATION_TYPE)){
+                messageHeader = notificationMessage.getHeader();
+                messageBody = notificationMessage.getBody();
+                messageFooter = notificationMessage.getFooter();
+                url = notificationMessage.getUrl();
+                subject = notificationMessage.getSubject();
+                break;
+            }
+        }
 
         StringBuilder messageBuilder = new StringBuilder();
 
@@ -249,13 +263,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             }
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.TITLE + "\\}",
                     URLEncoder.encode(title, EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.USERNAME + "\\}",
+            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                             URLEncoder.encode(emailMessageProperties.getFirstName(),
                                     EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBody = messageBody + System.getProperty("line.separator") + enrolmentNotifications.getUrl()
-                    .replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.DOwN_LOAD_URL + "\\}",
-                            URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
-                                    EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+            messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
+                            + EmailConstants.EnrolmentEmailConstants.DOwN_LOAD_URL + "\\}",
+                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
+                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator")).append(
                     System.getProperty("line.separator"));
 
@@ -268,7 +282,71 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
-        emailMessageProperties.setSubject(enrolmentNotifications.getSubject());
+        emailMessageProperties.setSubject(subject);
+        EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
+    }
+
+    @Override
+    public void sendRegistrationEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+        List<NotificationMessages> notificationMessages = DeviceConfigurationManager.getInstance()
+                .getNotificationMessagesConfig().getNotificationMessagesList();
+
+        String messageHeader = "";
+        String messageBody = "";
+        String messageFooter = "";
+        String url = "";
+        String subject = "";
+
+        for(NotificationMessages notificationMessage : notificationMessages){
+            if (notificationMessage.getType().equals(DeviceManagementConstants.EmailNotifications
+                    .USER_REGISTRATION_NOTIFICATION_TYPE)){
+                messageHeader = notificationMessage.getHeader();
+                messageBody = notificationMessage.getBody();
+                messageFooter = notificationMessage.getFooter();
+                url = notificationMessage.getUrl();
+                subject = notificationMessage.getSubject();
+                break;
+            }
+        }
+
+        StringBuilder messageBuilder = new StringBuilder();
+
+        try {
+            String title = "";
+            if (emailMessageProperties.getTitle() != null){
+                title = emailMessageProperties.getTitle();
+            }
+            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.TITLE + "\\}",
+                    URLEncoder.encode(title, EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
+                    URLEncoder.encode(emailMessageProperties.getFirstName(),
+                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+
+            messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.USERNAME + "\\}",
+                    URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
+                            .ENCODED_SCHEME));
+
+            messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.PASSWORD + "\\}",
+                    URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
+                            .ENCODED_SCHEME));
+
+            messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
+                            + EmailConstants.EnrolmentEmailConstants.DOwN_LOAD_URL + "\\}",
+                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
+                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+            messageBuilder.append(messageHeader).append(System.getProperty("line.separator")).append(
+                    System.getProperty("line.separator"));
+
+            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
+                    System.getProperty("line.separator")).append(messageFooter);
+
+        } catch (IOException e) {
+            log.error("IO error in processing enrol email message "+emailMessageProperties);
+            throw new DeviceManagementException("Error replacing tags in email template '" +
+                    emailMessageProperties.getSubject() + "'", e);
+        }
+        emailMessageProperties.setMessageBody(messageBuilder.toString());
+        emailMessageProperties.setSubject(subject);
         EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
     }
 

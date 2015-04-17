@@ -23,10 +23,10 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import java.util.List;
 
-public class DeviceManagementServiceImpl implements DeviceManagementService {
+public class DeviceManagementServiceImpl implements DeviceManagementService{
 
     @Override
     public String getProviderType() {
@@ -140,6 +140,36 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     public void updateOperation(int operationId, Operation.Status operationStatus) throws OperationManagementException {
         DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().updateOperation(operationId,
                 operationStatus);
+    }
+
+    @Override
+    public void deleteOperation(int operationId) throws OperationManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().deleteOperation(operationId);
+    }
+
+    @Override
+    public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId,
+            int operationId) throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                .getOperationByDeviceAndOperationId(deviceId, operationId);
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
+            Operation.Status status) throws OperationManagementException, DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getOperationsByDeviceAndStatus
+                (identifier, status);
+    }
+
+    @Override
+    public Operation getOperation(int operationId) throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getOperation(operationId);
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsForStatus(Operation.Status status)
+            throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getOperationsForStatus(status);
     }
 
     @Override

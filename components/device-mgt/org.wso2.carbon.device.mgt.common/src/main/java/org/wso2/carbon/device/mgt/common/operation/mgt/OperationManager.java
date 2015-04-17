@@ -18,6 +18,8 @@
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+
 import java.util.List;
 
 /**
@@ -34,8 +36,8 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while adding the
      * operation
      */
-    public boolean addOperation(Operation operation,
-                                List<DeviceIdentifier> devices) throws OperationManagementException;
+    public boolean addOperation(Operation operation, List<DeviceIdentifier> devices) throws
+            OperationManagementException;
 
     /**
      * Method to retrieve the list of all operations to a device.
@@ -60,4 +62,15 @@ public interface OperationManager {
 
     public void updateOperation(int operationId, Operation.Status operationStatus) throws OperationManagementException;
 
+    public void deleteOperation(int operationId) throws OperationManagementException;
+
+    public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
+            throws OperationManagementException;
+
+    public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
+            Operation.Status status) throws OperationManagementException, DeviceManagementException;
+
+    public Operation getOperation(int operationId) throws OperationManagementException;
+
+    public List<? extends Operation> getOperationsForStatus(Operation.Status status) throws OperationManagementException;
 }

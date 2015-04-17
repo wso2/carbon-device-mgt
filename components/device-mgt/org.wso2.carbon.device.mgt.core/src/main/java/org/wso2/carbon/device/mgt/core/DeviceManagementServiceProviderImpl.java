@@ -363,6 +363,34 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public void updateOperation(int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
-        operationManager.updateOperation(operationId,operationStatus);
+        operationManager.updateOperation(operationId, operationStatus);
+    }
+
+    @Override
+    public void deleteOperation(int operationId) throws OperationManagementException {
+            operationManager.deleteOperation(operationId);
+    }
+
+    @Override
+    public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
+            throws OperationManagementException {
+        return operationManager.getOperationByDeviceAndOperationId(deviceId, operationId);
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
+            Operation.Status status) throws OperationManagementException, DeviceManagementException {
+        return operationManager.getOperationsByDeviceAndStatus(identifier, status);
+    }
+
+    @Override
+    public Operation getOperation(int operationId) throws OperationManagementException {
+        return operationManager.getOperation(operationId);
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsForStatus(Operation.Status status)
+            throws OperationManagementException {
+        return operationManager.getOperationsForStatus(status);
     }
 }

@@ -160,8 +160,8 @@ public class OperationDAOImpl implements OperationDAO {
             log.error(errorMsg, e);
             throw new OperationManagementDAOException(errorMsg, e);
         } catch (SQLException e) {
-            String errorMsg = "SQL Error occurred while retrieving the operation object " +
-                    "available for the id '" + id;
+            String errorMsg = "SQL Error occurred while retrieving the operation object " + "available for the id '"
+                    + id;
             log.error(errorMsg, e);
             throw new OperationManagementDAOException(errorMsg, e);
         } finally {
@@ -248,7 +248,7 @@ public class OperationDAOImpl implements OperationDAO {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Operation operation = null;
+        Operation operation;
 
         ByteArrayInputStream bais;
         ObjectInputStream ois;
@@ -393,7 +393,7 @@ public class OperationDAOImpl implements OperationDAO {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Operation operation = null;
+        Operation operation;
 
         ByteArrayInputStream bais;
         ObjectInputStream ois;
@@ -459,6 +459,7 @@ public class OperationDAOImpl implements OperationDAO {
 
     @Override
     public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -478,8 +479,8 @@ public class OperationDAOImpl implements OperationDAO {
             rs = stmt.executeQuery();
 
             Operation operation = null;
-            if (rs.next()) {
 
+            if (rs.next()) {
                 operation = new Operation();
                 operation.setType(this.getType(rs.getString("TYPE")));
                 operation.setStatus(this.getStatus(rs.getString("STATUS")));

@@ -119,5 +119,17 @@ public class Operation implements Serializable {
         this.payLoad = payLoad;
     }
 
+    @Override
+    public String toString() {
+        return "Operation{" +
+                "code='" + code + '\'' +
+                ", type=" + type +
+                ", id=" + id +
+                ", status=" + status +
+                ", receivedTimeStamp='" + receivedTimeStamp + '\'' +
+                ", createdTimeStamp='" + createdTimeStamp + '\'' +
+                ", isEnabled=" + isEnabled +
+                '}';
+    }
 
 }

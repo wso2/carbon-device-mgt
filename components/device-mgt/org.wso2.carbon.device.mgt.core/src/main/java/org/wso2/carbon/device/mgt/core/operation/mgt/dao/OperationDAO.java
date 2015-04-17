@@ -33,11 +33,10 @@ public interface OperationDAO {
 
     Operation getOperation(int operationId) throws OperationManagementDAOException;
 
-    Operation getOperationByDeviceAndId(int deviceId,
-            int operationId) throws OperationManagementDAOException;
+    Operation getOperationByDeviceAndId(int deviceId, int operationId) throws OperationManagementDAOException;
 
-    List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId, Operation.Status status)  throws
-            OperationManagementDAOException;
+    List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId, Operation.Status status)
+            throws OperationManagementDAOException;
 
     List<? extends Operation> getOperationsForDevice(int deviceId) throws OperationManagementDAOException;
 

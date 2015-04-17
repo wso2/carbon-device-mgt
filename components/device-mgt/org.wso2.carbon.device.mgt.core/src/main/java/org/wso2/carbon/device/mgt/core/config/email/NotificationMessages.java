@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Notifications")
+@XmlRootElement(name = "NotificationMessage")
 public class NotificationMessages {
 
     private String header;

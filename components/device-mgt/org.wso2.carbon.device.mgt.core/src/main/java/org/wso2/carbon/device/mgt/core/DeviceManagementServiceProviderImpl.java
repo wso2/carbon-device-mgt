@@ -243,8 +243,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         String subject = "";
 
         for(NotificationMessages notificationMessage : notificationMessages){
-            if (notificationMessage.getType().equals(DeviceManagementConstants.EmailNotifications
-                    .ENROL_NOTIFICATION_TYPE)){
+            if (DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE.
+		                                                   equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
                 messageFooter = notificationMessage.getFooter();
@@ -298,8 +298,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         String subject = "";
 
         for(NotificationMessages notificationMessage : notificationMessages){
-            if (notificationMessage.getType().equals(DeviceManagementConstants.EmailNotifications
-                    .USER_REGISTRATION_NOTIFICATION_TYPE)){
+            if (DeviceManagementConstants.EmailNotifications.USER_REGISTRATION_NOTIFICATION_TYPE.
+		                                                          equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
                 messageFooter = notificationMessage.getFooter();

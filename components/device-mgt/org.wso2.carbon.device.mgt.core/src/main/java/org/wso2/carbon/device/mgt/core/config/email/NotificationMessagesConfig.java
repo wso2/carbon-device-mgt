@@ -27,6 +27,7 @@ public class NotificationMessagesConfig {
 
     private List<NotificationMessages> notificationMessagesList;
 
+    @XmlElement(name = "NotificationMessage")
     public List<NotificationMessages> getNotificationMessagesList() {
         return notificationMessagesList;
     }

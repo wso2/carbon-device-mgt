@@ -119,11 +119,11 @@ public class OperationDAOImpl implements OperationDAO {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE," +
-                    "po.OPERATION_DETAILS,co.ENABLED from " +
-                    "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, OPERATION_CODE FROM " +
-                    " DM_OPERATION   WHERE id=?)  o" +
-                    "LEFT OUTER JOIN DM_PROFILE_OPERATION po on  o.ID =po.OPERATION_ID" +
-                    "LEFT OUTER JOIN DM_COMMAND_OPERATION co on co.OPERATION_ID=o.ID";
+                    " po.OPERATION_DETAILS, co.ENABLED from" +
+                    " (SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, OPERATION_CODE FROM " +
+                    " DM_OPERATION   WHERE id=?) o" +
+                    " LEFT OUTER JOIN DM_PROFILE_OPERATION po on o.ID=po.OPERATION_ID" +
+                    " LEFT OUTER JOIN DM_COMMAND_OPERATION co on co.OPERATION_ID=o.ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
@@ -184,7 +184,7 @@ public class OperationDAOImpl implements OperationDAO {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE," +
-                    "po.OPERATION_DETAILS,co.ENABLED from " +
+                    " po.OPERATION_DETAILS,co.ENABLED from " +
                     "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, " +
                     "OPERATION_CODE  FROM DM_OPERATION  WHERE id=?)  o INNER JOIN (Select * from " +
                     "DM_DEVICE_OPERATION_MAPPING dm where dm.OPERATION_ID=? AND  dm.DEVICE_ID=?)  om " +

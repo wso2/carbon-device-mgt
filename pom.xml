@@ -877,6 +877,21 @@
                 <version>${cxf.version}</version>
             </dependency>
             <!-- End of CXF dependencies -->
+
+            <!-- Transaction Mgt features -->
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
+                <type>zip</type>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.transaction.manager</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <!-- End of transaction Mgt features -->
+
         </dependencies>
     </dependencyManagement>
 

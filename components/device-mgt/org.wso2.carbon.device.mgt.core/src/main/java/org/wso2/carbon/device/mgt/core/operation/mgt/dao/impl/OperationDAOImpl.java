@@ -256,10 +256,10 @@ public class OperationDAOImpl implements OperationDAO {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE, " +
-                    "po.OPERATIONDETAILS,co.ENABLED from " +
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE, " +
+                    "po.OPERATION_DETAILS,co.ENABLED from " +
                     "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, " +
-                    "OPERATIONCODE  FROM DM_OPERATION  WHERE STATUS=?) o " +
+                    "OPERATION_CODE  FROM DM_OPERATION  WHERE STATUS=?) o " +
                     "INNER JOIN (Select * from DM_DEVICE_OPERATION_MAPPING dm " +
                     "where dm.DEVICE_ID=?) om ON o.ID = om.OPERATION_ID  LEFT OUTER JOIN DM_PROFILE_OPERATION po ON " +
                     "o.ID =po.OPERATION_ID LEFT OUTER JOIN DM_COMMAND_OPERATION co ON co.OPERATION_ID=o.ID";
@@ -329,10 +329,10 @@ public class OperationDAOImpl implements OperationDAO {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATIONCODE, " +
-                    "po.OPERATIONDETAILS,co.ENABLED from " +
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE, " +
+                    "po.OPERATION_DETAILS,co.ENABLED from " +
                     "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS, " +
-                    "OPERATIONCODE  FROM DM_OPERATION) o " +
+                    "OPERATION_CODE  FROM DM_OPERATION) o " +
                     "INNER JOIN (Select * from DM_DEVICE_OPERATION_MAPPING dm " +
                     "where dm.DEVICE_ID=?) om ON o.ID = om.OPERATION_ID  LEFT OUTER JOIN DM_PROFILE_OPERATION po ON " +
                     "o.ID =po.OPERATION_ID LEFT OUTER JOIN DM_COMMAND_OPERATION co ON co.OPERATION_ID=o.ID";
@@ -404,7 +404,7 @@ public class OperationDAOImpl implements OperationDAO {
             String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE,"+
                     "po.OPERATION_DETAILS,co.ENABLED from "+
                     "(SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS,"+
-                    "OPERATIONCODE  FROM DM_OPERATION  WHERE STATUS=?) o "+
+                    "OPERATION_CODE  FROM DM_OPERATION  WHERE STATUS=?) o "+
                     "LEFT OUTER JOIN DM_PROFILE_OPERATION po ON "+
                     "o.ID =po.OPERATION_ID LEFT OUTER JOIN DM_COMMAND_OPERATION co ON co.OPERATION_ID=o.ID";
 

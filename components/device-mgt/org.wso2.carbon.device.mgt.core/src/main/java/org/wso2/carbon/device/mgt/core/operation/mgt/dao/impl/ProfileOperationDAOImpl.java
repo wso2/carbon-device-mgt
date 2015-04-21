@@ -70,7 +70,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "SELECT po.OPERATION_DETAILS AS OPERATIONDETAILS " +
+                    "SELECT po.OPERATION_DETAILS AS OPERATION_DETAILS " +
                             "FROM DM_OPERATION o " +
                             "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.STATUS =? AND o.ID IN ("
                             +
@@ -86,7 +86,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
             byte[] operationDetails = new byte[0];
             if (rs.next()) {
-                operationDetails = rs.getBytes("OPERATIONDETAILS");
+                operationDetails = rs.getBytes("OPERATION_DETAILS");
             }
             bais = new ByteArrayInputStream(operationDetails);
             ois = new ObjectInputStream(bais);

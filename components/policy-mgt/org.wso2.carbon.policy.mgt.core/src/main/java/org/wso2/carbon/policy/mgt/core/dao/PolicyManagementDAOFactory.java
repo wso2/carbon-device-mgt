@@ -20,12 +20,17 @@ package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
+import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
+import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -33,8 +38,7 @@ public class PolicyManagementDAOFactory {
 
     private static DataSource dataSource;
     private static final Log log = LogFactory.getLog(PolicyManagementDAOFactory.class);
-
-
+    private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
@@ -49,6 +53,18 @@ public class PolicyManagementDAOFactory {
             return dataSource;
         }
         throw new RuntimeException("Data source is not yet configured.");
+    }
+
+    public static PolicyDAO getPolicyDAO() {
+        return new PolicyDAOImpl();
+    }
+
+    public static ProfileDAO getProfileDAO() {
+        return new ProfileDAOImpl();
+    }
+
+    public static FeatureDAO getFeatureDAO() {
+        return new FeatureDAOImpl();
     }
 
     /**
@@ -83,6 +99,78 @@ public class PolicyManagementDAOFactory {
             }
         }
         return dataSource;
+    }
+
+    public static void beginTransaction() throws PolicyManagerDAOException {
+        try {
+            Connection conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            currentConnection.set(conn);
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while retrieving datasource connection", e);
+        }
+    }
+
+    public static Connection getConnection() throws PolicyManagerDAOException {
+        if (currentConnection.get() == null) {
+            try {
+                Connection conn = dataSource.getConnection();
+                conn.setAutoCommit(false);
+                currentConnection.set(conn);
+
+            } catch (SQLException e) {
+                throw new PolicyManagerDAOException("Error occurred while retrieving data source connection",
+                        e);
+            }
+        }
+        return currentConnection.get();
+    }
+
+    public static void closeConnection() throws PolicyManagerDAOException {
+
+        Connection con = currentConnection.get();
+        try {
+            con.close();
+        } catch (SQLException e) {
+            log.error("Error occurred while close the connection");
+        }
+        currentConnection.remove();
+    }
+
+    public static void commitTransaction() throws PolicyManagerDAOException {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.commit();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence commit " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while committing the transaction", e);
+        } finally {
+            closeConnection();
+        }
+    }
+
+    public static void rollbackTransaction() throws PolicyManagerDAOException {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.rollback();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence rollback " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while rollbacking the transaction", e);
+        } finally {
+            closeConnection();
+        }
     }
 
 }

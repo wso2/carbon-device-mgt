@@ -20,7 +20,6 @@ package org.wso2.carbon.policy.mgt.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
@@ -28,13 +27,13 @@ import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 
 import java.util.List;
 
-public class PolicyManagerImpl implements PolicyManager {
+public class PolicyManagerServiceImpl implements PolicyManagerService {
 
-    private static final Log log = LogFactory.getLog(PolicyManagerImpl.class);
+    private static final Log log = LogFactory.getLog(PolicyManagerServiceImpl.class);
 
     PolicyAdministratorPointImpl policyAdministratorPoint;
 
-    public PolicyManagerImpl() {
+    public PolicyManagerServiceImpl() {
         policyAdministratorPoint = new PolicyAdministratorPointImpl();
     }
 

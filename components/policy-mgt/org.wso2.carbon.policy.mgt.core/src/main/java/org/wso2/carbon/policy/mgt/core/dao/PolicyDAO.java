@@ -19,11 +19,10 @@
 package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.policy.mgt.common.*;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface PolicyDAO {
@@ -32,9 +31,17 @@ public interface PolicyDAO {
 
     Policy addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException;
 
-    Policy addPolicyToRole(String roleName, Policy policy) throws PolicyManagerDAOException;
+    Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagerDAOException;
 
-    Policy addPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagerDAOException;
+    Policy addPolicyToUser(List<String> usernameList, Policy policy) throws PolicyManagerDAOException;
+
+    Policy addPolicyToDevice(List<Device> devices, Policy policy) throws PolicyManagerDAOException;
+
+    Policy addDatesToPolicy(Date startDate, Date endDate, Policy policy) throws PolicyManagerDAOException;
+
+    Policy addTimesToPolicy(int startTime, int endTime, Policy policy) throws PolicyManagerDAOException;
+
+    Policy addLocationToPolicy(String latitude, String longitude, Policy policy) throws PolicyManagerDAOException;
 
     Policy updatePolicy(Policy policy) throws PolicyManagerDAOException;
 
@@ -42,14 +49,28 @@ public interface PolicyDAO {
 
     Policy getPolicyByProfileID(int profileId) throws PolicyManagerDAOException;
 
-    List<Policy> getPolicy() throws PolicyManagerDAOException;
+    List<Integer> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagerDAOException;
 
-    List<Policy> getPolicy(String deviceType) throws PolicyManagerDAOException;
+    List<Policy> getAllPolicies() throws PolicyManagerDAOException;
 
-    List<Policy> getPolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagerDAOException;
+    List<Policy> getPolicyOfDeviceType(String deviceType) throws PolicyManagerDAOException;
 
-    List<Policy> getPolicyOfRole(String roleName) throws PolicyManagerDAOException;
+    List<Integer> getPolicyIdsOfDevice(Device device) throws PolicyManagerDAOException;
 
-    void deletePolicy(Policy policy) throws PolicyManagerDAOException;
+    List<Integer> getPolicyOfRole(String roleName) throws PolicyManagerDAOException;
+
+    List<Integer> getPolicyOfUser(String username) throws PolicyManagerDAOException;
+
+    boolean deletePolicy(Policy policy) throws PolicyManagerDAOException;
+
+    boolean deleteAllPolicyRelatedConfigs(int policyId) throws PolicyManagerDAOException;
+
+    List<String> getPolicyAppliedRoles(int policyId) throws PolicyManagerDAOException;
+
+    PolicyTimes getTimesOfPolicy(Policy policy) throws PolicyManagerDAOException;
+
+    PolicyDates getDatesOfPolicy(Policy policy) throws PolicyManagerDAOException;
+
+    PolicyLocations getLocationsOfPolicy(Policy policy) throws PolicyManagerDAOException;
 
 }

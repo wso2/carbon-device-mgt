@@ -25,7 +25,7 @@ import org.wso2.carbon.policy.mgt.common.PIPDevice;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.core.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 
 import java.util.Collections;
@@ -34,20 +34,20 @@ import java.util.List;
 public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     private static final Log log = LogFactory.getLog(SimpleEvaluationImpl.class);
-    private PolicyManager policyManager;
+    private PolicyManagerService policyManagerService;
     private List<Policy> policyList;
 
     public SimpleEvaluationImpl() {
-        policyManager = PolicyDecisionPointDataHolder.getInstance().getPolicyManager();
+        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
     }
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
 
         try {
-            if (policyManager == null && policyList == null) {
-                PIPDevice pipDevice = policyManager.getPIP().getDeviceData(deviceIdentifier);
-                policyList = policyManager.getPIP().getRelatedPolicies(pipDevice);
+            if (policyManagerService == null && policyList == null) {
+                PIPDevice pipDevice = policyManagerService.getPIP().getDeviceData(deviceIdentifier);
+                policyList = policyManagerService.getPIP().getRelatedPolicies(pipDevice);
             }
             sortPolicy();
         } catch (PolicyManagementException e) {

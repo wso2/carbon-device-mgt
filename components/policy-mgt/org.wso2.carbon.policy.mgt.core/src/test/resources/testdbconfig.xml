@@ -25,7 +25,7 @@
         <pwd>root</pwd>
     </DBType>
     <DBType typeName="H2">
-        <connectionurl>jdbc:h2:mem:cdm-test-db;DB_CLOSE_DELAY=-1</connectionurl>
+        <connectionurl>jdbc:h2:mem:WSO2_TEST_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000</connectionurl>
         <driverclass>org.h2.Driver</driverclass>
         <userName>wso2carbon</userName>
         <pwd>wso2carbon</pwd>

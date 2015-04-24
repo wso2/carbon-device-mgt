@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.policy.mgt.core.internal;
 
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -29,6 +30,7 @@ public class PolicyManagementDataHolder {
     private TenantManager tenantManager;
     private PolicyEvaluationPoint policyEvaluationPoint;
     private PolicyInformationPoint policyInformationPoint;
+    private DeviceManagementService deviceManagementService;
     private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
 
     private PolicyManagementDataHolder() {}
@@ -71,5 +73,13 @@ public class PolicyManagementDataHolder {
 
     public void setPolicyInformationPoint(PolicyInformationPoint policyInformationPoint) {
         this.policyInformationPoint = policyInformationPoint;
+    }
+
+    public DeviceManagementService getDeviceManagementService() {
+        return deviceManagementService;
+    }
+
+    public void setDeviceManagementService(DeviceManagementService deviceManagementService) {
+        this.deviceManagementService = deviceManagementService;
     }
 }

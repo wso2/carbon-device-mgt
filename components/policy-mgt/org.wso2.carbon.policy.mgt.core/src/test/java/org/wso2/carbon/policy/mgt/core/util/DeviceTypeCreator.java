@@ -16,26 +16,18 @@
 * under the License.
 */
 
-
-package org.wso2.carbon.policy.mgt.core.dao;
+package org.wso2.carbon.policy.mgt.core.util;
 
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.policy.mgt.common.Profile;
 
-import java.util.List;
+public class DeviceTypeCreator {
 
-public interface ProfileDAO {
+    public static DeviceType getDeviceType(){
 
-    Profile addProfile(Profile profile) throws ProfileManagerDAOException;
+        DeviceType deviceType = new DeviceType();
+        deviceType.setName("ANDROID");
+        deviceType.setId(1);
 
-    Profile updateProfile(Profile profile) throws ProfileManagerDAOException;
-
-    boolean deleteProfile(Profile profile) throws ProfileManagerDAOException;
-
-    Profile getProfiles(int profileId) throws ProfileManagerDAOException;
-
-    List<Profile> getAllProfiles() throws ProfileManagerDAOException;
-
-    List<Profile> getProfilesOfDeviceType(DeviceType deviceType) throws ProfileManagerDAOException;
-
+        return deviceType;
+    }
 }

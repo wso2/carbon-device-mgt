@@ -21,9 +21,10 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
-import org.wso2.carbon.policy.mgt.core.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyManagementConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
@@ -51,6 +52,12 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setPEPService"
  * unbind="unsetPEPService"
+ * @scr.reference name="org.wso2.carbon.device.manager"
+ * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setDeviceManagementService"
+ * unbind="unsetDeviceManagementService"
  */
 
 public class PolicyManagementServiceComponent {
@@ -66,7 +73,7 @@ public class PolicyManagementServiceComponent {
             PolicyManagementDAOFactory.init(dsConfig);
 
             componentContext.getBundleContext().registerService(
-                    PolicyManager.class.getName(), new PolicyManagementService(), null);
+                    PolicyManagerService.class.getName(), new PolicyManagementService(), null);
 
         } catch (Throwable t) {
             String msg = "Error occurred while initializing the Policy management core.";
@@ -128,6 +135,20 @@ public class PolicyManagementServiceComponent {
             log.debug("Unsetting Policy Information Service");
         }
         PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(null);
+    }
+
+    protected void setDeviceManagementService(DeviceManagementService deviceManagerService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Device Management Service");
+        }
+        PolicyManagementDataHolder.getInstance().setDeviceManagementService(deviceManagerService);
+    }
+
+    protected void unsetDeviceManagementService(DeviceManagementService deviceManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Device Management Service");
+        }
+        PolicyManagementDataHolder.getInstance().setDeviceManagementService(null);
     }
 
 }

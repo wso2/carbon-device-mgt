@@ -25,7 +25,7 @@ import org.wso2.carbon.policy.mgt.common.*;
 
 import java.util.List;
 
-public interface PolicyManager {
+public interface PolicyManagerService {
 
     Feature addFeature(Feature feature) throws FeatureManagementException;
 

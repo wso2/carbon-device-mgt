@@ -43,21 +43,21 @@ public interface PolicyAdministratorPoint {
     /**
      * This method adds a policy per device which should be implemented by the related plugins.
      *
-     * @param deviceIdentifierr
+     * @param deviceIdentifierList
      * @param policy
-     * @return primary key (generated key)
+     * @return
+     * @throws PolicyManagementException
      */
-
-    Policy addPolicyToDevice(DeviceIdentifier deviceIdentifierr, Policy policy) throws FeatureManagementException, PolicyManagementException;
+    Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws PolicyManagementException;
 
     /**
      * This method adds the policy to specific role.
      *
-     * @param roleName
+     * @param roleNames
      * @param policy
      * @return primary key (generated key)
      */
-    Policy addPolicyToRole(String roleName, Policy policy) throws FeatureManagementException, PolicyManagementException;
+    Policy addPolicyToRole(List<String> roleNames, Policy policy) throws  PolicyManagementException;
 
     /**
      * This method returns the policy of whole platform
@@ -70,12 +70,11 @@ public interface PolicyAdministratorPoint {
     /**
      * This method gives the device specific policy.
      *
-     * @param deviceId
-     * @param deviceType
+     * @param deviceIdentifier
      * @return Policy
      */
 
-    List<Policy> getPoliciesOfDevice(String deviceId, String deviceType) throws FeatureManagementException, PolicyManagementException;
+    List<Policy> getPoliciesOfDevice(DeviceIdentifier deviceIdentifier) throws  PolicyManagementException;
 
     /**
      * This method returns the device type specific policy.
@@ -84,7 +83,7 @@ public interface PolicyAdministratorPoint {
      * @return Policy
      */
 
-    List<Policy> getPoliciesOfDeviceType(String deviceType) throws FeatureManagementException, PolicyManagementException;
+    List<Policy> getPoliciesOfDeviceType(String deviceType) throws  PolicyManagementException;
 
     /**
      * This method returns the role specific policy.
@@ -93,7 +92,10 @@ public interface PolicyAdministratorPoint {
      * @return
      */
 
-    List<Policy> getPoliciesOfRole(String roleName) throws FeatureManagementException, PolicyManagementException;
+    List<Policy> getPoliciesOfRole(String roleName) throws  PolicyManagementException;
+
+
+    List<Policy> getPoliciesOfUser(String username) throws  PolicyManagementException;
 
 
     /**
@@ -138,6 +140,6 @@ public interface PolicyAdministratorPoint {
 
     Feature updateFeature(Feature feature) throws  FeatureManagementException;
 
-    void deleteFeature(int featureId)   throws  FeatureManagementException;
+    boolean deleteFeature(int featureId)   throws  FeatureManagementException;
 
 }

@@ -18,13 +18,13 @@
 
 package org.wso2.carbon.simple.policy.decision.point.internal;
 
-import org.wso2.carbon.policy.mgt.core.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 public class PolicyDecisionPointDataHolder {
 
     private RealmService realmService;
-    private PolicyManager policyManager;
+    private PolicyManagerService policyManagerService;
 
     private static PolicyDecisionPointDataHolder dataHolder = new PolicyDecisionPointDataHolder();
 
@@ -43,11 +43,11 @@ public class PolicyDecisionPointDataHolder {
         this.realmService = realmService;
     }
 
-    public PolicyManager getPolicyManager() {
-        return policyManager;
+    public PolicyManagerService getPolicyManagerService() {
+        return policyManagerService;
     }
 
-    public void setPolicyManager(PolicyManager policyManager) {
-        this.policyManager = policyManager;
+    public void setPolicyManagerService(PolicyManagerService policyManagerService) {
+        this.policyManagerService = policyManagerService;
     }
 }

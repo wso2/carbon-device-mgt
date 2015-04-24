@@ -17,25 +17,24 @@
 */
 
 
-package org.wso2.carbon.policy.mgt.core.dao;
+package org.wso2.carbon.policy.mgt.core.mgt;
 
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
 
 import java.util.List;
 
-public interface ProfileDAO {
+public interface ProfileManager {
 
-    Profile addProfile(Profile profile) throws ProfileManagerDAOException;
+    Profile addProfile(Profile profile) throws ProfileManagementException;
 
-    Profile updateProfile(Profile profile) throws ProfileManagerDAOException;
+    Profile updateProfile(Profile profile) throws ProfileManagementException;
 
-    boolean deleteProfile(Profile profile) throws ProfileManagerDAOException;
+    boolean deleteProfile(Profile profile) throws ProfileManagementException;
 
-    Profile getProfiles(int profileId) throws ProfileManagerDAOException;
+    Profile getProfiles(int profileId) throws ProfileManagementException;
 
-    List<Profile> getAllProfiles() throws ProfileManagerDAOException;
+    List<Profile> getAllProfiles() throws ProfileManagementException;
 
-    List<Profile> getProfilesOfDeviceType(DeviceType deviceType) throws ProfileManagerDAOException;
-
+    List<Profile> getProfilesOfDeviceType(String deviceType) throws ProfileManagementException;
 }

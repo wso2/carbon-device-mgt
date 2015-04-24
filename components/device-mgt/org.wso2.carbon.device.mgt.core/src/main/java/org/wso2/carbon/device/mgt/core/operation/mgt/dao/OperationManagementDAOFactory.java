@@ -36,7 +36,6 @@ public class OperationManagementDAOFactory {
     private static DataSource dataSource;
     private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
-    private static final Object LOCK = new Object();
 
     public static OperationDAO getCommandOperationDAO() {
         return new CommandOperationDAOImpl();
@@ -67,6 +66,7 @@ public class OperationManagementDAOFactory {
     }
 
     public static void beginTransaction() throws OperationManagementDAOException {
+
         try {
             currentConnection.set(dataSource.getConnection());
         } catch (SQLException e) {
@@ -75,6 +75,7 @@ public class OperationManagementDAOFactory {
     }
 
     public static Connection getConnection() throws OperationManagementDAOException {
+
         if (currentConnection.get() == null) {
             try {
                 currentConnection.set(dataSource.getConnection());

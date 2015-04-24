@@ -81,6 +81,7 @@ public class OperationDAOUtil {
         operation.setId(dtoOperation.getId());
         operation.setPayLoad(dtoOperation.getPayLoad());
         operation.setReceivedTimeStamp(dtoOperation.getReceivedTimeStamp());
+        operation.setEnabled(dtoOperation.isEnabled());
 
         return operation;
     }

@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -98,20 +99,28 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
                                     org.wso2.carbon.commons:org.wso2.carbon.email.verification
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${carbon.identity.version}
+                                <bundleDef>
+                                    org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${carbon.identity.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.governance.metadata:${carbon.governance.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
+                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.governance.metadata:${carbon.governance.version}
+                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}
+                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon.commons.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

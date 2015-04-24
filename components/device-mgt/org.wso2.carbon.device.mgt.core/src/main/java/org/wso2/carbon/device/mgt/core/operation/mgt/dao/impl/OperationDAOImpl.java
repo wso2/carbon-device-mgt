@@ -289,6 +289,9 @@ public class OperationDAOImpl implements OperationDAO {
                     }
                     operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
                     operation.setCode(rs.getString("OPERATION_CODE"));
+                    if (rs.getObject("ENABLED") != null) {
+                        operation.setEnabled(rs.getBoolean("ENABLED"));
+                    }
                 }
                 operationList.add(operation);
             }

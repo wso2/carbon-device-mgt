@@ -19,29 +19,34 @@
 
 <Notifications>
     <NotificationMessage type="enrol">
-            <Header>Dear {title} {first-name},</Header>
-            <Body>You have been registered to the WSO2 MDM. Below is the link to enroll.</Body>
-            <Url>{downloadUrl}</Url>
-            <Footer>
+        <Subject>Enroll your Device with WSO2 MDM</Subject>
+        <Header>Dear {first-name},</Header>
+        <Body>
+            You have been registered to the WSO2 MDM. Below is the link to enroll.
+        </Body>
+        <Url>{downloadUrl}</Url>
+        <Footer>
             Best Regards,
-            WSO2 MDM Team
+            WSO2 MDM Team.
             http://www.wso2.com
-            </Footer>
-            <Subject>Enrol your device with WSO2 MDM</Subject>
+        </Footer>
     </NotificationMessage>
     <NotificationMessage type="userRegistration">
-        <Header>Dear {title} {first-name},</Header>
-        <Body>You have been registered to WSO2 MDM with following credentials.
+        <Subject>Enroll your Device with WSO2 MDM</Subject>
+        <Header>Dear {first-name},</Header>
+        <Body>
+            You have been registered to WSO2 MDM with following credentials.
+
             Username: {user-name}
             Password: {password}
+
             Below is the link to enroll.
         </Body>
         <Url>{downloadUrl}</Url>
         <Footer>
             Best Regards,
-            WSO2 MDM Team
+            WSO2 MDM Team.
             http://www.wso2.com
         </Footer>
-        <Subject>Enrol your device with WSO2 MDM</Subject>
     </NotificationMessage>
 </Notifications>

@@ -257,24 +257,16 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
-            String title = "";
-            if (emailMessageProperties.getTitle() != null){
-                title = emailMessageProperties.getTitle();
-            }
-            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.TITLE + "\\}",
-                    URLEncoder.encode(title, EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                             URLEncoder.encode(emailMessageProperties.getFirstName(),
                                     EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOwN_LOAD_URL + "\\}",
+                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBuilder.append(messageHeader).append(System.getProperty("line.separator")).append(
-                    System.getProperty("line.separator"));
 
-            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
-                    System.getProperty("line.separator")).append(messageFooter);
+	        messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
+            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter);
 
         } catch (IOException e) {
             log.error("IO error in processing enrol email message "+emailMessageProperties);
@@ -312,12 +304,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
-            String title = "";
-            if (emailMessageProperties.getTitle() != null){
-                title = emailMessageProperties.getTitle();
-            }
-            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.TITLE + "\\}",
-                    URLEncoder.encode(title, EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                     URLEncoder.encode(emailMessageProperties.getFirstName(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
@@ -327,18 +313,16 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                             .ENCODED_SCHEME));
 
             messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.PASSWORD + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
+                    URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOwN_LOAD_URL + "\\}",
+                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBuilder.append(messageHeader).append(System.getProperty("line.separator")).append(
-                    System.getProperty("line.separator"));
 
-            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
-                    System.getProperty("line.separator")).append(messageFooter);
+            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
+            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter);
 
         } catch (IOException e) {
             log.error("IO error in processing enrol email message "+emailMessageProperties);

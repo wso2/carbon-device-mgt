@@ -119,8 +119,10 @@
                                 </importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}
                                 </importFeatureDef>
+                                <!--
                                 <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon.commons.version}
                                 </importFeatureDef>
+                                -->
                             </importFeatures>
                         </configuration>
                     </execution>

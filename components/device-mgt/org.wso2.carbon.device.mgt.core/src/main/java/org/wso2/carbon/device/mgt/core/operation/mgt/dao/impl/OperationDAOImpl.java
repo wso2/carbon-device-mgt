@@ -324,7 +324,7 @@ public class OperationDAOImpl implements OperationDAO {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Operation operation = null;
+        Operation operation;
 
         ByteArrayInputStream bais;
         ObjectInputStream ois;

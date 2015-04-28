@@ -120,8 +120,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public boolean addOperation(Operation operation,
-            List<DeviceIdentifier> devices) throws OperationManagementException, DeviceManagementException {
+    public boolean addOperation(Operation operation, List<DeviceIdentifier> devices)
+            throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, devices);
     }
 

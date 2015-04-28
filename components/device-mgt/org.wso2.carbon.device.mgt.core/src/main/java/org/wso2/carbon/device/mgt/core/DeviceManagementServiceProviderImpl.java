@@ -424,7 +424,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public boolean addOperation(Operation operation, List<DeviceIdentifier> devices) throws
-            OperationManagementException, DeviceManagementException {
+            OperationManagementException {
         return operationManager.addOperation(operation, devices);
     }
 

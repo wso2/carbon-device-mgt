@@ -67,6 +67,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         this.licenseManager = new LicenseManagerImpl();
     }
 
+    public DeviceManagementServiceProviderImpl(){
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        this.operationManager = new OperationManagerImpl();
+        this.licenseManager = new LicenseManagerImpl();
+    }
+
     @Override
     public String getProviderType() {
         return null;
@@ -82,6 +89,24 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(type);
         return dms.getFeatureManager();
+    }
+
+    @Override
+    public Device getCoreDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+
+        Device convertedDevice = null;
+        try {
+            DeviceType deviceType = this.getDeviceTypeDAO().getDeviceType(deviceId.getType());
+            org.wso2.carbon.device.mgt.core.dto.Device device = this.getDeviceDAO().getDevice(deviceId);
+            if (device != null) {
+                convertedDevice = DeviceManagementDAOUtil.convertDevice(device,
+                        this.getDeviceTypeDAO().getDeviceType(deviceType.getId()));
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                    "'" + deviceId.getId() + "' and type:"+deviceId.getType(), e);
+        }
+        return convertedDevice;
     }
 
     @Override
@@ -336,8 +361,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+
+        DeviceManager dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         Device convertedDevice = null;
         try {
             DeviceType deviceType =
@@ -375,10 +400,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         return dms.setOwnership(deviceId, ownershipType);
     }
 
-    public OperationManager getOperationManager(String type) throws DeviceManagementException {
-        return operationManager;
-    }
-
     @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
         return licenseManager.getLicense(deviceType, languageCode);
@@ -402,8 +423,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public boolean addOperation(Operation operation,
-            List<DeviceIdentifier> devices) throws OperationManagementException {
+    public boolean addOperation(Operation operation, List<DeviceIdentifier> devices) throws
+            OperationManagementException, DeviceManagementException {
         return operationManager.addOperation(operation, devices);
     }
 

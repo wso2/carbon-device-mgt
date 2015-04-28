@@ -66,6 +66,7 @@ public class OperationDAOImpl implements OperationDAO {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
         }
     }
 
@@ -398,7 +399,7 @@ public class OperationDAOImpl implements OperationDAO {
         ResultSet rs = null;
         Operation operation;
 
-        ByteArrayInputStream bais;
+        ByteArrayInputStream byteArrayInputStream;
         ObjectInputStream ois;
         List<Operation> operationList = new ArrayList<Operation>();
 
@@ -419,8 +420,8 @@ public class OperationDAOImpl implements OperationDAO {
                 if (rs.getBytes("OPERATION_DETAILS") != null) {
                     byte[] operationDetails;
                     operationDetails = rs.getBytes("OPERATION_DETAILS");
-                    bais = new ByteArrayInputStream(operationDetails);
-                    ois = new ObjectInputStream(bais);
+                    byteArrayInputStream = new ByteArrayInputStream(operationDetails);
+                    ois = new ObjectInputStream(byteArrayInputStream);
                     operation = (ProfileOperation) ois.readObject();
                 } else {
                     operation = new Operation();

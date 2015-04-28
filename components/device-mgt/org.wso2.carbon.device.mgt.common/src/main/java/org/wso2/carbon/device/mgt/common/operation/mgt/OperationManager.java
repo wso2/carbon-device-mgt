@@ -37,7 +37,7 @@ public interface OperationManager {
      * operation
      */
     public boolean addOperation(Operation operation, List<DeviceIdentifier> devices) throws
-            OperationManagementException;
+            OperationManagementException, DeviceManagementException;
 
     /**
      * Method to retrieve the list of all operations to a device.

@@ -18,44 +18,24 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
-import java.io.Serializable;
+public class PolicyLocations {
 
-public class ProfileFeature implements Serializable {
+    private String latitude;                // Latitude
+    private String longitude;               // Longitude
 
-    private int id;
-    private Feature feature;
-    private int profileId;
-    private Object content;
-
-    public int getId() {
-        return id;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
-    public Feature getFeature() {
-        return feature;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setFeature(Feature feature) {
-        this.feature = feature;
-    }
-
-    public int getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(int profileId) {
-        this.profileId = profileId;
-    }
-
-    public Object getContent() {
-        return content;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

@@ -69,4 +69,8 @@ public class PolicyManagementDAOUtil {
         }
     }
 
+    public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
+        cleanupResources(null, stmt, rs);
+    }
+
 }

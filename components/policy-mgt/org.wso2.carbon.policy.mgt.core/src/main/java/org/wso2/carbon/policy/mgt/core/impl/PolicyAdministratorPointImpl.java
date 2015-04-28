@@ -21,18 +21,13 @@ package org.wso2.carbon.policy.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
-import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
-import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
-import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
-import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
+import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
+import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.FeatureManagerImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.ProfileManagerImpl;
 
 import java.util.List;
 
@@ -40,104 +35,61 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     private static final Log log = LogFactory.getLog(PolicyAdministratorPointImpl.class);
 
-    PolicyDAOImpl policyDAO;
-    FeatureDAOImpl featureDAO;
-    ProfileDAOImpl profileDAO;
+
+    private PolicyManager policyManager;
+    private ProfileManager profileManager;
+    private FeatureManager featureManager;
 
     public PolicyAdministratorPointImpl() {
-        policyDAO = new PolicyDAOImpl();
-        featureDAO = new FeatureDAOImpl();
-        profileDAO = new ProfileDAOImpl();
+
+        policyManager = new PolicyManagerImpl();
+        profileManager = new ProfileManagerImpl();
+        featureManager = new FeatureManagerImpl();
     }
 
     @Override
     public Policy addPolicy(Policy policy) throws PolicyManagementException {
-        try {
-            policy = policyDAO.addPolicy(policy);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while persisting the policy.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
-        return policy;
+        return policyManager.addPolicy(policy);
     }
 
+    @Override
     public Policy updatePolicy(Policy policy) throws PolicyManagementException {
-        try {
-            policy = policyDAO.updatePolicy(policy);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while updating the policy.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
-        return policy;
+        return policyManager.updatePolicy(policy);
     }
 
     @Override
-    public Policy addPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
-            throws FeatureManagementException, PolicyManagementException {
-
-        try {
-            policy = policyDAO.addPolicyToDevice(deviceIdentifier, policy);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while persisting the policy.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
-        return policy;
+    public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws PolicyManagementException {
+        return policyManager.addPolicyToDevice(deviceIdentifierList, policy);
     }
 
     @Override
-    public Policy addPolicyToRole(String roleName, Policy policy)
-            throws FeatureManagementException, PolicyManagementException {
-        try {
-            policy = policyDAO.addPolicyToRole(roleName, policy);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while persisting the policy.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
-        return policy;
+    public Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagementException {
+        return policyManager.addPolicyToRole(roleNames, policy);
     }
 
     @Override
     public List<Policy> getPolicies() throws PolicyManagementException {
-        try {
-            return policyDAO.getPolicy();
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policies.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
+        return policyManager.getPolicies();
     }
 
     @Override
-    public List<Policy> getPoliciesOfDevice(String deviceId, String deviceType)
-            throws FeatureManagementException, PolicyManagementException {
-        return null;
+    public List<Policy> getPoliciesOfDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+        return policyManager.getPoliciesOfDevice(deviceIdentifier);
     }
 
     @Override
-    public List<Policy> getPoliciesOfDeviceType(String deviceType)
-            throws FeatureManagementException, PolicyManagementException {
-        try {
-            return policyDAO.getPolicy(deviceType);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policy related to device type.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
+    public List<Policy> getPoliciesOfDeviceType(String deviceType) throws PolicyManagementException {
+        return policyManager.getPoliciesOfDeviceType(deviceType);
     }
 
     @Override
-    public List<Policy> getPoliciesOfRole(String roleName) throws FeatureManagementException, PolicyManagementException {
-        try {
-            return policyDAO.getPolicyOfRole(roleName);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policy related to role name.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
+    public List<Policy> getPoliciesOfRole(String roleName) throws PolicyManagementException {
+        return policyManager.getPoliciesOfRole(roleName);
+    }
+
+    @Override
+    public List<Policy> getPoliciesOfUser(String username) throws PolicyManagementException {
+        return policyManager.getPoliciesOfUser(username);
     }
 
     @Override
@@ -158,14 +110,12 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Profile addProfile(Profile profile) throws PolicyManagementException {
         try {
-            profile = profileDAO.addProfile(profile);
-        } catch (ProfileManagerDAOException e) {
+            return profileManager.addProfile(profile);
+        } catch (ProfileManagementException e) {
             String msg = "Error occurred while persisting the policy.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }
-
-        return profile;
     }
 
     @Override
@@ -176,46 +126,41 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Profile updateProfile(Profile profile) throws PolicyManagementException {
         try {
-            profile = profileDAO.updateProfile(profile);
-        } catch (ProfileManagerDAOException e) {
+            return profileManager.updateProfile(profile);
+        } catch (ProfileManagementException e) {
             String msg = "Error occurred while persisting the profile.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }
-
-        return profile;
     }
 
     @Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
         try {
-            feature = featureDAO.addFeature(feature);
-        } catch (FeatureManagerDAOException e) {
+            return featureManager.addFeature(feature);
+        } catch (FeatureManagementException e) {
             String msg = "Error occurred while persisting the feature.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         }
-
-        return feature;
     }
 
     @Override
     public Feature updateFeature(Feature feature) throws FeatureManagementException {
         try {
-            feature = featureDAO.updateFeature(feature);
-        } catch (FeatureManagerDAOException e) {
+            return featureManager.updateFeature(feature);
+        } catch (FeatureManagementException e) {
             String msg = "Error occurred while persisting the feature.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         }
-        return feature;
     }
 
     @Override
-    public void deleteFeature(int featureId) throws FeatureManagementException {
+    public boolean deleteFeature(int featureId) throws FeatureManagementException {
         try {
-            featureDAO.deleteFeature(featureId);
-        } catch (FeatureManagerDAOException e) {
+            return featureManager.deleteFeature(featureId);
+        } catch (FeatureManagementException e) {
             String msg = "Error occurred while deleting the feature.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);

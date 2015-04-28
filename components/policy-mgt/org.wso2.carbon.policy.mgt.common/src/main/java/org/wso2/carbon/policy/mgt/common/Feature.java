@@ -18,7 +18,9 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
-public class Feature {
+import java.io.Serializable;
+
+public class Feature implements Serializable {
 
     private int id;
     private String code;

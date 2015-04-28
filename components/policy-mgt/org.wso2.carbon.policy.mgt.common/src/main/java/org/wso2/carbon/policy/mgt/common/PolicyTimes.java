@@ -18,44 +18,26 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
-import java.io.Serializable;
+import java.sql.Date;
 
-public class ProfileFeature implements Serializable {
+public class PolicyTimes {
 
-    private int id;
-    private Feature feature;
-    private int profileId;
-    private Object content;
+    private int startTime;                  // Start time to apply the policy.
+    private int endTime;                    // After this time policy will not be applied
 
-    public int getId() {
-        return id;
+    public int getStartTime() {
+        return startTime;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
     }
 
-    public Feature getFeature() {
-        return feature;
+    public int getEndTime() {
+        return endTime;
     }
 
-    public void setFeature(Feature feature) {
-        this.feature = feature;
-    }
-
-    public int getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(int profileId) {
-        this.profileId = profileId;
-    }
-
-    public Object getContent() {
-        return content;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
+    public void setEndTime(int endTime) {
+        this.endTime = endTime;
     }
 }

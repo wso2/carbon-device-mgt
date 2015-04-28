@@ -22,7 +22,6 @@ package org.wso2.carbon.policy.mgt.common;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 
 import java.sql.Date;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,12 +32,14 @@ public class Policy implements Comparable<Policy> {
 
     private int id;                         // Identifier of the policy.
     private int priorityId;                 // Priority of the policies. This will be used only for simple evaluation.
-    private Profile profile;                  // Profile id
+    private Profile profile;                  // Profile
+    private int profileId;
     private String policyName;              // Name of the policy.
     private boolean generic;                // If true, this should be applied to all related device.
     private List<String> roleList;          // Roles which this policy should be applied.
     private String ownershipType;           // Ownership type (COPE, BYOD, CPE)
     private List<Device> DeviceList;        // Individual devices this policy should be applied
+    private List<String> users;
 
     /*Dynamic policy attributes*/
 
@@ -85,6 +86,14 @@ public class Policy implements Comparable<Policy> {
         this.profile = profile;
     }
 
+    public int getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(int profileId) {
+        this.profileId = profileId;
+    }
+
     public String getPolicyName() {
         return policyName;
     }
@@ -123,6 +132,14 @@ public class Policy implements Comparable<Policy> {
 
     public void setDeviceList(List<Device> deviceList) {
         DeviceList = deviceList;
+    }
+
+    public List<String> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<String> users) {
+        this.users = users;
     }
 
     public int getStartTime() {

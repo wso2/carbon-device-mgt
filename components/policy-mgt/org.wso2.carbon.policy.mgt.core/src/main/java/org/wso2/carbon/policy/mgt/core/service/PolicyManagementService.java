@@ -18,80 +18,79 @@
 
 package org.wso2.carbon.policy.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.*;
-import org.wso2.carbon.policy.mgt.core.PolicyManager;
-import org.wso2.carbon.policy.mgt.core.PolicyManagerImpl;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 
 import java.util.List;
 
-public class PolicyManagementService implements PolicyManager {
+public class PolicyManagementService implements PolicyManagerService {
 
 
-    PolicyManager policyManager;
+    PolicyManagerService policyManagerService;
 
     public PolicyManagementService() {
-        policyManager = new PolicyManagerImpl();
+        policyManagerService = new PolicyManagerServiceImpl();
     }
 
     @Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
-        return policyManager.addFeature(feature);
+        return policyManagerService.addFeature(feature);
     }
 
     @Override
     public Feature updateFeature(Feature feature) throws FeatureManagementException {
-        return policyManager.updateFeature(feature);
+        return policyManagerService.updateFeature(feature);
     }
 
     @Override
     public Profile addProfile(Profile profile) throws PolicyManagementException {
-        return policyManager.addProfile(profile);
+        return policyManagerService.addProfile(profile);
     }
 
     @Override
     public Profile updateProfile(Profile profile) throws PolicyManagementException {
-        return policyManager.updateProfile(profile);
+        return policyManagerService.updateProfile(profile);
     }
 
     @Override
     public Policy addPolicy(Policy policy) throws PolicyManagementException {
-        return policyManager.addPolicy(policy);
+        return policyManagerService.addPolicy(policy);
     }
 
     @Override
     public Policy updatePolicy(Policy policy) throws PolicyManagementException {
-        return policyManager.updatePolicy(policy);
+        return policyManagerService.updatePolicy(policy);
     }
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
-        return policyManager.getEffectivePolicy(deviceIdentifier);
+        return policyManagerService.getEffectivePolicy(deviceIdentifier);
     }
 
     @Override
     public Policy getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws FeatureManagementException {
-        return policyManager.getEffectiveFeatures(deviceIdentifier);
+        return policyManagerService.getEffectiveFeatures(deviceIdentifier);
     }
 
     @Override
     public List<Policy> getPolicies(String deviceType) throws PolicyManagementException {
-        return policyManager.getPolicies(deviceType);
+        return policyManagerService.getPolicies(deviceType);
     }
 
     @Override
     public List<Feature> getFeatures() throws FeatureManagementException {
-        return policyManager.getFeatures();
+        return policyManagerService.getFeatures();
     }
 
     @Override
     public PolicyAdministratorPoint getPAP() throws PolicyManagementException {
-        return policyManager.getPAP();
+        return policyManagerService.getPAP();
     }
 
     @Override
     public PolicyInformationPoint getPIP() throws PolicyManagementException {
-        return policyManager.getPIP();
+        return policyManagerService.getPIP();
     }
 }

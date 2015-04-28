@@ -25,19 +25,33 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
 import org.wso2.carbon.policy.mgt.core.common.DBTypes;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfiguration;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfigurations;
-import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
-import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
-import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
-import org.wso2.carbon.policy.mgt.core.util.FeatureCreator;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
+import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
+import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.FeatureManagerImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.ProfileManagerImpl;
+import org.wso2.carbon.policy.mgt.core.util.*;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -46,12 +60,18 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PolicyDAOTestCase {
 
 
-    private DataSource dataSource;
+    private static DataSource dataSource;
+    private List<Feature> featureList;
+    private List<ProfileFeature> profileFeatureList;
+    private Profile profile;
+    private Policy policy;
+    private List<Device> devices;
     private static final Log log = LogFactory.getLog(PolicyDAOTestCase.class);
 
     @BeforeClass
@@ -75,6 +95,7 @@ public class PolicyDAOTestCase {
                 properties.setPassword(dbConfig.getPwd());
                 dataSource = new org.apache.tomcat.jdbc.pool.DataSource(properties);
                 PolicyManagementDAOFactory.init(dataSource);
+                DeviceManagementDAOFactory.init(dataSource);
                 break;
 
             case H2:
@@ -86,6 +107,7 @@ public class PolicyDAOTestCase {
                 dataSource = new org.apache.tomcat.jdbc.pool.DataSource(properties);
                 this.initH2SQLScript();
                 PolicyManagementDAOFactory.init(dataSource);
+                DeviceManagementDAOFactory.init(dataSource);
                 break;
 
             default:
@@ -125,7 +147,6 @@ public class PolicyDAOTestCase {
             stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/CreateH2TestDB.sql'");
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
-
         }
     }
 
@@ -146,14 +167,140 @@ public class PolicyDAOTestCase {
     }
 
     @Test
-    public void addFeatures() throws FeatureManagerDAOException {
+    public void addDeviceType() throws DeviceManagementDAOException {
 
-        FeatureDAOImpl policyDAO = new FeatureDAOImpl();
-        List<Feature> featureList = FeatureCreator.getFeatureList();
+        DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
+    }
+
+
+    @Test(dependsOnMethods = ("addDeviceType"))
+    public void addDevice() throws DeviceManagementDAOException {
+
+        DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        devices = DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType());
+        for (Device device : devices) {
+            deviceTypeDAO.addDevice(device);
+        }
+    }
+
+
+    @Test(dependsOnMethods = ("addDevice"))
+    public void addFeatures() throws FeatureManagementException {
+
+        FeatureManager featureManager = new FeatureManagerImpl();
+        featureList = FeatureCreator.getFeatureList();
+        //featureManager.addFeatures(featureList);
         for (Feature feature : featureList) {
-            policyDAO.addFeature(feature);
+            featureManager.addFeature(feature);
         }
 
     }
+
+    @Test(dependsOnMethods = ("addFeatures"))
+    public void addProfileFeatures() throws ProfileManagementException {
+
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
+        profileFeatureList = profile.getProfileFeaturesList();
+    }
+
+    @Test(dependsOnMethods = ("addProfileFeatures"))
+    public void addPolicy() throws PolicyManagementException {
+
+        PolicyManager policyManager = new PolicyManagerImpl();
+        policy = PolicyCreator.createPolicy(profile);
+        policyManager.addPolicy(policy);
+    }
+
+    @Test(dependsOnMethods = ("addPolicy"))
+    public void addPolicyToRole() throws PolicyManagementException {
+        PolicyManager policyManager = new PolicyManagerImpl();
+
+        List<String> roles = new ArrayList<String>();
+        roles.add("Test_ROLE_01");
+        roles.add("Test_ROLE_02");
+        roles.add("Test_ROLE_03");
+
+        policyManager.addPolicyToRole(roles, policy);
+
+    }
+
+    @Test(dependsOnMethods = ("addPolicyToRole"))
+    public void addPolicyToDevice() throws PolicyManagementException {
+        PolicyManager policyManager = new PolicyManagerImpl();
+        Device device = DeviceCreator.getSingleDevice();
+
+        List<DeviceIdentifier> deviceIdentifierList = new ArrayList<DeviceIdentifier>();
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId(device.getDeviceIdentificationId());
+        deviceIdentifier.setType("ANDROID");
+
+        deviceIdentifierList.add(deviceIdentifier);
+        policyManager.addPolicyToDevice(deviceIdentifierList, policy);
+
+    }
+
+    @Test(dependsOnMethods = ("addPolicyToDevice"))
+    public void addNewPolicy() throws PolicyManagementException {
+
+        PolicyManager policyManager = new PolicyManagerImpl();
+        policy = PolicyCreator.createPolicy2(profile);
+        policyManager.addPolicy(policy);
+    }
+
+    @Test(dependsOnMethods = ("addNewPolicy"))
+    public void getPolicies() throws PolicyManagementException {
+        PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
+        List<Policy> policyList = policyAdministratorPoint.getPolicies();
+
+        log.debug("----------All policies---------");
+
+        for (Policy policy : policyList) {
+            log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+        }
+    }
+
+    @Test(dependsOnMethods = ("getPolicies"))
+    public void getDeviceTypeRelatedPolicy() throws PolicyManagementException {
+
+        PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
+        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfDeviceType("ANDROID");
+
+        log.debug("----------Device type related policy---------");
+
+        for (Policy policy : policyList) {
+            log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+        }
+    }
+
+
+    @Test(dependsOnMethods = ("getDeviceTypeRelatedPolicy"))
+    public void getUserRelatedPolicy() throws PolicyManagementException {
+
+        PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
+        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfUser("Dilshan");
+
+        log.debug("----------User related policy---------");
+
+        for (Policy policy : policyList) {
+            log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+        }
+    }
+
+    @Test(dependsOnMethods = ("getDeviceTypeRelatedPolicy"))
+    public void getRoleRelatedPolicy() throws PolicyManagementException {
+
+        PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
+        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfRole("Test_ROLE_01");
+
+        log.debug("----------Roles related policy---------");
+
+        for (Policy policy : policyList) {
+            log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+        }
+    }
+
 
 }

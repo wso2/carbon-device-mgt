@@ -21,18 +21,17 @@ package org.wso2.carbon.policy.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dao.impl.DeviceDAOImpl;
-import org.wso2.carbon.device.mgt.core.dao.impl.DeviceTypeDAOImpl;
-import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.policy.mgt.common.*;
-import org.wso2.carbon.policy.mgt.core.dao.*;
-import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
-import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
+import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
+import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.FeatureManagerImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.ArrayList;
@@ -43,22 +42,30 @@ import java.util.Map;
 public class PolicyInformationPointImpl implements PolicyInformationPoint {
 
     private static final Log log = LogFactory.getLog(PolicyInformationPointImpl.class);
-    DeviceDAOImpl deviceDAO = new DeviceDAOImpl(PolicyManagementDAOFactory.getDataSource());
-    DeviceTypeDAO deviceTypeDAO = new DeviceTypeDAOImpl(PolicyManagementDAOFactory.getDataSource());
-    FeatureDAO featureDAO = new FeatureDAOImpl();
-    PolicyDAO policyDAO = new PolicyDAOImpl();
+
+    PolicyManager policyManager;
+    FeatureManager featureManager;
+    DeviceManagementService deviceManagementService;
 
     public PolicyInformationPointImpl() {
-        deviceDAO = new DeviceDAOImpl(DeviceManagementDAOFactory.getDataSource());
+        deviceManagementService =
+                PolicyManagementDataHolder.getInstance().getDeviceManagementService();
+        policyManager = new PolicyManagerImpl();
+        featureManager = new FeatureManagerImpl();
     }
 
     @Override
     public PIPDevice getDeviceData(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         PIPDevice pipDevice = new PIPDevice();
-        Device device;
+        org.wso2.carbon.device.mgt.common.Device device;
+
+        // TODO : Find
+        DeviceType deviceType = new DeviceType();
+        deviceType.setName(deviceIdentifier.getType());
+
         try {
-            device = deviceDAO.getDevice(deviceIdentifier);
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceIdentifier.getType());
+            device = deviceManagementService.getDevice(deviceIdentifier);
+             /*deviceManagementService.getDeviceType(deviceIdentifier.getType());*/
             pipDevice.setDevice(device);
             pipDevice.setRoles(getRoleOfDevice(device));
             pipDevice.setDeviceType(deviceType);
@@ -68,7 +75,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
             // pipDevice.setLongitude();
             // pipDevice.setAltitude();
             // pipDevice.setTimestamp();
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred when retrieving the data related to device from the database.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -83,17 +90,17 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         List<List<Policy>> policies = new ArrayList<List<Policy>>();
         try {
             // Get the device type related policies
-            policies.add(policyDAO.getPolicy(pipDevice.getDeviceType().getName()));
+            policies.add(policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName()));
 
             // Get the roles related policies
             for (String role : pipDevice.getRoles()) {
-                policies.add(policyDAO.getPolicyOfRole(role));
+                policies.add(policyManager.getPoliciesOfRole(role));
             }
             // Get policy related to the device
-            policies.add(policyDAO.getPolicy(pipDevice.getDeviceIdentifier()));
+            policies.add(policyManager.getPoliciesOfDevice(pipDevice.getDeviceIdentifier()));
 
             return removeDuplicatePolicies(policies);
-        } catch (PolicyManagerDAOException e) {
+        } catch (PolicyManagementException e) {
             String msg = "Error occurred when retrieving related to given device " +
                     pipDevice.getDeviceIdentifier().getId() + " " + pipDevice.getDeviceIdentifier().getType() + ".";
             log.error(msg, e);
@@ -104,8 +111,8 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     @Override
     public List<Feature> getRelatedFeatures(String deviceType) throws FeatureManagementException {
         try {
-            return featureDAO.getAllFeatures(deviceType);
-        } catch (FeatureManagerDAOException e) {
+            return featureManager.getAllFeatures(deviceType);
+        } catch (FeatureManagementException e) {
             String msg = "Error occurred when retrieving features related  to device type.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
@@ -115,7 +122,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     private String[] getRoleOfDevice(Device device) throws PolicyManagementException {
         try {
             return CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getUserStoreManager().getRoleListOfUser(device.getOwnerId());
+                    getUserStoreManager().getRoleListOfUser(device.getOwner());
         } catch (UserStoreException e) {
             String msg = "Error occurred when retrieving roles related to user name.";
             log.error(msg, e);

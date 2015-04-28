@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
-import org.wso2.carbon.policy.mgt.core.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.simple.policy.decision.point.PolicyEvaluationServiceImpl;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -35,7 +35,7 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setRealmService"
  * unbind="unsetRealmService"
  * @scr.reference name="org.wso2.carbon.devicemgt.policy.manager"
- * interface="org.wso2.carbon.policy.mgt.core.PolicyManager"
+ * interface="org.wso2.carbon.policy.mgt.core.PolicyManagerService"
  * cardinality="0..1"
  * policy="dynamic"
  * bind="setPolicyManagerService"
@@ -91,19 +91,19 @@ public class PolicyEvaluationServiceComponent {
     }
 
 
-    protected void setPolicyManagerService(PolicyManager policyManagerService) {
+    protected void setPolicyManagerService(PolicyManagerService policyManagerService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting PolicyManager Service");
+            log.debug("Unsetting PolicyManagerService Service");
         }
-        PolicyDecisionPointDataHolder.getInstance().setPolicyManager(policyManagerService);
+        PolicyDecisionPointDataHolder.getInstance().setPolicyManagerService(policyManagerService);
     }
 
 
-    protected void unsetPolicyManagerService(PolicyManager policyManagerService) {
+    protected void unsetPolicyManagerService(PolicyManagerService policyManagerService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting PolicyManager Service");
+            log.debug("Unsetting PolicyManagerService Service");
         }
-        PolicyDecisionPointDataHolder.getInstance().setPolicyManager(null);
+        PolicyDecisionPointDataHolder.getInstance().setPolicyManagerService(null);
     }
 
 }

@@ -99,7 +99,7 @@ public class ProfileDAOImpl implements ProfileDAO {
             String query = "UPDATE DM_PROFILE SET PROFILE_NAME = ? ,TENANT_ID = ?, DEVICE_TYPE_ID = ? , UPDATED_TIME = ? " +
                     "WHERE ID = ?";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, profile.getProfileName());
+           stmt.setString(1, profile.getProfileName());
             stmt.setInt(2, tenantId);
             stmt.setLong(3, profile.getDeviceType().getId());
             stmt.setTimestamp(4, profile.getUpdatedDate());

@@ -87,6 +87,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
+    public Device getCoreDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getCoreDevice(deviceId);
+    }
+
+    @Override
     public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
             throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId);
@@ -115,8 +120,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public boolean addOperation(Operation operation,
-            List<DeviceIdentifier> devices) throws OperationManagementException {
+    public boolean addOperation(Operation operation, List<DeviceIdentifier> devices)
+            throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, devices);
     }
 

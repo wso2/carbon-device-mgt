@@ -17,10 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -43,5 +40,13 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
     void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String type) throws DeviceManagementException;
+
+    /**
+     * This method returns core device details.
+     * @param deviceId
+     * @return
+     * @throws DeviceManagementException
+     */
+    Device getCoreDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
 }

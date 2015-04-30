@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -58,6 +59,7 @@ public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
 
     private void initOperationManager() {
         this.operationManager = new OperationManagerImpl();
+        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(new DeviceManagementServiceProviderImpl());
     }
 
     @Test

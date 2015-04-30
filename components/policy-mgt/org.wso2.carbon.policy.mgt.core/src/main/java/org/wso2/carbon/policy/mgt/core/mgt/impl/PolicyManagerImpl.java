@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 
@@ -564,5 +565,76 @@ public class PolicyManagerImpl implements PolicyManager {
             throw new PolicyManagementException(msg, e);
         }
         return deviceList;
+    }
+
+    @Override
+    public void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature> profileFeatures) throws
+            PolicyManagementException {
+        int deviceId = -1;
+        try {
+            Device device = deviceDAO.getDevice(deviceIdentifier);
+            deviceId = device.getId();
+            boolean exist = policyDAO.checkPolicyAvailable(deviceId);
+            PolicyManagementDAOFactory.beginTransaction();
+            if (exist) {
+                policyDAO.updateEffectivePolicyToDevice(deviceId, policyId, profileFeatures);
+            } else {
+                policyDAO.addEffectivePolicyToDevice(deviceId, policyId, profileFeatures);
+            }
+            PolicyManagementDAOFactory.commitTransaction();
+        } catch (PolicyManagerDAOException e) {
+            try {
+                PolicyManagementDAOFactory.rollbackTransaction();
+            } catch (PolicyManagerDAOException e1) {
+                log.warn("Error occurred while roll backing the transaction.");
+            }
+            String msg = "Error occurred while adding the evaluated policy to device (" +
+                    deviceId + " - " + policyId + ")";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+
+    }
+
+    @Override
+    public boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+
+        boolean exist;
+        try {
+            Device device = deviceDAO.getDevice(deviceIdentifier);
+            exist = policyDAO.checkPolicyAvailable(device.getId());
+        } catch (PolicyManagerDAOException e) {
+            String msg = "Error occurred while checking whether device has a policy to apply.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+        return exist;
+    }
+
+    @Override
+    public boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+
+        try {
+            Device device = deviceDAO.getDevice(deviceIdentifier);
+            policyDAO.setPolicyApplied(device.getId());
+            return true;
+        } catch (PolicyManagerDAOException e) {
+            String msg = "Error occurred while setting the policy has applied to device (" +
+                    deviceIdentifier.getId() + ")";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
     }
 }

@@ -20,23 +20,22 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyDates;
 import org.wso2.carbon.policy.mgt.common.PolicyLocations;
 import org.wso2.carbon.policy.mgt.common.PolicyTimes;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyDAO;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class PolicyDAOImpl implements PolicyDAO {
@@ -200,7 +199,8 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public Policy addLocationToPolicy(String latitude, String longitude, Policy policy) throws PolicyManagerDAOException {
+    public Policy addLocationToPolicy(String latitude, String longitude, Policy policy) throws
+            PolicyManagerDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -270,6 +270,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setId(policyId);
                 policy.setPolicyName(resultSet.getString("NAME"));
                 policy.setTenantId(resultSet.getInt("TENANT_ID"));
+                policy.setPriorityId(resultSet.getInt("PRIORITY"));
             }
             return policy;
 
@@ -302,6 +303,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setId(resultSet.getInt("ID"));
                 policy.setPolicyName(resultSet.getString("NAME"));
                 policy.setTenantId(resultSet.getInt("TENANT_ID"));
+                policy.setPriorityId(resultSet.getInt("PRIORITY"));
             }
             return policy;
 
@@ -335,6 +337,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setProfileId(resultSet.getInt("PROFILE_ID"));
                 policy.setPolicyName(resultSet.getString("NAME"));
                 policy.setTenantId(resultSet.getInt("TENANT_ID"));
+                policy.setPriorityId(resultSet.getInt("PRIORITY"));
                 policies.add(policy);
             }
             return policies;
@@ -432,7 +435,6 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                //TODO:
                 policy.setStartTime(resultSet.getInt("STARTING_TIME"));
                 policy.setEndTime(resultSet.getInt("ENDING_TIME"));
 
@@ -467,7 +469,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                //TODO:
+
                 policy.setStartDate(resultSet.getDate("START_DATE"));
                 policy.setEndDate(resultSet.getDate("END_DATE"));
 
@@ -502,7 +504,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                //TODO:
+
                 policy.setLatitude(resultSet.getString("LATITUDE"));
                 policy.setLongitude(resultSet.getString("LONGITUDE"));
 
@@ -519,6 +521,116 @@ public class PolicyDAOImpl implements PolicyDAO {
             this.closeConnection();
         }
         return locations;
+    }
+
+    @Override
+    public void addEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+            throws PolicyManagerDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        try {
+            conn = this.getConnection();
+            String query = "INSERT INTO DM_DEVICE_POLICY_APPLIED " +
+                    "(DEVICE_ID, POLICY_ID, POLICY_CONTENT, CREATED_TIME, UPDATED_TIME) VALUES (?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, deviceId);
+            stmt.setInt(2, policyId);
+            stmt.setObject(3, profileFeatures);
+            stmt.setTimestamp(4, currentTimestamp);
+            stmt.setTimestamp(5, currentTimestamp);
+
+            stmt.executeQuery();
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while adding the evaluated feature list to device.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+
+    }
+
+    @Override
+    public void setPolicyApplied(int deviceId) throws PolicyManagerDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        try {
+            conn = this.getConnection();
+            String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET APPLIED_TIME = ?, APPLIED = ? WHERE DEVICE_ID = ? ";
+            stmt = conn.prepareStatement(query);
+            stmt.setTimestamp(1, currentTimestamp);
+            stmt.setBoolean(2, true);
+            stmt.setInt(3, deviceId);
+
+            stmt.executeQuery();
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while updating applied policy to device (" + deviceId + ")";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+
+    @Override
+    public void updateEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+            throws PolicyManagerDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        try {
+            conn = this.getConnection();
+            String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET POLICY_ID = ?, POLICY_CONTENT = ? UPDATED_TIME = ?, APPLIED = ? WHERE DEVICE_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, policyId);
+            stmt.setObject(2, profileFeatures);
+            stmt.setTimestamp(3, currentTimestamp);
+            stmt.setBoolean(4, false);
+            stmt.setInt(5, deviceId);
+            stmt.executeQuery();
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while updating the evaluated feature list to device.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+
+    }
+
+    @Override
+    public boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        boolean exist = false;
+
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, deviceId);
+            resultSet = stmt.executeQuery();
+            exist = resultSet.next();
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while checking whether device (" + deviceId + ") has a policy to apply.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+        return exist;
     }
 
     @Override
@@ -711,8 +823,8 @@ public class PolicyDAOImpl implements PolicyDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
+        int tenantId = PolicyManagerUtil.getTenantId();
 
-        int tenantId = MultitenantConstants.SUPER_TENANT_ID;
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY) VALUES (?, ?, ?, ?)";

@@ -65,12 +65,18 @@ public class PolicyManagementService implements PolicyManagerService {
     }
 
     @Override
+    public boolean deletePolicy(Policy policy) throws PolicyManagementException {
+        return policyManagerService.deletePolicy(policy);
+    }
+
+    @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         return policyManagerService.getEffectivePolicy(deviceIdentifier);
     }
 
     @Override
-    public Policy getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws FeatureManagementException {
+    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws
+            FeatureManagementException {
         return policyManagerService.getEffectiveFeatures(deviceIdentifier);
     }
 
@@ -92,5 +98,10 @@ public class PolicyManagementService implements PolicyManagerService {
     @Override
     public PolicyInformationPoint getPIP() throws PolicyManagementException {
         return policyManagerService.getPIP();
+    }
+
+    @Override
+    public PolicyEvaluationPoint getPEP() throws PolicyManagementException {
+        return policyManagerService.getPEP();
     }
 }

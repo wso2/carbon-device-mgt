@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 
 import java.util.List;
 
@@ -68,18 +69,40 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
-    public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
-        return null;
+    public boolean deletePolicy(Policy policy) throws PolicyManagementException {
+        return policyAdministratorPoint.deletePolicy(policy);
     }
 
     @Override
-    public Policy getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws FeatureManagementException {
-        return null;
+    public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+        try {
+            return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
+                    getEffectivePolicies(deviceIdentifier);
+        } catch (PolicyEvaluationException e) {
+            String msg = "Error occurred while getting the effective policies from the PEP service for device " +
+                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
+
+    @Override
+    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws
+            FeatureManagementException {
+        try {
+            return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
+                    getEffectiveFeatures(deviceIdentifier);
+        } catch (PolicyEvaluationException e) {
+            String msg = "Error occurred while getting the effective features from the PEP service " +
+                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
+            log.error(msg, e);
+            throw new FeatureManagementException(msg, e);
+        }
     }
 
     @Override
     public List<Policy> getPolicies(String deviceType) throws PolicyManagementException {
-        return null;
+        return policyAdministratorPoint.getPoliciesOfDeviceType(deviceType);
     }
 
     @Override
@@ -95,5 +118,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public PolicyInformationPoint getPIP() throws PolicyManagementException {
         return new PolicyInformationPointImpl();
+    }
+
+    @Override
+    public PolicyEvaluationPoint getPEP() throws PolicyManagementException {
+        return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
     }
 }

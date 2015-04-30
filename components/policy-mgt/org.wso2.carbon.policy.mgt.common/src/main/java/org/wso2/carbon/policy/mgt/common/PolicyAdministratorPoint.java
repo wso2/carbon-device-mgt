@@ -31,8 +31,6 @@ public interface PolicyAdministratorPoint {
     /**
      * This method adds a policy to the platform
      *
-     * @param policy
-     * @return primary key (generated key)
      */
 
     Policy addPolicy(Policy policy) throws PolicyManagementException;
@@ -40,13 +38,10 @@ public interface PolicyAdministratorPoint {
 
     Policy updatePolicy(Policy policy) throws PolicyManagementException;
 
+    boolean deletePolicy(Policy policy) throws PolicyManagementException;
+
     /**
      * This method adds a policy per device which should be implemented by the related plugins.
-     *
-     * @param deviceIdentifierList
-     * @param policy
-     * @return
-     * @throws PolicyManagementException
      */
     Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws PolicyManagementException;
 
@@ -132,7 +127,7 @@ public interface PolicyAdministratorPoint {
      */
     Profile addProfile(Profile profile) throws PolicyManagementException;
 
-    boolean deleteProfile(int profileId) throws PolicyManagementException;
+    boolean deleteProfile(Profile profile) throws PolicyManagementException;
 
     Profile updateProfile(Profile profile) throws PolicyManagementException;
 

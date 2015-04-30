@@ -58,6 +58,11 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     }
 
     @Override
+    public boolean deletePolicy(Policy policy) throws PolicyManagementException {
+        return policyManager.deletePolicy(policy);
+    }
+
+    @Override
     public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws PolicyManagementException {
         return policyManager.addPolicyToDevice(deviceIdentifierList, policy);
     }
@@ -94,17 +99,17 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     @Override
     public boolean isPolicyAvailableForDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
-        return false;
+        return policyManager.checkPolicyAvailable(deviceIdentifier);
     }
 
     @Override
     public boolean isPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
-        return false;
+        return policyManager.setPolicyApplied(deviceIdentifier);
     }
 
     @Override
     public void setPolicyUsed(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException {
-
+        policyManager.addAppliedPolicyToDevice(deviceIdentifier, policy.getId(), policy.getProfile().getProfileFeaturesList());
     }
 
     @Override
@@ -119,8 +124,14 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     }
 
     @Override
-    public boolean deleteProfile(int profileId) throws PolicyManagementException {
-        return false;
+    public boolean deleteProfile(Profile profile) throws PolicyManagementException {
+        try {
+            return profileManager.deleteProfile(profile);
+        } catch (ProfileManagementException e) {
+            String msg = "Error occurred while deleting the profile.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
     }
 
     @Override

@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.mgt.common;
 
 import org.wso2.carbon.device.mgt.core.dto.Device;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,11 @@ import java.util.Map;
 /**
  * This class will be the used to create policy object with relevant information for evaluating.
  */
-public class Policy implements Comparable<Policy> {
+public class Policy implements Comparable<Policy>, Serializable {
 
     private int id;                         // Identifier of the policy.
     private int priorityId;                 // Priority of the policies. This will be used only for simple evaluation.
     private Profile profile;                  // Profile
-    private int profileId;
     private String policyName;              // Name of the policy.
     private boolean generic;                // If true, this should be applied to all related device.
     private List<String> roleList;          // Roles which this policy should be applied.
@@ -57,6 +57,7 @@ public class Policy implements Comparable<Policy> {
     private String longitude;               // Longitude
 
     private int tenantId;
+    private int profileId;
 
     /*This will be used to record attributes which will be used by customer extended PDPs and PIPs*/
 

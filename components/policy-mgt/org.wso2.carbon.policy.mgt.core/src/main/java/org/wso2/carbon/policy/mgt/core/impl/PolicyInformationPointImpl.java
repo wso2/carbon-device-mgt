@@ -59,7 +59,6 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         PIPDevice pipDevice = new PIPDevice();
         org.wso2.carbon.device.mgt.common.Device device;
 
-        // TODO : Find
         DeviceType deviceType = new DeviceType();
         deviceType.setName(deviceIdentifier.getType());
 

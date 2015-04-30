@@ -21,10 +21,7 @@ package org.wso2.carbon.simple.policy.decision.point;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.PIPDevice;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 
@@ -43,20 +40,31 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
+        Policy policy = new Policy();
+        PolicyAdministratorPoint policyAdministratorPoint;
+        PolicyInformationPoint policyInformationPoint;
 
         try {
-            if (policyManagerService == null && policyList == null) {
-                PIPDevice pipDevice = policyManagerService.getPIP().getDeviceData(deviceIdentifier);
-                policyList = policyManagerService.getPIP().getRelatedPolicies(pipDevice);
+            if (policyManagerService != null && policyList == null) {
+
+                policyInformationPoint = policyManagerService.getPIP();
+                PIPDevice pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
+                policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
+
+                sortPolicy();
+                policy = policyList.get(0);
+
+                policyAdministratorPoint = policyManagerService.getPAP();
+                policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
+
             }
-            sortPolicy();
+
         } catch (PolicyManagementException e) {
             String msg = "Error occurred when retrieving the policy related data from policy management service.";
             log.error(msg, e);
             throw new PolicyEvaluationException(msg, e);
         }
-
-        return policyList.get(0);
+        return policy;
     }
 
 

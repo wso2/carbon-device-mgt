@@ -20,6 +20,7 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.Profile;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
@@ -27,7 +28,7 @@ import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.ProfileDAO;
 import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,7 +46,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
-        int tenantId = MultitenantConstants.SUPER_TENANT_ID;
+        int tenantId = PolicyManagerUtil.getTenantId();
 
         try {
             conn = this.getConnection();
@@ -91,7 +92,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
-        int tenantId = MultitenantConstants.SUPER_TENANT_ID;
+        int tenantId = PolicyManagerUtil.getTenantId();
 
         try {
             conn = this.getConnection();

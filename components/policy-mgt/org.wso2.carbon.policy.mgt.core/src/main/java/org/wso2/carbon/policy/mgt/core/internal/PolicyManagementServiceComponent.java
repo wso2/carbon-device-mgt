@@ -53,7 +53,7 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setDeviceManagementService"
  * unbind="unsetDeviceManagementService"
  */
-
+@SuppressWarnings("unused")
 public class PolicyManagementServiceComponent {
 
     private static Log log = LogFactory.getLog(PolicyManagementServiceComponent.class);
@@ -70,8 +70,7 @@ public class PolicyManagementServiceComponent {
                     PolicyManagerService.class.getName(), new PolicyManagementService(), null);
 
         } catch (Throwable t) {
-            String msg = "Error occurred while initializing the Policy management core.";
-            log.error(msg, t);
+            log.error("Error occurred while initializing the Policy management core.", t);
         }
     }
 

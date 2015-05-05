@@ -25,14 +25,16 @@ import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     private static final Log log = LogFactory.getLog(SimpleEvaluationImpl.class);
+    //TODO : to revove the stale reference
     private PolicyManagerService policyManagerService;
-    private List<Policy> policyList;
+    private List<Policy> policyList = new ArrayList<Policy>();
 
     public SimpleEvaluationImpl() {
         policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
@@ -45,13 +47,13 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
         PolicyInformationPoint policyInformationPoint;
 
         try {
-            if (policyManagerService != null && policyList == null) {
+            if (policyManagerService != null) {
 
                 policyInformationPoint = policyManagerService.getPIP();
                 PIPDevice pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
                 policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
 
-                sortPolicy();
+                sortPolicies();
                 policy = policyList.get(0);
 
                 policyAdministratorPoint = policyManagerService.getPAP();
@@ -69,7 +71,7 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
 
 
     @Override
-    public void sortPolicy() throws PolicyEvaluationException {
+    public void sortPolicies() throws PolicyEvaluationException {
         Collections.sort(policyList);
     }
 }

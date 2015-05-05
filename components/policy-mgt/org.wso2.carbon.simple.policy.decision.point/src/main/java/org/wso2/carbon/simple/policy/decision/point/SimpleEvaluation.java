@@ -25,7 +25,7 @@ import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 
 public interface SimpleEvaluation  {
 
-    void sortPolicy() throws PolicyEvaluationException;
+    void sortPolicies() throws PolicyEvaluationException;
 
     Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier)  throws PolicyEvaluationException;
 

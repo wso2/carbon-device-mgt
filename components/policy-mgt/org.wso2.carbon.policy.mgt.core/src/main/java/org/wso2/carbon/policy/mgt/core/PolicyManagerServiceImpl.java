@@ -77,7 +77,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         try {
             return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
-                    getEffectivePolicies(deviceIdentifier);
+                    getEffectivePolicy(deviceIdentifier);
         } catch (PolicyEvaluationException e) {
             String msg = "Error occurred while getting the effective policies from the PEP service for device " +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType();

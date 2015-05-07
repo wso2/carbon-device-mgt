@@ -61,6 +61,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
 
         DeviceType deviceType = new DeviceType();
         deviceType.setName(deviceIdentifier.getType());
+        deviceManagementService = getDeviceManagementService();
 
         try {
             device = deviceManagementService.getDevice(deviceIdentifier);
@@ -144,6 +145,10 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         }
 
         return finalPolicies;
+    }
+
+    private DeviceManagementService getDeviceManagementService() {
+        return PolicyManagementDataHolder.getInstance().getDeviceManagementService();
     }
 
 }

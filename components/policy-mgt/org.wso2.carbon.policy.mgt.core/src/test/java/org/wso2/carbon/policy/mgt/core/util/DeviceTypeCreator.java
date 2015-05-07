@@ -25,7 +25,7 @@ public class DeviceTypeCreator {
     public static DeviceType getDeviceType(){
 
         DeviceType deviceType = new DeviceType();
-        deviceType.setName("ANDROID");
+        deviceType.setName("android");
         deviceType.setId(1);
 
         return deviceType;

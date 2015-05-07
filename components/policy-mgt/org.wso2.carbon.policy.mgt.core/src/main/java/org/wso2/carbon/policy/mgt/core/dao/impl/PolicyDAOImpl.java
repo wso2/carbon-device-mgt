@@ -536,7 +536,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setTimestamp(4, currentTimestamp);
             stmt.setTimestamp(5, currentTimestamp);
 
-            stmt.executeQuery();
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
             String msg = "Error occurred while adding the evaluated feature list to device.";
@@ -562,7 +562,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setBoolean(2, true);
             stmt.setInt(3, deviceId);
 
-            stmt.executeQuery();
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
             String msg = "Error occurred while updating applied policy to device (" + deviceId + ")";
@@ -583,14 +583,15 @@ public class PolicyDAOImpl implements PolicyDAO {
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET POLICY_ID = ?, POLICY_CONTENT = ? UPDATED_TIME = ?, APPLIED = ? WHERE DEVICE_ID = ?";
+            String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET POLICY_ID = ?, POLICY_CONTENT = ?, UPDATED_TIME = ?, " +
+                    "APPLIED = ? WHERE DEVICE_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, policyId);
             stmt.setObject(2, profileFeatures);
             stmt.setTimestamp(3, currentTimestamp);
             stmt.setBoolean(4, false);
             stmt.setInt(5, deviceId);
-            stmt.executeQuery();
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
             String msg = "Error occurred while updating the evaluated feature list to device.";

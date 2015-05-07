@@ -23,13 +23,12 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyManagementConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
-import org.wso2.carbon.policy.mgt.core.service.PolicyManagementService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -67,7 +66,7 @@ public class PolicyManagementServiceComponent {
             PolicyManagementDAOFactory.init(dsConfig);
 
             componentContext.getBundleContext().registerService(
-                    PolicyManagerService.class.getName(), new PolicyManagementService(), null);
+                    PolicyManagerService.class.getName(), new PolicyManagerServiceImpl(), null);
 
         } catch (Throwable t) {
             log.error("Error occurred while initializing the Policy management core.", t);

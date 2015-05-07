@@ -27,12 +27,10 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +42,7 @@ public class PolicyManagerImpl implements PolicyManager {
     private FeatureDAO featureDAO;
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
+    private ProfileManager profileManager;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
     public PolicyManagerImpl() {
@@ -52,6 +51,7 @@ public class PolicyManagerImpl implements PolicyManager {
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        this.profileManager = new ProfileManagerImpl();
     }
 
     @Override
@@ -463,13 +463,16 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Policy> policies = new ArrayList<Policy>();
 
         try {
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
-            List<Profile> profileList = profileDAO.getProfilesOfDeviceType(deviceType);
+//            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
+
+            List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
             List<Policy> allPolicies = policyDAO.getAllPolicies();
+
 
             for (Profile profile : profileList) {
                 for (Policy policy : allPolicies) {
                     if (policy.getProfileId() == profile.getProfileId()) {
+                        policy.setProfile(profile);
                         policies.add(policy);
                     }
                 }
@@ -479,12 +482,16 @@ public class PolicyManagerImpl implements PolicyManager {
             String msg = "Error occurred while getting all the policies.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (ProfileManagerDAOException e) {
-            String msg = "Error occurred while getting the profiles related to device type (" + deviceTypeName + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while getting device type object related to (" + deviceTypeName + ")";
+//        } catch (ProfileManagerDAOException e) {
+//            String msg = "Error occurred while getting the profiles related to device type (" + deviceTypeName + ")";
+//            log.error(msg, e);
+//            throw new PolicyManagementException(msg, e);
+//        } catch (DeviceManagementDAOException e) {
+//            String msg = "Error occurred while getting device type object related to (" + deviceTypeName + ")";
+//            log.error(msg, e);
+//            throw new PolicyManagementException(msg, e);
+        } catch (ProfileManagementException e) {
+            String msg = "Error occurred while getting all the profile features.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }

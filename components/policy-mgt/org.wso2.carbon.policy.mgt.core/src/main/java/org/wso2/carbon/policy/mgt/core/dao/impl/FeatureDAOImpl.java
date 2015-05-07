@@ -303,7 +303,7 @@ public class FeatureDAOImpl implements FeatureDAO {
         try {
             conn = this.getConnection();
             String query = "SELECT PF.ID AS ID, PF.FEATURE_ID FEATURE_ID, F.NAME NAME, F.CODE CODE, " +
-                    "F.EVALUATION_RULE RULE, F.CONTENT AS CONTENT FROM DM_PROFILE_FEATURES AS PF " +
+                    "F.EVALUATION_RULE RULE, PF.CONTENT AS CONTENT, PF.PROFILE_ID PROFILE_ID FROM DM_PROFILE_FEATURES AS PF " +
                     "JOIN DM_FEATURES AS F ON F.ID = PF.FEATURE_ID";
             stmt = conn.prepareStatement(query);
             resultSet = stmt.executeQuery();
@@ -320,6 +320,7 @@ public class FeatureDAOImpl implements FeatureDAO {
                 profileFeature.setFeature(feature);
                 profileFeature.setId(resultSet.getInt("ID"));
                 profileFeature.setContent(resultSet.getObject("CONTENT"));
+                profileFeature.setProfileId(resultSet.getInt("PROFILE_ID"));
                 featureList.add(profileFeature);
             }
 

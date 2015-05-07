@@ -36,15 +36,16 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
     private PolicyManagerService policyManagerService;
     private List<Policy> policyList = new ArrayList<Policy>();
 
-    public SimpleEvaluationImpl() {
-        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
-    }
+//    public SimpleEvaluationImpl() {
+//        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
+//    }
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         Policy policy = new Policy();
         PolicyAdministratorPoint policyAdministratorPoint;
         PolicyInformationPoint policyInformationPoint;
+        policyManagerService = getPolicyManagerService();
 
         try {
             if (policyManagerService != null) {
@@ -73,5 +74,9 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
     @Override
     public void sortPolicies() throws PolicyEvaluationException {
         Collections.sort(policyList);
+    }
+
+    private PolicyManagerService getPolicyManagerService(){
+       return PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
     }
 }

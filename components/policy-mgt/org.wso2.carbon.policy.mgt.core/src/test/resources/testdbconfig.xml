@@ -19,10 +19,10 @@
 
 <DeviceMgtTestDBConfigurations>
     <DBType typeName="MySql">
-        <connectionurl>jdbc:mysql://10.100.0.47:3306/WSO2CDM</connectionurl>
+        <connectionurl>jdbc:mysql://localhost:3306/WSO2CDM</connectionurl>
         <driverclass>com.mysql.jdbc.Driver</driverclass>
         <userName>root</userName>
-        <pwd>root</pwd>
+        <pwd></pwd>
     </DBType>
     <DBType typeName="H2">
         <connectionurl>jdbc:h2:mem:WSO2_TEST_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000</connectionurl>

@@ -235,7 +235,7 @@ public class PolicyDAOTestCase {
         List<DeviceIdentifier> deviceIdentifierList = new ArrayList<DeviceIdentifier>();
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
         deviceIdentifier.setId(device.getDeviceIdentificationId());
-        deviceIdentifier.setType("ANDROID");
+        deviceIdentifier.setType("android");
 
         deviceIdentifierList.add(deviceIdentifier);
         policyManager.addPolicyToDevice(deviceIdentifierList, policy);
@@ -266,7 +266,7 @@ public class PolicyDAOTestCase {
     public void getDeviceTypeRelatedPolicy() throws PolicyManagementException {
 
         PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
-        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfDeviceType("ANDROID");
+        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfDeviceType("android");
 
         log.debug("----------Device type related policy---------");
 

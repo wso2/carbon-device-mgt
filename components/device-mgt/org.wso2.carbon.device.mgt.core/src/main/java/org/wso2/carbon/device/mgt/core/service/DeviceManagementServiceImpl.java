@@ -23,7 +23,7 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
+
 import java.util.List;
 
 public class DeviceManagementServiceImpl implements DeviceManagementService {

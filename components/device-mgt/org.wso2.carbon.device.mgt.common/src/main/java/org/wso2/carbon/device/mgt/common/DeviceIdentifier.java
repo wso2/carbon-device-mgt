@@ -17,7 +17,9 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-public class DeviceIdentifier {
+import java.io.Serializable;
+
+public class DeviceIdentifier implements Serializable{
 
     private String id;
     private String type;
@@ -29,7 +31,6 @@ public class DeviceIdentifier {
     public void setType(String type) {
         this.type = type;
     }
-
     public String getId() {
         return id;
     }

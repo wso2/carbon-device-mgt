@@ -18,7 +18,7 @@
 package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
+import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.HashMap;
@@ -26,13 +26,13 @@ import java.util.Map;
 
 public class DeviceManagementRepository {
 
-    private Map<String, DeviceManager> providers;
+    private Map<String, DeviceMgtService> providers;
 
     public DeviceManagementRepository() {
-        providers = new HashMap<String, DeviceManager>();
+        providers = new HashMap<String, DeviceMgtService>();
     }
 
-    public void addDeviceManagementProvider(DeviceManager provider) throws DeviceManagementException {
+    public void addDeviceManagementProvider(DeviceMgtService provider) throws DeviceManagementException {
         String deviceType = provider.getProviderType();
         try {
             DeviceManagerUtil.registerDeviceType(deviceType);
@@ -43,7 +43,7 @@ public class DeviceManagementRepository {
         providers.put(deviceType, provider);
     }
 
-    public void removeDeviceManagementProvider(DeviceManager provider) throws DeviceManagementException {
+    public void removeDeviceManagementProvider(DeviceMgtService provider) throws DeviceManagementException {
         String deviceType = provider.getProviderType();
         try {
             DeviceManagerUtil.unregisterDeviceType(deviceType);
@@ -54,7 +54,7 @@ public class DeviceManagementRepository {
         providers.remove(deviceType);
     }
 
-    public DeviceManager getDeviceManagementProvider(String type) {
+    public DeviceMgtService getDeviceManagementProvider(String type) {
         return providers.get(type);
     }
 

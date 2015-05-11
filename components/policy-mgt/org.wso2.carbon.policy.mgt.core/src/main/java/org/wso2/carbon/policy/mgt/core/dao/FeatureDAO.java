@@ -38,9 +38,11 @@ public interface FeatureDAO {
 
     ProfileFeature updateProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException;
 
-    List<ProfileFeature> addProfileFeatures(List<ProfileFeature> features, int profileId) throws FeatureManagerDAOException;
+    List<ProfileFeature> addProfileFeatures(List<ProfileFeature> features, int profileId) throws
+            FeatureManagerDAOException;
 
-    List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws FeatureManagerDAOException;
+    List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws
+            FeatureManagerDAOException;
 
     List<Feature> getAllFeatures() throws FeatureManagerDAOException;
 

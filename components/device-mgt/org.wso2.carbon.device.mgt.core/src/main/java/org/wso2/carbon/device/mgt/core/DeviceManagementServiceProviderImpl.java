@@ -22,10 +22,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
@@ -37,9 +35,8 @@ import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.Status;
 import org.wso2.carbon.device.mgt.core.email.EmailConstants;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
@@ -54,8 +51,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
     private DeviceManagementRepository pluginRepository;
-    private OperationManager operationManager;
-    private LicenseManager licenseManager;
 
     private static Log log = LogFactory.getLog(DeviceManagementServiceProviderImpl.class);
 
@@ -63,15 +58,11 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         this.pluginRepository = pluginRepository;
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-        this.operationManager = new OperationManagerImpl();
-        this.licenseManager = new LicenseManagerImpl();
     }
 
-    public DeviceManagementServiceProviderImpl(){
+    public DeviceManagementServiceProviderImpl() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-        this.operationManager = new OperationManagerImpl();
-        this.licenseManager = new LicenseManagerImpl();
     }
 
     @Override
@@ -104,7 +95,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             }
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "' and type:"+deviceId.getType(), e);
+                    "'" + deviceId.getId() + "' and type:" + deviceId.getType(), e);
         }
         return convertedDevice;
     }
@@ -256,7 +247,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties)
+            throws DeviceManagementException {
 
         List<NotificationMessages> notificationMessages = DeviceConfigurationManager.getInstance()
                 .getNotificationMessagesConfig().getNotificationMessagesList();
@@ -267,9 +259,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         String url = "";
         String subject = "";
 
-        for(NotificationMessages notificationMessage : notificationMessages){
+        for (NotificationMessages notificationMessage : notificationMessages) {
             if (DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE.
-		                                                   equals(notificationMessage.getType())) {
+                    equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
                 messageFooter = notificationMessage.getFooter();
@@ -283,18 +275,18 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
         try {
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
-                            URLEncoder.encode(emailMessageProperties.getFirstName(),
-                                    EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                    URLEncoder.encode(emailMessageProperties.getFirstName(),
+                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
                             + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
-	        messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
+            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
             messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter);
 
         } catch (IOException e) {
-            log.error("IO error in processing enrol email message "+emailMessageProperties);
+            log.error("IO error in processing enrol email message " + emailMessageProperties);
             throw new DeviceManagementException("Error replacing tags in email template '" +
                     emailMessageProperties.getSubject() + "'", e);
         }
@@ -314,9 +306,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         String url = "";
         String subject = "";
 
-        for(NotificationMessages notificationMessage : notificationMessages){
+        for (NotificationMessages notificationMessage : notificationMessages) {
             if (DeviceManagementConstants.EmailNotifications.USER_REGISTRATION_NOTIFICATION_TYPE.
-		                                                          equals(notificationMessage.getType())) {
+                    equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
                 messageFooter = notificationMessage.getFooter();
@@ -350,7 +342,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter);
 
         } catch (IOException e) {
-            log.error("IO error in processing enrol email message "+emailMessageProperties);
+            log.error("IO error in processing enrol email message " + emailMessageProperties);
             throw new DeviceManagementException("Error replacing tags in email template '" +
                     emailMessageProperties.getSubject() + "'", e);
         }
@@ -402,12 +394,12 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
-        return licenseManager.getLicense(deviceType, languageCode);
+        return DeviceManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
     }
 
     @Override
     public boolean addLicense(String type, License license) throws LicenseManagementException {
-        return licenseManager.addLicense(type, license);
+        return DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(type, license);
     }
 
     public DeviceDAO getDeviceDAO() {
@@ -425,55 +417,58 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public boolean addOperation(Operation operation, List<DeviceIdentifier> devices) throws
             OperationManagementException {
-        return operationManager.addOperation(operation, devices);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().addOperation(operation, devices);
     }
 
     @Override
     public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
-        return operationManager.getOperations(deviceId);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperations(deviceId);
     }
 
     @Override
-    public List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId) throws OperationManagementException {
-        return operationManager.getPendingOperations(deviceId);
+    public List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId)
+            throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getPendingOperations(deviceId);
     }
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
-        return operationManager.getNextPendingOperation(deviceId);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getNextPendingOperation(deviceId);
     }
 
     @Override
     public void updateOperation(int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
-        operationManager.updateOperation(operationId, operationStatus);
+        DeviceManagementDataHolder.getInstance().getOperationManager().updateOperation(operationId, operationStatus);
     }
 
     @Override
     public void deleteOperation(int operationId) throws OperationManagementException {
-            operationManager.deleteOperation(operationId);
+        DeviceManagementDataHolder.getInstance().getOperationManager().deleteOperation(operationId);
     }
 
     @Override
     public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException {
-        return operationManager.getOperationByDeviceAndOperationId(deviceId, operationId);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByDeviceAndOperationId(
+                deviceId, operationId);
     }
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
             Operation.Status status) throws OperationManagementException, DeviceManagementException {
-        return operationManager.getOperationsByDeviceAndStatus(identifier, status);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsByDeviceAndStatus(identifier,
+                status);
     }
 
     @Override
     public Operation getOperation(int operationId) throws OperationManagementException {
-        return operationManager.getOperation(operationId);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperation(operationId);
     }
 
     @Override
     public List<? extends Operation> getOperationsForStatus(Operation.Status status)
             throws OperationManagementException {
-        return operationManager.getOperationsForStatus(status);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsForStatus(status);
     }
 }

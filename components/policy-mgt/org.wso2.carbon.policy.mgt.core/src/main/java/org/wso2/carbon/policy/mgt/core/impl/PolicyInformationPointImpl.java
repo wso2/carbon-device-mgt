@@ -59,9 +59,9 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         PIPDevice pipDevice = new PIPDevice();
         org.wso2.carbon.device.mgt.common.Device device;
 
-        // TODO : Find
         DeviceType deviceType = new DeviceType();
         deviceType.setName(deviceIdentifier.getType());
+        deviceManagementService = getDeviceManagementService();
 
         try {
             device = deviceManagementService.getDevice(deviceIdentifier);
@@ -145,6 +145,10 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         }
 
         return finalPolicies;
+    }
+
+    private DeviceManagementService getDeviceManagementService() {
+        return PolicyManagementDataHolder.getInstance().getDeviceManagementService();
     }
 
 }

@@ -19,8 +19,7 @@
 package org.wso2.carbon.device.mgt.core.app.mgt.config;
 
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerConnectorException;
-import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 

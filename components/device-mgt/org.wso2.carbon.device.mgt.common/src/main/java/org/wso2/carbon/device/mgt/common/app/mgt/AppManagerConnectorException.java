@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.device.mgt.core.app.mgt;
+package org.wso2.carbon.device.mgt.common.app.mgt;
 
 /**
  * Handles the exceptions related to Application management.

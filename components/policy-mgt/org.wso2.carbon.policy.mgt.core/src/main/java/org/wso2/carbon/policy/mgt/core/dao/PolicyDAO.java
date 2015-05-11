@@ -73,4 +73,13 @@ public interface PolicyDAO {
 
     PolicyLocations getLocationsOfPolicy(Policy policy) throws PolicyManagerDAOException;
 
+    void addEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+            throws PolicyManagerDAOException;
+
+    void setPolicyApplied(int deviceId) throws PolicyManagerDAOException;
+
+    void updateEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+            throws PolicyManagerDAOException;
+
+    boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException;
 }

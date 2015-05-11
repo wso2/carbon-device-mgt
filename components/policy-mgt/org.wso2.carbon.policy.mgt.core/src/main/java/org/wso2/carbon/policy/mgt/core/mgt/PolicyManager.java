@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.List;
 
@@ -33,7 +34,8 @@ public interface PolicyManager {
 
     boolean deletePolicy(Policy policy) throws PolicyManagementException;
 
-    Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws PolicyManagementException;
+    Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
+            PolicyManagementException;
 
     Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagementException;
 
@@ -54,4 +56,11 @@ public interface PolicyManager {
     List<Policy> getPoliciesOfUser(String username) throws PolicyManagementException;
 
     List<Device> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagementException;
+
+    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature> profileFeatures) throws
+            PolicyManagementException;
+
+    boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
+
+    boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 }

@@ -35,7 +35,7 @@ public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
     }
 
     @Override
-    public Policy getEffectivePolicies(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
+    public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         return evaluation.getEffectivePolicy(deviceIdentifier);
     }
 

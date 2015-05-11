@@ -50,7 +50,7 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION, EVALUVATION_RULE, DEVICE_TYPE_ID) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION, EVALUATION_RULE, DEVICE_TYPE_ID) VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, feature.getName());
             stmt.setString(2, feature.getCode());
@@ -88,7 +88,7 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION, EVALUVATION_RULE, DEVICE_TYPE_ID) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION, EVALUATION_RULE, DEVICE_TYPE_ID) VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             for (Feature feature : features) {
@@ -133,7 +133,7 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_FEATURES SET NAME = ?, CODE = ?, DESCRIPTION = ?, EVALUVATION_RULE = ? WHERE ID = ?";
+            String query = "UPDATE DM_FEATURES SET NAME = ?, CODE = ?, DESCRIPTION = ?, EVALUATION_RULE = ? WHERE ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, feature.getName());
             stmt.setString(2, feature.getCode());
@@ -266,7 +266,7 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "SELECT ID, NAME, CODE, DEVICE_TYPE_ID, EVALUVATION_RULE FROM DM_FEATURES";
+            String query = "SELECT ID, NAME, CODE, DEVICE_TYPE_ID, EVALUATION_RULE FROM DM_FEATURES";
             stmt = conn.prepareStatement(query);
             resultSet = stmt.executeQuery();
 
@@ -277,7 +277,7 @@ public class FeatureDAOImpl implements FeatureDAO {
                 feature.setCode(resultSet.getString("CODE"));
                 feature.setName(resultSet.getString("NAME"));
                 feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
-                feature.setRuleValue(resultSet.getString("EVALUVATION_RULE"));
+                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
                 featureList.add(feature);
             }
 
@@ -303,7 +303,7 @@ public class FeatureDAOImpl implements FeatureDAO {
         try {
             conn = this.getConnection();
             String query = "SELECT PF.ID AS ID, PF.FEATURE_ID FEATURE_ID, F.NAME NAME, F.CODE CODE, " +
-                    "F.EVALUVATION_RULE RULE, F.CONTENT AS CONTENT FROM DM_PROFILE_FEATURES AS PF " +
+                    "F.EVALUATION_RULE RULE, PF.CONTENT AS CONTENT, PF.PROFILE_ID PROFILE_ID FROM DM_PROFILE_FEATURES AS PF " +
                     "JOIN DM_FEATURES AS F ON F.ID = PF.FEATURE_ID";
             stmt = conn.prepareStatement(query);
             resultSet = stmt.executeQuery();
@@ -320,6 +320,7 @@ public class FeatureDAOImpl implements FeatureDAO {
                 profileFeature.setFeature(feature);
                 profileFeature.setId(resultSet.getInt("ID"));
                 profileFeature.setContent(resultSet.getObject("CONTENT"));
+                profileFeature.setProfileId(resultSet.getInt("PROFILE_ID"));
                 featureList.add(profileFeature);
             }
 
@@ -345,7 +346,7 @@ public class FeatureDAOImpl implements FeatureDAO {
         try {
             conn = this.getConnection();
             String query = "SELECT f.ID ID, f.NAME NAME, f.CODE CODE, f.DEVICE_TYPE_ID DEVICE_TYPE_ID," +
-                    " f.EVALUVATION_RULE EVALUVATION_RULE FROM DM_FEATURES f INNER JOIN DM_DEVICE_TYPE d " +
+                    " f.EVALUATION_RULE EVALUATION_RULE FROM DM_FEATURES f INNER JOIN DM_DEVICE_TYPE d " +
                     "ON d.ID=f.DEVICE_TYPE_ID WHERE d.NAME = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, deviceType);
@@ -358,7 +359,7 @@ public class FeatureDAOImpl implements FeatureDAO {
                 feature.setCode(resultSet.getString("CODE"));
                 feature.setName(resultSet.getString("NAME"));
                 feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
-                feature.setRuleValue(resultSet.getString("EVALUVATION_RULE"));
+                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
                 featureList.add(feature);
             }
 
@@ -384,7 +385,7 @@ public class FeatureDAOImpl implements FeatureDAO {
         try {
             conn = this.getConnection();
             String query = "SELECT PF.ID AS ID, PF.FEATURE_ID FEATURE_ID, F.NAME NAME, F.CODE CODE, " +
-                    "F.EVALUVATION_RULE RULE, F.CONTENT AS CONTENT FROM DM_PROFILE_FEATURES AS PF " +
+                    "F.EVALUATION_RULE RULE, F.CONTENT AS CONTENT FROM DM_PROFILE_FEATURES AS PF " +
                     "JOIN DM_FEATURES AS F ON F.ID = PF.FEATURE_ID WHERE PROFILE_ID=?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profileId);

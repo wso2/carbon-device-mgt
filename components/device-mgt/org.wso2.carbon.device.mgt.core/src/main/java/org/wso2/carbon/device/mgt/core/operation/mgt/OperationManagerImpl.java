@@ -76,6 +76,8 @@ public class OperationManagerImpl implements OperationManager {
             OperationManagementDAOFactory.beginTransaction();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                     OperationDAOUtil.convertOperation(operation);
+            operationDto.setStatus(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING);
+
             int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
             org.wso2.carbon.device.mgt.common.Device device;
 

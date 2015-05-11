@@ -19,7 +19,6 @@
 
 package org.wso2.carbon.policy.mgt.core;
 
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.*;
 
@@ -39,15 +38,19 @@ public interface PolicyManagerService {
 
     Policy updatePolicy(Policy policy) throws PolicyManagementException;
 
-    Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier)  throws PolicyManagementException;
+    boolean deletePolicy(Policy policy) throws PolicyManagementException;
 
-    Policy getEffectiveFeatures(DeviceIdentifier deviceIdentifier)  throws FeatureManagementException;
+    Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
+
+    List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws FeatureManagementException;
 
     List<Policy> getPolicies(String deviceType) throws PolicyManagementException;
 
     List<Feature> getFeatures() throws FeatureManagementException;
 
-    PolicyAdministratorPoint getPAP()  throws PolicyManagementException;
+    PolicyAdministratorPoint getPAP() throws PolicyManagementException;
 
-    PolicyInformationPoint getPIP()    throws PolicyManagementException;
+    PolicyInformationPoint getPIP() throws PolicyManagementException;
+
+    PolicyEvaluationPoint getPEP() throws PolicyManagementException;
 }

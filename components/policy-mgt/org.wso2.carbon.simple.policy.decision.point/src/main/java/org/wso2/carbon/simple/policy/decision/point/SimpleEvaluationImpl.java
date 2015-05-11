@@ -21,47 +21,62 @@ package org.wso2.carbon.simple.policy.decision.point;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.PIPDevice;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     private static final Log log = LogFactory.getLog(SimpleEvaluationImpl.class);
+    //TODO : to revove the stale reference
     private PolicyManagerService policyManagerService;
-    private List<Policy> policyList;
+    private List<Policy> policyList = new ArrayList<Policy>();
 
-    public SimpleEvaluationImpl() {
-        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
-    }
+//    public SimpleEvaluationImpl() {
+//        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
+//    }
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
+        Policy policy = new Policy();
+        PolicyAdministratorPoint policyAdministratorPoint;
+        PolicyInformationPoint policyInformationPoint;
+        policyManagerService = getPolicyManagerService();
 
         try {
-            if (policyManagerService == null && policyList == null) {
-                PIPDevice pipDevice = policyManagerService.getPIP().getDeviceData(deviceIdentifier);
-                policyList = policyManagerService.getPIP().getRelatedPolicies(pipDevice);
+            if (policyManagerService != null) {
+
+                policyInformationPoint = policyManagerService.getPIP();
+                PIPDevice pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
+                policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
+
+                sortPolicies();
+                policy = policyList.get(0);
+
+                policyAdministratorPoint = policyManagerService.getPAP();
+                policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
+
             }
-            sortPolicy();
+
         } catch (PolicyManagementException e) {
             String msg = "Error occurred when retrieving the policy related data from policy management service.";
             log.error(msg, e);
             throw new PolicyEvaluationException(msg, e);
         }
-
-        return policyList.get(0);
+        return policy;
     }
 
 
     @Override
-    public void sortPolicy() throws PolicyEvaluationException {
+    public void sortPolicies() throws PolicyEvaluationException {
         Collections.sort(policyList);
+    }
+
+    private PolicyManagerService getPolicyManagerService(){
+       return PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
     }
 }

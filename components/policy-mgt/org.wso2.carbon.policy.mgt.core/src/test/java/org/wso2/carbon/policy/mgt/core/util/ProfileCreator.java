@@ -32,7 +32,7 @@ public class ProfileCreator {
         DeviceType deviceType = new DeviceType();
 
         deviceType.setId(1);
-        deviceType.setName("ANDROID");
+        deviceType.setName("android");
 
         profile.setProfileFeaturesList(ProfileFeatureCreator.getProfileFeature(features));
         profile.setProfileName("Test Profile");

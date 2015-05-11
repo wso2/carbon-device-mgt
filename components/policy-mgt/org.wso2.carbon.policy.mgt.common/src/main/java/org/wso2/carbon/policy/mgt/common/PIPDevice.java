@@ -27,17 +27,18 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+//TODO :
 public class PIPDevice {
 
-    Device device;
-    DeviceType deviceType;
-    DeviceIdentifier deviceIdentifier;
-    String ownershipType;
-    List<String> userIds;
-    String roles [];
-    String altitude;
-    String longitude;
-    Timestamp timestamp;
+    private Device device;
+    private DeviceType deviceType;
+    private DeviceIdentifier deviceIdentifier;
+    private String ownershipType;
+    private List<String> userIds;
+    private String roles[];
+    private String altitude;
+    private String longitude;
+    private Timestamp timestamp;
 
     /*This will be used to record attributes to which would come from other PDPs*/
     Map<String, Object> attributes;

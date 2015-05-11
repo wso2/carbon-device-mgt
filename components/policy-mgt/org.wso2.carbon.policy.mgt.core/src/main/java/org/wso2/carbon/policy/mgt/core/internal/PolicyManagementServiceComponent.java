@@ -23,13 +23,12 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyManagementConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
-import org.wso2.carbon.policy.mgt.core.service.PolicyManagementService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -40,12 +39,6 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
- * @scr.reference name="org.wso2.carbon.devicemgt.policy.information.point.default"
- * interface="org.wso2.carbon.policy.mgt.common.PolicyInformationPoint"
- * cardinality="1..1"
- * policy="dynamic"
- * bind="setPIPService"
- * unbind="unsetPIPService"
  * @scr.reference name="org.wso2.carbon.devicemgt.simple.policy.evaluation.manager"
  * interface="org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint"
  * cardinality="1..1"
@@ -59,7 +52,7 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setDeviceManagementService"
  * unbind="unsetDeviceManagementService"
  */
-
+@SuppressWarnings("unused")
 public class PolicyManagementServiceComponent {
 
     private static Log log = LogFactory.getLog(PolicyManagementServiceComponent.class);
@@ -73,11 +66,10 @@ public class PolicyManagementServiceComponent {
             PolicyManagementDAOFactory.init(dsConfig);
 
             componentContext.getBundleContext().registerService(
-                    PolicyManagerService.class.getName(), new PolicyManagementService(), null);
+                    PolicyManagerService.class.getName(), new PolicyManagerServiceImpl(), null);
 
         } catch (Throwable t) {
-            String msg = "Error occurred while initializing the Policy management core.";
-            log.error(msg, t);
+            log.error("Error occurred while initializing the Policy management core.", t);
         }
     }
 
@@ -108,7 +100,7 @@ public class PolicyManagementServiceComponent {
     }
 
 
-    protected void setPIPService(PolicyInformationPoint pipService) {
+/*    protected void setPIPService(PolicyInformationPoint pipService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Policy Information Service");
         }
@@ -120,7 +112,7 @@ public class PolicyManagementServiceComponent {
             log.debug("Unsetting Policy Information Service");
         }
         PolicyManagementDataHolder.getInstance().setPolicyInformationPoint(null);
-    }
+    }*/
 
 
     protected void setPEPService(PolicyEvaluationPoint pepService) {

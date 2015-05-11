@@ -46,15 +46,16 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Activator>org.wso2.carbon.webapp.authenticator.framework.internal.WebappAuthenticatorFrameworkBundleActivator</Bundle-Activator>
-                        <Require-Bundle>org.wso2.carbon.tomcat.patch</Require-Bundle>
+                        <!--<Require-Bundle>org.wso2.carbon.tomcat.patch</Require-Bundle>-->
                         <Private-Package>
                             org.wso2.carbon.webapp.authenticator.framework.internal
                         </Private-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Export-Package>
                             !org.wso2.carbon.webapp.authenticator.framework.internal,
                             org.wso2.carbon.webapp.authenticator.framework.*
                         </Export-Package>
-                        <Fragment-Host>tomcat</Fragment-Host>
+                        <!--<Fragment-Host>tomcat</Fragment-Host>-->
                     </instructions>
                 </configuration>
             </plugin>

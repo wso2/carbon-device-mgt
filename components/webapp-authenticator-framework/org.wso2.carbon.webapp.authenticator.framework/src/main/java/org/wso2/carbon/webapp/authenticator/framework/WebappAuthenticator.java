@@ -19,6 +19,7 @@
 package org.wso2.carbon.webapp.authenticator.framework;
 
 import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 
 public interface WebappAuthenticator {
 
@@ -28,7 +29,7 @@ public interface WebappAuthenticator {
 
     boolean isAuthenticated(Request request);
 
-    Status authenticate(Request request);
+    Status authenticate(Request request, Response response);
 
     String getAuthenticatorName();
 

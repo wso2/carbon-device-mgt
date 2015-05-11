@@ -16,20 +16,33 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.webapp.authenticator.framework;
+package org.wso2.carbon.webapp.authenticator.framework.config;
 
-import org.apache.catalina.connector.Request;
-import org.apache.catalina.util.Base64;
-import org.apache.tomcat.util.buf.ByteChunk;
-import org.apache.tomcat.util.buf.CharChunk;
-import org.apache.tomcat.util.buf.MessageBytes;
-import org.wso2.carbon.webapp.authenticator.framework.authenticator.BasicAuthAuthenticator;
-import org.wso2.carbon.webapp.authenticator.framework.authenticator.OAuthAuthenticator;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class WebappAuthenticatorFactory {
+@XmlRootElement(name = "Authenticator")
+public class AuthenticatorConfig {
 
-    public static WebappAuthenticator getAuthenticator(Request request) {
-        return new OAuthAuthenticator();
+    private String name;
+    private String className;
+
+    @XmlElement(name = "Name", required = true)
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @XmlElement(name = "ClassName", required = true)
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
 }

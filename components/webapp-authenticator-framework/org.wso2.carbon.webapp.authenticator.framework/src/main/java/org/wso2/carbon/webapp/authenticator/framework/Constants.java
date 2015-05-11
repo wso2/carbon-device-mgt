@@ -17,11 +17,27 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
-public class HandlerConstants {
+public final class Constants {
 
-    public static final String HEADER_AUTHORIZATION = "Authorization";
-    public static final String TOKEN_NAME_BEARER = "Bearer";
-
+    public static final String AUTHORIZATION_HEADER_PREFIX_BEARER = "Bearer";
     public static final String NO_MATCHING_AUTH_SCHEME = "noMatchedAuthScheme";
+
+    public static final class HTTPHeaders {
+        private HTTPHeaders() {
+            throw new AssertionError();
+        }
+
+        public static final String HEADER_HTTP_ACCEPT = "Accept";
+        public static final String HEADER_HTTP_AUTHORIZATION = "Authorization";
+    }
+
+    public static final class ContentTypes {
+        private ContentTypes() {
+            throw new AssertionError();
+        }
+
+        public static final String CONTENT_TYPE_ANY = "*/*";
+        public static final String CONTENT_TYPE_APPLICATION_XML = "application/xml";
+    }
 
 }

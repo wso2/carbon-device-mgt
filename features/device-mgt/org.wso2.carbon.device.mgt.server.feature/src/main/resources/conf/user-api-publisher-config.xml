@@ -19,27 +19,27 @@
 <APIPublisherConfig>
     <APIs>
         <API>
-            <Name>appmanager</Name>
+            <Name>AppManagerController</Name>
             <Owner>admin</Owner>
-            <Context>devices</Context>
+            <Context>appmanager</Context>
             <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/</Endpoint>
+            <Endpoint>http://localhost:9763/appmanager</Endpoint>
             <Transports>http,https</Transports>
         </API>
         <API>
             <Name>enrollment</Name>
             <Owner>admin</Owner>
-            <Context>enroll</Context>
+            <Context>enrollment</Context>
             <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/cdm-android-api/enrollment/</Endpoint>
+            <Endpoint>http://localhost:9763/enrollment</Endpoint>
             <Transports>http,https</Transports>
         </API>
         <API>
             <Name>license</Name>
             <Owner>admin</Owner>
-            <Context>license</Context>
+            <Context>license-mgt</Context>
             <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/cdm-android-api/devices/license</Endpoint>
+            <Endpoint>http://localhost:9763/license-mgt</Endpoint>
             <Transports>http,https</Transports>
         </API>
         <API>
@@ -47,7 +47,7 @@
             <Owner>admin</Owner>
             <Context>operation</Context>
             <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/cdm-android-ap/operations/</Endpoint>
+            <Endpoint>http://localhost:9763/operations</Endpoint>
             <Transports>http,https</Transports>
         </API>
     </APIs>

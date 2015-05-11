@@ -23,19 +23,25 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.Credential;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
-import org.wso2.carbon.device.mgt.core.app.mgt.oauth.dto.Credential;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
-import org.wso2.carbon.device.mgt.core.dto.Application;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * Implements AppManagerConnector interface
@@ -45,12 +51,14 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
     private ConfigurationContext configCtx;
     private ServiceAuthenticator authenticator;
     private String oAuthAdminServiceUrl;
+    private DeviceManagementRepository pluginRepository;
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
 
     private static final Log log = LogFactory.getLog(RemoteAppManagerConnector.class);
 
-    public RemoteAppManagerConnector(AppManagementConfig appManagementConfig) {
+    public RemoteAppManagerConnector(AppManagementConfig appManagementConfig, DeviceManagementRepository pluginRepository) {
+
         IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getDeviceManagementConfigRepository().getIdentityConfigurations();
         this.authenticator =
@@ -63,6 +71,7 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
             throw new IllegalArgumentException("Error occurred while initializing Axis2 Configuration Context. " +
                     "Please check if an appropriate axis2.xml is provided", e);
         }
+        this.pluginRepository = pluginRepository;
     }
 
     @Override
@@ -91,6 +100,16 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
         credential.setConsumerKey(appInfo.getOauthConsumerKey());
         credential.setConsumerSecret(appInfo.getOauthConsumerSecret());
         return credential;
+    }
+
+    @Override
+    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+            throws AppManagerConnectorException {
+
+       for(DeviceIdentifier deviceIdentifier:deviceIdentifiers){
+           DeviceMgtService dms = this.getPluginRepository().getDeviceManagementProvider(deviceIdentifier.getType());
+           dms.installApplication(operation,deviceIdentifiers);
+       }
     }
 
     private OAuthConsumerAppDTO getAppInfo() throws AppManagerConnectorException {
@@ -133,4 +152,7 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
         throw new AppManagerConnectorException(msg, e);
     }
 
+    public DeviceManagementRepository getPluginRepository() {
+        return pluginRepository;
+    }
 }

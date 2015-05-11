@@ -17,16 +17,20 @@
 */
 package org.wso2.carbon.device.mgt.core.app.mgt;
 
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.Credential;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.app.mgt.oauth.dto.Credential;
-import org.wso2.carbon.device.mgt.core.dto.Application;
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+
+import java.util.List;
 
 public class AppManagementServiceImpl implements AppManagerConnector {
 
     @Override
-    public Application[] getApplicationList(String domain, int pageNumber,
-                                            int size) throws AppManagerConnectorException {
+    public Application[] getApplicationList(String domain, int pageNumber, int size) throws AppManagerConnectorException {
         return DeviceManagementDataHolder.getInstance().getAppManager().getApplicationList(domain, pageNumber, size);
     }
 
@@ -46,6 +50,12 @@ public class AppManagementServiceImpl implements AppManagerConnector {
     @Override
     public Credential getClientCredentials() throws AppManagerConnectorException {
         return DeviceManagementDataHolder.getInstance().getAppManager().getClientCredentials();
+    }
+
+    @Override
+    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+            throws AppManagerConnectorException {
+        DeviceManagementDataHolder.getInstance().getAppManager().installApplication(operation, deviceIdentifiers);
     }
 
 }

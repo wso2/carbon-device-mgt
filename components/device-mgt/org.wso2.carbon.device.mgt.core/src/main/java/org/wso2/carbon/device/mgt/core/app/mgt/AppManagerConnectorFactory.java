@@ -18,12 +18,26 @@
  */
 package org.wso2.carbon.device.mgt.core.app.mgt;
 
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
+import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 
 public class AppManagerConnectorFactory {
 
+    private static DeviceManagementRepository pluginRepository;
+
+    public DeviceManagementRepository getPluginRepository() {
+        return pluginRepository;
+    }
+
+    public void setPluginRepository(DeviceManagementRepository pluginRepository) {
+        this.pluginRepository = pluginRepository;
+    }
+
+
+
     public static AppManagerConnector getConnector(AppManagementConfig config) {
-        return new RemoteAppManagerConnector(config);
+        return new RemoteAppManagerConnector(config, pluginRepository);
     }
 
 }

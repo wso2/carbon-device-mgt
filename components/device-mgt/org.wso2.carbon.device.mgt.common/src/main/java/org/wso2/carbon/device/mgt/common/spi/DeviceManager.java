@@ -18,7 +18,10 @@
 
 package org.wso2.carbon.device.mgt.common.spi;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
 
 import java.util.List;
 
@@ -31,14 +34,14 @@ public interface DeviceManager {
     /**
      * Method to retrieve the provider type that implements DeviceManager interface.
      *
-     * @return  Returns provider type
+     * @return Returns provider type
      */
     String getProviderType();
 
     /**
      * Method to return feature manager implementation associated with a particular platform-specific plugin.
      *
-     * @return  Returns an instance of feature manager
+     * @return Returns an instance of feature manager
      */
     FeatureManager getFeatureManager();
 
@@ -110,7 +113,7 @@ public interface DeviceManager {
      * Method to retrieve metadata of a device corresponding to a particular type that carries a specific identifier.
      *
      * @param deviceId  Fully qualified device identifier
-     * @return          Metadata corresponding to a particular device
+     * @return Metadata corresponding to a particular device
      * @throws DeviceManagementException If some unusual behaviour is observed obtaining the device object
      */
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
@@ -132,6 +135,5 @@ public interface DeviceManager {
      * of the device
      */
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
-
 
 }

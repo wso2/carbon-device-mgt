@@ -17,15 +17,15 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
+import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
 
 import java.util.List;
 
-public class TestDeviceManager implements DeviceManager {
+public class TestDeviceManager implements DeviceMgtService {
 
     public static final String DEVICE_TYPE_TEST = "Test";
 
@@ -89,4 +89,9 @@ public class TestDeviceManager implements DeviceManager {
         return false;
     }
 
+    @Override
+    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+            throws AppManagerConnectorException {
+
+    }
 }

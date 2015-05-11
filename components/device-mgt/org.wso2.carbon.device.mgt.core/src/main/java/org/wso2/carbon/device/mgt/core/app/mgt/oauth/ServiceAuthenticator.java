@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.core.app.mgt.oauth;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HttpTransportProperties;
-import org.wso2.carbon.device.mgt.core.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
 
 /**
  * Authenticate a given service client.

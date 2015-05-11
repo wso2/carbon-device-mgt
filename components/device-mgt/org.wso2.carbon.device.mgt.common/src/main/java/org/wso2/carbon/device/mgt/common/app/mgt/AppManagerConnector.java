@@ -15,11 +15,12 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.device.mgt.core.app.mgt;
+package org.wso2.carbon.device.mgt.common.app.mgt;
 
+import org.wso2.carbon.device.mgt.common.Credential;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.app.mgt.oauth.dto.Credential;
-import org.wso2.carbon.device.mgt.core.dto.Application;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import java.util.List;
 
 /**
  * This will handle the Application management side of MDM by acting a bridge between
@@ -67,5 +68,8 @@ public interface AppManagerConnector {
      *         * @throws AppManagerConnectorException
      */
     Credential getClientCredentials() throws AppManagerConnectorException;
+
+    void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers) throws
+            AppManagerConnectorException;
 
 }

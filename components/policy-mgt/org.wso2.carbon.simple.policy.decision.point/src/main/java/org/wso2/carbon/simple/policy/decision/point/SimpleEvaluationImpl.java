@@ -57,8 +57,9 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
                 sortPolicies();
                 policy = policyList.get(0);
 
-                policyAdministratorPoint = policyManagerService.getPAP();
-                policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
+                //TODO : UNCOMMENT THE FOLLOWING CASE
+//                policyAdministratorPoint = policyManagerService.getPAP();
+//                policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
 
             }
 
@@ -76,7 +77,7 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
         Collections.sort(policyList);
     }
 
-    private PolicyManagerService getPolicyManagerService(){
-       return PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
+    private PolicyManagerService getPolicyManagerService() {
+        return PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
     }
 }

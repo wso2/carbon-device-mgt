@@ -25,6 +25,7 @@ import org.osgi.framework.BundleContext;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorFrameworkValve;
+import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class WebappAuthenticatorFrameworkBundleActivator implements BundleActiva
             log.debug("Starting Web Application Authenticator Framework Bundle");
         }
         try {
+            WebappAuthenticatorConfig.init();
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
             valves.add(new WebappAuthenticatorFrameworkValve());
             TomcatValveContainer.addValves(valves);
@@ -47,7 +49,7 @@ public class WebappAuthenticatorFrameworkBundleActivator implements BundleActiva
                 log.debug("Web Application Authenticator Framework Bundle has been started successfully");
             }
         } catch (Throwable e) {
-            log.error("Error occurred while initializing the bundle");
+            log.error("Error occurred while initializing the bundle", e);
         }
     }
 

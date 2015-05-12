@@ -19,12 +19,15 @@
 package org.wso2.carbon.policy.mgt.common;
 
 import java.io.Serializable;
+import org.wso2.carbon.device.mgt.common.Feature;
 
 public class ProfileFeature implements Serializable {
 
     private int id;
-    private Feature feature;
+    private String featureCode;
+//    private Feature feature;
     private int profileId;
+    private int deviceTypeId;
     private Object content;
 
     public int getId() {
@@ -35,13 +38,21 @@ public class ProfileFeature implements Serializable {
         this.id = id;
     }
 
-    public Feature getFeature() {
-        return feature;
+    public String getFeatureCode() {
+        return featureCode;
     }
 
-    public void setFeature(Feature feature) {
-        this.feature = feature;
+    public void setFeatureCode(String featureCode) {
+        this.featureCode = featureCode;
     }
+
+//    public Feature getFeature() {
+//        return feature;
+//    }
+//
+//    public void setFeature(Feature feature) {
+//        this.feature = feature;
+//    }
 
     public int getProfileId() {
         return profileId;
@@ -49,6 +60,14 @@ public class ProfileFeature implements Serializable {
 
     public void setProfileId(int profileId) {
         this.profileId = profileId;
+    }
+
+    public int getDeviceTypeId() {
+        return deviceTypeId;
+    }
+
+    public void setDeviceTypeId(int deviceTypeId) {
+        this.deviceTypeId = deviceTypeId;
     }
 
     public Object getContent() {

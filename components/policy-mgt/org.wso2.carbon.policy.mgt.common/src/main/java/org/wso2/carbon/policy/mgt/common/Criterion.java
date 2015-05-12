@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,13 +15,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.webapp.authenticator.framework;
 
-public class HandlerConstants {
 
-    public static final String HEADER_AUTHORIZATION = "Authorization";
-    public static final String TOKEN_NAME_BEARER = "Bearer";
+package org.wso2.carbon.policy.mgt.common;
 
-    public static final String NO_MATCHING_AUTH_SCHEME = "noMatchedAuthScheme";
+public class Criterion {
 
+    private int id;
+    private String name;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -178,7 +178,7 @@ public class ProfileManagerImpl implements ProfileManager {
     }
 
     @Override
-    public Profile getProfiles(int profileId) throws ProfileManagementException {
+    public Profile getProfile(int profileId) throws ProfileManagementException {
         Profile profile;
         List<ProfileFeature> featureList;
         DeviceType deviceType;

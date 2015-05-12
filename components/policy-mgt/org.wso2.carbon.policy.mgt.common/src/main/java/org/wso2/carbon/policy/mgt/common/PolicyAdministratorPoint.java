@@ -17,7 +17,7 @@
  */
 
 package org.wso2.carbon.policy.mgt.common;
-
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.util.List;
@@ -130,6 +130,10 @@ public interface PolicyAdministratorPoint {
     boolean deleteProfile(Profile profile) throws PolicyManagementException;
 
     Profile updateProfile(Profile profile) throws PolicyManagementException;
+
+    Profile getProfile(int profileId) throws PolicyManagementException;
+
+    List<Profile> getProfiles() throws PolicyManagementException;
 
     Feature addFeature(Feature feature) throws  FeatureManagementException;
 

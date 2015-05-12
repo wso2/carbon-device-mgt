@@ -21,7 +21,13 @@ package org.wso2.carbon.policy.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
+import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
@@ -140,6 +146,28 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
             return profileManager.updateProfile(profile);
         } catch (ProfileManagementException e) {
             String msg = "Error occurred while persisting the profile.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
+
+    @Override
+    public Profile getProfile(int profileId) throws PolicyManagementException {
+        try {
+            return profileManager.getProfile(profileId);
+        } catch (ProfileManagementException e) {
+            String msg = "Error occurred while retriving profile";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
+
+    @Override
+    public List<Profile> getProfiles() throws PolicyManagementException {
+        try {
+            return profileManager.getAllProfiles();
+        } catch (ProfileManagementException e) {
+            String msg = "Error occurred while obtaining list of profiles.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }

@@ -20,7 +20,8 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.policy.mgt.common.Feature;
+
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Profile;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.dao.FeatureDAO;
@@ -50,13 +51,13 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION, EVALUATION_RULE, DEVICE_TYPE_ID) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, feature.getName());
             stmt.setString(2, feature.getCode());
             stmt.setString(3, feature.getDescription());
-            stmt.setString(4, feature.getRuleValue());
-            stmt.setInt(5, feature.getDeviceTypeId());
+//            stmt.setString(4, feature.getRuleValue());
+//            stmt.setInt(5, feature.getDeviceTypeId());
             int affectedRows = stmt.executeUpdate();
 
             if (log.isDebugEnabled()) {
@@ -88,15 +89,15 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION, EVALUATION_RULE, DEVICE_TYPE_ID) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             for (Feature feature : features) {
                 stmt.setString(1, feature.getName());
                 stmt.setString(2, feature.getCode());
                 stmt.setString(3, feature.getDescription());
-                stmt.setString(4, feature.getRuleValue());
-                stmt.setInt(5, feature.getDeviceTypeId());
+//                stmt.setString(4, feature.getRuleValue());
+//                stmt.setInt(5, feature.getDeviceTypeId());
                 stmt.addBatch();
             }
 
@@ -133,13 +134,13 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_FEATURES SET NAME = ?, CODE = ?, DESCRIPTION = ?, EVALUATION_RULE = ? WHERE ID = ?";
+            String query = "UPDATE DM_FEATURES SET NAME = ?, CODE = ?, DESCRIPTION = ? WHERE ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, feature.getName());
             stmt.setString(2, feature.getCode());
             stmt.setString(3, feature.getDescription());
-            stmt.setString(4, feature.getRuleValue());
-            stmt.setInt(5, feature.getId());
+//            stmt.setString(4, feature.getRuleValue());
+            stmt.setInt(4, feature.getId());
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -172,13 +173,15 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_PROFILE_FEATURES (PROFILE_ID, FEATURE_ID, CONTENT) VALUES (?, ?, ?)";
+            String query = "INSERT INTO DM_PROFILE_FEATURES (PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT) " +
+                    "VALUES (?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             for (ProfileFeature feature : features) {
                 stmt.setInt(1, profileId);
-                stmt.setInt(2, feature.getFeature().getId());
-                stmt.setObject(3, feature.getContent());
+                stmt.setString(2, feature.getFeatureCode());
+                stmt.setInt(3, feature.getDeviceTypeId());
+                stmt.setObject(4, feature.getContent());
                 stmt.addBatch();
                 //Not adding the logic to check the size of the stmt and execute if the size records added is over 1000
             }
@@ -210,13 +213,13 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_PROFILE_FEATURES SET CONTENT = ? WHERE PROFILE_ID = ? , FEATURE_ID = ? ";
+            String query = "UPDATE DM_PROFILE_FEATURES SET CONTENT = ? WHERE PROFILE_ID = ?, FEATURE_CODE = ?";
 
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             for (ProfileFeature feature : features) {
                 stmt.setObject(1, feature.getContent());
                 stmt.setInt(2, profileId);
-                stmt.setInt(3, feature.getFeature().getId());
+                stmt.setString(3, feature.getFeatureCode());
                 stmt.addBatch();
                 //Not adding the logic to check the size of the stmt and execute if the size records added is over 1000
             }
@@ -259,36 +262,36 @@ public class FeatureDAOImpl implements FeatureDAO {
     @Override
     public List<Feature> getAllFeatures() throws FeatureManagerDAOException {
 
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
+//        Connection conn;
+//        PreparedStatement stmt = null;
+//        ResultSet resultSet = null;
         List<Feature> featureList = new ArrayList<Feature>();
-
-        try {
-            conn = this.getConnection();
-            String query = "SELECT ID, NAME, CODE, DEVICE_TYPE_ID, EVALUATION_RULE FROM DM_FEATURES";
-            stmt = conn.prepareStatement(query);
-            resultSet = stmt.executeQuery();
-
-            while (resultSet.next()) {
-
-                Feature feature = new Feature();
-                feature.setId(resultSet.getInt("ID"));
-                feature.setCode(resultSet.getString("CODE"));
-                feature.setName(resultSet.getString("NAME"));
-                feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
-                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
-                featureList.add(feature);
-            }
-
-        } catch (SQLException e) {
-            String msg = "Unable to get the list of the features from database.";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
-        } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
-        }
+//
+//        try {
+//            conn = this.getConnection();
+//            String query = "SELECT ID, NAME, CODE, DEVICE_TYPE_ID, EVALUATION_RULE FROM DM_FEATURES";
+//            stmt = conn.prepareStatement(query);
+//            resultSet = stmt.executeQuery();
+//
+//            while (resultSet.next()) {
+//
+//                Feature feature = new Feature();
+//                feature.setId(resultSet.getInt("ID"));
+//                feature.setCode(resultSet.getString("CODE"));
+//                feature.setName(resultSet.getString("NAME"));
+//                feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
+//                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
+//                featureList.add(feature);
+//            }
+//
+//        } catch (SQLException e) {
+//            String msg = "Unable to get the list of the features from database.";
+//            log.error(msg);
+//            throw new FeatureManagerDAOException(msg, e);
+//        } finally {
+//            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+//            this.closeConnection();
+//        }
         return featureList;
     }
 
@@ -302,22 +305,22 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "SELECT PF.ID AS ID, PF.FEATURE_ID FEATURE_ID, F.NAME NAME, F.CODE CODE, " +
-                    "F.EVALUATION_RULE RULE, PF.CONTENT AS CONTENT, PF.PROFILE_ID PROFILE_ID FROM DM_PROFILE_FEATURES AS PF " +
-                    "JOIN DM_FEATURES AS F ON F.ID = PF.FEATURE_ID";
+            String query = "SELECT ID, PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT FROM DM_PROFILE_FEATURES";
             stmt = conn.prepareStatement(query);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
 
                 ProfileFeature profileFeature = new ProfileFeature();
-                Feature feature = new Feature();
-                feature.setId(resultSet.getInt("FEATURE_ID"));
-                feature.setCode(resultSet.getString("CODE"));
-                feature.setName(resultSet.getString("NAME"));
-                feature.setRuleValue(resultSet.getString("RULE"));
+//                Feature feature = new Feature();
+//                feature.setId(resultSet.getInt("FEATURE_ID"));
+//                feature.setCode(resultSet.getString("CODE"));
+//                feature.setName(resultSet.getString("NAME"));
+//                feature.setRuleValue(resultSet.getString("RULE"));
 
-                profileFeature.setFeature(feature);
+//                profileFeature.setFeature(feature);
+                profileFeature.setFeatureCode(resultSet.getString("FEATURE_CODE"));
+                profileFeature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
                 profileFeature.setId(resultSet.getInt("ID"));
                 profileFeature.setContent(resultSet.getObject("CONTENT"));
                 profileFeature.setProfileId(resultSet.getInt("PROFILE_ID"));
@@ -358,8 +361,8 @@ public class FeatureDAOImpl implements FeatureDAO {
                 feature.setId(resultSet.getInt("ID"));
                 feature.setCode(resultSet.getString("CODE"));
                 feature.setName(resultSet.getString("NAME"));
-                feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
-                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
+//                feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
+//                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
                 featureList.add(feature);
             }
 
@@ -384,23 +387,24 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "SELECT PF.ID AS ID, PF.FEATURE_ID FEATURE_ID, F.NAME NAME, F.CODE CODE, " +
-                    "F.EVALUATION_RULE RULE, F.CONTENT AS CONTENT FROM DM_PROFILE_FEATURES AS PF " +
-                    "JOIN DM_FEATURES AS F ON F.ID = PF.FEATURE_ID WHERE PROFILE_ID=?";
+            String query = "SELECT ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT FROM DM_PROFILE_FEATURES " +
+                    "WHERE PROFILE_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profileId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
                 ProfileFeature profileFeature = new ProfileFeature();
-                Feature feature = new Feature();
-                feature.setId(resultSet.getInt("FEATURE_ID"));
-                feature.setCode(resultSet.getString("CODE"));
-                feature.setName(resultSet.getString("NAME"));
-                feature.setRuleValue(resultSet.getString("RULE"));
+//                Feature feature = new Feature();
+//                feature.setId(resultSet.getInt("FEATURE_ID"));
+//                feature.setCode(resultSet.getString("CODE"));
+//                feature.setName(resultSet.getString("NAME"));
+//                feature.setRuleValue(resultSet.getString("RULE"));
 
-                profileFeature.setFeature(feature);
+//                profileFeature.setFeature(feature);
                 profileFeature.setId(resultSet.getInt("ID"));
+                profileFeature.setFeatureCode(resultSet.getString("FEATURE_CODE"));
+                profileFeature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
                 profileFeature.setContent(resultSet.getObject("CONTENT"));
                 featureList.add(profileFeature);
             }

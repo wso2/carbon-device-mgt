@@ -17,9 +17,10 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Feature {
+public class Feature implements Serializable{
 
     private int id;
     private String code;

@@ -39,7 +39,7 @@ public class PolicyFilterImpl implements PolicyFilter {
         List<Policy> policies = new ArrayList<Policy>();
 
         for (Policy policy : policyList) {
-            List<String> roleList = policy.getRoleList();
+            List<String> roleList = policy.getRoles();
 
             for (String role : roleList) {
                 if (roles.contains(role)) {

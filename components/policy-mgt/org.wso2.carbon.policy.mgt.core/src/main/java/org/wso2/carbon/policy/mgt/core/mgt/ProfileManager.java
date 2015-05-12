@@ -32,7 +32,7 @@ public interface ProfileManager {
 
     boolean deleteProfile(Profile profile) throws ProfileManagementException;
 
-    Profile getProfiles(int profileId) throws ProfileManagementException;
+    Profile getProfile(int profileId) throws ProfileManagementException;
 
     List<Profile> getAllProfiles() throws ProfileManagementException;
 

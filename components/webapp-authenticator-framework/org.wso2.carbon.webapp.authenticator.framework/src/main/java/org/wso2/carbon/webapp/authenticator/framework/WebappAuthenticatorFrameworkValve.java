@@ -18,29 +18,37 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
-import org.apache.axis2.context.MessageContext;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-import org.apache.catalina.valves.ValveBase;
-import org.wso2.carbon.core.services.authentication.CarbonServerAuthenticator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
 public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
+
+    private static final Log log = LogFactory.getLog(WebappAuthenticatorFrameworkValve.class);
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(request);
-        WebappAuthenticator.Status status = authenticator.authenticate(request);
+        WebappAuthenticator.Status status = authenticator.authenticate(request, response);
+        this.processResponse(request, response, compositeValve, status);
+    }
+
+    private void processResponse(Request request, Response response, CompositeValve compositeValve,
+                                 WebappAuthenticator.Status status) {
         switch (status) {
             case SUCCESS:
             case CONTINUE:
-                getNext().invoke(request, response, compositeValve);
+                this.getNext().invoke(request, response, compositeValve);
             case FAILURE:
-                //do something
+                AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED,
+                        "Failed to authorize the incoming request");
         }
     }
+
+
 }

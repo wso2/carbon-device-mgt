@@ -21,6 +21,8 @@ package org.wso2.carbon.policy.mgt.common;
 
 import org.wso2.carbon.device.mgt.core.dto.Device;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.Map;
 /**
  * This class will be the used to create policy object with relevant information for evaluating.
  */
+@XmlRootElement
 public class Policy implements Comparable<Policy>, Serializable {
 
     private int id;                         // Identifier of the policy.
@@ -36,12 +39,16 @@ public class Policy implements Comparable<Policy>, Serializable {
     private Profile profile;                  // Profile
     private String policyName;              // Name of the policy.
     private boolean generic;                // If true, this should be applied to all related device.
-    private List<String> roleList;          // Roles which this policy should be applied.
+    private List<String> roles;          // Roles which this policy should be applied.
     private String ownershipType;           // Ownership type (COPE, BYOD, CPE)
-    private List<Device> DeviceList;        // Individual devices this policy should be applied
+    private List<Device> devices;        // Individual devices this policy should be applied
     private List<String> users;
 
     /*Dynamic policy attributes*/
+
+    /* This is related criteria based policy */
+
+    private List<PolicyCriteria> policyCriterias;
 
     /*These are related to time based policies*/
 
@@ -63,6 +70,7 @@ public class Policy implements Comparable<Policy>, Serializable {
 
     private Map<String, Object> attributes;
 
+    @XmlElement
     public int getId() {
         return id;
     }
@@ -71,6 +79,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.id = id;
     }
 
+    @XmlElement
     public int getPriorityId() {
         return priorityId;
     }
@@ -79,6 +88,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.priorityId = priorityId;
     }
 
+    @XmlElement
     public Profile getProfile() {
         return profile;
     }
@@ -87,6 +97,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.profile = profile;
     }
 
+    @XmlElement
     public int getProfileId() {
         return profileId;
     }
@@ -95,6 +106,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.profileId = profileId;
     }
 
+    @XmlElement
     public String getPolicyName() {
         return policyName;
     }
@@ -103,6 +115,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.policyName = policyName;
     }
 
+    @XmlElement
     public boolean isGeneric() {
         return generic;
     }
@@ -111,14 +124,16 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.generic = generic;
     }
 
-    public List<String> getRoleList() {
-        return roleList;
+    @XmlElement
+    public List<String> getRoles() {
+        return roles;
     }
 
-    public void setRoleList(List<String> roleList) {
-        this.roleList = roleList;
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 
+    @XmlElement
     public String getOwnershipType() {
         return ownershipType;
     }
@@ -127,20 +142,31 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.ownershipType = ownershipType;
     }
 
-    public List<Device> getDeviceList() {
-        return DeviceList;
+    @XmlElement
+    public List<Device> getDevices() {
+        return devices;
     }
 
-    public void setDeviceList(List<Device> deviceList) {
-        DeviceList = deviceList;
+    public void setDevices(List<Device> devices) {
+        this.devices = devices;
     }
 
+    @XmlElement
     public List<String> getUsers() {
         return users;
     }
 
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    @XmlElement
+    public List<PolicyCriteria> getPolicyCriterias() {
+        return policyCriterias;
+    }
+
+    public void setPolicyCriterias(List<PolicyCriteria> policyCriterias) {
+        this.policyCriterias = policyCriterias;
     }
 
     public int getStartTime() {
@@ -151,6 +177,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.startTime = startTime;
     }
 
+    @XmlElement
     public int getEndTime() {
         return endTime;
     }
@@ -159,6 +186,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.endTime = endTime;
     }
 
+    @XmlElement
     public Date getStartDate() {
         return startDate;
     }
@@ -167,6 +195,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.startDate = startDate;
     }
 
+    @XmlElement
     public Date getEndDate() {
         return endDate;
     }
@@ -175,6 +204,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.endDate = endDate;
     }
 
+    @XmlElement
     public String getLatitude() {
         return latitude;
     }
@@ -183,6 +213,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.latitude = latitude;
     }
 
+    @XmlElement
     public String getLongitude() {
         return longitude;
     }
@@ -191,6 +222,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.longitude = longitude;
     }
 
+    @XmlElement
     public Map<String, Object> getAttributes() {
         return attributes;
     }
@@ -199,6 +231,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.attributes = attributes;
     }
 
+    @XmlElement
     public int getTenantId() {
         return tenantId;
     }

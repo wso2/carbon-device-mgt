@@ -20,7 +20,7 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.policy.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.common.Profile;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
@@ -167,7 +167,7 @@ public class FeatureManagerImpl implements FeatureManager {
 
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while adding profile feature (" +
-                    feature.getFeature().getName() + " - " + profileId + ")";
+                    feature.getFeatureCode() + " - " + profileId + ")";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         } catch (FeatureManagerDAOException e) {
@@ -177,7 +177,7 @@ public class FeatureManagerImpl implements FeatureManager {
                 log.warn("Unable to roll back the transaction");
             }
             String msg = "Error occurred while adding profile feature (" +
-                    feature.getFeature().getName() + " - " + profileId + ") to database.";
+                    feature.getFeatureCode() + " - " + profileId + ") to database.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         }
@@ -199,7 +199,7 @@ public class FeatureManagerImpl implements FeatureManager {
                 log.warn("Unable to roll back the transaction");
             }
             String msg = "Error occurred while updating feature (" +
-                    feature.getFeature().getName() + " - " + profileId + ")";
+                    feature.getFeatureCode() + " - " + profileId + ")";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         } catch (FeatureManagerDAOException e) {
@@ -209,7 +209,7 @@ public class FeatureManagerImpl implements FeatureManager {
                 log.warn("Unable to roll back the transaction");
             }
             String msg = "Error occurred while updating feature (" +
-                    feature.getFeature().getName() + " - " + profileId + ") in database.";
+                    feature.getFeatureCode() + " - " + profileId + ") in database.";
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         }

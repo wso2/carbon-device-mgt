@@ -56,7 +56,8 @@
                         <Import-Package>
                             org.apache.commons.logging,
                             org.wso2.carbon.device.mgt.common.*,
-                            org.wso2.carbon.device.mgt.core.dto.*
+                            org.wso2.carbon.device.mgt.core.dto.*,
+                            javax.xml.bind.*,
                         </Import-Package>
                         <Export-Package>
                             org.wso2.carbon.policy.mgt.common.*

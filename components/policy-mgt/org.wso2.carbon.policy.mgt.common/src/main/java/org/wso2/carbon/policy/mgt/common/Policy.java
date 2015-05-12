@@ -21,6 +21,8 @@ package org.wso2.carbon.policy.mgt.common;
 
 import org.wso2.carbon.device.mgt.core.dto.Device;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.Map;
 /**
  * This class will be the used to create policy object with relevant information for evaluating.
  */
+@XmlRootElement
 public class Policy implements Comparable<Policy>, Serializable {
 
     private int id;                         // Identifier of the policy.
@@ -63,6 +66,7 @@ public class Policy implements Comparable<Policy>, Serializable {
 
     private Map<String, Object> attributes;
 
+    @XmlElement
     public int getId() {
         return id;
     }
@@ -71,6 +75,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.id = id;
     }
 
+    @XmlElement
     public int getPriorityId() {
         return priorityId;
     }
@@ -79,6 +84,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.priorityId = priorityId;
     }
 
+    @XmlElement
     public Profile getProfile() {
         return profile;
     }
@@ -87,6 +93,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.profile = profile;
     }
 
+    @XmlElement
     public int getProfileId() {
         return profileId;
     }
@@ -95,6 +102,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.profileId = profileId;
     }
 
+    @XmlElement
     public String getPolicyName() {
         return policyName;
     }
@@ -103,6 +111,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.policyName = policyName;
     }
 
+    @XmlElement
     public boolean isGeneric() {
         return generic;
     }
@@ -111,6 +120,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.generic = generic;
     }
 
+    @XmlElement
     public List<String> getRoleList() {
         return roleList;
     }
@@ -119,6 +129,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.roleList = roleList;
     }
 
+    @XmlElement
     public String getOwnershipType() {
         return ownershipType;
     }
@@ -127,6 +138,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.ownershipType = ownershipType;
     }
 
+    @XmlElement
     public List<Device> getDeviceList() {
         return DeviceList;
     }
@@ -135,6 +147,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         DeviceList = deviceList;
     }
 
+    @XmlElement
     public List<String> getUsers() {
         return users;
     }
@@ -143,6 +156,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.users = users;
     }
 
+    @XmlElement
     public int getStartTime() {
         return startTime;
     }
@@ -151,6 +165,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.startTime = startTime;
     }
 
+    @XmlElement
     public int getEndTime() {
         return endTime;
     }
@@ -159,6 +174,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.endTime = endTime;
     }
 
+    @XmlElement
     public Date getStartDate() {
         return startDate;
     }
@@ -167,6 +183,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.startDate = startDate;
     }
 
+    @XmlElement
     public Date getEndDate() {
         return endDate;
     }
@@ -175,6 +192,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.endDate = endDate;
     }
 
+    @XmlElement
     public String getLatitude() {
         return latitude;
     }
@@ -183,6 +201,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.latitude = latitude;
     }
 
+    @XmlElement
     public String getLongitude() {
         return longitude;
     }
@@ -191,6 +210,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.longitude = longitude;
     }
 
+    @XmlElement
     public Map<String, Object> getAttributes() {
         return attributes;
     }
@@ -199,6 +219,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.attributes = attributes;
     }
 
+    @XmlElement
     public int getTenantId() {
         return tenantId;
     }

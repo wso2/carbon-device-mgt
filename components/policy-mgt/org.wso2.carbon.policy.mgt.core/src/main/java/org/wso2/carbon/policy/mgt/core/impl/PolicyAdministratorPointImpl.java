@@ -146,6 +146,28 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     }
 
     @Override
+    public Profile getProfile(int profileId) throws PolicyManagementException {
+        try {
+            return profileManager.getProfile(profileId);
+        } catch (ProfileManagementException e) {
+            String msg = "Error occurred while retriving profile";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
+
+    @Override
+    public List<Profile> getProfiles() throws PolicyManagementException {
+        try {
+            return profileManager.getAllProfiles();
+        } catch (ProfileManagementException e) {
+            String msg = "Error occurred while obtaining list of profiles.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
+
+    @Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
         try {
             return featureManager.addFeature(feature);

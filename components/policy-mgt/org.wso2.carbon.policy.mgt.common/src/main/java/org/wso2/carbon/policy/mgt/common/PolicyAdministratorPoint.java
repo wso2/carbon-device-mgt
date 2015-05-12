@@ -131,6 +131,10 @@ public interface PolicyAdministratorPoint {
 
     Profile updateProfile(Profile profile) throws PolicyManagementException;
 
+    Profile getProfile(int profileId) throws PolicyManagementException;
+
+    List<Profile> getProfiles() throws PolicyManagementException;
+
     Feature addFeature(Feature feature) throws  FeatureManagementException;
 
     Feature updateFeature(Feature feature) throws  FeatureManagementException;

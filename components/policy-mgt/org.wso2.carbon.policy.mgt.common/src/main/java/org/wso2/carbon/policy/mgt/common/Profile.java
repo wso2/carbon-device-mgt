@@ -22,9 +22,11 @@ package org.wso2.carbon.policy.mgt.common;
 
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.sql.Timestamp;
 import java.util.List;
-
+@XmlRootElement
 public class Profile {
 
     private int profileId;
@@ -43,7 +45,7 @@ public class Profile {
     public void setDeviceType(DeviceType deviceType) {
         this.deviceType = deviceType;
     }
-
+    @XmlElement
     public int getTenantId() {
         return tenantId;
     }
@@ -59,7 +61,7 @@ public class Profile {
     public void setFeaturesList(List<Feature> featuresList) {
         this.featuresList = featuresList;
     }*/
-
+    @XmlElement
     public int getProfileId() {
         return profileId;
     }
@@ -68,6 +70,7 @@ public class Profile {
         this.profileId = profileId;
     }
 
+    @XmlElement
     public String getProfileName() {
         return profileName;
     }
@@ -76,6 +79,7 @@ public class Profile {
         this.profileName = profileName;
     }
 
+    @XmlElement
     public Timestamp getCreatedDate() {
         return createdDate;
     }
@@ -84,6 +88,7 @@ public class Profile {
         this.createdDate = createdDate;
     }
 
+    @XmlElement
     public Timestamp getUpdatedDate() {
         return updatedDate;
     }
@@ -92,6 +97,7 @@ public class Profile {
         this.updatedDate = updatedDate;
     }
 
+    @XmlElement
     public List<ProfileFeature> getProfileFeaturesList() {
         return profileFeaturesList;
     }

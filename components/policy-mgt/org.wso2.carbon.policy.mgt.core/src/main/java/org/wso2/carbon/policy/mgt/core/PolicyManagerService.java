@@ -20,7 +20,15 @@
 package org.wso2.carbon.policy.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
+import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
+import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.List;
 

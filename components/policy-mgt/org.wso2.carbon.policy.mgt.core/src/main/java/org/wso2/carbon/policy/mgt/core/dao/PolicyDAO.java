@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.policy.mgt.core.dao;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.*;
 
@@ -42,6 +41,24 @@ public interface PolicyDAO {
     Policy addTimesToPolicy(int startTime, int endTime, Policy policy) throws PolicyManagerDAOException;
 
     Policy addLocationToPolicy(String latitude, String longitude, Policy policy) throws PolicyManagerDAOException;
+
+    Criterion addCriterion(Criterion criteria) throws PolicyManagerDAOException;
+
+    Criterion updateCriterion(Criterion criteria) throws PolicyManagerDAOException;
+
+    Criterion getCriterion(int id) throws PolicyManagerDAOException;
+
+    Criterion getCriterion(String name) throws PolicyManagerDAOException;
+
+    boolean checkCriterionExists(String name) throws PolicyManagerDAOException;
+
+    boolean deleteCriterion(Criterion criteria) throws PolicyManagerDAOException;
+
+    List<Criterion> getAllPolicyCriteria() throws PolicyManagerDAOException;
+
+    Policy addPolicyCriteria(Policy policy) throws PolicyManagerDAOException;
+
+    List<PolicyCriteria> getPolicyCriteria(int policyId) throws PolicyManagerDAOException;
 
     Policy updatePolicy(Policy policy) throws PolicyManagerDAOException;
 

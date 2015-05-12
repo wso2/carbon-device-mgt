@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.policy.mgt.core.util;
 
-import org.wso2.carbon.policy.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.ArrayList;
@@ -33,9 +33,12 @@ public class ProfileFeatureCreator {
 
             ProfileFeature profileFeature = new ProfileFeature();
             profileFeature.setContent(feature);
+            profileFeature.setDeviceTypeId(1);
+            profileFeature.setFeatureCode(feature.getCode());
+
 //            profileFeature.setContent("rrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
           //  profileFeature.setProfileId(1);
-            profileFeature.setFeature(feature);
+//            profileFeature.setFeature(feature);
             profileFeatureList.add(profileFeature);
 
         }

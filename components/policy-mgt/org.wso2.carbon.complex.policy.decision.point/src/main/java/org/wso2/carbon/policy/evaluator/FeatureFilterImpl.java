@@ -19,7 +19,6 @@
 package org.wso2.carbon.policy.evaluator;
 
 import org.wso2.carbon.policy.evaluator.utils.Constants;
-import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
@@ -103,17 +102,17 @@ public class FeatureFilterImpl implements FeatureFilter {
      */
     public void getDenyOverridesFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
         ProfileFeature evaluatedFeature = null;
-        for (ProfileFeature feature : featureList) {
-            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
-                if (feature.getFeature().getRuleValue().equalsIgnoreCase("Deny")) {
-                    evaluatedFeature = feature;
-                    effectiveFeatureList.add(evaluatedFeature);
-                    return;
-                } else {
-                    evaluatedFeature = feature;
-                }
-            }
-        }
+//        for (ProfileFeature feature : featureList) {
+//            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+//                if (feature.getFeature().getRuleValue().equalsIgnoreCase("Deny")) {
+//                    evaluatedFeature = feature;
+//                    effectiveFeatureList.add(evaluatedFeature);
+//                    return;
+//                } else {
+//                    evaluatedFeature = feature;
+//                }
+//            }
+//        }
         if (evaluatedFeature != null) {
             effectiveFeatureList.add(evaluatedFeature);
         }
@@ -130,17 +129,17 @@ public class FeatureFilterImpl implements FeatureFilter {
      */
     public void getPermitOverridesFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
         ProfileFeature evaluatedFeature = null;
-        for (ProfileFeature feature : featureList) {
-            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
-                if (feature.getFeature().getRuleValue().equalsIgnoreCase("Permit")) {
-                    evaluatedFeature = feature;
-                    effectiveFeatureList.add(evaluatedFeature);
-                    return;
-                } else {
-                    evaluatedFeature = feature;
-                }
-            }
-        }
+//        for (ProfileFeature feature : featureList) {
+//            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+//                if (feature.getFeature().getRuleValue().equalsIgnoreCase("Permit")) {
+//                    evaluatedFeature = feature;
+//                    effectiveFeatureList.add(evaluatedFeature);
+//                    return;
+//                } else {
+//                    evaluatedFeature = feature;
+//                }
+//            }
+//        }
         if (evaluatedFeature != null) {
             effectiveFeatureList.add(evaluatedFeature);
         }
@@ -157,11 +156,11 @@ public class FeatureFilterImpl implements FeatureFilter {
      */
     public void getFirstApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
         for (ProfileFeature feature : featureList) {
-            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
-                effectiveFeatureList.add(feature);
-                return;
-
-            }
+//            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+//                effectiveFeatureList.add(feature);
+//                return;
+//
+//            }
         }
     }
 
@@ -175,11 +174,11 @@ public class FeatureFilterImpl implements FeatureFilter {
      */
     public void getLastApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
         ProfileFeature evaluatedFeature = null;
-        for (ProfileFeature feature : featureList) {
-            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
-                evaluatedFeature = feature;
-            }
-        }
+//        for (ProfileFeature feature : featureList) {
+//            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+//                evaluatedFeature = feature;
+//            }
+//        }
         if (evaluatedFeature != null) {
             effectiveFeatureList.add(evaluatedFeature);
         }
@@ -195,9 +194,9 @@ public class FeatureFilterImpl implements FeatureFilter {
      */
     public void getAllApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
         for (ProfileFeature feature : featureList) {
-            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
-                effectiveFeatureList.add(feature);
-            }
+//            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+//                effectiveFeatureList.add(feature);
+//            }
         }
     }
 
@@ -212,14 +211,14 @@ public class FeatureFilterImpl implements FeatureFilter {
     public void getHighestApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
         ProfileFeature evaluatedFeature = null;
         int intValve = 0;
-        for (ProfileFeature feature : featureList) {
-            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
-                if (Integer.parseInt(feature.getFeature().getRuleValue()) > intValve) {
-                    intValve = Integer.parseInt(feature.getFeature().getRuleValue());
-                    evaluatedFeature = feature;
-                }
-            }
-        }
+//        for (ProfileFeature feature : featureList) {
+//            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+//                if (Integer.parseInt(feature.getFeature().getRuleValue()) > intValve) {
+//                    intValve = Integer.parseInt(feature.getFeature().getRuleValue());
+//                    evaluatedFeature = feature;
+//                }
+//            }
+//        }
         if (evaluatedFeature != null) {
             effectiveFeatureList.add(evaluatedFeature);
         }
@@ -235,15 +234,15 @@ public class FeatureFilterImpl implements FeatureFilter {
      */
     public void getLowestApplicableFeatures(String featureName, List<ProfileFeature> featureList, List<ProfileFeature> effectiveFeatureList) {
         ProfileFeature evaluatedFeature = null;
-        int intValve = 0;
-        for (ProfileFeature feature : featureList) {
-            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
-                if (Integer.parseInt(feature.getFeature().getRuleValue()) < intValve) {
-                    intValve = Integer.parseInt(feature.getFeature().getRuleValue());
-                    evaluatedFeature = feature;
-                }
-            }
-        }
+//        int intValve = 0;
+//        for (ProfileFeature feature : featureList) {
+//            if (feature.getFeature().getName().equalsIgnoreCase(featureName)) {
+//                if (Integer.parseInt(feature.getFeature().getRuleValue()) < intValve) {
+//                    intValve = Integer.parseInt(feature.getFeature().getRuleValue());
+//                    evaluatedFeature = feature;
+//                }
+//            }
+//        }
         if (evaluatedFeature != null) {
             effectiveFeatureList.add(evaluatedFeature);
         }

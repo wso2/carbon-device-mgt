@@ -26,7 +26,6 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.Device;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
@@ -70,12 +69,12 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyToUser(policy.getUsers(), policy);
             }
 
-            if (policy.getRoleList() != null) {
-                policyDAO.addPolicyToRole(policy.getRoleList(), policy);
+            if (policy.getRoles() != null) {
+                policyDAO.addPolicyToRole(policy.getRoles(), policy);
             }
 
-            if (policy.getDeviceList() != null) {
-                policyDAO.addPolicyToDevice(policy.getDeviceList(), policy);
+            if (policy.getDevices() != null) {
+                policyDAO.addPolicyToDevice(policy.getDevices(), policy);
             }
 
             if (policy.getEndDate() != null & policy.getStartDate() != null) {
@@ -138,12 +137,12 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyToUser(policy.getUsers(), policy);
             }
 
-            if (policy.getRoleList() != null) {
-                policyDAO.addPolicyToRole(policy.getRoleList(), policy);
+            if (policy.getRoles() != null) {
+                policyDAO.addPolicyToRole(policy.getRoles(), policy);
             }
 
-            if (policy.getDeviceList() != null) {
-                policyDAO.addPolicyToDevice(policy.getDeviceList(), policy);
+            if (policy.getDevices() != null) {
+                policyDAO.addPolicyToDevice(policy.getDevices(), policy);
             }
 
             if (policy.getEndDate() != null & policy.getStartDate() != null) {
@@ -213,16 +212,16 @@ public class PolicyManagerImpl implements PolicyManager {
             policy = policyDAO.addPolicyToDevice(deviceList, policy);
             PolicyManagementDAOFactory.commitTransaction();
 
-            if (policy.getDeviceList() != null) {
+            if (policy.getDevices() != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device list of policy is not null.");
                 }
-                policy.getDeviceList().addAll(deviceList);
+                policy.getDevices().addAll(deviceList);
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Device list of policy is null. So added the first device to the list.");
                 }
-                policy.setDeviceList(deviceList);
+                policy.setDevices(deviceList);
             }
 
         } catch (PolicyManagerDAOException e) {
@@ -260,16 +259,16 @@ public class PolicyManagerImpl implements PolicyManager {
             policy = policyDAO.addPolicyToRole(roleNames, policy);
             PolicyManagementDAOFactory.commitTransaction();
 
-            if (policy.getRoleList() != null) {
+            if (policy.getRoles() != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("New roles list is added to the policy ");
                 }
-                policy.getRoleList().addAll(roleNames);
+                policy.getRoles().addAll(roleNames);
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Roles list was null, new roles are added.");
                 }
-                policy.setRoleList(roleNames);
+                policy.setRoles(roleNames);
             }
 
         } catch (PolicyManagerDAOException e) {
@@ -298,16 +297,16 @@ public class PolicyManagerImpl implements PolicyManager {
             policy = policyDAO.addPolicyToUser(usernameList, policy);
             PolicyManagementDAOFactory.commitTransaction();
 
-            if (policy.getRoleList() != null) {
+            if (policy.getRoles() != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("New users list is added to the policy ");
                 }
-                policy.getRoleList().addAll(usernameList);
+                policy.getRoles().addAll(usernameList);
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Users list was null, new users list is added.");
                 }
-                policy.setRoleList(usernameList);
+                policy.setRoles(usernameList);
             }
 
         } catch (PolicyManagerDAOException e) {
@@ -343,8 +342,8 @@ public class PolicyManagerImpl implements PolicyManager {
             profile = profileDAO.getProfiles(profileId);
 
             policy.setProfile(profile);
-            policy.setRoleList(roleNames);
-            policy.setDeviceList(deviceList);
+            policy.setRoles(roleNames);
+            policy.setDevices(deviceList);
 
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while getting the policy related to profile ID (" + profileId + ")";
@@ -376,8 +375,8 @@ public class PolicyManagerImpl implements PolicyManager {
             Profile profile = profileDAO.getProfiles(policy.getProfile().getProfileId());
 
             policy.setProfile(profile);
-            policy.setRoleList(roleNames);
-            policy.setDeviceList(deviceList);
+            policy.setRoles(roleNames);
+            policy.setDevices(deviceList);
 
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while getting the policy related to policy ID (" + policyId + ")";
@@ -406,8 +405,8 @@ public class PolicyManagerImpl implements PolicyManager {
                         policy.setProfile(profile);
                     }
                 }
-                policy.setDeviceList(getPolicyAppliedDevicesIds(policy.getId()));
-                policy.setRoleList(policyDAO.getPolicyAppliedRoles(policy.getId()));
+                policy.setDevices(getPolicyAppliedDevicesIds(policy.getId()));
+                policy.setRoles(policyDAO.getPolicyAppliedRoles(policy.getId()));
                 policyDAO.getDatesOfPolicy(policy);
                 policyDAO.getTimesOfPolicy(policy);
                 policyDAO.getLocationsOfPolicy(policy);

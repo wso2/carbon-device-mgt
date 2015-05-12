@@ -19,12 +19,10 @@
 
 package org.wso2.carbon.policy.evaluator;
 
-import org.wso2.carbon.policy.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.List;
-import java.util.Map;
 
 public interface FeatureFilter {
 

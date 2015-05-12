@@ -22,67 +22,67 @@ import java.io.Serializable;
 
 public class Feature implements Serializable {
 
-    private int id;
-    private String code;
-    private String name;
-    private String description;
- //   private Object attribute;
-    private String ruleValue;
-    private int deviceTypeId;
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getRuleValue() {
-        return ruleValue;
-    }
-
-    public void setRuleValue(String ruleValue) {
-        this.ruleValue = ruleValue;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-/*    public Object getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(Object attribute) {
-        this.attribute = attribute;
-    }*/
-
-    public int getDeviceTypeId() {
-        return deviceTypeId;
-    }
-
-    public void setDeviceTypeId(int deviceTypeId) {
-        this.deviceTypeId = deviceTypeId;
-    }
+//    private int id;
+//    private String code;
+//    private String name;
+//    private String description;
+// //   private Object attribute;
+//    private String ruleValue;
+//    private int deviceTypeId;
+//
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
+//
+//    public String getRuleValue() {
+//        return ruleValue;
+//    }
+//
+//    public void setRuleValue(String ruleValue) {
+//        this.ruleValue = ruleValue;
+//    }
+//
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getCode() {
+//        return code;
+//    }
+//
+//    public void setCode(String code) {
+//        this.code = code;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+///*    public Object getAttribute() {
+//        return attribute;
+//    }
+//
+//    public void setAttribute(Object attribute) {
+//        this.attribute = attribute;
+//    }*/
+//
+//    public int getDeviceTypeId() {
+//        return deviceTypeId;
+//    }
+//
+//    public void setDeviceTypeId(int deviceTypeId) {
+//        this.deviceTypeId = deviceTypeId;
+//    }
 }

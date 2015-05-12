@@ -21,9 +21,6 @@ package org.wso2.carbon.policy.mgt.core.util;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.Profile;
 
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,14 +46,14 @@ public class PolicyCreator {
         policy.setPolicyName("New test Policy");
         policy.setGeneric(true);
         policy.setProfile(profile);
-        policy.setDeviceList(DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType()));
+        policy.setDevices(DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType()));
 
         List<String> roles = new ArrayList<String>();
         roles.add("Role_01");
         roles.add("Role_02");
         roles.add("Role_03");
 
-        policy.setRoleList(roles);
+        policy.setRoles(roles);
 
         List<String> users = new ArrayList<String>();
         users.add("Geeth");

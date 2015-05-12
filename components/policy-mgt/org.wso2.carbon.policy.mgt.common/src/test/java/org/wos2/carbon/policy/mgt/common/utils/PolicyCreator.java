@@ -18,7 +18,8 @@
 
 package org.wos2.carbon.policy.mgt.common.utils;
 
-import org.wso2.carbon.policy.mgt.common.Feature;
+
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.Profile;
 

@@ -36,12 +36,16 @@ public class Policy implements Comparable<Policy>, Serializable {
     private Profile profile;                  // Profile
     private String policyName;              // Name of the policy.
     private boolean generic;                // If true, this should be applied to all related device.
-    private List<String> roleList;          // Roles which this policy should be applied.
+    private List<String> roles;          // Roles which this policy should be applied.
     private String ownershipType;           // Ownership type (COPE, BYOD, CPE)
-    private List<Device> DeviceList;        // Individual devices this policy should be applied
+    private List<Device> devices;        // Individual devices this policy should be applied
     private List<String> users;
 
     /*Dynamic policy attributes*/
+
+    /* This is related criteria based policy */
+
+    private List<PolicyCriteria> policyCriterias;
 
     /*These are related to time based policies*/
 
@@ -111,12 +115,12 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.generic = generic;
     }
 
-    public List<String> getRoleList() {
-        return roleList;
+    public List<String> getRoles() {
+        return roles;
     }
 
-    public void setRoleList(List<String> roleList) {
-        this.roleList = roleList;
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 
     public String getOwnershipType() {
@@ -127,12 +131,12 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.ownershipType = ownershipType;
     }
 
-    public List<Device> getDeviceList() {
-        return DeviceList;
+    public List<Device> getDevices() {
+        return devices;
     }
 
-    public void setDeviceList(List<Device> deviceList) {
-        DeviceList = deviceList;
+    public void setDevices(List<Device> devices) {
+        this.devices = devices;
     }
 
     public List<String> getUsers() {
@@ -141,6 +145,14 @@ public class Policy implements Comparable<Policy>, Serializable {
 
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    public List<PolicyCriteria> getPolicyCriterias() {
+        return policyCriterias;
+    }
+
+    public void setPolicyCriterias(List<PolicyCriteria> policyCriterias) {
+        this.policyCriterias = policyCriterias;
     }
 
     public int getStartTime() {

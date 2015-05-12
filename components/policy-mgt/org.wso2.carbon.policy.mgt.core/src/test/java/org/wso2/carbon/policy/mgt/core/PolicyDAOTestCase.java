@@ -31,7 +31,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.Device;
-import org.wso2.carbon.policy.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
@@ -192,7 +192,7 @@ public class PolicyDAOTestCase {
         featureList = FeatureCreator.getFeatureList();
         //featureManager.addFeatures(featureList);
         for (Feature feature : featureList) {
-            featureManager.addFeature(feature);
+//            featureManager.addFeature(feature);
         }
 
     }

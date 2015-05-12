@@ -127,6 +127,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         PreparedStatement stmt = null;
         ByteArrayOutputStream bao = null;
         ObjectOutputStream oos = null;
+        super.updateOperation(operation);
 
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();

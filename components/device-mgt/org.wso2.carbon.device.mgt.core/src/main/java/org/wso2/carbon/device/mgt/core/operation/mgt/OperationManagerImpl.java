@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -195,20 +196,33 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
+    public Operation getNextPendingOperation(DeviceIdentifier deviceIdentifier) throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
-            log.debug("device identifier id:[" + deviceId.getId() + "] type:[" + deviceId.getType() + "]");
+            log.debug("device identifier id:[" + deviceIdentifier.getId() + "] type:[" + deviceIdentifier.getType() + "]");
         }
         Operation operation = null;
+        Device device;
         try {
+            device = deviceManagementService.getCoreDevice(deviceIdentifier);
+
+            if (device == null) {
+                throw new OperationManagementException("Device not found for given device " +
+                        "Identifier:" + deviceIdentifier.getId() + " and given type" + deviceIdentifier.getType());
+            }
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
-                    .getNextOperation(deviceId);
+                    .getNextOperation(device.getId());
             if (dtoOperation != null) {
                 operation = OperationDAOUtil.convertOperation(dtoOperation);
             }
             return operation;
-        } catch (OperationManagementDAOException e) {
+        } catch (DeviceManagementException deviceMgtException) {
+            String errorMsg = "Error occurred while retrieving the device " +
+                    "for device Identifier type -'" + deviceIdentifier.getType() + "' and device Id '"
+                    + deviceIdentifier.getId();
+            log.error(errorMsg, deviceMgtException);
+            throw new OperationManagementException(errorMsg, deviceMgtException);
+        }  catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving next pending operation", e);
         }
     }

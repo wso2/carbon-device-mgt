@@ -19,7 +19,6 @@ package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
 

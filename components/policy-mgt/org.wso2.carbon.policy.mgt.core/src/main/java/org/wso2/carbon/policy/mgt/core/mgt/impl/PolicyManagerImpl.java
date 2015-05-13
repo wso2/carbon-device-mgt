@@ -372,7 +372,7 @@ public class PolicyManagerImpl implements PolicyManager {
             policyDAO.getTimesOfPolicy(policy);
             policyDAO.getLocationsOfPolicy(policy);
 
-            Profile profile = profileDAO.getProfiles(policy.getProfile().getProfileId());
+            Profile profile = profileDAO.getProfiles(policy.getProfileId());
 
             policy.setProfile(profile);
             policy.setRoles(roleNames);

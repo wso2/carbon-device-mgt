@@ -62,6 +62,8 @@ public interface PolicyAdministratorPoint {
 
     List<Policy> getPolicies() throws PolicyManagementException;
 
+    Policy getPolicy(int policyId) throws PolicyManagementException;
+
     /**
      * This method gives the device specific policy.
      *

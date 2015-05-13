@@ -17,7 +17,7 @@
 */
 package org.wso2.carbon.device.mgt.core.app.mgt;
 
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.Application;
 import org.wso2.carbon.device.mgt.common.Credential;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;

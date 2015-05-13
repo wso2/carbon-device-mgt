@@ -17,7 +17,7 @@
  *  under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.app.mgt;
+package org.wso2.carbon.device.mgt.common;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Platform;

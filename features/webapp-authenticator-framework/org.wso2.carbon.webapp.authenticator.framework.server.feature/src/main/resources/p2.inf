@@ -1,7 +1,2 @@
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/conf/cdm-config.xml,target:${installFolder}/../../conf/cdm-config.xml,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/conf/notification-messages.xml,target:${installFolder}/../../conf/notification-messages.xml,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/conf/license-config.xml,target:${installFolder}/../../conf/etc/license-config.xml,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/conf/user-api-publisher-config.xml,target:${installFolder}/../../conf/etc/user-api-publisher-config.xml,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/dbscripts/cdm,target:${installFolder}/../../../dbscripts/cdm,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/rxts/license.rxt,target:${installFolder}/../../../repository/resources/rxts/license.rxt,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/conf/webapp-authenticator-config.xml,target:${installFolder}/../../conf/etc/webapp-authenticator-config.xml,overwrite:true);\

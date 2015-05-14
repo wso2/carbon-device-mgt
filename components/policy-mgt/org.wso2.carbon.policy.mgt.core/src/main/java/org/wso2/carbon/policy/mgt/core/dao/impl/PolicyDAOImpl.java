@@ -445,11 +445,11 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-
                 policy.setId(policyId);
                 policy.setPolicyName(resultSet.getString("NAME"));
                 policy.setTenantId(resultSet.getInt("TENANT_ID"));
                 policy.setPriorityId(resultSet.getInt("PRIORITY"));
+                policy.setProfileId(resultSet.getInt("PROFILE_ID"));
             }
             return policy;
 

@@ -44,9 +44,11 @@ public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
             case SUCCESS:
             case CONTINUE:
                 this.getNext().invoke(request, response, compositeValve);
+                break;
             case FAILURE:
                 AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED,
                         "Failed to authorize the incoming request");
+                break;
         }
     }
 

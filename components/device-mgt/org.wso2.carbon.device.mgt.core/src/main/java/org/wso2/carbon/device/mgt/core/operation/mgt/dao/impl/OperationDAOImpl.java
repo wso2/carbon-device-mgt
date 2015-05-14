@@ -462,7 +462,7 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     @Override
-    public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
+    public Operation getNextOperation(int deviceId) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -483,9 +483,9 @@ public class OperationDAOImpl implements OperationDAO {
                             "o.ID =po.OPERATION_ID LEFT OUTER JOIN DM_COMMAND_OPERATION co ON co.OPERATION_ID=o.ID " +
                             "ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
 
-            stmt.setString(1, deviceId.getType());
-            stmt.setString(2, deviceId.getId());
-            stmt.setString(3, Operation.Status.PENDING.toString());
+            stmt.setString(1, Operation.Status.PENDING.toString());
+            stmt.setInt(2, deviceId);
+
             rs = stmt.executeQuery();
             Operation operation = null;
 

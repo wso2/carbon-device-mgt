@@ -59,7 +59,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         return operationId;
     }
 
-    @Override
     public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;

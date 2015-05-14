@@ -42,6 +42,6 @@ public interface OperationDAO {
 
     List<? extends Operation> getOperationsForStatus(Operation.Status status) throws OperationManagementDAOException;
 
-    Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException;
+    Operation getNextOperation(int deviceId) throws OperationManagementDAOException;
 
 }

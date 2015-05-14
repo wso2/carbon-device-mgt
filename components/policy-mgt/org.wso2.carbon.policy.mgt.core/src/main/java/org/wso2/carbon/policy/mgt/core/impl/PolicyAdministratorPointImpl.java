@@ -83,6 +83,10 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         return policyManager.getPolicies();
     }
 
+    @Override public Policy getPolicy(int policyId) throws PolicyManagementException {
+        return policyManager.getPolicy(policyId);
+    }
+
     @Override
     public List<Policy> getPoliciesOfDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         return policyManager.getPoliciesOfDevice(deviceIdentifier);

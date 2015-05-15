@@ -45,12 +45,6 @@ public class DeviceManagementRepository {
 
     public void removeDeviceManagementProvider(DeviceMgtService provider) throws DeviceManagementException {
         String deviceType = provider.getProviderType();
-        try {
-            DeviceManagerUtil.unregisterDeviceType(deviceType);
-        } catch (DeviceManagementException e) {
-            throw new DeviceManagementException("Error occurred while removing device management provider '" +
-                    deviceType + "'", e);
-        }
         providers.remove(deviceType);
     }
 

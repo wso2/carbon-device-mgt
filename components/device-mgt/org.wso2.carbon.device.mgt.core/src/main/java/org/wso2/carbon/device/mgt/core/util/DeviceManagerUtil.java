@@ -142,7 +142,7 @@ public final class DeviceManagerUtil {
         try {
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
             DeviceType deviceType = deviceTypeDAO.getDeviceType(typeName);
-            if (deviceType == null) {
+            if (deviceType != null) {
                 DeviceType dt = new DeviceType();
                 dt.setName(typeName);
                 deviceTypeDAO.removeDeviceType(typeName);

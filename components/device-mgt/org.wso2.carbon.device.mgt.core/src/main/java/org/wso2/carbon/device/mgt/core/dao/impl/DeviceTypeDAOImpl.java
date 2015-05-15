@@ -120,6 +120,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        DeviceType deviceType = null;
         try {
             conn = this.getConnection();
             String sql = "SELECT ID From DM_DEVICE_TYPE WHERE NAME = ?";
@@ -127,14 +128,11 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
             stmt.setString(1, type);
             rs = stmt.executeQuery();
 
-            int id = -1;
             if (rs.next()) {
-                id = rs.getInt("ID");
+                deviceType = new DeviceType();
+                deviceType.setId(rs.getInt("ID"));
+                deviceType.setName(type);
             }
-            DeviceType deviceType = new DeviceType();
-            deviceType.setId(id);
-            deviceType.setName(type);
-
             return deviceType;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while fetch device type id for device type " +

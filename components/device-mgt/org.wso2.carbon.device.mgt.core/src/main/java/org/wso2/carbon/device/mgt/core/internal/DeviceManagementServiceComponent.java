@@ -55,10 +55,9 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.user.core.service.RealmService;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -267,7 +266,7 @@ public class DeviceManagementServiceComponent {
 	 */
 	protected void unsetDeviceManager(DeviceMgtService deviceManager) {
 		if (log.isDebugEnabled()) {
-			log.debug("Unsetting Device Management Service Provider : '" + deviceManager.getProviderType() + "'");
+			log.debug("Un setting Device Management Service Provider : '" + deviceManager.getProviderType() + "'");
 		}
         try {
             this.getPluginRepository().removeDeviceManagementProvider(deviceManager);

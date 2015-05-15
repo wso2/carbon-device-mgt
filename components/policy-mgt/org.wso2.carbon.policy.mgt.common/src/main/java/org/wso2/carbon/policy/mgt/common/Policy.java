@@ -34,6 +34,8 @@ import java.util.Map;
 @XmlRootElement
 public class Policy implements Comparable<Policy>, Serializable {
 
+    private static final long serialVersionUID = 19981017L;
+
     private int id;                         // Identifier of the policy.
     private int priorityId;                 // Priority of the policies. This will be used only for simple evaluation.
     private Profile profile;                  // Profile
@@ -48,7 +50,7 @@ public class Policy implements Comparable<Policy>, Serializable {
 
     /* This is related criteria based policy */
 
-    private List<PolicyCriteria> policyCriterias;
+    private List<PolicyCriterion> policyCriterias;
 
     /*These are related to time based policies*/
 
@@ -161,11 +163,11 @@ public class Policy implements Comparable<Policy>, Serializable {
     }
 
     @XmlElement
-    public List<PolicyCriteria> getPolicyCriterias() {
+    public List<PolicyCriterion> getPolicyCriterias() {
         return policyCriterias;
     }
 
-    public void setPolicyCriterias(List<PolicyCriteria> policyCriterias) {
+    public void setPolicyCriterias(List<PolicyCriterion> policyCriterias) {
         this.policyCriterias = policyCriterias;
     }
 

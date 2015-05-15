@@ -111,23 +111,23 @@ public final class DeviceManagerUtil {
     /**
      * Adds a new device type to the database if it does not exists.
      *
-     * @param deviceType device type
+     * @param typeName device type
      * @return status of the operation
      */
-    public static boolean registerDeviceType(String deviceType) throws DeviceManagementException {
+    public static boolean registerDeviceType(String typeName) throws DeviceManagementException {
         boolean status;
         try {
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-            DeviceType deviceTypeId = deviceTypeDAO.getDeviceType(deviceType);
-            if (deviceTypeId == null) {
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(typeName);
+            if (deviceType == null) {
                 DeviceType dt = new DeviceType();
-                dt.setName(deviceType);
+                dt.setName(typeName);
                 deviceTypeDAO.addDeviceType(dt);
             }
             status = true;
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while registering the device type '" +
-                    deviceType + "'", e);
+                    typeName + "'", e);
         }
         return status;
     }
@@ -135,22 +135,22 @@ public final class DeviceManagerUtil {
     /**
      * Un-registers an existing device type from the device management metadata repository.
      *
-     * @param deviceType device type
+     * @param typeName device type
      * @return status of the operation
      */
-    public static boolean unregisterDeviceType(String deviceType) throws DeviceManagementException {
+    public static boolean unregisterDeviceType(String typeName) throws DeviceManagementException {
         try {
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-            DeviceType deviceTypeId = deviceTypeDAO.getDeviceType(deviceType);
-            if (deviceTypeId == null) {
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(typeName);
+            if (deviceType == null) {
                 DeviceType dt = new DeviceType();
-                dt.setName(deviceType);
-                deviceTypeDAO.removeDeviceType(deviceType);
+                dt.setName(typeName);
+                deviceTypeDAO.removeDeviceType(typeName);
             }
             return true;
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while registering the device type '" +
-                    deviceType + "'", e);
+                    typeName + "'", e);
         }
     }
 

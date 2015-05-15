@@ -66,7 +66,6 @@ public class OperationDAOImpl implements OperationDAO {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
     }
 

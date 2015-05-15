@@ -266,7 +266,7 @@ public class DeviceManagementServiceComponent {
 	 */
 	protected void unsetDeviceManager(DeviceMgtService deviceManager) {
 		if (log.isDebugEnabled()) {
-			log.debug("Unsetting Device Management Service Provider : '" + deviceManager.getProviderType() + "'");
+			log.debug("Un setting Device Management Service Provider : '" + deviceManager.getProviderType() + "'");
 		}
         try {
             this.getPluginRepository().removeDeviceManagementProvider(deviceManager);

@@ -58,7 +58,9 @@ public interface PolicyDAO {
 
     Policy addPolicyCriteria(Policy policy) throws PolicyManagerDAOException;
 
-    List<PolicyCriteria> getPolicyCriteria(int policyId) throws PolicyManagerDAOException;
+    boolean addPolicyCriteriaProperties(List<PolicyCriterion> policyCriteria) throws PolicyManagerDAOException;
+
+    List<PolicyCriterion> getPolicyCriteria(int policyId) throws PolicyManagerDAOException;
 
     Policy updatePolicy(Policy policy) throws PolicyManagerDAOException;
 

@@ -24,7 +24,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.dao.*;
@@ -40,7 +39,7 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private DeviceDAO deviceDAO;
-    private DeviceTypeDAO deviceTypeDAO;
+//    private DeviceTypeDAO deviceTypeDAO;
     private ProfileManager profileManager;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
@@ -49,7 +48,7 @@ public class PolicyManagerImpl implements PolicyManager {
         this.profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+//        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.profileManager = new ProfileManagerImpl();
     }
 
@@ -75,6 +74,20 @@ public class PolicyManagerImpl implements PolicyManager {
 
             if (policy.getDevices() != null) {
                 policyDAO.addPolicyToDevice(policy.getDevices(), policy);
+            }
+
+            if (policy.getPolicyCriterias() != null) {
+                List<PolicyCriterion> criteria = policy.getPolicyCriterias();
+                for (PolicyCriterion criterion : criteria) {
+                    if (!policyDAO.checkCriterionExists(criterion.getName())) {
+                        Criterion criteriaObj = new Criterion();
+                        criteriaObj.setName(criterion.getName());
+                        policyDAO.addCriterion(criteriaObj);
+                    }
+                }
+
+                policyDAO.addPolicyCriteria(policy);
+                policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
             if (policy.getEndDate() != null & policy.getStartDate() != null) {
@@ -145,6 +158,20 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyToDevice(policy.getDevices(), policy);
             }
 
+            if (policy.getPolicyCriterias() != null) {
+                List<PolicyCriterion> criteria = policy.getPolicyCriterias();
+                for (PolicyCriterion criterion : criteria) {
+                    if (!policyDAO.checkCriterionExists(criterion.getName())) {
+                        Criterion criteriaObj = new Criterion();
+                        criteriaObj.setName(criterion.getName());
+                        policyDAO.addCriterion(criteriaObj);
+                    }
+                }
+
+                policyDAO.addPolicyCriteria(policy);
+                policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
+            }
+            
             if (policy.getEndDate() != null & policy.getStartDate() != null) {
                 policyDAO.addDatesToPolicy(policy.getStartDate(), policy.getEndDate(), policy);
             }

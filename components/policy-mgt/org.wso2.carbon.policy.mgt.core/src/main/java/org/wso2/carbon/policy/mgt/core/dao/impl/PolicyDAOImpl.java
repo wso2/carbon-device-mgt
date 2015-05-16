@@ -29,9 +29,8 @@ import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.sql.Date;
+import java.util.*;
 
 public class PolicyDAOImpl implements PolicyDAO {
 
@@ -303,6 +302,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             throw new PolicyManagerDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
         }
     }
 
@@ -333,6 +333,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             throw new PolicyManagerDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
         }
     }
 
@@ -391,17 +392,163 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public List<Criterion> getAllPolicyCriteria() throws PolicyManagerDAOException {
-        return null;
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        List<Criterion> criteria = new ArrayList<Criterion>();
+
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_CRITERIA";
+            stmt = conn.prepareStatement(query);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                Criterion criterion = new Criterion();
+                criterion.setId(resultSet.getInt("ID"));
+                criterion.setName(resultSet.getString("NAME"));
+                criteria.add(criterion);
+            }
+            return criteria;
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while reading the policies from the database.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
     }
 
     @Override
     public Policy addPolicyCriteria(Policy policy) throws PolicyManagerDAOException {
-        return null;
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet generatedKeys;
+
+        try {
+            conn = this.getConnection();
+            String query = "INSERT INTO DM_POLICY_CRITERIA (CRITERIA_ID, POLICY_ID) VALUES (?, ?)";
+            stmt = conn.prepareStatement(query);
+
+            List<PolicyCriterion> criteria = policy.getPolicyCriterias();
+            for (PolicyCriterion criterion : criteria) {
+
+                stmt.setInt(1, criterion.getCriteriaId());
+                stmt.setInt(2, policy.getId());
+                stmt.addBatch();
+            }
+            stmt.executeUpdate();
+
+            generatedKeys = stmt.getGeneratedKeys();
+            int i = 0;
+
+            while (generatedKeys.next()) {
+                policy.getPolicyCriterias().get(i).setId(generatedKeys.getInt(1));
+                i++;
+            }
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while inserting the criterion to policy (" + policy.getPolicyName() + ") " +
+                    "to database.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return policy;
+
     }
 
     @Override
-    public List<PolicyCriteria> getPolicyCriteria(int policyId) throws PolicyManagerDAOException {
-        return null;
+    public boolean addPolicyCriteriaProperties(List<PolicyCriterion> policyCriteria) throws PolicyManagerDAOException {
+
+
+        Connection conn;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = this.getConnection();
+            String query = "INSERT INTO DM_POLICY_CRITERIA_PROPERTIES (POLICY_CRITERION_ID, KEY, VALUE, CONTENT) VALUES (?, ?, ?, ?)";
+            stmt = conn.prepareStatement(query);
+
+            for (PolicyCriterion criterion : policyCriteria) {
+
+                for (String name : criterion.getProperties().stringPropertyNames()) {
+
+                    stmt.setInt(1, criterion.getId());
+                    stmt.setString(2, name);
+                    stmt.setString(3, criterion.getProperties().getProperty(name));
+                    stmt.setObject(4, criterion.getObjectMap());
+                    stmt.addBatch();
+                }
+            }
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while inserting the criterion properties to database.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+
+        return false;
+    }
+
+    @Override
+    public List<PolicyCriterion> getPolicyCriteria(int policyId) throws PolicyManagerDAOException {
+
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        List<PolicyCriterion> criteria = new ArrayList<PolicyCriterion>();
+
+        try {
+            conn = this.getConnection();
+            String query = "SELECT DPC.ID, DPC.CRITERIA_ID, DPCP.KEY, DPCP.VALUE, DPCP.CONTENT FROM " +
+                    "DM_POLICY_CRITERIA DPC LEFT JOIN DM_POLICY_CRITERIA_PROPERTIES DPCP " +
+                    "ON DPCP.POLICY_CRITERION_ID = DPC.ID RIGHT JOIN DM_CRITERIA DC " +
+                    "ON DC.ID=DPC.CRITERIA_ID WHERE DPC.POLICY_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, policyId);
+            resultSet = stmt.executeQuery();
+
+            int criteriaId = 0;
+
+            PolicyCriterion policyCriterion = null;
+            Properties prop = null;
+            while (resultSet.next()) {
+
+                if (criteriaId != resultSet.getInt("ID")) {
+                    if (policyCriterion != null) {
+                        policyCriterion.setProperties(prop);
+                        criteria.add(policyCriterion);
+                    }
+                    policyCriterion = new PolicyCriterion();
+                    prop = new Properties();
+                    criteriaId = resultSet.getInt("ID");
+
+                    policyCriterion.setId(resultSet.getInt("ID"));
+                    policyCriterion.setCriteriaId(resultSet.getInt("CRITERIA_ID"));
+                } else {
+                    prop.setProperty(resultSet.getString("KEY"), resultSet.getString("VALUE"));
+                }
+            }
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while reading the criteria related to policies from the database.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+        return criteria;
     }
 
     @Override
@@ -971,6 +1118,13 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt = conn.prepareStatement(datePolicy);
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
+
+
+            String deleteCriteria = "DELETE FROM DM_POLICY_CRITERIA WHERE POLICY_ID = ?";
+            stmt = conn.prepareStatement(deleteCriteria);
+            stmt.setInt(1, policyId);
+            stmt.executeUpdate();
+
 
             if (log.isDebugEnabled()) {
                 log.debug("Policy (" + policyId + ") related configs deleted from database.");

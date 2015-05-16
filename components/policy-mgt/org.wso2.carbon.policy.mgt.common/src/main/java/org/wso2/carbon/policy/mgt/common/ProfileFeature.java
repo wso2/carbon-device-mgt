@@ -25,7 +25,6 @@ public class ProfileFeature implements Serializable {
 
     private int id;
     private String featureCode;
-//    private Feature feature;
     private int profileId;
     private int deviceTypeId;
     private Object content;
@@ -45,14 +44,6 @@ public class ProfileFeature implements Serializable {
     public void setFeatureCode(String featureCode) {
         this.featureCode = featureCode;
     }
-
-//    public Feature getFeature() {
-//        return feature;
-//    }
-//
-//    public void setFeature(Feature feature) {
-//        this.feature = feature;
-//    }
 
     public int getProfileId() {
         return profileId;

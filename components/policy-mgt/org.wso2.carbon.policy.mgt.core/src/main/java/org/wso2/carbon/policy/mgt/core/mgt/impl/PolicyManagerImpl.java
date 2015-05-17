@@ -39,7 +39,7 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private DeviceDAO deviceDAO;
-//    private DeviceTypeDAO deviceTypeDAO;
+    //    private DeviceTypeDAO deviceTypeDAO;
     private ProfileManager profileManager;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
@@ -83,6 +83,7 @@ public class PolicyManagerImpl implements PolicyManager {
                         Criterion criteriaObj = new Criterion();
                         criteriaObj.setName(criterion.getName());
                         policyDAO.addCriterion(criteriaObj);
+                        criterion.setCriteriaId(criteriaObj.getId());
                     }
                 }
 
@@ -90,17 +91,17 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
-            if (policy.getEndDate() != null & policy.getStartDate() != null) {
-                policyDAO.addDatesToPolicy(policy.getStartDate(), policy.getEndDate(), policy);
-            }
-
-            if (policy.getStartTime() != 0 & policy.getEndTime() != 0) {
-                policyDAO.addTimesToPolicy(policy.getStartTime(), policy.getEndTime(), policy);
-            }
-
-            if (policy.getLatitude() != null && policy.getLongitude() != null) {
-                policyDAO.addLocationToPolicy(policy.getLatitude(), policy.getLongitude(), policy);
-            }
+//            if (policy.getEndDate() != null & policy.getStartDate() != null) {
+//                policyDAO.addDatesToPolicy(policy.getStartDate(), policy.getEndDate(), policy);
+//            }
+//
+//            if (policy.getStartTime() != 0 & policy.getEndTime() != 0) {
+//                policyDAO.addTimesToPolicy(policy.getStartTime(), policy.getEndTime(), policy);
+//            }
+//
+//            if (policy.getLatitude() != null && policy.getLongitude() != null) {
+//                policyDAO.addLocationToPolicy(policy.getLatitude(), policy.getLongitude(), policy);
+//            }
             PolicyManagementDAOFactory.commitTransaction();
 
         } catch (PolicyManagerDAOException e) {
@@ -165,24 +166,25 @@ public class PolicyManagerImpl implements PolicyManager {
                         Criterion criteriaObj = new Criterion();
                         criteriaObj.setName(criterion.getName());
                         policyDAO.addCriterion(criteriaObj);
+                        criterion.setCriteriaId(criteriaObj.getId());
                     }
                 }
 
                 policyDAO.addPolicyCriteria(policy);
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
-            
-            if (policy.getEndDate() != null & policy.getStartDate() != null) {
-                policyDAO.addDatesToPolicy(policy.getStartDate(), policy.getEndDate(), policy);
-            }
 
-            if (policy.getStartTime() != 0 & policy.getEndTime() != 0) {
-                policyDAO.addTimesToPolicy(policy.getStartTime(), policy.getEndTime(), policy);
-            }
-
-            if (policy.getLatitude() != null && policy.getLongitude() != null) {
-                policyDAO.addLocationToPolicy(policy.getLatitude(), policy.getLongitude(), policy);
-            }
+//            if (policy.getEndDate() != null & policy.getStartDate() != null) {
+//                policyDAO.addDatesToPolicy(policy.getStartDate(), policy.getEndDate(), policy);
+//            }
+//
+//            if (policy.getStartTime() != 0 & policy.getEndTime() != 0) {
+//                policyDAO.addTimesToPolicy(policy.getStartTime(), policy.getEndTime(), policy);
+//            }
+//
+//            if (policy.getLatitude() != null && policy.getLongitude() != null) {
+//                policyDAO.addLocationToPolicy(policy.getLatitude(), policy.getLongitude(), policy);
+//            }
 
             PolicyManagementDAOFactory.commitTransaction();
 
@@ -362,9 +364,9 @@ public class PolicyManagerImpl implements PolicyManager {
             policy = policyDAO.getPolicyByProfileID(profileId);
             deviceList = getPolicyAppliedDevicesIds(policy.getId());
             roleNames = policyDAO.getPolicyAppliedRoles(policy.getId());
-            policyDAO.getDatesOfPolicy(policy);
-            policyDAO.getTimesOfPolicy(policy);
-            policyDAO.getLocationsOfPolicy(policy);
+//            policyDAO.getDatesOfPolicy(policy);
+//            policyDAO.getTimesOfPolicy(policy);
+//            policyDAO.getLocationsOfPolicy(policy);
 
             profile = profileDAO.getProfiles(profileId);
 
@@ -395,9 +397,9 @@ public class PolicyManagerImpl implements PolicyManager {
             policy = policyDAO.getPolicy(policyId);
             deviceList = getPolicyAppliedDevicesIds(policyId);
             roleNames = policyDAO.getPolicyAppliedRoles(policyId);
-            policyDAO.getDatesOfPolicy(policy);
-            policyDAO.getTimesOfPolicy(policy);
-            policyDAO.getLocationsOfPolicy(policy);
+//            policyDAO.getDatesOfPolicy(policy);
+//            policyDAO.getTimesOfPolicy(policy);
+//            policyDAO.getLocationsOfPolicy(policy);
 
             Profile profile = profileDAO.getProfiles(policy.getProfileId());
 
@@ -424,7 +426,8 @@ public class PolicyManagerImpl implements PolicyManager {
 
         try {
             policyList = policyDAO.getAllPolicies();
-            List<Profile> profileList = profileDAO.getAllProfiles();
+//            List<Profile> profileList = profileDAO.getAllProfiles();
+            List<Profile> profileList = profileManager.getAllProfiles();
 
             for (Policy policy : policyList) {
                 for (Profile profile : profileList) {
@@ -434,16 +437,17 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
                 policy.setDevices(getPolicyAppliedDevicesIds(policy.getId()));
                 policy.setRoles(policyDAO.getPolicyAppliedRoles(policy.getId()));
-                policyDAO.getDatesOfPolicy(policy);
-                policyDAO.getTimesOfPolicy(policy);
-                policyDAO.getLocationsOfPolicy(policy);
+                policy.setPolicyCriterias(policyDAO.getPolicyCriteria(policy.getId()));
+//                policyDAO.getDatesOfPolicy(policy);
+//                policyDAO.getTimesOfPolicy(policy);
+//                policyDAO.getLocationsOfPolicy(policy);
             }
 
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while getting all the policies.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (ProfileManagerDAOException e) {
+        } catch (ProfileManagementException e) {
             String msg = "Error occurred while getting all the profiles.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -459,7 +463,7 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             Device device = deviceDAO.getDevice(deviceIdentifier);
             policyIdList = policyDAO.getPolicyIdsOfDevice(device);
-            List<Policy> tempPolicyList = policyDAO.getAllPolicies();
+            List<Policy> tempPolicyList = this.getPolicies();
 
             for (Policy policy : tempPolicyList) {
                 for (Integer i : policyIdList) {
@@ -492,7 +496,7 @@ public class PolicyManagerImpl implements PolicyManager {
 //            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
 
             List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
-            List<Policy> allPolicies = policyDAO.getAllPolicies();
+            List<Policy> allPolicies = this.getPolicies();
 
 
             for (Profile profile : profileList) {
@@ -504,10 +508,10 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
             }
 
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting all the policies.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+//        } catch (PolicyManagerDAOException e) {
+//            String msg = "Error occurred while getting all the policies.";
+//            log.error(msg, e);
+//            throw new PolicyManagementException(msg, e);
 //        } catch (ProfileManagerDAOException e) {
 //            String msg = "Error occurred while getting the profiles related to device type (" + deviceTypeName + ")";
 //            log.error(msg, e);
@@ -532,7 +536,7 @@ public class PolicyManagerImpl implements PolicyManager {
 
         try {
             policyIdList = policyDAO.getPolicyOfRole(roleName);
-            List<Policy> tempPolicyList = policyDAO.getAllPolicies();
+            List<Policy> tempPolicyList = this.getPolicies();
 
             for (Policy policy : tempPolicyList) {
                 for (Integer i : policyIdList) {
@@ -558,7 +562,7 @@ public class PolicyManagerImpl implements PolicyManager {
 
         try {
             policyIdList = policyDAO.getPolicyOfUser(username);
-            List<Policy> tempPolicyList = policyDAO.getAllPolicies();
+            List<Policy> tempPolicyList = this.getPolicies();
 
             for (Policy policy : tempPolicyList) {
                 for (Integer i : policyIdList) {

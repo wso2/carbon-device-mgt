@@ -36,11 +36,11 @@ public interface PolicyDAO {
 
     Policy addPolicyToDevice(List<Device> devices, Policy policy) throws PolicyManagerDAOException;
 
-    Policy addDatesToPolicy(Date startDate, Date endDate, Policy policy) throws PolicyManagerDAOException;
-
-    Policy addTimesToPolicy(int startTime, int endTime, Policy policy) throws PolicyManagerDAOException;
-
-    Policy addLocationToPolicy(String latitude, String longitude, Policy policy) throws PolicyManagerDAOException;
+//    Policy addDatesToPolicy(Date startDate, Date endDate, Policy policy) throws PolicyManagerDAOException;
+//
+//    Policy addTimesToPolicy(int startTime, int endTime, Policy policy) throws PolicyManagerDAOException;
+//
+//    Policy addLocationToPolicy(String latitude, String longitude, Policy policy) throws PolicyManagerDAOException;
 
     Criterion addCriterion(Criterion criteria) throws PolicyManagerDAOException;
 
@@ -86,11 +86,11 @@ public interface PolicyDAO {
 
     List<String> getPolicyAppliedRoles(int policyId) throws PolicyManagerDAOException;
 
-    PolicyTimes getTimesOfPolicy(Policy policy) throws PolicyManagerDAOException;
-
-    PolicyDates getDatesOfPolicy(Policy policy) throws PolicyManagerDAOException;
-
-    PolicyLocations getLocationsOfPolicy(Policy policy) throws PolicyManagerDAOException;
+//    PolicyTimes getTimesOfPolicy(Policy policy) throws PolicyManagerDAOException;
+//
+//    PolicyDates getDatesOfPolicy(Policy policy) throws PolicyManagerDAOException;
+//
+//    PolicyLocations getLocationsOfPolicy(Policy policy) throws PolicyManagerDAOException;
 
     void addEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
             throws PolicyManagerDAOException;

@@ -32,13 +32,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
-import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.common.DBTypes;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfiguration;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfigurations;
@@ -62,6 +56,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class PolicyDAOTestCase {
 
@@ -250,6 +245,15 @@ public class PolicyDAOTestCase {
         policyManager.addPolicy(policy);
     }
 
+
+    @Test(dependsOnMethods = ("addPolicyToDevice"))
+    public void addThirdPolicy() throws PolicyManagementException {
+
+        PolicyManager policyManager = new PolicyManagerImpl();
+        policy = PolicyCreator.createPolicy4(profile);
+        policyManager.addPolicy(policy);
+    }
+
     @Test(dependsOnMethods = ("addNewPolicy"))
     public void getPolicies() throws PolicyManagementException {
         PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
@@ -299,6 +303,67 @@ public class PolicyDAOTestCase {
 
         for (Policy policy : policyList) {
             log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+        }
+    }
+
+    @Test(dependsOnMethods = ("getRoleRelatedPolicy"))
+    public void addSecondPolicy() throws PolicyManagementException {
+        PolicyManager policyManager = new PolicyManagerImpl();
+        policy = PolicyCreator.createPolicy3(profile);
+        policyManager.addPolicy(policy);
+    }
+
+    @Test(dependsOnMethods = ("getDeviceTypeRelatedPolicy"))
+    public void getRoleRelatedPolicySecondTime() throws PolicyManagementException {
+
+        PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
+        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfRole("Role_01");
+
+        log.debug("----------Roles related policy second time ---------");
+
+        for (Policy policy : policyList) {
+            log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+
+            List<ProfileFeature> profileFeatures = policy.getProfile().getProfileFeaturesList();
+
+            for (ProfileFeature profileFeature : profileFeatures) {
+                log.debug("Feature Content" + profileFeature.getId() + " - " + profileFeature.getContent());
+            }
+
+        }
+    }
+
+    @Test(dependsOnMethods = ("getRoleRelatedPolicySecondTime"))
+    public void getRoleRelatedPolicyThirdTime() throws PolicyManagementException {
+
+        PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
+        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfRole("Role_02");
+
+
+        log.debug("----------Roles related policy third time ---------");
+
+        for (Policy policy : policyList) {
+            log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+
+            List<ProfileFeature> profileFeatures = policy.getProfile().getProfileFeaturesList();
+
+//            for (ProfileFeature profileFeature : profileFeatures) {
+//                log.debug("Feature Content" + profileFeature.getId() + " - " + profileFeature.getContent());
+//            }
+
+            List<PolicyCriterion> criteria = policy.getPolicyCriterias();
+
+            for (PolicyCriterion criterion : criteria) {
+                log.debug("Criterias " + criterion.getName() + " -- " + criterion.getCriteriaId() + " -- "
+                        + criterion.getId());
+
+                Properties prop = criterion.getProperties();
+
+                for (String key : prop.stringPropertyNames()) {
+                    log.debug("Property Names : " + key + " -- " + prop.getProperty(key));
+                }
+            }
+
         }
     }
 

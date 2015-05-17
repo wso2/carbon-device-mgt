@@ -21,6 +21,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +51,10 @@ public class DeviceManagementRepository {
 
     public DeviceMgtService getDeviceManagementProvider(String type) {
         return providers.get(type);
+    }
+
+    public Collection<DeviceMgtService> getDeviceManagementProviders(){
+        return providers.values();
     }
 
 }

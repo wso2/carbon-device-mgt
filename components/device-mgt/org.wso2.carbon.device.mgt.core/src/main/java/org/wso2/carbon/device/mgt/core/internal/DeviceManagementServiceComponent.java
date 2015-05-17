@@ -29,7 +29,6 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
@@ -55,6 +54,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.device.mgt.user.core.UserManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -93,6 +93,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setDataSourceService"
  * unbind="unsetDataSourceService"
+ * @scr.reference name="org.wso2.carbon.device.mgt.usermanager.service"
+ * interface="org.wso2.carbon.device.mgt.user.core.UserManager"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setUserManager"
+ * unbind="unsetUserManager"
  */
 public class DeviceManagementServiceComponent {
 
@@ -323,6 +329,30 @@ public class DeviceManagementServiceComponent {
 		}
 		DeviceManagementDataHolder.getInstance().setRegistryService(null);
 	}
+
+    /**
+     * Sets UserManager Service.
+     *
+     * @param userMgtService An instance of UserManager
+     */
+    protected void setUserManager(UserManager userMgtService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting UserManager Service");
+        }
+        DeviceManagementDataHolder.getInstance().setUserManager(userMgtService);
+    }
+
+    /**
+     * Unsets UserManager Service.
+     *
+     * @param userMgtService An instance of UserManager
+     */
+    protected void unsetUserManager(UserManager userMgtService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting UserManager Service");
+        }
+        DeviceManagementDataHolder.getInstance().setUserManager(null);
+    }
 
 	private DeviceManagementRepository getPluginRepository() {
 		return pluginRepository;

@@ -17,18 +17,21 @@
 */
 package org.wso2.carbon.device.mgt.core.app.mgt;
 
-import org.wso2.carbon.device.mgt.common.Application;
-import org.wso2.carbon.device.mgt.common.Credential;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
 import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppManagementServiceImpl implements AppManagerConnector {
 
+    private static final Log log = LogFactory.getLog(AppManagementServiceImpl.class);
     @Override
     public Application[] getApplicationList(String domain, int pageNumber, int size) throws AppManagerConnectorException {
         return DeviceManagementDataHolder.getInstance().getAppManager().getApplicationList(domain, pageNumber, size);
@@ -55,6 +58,14 @@ public class AppManagementServiceImpl implements AppManagerConnector {
     @Override
     public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
             throws AppManagerConnectorException {
+        try {
+            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation,
+                    deviceIdentifiers);
+        } catch (OperationManagementException opMgtEx) {
+            String errorMsg = "Error occurred when add operations at install application";
+            log.error(errorMsg, opMgtEx);
+            throw new AppManagerConnectorException();
+        }
         DeviceManagementDataHolder.getInstance().getAppManager().installApplication(operation, deviceIdentifiers);
     }
 

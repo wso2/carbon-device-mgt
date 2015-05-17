@@ -22,9 +22,10 @@ package org.wso2.carbon.policy.mgt.common;
 import java.util.Map;
 import java.util.Properties;
 
-public class PolicyCriteria {
+public class PolicyCriterion {
 
     private int id;
+    private int criteriaId;
     private String name;
     private Properties properties;
     private Map<String, Object> objectMap;
@@ -35,6 +36,14 @@ public class PolicyCriteria {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getCriteriaId() {
+        return criteriaId;
+    }
+
+    public void setCriteriaId(int criteriaId) {
+        this.criteriaId = criteriaId;
     }
 
     public String getName() {

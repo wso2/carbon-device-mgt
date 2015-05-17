@@ -32,7 +32,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.wso2.carbon.devicemgt</groupId>
-    <artifactId>org.wso2.carbon.devicemgt.user.server.feature</artifactId>
+    <artifactId>org.wso2.carbon.device.mgt.user.server.feature</artifactId>
     <packaging>pom</packaging>
     <version>0.9.2-SNAPSHOT</version>
     <name>WSO2 Carbon - User Management Server Feature</name>
@@ -91,7 +91,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.devicemgt.user.server</id>
+                            <id>org.wso2.carbon.device.mgt.user.server</id>
                             <propertiesFile>../../../features/etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>

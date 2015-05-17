@@ -82,7 +82,9 @@
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.identity.oauth.stub,
                             org.wso2.carbon.identity.oauth.stub.dto,
-                            org.wso2.carbon.ndatasource.core
+                            org.wso2.carbon.ndatasource.core,
+                            org.wso2.carbon.device.mgt.user.core,
+                            org.wso2.carbon.device.mgt.user.common,
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -121,6 +123,14 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.user.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.user.common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

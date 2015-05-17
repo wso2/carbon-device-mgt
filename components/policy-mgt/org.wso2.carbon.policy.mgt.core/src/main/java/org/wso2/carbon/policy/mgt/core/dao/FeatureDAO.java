@@ -43,8 +43,6 @@ public interface FeatureDAO {
     List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws
             FeatureManagerDAOException;
 
-    List<Feature> getAllFeatures() throws FeatureManagerDAOException;
-
     List<ProfileFeature> getAllProfileFeatures() throws FeatureManagerDAOException;
 
     List<Feature> getAllFeatures(String deviceType) throws FeatureManagerDAOException;

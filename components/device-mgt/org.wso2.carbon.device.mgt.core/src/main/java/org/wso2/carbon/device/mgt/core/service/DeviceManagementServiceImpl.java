@@ -190,4 +190,18 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                 .sendRegistrationEmail(emailMessageProperties);
     }
+
+    @Override
+    public List<Device> getAllDevicesOfUser(String userName)
+            throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                                   .getAllDevicesOfUser(userName);
+    }
+
+    @Override
+    public List<Device> getAllDevicesOfRole(String roleName)
+            throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                                         .getAllDevicesOfRole(roleName);
+    }
 }

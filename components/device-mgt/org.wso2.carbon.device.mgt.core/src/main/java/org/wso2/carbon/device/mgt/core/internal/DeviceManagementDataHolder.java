@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
+import org.wso2.carbon.device.mgt.user.core.UserManager;
 
 public class DeviceManagementDataHolder {
 
@@ -42,6 +43,7 @@ public class DeviceManagementDataHolder {
 	private AppManagerConnector appManager;
 	private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
+    private UserManager userManager;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -134,5 +136,14 @@ public class DeviceManagementDataHolder {
 
     public void setOperationManager(OperationManager operationManager) {
         this.operationManager = operationManager;
+    }
+
+
+    public UserManager getUserManager() {
+        return userManager;
+    }
+
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
     }
 }

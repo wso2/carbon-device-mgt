@@ -17,7 +17,7 @@
  */
 
 
-package org.wso2.carbon.policy.mgt.core.impl;
+package org.wso2.carbon.policy.mgt.common;
 
 import org.wso2.carbon.policy.mgt.common.Policy;
 

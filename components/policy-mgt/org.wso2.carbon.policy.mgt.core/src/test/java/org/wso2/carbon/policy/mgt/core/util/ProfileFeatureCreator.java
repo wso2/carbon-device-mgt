@@ -55,71 +55,68 @@ public class ProfileFeatureCreator {
 
 
     private static String getJSON() {
-        return "[\n" +
-                "\t{\n" +
-                "\t\tcolor: \"red\",\n" +
-                "\t\tvalue: \"#f00\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\tcolor: \"green\",\n" +
-                "\t\tvalue: \"#0f0\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\tcolor: \"blue\",\n" +
-                "\t\tvalue: \"#00f\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\tcolor: \"cyan\",\n" +
-                "\t\tvalue: \"#0ff\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\tcolor: \"magenta\",\n" +
-                "\t\tvalue: \"#f0f\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\tcolor: \"yellow\",\n" +
-                "\t\tvalue: \"#ff0\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\tcolor: \"black\",\n" +
-                "\t\tvalue: \"#000\"\n" +
-                "\t}\n" +
-                "]";
+        return "{\n" +
+                "    \"userNameList\": [\n" +
+                "        \"admin\"\n" +
+                "    ],\n" +
+                "    \"roleNameList\": [\n" +
+                "        \"admin\"\n" +
+                "    ],\n" +
+                "    \"deviceIdentifiers\": [\n" +
+                "        {\n" +
+                "            \"id\": \"08:00:27:fe:27:7b\",\n" +
+                "            \"type\": \"ios\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"application\": {\n" +
+                "        \"id\": \"id\",\n" +
+                "        \"name\": \"test\",\n" +
+                "        \"type\": \"ENTERPRISE\",\n" +
+                "        \"platform\": \"android\",\n" +
+                "        \"version\": \"1.0\",\n" +
+                "        \"identifier\": \"sdfsdfldfs\",\n" +
+                "        \"iconImage\": \"http://gogle.com\",\n" +
+                "        \"packageName\": \"com.google.mail\",\n" +
+                "        \"appIdentifier\": \"asdf\",\n" +
+                "        \"location\": \"location\",\n" +
+                "        \"properties\": {\n" +
+                "            \"isRemoveApp\": true,\n" +
+                "            \"isPreventBackup\": true\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
     }
 
     private static String getJSON2() {
         return "{\n" +
-                "   \"odata.metadata\":\"http://services.odata.org/V3/OData/OData.svc/$metadata#Products\",\n" +
-                "   \"value\":[\n" +
-                "      {\n" +
-                "         \"ID\":0,\n" +
-                "         \"Name\":\"Bread\",\n" +
-                "         \"Description\":\"Whole grain bread\",\n" +
-                "         \"ReleaseDate\":\"1992-01-01T00:00:00\",\n" +
-                "         \"DiscontinuedDate\":null,\n" +
-                "         \"Rating\":4,\n" +
-                "         \"Price\":\"2.5\"\n" +
-                "      },\n" +
-                "      {\n" +
-                "         \"ID\":1,\n" +
-                "         \"Name\":\"Milk\",\n" +
-                "         \"Description\":\"Low fat milk\",\n" +
-                "         \"ReleaseDate\":\"1995-10-01T00:00:00\",\n" +
-                "         \"DiscontinuedDate\":null,\n" +
-                "         \"Rating\":3,\n" +
-                "         \"Price\":\"3.5\"\n" +
-                "      },\n" +
-                "      {\n" +
-                "         \"ID\":2,\n" +
-                "         \"Name\":\"Vint soda\",\n" +
-                "         \"Description\":\"Americana Variety - Mix of 6 flavors\",\n" +
-                "         \"ReleaseDate\":\"2000-10-01T00:00:00\",\n" +
-                "         \"DiscontinuedDate\":null,\n" +
-                "         \"Rating\":3,\n" +
-                "         \"Price\":\"20.9\"\n" +
-                "      },\n" +
-                "   …\n" +
-                "   ]\n" +
+                "    \"userNameList\": [\n" +
+                "        \"admin\"\n" +
+                "    ],\n" +
+                "    \"roleNameList\": [\n" +
+                "        \"admin\"\n" +
+                "    ],\n" +
+                "    \"deviceIdentifiers\": [\n" +
+                "        {\n" +
+                "            \"id\": \"11:11:11:12\",\n" +
+                "            \"type\": \"ios\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"application\": {\n" +
+                "        \"id\": \"1d548206-14ee-4672-91f6-9c230626a056\",\n" +
+                "        \"platform\": \"ios\",\n" +
+                "        \"packageName\": \"com.imangi.templerun2\",\n" +
+                "        \"name\": \"Temle Run\",\n" +
+                "        \"appIdentifier\": \"572395608\",\n" +
+                "        \"iconImage\": \"http://10.100.5.6:9763/publisher/api/mobileapp/getfile/FHmJReGEV3cExtf.png\",\n" +
+                "        \"type\": \"PUBLIC\",\n" +
+                "        \"identifier\": \"572395608\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"properties\": {\n" +
+                "            \"isRemoveApp\": true,\n" +
+                "            \"isPreventBackup\": true,\n" +
+                "            \"iTunesId\": 572395608\n" +
+                "        }\n" +
+                "    }\n" +
                 "}";
     }
 }

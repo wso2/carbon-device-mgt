@@ -98,9 +98,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public boolean updateDeviceInfo(Device device, List<Application> applicationList) throws DeviceManagementException {
+    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
-                updateDeviceInfo(device, applicationList);
+                updateDeviceInfo(device);
     }
 
     @Override

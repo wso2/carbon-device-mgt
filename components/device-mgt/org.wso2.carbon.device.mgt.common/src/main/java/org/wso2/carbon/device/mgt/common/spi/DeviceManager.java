@@ -121,7 +121,7 @@ public interface DeviceManager {
      * @param device   Updated device information related data
      * @throws DeviceManagementException If some unusual behaviour is observed while updating the device info
      */
-    boolean updateDeviceInfo(Device device, List<Application> applicationList) throws DeviceManagementException;
+    boolean updateDeviceInfo(Device device) throws DeviceManagementException;
 
     /**
      * Method to set the ownership type of a particular device. i.e. BYOD, COPE.

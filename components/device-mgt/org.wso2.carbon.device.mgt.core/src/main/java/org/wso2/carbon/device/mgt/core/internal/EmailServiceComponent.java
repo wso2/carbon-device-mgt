@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.email.sender.EmailServiceProviderImpl;
 import org.wso2.carbon.device.mgt.core.service.EmailService;
 import org.wso2.carbon.device.mgt.core.service.EmailServiceImpl;
@@ -48,6 +50,9 @@ public class EmailServiceComponent {
                 log.debug("Initializing email service bundle");
             }
 
+            DeviceConfigurationManager.getInstance().initConfig();
+            DeviceManagementConfig config =
+                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
 		    /* Initializing Email Service Configurations */
 
             EmailService emailServiceProvider = new EmailServiceProviderImpl();

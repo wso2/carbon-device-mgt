@@ -18,10 +18,7 @@
 
 package org.wso2.carbon.device.mgt.common.spi;
 
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.*;
 
 import java.util.List;
 
@@ -124,7 +121,7 @@ public interface DeviceManager {
      * @param device   Updated device information related data
      * @throws DeviceManagementException If some unusual behaviour is observed while updating the device info
      */
-    boolean updateDeviceInfo(Device device) throws DeviceManagementException;
+    boolean updateDeviceInfo(Device device, List<Application> applicationList) throws DeviceManagementException;
 
     /**
      * Method to set the ownership type of a particular device. i.e. BYOD, COPE.

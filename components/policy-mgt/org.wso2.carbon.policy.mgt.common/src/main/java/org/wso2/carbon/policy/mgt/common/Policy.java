@@ -34,6 +34,8 @@ import java.util.Map;
 @XmlRootElement
 public class Policy implements Comparable<Policy>, Serializable {
 
+    private static final long serialVersionUID = 19981017L;
+
     private int id;                         // Identifier of the policy.
     private int priorityId;                 // Priority of the policies. This will be used only for simple evaluation.
     private Profile profile;                  // Profile
@@ -44,25 +46,29 @@ public class Policy implements Comparable<Policy>, Serializable {
     private List<Device> devices;        // Individual devices this policy should be applied
     private List<String> users;
 
+
+    /* Compliance data*/
+    private String Compliance;
+
     /*Dynamic policy attributes*/
 
     /* This is related criteria based policy */
 
-    private List<PolicyCriteria> policyCriterias;
+    private List<PolicyCriterion> policyCriterias;
 
     /*These are related to time based policies*/
 
-    private int startTime;                  // Start time to apply the policy.
-    private int endTime;                    // After this time policy will not be applied
-    private Date startDate;                 // Start date to apply the policy
-    private Date endDate;                   // After this date policy will not be applied.
+//    private int startTime;                  // Start time to apply the policy.
+//    private int endTime;                    // After this time policy will not be applied
+//    private Date startDate;                 // Start date to apply the policy
+//    private Date endDate;                   // After this date policy will not be applied.
 
 
     /*These are related to location based policies*/
 
-    private String latitude;                // Latitude
-    private String longitude;               // Longitude
-
+//    private String latitude;                // Latitude
+//    private String longitude;               // Longitude
+//
     private int tenantId;
     private int profileId;
 
@@ -161,66 +167,74 @@ public class Policy implements Comparable<Policy>, Serializable {
     }
 
     @XmlElement
-    public List<PolicyCriteria> getPolicyCriterias() {
+    public List<PolicyCriterion> getPolicyCriterias() {
         return policyCriterias;
     }
 
-    public void setPolicyCriterias(List<PolicyCriteria> policyCriterias) {
+    public void setPolicyCriterias(List<PolicyCriterion> policyCriterias) {
         this.policyCriterias = policyCriterias;
     }
 
-    public int getStartTime() {
-        return startTime;
+    public String getCompliance() {
+        return Compliance;
     }
 
-    public void setStartTime(int startTime) {
-        this.startTime = startTime;
+    public void setCompliance(String compliance) {
+        Compliance = compliance;
     }
 
-    @XmlElement
-    public int getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(int endTime) {
-        this.endTime = endTime;
-    }
-
-    @XmlElement
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    @XmlElement
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    @XmlElement
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    @XmlElement
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
+    //    public int getStartTime() {
+//        return startTime;
+//    }
+//
+//    public void setStartTime(int startTime) {
+//        this.startTime = startTime;
+//    }
+//
+//    @XmlElement
+//    public int getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(int endTime) {
+//        this.endTime = endTime;
+//    }
+//
+//    @XmlElement
+//    public Date getStartDate() {
+//        return startDate;
+//    }
+//
+//    public void setStartDate(Date startDate) {
+//        this.startDate = startDate;
+//    }
+//
+//    @XmlElement
+//    public Date getEndDate() {
+//        return endDate;
+//    }
+//
+//    public void setEndDate(Date endDate) {
+//        this.endDate = endDate;
+//    }
+//
+//    @XmlElement
+//    public String getLatitude() {
+//        return latitude;
+//    }
+//
+//    public void setLatitude(String latitude) {
+//        this.latitude = latitude;
+//    }
+//
+//    @XmlElement
+//    public String getLongitude() {
+//        return longitude;
+//    }
+//
+//    public void setLongitude(String longitude) {
+//        this.longitude = longitude;
+//    }
 
     @XmlElement
     public Map<String, Object> getAttributes() {

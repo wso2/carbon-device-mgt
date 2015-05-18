@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,11 +16,20 @@
  * under the License.
  */
 
-package org.wso2.carbon.policy.mgt.core.util;
 
-public final class PolicyManagementConstants {
+package org.wso2.carbon.policy.mgt.common;
 
-    public static final String DEVICE_CONFIG_XML_NAME = "cdm-config.xml";
-    public static final String ANY = "ANY";
+import org.wso2.carbon.policy.mgt.common.Policy;
+
+import java.util.List;
+
+public interface PolicyFilter {
+
+    void filterRolesBasedPolicies(String roles[], List<Policy> policies);
+
+    void filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies);
+
+    void filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies);
+
 
 }

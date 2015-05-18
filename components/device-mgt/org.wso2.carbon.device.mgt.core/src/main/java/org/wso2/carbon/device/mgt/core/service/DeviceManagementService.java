@@ -50,4 +50,24 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
      */
     Device getCoreDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
+    /**
+     * Method to get the list of devices owned by an user.
+     *
+     * @param userName          Username of the user
+     * @return List of devices owned by a particular user
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    List<Device> getAllDevicesOfUser(String userName) throws DeviceManagementException;
+
+    /**
+     * Method to get the list of devices owned by users of a particular user-role.
+     *
+     * @param roleName          Role name of the users
+     * @return List of devices owned by users of a particular role
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    List<Device> getAllDevicesOfRole(String roleName) throws DeviceManagementException;
+
 }

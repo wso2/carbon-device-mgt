@@ -55,7 +55,7 @@ public class DeviceMgtUserServiceComponent {
             }
             /* Registering User Management service */
             BundleContext bundleContext = componentContext.getBundleContext();
-            bundleContext.registerService(UserManagementService.class.getName(),
+            bundleContext.registerService(UserManager.class,
                     new UserManagementService(), null);
             if (log.isDebugEnabled()) {
                 log.debug("User management core bundle has been successfully initialized");

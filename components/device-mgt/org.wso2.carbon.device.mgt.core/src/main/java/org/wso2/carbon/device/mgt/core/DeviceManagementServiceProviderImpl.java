@@ -378,10 +378,10 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
+    public boolean updateDeviceInfo(Device device, List<Application> applicationList) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(device.getType());
-        return dms.updateDeviceInfo(device);
+        return dms.updateDeviceInfo(device,applicationList);
     }
 
     @Override
@@ -470,5 +470,105 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     public List<? extends Operation> getOperationsForStatus(Operation.Status status)
             throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsForStatus(status);
+    }
+
+    @Override
+    public List<Device> getAllDevicesOfUser(String userName)
+            throws DeviceManagementException {
+        List<Device> devicesOfUser = new ArrayList<Device>();
+        List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList;
+        Device convertedDevice;
+        DeviceIdentifier deviceIdentifier;
+        DeviceManager dms;
+        Device dmsDevice;
+        org.wso2.carbon.device.mgt.core.dto.Device device;
+        int tenantId = DeviceManagerUtil.getTenantId();
+        //Fetch the DeviceList from Core
+        try {
+            devicesList = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the devices of user '"
+                                                + userName + "'", e);
+        }
+
+        //Fetch the DeviceList from device plugin dbs & append the properties
+        for (int x = 0; x < devicesList.size(); x++) {
+            device = devicesList.get(x);
+            try {
+                //TODO : Possible improvement if DeviceTypes have been cached
+                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
+                dms = this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
+                convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
+                deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(device.getDeviceIdentificationId());
+                deviceIdentifier.setType(device.getDeviceType().getName());
+                dmsDevice = dms.getDevice(deviceIdentifier);
+                if (dmsDevice != null) {
+                    convertedDevice.setProperties(dmsDevice.getProperties());
+                    convertedDevice.setFeatures(dmsDevice.getFeatures());
+                }
+                devicesOfUser.add(convertedDevice);
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error occurred while obtaining the device type of DeviceTypeId '"+
+                          device.getDeviceTypeId() + "'",e);
+            }
+        }
+        return devicesOfUser;
+    }
+
+    @Override
+    public List<Device> getAllDevicesOfRole(String roleName)
+            throws DeviceManagementException {
+        List<Device> devicesOfRole = new ArrayList<Device>();
+        List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList;
+        List<org.wso2.carbon.device.mgt.user.common.User> users;
+        Device convertedDevice;
+        DeviceIdentifier deviceIdentifier;
+        DeviceManager dms;
+        Device dmsDevice;
+        org.wso2.carbon.device.mgt.core.dto.Device device;
+        String userName = "";
+        int tenantId = DeviceManagerUtil.getTenantId();
+        //Obtaining the list of users of role
+        try {
+            users =  DeviceManagementDataHolder.getInstance().getUserManager().getUsersForTenantAndRole(
+                    tenantId, roleName);
+        } catch (org.wso2.carbon.device.mgt.user.common.UserManagementException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the users of role '"
+                                                + roleName + "'", e);
+        }
+
+        //Obtaining the devices per user
+        for(org.wso2.carbon.device.mgt.user.common.User user:users){
+            try {
+                userName = user.getUserName();
+                devicesList = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
+                for (int x = 0; x < devicesList.size(); x++) {
+                    device = devicesList.get(x);
+                    try {
+                        //TODO : Possible improvement if DeviceTypes have been cached
+                        device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
+                        dms = this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
+                        convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
+                        deviceIdentifier = new DeviceIdentifier();
+                        deviceIdentifier.setId(device.getDeviceIdentificationId());
+                        deviceIdentifier.setType(device.getDeviceType().getName());
+                        dmsDevice = dms.getDevice(deviceIdentifier);
+                        if (dmsDevice != null) {
+                            convertedDevice.setProperties(dmsDevice.getProperties());
+                            convertedDevice.setFeatures(dmsDevice.getFeatures());
+                        }
+                        devicesOfRole.add(convertedDevice);
+                    } catch (DeviceManagementDAOException e) {
+                        log.error("Error occurred while obtaining the device type of DeviceTypeId '"+
+                                  device.getDeviceTypeId() + "'",e);
+                    }
+                }
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error occurred while obtaining the devices of user '"
+                                                    + userName + "'", e);
+            }
+        }
+        return devicesOfRole;
     }
 }

@@ -30,10 +30,10 @@ import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -181,7 +181,11 @@ public class FeatureDAOImpl implements FeatureDAO {
                 stmt.setInt(1, profileId);
                 stmt.setString(2, feature.getFeatureCode());
                 stmt.setInt(3, feature.getDeviceTypeId());
-                stmt.setObject(4, feature.getContent());
+                if (conn.getMetaData().getDriverName().contains("H2")) {
+                    stmt.setObject(4, feature.getContent(), Types.JAVA_OBJECT);
+                } else {
+                    stmt.setObject(4, feature.getContent());
+                }
                 stmt.addBatch();
                 //Not adding the logic to check the size of the stmt and execute if the size records added is over 1000
             }
@@ -217,7 +221,11 @@ public class FeatureDAOImpl implements FeatureDAO {
 
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             for (ProfileFeature feature : features) {
-                stmt.setObject(1, feature.getContent());
+                if (conn.getMetaData().getDriverName().contains("H2")) {
+                    stmt.setObject(4, feature.getContent(), Types.JAVA_OBJECT);
+                } else {
+                    stmt.setObject(4, feature.getContent());
+                }
                 stmt.setInt(2, profileId);
                 stmt.setString(3, feature.getFeatureCode());
                 stmt.addBatch();
@@ -260,42 +268,6 @@ public class FeatureDAOImpl implements FeatureDAO {
 
 
     @Override
-    public List<Feature> getAllFeatures() throws FeatureManagerDAOException {
-
-//        Connection conn;
-//        PreparedStatement stmt = null;
-//        ResultSet resultSet = null;
-        List<Feature> featureList = new ArrayList<Feature>();
-//
-//        try {
-//            conn = this.getConnection();
-//            String query = "SELECT ID, NAME, CODE, DEVICE_TYPE_ID, EVALUATION_RULE FROM DM_FEATURES";
-//            stmt = conn.prepareStatement(query);
-//            resultSet = stmt.executeQuery();
-//
-//            while (resultSet.next()) {
-//
-//                Feature feature = new Feature();
-//                feature.setId(resultSet.getInt("ID"));
-//                feature.setCode(resultSet.getString("CODE"));
-//                feature.setName(resultSet.getString("NAME"));
-//                feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
-//                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
-//                featureList.add(feature);
-//            }
-//
-//        } catch (SQLException e) {
-//            String msg = "Unable to get the list of the features from database.";
-//            log.error(msg);
-//            throw new FeatureManagerDAOException(msg, e);
-//        } finally {
-//            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-//            this.closeConnection();
-//        }
-        return featureList;
-    }
-
-    @Override
     public List<ProfileFeature> getAllProfileFeatures() throws FeatureManagerDAOException {
 
         Connection conn;
@@ -322,13 +294,47 @@ public class FeatureDAOImpl implements FeatureDAO {
                 profileFeature.setFeatureCode(resultSet.getString("FEATURE_CODE"));
                 profileFeature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
                 profileFeature.setId(resultSet.getInt("ID"));
-                profileFeature.setContent(resultSet.getObject("CONTENT"));
+//                profileFeature.setContent(resultSet.getObject("CONTENT"));
                 profileFeature.setProfileId(resultSet.getInt("PROFILE_ID"));
+
+                ByteArrayInputStream bais = null;
+                ObjectInputStream ois = null;
+                byte[] contentBytes;
+                try {
+                    contentBytes = (byte[]) resultSet.getBytes("CONTENT");
+                    bais = new ByteArrayInputStream(contentBytes);
+                    ois = new ObjectInputStream(bais);
+                    profileFeature.setContent(ois.readObject().toString());
+                } finally {
+                    if (bais != null) {
+                        try {
+                            bais.close();
+                        } catch (IOException e) {
+                            log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                        }
+                    }
+                    if (ois != null) {
+                        try {
+                            ois.close();
+                        } catch (IOException e) {
+                            log.warn("Error occurred while closing ObjectOutputStream", e);
+                        }
+                    }
+                }
+
                 featureList.add(profileFeature);
             }
 
         } catch (SQLException e) {
             String msg = "Unable to get the list of the features from database.";
+            log.error(msg);
+            throw new FeatureManagerDAOException(msg, e);
+        } catch (IOException e) {
+            String msg = "Unable to read the byte stream for content";
+            log.error(msg);
+            throw new FeatureManagerDAOException(msg, e);
+        } catch (ClassNotFoundException e) {
+            String msg = "Class not found while converting the object";
             log.error(msg);
             throw new FeatureManagerDAOException(msg, e);
         } finally {
@@ -395,22 +401,48 @@ public class FeatureDAOImpl implements FeatureDAO {
 
             while (resultSet.next()) {
                 ProfileFeature profileFeature = new ProfileFeature();
-//                Feature feature = new Feature();
-//                feature.setId(resultSet.getInt("FEATURE_ID"));
-//                feature.setCode(resultSet.getString("CODE"));
-//                feature.setName(resultSet.getString("NAME"));
-//                feature.setRuleValue(resultSet.getString("RULE"));
-
-//                profileFeature.setFeature(feature);
                 profileFeature.setId(resultSet.getInt("ID"));
                 profileFeature.setFeatureCode(resultSet.getString("FEATURE_CODE"));
                 profileFeature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
-                profileFeature.setContent(resultSet.getObject("CONTENT"));
+
+                ByteArrayInputStream bais = null;
+                ObjectInputStream ois = null;
+                byte[] contentBytes;
+                try {
+                    contentBytes = resultSet.getBytes("CONTENT");
+                    bais = new ByteArrayInputStream(contentBytes);
+                    ois = new ObjectInputStream(bais);
+                    profileFeature.setContent(ois.readObject().toString());
+                } finally {
+                    if (bais != null) {
+                        try {
+                            bais.close();
+                        } catch (IOException e) {
+                            log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                        }
+                    }
+                    if (ois != null) {
+                        try {
+                            ois.close();
+                        } catch (IOException e) {
+                            log.warn("Error occurred while closing ObjectOutputStream", e);
+                        }
+                    }
+                }
+
                 featureList.add(profileFeature);
             }
 
         } catch (SQLException e) {
             String msg = "Unable to get the list of the features from database.";
+            log.error(msg);
+            throw new FeatureManagerDAOException(msg, e);
+        } catch (IOException e) {
+            String msg = "Unable to read the byte stream for content";
+            log.error(msg);
+            throw new FeatureManagerDAOException(msg, e);
+        } catch (ClassNotFoundException e) {
+            String msg = "Class not found while converting the object";
             log.error(msg);
             throw new FeatureManagerDAOException(msg, e);
         } finally {

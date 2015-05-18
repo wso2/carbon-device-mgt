@@ -45,7 +45,6 @@ public interface FeatureManager {
 
     List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws FeatureManagementException;
 
-    List<Feature> getAllFeatures() throws FeatureManagementException;
 
     List<Feature> getAllFeatures(String deviceType) throws FeatureManagementException;
 

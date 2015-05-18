@@ -27,11 +27,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.PIPDevice;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
@@ -92,19 +88,30 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     @Override
     public List<Policy> getRelatedPolicies(PIPDevice pipDevice) throws PolicyManagementException {
 
-        List<List<Policy>> policies = new ArrayList<List<Policy>>();
+//        List<List<Policy>> policies = new ArrayList<List<Policy>>();
+        List<Policy> policies = new ArrayList<Policy>();
         try {
             // Get the device type related policies
-            policies.add(policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName()));
+//            policies.add(policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName()));
 
-            // Get the roles related policies
-            for (String role : pipDevice.getRoles()) {
-                policies.add(policyManager.getPoliciesOfRole(role));
-            }
-            // Get policy related to the device
-            policies.add(policyManager.getPoliciesOfDevice(pipDevice.getDeviceIdentifier()));
 
-            return removeDuplicatePolicies(policies);
+            // Commented out because these are already taken when device type based policies retrieved
+
+//            // Get the roles related policies
+//            for (String role : pipDevice.getRoles()) {
+//                policies.add(policyManager.getPoliciesOfRole(role));
+//            }
+//            // Get policy related to the device
+//            policies.add(policyManager.getPoliciesOfDevice(pipDevice.getDeviceIdentifier()));
+
+            policies = policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName());
+
+            PolicyFilter policyFilter = new PolicyFilterImpl();
+            policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
+            policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
+            policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
+
+            return policies;
         } catch (PolicyManagementException e) {
             String msg = "Error occurred when retrieving related to given device " +
                     pipDevice.getDeviceIdentifier().getId() + " " + pipDevice.getDeviceIdentifier().getType() + ".";

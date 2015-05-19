@@ -23,7 +23,6 @@ import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ProfileFeatureCreator {
 
@@ -35,15 +34,15 @@ public class ProfileFeatureCreator {
 
             ProfileFeature profileFeature = new ProfileFeature();
             if (i % 2 == 0) {
-                profileFeature.setContent( getJSON());
+                profileFeature.setContent(getJSON());
             } else {
                 profileFeature.setContent(getJSON2());
             }
             profileFeature.setDeviceTypeId(1);
             profileFeature.setFeatureCode(feature.getCode());
 
-//            profileFeature.setContent("rrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-            //  profileFeature.setProfileId(1);
+//            profileFeature.setContent("mm");
+//            profileFeature.setProfileId(1);
 //            profileFeature.setFeature(feature);
             profileFeatureList.add(profileFeature);
 

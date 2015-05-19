@@ -98,21 +98,21 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
+    public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
-                updateDeviceInfo(device);
+                updateDeviceInfo(deviceIdentifier, device);
     }
 
     @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().setOwnership(deviceId,
-                ownershipType);
+                                                                                                   ownershipType);
     }
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getLicense(deviceType,
-                languageCode);
+                                                                                                 languageCode);
     }
 
     @Override

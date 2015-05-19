@@ -136,7 +136,16 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        return dms.disenrollDevice(deviceId);
+        boolean status = dms.disenrollDevice(deviceId);
+        try {
+            org.wso2.carbon.device.mgt.core.dto.Device device = this.getDeviceDAO().getDevice(deviceId);
+            device.setStatus(Status.INACTIVE);
+            this.getDeviceDAO().updateDevice(device);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while modifying the device " +
+                                                "'" + deviceId.getId() + "'", e);
+        }
+        return status;
     }
 
     @Override
@@ -378,10 +387,10 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
+    public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(device.getType());
-        return dms.updateDeviceInfo(device);
+        return dms.updateDeviceInfo(deviceIdentifier, device);
     }
 
     @Override

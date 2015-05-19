@@ -137,13 +137,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         boolean status = dms.disenrollDevice(deviceId);
-        try {
-            int deviceID = Integer.parseInt(deviceId.getId());
-            this.getDeviceDAO().updateDeviceStatus(deviceID, Status.INACTIVE);
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while modifying the device " +
-                                                "'" + deviceId.getId() + "'", e);
-        }
         return status;
     }
 

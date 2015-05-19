@@ -136,8 +136,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        boolean status = dms.disenrollDevice(deviceId);
-        return status;
+        return dms.disenrollDevice(deviceId);
     }
 
     @Override

@@ -56,6 +56,7 @@
                         <Import-Package>
                             org.wso2.carbon.device.mgt.user.common.*,
                             org.wso2.carbon.user.core.*,
+                            org.wso2.carbon.user.core,
                             org.apache.commons.logging.*,
                             org.osgi.framework.*,
                             org.osgi.service.component.*,

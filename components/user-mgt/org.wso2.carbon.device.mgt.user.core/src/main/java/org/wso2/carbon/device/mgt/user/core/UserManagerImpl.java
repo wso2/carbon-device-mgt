@@ -24,11 +24,13 @@ import org.wso2.carbon.device.mgt.user.common.Role;
 import org.wso2.carbon.device.mgt.user.common.User;
 import org.wso2.carbon.device.mgt.user.common.UserManagementException;
 import org.wso2.carbon.device.mgt.user.core.internal.DeviceMgtUserDataHolder;
+import org.wso2.carbon.user.api.Claim;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.UserCoreConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +61,9 @@ public class UserManagerImpl implements UserManager {
     public static final String IDENTITY_CLAIM_URI = UserCoreConstants.ClaimTypeURIs.IDENTITY_CLAIM_URI;
     public static final String TEMPORARY_EMAIL_ADDRESS = UserCoreConstants.ClaimTypeURIs.TEMPORARY_EMAIL_ADDRESS;
 
-    public static final String[] DEFAULT_CLAIM_ARR = new String[]{GIVEN_NAME,EMAIL_ADDRESS,SURNAME,STREET_ADDRESS,
-            LOCALITY,REGION,REGION,POSTAL_CODE,COUNTRY,HONE,IM,ORGANIZATION,URL,TITLE,ROLE,MOBILE,NICKNAME,
-            DATE_OF_BIRTH,GENDER,ACCOUNT_STATUS,CHALLENGE_QUESTION_URI,IDENTITY_CLAIM_URI,TEMPORARY_EMAIL_ADDRESS};
+//    public static final String[] DEFAULT_CLAIM_ARR = new String[]{GIVEN_NAME,EMAIL_ADDRESS,SURNAME,STREET_ADDRESS,
+//            LOCALITY,REGION,REGION,POSTAL_CODE,COUNTRY,HONE,IM,ORGANIZATION,URL,TITLE,ROLE,MOBILE,NICKNAME,
+//            DATE_OF_BIRTH,GENDER,ACCOUNT_STATUS,CHALLENGE_QUESTION_URI,IDENTITY_CLAIM_URI,TEMPORARY_EMAIL_ADDRESS};
 
   //  private static final String CLAIM_URL_
 
@@ -80,8 +82,14 @@ public class UserManagerImpl implements UserManager {
             User newUser;
             for (String userName : userNames) {
                 newUser = new User(userName);
-                setUserClaims(newUser, userStoreManager.getUserClaimValues(userName, DEFAULT_CLAIM_ARR,
-                        UserCoreConstants.DEFAULT_PROFILE));
+                Claim[] claims = userStoreManager.getUserClaimValues(userName, null);
+                Map<String,String> claimMap = new HashMap<String, String>();
+                for(Claim claim:claims){
+                    String claimURI = claim.getClaimUri();
+                    String value = claim.getValue();
+                    claimMap.put(claimURI, value);
+                }
+                setUserClaims(newUser, claimMap);
                 usersList.add(newUser);
             }
         } catch (UserStoreException userStoreEx) {
@@ -129,12 +137,18 @@ public class UserManagerImpl implements UserManager {
             userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
 
-            userNames = userStoreManager.listUsers("",-1);
+            userNames = userStoreManager.listUsers("", -1);
             User newUser;
             for (String userName : userNames) {
                 newUser = new User(userName);
-                setUserClaims(newUser, userStoreManager.getUserClaimValues(userName, DEFAULT_CLAIM_ARR,
-                        UserCoreConstants.DEFAULT_PROFILE));
+                Claim[] claims = userStoreManager.getUserClaimValues(userName, null);
+                Map<String,String> claimMap = new HashMap<String, String>();
+                for(Claim claim:claims){
+                    String claimURI = claim.getClaimUri();
+                    String value = claim.getValue();
+                    claimMap.put(claimURI, value);
+                }
+                setUserClaims(newUser, claimMap);
                 usersList.add(newUser);
             }
         } catch (UserStoreException userStoreEx) {
@@ -153,8 +167,16 @@ public class UserManagerImpl implements UserManager {
             userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                                                       .getUserStoreManager();
             user = new User(username);
-            setUserClaims(user, userStoreManager
-                    .getUserClaimValues(username, DEFAULT_CLAIM_ARR, UserCoreConstants.DEFAULT_PROFILE));
+
+            Claim[] claims = userStoreManager.getUserClaimValues(username, null);
+            Map<String,String> claimMap = new HashMap<String, String>();
+            for(Claim claim:claims){
+                String claimURI = claim.getClaimUri();
+                String value = claim.getValue();
+                claimMap.put(claimURI, value);
+            }
+
+            setUserClaims(user, claimMap);
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in fetching user " + username;
             log.error(errorMsg, userStoreEx);

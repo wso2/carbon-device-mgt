@@ -170,7 +170,7 @@ public class OperationManagerImpl implements OperationManager {
 
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device " +
-                        "Identifier:" + deviceIdentifier.getId() + " and given type" + deviceIdentifier.getType());
+                        "Identifier:" + deviceIdentifier.getId() + " and given type:" + deviceIdentifier.getType());
             }
             operations = new ArrayList<Operation>();
             dtoOperationList = operationDAO.getOperationsByDeviceAndStatus(device.getId(),

@@ -378,9 +378,10 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
-        DeviceManager dms = this.getPluginRepository().getDeviceManagementProvider(device.getType());
-        return dms.updateDeviceInfo(device);
+    public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementProvider(device.getType());
+        return dms.updateDeviceInfo(deviceIdentifier, device);
     }
 
     @Override

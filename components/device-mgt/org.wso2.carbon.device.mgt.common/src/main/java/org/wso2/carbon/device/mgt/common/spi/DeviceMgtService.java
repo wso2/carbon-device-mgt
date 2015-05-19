@@ -19,6 +19,6 @@
 
 package org.wso2.carbon.device.mgt.common.spi;
 
-public interface DeviceMgtService extends DeviceManager,AppManager {
+public interface DeviceMgtService extends DeviceManager, AppManager {
 
 }

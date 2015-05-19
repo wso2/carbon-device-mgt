@@ -79,7 +79,7 @@ public class TestDeviceManager implements DeviceMgtService {
     }
 
     @Override
-    public boolean updateDeviceInfo(Device device) throws DeviceManagementException {
+    public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
         return false;
     }
 

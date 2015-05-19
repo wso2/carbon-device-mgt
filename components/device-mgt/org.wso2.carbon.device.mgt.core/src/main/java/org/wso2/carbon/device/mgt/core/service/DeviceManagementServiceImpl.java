@@ -107,13 +107,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().setOwnership(deviceId,
-                                                                                                   ownershipType);
+                ownershipType);
     }
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getLicense(deviceType,
-                                                                                                 languageCode);
+                languageCode);
     }
 
     @Override

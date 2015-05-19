@@ -122,6 +122,7 @@ public interface DeviceManager {
      * @param device   Updated device information related data
      * @throws DeviceManagementException If some unusual behaviour is observed while updating the device info
      */
+
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 
     /**

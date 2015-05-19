@@ -138,9 +138,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                 this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         boolean status = dms.disenrollDevice(deviceId);
         try {
-            org.wso2.carbon.device.mgt.core.dto.Device device = this.getDeviceDAO().getDevice(deviceId);
-            device.setStatus(Status.INACTIVE);
-            this.getDeviceDAO().updateDevice(device);
+            int deviceID = Integer.parseInt(deviceId.getId());
+            this.getDeviceDAO().updateDeviceStatus(deviceID, Status.INACTIVE);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while modifying the device " +
                                                 "'" + deviceId.getId() + "'", e);

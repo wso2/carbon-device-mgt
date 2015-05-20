@@ -50,5 +50,13 @@
             <Endpoint>http://localhost:9763/operations</Endpoint>
             <Transports>http,https</Transports>
         </API>
+        <API>
+            <Name>deviceList</Name>
+            <Owner>admin</Owner>
+            <Context>devices</Context>
+            <Version>1.0.0</Version>
+            <Endpoint>http://localhost:9763/devices</Endpoint>
+            <Transports>http,https</Transports>
+        </API>
     </APIs>
 </APIPublisherConfig>

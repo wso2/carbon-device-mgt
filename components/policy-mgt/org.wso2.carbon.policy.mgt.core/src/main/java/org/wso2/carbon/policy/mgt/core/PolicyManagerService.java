@@ -48,6 +48,8 @@ public interface PolicyManagerService {
 
     boolean deletePolicy(Policy policy) throws PolicyManagementException;
 
+    boolean deletePolicy(int policyId) throws PolicyManagementException;
+
     Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
     List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws FeatureManagementException;

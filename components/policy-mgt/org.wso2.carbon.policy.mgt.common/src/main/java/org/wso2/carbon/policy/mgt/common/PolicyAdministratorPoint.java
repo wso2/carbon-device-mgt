@@ -39,6 +39,7 @@ public interface PolicyAdministratorPoint {
     Policy updatePolicy(Policy policy) throws PolicyManagementException;
 
     boolean deletePolicy(Policy policy) throws PolicyManagementException;
+    boolean deletePolicy(int policyId) throws PolicyManagementException;
 
     /**
      * This method adds a policy per device which should be implemented by the related plugins.

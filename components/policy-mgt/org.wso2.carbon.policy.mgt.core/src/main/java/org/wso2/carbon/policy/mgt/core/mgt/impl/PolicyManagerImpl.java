@@ -234,6 +234,29 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
+    public boolean deletePolicy(int policyId) throws PolicyManagementException {
+        boolean bool;
+        try {
+            PolicyManagementDAOFactory.beginTransaction();
+            policyDAO.deleteAllPolicyRelatedConfigs(policyId);
+            bool = policyDAO.deletePolicy(policyId);
+            PolicyManagementDAOFactory.commitTransaction();
+
+        } catch (PolicyManagerDAOException e) {
+            try {
+                PolicyManagementDAOFactory.rollbackTransaction();
+            } catch (PolicyManagerDAOException e1) {
+                log.warn("Error occurred while roll backing the transaction.");
+            }
+            String msg = "Error occurred while deleting the policy ("
+                    + policyId +")";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+        return bool;
+    }
+
+    @Override
     public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
             PolicyManagementException {
 

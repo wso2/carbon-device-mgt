@@ -34,6 +34,8 @@ public interface PolicyManager {
 
     boolean deletePolicy(Policy policy) throws PolicyManagementException;
 
+    boolean deletePolicy(int policyId) throws PolicyManagementException;
+
     Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
             PolicyManagementException;
 

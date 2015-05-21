@@ -78,6 +78,11 @@ public class PolicyManagementService implements PolicyManagerService {
     }
 
     @Override
+    public boolean deletePolicy(int policyId) throws PolicyManagementException {
+        return policyManagerService.deletePolicy(policyId);
+    }
+
+    @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         return policyManagerService.getEffectivePolicy(deviceIdentifier);
     }

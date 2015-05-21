@@ -88,47 +88,19 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     @Override
     public List<Policy> getRelatedPolicies(PIPDevice pipDevice) throws PolicyManagementException {
 
-//        List<List<Policy>> policies = new ArrayList<List<Policy>>();
-        List<Policy> policies = new ArrayList<Policy>();
-        try {
-            // Get the device type related policies
-//            policies.add(policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName()));
+        List<Policy> policies = policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName());
+        PolicyFilter policyFilter = new PolicyFilterImpl();
+        policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
+        policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
+        policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
 
-
-            // Commented out because these are already taken when device type based policies retrieved
-
-//            // Get the roles related policies
-//            for (String role : pipDevice.getRoles()) {
-//                policies.add(policyManager.getPoliciesOfRole(role));
-//            }
-//            // Get policy related to the device
-//            policies.add(policyManager.getPoliciesOfDevice(pipDevice.getDeviceIdentifier()));
-
-            policies = policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName());
-
-            PolicyFilter policyFilter = new PolicyFilterImpl();
-            policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
-            policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
-            policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
-
-            return policies;
-        } catch (PolicyManagementException e) {
-            String msg = "Error occurred when retrieving related to given device " +
-                    pipDevice.getDeviceIdentifier().getId() + " " + pipDevice.getDeviceIdentifier().getType() + ".";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        }
+        return policies;
     }
 
     @Override
     public List<Feature> getRelatedFeatures(String deviceType) throws FeatureManagementException {
-        try {
-            return featureManager.getAllFeatures(deviceType);
-        } catch (FeatureManagementException e) {
-            String msg = "Error occurred when retrieving features related  to device type.";
-            log.error(msg, e);
-            throw new FeatureManagementException(msg, e);
-        }
+        return featureManager.getAllFeatures(deviceType);
+
     }
 
     private String[] getRoleOfDevice(Device device) throws PolicyManagementException {

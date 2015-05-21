@@ -24,7 +24,11 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
+import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorFrameworkValve;
+import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
+import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
 
 import java.util.ArrayList;
@@ -41,6 +45,15 @@ public class WebappAuthenticatorFrameworkBundleActivator implements BundleActiva
         }
         try {
             WebappAuthenticatorConfig.init();
+
+            WebappAuthenticatorRepository repository = new WebappAuthenticatorRepository();
+            for (AuthenticatorConfig config : WebappAuthenticatorConfig.getInstance().getAuthenticators()) {
+                WebappAuthenticator authenticator =
+                        (WebappAuthenticator) Class.forName(config.getClassName()).newInstance();
+                repository.addAuthenticator(authenticator);
+            }
+            DataHolder.setWebappAuthenticatorRepository(repository);
+
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
             valves.add(new WebappAuthenticatorFrameworkValve());
             TomcatValveContainer.addValves(valves);

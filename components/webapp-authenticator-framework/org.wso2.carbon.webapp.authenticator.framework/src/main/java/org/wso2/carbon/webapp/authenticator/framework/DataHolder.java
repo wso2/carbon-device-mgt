@@ -18,18 +18,19 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
-import org.apache.catalina.connector.Request;
-import org.apache.catalina.util.Base64;
-import org.apache.tomcat.util.buf.ByteChunk;
-import org.apache.tomcat.util.buf.CharChunk;
-import org.apache.tomcat.util.buf.MessageBytes;
-import org.wso2.carbon.webapp.authenticator.framework.authenticator.BasicAuthAuthenticator;
-import org.wso2.carbon.webapp.authenticator.framework.authenticator.OAuthAuthenticator;
+public class DataHolder {
 
-public class WebappAuthenticatorFactory {
+    private static WebappAuthenticatorRepository repository;
 
-    public static WebappAuthenticator getAuthenticator(String authScheme) {
-        return DataHolder.getWebappAuthenticatorRepository().getAuthenticator(authScheme);
+    private DataHolder() {}
+
+    public static void setWebappAuthenticatorRepository (WebappAuthenticatorRepository repository) {
+        DataHolder.repository = repository;
     }
+
+    public static WebappAuthenticatorRepository getWebappAuthenticatorRepository() {
+        return repository;
+    }
+
 
 }

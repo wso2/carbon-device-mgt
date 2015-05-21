@@ -31,6 +31,6 @@ public interface WebappAuthenticator {
 
     Status authenticate(Request request, Response response);
 
-    String getAuthenticatorName();
+    String getName();
 
 }

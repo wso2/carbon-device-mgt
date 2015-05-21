@@ -670,6 +670,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setTenantId(resultSet.getInt("TENANT_ID"));
                 policy.setPriorityId(resultSet.getInt("PRIORITY"));
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
+                policy.setOwnershipType(resultSet.getString("OWNERSHIP_TYPE"));
                 policies.add(policy);
             }
             return policies;
@@ -1157,7 +1158,7 @@ public class PolicyDAOImpl implements PolicyDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE, OWNERSHIP_TYPE) VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, policy.getPolicyName());
@@ -1165,6 +1166,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(3, tenantId);
             stmt.setInt(4, readHighestPriorityOfPolicies());
             stmt.setString(5, policy.getCompliance());
+            stmt.setString(6, policy.getOwnershipType());
 
             int affectedRows = stmt.executeUpdate();
 

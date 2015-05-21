@@ -27,51 +27,19 @@
             <Transports>http,https</Transports>
         </API>
         <API>
-            <Name>Enrollment</Name>
+            <Name>AndroidAgent</Name>
             <Owner>admin</Owner>
-            <Context>enrollment</Context>
+            <Context>mdm-android-agent</Context>
             <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/mdm-android-agent/enrollment</Endpoint>
+            <Endpoint>http://localhost:9763/mdm-android-agent</Endpoint>
             <Transports>http,https</Transports>
         </API>
         <API>
-            <Name>License</Name>
+            <Name>MDMAdmin</Name>
             <Owner>admin</Owner>
-            <Context>license-mgt</Context>
+            <Context>mdm-admin</Context>
             <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/mdm-android-agent/device/license</Endpoint>
-            <Transports>http,https</Transports>
-        </API>
-        <API>
-            <Name>Operation</Name>
-            <Owner>admin</Owner>
-            <Context>operation</Context>
-            <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/mdm-android-agent/operation</Endpoint>
-            <Transports>http,https</Transports>
-        </API>
-        <API>
-            <Name>Device List</Name>
-            <Owner>admin</Owner>
-            <Context>mdm-admin/devices</Context>
-            <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/mdm-admin/devices</Endpoint>
-            <Transports>http,https</Transports>
-        </API>
-        <API>
-            <Name>APP Install Operation</Name>
-            <Owner>admin</Owner>
-            <Context>operations</Context>
-            <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/mdm-android-agent/operations/installApp</Endpoint>
-            <Transports>http,https</Transports>
-        </API>
-        <API>
-            <Name>APP UN Install Operation</Name>
-            <Owner>admin</Owner>
-            <Context>operations</Context>
-            <Version>1.0.0</Version>
-            <Endpoint>http://localhost:9763/mdm-android-agent/operations/uninstallApp</Endpoint>
+            <Endpoint>http://localhost:9763/mdm-admin</Endpoint>
             <Transports>http,https</Transports>
         </API>
     </APIs>

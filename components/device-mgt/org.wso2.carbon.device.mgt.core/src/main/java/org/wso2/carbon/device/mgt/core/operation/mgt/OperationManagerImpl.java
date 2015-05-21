@@ -26,6 +26,8 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -343,9 +345,22 @@ public class OperationManagerImpl implements OperationManager {
                             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status
                                     .valueOf(status.toString()));
 
-            Operation operation;
+            Operation operation = null;
+            PolicyOperation policyOperation;
+
             for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : dtoOperationList) {
-                operation = OperationDAOUtil.convertOperation(dtoOperation);
+
+                if (dtoOperation instanceof org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation){
+                    policyOperation = (PolicyOperation)dtoOperation;
+                    for(org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation
+                            profileOperation:policyOperation.getProfileOperations()){
+                        operation = OperationDAOUtil.convertOperation(profileOperation);
+                    }
+                }else{
+                    operation = OperationDAOUtil.convertOperation(dtoOperation);
+                }
+
+
                 operations.add(operation);
             }
             return operations;

@@ -30,7 +30,9 @@ import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class PolicyManagerImpl implements PolicyManager {
@@ -58,9 +60,15 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             PolicyManagementDAOFactory.beginTransaction();
             if (policy.getProfile() != null && policy.getProfile().getProfileId() == 0) {
-                profileDAO.addProfile(policy.getProfile());
-                featureDAO.addProfileFeatures(policy.getProfile().getProfileFeaturesList(),
-                        policy.getProfile().getProfileId());
+                Profile   profile = policy.getProfile();
+
+                Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+                profile.setCreatedDate(currentTimestamp);
+                profile.setUpdatedDate(currentTimestamp);
+
+
+                profileDAO.addProfile(profile);
+                featureDAO.addProfileFeatures(profile.getProfileFeaturesList(), profile.getProfileId());
             }
             policy = policyDAO.addPolicy(policy);
 

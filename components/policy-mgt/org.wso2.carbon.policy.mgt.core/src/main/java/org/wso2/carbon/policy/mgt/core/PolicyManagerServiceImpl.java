@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
@@ -93,27 +94,23 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                     getEffectivePolicy(deviceIdentifier);
 
             if (policy != null) {
+                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
+                deviceIdentifiers.add(deviceIdentifier);
 
                 List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
-
-                ProfileOperation policyOperation = new ProfileOperation();
-
                 List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
                 for (ProfileFeature feature : effectiveFeatures) {
                     ProfileOperation operation = new ProfileOperation();
 
                     operation.setCode(feature.getFeatureCode());
+                    operation.setEnabled(true);
+                    operation.setStatus(Operation.Status.PENDING);
+                    operation.setType(Operation.Type.PROFILE);
                     operation.setPayLoad(feature.getContent());
-                    profileOperationList.add(operation);
+                    PolicyManagementDataHolder.getInstance().getDeviceManagementService().
+                            addOperation(operation, deviceIdentifiers);
                 }
-                policyOperation.setPayLoad(profileOperationList);
-                policyOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);
 
-                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
-                deviceIdentifiers.add(deviceIdentifier);
-
-                PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                        addOperation(policyOperation, deviceIdentifiers);
             } else {
                 return null;
             }
@@ -140,25 +137,23 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
                     getEffectiveFeatures(deviceIdentifier);
 
-            if (!effectiveFeatures.isEmpty()) {
-                ProfileOperation profileOperation = new ProfileOperation();
+            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
+            deviceIdentifiers.add(deviceIdentifier);
+            List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
 
-                List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
+            if (!effectiveFeatures.isEmpty()) {
                 for (ProfileFeature feature : effectiveFeatures) {
                     ProfileOperation operation = new ProfileOperation();
 
                     operation.setCode(feature.getFeatureCode());
                     operation.setPayLoad(feature.getContent());
+                    operation.setStatus(Operation.Status.PENDING);
+                    operation.setType(Operation.Type.PROFILE);
+                    operation.setEnabled(true);
                     profileOperationList.add(operation);
+                    PolicyManagementDataHolder.getInstance().getDeviceManagementService().
+                            addOperation(operation, deviceIdentifiers);
                 }
-                profileOperation.setPayLoad(profileOperationList);
-                profileOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);
-
-                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
-                deviceIdentifiers.add(deviceIdentifier);
-
-                PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                        addOperation(profileOperation, deviceIdentifiers);
             } else {
                 return null;
             }

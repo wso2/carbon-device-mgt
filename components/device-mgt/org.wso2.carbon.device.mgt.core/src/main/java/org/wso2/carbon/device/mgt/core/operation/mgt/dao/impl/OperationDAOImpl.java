@@ -277,11 +277,7 @@ public class OperationDAOImpl implements OperationDAO {
                     operationDetails = rs.getBytes("OPERATION_DETAILS");
                     bais = new ByteArrayInputStream(operationDetails);
                     ois = new ObjectInputStream(bais);
-                    if (ois.readObject() instanceof PolicyOperation){
-                        operation = (PolicyOperation) ois.readObject();
-                    }else{
-                        operation = (PolicyOperation) ois.readObject();
-                    }
+                     operation = (ProfileOperation) ois.readObject();
                 } else {
                     operation = new Operation();
                     operation.setId(rs.getInt("ID"));

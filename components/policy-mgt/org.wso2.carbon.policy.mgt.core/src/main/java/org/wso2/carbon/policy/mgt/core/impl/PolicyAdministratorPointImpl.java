@@ -64,6 +64,11 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     }
 
     @Override
+    public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException {
+        return policyManager.updatePolicyPriorities(policies);
+    }
+
+    @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagementException {
         return policyManager.deletePolicy(policy);
     }
@@ -203,4 +208,5 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     public int getPolicyCount() throws PolicyManagementException {
         return policyManager.getPolicyCount();
     }
+
 }

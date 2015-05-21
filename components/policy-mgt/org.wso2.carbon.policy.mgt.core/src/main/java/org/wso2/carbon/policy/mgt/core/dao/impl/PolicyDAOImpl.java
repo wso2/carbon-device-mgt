@@ -145,31 +145,28 @@ public class PolicyDAOImpl implements PolicyDAO {
     @Override
     public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagerDAOException {
 
-  /*      Connection conn;
+        Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_POLICY SET  PRIORITY = ? WHERE ID = ?";
             stmt = conn.prepareStatement(query);
-            stmt.setString(1, policy.getPolicyName());
-            stmt.setInt(2, policy.getTenantId());
-            stmt.setInt(3, policy.getProfile().getProfileId());
-            stmt.setInt(4, policy.getPriorityId());
-            stmt.setString(5, policy.getCompliance());
-            stmt.setInt(6, policy.getId());
-            stmt.executeUpdate();
+
+            for (Policy policy : policies) {
+                stmt.setInt(1, policy.getPriorityId());
+                stmt.setInt(2, policy.getId());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
 
         } catch (SQLException e) {
-            String msg = "Error occurred while updating policy (" + policy.getPolicyName() + ") in database.";
+            String msg = "Error occurred while updating policy priorities in database.";
             log.error(msg, e);
             throw new PolicyManagerDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
-        return policy;*/
-
-
-        return false;
+        return true;
     }
 
 //    @Override
@@ -518,7 +515,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 }
                 stmt.executeBatch();
             }
-         //   stmt.executeUpdate();
+            //   stmt.executeUpdate();
 
         } catch (SQLException e) {
             String msg = "Error occurred while inserting the criterion properties to database.";
@@ -1146,7 +1143,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.executeUpdate();
 
             if (log.isDebugEnabled()) {
-                log.debug("Policy (" + policyId+ ") delete from database.");
+                log.debug("Policy (" + policyId + ") delete from database.");
             }
             return true;
         } catch (SQLException e) {

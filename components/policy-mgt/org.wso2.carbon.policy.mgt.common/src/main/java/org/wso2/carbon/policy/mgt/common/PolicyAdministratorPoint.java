@@ -144,4 +144,5 @@ public interface PolicyAdministratorPoint {
 
     boolean deleteFeature(int featureId)   throws  FeatureManagementException;
 
+    int getPolicyCount() throws PolicyManagementException;
 }

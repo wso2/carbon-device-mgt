@@ -63,4 +63,6 @@ public interface PolicyManagerService {
     PolicyInformationPoint getPIP() throws PolicyManagementException;
 
     PolicyEvaluationPoint getPEP() throws PolicyManagementException;
+
+    int getPolicyCount() throws PolicyManagementException;
 }

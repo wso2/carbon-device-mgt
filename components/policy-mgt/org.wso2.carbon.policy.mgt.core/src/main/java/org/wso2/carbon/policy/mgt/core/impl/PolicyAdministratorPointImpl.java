@@ -214,4 +214,9 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
             throw new FeatureManagementException(msg, e);
         }
     }
+
+    @Override
+    public int getPolicyCount() throws PolicyManagementException {
+        return policyManager.getPolicyCount();
+    }
 }

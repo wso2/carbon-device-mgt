@@ -705,4 +705,17 @@ public class PolicyManagerImpl implements PolicyManager {
             throw new PolicyManagementException(msg, e);
         }
     }
+
+    @Override
+    public int getPolicyCount() throws PolicyManagementException {
+        int policyCount = 0;
+        try {
+            policyCount = policyDAO.getPolicyCount();
+            return policyCount;
+        } catch (PolicyManagerDAOException e) {
+            String msg = "Error occurred while getting policy count";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
 }

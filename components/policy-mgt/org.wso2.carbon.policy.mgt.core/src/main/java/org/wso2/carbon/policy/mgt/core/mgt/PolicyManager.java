@@ -65,4 +65,6 @@ public interface PolicyManager {
     boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
     boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
+
+    int getPolicyCount() throws PolicyManagementException;
 }

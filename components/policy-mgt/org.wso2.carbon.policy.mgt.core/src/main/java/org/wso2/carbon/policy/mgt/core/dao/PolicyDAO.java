@@ -103,4 +103,6 @@ public interface PolicyDAO {
             throws PolicyManagerDAOException;
 
     boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException;
+
+    int getPolicyCount() throws PolicyManagerDAOException;
 }

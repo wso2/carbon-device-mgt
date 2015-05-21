@@ -82,6 +82,8 @@ public interface PolicyDAO {
 
     boolean deletePolicy(Policy policy) throws PolicyManagerDAOException;
 
+    boolean deletePolicy(int policyId) throws PolicyManagerDAOException;
+
     boolean deleteAllPolicyRelatedConfigs(int policyId) throws PolicyManagerDAOException;
 
     List<String> getPolicyAppliedRoles(int policyId) throws PolicyManagerDAOException;

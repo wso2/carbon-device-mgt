@@ -1074,6 +1074,31 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
+    public boolean deletePolicy(int policyId) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = this.getConnection();
+            String query = "DELETE FROM DM_POLICY WHERE ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, policyId);
+            stmt.executeUpdate();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Policy (" + policyId+ ") delete from database.");
+            }
+            return true;
+        } catch (SQLException e) {
+            String msg = "Unable to delete the policy (" + policyId + ") from database.";
+            log.error(msg);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
     public boolean deleteAllPolicyRelatedConfigs(int policyId) throws PolicyManagerDAOException {
 
         Connection conn;

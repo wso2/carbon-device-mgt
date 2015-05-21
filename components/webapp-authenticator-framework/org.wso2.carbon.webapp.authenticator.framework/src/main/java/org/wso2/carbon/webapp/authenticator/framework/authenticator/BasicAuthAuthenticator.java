@@ -28,7 +28,7 @@ import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticator;
 
 public class BasicAuthAuthenticator implements WebappAuthenticator {
 
-    private static final String BASIC_AUTH_AUTHENTICATOR = "BasicAuthAuthenticator";
+    private static final String BASIC_AUTH_AUTHENTICATOR = "BasicAuth";
 
     @Override
     public boolean isAuthenticated(Request request) {
@@ -41,7 +41,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
     }
 
     @Override
-    public String getAuthenticatorName() {
+    public String getName() {
         return BasicAuthAuthenticator.BASIC_AUTH_AUTHENTICATOR;
     }
 

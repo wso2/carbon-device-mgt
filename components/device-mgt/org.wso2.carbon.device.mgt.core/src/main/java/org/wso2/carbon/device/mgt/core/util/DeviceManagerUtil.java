@@ -179,7 +179,7 @@ public final class DeviceManagerUtil {
                 getURITemplates(config.getEndpoint(), APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
         api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);
         api.addAvailableTiers(provider.getTiers());
-        api.setEndpointSecured(false);
+        api.setEndpointSecured(true);
         api.setStatus(APIStatus.PUBLISHED);
         api.setTransports(config.getTransports());
 

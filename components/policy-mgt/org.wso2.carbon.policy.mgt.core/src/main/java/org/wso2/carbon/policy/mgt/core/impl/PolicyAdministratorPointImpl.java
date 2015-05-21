@@ -204,5 +204,9 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         return featureManager.deleteFeature(featureId);
     }
 
+    @Override
+    public int getPolicyCount() throws PolicyManagementException {
+        return policyManager.getPolicyCount();
+    }
 
 }

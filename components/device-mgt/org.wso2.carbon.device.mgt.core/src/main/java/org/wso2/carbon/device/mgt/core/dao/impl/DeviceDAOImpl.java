@@ -301,4 +301,33 @@ public class DeviceDAOImpl implements DeviceDAO {
         }
     }
 
+    /**
+     * Get device count of all devices.
+     * @return device count
+     * @throws DeviceManagementDAOException
+     */
+    @Override
+    public int getDeviceCount() throws DeviceManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        int deviceCount = 0;
+        try {
+            conn = this.getConnection();
+            String selectDBQueryForType = "SELECT COUNT(DM_DEVICE.ID) FROM DM_DEVICE";
+            stmt = conn.prepareStatement(selectDBQueryForType);
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                deviceCount = resultSet.getInt(0);
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while getting count of devices";
+            log.error(msg, e);
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
+        }
+        return deviceCount;
+    }
+
 }

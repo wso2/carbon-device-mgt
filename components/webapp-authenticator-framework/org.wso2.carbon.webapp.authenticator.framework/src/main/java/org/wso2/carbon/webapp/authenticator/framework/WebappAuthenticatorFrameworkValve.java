@@ -29,14 +29,18 @@ import javax.servlet.http.HttpServletResponse;
 
 public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
 
-    private static final String AUTHENTICATION_SCHEME = "AuthenticationScheme";
-    private static final Log log = LogFactory.getLog(WebappAuthenticatorFrameworkValve.class);
+    private static final String AUTHENTICATION_SCHEME = "authentication-scheme";
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
         String authScheme =
                 request.getContext().findParameter(WebappAuthenticatorFrameworkValve.AUTHENTICATION_SCHEME);
+        if (authScheme == null || "".equals(authScheme)) {
+            this.getNext().invoke(request, response, compositeValve);
+            return;
+        }
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(authScheme);
+
         WebappAuthenticator.Status status = authenticator.authenticate(request, response);
         this.processResponse(request, response, compositeValve, status);
     }
@@ -54,6 +58,5 @@ public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
                 break;
         }
     }
-
 
 }

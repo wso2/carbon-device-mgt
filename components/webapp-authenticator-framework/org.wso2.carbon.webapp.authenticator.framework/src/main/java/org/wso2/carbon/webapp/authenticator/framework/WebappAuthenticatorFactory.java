@@ -29,7 +29,7 @@ import org.wso2.carbon.webapp.authenticator.framework.authenticator.OAuthAuthent
 public class WebappAuthenticatorFactory {
 
     public static WebappAuthenticator getAuthenticator(String authScheme) {
-        return new OAuthAuthenticator();
+        return DataHolder.getWebappAuthenticatorRepository().getAuthenticator(authScheme);
     }
 
 }

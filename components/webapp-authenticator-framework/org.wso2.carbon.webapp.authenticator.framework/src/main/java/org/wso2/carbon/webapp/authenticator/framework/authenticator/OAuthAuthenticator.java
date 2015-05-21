@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
 
 public class OAuthAuthenticator implements WebappAuthenticator {
 
-    private static final String OAUTH_AUTHENTICATOR = "OAuthAuthenticator";
+    private static final String OAUTH_AUTHENTICATOR = "OAuth";
     private static APITokenAuthenticator authenticator = new APITokenAuthenticator();
 
     private static final Log log = LogFactory.getLog(OAuthAuthenticator.class);
@@ -97,7 +97,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     }
 
     @Override
-    public String getAuthenticatorName() {
+    public String getName() {
         return OAuthAuthenticator.OAUTH_AUTHENTICATOR;
     }
 

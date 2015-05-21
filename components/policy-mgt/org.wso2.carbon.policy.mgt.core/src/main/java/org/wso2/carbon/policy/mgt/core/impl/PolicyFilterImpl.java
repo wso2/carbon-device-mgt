@@ -39,6 +39,9 @@ public class PolicyFilterImpl implements PolicyFilter {
         for (Policy policy : policies) {
 
             List<String> tempRoles = policy.getRoles();
+            if (tempRoles != null) {
+                continue;
+            }
             if (PolicyManagementConstants.ANY.equalsIgnoreCase(tempRoles.get(0))) {
                 temp.add(policy);
                 continue;

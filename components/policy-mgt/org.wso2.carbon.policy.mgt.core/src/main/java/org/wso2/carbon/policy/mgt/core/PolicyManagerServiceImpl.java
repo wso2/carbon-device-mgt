@@ -86,28 +86,31 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             Policy policy = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
                     getEffectivePolicy(deviceIdentifier);
 
-            List<ProfileFeature> effectiveFeatures =policy.getProfile().getProfileFeaturesList();
+            if (policy != null) {
 
-            PolicyOperation policyOperation = new PolicyOperation();
+                List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
 
-            List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-            for (ProfileFeature feature : effectiveFeatures) {
-                ProfileOperation operation = new ProfileOperation();
+                PolicyOperation policyOperation = new PolicyOperation();
 
-                operation.setCode(feature.getFeatureCode());
-                operation.setPayLoad(feature.getContent());
-                profileOperationList.add(operation);
+                List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
+                for (ProfileFeature feature : effectiveFeatures) {
+                    ProfileOperation operation = new ProfileOperation();
+
+                    operation.setCode(feature.getFeatureCode());
+                    operation.setPayLoad(feature.getContent());
+                    profileOperationList.add(operation);
+                }
+                policyOperation.setProfileOperations(profileOperationList);
+                policyOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);
+
+                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
+                deviceIdentifiers.add(deviceIdentifier);
+
+                PolicyManagementDataHolder.getInstance().getDeviceManagementService().
+                        addOperation(policyOperation, deviceIdentifiers);
+            } else {
+                return null;
             }
-            policyOperation.setProfileOperations(profileOperationList);
-            policyOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);
-
-            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
-            deviceIdentifiers.add(deviceIdentifier);
-
-            PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                    addOperation(policyOperation, deviceIdentifiers);
-
-
 
             return policy;
         } catch (PolicyEvaluationException e) {
@@ -131,24 +134,28 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
                     getEffectiveFeatures(deviceIdentifier);
 
-            PolicyOperation policyOperation = new PolicyOperation();
+            if (!effectiveFeatures.isEmpty()) {
+                PolicyOperation policyOperation = new PolicyOperation();
 
-            List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-            for (ProfileFeature feature : effectiveFeatures) {
-                ProfileOperation operation = new ProfileOperation();
+                List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
+                for (ProfileFeature feature : effectiveFeatures) {
+                    ProfileOperation operation = new ProfileOperation();
 
-                operation.setCode(feature.getFeatureCode());
-                operation.setPayLoad(feature.getContent());
-                profileOperationList.add(operation);
+                    operation.setCode(feature.getFeatureCode());
+                    operation.setPayLoad(feature.getContent());
+                    profileOperationList.add(operation);
+                }
+                policyOperation.setProfileOperations(profileOperationList);
+                policyOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);
+
+                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
+                deviceIdentifiers.add(deviceIdentifier);
+
+                PolicyManagementDataHolder.getInstance().getDeviceManagementService().
+                        addOperation(policyOperation, deviceIdentifiers);
+            } else {
+                return null;
             }
-            policyOperation.setProfileOperations(profileOperationList);
-            policyOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);
-
-            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
-            deviceIdentifiers.add(deviceIdentifier);
-
-            PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                    addOperation(policyOperation, deviceIdentifiers);
 
             return effectiveFeatures;
         } catch (PolicyEvaluationException e) {

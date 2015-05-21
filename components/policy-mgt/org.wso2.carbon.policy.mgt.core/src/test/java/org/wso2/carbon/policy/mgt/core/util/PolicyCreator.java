@@ -38,6 +38,7 @@ public class PolicyCreator {
         users.add("Dilshan");
         policy.setUsers(users);
         policy.setCompliance("ENFORCE");
+        policy.setOwnershipType("COPE");
 
         return policy;
     }
@@ -83,6 +84,8 @@ public class PolicyCreator {
 
         criteria.add(criterion);
 
+        policy.setOwnershipType("COPE");
+
         policy.setPolicyCriterias(criteria);
 //
 //        policy.setLatitude("6.927079");
@@ -111,6 +114,7 @@ public class PolicyCreator {
 
         policy.setRoles(roles);
         policy.setCompliance("ENFORCE");
+        policy.setOwnershipType("BYOD");
 
 //        List<String> users = new ArrayList<String>();
 //        users.add("Geeth");
@@ -155,6 +159,7 @@ public class PolicyCreator {
         policy.setDevices(DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType()));
 
         policy.setCompliance("MONITOR");
+        policy.setOwnershipType("BYOD");
 
         List<String> roles = new ArrayList<String>();
         roles.add("Role_04");

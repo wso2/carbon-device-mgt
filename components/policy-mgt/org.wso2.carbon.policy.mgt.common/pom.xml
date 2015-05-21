@@ -57,6 +57,7 @@
                             org.apache.commons.logging,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.dto.*,
+                            org.wso2.carbon.device.mgt.core.operation.*,
                             javax.xml.bind.*,
                         </Import-Package>
                         <Export-Package>

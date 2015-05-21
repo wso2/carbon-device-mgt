@@ -60,13 +60,13 @@ public class PolicyFilterImpl implements PolicyFilter {
     @Override
     public void filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies) {
 
-        List<Policy> temp = new ArrayList<Policy>();
-        for (Policy policy : policies) {
-            if (ownershipType.equalsIgnoreCase(policy.getOwnershipType())) {
-                temp.add(policy);
-            }
-        }
-        policies = temp;
+//        List<Policy> temp = new ArrayList<Policy>();
+//        for (Policy policy : policies) {
+//            if (ownershipType.equalsIgnoreCase(policy.getOwnershipType())) {
+//                temp.add(policy);
+//            }
+//        }
+//        policies = temp;
     }
 
     @Override

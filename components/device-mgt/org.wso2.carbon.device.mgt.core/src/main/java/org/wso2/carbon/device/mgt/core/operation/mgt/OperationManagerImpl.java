@@ -349,18 +349,7 @@ public class OperationManagerImpl implements OperationManager {
             PolicyOperation policyOperation;
 
             for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : dtoOperationList) {
-
-                if (dtoOperation instanceof org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation){
-                    policyOperation = (PolicyOperation)dtoOperation;
-                    for(org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation
-                            profileOperation:policyOperation.getProfileOperations()){
-                        operation = OperationDAOUtil.convertOperation(profileOperation);
-                    }
-                }else{
-                    operation = OperationDAOUtil.convertOperation(dtoOperation);
-                }
-
-
+                operation = OperationDAOUtil.convertOperation(dtoOperation);
                 operations.add(operation);
             }
             return operations;

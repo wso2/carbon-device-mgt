@@ -60,7 +60,7 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             PolicyManagementDAOFactory.beginTransaction();
             if (policy.getProfile() != null && policy.getProfile().getProfileId() == 0) {
-                Profile   profile = policy.getProfile();
+                Profile profile = policy.getProfile();
 
                 Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
                 profile.setCreatedDate(currentTimestamp);
@@ -211,6 +211,26 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
+    public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException {
+        boolean bool;
+        try {
+            PolicyManagementDAOFactory.beginTransaction();
+            bool = policyDAO.updatePolicyPriorities(policies);
+            PolicyManagementDAOFactory.commitTransaction();
+        } catch (PolicyManagerDAOException e) {
+            try {
+                PolicyManagementDAOFactory.rollbackTransaction();
+            } catch (PolicyManagerDAOException e1) {
+                log.warn("Error occurred while roll backing the transaction.");
+            }
+            String msg = "Error occurred while updating the policy priorities";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+        return bool;
+    }
+
+    @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagementException {
 
         boolean bool;
@@ -249,7 +269,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 log.warn("Error occurred while roll backing the transaction.");
             }
             String msg = "Error occurred while deleting the policy ("
-                    + policyId +")";
+                    + policyId + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }

@@ -32,6 +32,8 @@ public interface PolicyManager {
 
     Policy updatePolicy(Policy policy) throws PolicyManagementException;
 
+    boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException;
+
     boolean deletePolicy(Policy policy) throws PolicyManagementException;
 
     boolean deletePolicy(int policyId) throws PolicyManagementException;

@@ -142,6 +142,36 @@ public class PolicyDAOImpl implements PolicyDAO {
         return policy;
     }
 
+    @Override
+    public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagerDAOException {
+
+  /*      Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String query = "UPDATE DM_POLICY SET  PRIORITY = ? WHERE ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, policy.getPolicyName());
+            stmt.setInt(2, policy.getTenantId());
+            stmt.setInt(3, policy.getProfile().getProfileId());
+            stmt.setInt(4, policy.getPriorityId());
+            stmt.setString(5, policy.getCompliance());
+            stmt.setInt(6, policy.getId());
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while updating policy (" + policy.getPolicyName() + ") in database.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return policy;*/
+
+
+        return false;
+    }
+
 //    @Override
 //    public Policy addDatesToPolicy(Date startDate, Date endDate, Policy policy) throws PolicyManagerDAOException {
 //
@@ -741,6 +771,36 @@ public class PolicyDAOImpl implements PolicyDAO {
                 roleNames.add(resultSet.getString("ROLE_NAME"));
             }
             return roleNames;
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while getting the roles related to policies.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+    }
+
+    @Override
+    public List<String> getPolicyAppliedUsers(int policyId) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
+        List<String> users = new ArrayList<String>();
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_USER_POLICY WHERE POLICY_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, policyId);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+
+                users.add(resultSet.getString("USERNAME"));
+            }
+            return users;
 
         } catch (SQLException e) {
             String msg = "Error occurred while getting the roles related to policies.";

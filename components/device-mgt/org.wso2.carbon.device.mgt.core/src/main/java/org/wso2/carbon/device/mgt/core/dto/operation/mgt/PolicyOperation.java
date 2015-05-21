@@ -4,7 +4,7 @@
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * You may obtain a copy of the License at
+ * you may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,17 +15,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.device.mgt.core.dto.operation.mgt;
 
-
-package org.wso2.carbon.policy.mgt.common;
-
-import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 
 import java.util.List;
 
-public class PolicyOperation extends ProfileOperation {
-
-    private List<ProfileOperation> profileOperations;
+public class PolicyOperation extends Operation{
 
     public List<ProfileOperation> getProfileOperations() {
         return profileOperations;
@@ -34,4 +31,7 @@ public class PolicyOperation extends ProfileOperation {
     public void setProfileOperations(List<ProfileOperation> profileOperations) {
         this.profileOperations = profileOperations;
     }
+
+    private List<ProfileOperation> profileOperations;
+
 }

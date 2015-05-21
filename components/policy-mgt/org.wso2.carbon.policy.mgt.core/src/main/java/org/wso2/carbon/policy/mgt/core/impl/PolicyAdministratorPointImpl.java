@@ -88,7 +88,8 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         return policyManager.getPolicies();
     }
 
-    @Override public Policy getPolicy(int policyId) throws PolicyManagementException {
+    @Override
+    public Policy getPolicy(int policyId) throws PolicyManagementException {
         return policyManager.getPolicy(policyId);
     }
 
@@ -184,35 +185,18 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     @Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
-        try {
-            return featureManager.addFeature(feature);
-        } catch (FeatureManagementException e) {
-            String msg = "Error occurred while persisting the feature.";
-            log.error(msg, e);
-            throw new FeatureManagementException(msg, e);
-        }
+        return featureManager.addFeature(feature);
     }
 
     @Override
     public Feature updateFeature(Feature feature) throws FeatureManagementException {
-        try {
-            return featureManager.updateFeature(feature);
-        } catch (FeatureManagementException e) {
-            String msg = "Error occurred while persisting the feature.";
-            log.error(msg, e);
-            throw new FeatureManagementException(msg, e);
-        }
+        return featureManager.updateFeature(feature);
+
     }
 
     @Override
     public boolean deleteFeature(int featureId) throws FeatureManagementException {
-        try {
-            return featureManager.deleteFeature(featureId);
-        } catch (FeatureManagementException e) {
-            String msg = "Error occurred while deleting the feature.";
-            log.error(msg, e);
-            throw new FeatureManagementException(msg, e);
-        }
+        return featureManager.deleteFeature(featureId);
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -276,7 +277,11 @@ public class OperationDAOImpl implements OperationDAO {
                     operationDetails = rs.getBytes("OPERATION_DETAILS");
                     bais = new ByteArrayInputStream(operationDetails);
                     ois = new ObjectInputStream(bais);
-                    operation = (ProfileOperation) ois.readObject();
+                    if (ois.readObject() instanceof PolicyOperation){
+                        operation = (PolicyOperation) ois.readObject();
+                    }else{
+                        operation = (PolicyOperation) ois.readObject();
+                    }
                 } else {
                     operation = new Operation();
                     operation.setId(rs.getInt("ID"));

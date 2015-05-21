@@ -49,8 +49,12 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
     @Override
     public Status authenticate(Request request, Response response) {
-        StringTokenizer tokenizer = new StringTokenizer(request.getRequestURI(), "/");
+        String requestUri = request.getRequestURI();
+        if (requestUri == null || "".equals(requestUri)) {
+            return Status.CONTINUE;
+        }
 
+        StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
         String context = request.getContextPath();
         if (context == null || "".equals(context)) {
             context = tokenizer.nextToken();
@@ -59,13 +63,13 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             }
         }
 
-        boolean isContextCached = false;
-        if (APIUtil.getAPIContextCache().get(context) != null) {
-            isContextCached = Boolean.parseBoolean(APIUtil.getAPIContextCache().get(context).toString());
-        }
-        if (!isContextCached) {
-            return Status.CONTINUE;
-        }
+//        boolean isContextCached = false;
+//        if (APIUtil.getAPIContextCache().get(context) != null) {
+//            isContextCached = Boolean.parseBoolean(APIUtil.getAPIContextCache().get(context).toString());
+//        }
+//        if (!isContextCached) {
+//            return Status.CONTINUE;
+//        }
 
         try {
             String apiVersion = tokenizer.nextToken();

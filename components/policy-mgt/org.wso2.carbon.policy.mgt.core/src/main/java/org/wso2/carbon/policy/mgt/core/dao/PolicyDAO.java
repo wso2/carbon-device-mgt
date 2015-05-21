@@ -36,6 +36,8 @@ public interface PolicyDAO {
 
     Policy addPolicyToDevice(List<Device> devices, Policy policy) throws PolicyManagerDAOException;
 
+    boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagerDAOException;
+
 //    Policy addDatesToPolicy(Date startDate, Date endDate, Policy policy) throws PolicyManagerDAOException;
 //
 //    Policy addTimesToPolicy(int startTime, int endTime, Policy policy) throws PolicyManagerDAOException;
@@ -87,6 +89,8 @@ public interface PolicyDAO {
     boolean deleteAllPolicyRelatedConfigs(int policyId) throws PolicyManagerDAOException;
 
     List<String> getPolicyAppliedRoles(int policyId) throws PolicyManagerDAOException;
+
+    List<String> getPolicyAppliedUsers(int policyId) throws PolicyManagerDAOException;
 
 //    PolicyTimes getTimesOfPolicy(Policy policy) throws PolicyManagerDAOException;
 //

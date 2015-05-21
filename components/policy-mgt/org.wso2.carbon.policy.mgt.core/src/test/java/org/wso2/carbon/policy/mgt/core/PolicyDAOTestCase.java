@@ -263,6 +263,17 @@ public class PolicyDAOTestCase {
 
         for (Policy policy : policyList) {
             log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+            log.debug("Policy Ownership type :" + policy.getOwnershipType());
+
+            List<String> users = policy.getUsers();
+            for (String user : users) {
+                log.debug("User of the policy : " + user);
+            }
+
+            List<String> roles = policy.getRoles();
+            for (String role : roles) {
+                log.debug("User of the policy : " + role);
+            }
         }
     }
 
@@ -276,6 +287,17 @@ public class PolicyDAOTestCase {
 
         for (Policy policy : policyList) {
             log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+            log.debug("Policy Ownership type :" + policy.getOwnershipType());
+
+            List<String> users = policy.getUsers();
+            for (String user : users) {
+                log.debug("User of the policy : " + user);
+            }
+
+            List<String> roles = policy.getRoles();
+            for (String role : roles) {
+                log.debug("User of the policy : " + role);
+            }
         }
     }
 
@@ -290,6 +312,17 @@ public class PolicyDAOTestCase {
 
         for (Policy policy : policyList) {
             log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+            log.debug("Policy Ownership type :" + policy.getOwnershipType());
+
+            List<String> users = policy.getUsers();
+            for (String user : users) {
+                log.debug("User of the policy : " + user);
+            }
+
+            List<String> roles = policy.getRoles();
+            for (String role : roles) {
+                log.debug("User of the policy : " + role);
+            }
         }
     }
 
@@ -303,6 +336,8 @@ public class PolicyDAOTestCase {
 
         for (Policy policy : policyList) {
             log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+
+            log.debug("Policy Ownership type :" + policy.getOwnershipType());
         }
     }
 
@@ -323,6 +358,8 @@ public class PolicyDAOTestCase {
 
         for (Policy policy : policyList) {
             log.debug("Policy Id : " + policy.getId() + " Policy Name : " + policy.getPolicyName());
+
+            log.debug("Policy Ownership type :" + policy.getOwnershipType());
 
             List<ProfileFeature> profileFeatures = policy.getProfile().getProfileFeaturesList();
 

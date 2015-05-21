@@ -468,6 +468,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
                 policy.setDevices(getPolicyAppliedDevicesIds(policy.getId()));
                 policy.setRoles(policyDAO.getPolicyAppliedRoles(policy.getId()));
+                policy.setUsers(policyDAO.getPolicyAppliedUsers(policy.getId()));
                 policy.setPolicyCriterias(policyDAO.getPolicyCriteria(policy.getId()));
 //                policyDAO.getDatesOfPolicy(policy);
 //                policyDAO.getTimesOfPolicy(policy);

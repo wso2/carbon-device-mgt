@@ -33,6 +33,7 @@ import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class PolicyManagerImpl implements PolicyManager {
@@ -494,6 +495,7 @@ public class PolicyManagerImpl implements PolicyManager {
 //                policyDAO.getTimesOfPolicy(policy);
 //                policyDAO.getLocationsOfPolicy(policy);
             }
+            Collections.sort(policyList);
 
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while getting all the policies.";
@@ -525,6 +527,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
             }
 
+            Collections.sort(policies);
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while getting the policies for device identifier (" +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType() + ")";
@@ -560,6 +563,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
             }
 
+            Collections.sort(policies);
 //        } catch (PolicyManagerDAOException e) {
 //            String msg = "Error occurred while getting all the policies.";
 //            log.error(msg, e);
@@ -603,6 +607,7 @@ public class PolicyManagerImpl implements PolicyManager {
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }
+        Collections.sort(policies);
         return policies;
     }
 
@@ -629,6 +634,7 @@ public class PolicyManagerImpl implements PolicyManager {
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }
+        Collections.sort(policies);
         return policies;
     }
 
@@ -722,6 +728,19 @@ public class PolicyManagerImpl implements PolicyManager {
             throw new PolicyManagementException(msg, e);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
+
+    @Override
+    public int getPolicyCount() throws PolicyManagementException {
+        int policyCount = 0;
+        try {
+            policyCount = policyDAO.getPolicyCount();
+            return policyCount;
+        } catch (PolicyManagerDAOException e) {
+            String msg = "Error occurred while getting policy count";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }

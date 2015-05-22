@@ -60,5 +60,10 @@ public interface DeviceDAO {
 	 */
 	List<Device> getDeviceListOfUser(String username , int tenantId) throws DeviceManagementDAOException;
 
-
+    /**
+     * Get the count of devices
+     * @return device count
+     * @throws DeviceManagementDAOException
+     */
+    int getDeviceCount() throws DeviceManagementDAOException;
 }

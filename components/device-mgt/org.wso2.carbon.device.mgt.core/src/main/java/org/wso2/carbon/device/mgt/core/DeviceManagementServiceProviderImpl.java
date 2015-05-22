@@ -589,4 +589,14 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         }
         return devicesOfRole;
     }
+
+    @Override
+    public int getDeviceCount() throws DeviceManagementException {
+        try {
+            int deviceCount = this.deviceDAO.getDeviceCount();
+            return deviceCount;
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining devices all devices", e);
+        }
+    }
 }

@@ -98,7 +98,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                 deviceIdentifiers.add(deviceIdentifier);
 
                 List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
-
+                List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
                 for (ProfileFeature feature : effectiveFeatures) {
                     ProfileOperation operation = new ProfileOperation();
 
@@ -110,9 +110,6 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService().
                             addOperation(operation, deviceIdentifiers);
                 }
-
-
-
 
             } else {
                 return null;
@@ -142,10 +139,9 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
             deviceIdentifiers.add(deviceIdentifier);
+            List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
 
             if (!effectiveFeatures.isEmpty()) {
-                PolicyOperation policyOperation = new PolicyOperation();
-
                 for (ProfileFeature feature : effectiveFeatures) {
                     ProfileOperation operation = new ProfileOperation();
 
@@ -154,12 +150,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                     operation.setStatus(Operation.Status.PENDING);
                     operation.setType(Operation.Type.PROFILE);
                     operation.setEnabled(true);
-
-
+                    profileOperationList.add(operation);
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                            addOperation(policyOperation, deviceIdentifiers);
+                            addOperation(operation, deviceIdentifiers);
                 }
-
             } else {
                 return null;
             }
@@ -201,5 +195,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public PolicyEvaluationPoint getPEP() throws PolicyManagementException {
         return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+    }
+
+    @Override
+    public int getPolicyCount() throws PolicyManagementException {
+        return policyAdministratorPoint.getPolicyCount();
     }
 }

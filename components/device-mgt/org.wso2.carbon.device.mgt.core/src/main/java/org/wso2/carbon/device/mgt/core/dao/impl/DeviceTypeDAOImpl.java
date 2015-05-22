@@ -67,7 +67,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<DeviceType> deviceTypes = null;
+        List<DeviceType> deviceTypes =  new ArrayList<DeviceType>();;
         try {
             conn = this.getConnection();
             String sql = "SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE";
@@ -75,7 +75,6 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                deviceTypes = new ArrayList<DeviceType>();
                 DeviceType deviceType = new DeviceType();
                 deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
                 deviceType.setName(rs.getString("DEVICE_TYPE"));

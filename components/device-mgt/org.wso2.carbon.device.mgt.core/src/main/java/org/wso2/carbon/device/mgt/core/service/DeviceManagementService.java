@@ -70,4 +70,10 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
      */
     List<Device> getAllDevicesOfRole(String roleName) throws DeviceManagementException;
 
+    /**
+     * Method to get the count of all types of devices.
+     * @return device count
+     * @throws DeviceManagementException
+     */
+    int getDeviceCount() throws DeviceManagementException;
 }

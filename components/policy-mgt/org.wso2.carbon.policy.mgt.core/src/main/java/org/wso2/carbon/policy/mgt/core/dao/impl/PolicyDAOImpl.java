@@ -1343,4 +1343,32 @@ public class PolicyDAOImpl implements PolicyDAO {
         return priority;
     }
 
+    @Override
+    public int getPolicyCount() throws PolicyManagerDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        int policyCount = 0;
+        try {
+            conn = this.getConnection();
+            String query = "SELECT COUNT(DM_POLICY.ID) FROM DM_POLICY";
+            stmt = conn.prepareStatement(query);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                policyCount = resultSet.getInt(0);
+            }
+            return policyCount;
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while reading the policies from the database.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+    }
+
 }

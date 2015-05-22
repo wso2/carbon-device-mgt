@@ -117,4 +117,9 @@ public class PolicyManagementService implements PolicyManagerService {
     public PolicyEvaluationPoint getPEP() throws PolicyManagementException {
         return policyManagerService.getPEP();
     }
+
+    @Override
+    public int getPolicyCount() throws PolicyManagementException {
+        return policyManagerService.getPolicyCount();
+    }
 }

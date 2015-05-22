@@ -205,4 +205,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                                          .getAllDevicesOfRole(roleName);
     }
+
+    @Override
+    public int getDeviceCount() throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                                    .getDeviceCount();
+    }
 }

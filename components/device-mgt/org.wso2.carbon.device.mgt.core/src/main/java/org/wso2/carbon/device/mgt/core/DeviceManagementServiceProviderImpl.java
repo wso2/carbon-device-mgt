@@ -255,7 +255,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
         String messageHeader = "";
         String messageBody = "";
-        String messageFooter = "";
+        String messageFooter1 = "";
+        String messageFooter2 = "";
+        String messageFooter3 = "";
         String url = "";
         String subject = "";
 
@@ -264,7 +266,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
-                messageFooter = notificationMessage.getFooter();
+                messageFooter1 = notificationMessage.getFooterLine1();
+                messageFooter2 = notificationMessage.getFooterLine2();
+                messageFooter3  = notificationMessage.getFooterLine3();
                 url = notificationMessage.getUrl();
                 subject = notificationMessage.getSubject();
                 break;
@@ -277,13 +281,19 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                     URLEncoder.encode(emailMessageProperties.getFirstName(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
+            messageBody = messageBody.trim() + System.getProperty("line.separator") +
+                    System.getProperty("line.separator") + url.replaceAll("\\{"
                             + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
-            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
-            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter);
+            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
+                    .append(System.getProperty("line.separator"));
+            messageBuilder.append(messageBody);
+            messageBuilder.append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
+            messageBuilder.append(messageFooter1.trim())
+                    .append(System.getProperty("line.separator")).append(messageFooter2.trim()).append(System
+                    .getProperty("line.separator")).append(messageFooter3.trim());
 
         } catch (IOException e) {
             log.error("IO error in processing enrol email message " + emailMessageProperties);
@@ -302,7 +312,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
         String messageHeader = "";
         String messageBody = "";
-        String messageFooter = "";
+        String messageFooter1 = "";
+        String messageFooter2 = "";
+        String messageFooter3 = "";
         String url = "";
         String subject = "";
 
@@ -311,7 +323,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
-                messageFooter = notificationMessage.getFooter();
+                messageFooter1 = notificationMessage.getFooterLine1();
+                messageFooter2 = notificationMessage.getFooterLine2();
+                messageFooter3 = notificationMessage.getFooterLine3();
                 url = notificationMessage.getUrl();
                 subject = notificationMessage.getSubject();
                 break;
@@ -325,7 +339,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     URLEncoder.encode(emailMessageProperties.getFirstName(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
-            messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.USERNAME + "\\}",
+            messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
+                            .USERNAME
+                            + "\\}",
                     URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
 
@@ -339,7 +355,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
-            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter);
+            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter1.trim());
+            messageBuilder.append(System.getProperty("line.separator")).append(messageFooter2.trim());
+            messageBuilder.append(System.getProperty("line.separator")).append(messageFooter3.trim());
 
         } catch (IOException e) {
             log.error("IO error in processing enrol email message " + emailMessageProperties);
@@ -488,7 +506,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             devicesList = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the devices of user '"
-                                                + userName + "'", e);
+                    + userName + "'", e);
         }
 
         //Fetch the DeviceList from device plugin dbs & append the properties
@@ -509,8 +527,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                 }
                 devicesOfUser.add(convertedDevice);
             } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while obtaining the device type of DeviceTypeId '"+
-                          device.getDeviceTypeId() + "'",e);
+                log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
+                        device.getDeviceTypeId() + "'", e);
             }
         }
         return devicesOfUser;
@@ -531,15 +549,15 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         int tenantId = DeviceManagerUtil.getTenantId();
         //Obtaining the list of users of role
         try {
-            users =  DeviceManagementDataHolder.getInstance().getUserManager().getUsersForTenantAndRole(
+            users = DeviceManagementDataHolder.getInstance().getUserManager().getUsersForTenantAndRole(
                     tenantId, roleName);
         } catch (org.wso2.carbon.device.mgt.user.common.UserManagementException e) {
             throw new DeviceManagementException("Error occurred while obtaining the users of role '"
-                                                + roleName + "'", e);
+                    + roleName + "'", e);
         }
 
         //Obtaining the devices per user
-        for(org.wso2.carbon.device.mgt.user.common.User user:users){
+        for (org.wso2.carbon.device.mgt.user.common.User user : users) {
             try {
                 userName = user.getUserName();
                 devicesList = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
@@ -560,13 +578,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                         }
                         devicesOfRole.add(convertedDevice);
                     } catch (DeviceManagementDAOException e) {
-                        log.error("Error occurred while obtaining the device type of DeviceTypeId '"+
-                                  device.getDeviceTypeId() + "'",e);
+                        log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
+                                device.getDeviceTypeId() + "'", e);
                     }
                 }
             } catch (DeviceManagementDAOException e) {
                 log.error("Error occurred while obtaining the devices of user '"
-                                                    + userName + "'", e);
+                        + userName + "'", e);
             }
         }
         return devicesOfRole;

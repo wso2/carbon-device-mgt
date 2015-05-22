@@ -27,7 +27,9 @@ public class NotificationMessages {
 
     private String header;
     private String body;
-    private String footer;
+    private String footerLine1;
+    private String footerLine2;
+    private String footerLine3;
     private String subject;
     private String url;
 
@@ -60,15 +62,6 @@ public class NotificationMessages {
         this.body = body;
     }
 
-    @XmlElement(name = "Footer", required = true)
-    public String getFooter() {
-        return footer;
-    }
-
-    public void setFooter(String footer) {
-        this.footer = footer;
-    }
-
     @XmlElement(name = "Subject", required = true)
     public String getSubject() {
         return subject;
@@ -86,4 +79,32 @@ public class NotificationMessages {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @XmlElement(name = "Footer1")
+    public String getFooterLine1() {
+        return footerLine1;
+    }
+
+    public void setFooterLine1(String footerLine1) {
+        this.footerLine1 = footerLine1;
+    }
+
+    @XmlElement(name = "Footer2")
+    public String getFooterLine2() {
+        return footerLine2;
+    }
+
+    public void setFooterLine2(String footerLine2) {
+        this.footerLine2 = footerLine2;
+    }
+
+    @XmlElement(name = "Footer3")
+    public String getFooterLine3() {
+        return footerLine3;
+    }
+
+    public void setFooterLine3(String footerLine3) {
+        this.footerLine3 = footerLine3;
+    }
+
 }

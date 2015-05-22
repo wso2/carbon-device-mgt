@@ -1352,12 +1352,12 @@ public class PolicyDAOImpl implements PolicyDAO {
         int policyCount = 0;
         try {
             conn = this.getConnection();
-            String query = "SELECT COUNT(DM_POLICY.ID) FROM DM_POLICY";
+            String query = "SELECT COUNT(ID) AS POLICY_COUNT FROM DM_POLICY";
             stmt = conn.prepareStatement(query);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                policyCount = resultSet.getInt(0);
+                policyCount = resultSet.getInt("POLICY_COUNT");
             }
             return policyCount;
 

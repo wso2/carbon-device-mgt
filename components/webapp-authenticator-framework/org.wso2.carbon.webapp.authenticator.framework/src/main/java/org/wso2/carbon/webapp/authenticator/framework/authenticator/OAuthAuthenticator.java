@@ -55,28 +55,16 @@ public class OAuthAuthenticator implements WebappAuthenticator {
         }
 
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
-        String context = request.getContextPath();
+        String context = tokenizer.nextToken();
         if (context == null || "".equals(context)) {
-            context = tokenizer.nextToken();
-            if (context == null || "".equals(context)) {
-                return Status.CONTINUE;
-            }
+            return Status.CONTINUE;
         }
-
-//        boolean isContextCached = false;
-//        if (APIUtil.getAPIContextCache().get(context) != null) {
-//            isContextCached = Boolean.parseBoolean(APIUtil.getAPIContextCache().get(context).toString());
-//        }
-//        if (!isContextCached) {
-//            return Status.CONTINUE;
-//        }
+        String apiVersion = tokenizer.nextToken();
+        String domain = request.getHeader(APITokenValidator.getAPIManagerClientDomainHeader());
+        String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion,
+                request.getRequestURI(), request.getMethod());
 
         try {
-            String apiVersion = tokenizer.nextToken();
-            String domain = request.getHeader(APITokenValidator.getAPIManagerClientDomainHeader());
-            String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion,
-                    request.getRequestURI(), request.getMethod());
-
             if (Constants.NO_MATCHING_AUTH_SCHEME.equals(authLevel)) {
                 AuthenticationFrameworkUtil.handleNoMatchAuthScheme(request, response, request.getMethod(),
                         apiVersion, context);

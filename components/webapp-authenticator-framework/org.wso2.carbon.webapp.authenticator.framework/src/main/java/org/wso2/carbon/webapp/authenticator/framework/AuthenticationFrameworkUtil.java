@@ -64,21 +64,21 @@ public class AuthenticationFrameworkUtil {
         APIKeyValidationInfoDTO apiKeyValidationDTO = tokenValidator.validateKey(context, version, accessToken,
                 requiredAuthenticationLevel, clientDomain);
         if (apiKeyValidationDTO.isAuthorized()) {
-            String userName = apiKeyValidationDTO.getEndUserName();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
+            String username = apiKeyValidationDTO.getEndUserName();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
             try {
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                        IdentityUtil.getTenantIdOFUser(userName));
+                        IdentityUtil.getTenantIdOFUser(username));
             } catch (IdentityException e) {
                 throw new AuthenticationException("Error occurred while retrieving the tenant ID of user '" +
-                        userName + "'", e);
+                        username + "'", e);
             }
+            return true;
         } else {
             throw new AuthenticationException(apiKeyValidationDTO.getValidationStatus(),
                     "Access failure for API: " + context + ", version: " +
                             version + " with key: " + accessToken);
         }
-        return false;
     }
 
     public static void handleResponse(Request request, Response response, int statusCode, String payload) {

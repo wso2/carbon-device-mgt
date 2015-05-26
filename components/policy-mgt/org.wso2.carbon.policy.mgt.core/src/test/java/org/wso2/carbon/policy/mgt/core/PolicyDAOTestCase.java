@@ -405,4 +405,13 @@ public class PolicyDAOTestCase {
     }
 
 
+    @Test(dependsOnMethods = ("getRoleRelatedPolicyThirdTime"))
+    public void deletPolicy() throws PolicyManagementException {
+        PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
+        policyAdministratorPoint.deletePolicy(1);
+
+        log.debug("First policy deleted.");
+    }
+
+
 }

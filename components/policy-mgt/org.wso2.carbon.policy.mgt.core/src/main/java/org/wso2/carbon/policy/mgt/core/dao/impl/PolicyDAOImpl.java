@@ -1181,7 +1181,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.executeUpdate();
 
 
-            String locationPolicy = "DELETE FROM DM_LOCATION WHERE POLICY_ID = ?";
+            /*String locationPolicy = "DELETE FROM DM_LOCATION WHERE POLICY_ID = ?";
             stmt = conn.prepareStatement(locationPolicy);
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
@@ -1196,7 +1196,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             String datePolicy = "DELETE FROM DM_DATE WHERE POLICY_ID = ?";
             stmt = conn.prepareStatement(datePolicy);
             stmt.setInt(1, policyId);
-            stmt.executeUpdate();
+            stmt.executeUpdate();*/
 
 
             String deleteCriteria = "DELETE FROM DM_POLICY_CRITERIA WHERE POLICY_ID = ?";

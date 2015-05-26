@@ -27,7 +27,6 @@ import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.core.authenticate.APITokenValidator;
 import org.wso2.carbon.apimgt.core.gateway.APITokenAuthenticator;
-import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
 import org.wso2.carbon.webapp.authenticator.framework.Constants;
@@ -41,7 +40,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
     private static final String OAUTH_AUTHENTICATOR = "OAuth";
     private static APITokenAuthenticator authenticator = new APITokenAuthenticator();
-    private static final String REGEX_BEARER_PATTERN = "\"[B|b]earer\\\\s\"";
+    private static final String REGEX_BEARER_PATTERN = "[B|b]earer\\s";
 
     private static final Log log = LogFactory.getLog(OAuthAuthenticator.class);
 
@@ -105,8 +104,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             tokenValue = authBC.toString();
             Pattern pattern = Pattern.compile(REGEX_BEARER_PATTERN);
             Matcher matcher = pattern.matcher(tokenValue);
-
-            if (matcher.find()){
+            if (matcher.find()) {
                 tokenValue = tokenValue.substring(matcher.end());
             }
         }

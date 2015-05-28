@@ -73,7 +73,18 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
     /**
      * Method to get the count of all types of devices.
      * @return device count
-     * @throws DeviceManagementException
+     * @throws DeviceManagementException If some unusual behaviour is observed while counting
+     * the devices
      */
     int getDeviceCount() throws DeviceManagementException;
+
+    /**
+     * Method to get the list of devices that matches with the given device name.
+     *
+     * @param deviceName    name of the device
+     * @return List of devices that matches with the given device name.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException;
 }

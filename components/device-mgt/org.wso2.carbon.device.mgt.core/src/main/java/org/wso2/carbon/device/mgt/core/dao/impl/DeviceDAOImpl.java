@@ -330,4 +330,58 @@ public class DeviceDAOImpl implements DeviceDAO {
         return deviceCount;
     }
 
+    /**
+     * Get the list of devices that matches with the given device name.
+     *
+     * @param deviceName Name of the device.
+     * @param tenantId
+     * @return device list
+     * @throws DeviceManagementDAOException
+     */
+    @Override
+    public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException {
+        Connection conn = this.getConnection();
+        PreparedStatement stmt = null;
+        List<Device> deviceList = new ArrayList<Device>();
+        try {
+            stmt = conn.prepareStatement(
+                    "SELECT DM_DEVICE_TYPE.ID, DM_DEVICE_TYPE.NAME, DM_DEVICE.ID, DM_DEVICE.DESCRIPTION, " +
+                    "DM_DEVICE.NAME, DM_DEVICE.DATE_OF_ENROLLMENT, DM_DEVICE.DATE_OF_LAST_UPDATE, " +
+                    "DM_DEVICE.OWNERSHIP, DM_DEVICE.STATUS, DM_DEVICE.DEVICE_TYPE_ID, " +
+                    "DM_DEVICE.DEVICE_IDENTIFICATION, DM_DEVICE.OWNER, DM_DEVICE.TENANT_ID FROM " +
+                    "DM_DEVICE, DM_DEVICE_TYPE WHERE DM_DEVICE.DEVICE_TYPE_ID = DM_DEVICE_TYPE.ID " +
+                    "AND DM_DEVICE.NAME LIKE ? AND DM_DEVICE.TENANT_ID =?");
+            stmt.setString(1, deviceName + "%");
+            stmt.setInt(2, tenantId);
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                Device device = new Device();
+                DeviceType deviceType = new DeviceType();
+                int id = resultSet.getInt(resultSet.getInt(1));
+                deviceType.setId(id);
+                deviceType.setName(resultSet.getString(2));
+                device.setId(resultSet.getInt(3));
+                device.setDescription(resultSet.getString(4));
+                device.setName(resultSet.getString(5));
+                device.setDateOfEnrollment(resultSet.getLong(6));
+                device.setDateOfLastUpdate(resultSet.getLong(7));
+                device.setOwnerShip(resultSet.getString(8));
+                device.setStatus(Status.valueOf(resultSet.getString(9)));
+                device.setDeviceTypeId(resultSet.getInt(10));
+                device.setDeviceIdentificationId(resultSet.getString(11));
+                device.setOwnerId(resultSet.getString(12));
+                device.setTenantId(resultSet.getInt(13));
+                deviceList.add(device);
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while fetching the list of devices that matches to '" + deviceName + "'";
+            log.error(msg, e);
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(conn, stmt, null);
+        }
+        return deviceList;
+    }
+
 }

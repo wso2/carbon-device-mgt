@@ -65,7 +65,7 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
             OAuthApplicationInfo info = this.registerApplication(profile);
-            return Response.status(Response.Status.ACCEPTED).entity(info.getJsonString()).build();
+            return Response.status(Response.Status.ACCEPTED).entity(info.toString()).build();
         } catch (APIManagementException e) {
             String msg = "Error occurred while registering client '" + profile.getClientName() + "'";
             log.error(msg, e);
@@ -125,6 +125,8 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
                 oAuthApplicationInfo.addParameter(ApplicationConstants.
                         OAUTH_CLIENT_GRANT, jsonObject.get(ApplicationConstants.OAUTH_CLIENT_GRANT));
             }
+
+
         } catch (JSONException e) {
             throw new APIManagementException("Can not retrieve information of the created OAuth application", e);
         }

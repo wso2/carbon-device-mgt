@@ -18,8 +18,10 @@
  */
 package org.wso2.carbon.identity.oauth.extension;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,6 +101,15 @@ public class OAuthApplicationInfo {
 
     public void removeParameter(String key){
         this.parameters.remove(key);
+    }
+
+    public String toString() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (IOException e) {
+            throw new RuntimeException("Error occurred while serializing OAuthApplicationInfo bean");
+        }
     }
 
 }

@@ -18,19 +18,24 @@
  */
 package org.wso2.carbon.identity.oauth.extension;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public interface RegistrationService {
+public class RegistrationResponse extends Response {
 
-    @POST
-    @Path("/register")
-    Response register(RegistrationProfile profile);
+    @Override
+    public Object getEntity() {
+        return null;
+    }
+
+    @Override
+    public int getStatus() {
+        return 0;
+    }
+
+    @Override
+    public MultivaluedMap<String, Object> getMetadata() {
+        return null;
+    }
 
 }

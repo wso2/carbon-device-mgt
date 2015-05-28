@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.identity.oauth.extension;
 
-import javax.ws.rs.core.Request;
-
 public class RegistrationProfile {
 
     private String applicationType;
@@ -34,6 +32,7 @@ public class RegistrationProfile {
     private String userInfoEncryptedResponseEnc;
     private String[] contacts;
     private String[] requestUris;
+    private String owner;
 
     public String getApplicationType() {
         return applicationType;
@@ -129,6 +128,14 @@ public class RegistrationProfile {
 
     public void setRequestUris(String[] requestUris) {
         this.requestUris = requestUris;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
 }

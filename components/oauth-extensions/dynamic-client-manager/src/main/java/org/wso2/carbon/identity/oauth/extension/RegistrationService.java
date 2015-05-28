@@ -30,7 +30,6 @@ import javax.ws.rs.core.Response;
 public interface RegistrationService {
 
     @POST
-    @Path("/register")
     Response register(RegistrationProfile profile);
 
 }

@@ -20,12 +20,11 @@ package org.wso2.carbon.identity.oauth.extension.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.simple.JSONArray;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
-import org.wso2.carbon.apimgt.keymgt.client.SubscriberKeyMgtClient;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
@@ -37,7 +36,10 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
-import org.wso2.carbon.identity.oauth.extension.*;
+import org.wso2.carbon.identity.oauth.extension.ApplicationConstants;
+import org.wso2.carbon.identity.oauth.extension.OAuthApplicationInfo;
+import org.wso2.carbon.identity.oauth.extension.RegistrationProfile;
+import org.wso2.carbon.identity.oauth.extension.RegistrationService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -68,19 +70,17 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
 
 
     private OAuthApplicationInfo registerApplication(RegistrationProfile profile) throws APIManagementException {
-        //OAuthApplications are created by calling to APIKeyMgtSubscriber Service
-        SubscriberKeyMgtClient keyMgtClient = APIUtil.getKeyManagementClient();
         OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
 
         //Subscriber's name should be passed as a parameter, since it's under the subscriber the OAuth App is created.
-        String userId = (String) oAuthApplicationInfo.getParameter(ApplicationConstants.OAUTH_CLIENT_USERNAME);
+        String userId = profile.getOwner();
         String applicationName = profile.getClientName();
 
         if (log.isDebugEnabled()) {
-            log.debug("Trying to create OAuth application :" + applicationName);
+            log.debug("Trying to create OAuth application: '" + applicationName + "'");
         }
 
-        String callBackURL = "";
+        String callBackURL = null;
         if (oAuthApplicationInfo.getParameter("callback_url") != null) {
             JSONArray jsonArray = (JSONArray) oAuthApplicationInfo.getParameter("callback_url");
             for (Object callbackUrlObject : jsonArray) {

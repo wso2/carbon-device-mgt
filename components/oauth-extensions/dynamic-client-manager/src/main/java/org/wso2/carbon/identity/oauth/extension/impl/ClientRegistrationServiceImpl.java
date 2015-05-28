@@ -87,15 +87,9 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
             log.debug("Trying to create OAuth application: '" + applicationName + "'");
         }
 
-        String callBackURL = null;
-        if (oAuthApplicationInfo.getParameter("callback_url") != null) {
-            JSONArray jsonArray = (JSONArray) oAuthApplicationInfo.getParameter("callback_url");
-            for (Object callbackUrlObject : jsonArray) {
-                callBackURL = (String) callbackUrlObject;
-            }
-        }
+        String callBackURL = profile.getCallbackUrl();
 
-        String tokenScope = (String) oAuthApplicationInfo.getParameter("tokenScope");
+        String tokenScope = profile.getTokenScope();
         String tokenScopes[] = new String[1];
         tokenScopes[0] = tokenScope;
 

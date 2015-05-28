@@ -33,6 +33,8 @@ public class RegistrationProfile {
     private String[] contacts;
     private String[] requestUris;
     private String owner;
+    private String callbackUrl;
+    private String tokenScope;
 
     public String getApplicationType() {
         return applicationType;
@@ -136,6 +138,22 @@ public class RegistrationProfile {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getCallbackUrl() {
+        return callbackUrl;
+    }
+
+    public void setCallbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
+    }
+
+    public String getTokenScope() {
+        return tokenScope;
+    }
+
+    public void setTokenScope(String tokenScope) {
+        this.tokenScope = tokenScope;
     }
 
 }

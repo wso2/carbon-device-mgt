@@ -18,34 +18,20 @@
   ~  * under the License.
   ~  */
   -->
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://java.sun.com/xml/ns/javaee"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5">
-    <display-name>CDM-Windows-API</display-name>
-
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/cxf-servlet.xml</param-value>
-    </context-param>
-
-    <listener>
-        <listener-class>org.wso2.carbon.mdm.mobileservices.windows.common.util.ConfigInitializerContextListener
-        </listener-class>
-    </listener>
-
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+    <display-name>Admin-Webapp</display-name>
     <servlet>
-        <description>JAX-WS/JAX-RS-windows Endpoint</description>
-        <display-name>JAX-WS/JAX-RS-windows Servlet</display-name>
-        <servlet-name>JAXServlet-windows</servlet-name>
+        <description>JAX-WS/JAX-RS Device Registration Agent Endpoint</description>
+        <display-name>JAX-WS/JAX-RS Servlet</display-name>
+        <servlet-name>CXFServlet</servlet-name>
         <servlet-class>
             org.apache.cxf.transport.servlet.CXFServlet
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>JAXServlet-windows</servlet-name>
-        <url-pattern>/services/*</url-pattern>
+        <servlet-name>CXFServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>

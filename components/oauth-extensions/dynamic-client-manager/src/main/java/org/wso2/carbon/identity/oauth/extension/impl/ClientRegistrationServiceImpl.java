@@ -43,12 +43,19 @@ import org.wso2.carbon.identity.oauth.extension.RegistrationService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ClientRegistrationServiceImpl implements RegistrationService {
 
     private static final Log log = LogFactory.getLog(ClientRegistrationServiceImpl.class);
 
+    @POST
     @Override
     public Response register(RegistrationProfile profile) {
         try {

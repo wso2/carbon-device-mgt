@@ -31,8 +31,12 @@
         <jaxrs:serviceBeans>
             <ref bean="RegistrationServiceBean"/>
         </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jsonProvider"/>
+        </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="RegistrationServiceBean" class="org.wso2.carbon.identity.oauth.extension.impl.ClientRegistrationServiceImpl"/>
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
 </beans>
 

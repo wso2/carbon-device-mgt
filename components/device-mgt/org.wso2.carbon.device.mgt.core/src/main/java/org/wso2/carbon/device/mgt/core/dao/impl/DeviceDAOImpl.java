@@ -350,8 +350,8 @@ public class DeviceDAOImpl implements DeviceDAO {
                     "DM_DEVICE.OWNERSHIP, DM_DEVICE.STATUS, DM_DEVICE.DEVICE_TYPE_ID, " +
                     "DM_DEVICE.DEVICE_IDENTIFICATION, DM_DEVICE.OWNER, DM_DEVICE.TENANT_ID FROM " +
                     "DM_DEVICE, DM_DEVICE_TYPE WHERE DM_DEVICE.DEVICE_TYPE_ID = DM_DEVICE_TYPE.ID " +
-                    "AND DM_DEVICE.NAME LIKE %?% AND DM_DEVICE.TENANT_ID =?");
-            stmt.setString(1, deviceName);
+                    "AND DM_DEVICE.NAME LIKE ? AND DM_DEVICE.TENANT_ID =?");
+            stmt.setString(1, deviceName + "%");
             stmt.setInt(2, tenantId);
             ResultSet resultSet = stmt.executeQuery();
 
@@ -366,7 +366,6 @@ public class DeviceDAOImpl implements DeviceDAO {
                 device.setName(resultSet.getString(5));
                 device.setDateOfEnrollment(resultSet.getLong(6));
                 device.setDateOfLastUpdate(resultSet.getLong(7));
-                //TODO:- Ownership is not a enum in DeviceDAO
                 device.setOwnerShip(resultSet.getString(8));
                 device.setStatus(Status.valueOf(resultSet.getString(9)));
                 device.setDeviceTypeId(resultSet.getInt(10));

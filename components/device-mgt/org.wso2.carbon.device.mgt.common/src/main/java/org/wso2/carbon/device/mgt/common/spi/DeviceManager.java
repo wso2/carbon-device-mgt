@@ -134,4 +134,6 @@ public interface DeviceManager {
      */
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
 
+    boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException;
+
 }

@@ -108,7 +108,11 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         try {
             org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
             DeviceType deviceType = this.getDeviceTypeDAO().getDeviceType(device.getType());
-            deviceDto.setStatus(Status.ACTIVE);
+            if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), deviceType.getName()))) {
+                deviceDto.setStatus(Status.INACTIVE);
+            } else {
+                deviceDto.setStatus(Status.ACTIVE);
+            }
             deviceDto.setDeviceTypeId(deviceType.getId());
             this.getDeviceDAO().addDevice(deviceDto);
         } catch (DeviceManagementDAOException e) {
@@ -408,6 +412,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
         return dms.setOwnership(deviceId, ownershipType);
+    }
+
+    @Override
+    public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+        return dms.isClaimable(deviceId);
     }
 
     @Override

@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -29,6 +28,8 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOU
 
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
@@ -57,67 +58,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;
-    }
-
-    public Operation getNextOperation(DeviceIdentifier deviceId) throws OperationManagementDAOException {
-
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        ByteArrayInputStream bais = null;
-        ObjectInputStream ois = null;
-
-        try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement(
-                    "SELECT po.OPERATION_DETAILS AS OPERATION_DETAILS " +
-                            "FROM DM_OPERATION o " +
-                            "INNER JOIN DM_PROFILE_OPERATION po ON o.ID = po.OPERATION_ID AND o.STATUS =? AND o.ID IN ("
-                            +
-                            "SELECT dom.OPERATION_ID FROM (SELECT d.ID FROM DM_DEVICE d INNER JOIN " +
-                            "DM_DEVICE_TYPE dm ON d.DEVICE_TYPE_ID = dm.ID AND dm.NAME = ? AND " +
-                            "d.DEVICE_IDENTIFICATION = ?) d1 INNER JOIN DM_DEVICE_OPERATION_MAPPING dom " +
-                            "ON d1.ID = dom.DEVICE_ID) ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
-
-            stmt.setString(1, Operation.Status.PENDING.toString());
-            stmt.setString(2, deviceId.getType());
-            stmt.setString(3, deviceId.getId());
-            rs = stmt.executeQuery();
-
-            byte[] operationDetails = new byte[0];
-            if (rs.next()) {
-                operationDetails = rs.getBytes("OPERATION_DETAILS");
-            }
-            bais = new ByteArrayInputStream(operationDetails);
-            ois = new ObjectInputStream(bais);
-            return (ProfileOperation) ois.readObject();
-        } catch (SQLException e) {
-            log.error("SQL error occurred while retrieving profile operation", e);
-            throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
-        } catch (ClassNotFoundException e) {
-            log.error("Class not found error occurred while retrieving profile operation", e);
-            throw new OperationManagementDAOException("Error occurred while casting retrieved payload as a " +
-                    "ProfileOperation object", e);
-        } catch (IOException e) {
-            log.error("IO error occurred while de serialize profile operation", e);
-            throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
-        } finally {
-            if (bais != null) {
-                try {
-                    bais.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
-                }
-            }
-            if (ois != null) {
-                try {
-                    ois.close();
-                } catch (IOException e) {
-                    log.warn("Error occurred while closing ObjectOutputStream", e);
-                }
-            }
-            OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
-        }
     }
 
     @Override
@@ -179,5 +119,118 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
+    }
+
+    public Operation getOperation(int id) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ProfileOperation profileOperation = null;
+
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID=?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
+                bais = new ByteArrayInputStream(operationDetails);
+                ois = new ObjectInputStream(bais);
+                profileOperation = (ProfileOperation) ois.readObject();
+            }
+
+        } catch (IOException e) {
+            String errorMsg = "IO Error occurred while de serialize the profile operation object";
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } catch (ClassNotFoundException e) {
+            String errorMsg = "Class not found error occurred while de serialize the profile operation object";
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } catch (SQLException e) {
+            String errorMsg = "SQL Error occurred while retrieving the command operation object " + "available for " +
+                    "the id '"
+                    + id;
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
+        }
+        return profileOperation;
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
+            Operation.Status status) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ProfileOperation profileOperation;
+
+        List<Operation> operationList = new ArrayList<Operation>();
+
+        ByteArrayInputStream bais = null;
+        ObjectInputStream ois = null;
+
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "Select OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_PROFILE_OPERATION po " +
+                    "INNER JOIN  " +
+                    "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? " +
+                    "AND STATUS=?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, deviceId);
+            stmt.setString(2, status.toString());
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
+                bais = new ByteArrayInputStream(operationDetails);
+                ois = new ObjectInputStream(bais);
+                profileOperation = (ProfileOperation) ois.readObject();
+                operationList.add(profileOperation);
+            }
+
+        } catch (IOException e) {
+            String errorMsg = "IO Error occurred while de serialize the profile operation object";
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } catch (ClassNotFoundException e) {
+            String errorMsg = "Class not found error occurred while de serialize the profile operation object";
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } catch (SQLException e) {
+            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + deviceId +
+                    "' with status '" + status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } finally {
+            if (bais != null) {
+                try {
+                    bais.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
+        }
+        return operationList;
     }
 }

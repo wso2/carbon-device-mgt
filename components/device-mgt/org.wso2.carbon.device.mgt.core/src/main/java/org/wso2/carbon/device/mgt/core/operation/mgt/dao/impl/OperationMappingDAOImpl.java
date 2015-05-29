@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
@@ -34,10 +35,11 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
         PreparedStatement stmt = null;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "INSERT INTO DM_DEVICE_OPERATION_MAPPING(DEVICE_ID, OPERATION_ID) VALUES(?, ?)";
+            String sql = "INSERT INTO DM_DEVICE_OPERATION_MAPPING(DEVICE_ID, OPERATION_ID,STATUS) VALUES(?, ?,?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, operationId);
+            stmt.setString(3, Operation.Status.PENDING.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while persisting device operation mappings", e);

@@ -71,5 +71,4 @@ public interface OperationManager {
 
     public Operation getOperation(int operationId) throws OperationManagementException;
 
-    public List<? extends Operation> getOperationsForStatus(Operation.Status status) throws OperationManagementException;
 }

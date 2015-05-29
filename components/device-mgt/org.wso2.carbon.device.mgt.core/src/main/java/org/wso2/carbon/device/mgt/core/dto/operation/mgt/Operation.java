@@ -27,7 +27,7 @@ import java.util.Properties;
 public class Operation implements Serializable {
 
 	public enum Type {
-		CONFIG, MESSAGE, INFO, COMMAND, PROFILE
+		CONFIG, MESSAGE, INFO, COMMAND, PROFILE , POLICY
 	}
 
     public enum Status {

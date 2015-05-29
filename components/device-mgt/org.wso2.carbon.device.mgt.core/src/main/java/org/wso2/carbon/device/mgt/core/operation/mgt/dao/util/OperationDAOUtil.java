@@ -56,6 +56,7 @@ public class OperationDAOUtil {
         dtoOperation.setId(operation.getId());
         dtoOperation.setPayLoad(operation.getPayLoad());
         dtoOperation.setReceivedTimeStamp(operation.getReceivedTimeStamp());
+        dtoOperation.setProperties(operation.getProperties());
 
         return dtoOperation;
     }
@@ -82,6 +83,7 @@ public class OperationDAOUtil {
         operation.setPayLoad(dtoOperation.getPayLoad());
         operation.setReceivedTimeStamp(dtoOperation.getReceivedTimeStamp());
         operation.setEnabled(dtoOperation.isEnabled());
+        operation.setProperties(dtoOperation.getProperties());
 
         return operation;
     }

@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
@@ -34,6 +36,7 @@ import java.util.List;
 
 public class CommandOperationDAOImpl extends OperationDAOImpl {
 
+    private static final Log log = LogFactory.getLog(CommandOperationDAOImpl.class);
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
 
@@ -94,4 +97,79 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         }
     }
 
+    public CommandOperation getOperation(int id) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        CommandOperation commandOperation = null;
+
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT OPERATION_ID, ENABLED FROM DM_COMMAND_OPERATION WHERE OPERATION_ID=?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                commandOperation = new CommandOperation();
+                commandOperation.setEnabled(rs.getInt("ENABLED") == 0 ? false : true);
+            }
+
+        } catch (SQLException e) {
+            String errorMsg = "SQL Error occurred while retrieving the command operation object " + "available for " +
+                    "the id '"
+                    + id;
+            log.error(errorMsg, e);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
+        }
+        return commandOperation;
+    }
+
+    @Override
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
+            Operation.Status status) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Operation operation;
+
+        List<Operation> operationList = new ArrayList<Operation>();
+
+
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "Select co.OPERATION_ID,ENABLED from DM_COMMAND_OPERATION co "+
+                     "INNER JOIN  "+
+                     "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? "+
+                     "AND STATUS=? ) dm ON dm.OPERATION_ID = co.OPERATION_ID";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, deviceId);
+            stmt.setString(2, status.toString());
+
+            rs = stmt.executeQuery();
+            int operationId;
+
+            while (rs.next()) {
+
+                operationId = rs.getInt("ID");
+                operation = super.getOperation(operationId);
+                operation.setEnabled(rs.getInt("ENABLED") == 0?false:true);
+                operationList.add(operation);
+            }
+        } catch (SQLException e) {
+            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + deviceId +
+                    "' with status '" + status.toString();
+            log.error(errorMsg);
+            throw new OperationManagementDAOException(errorMsg, e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+            OperationManagementDAOFactory.closeConnection();
+        }
+        return operationList;
+    }
 }

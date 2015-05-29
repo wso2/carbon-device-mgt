@@ -33,6 +33,7 @@ import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PolicyManagerServiceImpl implements PolicyManagerService {
@@ -101,6 +102,8 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                 List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
 
                 PolicyOperation policyOperation = new PolicyOperation();
+                policyOperation.setEnabled(true);
+                policyOperation.setType(Operation.Type.POLICY);
 
                 for (ProfileFeature feature : effectiveFeatures) {
                     ProfileOperation profileOperation = new ProfileOperation();

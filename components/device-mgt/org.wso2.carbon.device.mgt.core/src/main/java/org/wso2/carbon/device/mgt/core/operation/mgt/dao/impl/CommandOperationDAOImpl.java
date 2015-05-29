@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -37,6 +36,7 @@ import java.util.List;
 public class CommandOperationDAOImpl extends OperationDAOImpl {
 
     private static final Log log = LogFactory.getLog(CommandOperationDAOImpl.class);
+
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
 
@@ -138,29 +138,35 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         Operation operation;
 
         List<Operation> operationList = new ArrayList<Operation>();
+        List<CommandOperation> commandOperationList = new ArrayList<CommandOperation>();
 
+        CommandOperation commandOperation = null;
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select co.OPERATION_ID,ENABLED from DM_COMMAND_OPERATION co "+
-                     "INNER JOIN  "+
-                     "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? "+
-                     "AND STATUS=? ) dm ON dm.OPERATION_ID = co.OPERATION_ID";
+            String sql = "Select co.OPERATION_ID,ENABLED from DM_COMMAND_OPERATION co " +
+                    "INNER JOIN  " +
+                    "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? " +
+                    "AND STATUS=? ) dm ON dm.OPERATION_ID = co.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
             stmt.setString(2, status.toString());
 
             rs = stmt.executeQuery();
-            int operationId;
-
             while (rs.next()) {
-
-                operationId = rs.getInt("OPERATION_ID");
-                operation = super.getOperation(operationId);
-                operation.setEnabled(rs.getInt("ENABLED") == 0?false:true);
-                operationList.add(operation);
+                commandOperation = new CommandOperation();
+                commandOperation.setEnabled(rs.getInt("ENABLED") == 0 ? false : true);
+                commandOperation.setId(rs.getInt("OPERATION_ID"));
+                commandOperationList.add(commandOperation);
             }
+
+            for(CommandOperation cmOperation:commandOperationList){
+               operation =  super.getOperation(cmOperation.getId());
+               operation.setEnabled(cmOperation.isEnabled());
+               operationList.add(operation);
+            }
+
         } catch (SQLException e) {
             String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + deviceId +
                     "' with status '" + status.toString();

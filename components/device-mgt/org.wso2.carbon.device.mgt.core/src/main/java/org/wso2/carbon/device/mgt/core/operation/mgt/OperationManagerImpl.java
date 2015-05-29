@@ -27,7 +27,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -485,7 +484,7 @@ public class OperationManagerImpl implements OperationManager {
             return profileOperationDAO;
         } else if (operation instanceof ConfigOperation) {
             return configOperationDAO;
-        } else if (operation instanceof org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation){
+        } else if (operation instanceof PolicyOperation){
             return policyOperationDAO;
         }else{
             return operationDAO;

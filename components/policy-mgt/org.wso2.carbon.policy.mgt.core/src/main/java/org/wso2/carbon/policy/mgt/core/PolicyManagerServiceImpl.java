@@ -117,9 +117,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                     profileOperationList.add(profileOperation);
                 }
                 policyOperation.setProfileOperations(profileOperationList);
+                policyOperation.setPayLoad(policyOperation.getProfileOperations());
                 PolicyManagementDataHolder.getInstance().getDeviceManagementService().
                         addOperation(policyOperation, deviceIdentifiers);
-                policyOperation.setPayLoad(policyOperation.getProfileOperations());
+
             } else {
                 return null;
             }

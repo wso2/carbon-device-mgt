@@ -38,6 +38,14 @@ public class Device {
 	private List<Feature> features;
 	private List<Device.Property> properties;
 
+    public enum Status {
+        ACTIVE, INACTIVE, UNCLAIMED
+    }
+
+    public enum OwnerShip {
+        BYOD,COPE
+    }
+
 	@XmlElement
 	public int getId() {
 		return id;

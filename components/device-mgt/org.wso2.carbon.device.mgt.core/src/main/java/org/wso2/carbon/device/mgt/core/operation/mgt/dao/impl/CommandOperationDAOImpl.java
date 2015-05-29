@@ -164,6 +164,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             for(CommandOperation cmOperation:commandOperationList){
                operation =  super.getOperation(cmOperation.getId());
                operation.setEnabled(cmOperation.isEnabled());
+               operation.setStatus(status);
                operationList.add(operation);
             }
 

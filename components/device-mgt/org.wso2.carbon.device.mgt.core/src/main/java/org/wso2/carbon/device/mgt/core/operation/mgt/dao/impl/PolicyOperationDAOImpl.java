@@ -201,6 +201,7 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 policyOperation = (PolicyOperation) ois.readObject();
+                policyOperation.setStatus(status);
                 operationList.add(policyOperation);
             }
 

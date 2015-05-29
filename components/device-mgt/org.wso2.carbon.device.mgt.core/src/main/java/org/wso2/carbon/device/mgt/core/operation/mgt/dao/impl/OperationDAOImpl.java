@@ -218,6 +218,7 @@ public class OperationDAOImpl implements OperationDAO {
                     operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
+                operation.setStatus(status);
                 operationList.add(operation);
             }
         } catch (SQLException e) {
@@ -312,6 +313,7 @@ public class OperationDAOImpl implements OperationDAO {
                     operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
+                operation.setStatus(Operation.Status.PENDING);
             }
             return operation;
         } catch (SQLException e) {

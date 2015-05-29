@@ -198,6 +198,7 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 configOperation = (ConfigOperation) ois.readObject();
+                configOperation.setStatus(status);
                 operationList.add(configOperation);
             }
 

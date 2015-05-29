@@ -197,6 +197,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 profileOperation = (ProfileOperation) ois.readObject();
+                profileOperation.setStatus(status);
                 operationList.add(profileOperation);
             }
 

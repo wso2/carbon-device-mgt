@@ -28,6 +28,7 @@ public class PolicyOperation extends Operation {
     public List<ProfileOperation> getProfileOperations() {
         return profileOperations;
     }
+    public static final String POLICY_OPERATION_CODE = "POLICY_BUNDLE";
 
     public void setProfileOperations(List<ProfileOperation> profileOperations) {
         this.profileOperations = profileOperations;

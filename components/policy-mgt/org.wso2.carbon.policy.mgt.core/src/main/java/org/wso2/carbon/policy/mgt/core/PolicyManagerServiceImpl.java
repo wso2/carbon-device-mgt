@@ -104,6 +104,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                 PolicyOperation policyOperation = new PolicyOperation();
                 policyOperation.setEnabled(true);
                 policyOperation.setType(Operation.Type.POLICY);
+                policyOperation.setCode(PolicyOperation.POLICY_OPERATION_CODE);
 
                 for (ProfileFeature feature : effectiveFeatures) {
                     ProfileOperation profileOperation = new ProfileOperation();

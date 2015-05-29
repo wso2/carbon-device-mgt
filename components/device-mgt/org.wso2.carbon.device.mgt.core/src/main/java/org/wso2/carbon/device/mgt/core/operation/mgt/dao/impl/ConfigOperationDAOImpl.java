@@ -182,10 +182,10 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_POLICY_OPERATION po " +
+            String sql = "Select co.OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_CONFIG_OPERATION co " +
                     "INNER JOIN  " +
                     "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? " +
-                    "AND STATUS=?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
+                    "AND STATUS=?) dm ON dm.OPERATION_ID = co.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);

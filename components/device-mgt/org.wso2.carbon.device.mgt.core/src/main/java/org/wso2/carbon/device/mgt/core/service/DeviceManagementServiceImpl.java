@@ -178,11 +178,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getOperation(operationId);
     }
 
-    @Override
-    public List<? extends Operation> getOperationsForStatus(Operation.Status status)
-            throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getOperationsForStatus(status);
-    }
 
     @Override
     public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties)

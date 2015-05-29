@@ -44,6 +44,65 @@ public class Operation implements Serializable {
     private boolean isEnabled;
     private Object payLoad;
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Operation operation = (Operation) o;
+
+        if (id != operation.id) {
+            return false;
+        }
+        if (isEnabled != operation.isEnabled) {
+            return false;
+        }
+        if (!code.equals(operation.code)) {
+            return false;
+        }
+        if (createdTimeStamp != null ?
+                !createdTimeStamp.equals(operation.createdTimeStamp) :
+                operation.createdTimeStamp != null) {
+            return false;
+        }
+        if (payLoad != null ? !payLoad.equals(operation.payLoad) : operation.payLoad != null) {
+            return false;
+        }
+        if (properties != null ? !properties.equals(operation.properties) : operation.properties != null) {
+            return false;
+        }
+        if (!receivedTimeStamp.equals(operation.receivedTimeStamp)) {
+            return false;
+        }
+        if (status != operation.status) {
+            return false;
+        }
+        if (type != operation.type) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = code.hashCode();
+        result = 31 * result + (properties != null ? properties.hashCode() : 0);
+        result = 31 * result + type.hashCode();
+        result = 31 * result + id;
+        result = 31 * result + status.hashCode();
+        result = 31 * result + receivedTimeStamp.hashCode();
+        result = 31 * result + (createdTimeStamp != null ? createdTimeStamp.hashCode() : 0);
+        result = 31 * result + (isEnabled ? 1 : 0);
+        result = 31 * result + (payLoad != null ? payLoad.hashCode() : 0);
+        return result;
+    }
+
     @XmlElement
     public String getCode() {
         return code;

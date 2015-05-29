@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -31,33 +32,35 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileOperationDAOImpl extends OperationDAOImpl {
+public class PolicyOperationDAOImpl extends OperationDAOImpl {
 
-    private static final Log log = LogFactory.getLog(ProfileOperationDAOImpl.class);
+    private static final Log log = LogFactory.getLog(PolicyOperationDAOImpl.class);
 
+    @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
 
         int operationId = super.addOperation(operation);
         operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
         operation.setId(operationId);
         operation.setEnabled(true);
-        ProfileOperation profileOp = (ProfileOperation) operation;
+        PolicyOperation policyOperation = (PolicyOperation) operation;
         Connection conn = OperationManagementDAOFactory.getConnection();
 
         PreparedStatement stmt = null;
 
         try {
-            stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
+            stmt = conn.prepareStatement("INSERT INTO DM_POLICY_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
             stmt.setInt(1, operationId);
-            stmt.setObject(2, profileOp);
+            stmt.setObject(2, policyOperation);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while adding profile operation", e);
+            throw new OperationManagementDAOException("Error occurred while adding policy operation", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;
+
     }
 
     @Override
@@ -70,7 +73,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_PROFILE_OPERATION O SET O.OPERATION_DETAILS=? " +
+            stmt = connection.prepareStatement("UPDATE DM_POLICY_OPERATION O SET O.OPERATION_DETAILS=? " +
                     "WHERE O.OPERATION_ID=?");
 
             bao = new ByteArrayOutputStream();
@@ -82,9 +85,9 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while update operation metadata", e);
+            throw new OperationManagementDAOException("Error occurred while update policy operation metadata", e);
         } catch (IOException e) {
-            throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
+            throw new OperationManagementDAOException("Error occurred while serializing policy operation object", e);
         } finally {
             if (bao != null) {
                 try {
@@ -105,14 +108,14 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public void deleteOperation(int id) throws OperationManagementDAOException {
+    public void deleteOperation(int operationId) throws OperationManagementDAOException {
 
-        super.deleteOperation(id);
+        super.deleteOperation(operationId);
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_PROFILE_OPERATION WHERE OPERATION_ID=?");
-            stmt.setInt(1, id);
+            stmt = connection.prepareStatement("DELETE DM_POLICY_OPERATION WHERE OPERATION_ID=?");
+            stmt.setInt(1, operationId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
@@ -121,49 +124,50 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         }
     }
 
-    public Operation getOperation(int id) throws OperationManagementDAOException {
+    @Override
+    public Operation getOperation(int operationId) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ProfileOperation profileOperation = null;
+        PolicyOperation policyOperation = null;
 
         ByteArrayInputStream bais;
         ObjectInputStream ois;
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID=?";
+            String sql = "SELECT OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_POLICY_OPERATION WHERE OPERATION_ID=?";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, id);
+            stmt.setInt(1, operationId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
-                profileOperation = (ProfileOperation) ois.readObject();
+                policyOperation = (PolicyOperation) ois.readObject();
             }
 
         } catch (IOException e) {
-            String errorMsg = "IO Error occurred while de serialize the profile operation object";
+            String errorMsg = "IO Error occurred while de serialize the policy operation object";
             log.error(errorMsg, e);
             throw new OperationManagementDAOException(errorMsg, e);
         } catch (ClassNotFoundException e) {
-            String errorMsg = "Class not found error occurred while de serialize the profile operation object";
+            String errorMsg = "Class not found error occurred while de serialize the policy operation object";
             log.error(errorMsg, e);
             throw new OperationManagementDAOException(errorMsg, e);
         } catch (SQLException e) {
-            String errorMsg = "SQL Error occurred while retrieving the command operation object " + "available for " +
+            String errorMsg = "SQL Error occurred while retrieving the policy operation object " + "available for " +
                     "the id '"
-                    + id;
+                    + operationId;
             log.error(errorMsg, e);
             throw new OperationManagementDAOException(errorMsg, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
         }
-        return profileOperation;
+        return policyOperation;
     }
 
     @Override
@@ -172,7 +176,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ProfileOperation profileOperation;
+        PolicyOperation policyOperation;
 
         List<Operation> operationList = new ArrayList<Operation>();
 
@@ -181,7 +185,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_PROFILE_OPERATION po " +
+            String sql = "Select OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_POLICY_OPERATION po " +
                     "INNER JOIN  " +
                     "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? " +
                     "AND STATUS=?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
@@ -196,8 +200,8 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
                 byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
-                profileOperation = (ProfileOperation) ois.readObject();
-                operationList.add(profileOperation);
+                policyOperation = (PolicyOperation) ois.readObject();
+                operationList.add(policyOperation);
             }
 
         } catch (IOException e) {

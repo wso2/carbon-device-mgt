@@ -495,12 +495,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public List<? extends Operation> getOperationsForStatus(Operation.Status status)
-            throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsForStatus(status);
-    }
-
-    @Override
     public List<Device> getAllDevicesOfUser(String userName)
             throws DeviceManagementException {
         List<Device> devicesOfUser = new ArrayList<Device>();

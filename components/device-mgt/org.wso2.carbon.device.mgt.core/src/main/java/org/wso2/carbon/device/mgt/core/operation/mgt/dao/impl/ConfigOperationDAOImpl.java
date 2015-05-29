@@ -182,7 +182,7 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select co.OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_CONFIG_OPERATION co " +
+            String sql = "Select co.OPERATION_ID, co.OPERATION_CONFIG from DM_CONFIG_OPERATION co " +
                     "INNER JOIN  " +
                     "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? " +
                     "AND STATUS=?) dm ON dm.OPERATION_ID = co.OPERATION_ID";
@@ -194,7 +194,7 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
+                byte[] operationDetails = rs.getBytes("OPERATION_CONFIG");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 configOperation = (ConfigOperation) ois.readObject();

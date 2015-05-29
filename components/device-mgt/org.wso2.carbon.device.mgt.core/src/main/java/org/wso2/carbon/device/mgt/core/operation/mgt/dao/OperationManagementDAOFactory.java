@@ -49,6 +49,10 @@ public class OperationManagementDAOFactory {
         return new ProfileOperationDAOImpl();
     }
 
+    public static OperationDAO getPolicyOperationDAO() {
+        return new PolicyOperationDAOImpl();
+    }
+
     public static OperationMappingDAO getOperationMappingDAO() {
         return new OperationMappingDAOImpl();
     }

@@ -60,6 +60,7 @@ public class OperationManagerImpl implements OperationManager {
         commandOperationDAO = OperationManagementDAOFactory.getCommandOperationDAO();
         configOperationDAO = OperationManagementDAOFactory.getConfigOperationDAO();
         profileOperationDAO = OperationManagementDAOFactory.getProfileOperationDAO();
+        policyOperationDAO = OperationManagementDAOFactory.getPolicyOperationDAO();
         operationMappingDAO = OperationManagementDAOFactory.getOperationMappingDAO();
         operationDAO = OperationManagementDAOFactory.getOperationDAO();
         deviceManagementService = new DeviceManagementServiceImpl();

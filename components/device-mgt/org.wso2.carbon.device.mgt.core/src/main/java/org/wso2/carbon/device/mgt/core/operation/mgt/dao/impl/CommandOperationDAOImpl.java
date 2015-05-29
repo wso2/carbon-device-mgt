@@ -156,7 +156,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
 
             while (rs.next()) {
 
-                operationId = rs.getInt("ID");
+                operationId = rs.getInt("OPERATION_ID");
                 operation = super.getOperation(operationId);
                 operation.setEnabled(rs.getInt("ENABLED") == 0?false:true);
                 operationList.add(operation);

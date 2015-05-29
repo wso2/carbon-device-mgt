@@ -263,7 +263,7 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public void updateOperation(int operationId, Operation.Status operationStatus)
+    public void updateOperation(int deviceId, int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
@@ -280,7 +280,9 @@ public class OperationManagerImpl implements OperationManager {
             dtoOperation.setStatus(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf
                     (operationStatus.toString()));
             OperationManagementDAOFactory.beginTransaction();
-            lookupOperationDAO(dtoOperation).updateOperation(dtoOperation);
+            operationDAO.updateOperation(dtoOperation);
+            operationDAO.updateOperationStatus(deviceId,operationId,
+                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf(operationStatus.toString()));
             OperationManagementDAOFactory.commitTransaction();
         } catch (OperationManagementDAOException ex) {
             try {

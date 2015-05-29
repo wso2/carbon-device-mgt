@@ -76,10 +76,34 @@ public class OperationDAOImpl implements OperationDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
+            throw new OperationManagementDAOException("Error occurred while update operation metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
+    }
+
+    public void updateOperationStatus(int deviceId, int operationId,Operation.Status status)
+            throws OperationManagementDAOException{
+
+        PreparedStatement stmt = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            stmt = connection.prepareStatement("UPDATE DM_DEVICE_OPERATION_MAPPING O SET O.STATUS=? " +
+                    "WHERE O.DEVICE_ID=? and O.OPERATION_ID=?");
+
+            stmt.setString(1, status.toString());
+            stmt.setInt(2, deviceId);
+            stmt.setInt(3, operationId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while update device mapping operation status " +
+                    "metadata",
+                    e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+
     }
 
     @Override

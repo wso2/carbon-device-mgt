@@ -149,8 +149,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public void updateOperation(int operationId, Operation.Status operationStatus) throws OperationManagementException {
-        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().updateOperation(operationId,
+    public void updateOperation(int deviceId, int operationId, Operation.Status operationStatus) throws
+            OperationManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().updateOperation(deviceId, operationId,
                 operationStatus);
     }
 

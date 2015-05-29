@@ -59,7 +59,8 @@ public interface OperationManager {
 
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
-    public void updateOperation(int operationId, Operation.Status operationStatus) throws OperationManagementException;
+    public void updateOperation(int deviceId, int operationId, Operation.Status operationStatus) throws
+            OperationManagementException;
 
     public void deleteOperation(int operationId) throws OperationManagementException;
 

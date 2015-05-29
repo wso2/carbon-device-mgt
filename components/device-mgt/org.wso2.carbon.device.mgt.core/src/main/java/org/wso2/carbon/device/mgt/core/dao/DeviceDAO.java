@@ -62,8 +62,18 @@ public interface DeviceDAO {
 
     /**
      * Get the count of devices
+     *
      * @return device count
      * @throws DeviceManagementDAOException
      */
     int getDeviceCount() throws DeviceManagementDAOException;
+
+    /**
+     * Get the list of devices that matches with the given device name.
+     *
+     * @param deviceName Name of the device
+     * @return List of devices that matches with the given device name.
+     * @throws DeviceManagementDAOException
+     */
+    List<Device> getDevicesByName(String deviceName , int tenantId) throws DeviceManagementDAOException;
 }

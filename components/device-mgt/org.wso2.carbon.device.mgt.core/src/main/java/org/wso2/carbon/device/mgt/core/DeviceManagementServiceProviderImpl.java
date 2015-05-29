@@ -590,7 +590,48 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             int deviceCount = this.deviceDAO.getDeviceCount();
             return deviceCount;
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining devices all devices", e);
+            log.error("Error occurred while counting devices", e);
+            throw new DeviceManagementException("Error occurred while counting devices", e);
         }
+    }
+
+    @Override
+    public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException {
+        List<Device> devicesOfUser = new ArrayList<Device>();
+        List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList;
+        Device convertedDevice;
+        DeviceIdentifier deviceIdentifier;
+        DeviceManager dms;
+        Device dmsDevice;
+        org.wso2.carbon.device.mgt.core.dto.Device device;
+
+        try {
+            devicesList = this.getDeviceDAO().getDevicesByName(deviceName, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
+                                                + deviceName + "'", e);
+        }
+
+        for (int x = 0; x < devicesList.size(); x++) {
+            device = devicesList.get(x);
+            try {
+                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
+                dms = this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
+                convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
+                deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(device.getDeviceIdentificationId());
+                deviceIdentifier.setType(device.getDeviceType().getName());
+                dmsDevice = dms.getDevice(deviceIdentifier);
+                if (dmsDevice != null) {
+                    convertedDevice.setProperties(dmsDevice.getProperties());
+                    convertedDevice.setFeatures(dmsDevice.getFeatures());
+                }
+                devicesOfUser.add(convertedDevice);
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
+                          device.getDeviceTypeId() + "'", e);
+            }
+        }
+        return devicesOfUser;
     }
 }

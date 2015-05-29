@@ -206,4 +206,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                                     .getDeviceCount();
     }
+
+    @Override
+    public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                                    .getDevicesByName(deviceName, tenantId);
+    }
 }

@@ -94,12 +94,14 @@ public class OperationManagementDAOFactory {
     public static void closeConnection() throws OperationManagementDAOException {
 
         Connection con = currentConnection.get();
-        try {
-            con.close();
-        } catch (SQLException e) {
-            log.error("Error occurred while close the connection");
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                log.error("Error occurred while close the connection");
+            }
+            currentConnection.remove();
         }
-        currentConnection.remove();
     }
 
     public static void commitTransaction() throws OperationManagementDAOException {

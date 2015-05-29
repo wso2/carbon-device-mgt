@@ -19,6 +19,11 @@
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.util;
 
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ConfigOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.*;
 
 public class OperationDAOUtil {
 

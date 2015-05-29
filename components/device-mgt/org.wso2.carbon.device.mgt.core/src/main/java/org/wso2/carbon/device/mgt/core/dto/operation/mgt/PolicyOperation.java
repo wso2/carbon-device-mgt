@@ -17,9 +17,6 @@
  */
 package org.wso2.carbon.device.mgt.core.dto.operation.mgt;
 
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
-
 import java.util.List;
 
 public class PolicyOperation extends Operation{

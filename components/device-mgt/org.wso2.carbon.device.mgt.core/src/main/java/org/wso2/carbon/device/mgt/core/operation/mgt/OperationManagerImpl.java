@@ -263,7 +263,7 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public void updateOperation(int deviceId, int operationId, Operation.Status operationStatus)
+    public void updateOperation(DeviceIdentifier deviceIdentifier, int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
@@ -279,11 +279,19 @@ public class OperationManagerImpl implements OperationManager {
             }
             dtoOperation.setStatus(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf
                     (operationStatus.toString()));
+            Device device = deviceManagementService.getCoreDevice(deviceIdentifier);
+
             OperationManagementDAOFactory.beginTransaction();
             operationDAO.updateOperation(dtoOperation);
-            operationDAO.updateOperationStatus(deviceId,operationId,
-                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf(operationStatus.toString()));
+            operationDAO.updateOperationStatus(device.getId(), operationId,
+                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status
+                            .valueOf(operationStatus.toString()));
             OperationManagementDAOFactory.commitTransaction();
+        }catch (DeviceManagementException ex){
+            log.error("Error occurred while fetch the device for device identifier: " + deviceIdentifier.getId() + " " +
+                    "type:" + deviceIdentifier.getType(), ex);
+            throw new OperationManagementException("Error occurred while update operation", ex);
+
         } catch (OperationManagementDAOException ex) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();

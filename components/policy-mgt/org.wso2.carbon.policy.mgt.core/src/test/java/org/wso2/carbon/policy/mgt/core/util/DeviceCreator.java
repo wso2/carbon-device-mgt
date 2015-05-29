@@ -20,7 +20,7 @@ package org.wso2.carbon.policy.mgt.core.util;
 
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.dto.Status;
+import org.wso2.carbon.device.mgt.common.Device.Status;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.dto;
 
 import java.io.Serializable;
+import org.wso2.carbon.device.mgt.common.Device.Status;
 
 public class Device implements Serializable {
 

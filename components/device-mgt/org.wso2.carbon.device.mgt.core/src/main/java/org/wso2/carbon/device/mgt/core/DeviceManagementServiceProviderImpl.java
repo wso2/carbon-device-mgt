@@ -33,7 +33,6 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.dto.Status;
 import org.wso2.carbon.device.mgt.core.email.EmailConstants;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
@@ -109,9 +108,9 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
             DeviceType deviceType = this.getDeviceTypeDAO().getDeviceType(device.getType());
             if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), deviceType.getName()))) {
-                deviceDto.setStatus(Status.INACTIVE);
+                deviceDto.setStatus(Device.Status.INACTIVE);
             } else {
-                deviceDto.setStatus(Status.ACTIVE);
+                deviceDto.setStatus(Device.Status.ACTIVE);
             }
             deviceDto.setDeviceTypeId(deviceType.getId());
             this.getDeviceDAO().addDevice(deviceDto);

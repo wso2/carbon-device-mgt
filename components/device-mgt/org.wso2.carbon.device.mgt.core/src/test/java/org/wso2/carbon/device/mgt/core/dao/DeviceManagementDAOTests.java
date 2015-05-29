@@ -28,14 +28,14 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.Device.Status;
+import org.wso2.carbon.device.mgt.common.Device.OwnerShip;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.common.DBTypes;
 import org.wso2.carbon.device.mgt.core.common.TestDBConfiguration;
 import org.wso2.carbon.device.mgt.core.common.TestDBConfigurations;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.dto.OwnerShip;
-import org.wso2.carbon.device.mgt.core.dto.Status;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import javax.sql.DataSource;

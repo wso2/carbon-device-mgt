@@ -99,17 +99,22 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
                 List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
                 List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-                for (ProfileFeature feature : effectiveFeatures) {
-                    ProfileOperation operation = new ProfileOperation();
 
-                    operation.setCode(feature.getFeatureCode());
-                    operation.setEnabled(true);
-                    operation.setStatus(Operation.Status.PENDING);
-                    operation.setType(Operation.Type.PROFILE);
-                    operation.setPayLoad(feature.getContent());
-                    PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                            addOperation(operation, deviceIdentifiers);
+                PolicyOperation policyOperation = new PolicyOperation();
+
+                for (ProfileFeature feature : effectiveFeatures) {
+                    ProfileOperation profileOperation = new ProfileOperation();
+
+                    profileOperation.setCode(feature.getFeatureCode());
+                    profileOperation.setEnabled(true);
+                    profileOperation.setStatus(Operation.Status.PENDING);
+                    profileOperation.setType(Operation.Type.PROFILE);
+                    profileOperation.setPayLoad(feature.getContent());
+                    profileOperationList.add(profileOperation);
                 }
+                policyOperation.setProfileOperations(profileOperationList);
+                PolicyManagementDataHolder.getInstance().getDeviceManagementService().
+                        addOperation(policyOperation, deviceIdentifiers);
 
             } else {
                 return null;

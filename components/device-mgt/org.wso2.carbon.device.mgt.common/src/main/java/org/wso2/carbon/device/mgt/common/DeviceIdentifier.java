@@ -24,6 +24,13 @@ public class DeviceIdentifier implements Serializable{
     private String id;
     private String type;
 
+    public DeviceIdentifier() {}
+
+    public DeviceIdentifier(String id, String type) {
+        this.id = id;
+        this.type = type;
+    }
+
     public String getType() {
         return type;
     }

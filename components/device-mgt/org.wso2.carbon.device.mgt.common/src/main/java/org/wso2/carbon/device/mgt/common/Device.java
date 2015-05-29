@@ -31,7 +31,7 @@ public class Device {
 	private Long dateOfEnrolment;
 	private Long dateOfLastUpdate;
 	private String ownership;
-	private boolean status;
+	private Status status;
 	private int deviceTypeId;
 	private String deviceIdentifier;
 	private String owner;
@@ -101,11 +101,11 @@ public class Device {
 	}
 
 	@XmlElement
-	public boolean isStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(boolean status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 

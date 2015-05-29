@@ -89,6 +89,11 @@ public class TestDeviceManager implements DeviceMgtService {
     }
 
     @Override
+    public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
+        return false;
+    }
+
+    @Override
     public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
             throws AppManagerConnectorException {
 

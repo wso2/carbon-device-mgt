@@ -111,6 +111,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
+    public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().isClaimable(deviceId);
+    }
+
+    @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getLicense(deviceType,
                 languageCode);
@@ -212,4 +217,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                                     .getDevicesByName(deviceName, tenantId);
     }
+
+
+
 }

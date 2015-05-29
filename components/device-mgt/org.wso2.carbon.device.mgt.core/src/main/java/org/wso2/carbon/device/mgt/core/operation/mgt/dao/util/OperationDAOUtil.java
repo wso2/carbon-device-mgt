@@ -18,20 +18,22 @@
 */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.util;
 
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
 
 public class OperationDAOUtil {
 
-    public static Operation convertOperation(org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation){
+    public static Operation convertOperation(org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation) {
 
         Operation dtoOperation = null;
 
-        if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.COMMAND)){
+        if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.COMMAND)) {
             dtoOperation = new CommandOperation();
-        }else if(operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.PROFILE)){
+        } else if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.PROFILE)) {
             dtoOperation = new ProfileOperation();
+        }else if(operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.POLICY)){
+            dtoOperation = new PolicyOperation();
+        }else if(operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.CONFIG)) {
+            dtoOperation = new ConfigOperation();
         }else{
             dtoOperation = new Operation();
         }

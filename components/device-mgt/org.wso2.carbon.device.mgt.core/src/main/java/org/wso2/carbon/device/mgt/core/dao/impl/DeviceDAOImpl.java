@@ -79,7 +79,23 @@ public class DeviceDAOImpl implements DeviceDAO {
 
     @Override
     public void updateDevice(Device device) throws DeviceManagementDAOException {
-
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql =
+                    "UPDATE DM_DEVICE SET STATUS=?, OWNER=? WHERE DEVICE_IDENTIFICATION=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, device.getStatus().toString());
+            stmt.setString(2, device.getOwnerId());
+            stmt.setString(3, device.getDeviceIdentificationId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while enrolling device " +
+                                                   "'" + device.getName() + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(conn, stmt, null);
+        }
     }
 
     @Override

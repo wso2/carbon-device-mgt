@@ -31,5 +31,6 @@ public interface PolicyFilter {
 
     void filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies);
 
+    void filterUserBasedPolicies(List<String> usernames, List<Policy> policies);
 
 }

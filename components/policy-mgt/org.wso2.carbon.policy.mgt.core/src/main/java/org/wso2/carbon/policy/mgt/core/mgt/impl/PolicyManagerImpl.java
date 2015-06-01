@@ -548,11 +548,8 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Policy> policies = new ArrayList<Policy>();
 
         try {
-//            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
-
             List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
             List<Policy> allPolicies = this.getPolicies();
-
 
             for (Profile profile : profileList) {
                 for (Policy policy : allPolicies) {
@@ -562,20 +559,7 @@ public class PolicyManagerImpl implements PolicyManager {
                     }
                 }
             }
-
             Collections.sort(policies);
-//        } catch (PolicyManagerDAOException e) {
-//            String msg = "Error occurred while getting all the policies.";
-//            log.error(msg, e);
-//            throw new PolicyManagementException(msg, e);
-//        } catch (ProfileManagerDAOException e) {
-//            String msg = "Error occurred while getting the profiles related to device type (" + deviceTypeName + ")";
-//            log.error(msg, e);
-//            throw new PolicyManagementException(msg, e);
-//        } catch (DeviceManagementDAOException e) {
-//            String msg = "Error occurred while getting device type object related to (" + deviceTypeName + ")";
-//            log.error(msg, e);
-//            throw new PolicyManagementException(msg, e);
         } catch (ProfileManagementException e) {
             String msg = "Error occurred while getting all the profile features.";
             log.error(msg, e);

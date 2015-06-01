@@ -83,5 +83,20 @@ public class PolicyFilterImpl implements PolicyFilter {
         policies = temp;
     }
 
+    @Override
+    public void filterUserBasedPolicies(List<String> usernames, List<Policy> policies) {
+        List<Policy> temp = new ArrayList<Policy>();
+
+        for (Policy policy : policies) {
+            List<String> users = policy.getUsers();
+            for (String user : users) {
+                if(usernames.contains(user)) {
+                    temp.add(policy);
+                }
+            }
+        }
+        policies = temp;
+    }
+
 
 }

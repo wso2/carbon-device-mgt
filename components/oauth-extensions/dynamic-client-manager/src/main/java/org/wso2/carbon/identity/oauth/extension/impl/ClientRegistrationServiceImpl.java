@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.simple.JSONArray;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.context.CarbonContext;
@@ -48,6 +47,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -82,6 +82,7 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
         //Subscriber's name should be passed as a parameter, since it's under the subscriber the OAuth App is created.
         String userId = profile.getOwner();
         String applicationName = profile.getClientName();
+        String grantType = profile.getGrantType();
 
         if (log.isDebugEnabled()) {
             log.debug("Trying to create OAuth application: '" + applicationName + "'");
@@ -93,10 +94,10 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
         String tokenScopes[] = new String[1];
         tokenScopes[0] = tokenScope;
 
-        oAuthApplicationInfo.addParameter("tokenScope", tokenScopes);
+        oAuthApplicationInfo.addParameter("tokenScope", Arrays.toString(tokenScopes));
         OAuthApplicationInfo info;
         try {
-            info = this.createOAuthApplication(userId, applicationName, callBackURL);
+            info = this.createOAuthApplication(userId, applicationName, callBackURL, grantType);
         } catch (Exception e) {
             throw new APIManagementException("Can not create OAuth application  : " + applicationName, e);
         }
@@ -116,11 +117,6 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
                 oAuthApplicationInfo.addParameter(ApplicationConstants.OAUTH_REDIRECT_URIS, jsonObject.get(ApplicationConstants.OAUTH_REDIRECT_URIS));
             }
 
-            if (jsonObject.has(ApplicationConstants.OAUTH_CLIENT_NAME)) {
-                oAuthApplicationInfo.addParameter(ApplicationConstants.
-                        OAUTH_CLIENT_NAME, jsonObject.get(ApplicationConstants.OAUTH_CLIENT_NAME));
-            }
-
             if (jsonObject.has(ApplicationConstants.OAUTH_CLIENT_GRANT)) {
                 oAuthApplicationInfo.addParameter(ApplicationConstants.
                         OAUTH_CLIENT_GRANT, jsonObject.get(ApplicationConstants.OAUTH_CLIENT_GRANT));
@@ -134,7 +130,8 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
     }
 
     public OAuthApplicationInfo createOAuthApplication(
-            String userId, String applicationName, String callbackUrl) throws APIManagementException, IdentityException {
+            String userId, String applicationName, String callbackUrl, String grantType)
+            throws APIManagementException, IdentityException {
 
         if (userId == null || userId.isEmpty()) {
             return null;
@@ -177,6 +174,7 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
 
             oAuthConsumerAppDTO.setApplicationName(applicationName);
             oAuthConsumerAppDTO.setCallbackUrl(callbackUrl);
+            oAuthConsumerAppDTO.setGrantTypes(grantType);
             log.debug("Creating OAuth App " + applicationName);
             oAuthAdminService.registerOAuthApplicationData(oAuthConsumerAppDTO);
             log.debug("Created OAuth App " + applicationName);
@@ -214,11 +212,10 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
             oAuthApplicationInfo.setClientId(createdApp.getOauthConsumerKey());
             oAuthApplicationInfo.setCallBackURL(createdApp.getCallbackUrl());
             oAuthApplicationInfo.setClientSecret(createdApp.getOauthConsumerSecret());
+            oAuthApplicationInfo.setClientName(createdApp.getApplicationName());
 
             oAuthApplicationInfo.addParameter(ApplicationConstants.
                     OAUTH_REDIRECT_URIS, createdApp.getCallbackUrl());
-            oAuthApplicationInfo.addParameter(ApplicationConstants.
-                    OAUTH_CLIENT_NAME, createdApp.getApplicationName());
             oAuthApplicationInfo.addParameter(ApplicationConstants.
                     OAUTH_CLIENT_GRANT, createdApp.getGrantTypes());
 

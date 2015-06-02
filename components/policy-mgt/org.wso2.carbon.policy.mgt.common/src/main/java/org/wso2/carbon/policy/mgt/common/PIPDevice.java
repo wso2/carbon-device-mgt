@@ -36,7 +36,7 @@ public class PIPDevice {
     private String ownershipType;
     private List<String> userIds;
     private String roles[];
-    private String altitude;
+    private String latitude;
     private String longitude;
     private Timestamp timestamp;
 
@@ -83,12 +83,12 @@ public class PIPDevice {
         this.roles = roles;
     }
 
-    public String getAltitude() {
-        return altitude;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setAltitude(String altitude) {
-        this.altitude = altitude;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getLongitude() {

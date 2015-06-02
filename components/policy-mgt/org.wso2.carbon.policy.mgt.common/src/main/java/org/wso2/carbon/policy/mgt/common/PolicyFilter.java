@@ -31,5 +31,4 @@ public interface PolicyFilter {
 
     void filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies);
 
-
 }

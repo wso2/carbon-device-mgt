@@ -35,6 +35,7 @@ public class RegistrationProfile {
     private String owner;
     private String callbackUrl;
     private String tokenScope;
+    private String grantType;
 
     public String getApplicationType() {
         return applicationType;
@@ -155,5 +156,14 @@ public class RegistrationProfile {
     public void setTokenScope(String tokenScope) {
         this.tokenScope = tokenScope;
     }
+
+    public String getGrantType() {
+        return grantType;
+    }
+
+    public void setGrantType(String grantType) {
+        this.grantType = grantType;
+    }
+
 
 }

@@ -19,18 +19,16 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
-import org.wso2.carbon.policy.mgt.common.Policy;
-
 import java.util.List;
 
 public interface PolicyFilter {
 
-    void filterRolesBasedPolicies(String roles[], List<Policy> policies);
+    List<Policy> filterRolesBasedPolicies(String roles[], List<Policy> policies);
 
-    void filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies);
+    List<Policy> filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies);
 
-    void filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies);
+    List<Policy> filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies);
 
-    void filterUserBasedPolicies(List<String> usernames, List<Policy> policies);
+    List<Policy> filterUserBasedPolicies(String username, List<Policy> policies);
 
 }

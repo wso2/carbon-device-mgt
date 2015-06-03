@@ -24,7 +24,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Map;
 
 //TODO :
@@ -34,7 +33,7 @@ public class PIPDevice {
     private DeviceType deviceType;
     private DeviceIdentifier deviceIdentifier;
     private String ownershipType;
-    private List<String> userIds;
+    private String userId;
     private String roles[];
     private String latitude;
     private String longitude;
@@ -67,12 +66,12 @@ public class PIPDevice {
         this.ownershipType = ownershipType;
     }
 
-    public List<String> getUserIds() {
-        return userIds;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserIds(List<String> userIds) {
-        this.userIds = userIds;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String[] getRoles() {

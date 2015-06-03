@@ -71,6 +71,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
             pipDevice.setRoles(getRoleOfDevice(device));
             pipDevice.setDeviceType(deviceType);
             pipDevice.setDeviceIdentifier(deviceIdentifier);
+            pipDevice.setUserId(device.getOwner());
 
             // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
             // pipDevice.setLongitude();
@@ -92,16 +93,16 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         PolicyFilter policyFilter = new PolicyFilterImpl();
 
         if (pipDevice.getDeviceType() != null) {
-            policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
+            policies = policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
         }
-        if (!pipDevice.getOwnershipType().isEmpty()) {
-            policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
+        if (pipDevice.getOwnershipType() != null && !pipDevice.getOwnershipType().isEmpty()) {
+            policies = policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
         }
         if (pipDevice.getRoles() != null) {
-            policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
+            policies = policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
         }
-        if(pipDevice.getUserIds()!=null) {
-            policyFilter.filterUserBasedPolicies(pipDevice.getUserIds(), policies);
+        if(pipDevice.getUserId() != null && !pipDevice.getUserId().isEmpty()) {
+            policies = policyFilter.filterUserBasedPolicies(pipDevice.getUserId(), policies);
         }
 
         return policies;

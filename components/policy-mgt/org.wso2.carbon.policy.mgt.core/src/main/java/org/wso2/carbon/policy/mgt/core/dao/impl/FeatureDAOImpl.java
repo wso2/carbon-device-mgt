@@ -56,8 +56,6 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt.setString(1, feature.getName());
             stmt.setString(2, feature.getCode());
             stmt.setString(3, feature.getDescription());
-//            stmt.setString(4, feature.getRuleValue());
-//            stmt.setInt(5, feature.getDeviceTypeId());
             int affectedRows = stmt.executeUpdate();
 
             if (log.isDebugEnabled()) {
@@ -96,8 +94,6 @@ public class FeatureDAOImpl implements FeatureDAO {
                 stmt.setString(1, feature.getName());
                 stmt.setString(2, feature.getCode());
                 stmt.setString(3, feature.getDescription());
-//                stmt.setString(4, feature.getRuleValue());
-//                stmt.setInt(5, feature.getDeviceTypeId());
                 stmt.addBatch();
             }
 
@@ -139,7 +135,6 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt.setString(1, feature.getName());
             stmt.setString(2, feature.getCode());
             stmt.setString(3, feature.getDescription());
-//            stmt.setString(4, feature.getRuleValue());
             stmt.setInt(4, feature.getId());
             stmt.executeUpdate();
 
@@ -222,9 +217,9 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             for (ProfileFeature feature : features) {
                 if (conn.getMetaData().getDriverName().contains("H2")) {
-                    stmt.setObject(4, feature.getContent(), Types.JAVA_OBJECT);
+                    stmt.setObject(1, feature.getContent(), Types.JAVA_OBJECT);
                 } else {
-                    stmt.setObject(4, feature.getContent());
+                    stmt.setObject(1, feature.getContent());
                 }
                 stmt.setInt(2, profileId);
                 stmt.setString(3, feature.getFeatureCode());
@@ -284,17 +279,9 @@ public class FeatureDAOImpl implements FeatureDAO {
             while (resultSet.next()) {
 
                 ProfileFeature profileFeature = new ProfileFeature();
-//                Feature feature = new Feature();
-//                feature.setId(resultSet.getInt("FEATURE_ID"));
-//                feature.setCode(resultSet.getString("CODE"));
-//                feature.setName(resultSet.getString("NAME"));
-//                feature.setRuleValue(resultSet.getString("RULE"));
-
-//                profileFeature.setFeature(feature);
                 profileFeature.setFeatureCode(resultSet.getString("FEATURE_CODE"));
                 profileFeature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
                 profileFeature.setId(resultSet.getInt("ID"));
-//                profileFeature.setContent(resultSet.getObject("CONTENT"));
                 profileFeature.setProfileId(resultSet.getInt("PROFILE_ID"));
 
                 ByteArrayInputStream bais = null;
@@ -367,8 +354,6 @@ public class FeatureDAOImpl implements FeatureDAO {
                 feature.setId(resultSet.getInt("ID"));
                 feature.setCode(resultSet.getString("CODE"));
                 feature.setName(resultSet.getString("NAME"));
-//                feature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
-//                feature.setRuleValue(resultSet.getString("EVALUATION_RULE"));
                 featureList.add(feature);
             }
 

@@ -63,13 +63,14 @@ public class PolicyFilterImpl implements PolicyFilter {
     @Override
     public void filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies) {
 
-//        List<Policy> temp = new ArrayList<Policy>();
-//        for (Policy policy : policies) {
-//            if (ownershipType.equalsIgnoreCase(policy.getOwnershipType())) {
-//                temp.add(policy);
-//            }
-//        }
-//        policies = temp;
+        List<Policy> temp = new ArrayList<Policy>();
+        for (Policy policy : policies) {
+            if (ownershipType.equalsIgnoreCase(policy.getOwnershipType()) ||
+                    PolicyManagementConstants.ANY.equalsIgnoreCase(policy.getOwnershipType())) {
+                temp.add(policy);
+            }
+        }
+        policies = temp;
     }
 
     @Override
@@ -78,6 +79,25 @@ public class PolicyFilterImpl implements PolicyFilter {
         for (Policy policy : policies) {
             if (deviceType.equalsIgnoreCase(policy.getProfile().getDeviceType().getName())) {
                 temp.add(policy);
+            }
+        }
+        policies = temp;
+    }
+
+    @Override
+    public void filterUserBasedPolicies(List<String> usernames, List<Policy> policies) {
+        List<Policy> temp = new ArrayList<Policy>();
+
+        for (Policy policy : policies) {
+            List<String> users = policy.getUsers();
+            if(users.contains(PolicyManagementConstants.ANY)) {
+                temp.add(policy);
+                continue;
+            }
+            for (String user : users) {
+                if(usernames.contains(user)) {
+                    temp.add(policy);
+                }
             }
         }
         policies = temp;

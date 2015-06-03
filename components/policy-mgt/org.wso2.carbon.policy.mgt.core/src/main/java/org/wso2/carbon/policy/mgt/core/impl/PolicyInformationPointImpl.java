@@ -90,9 +90,19 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
 
         List<Policy> policies = policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName());
         PolicyFilter policyFilter = new PolicyFilterImpl();
-        policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
-        policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
-        policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
+
+        if (pipDevice.getDeviceType() != null) {
+            policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
+        }
+        if (!pipDevice.getOwnershipType().isEmpty()) {
+            policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
+        }
+        if (pipDevice.getRoles() != null) {
+            policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
+        }
+        if(pipDevice.getUserIds()!=null) {
+            policyFilter.filterUserBasedPolicies(pipDevice.getUserIds(), policies);
+        }
 
         return policies;
     }

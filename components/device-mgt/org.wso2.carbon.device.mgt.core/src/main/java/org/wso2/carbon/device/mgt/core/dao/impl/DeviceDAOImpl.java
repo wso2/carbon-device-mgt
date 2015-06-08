@@ -83,8 +83,7 @@ public class DeviceDAOImpl implements DeviceDAO {
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String sql =
-                    "UPDATE DM_DEVICE SET STATUS=?, OWNER=? WHERE DEVICE_IDENTIFICATION=?";
+            String sql = "UPDATE DM_DEVICE SET STATUS=?, OWNER=? WHERE DEVICE_IDENTIFICATION=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, device.getStatus().toString());
             stmt.setString(2, device.getOwnerId());

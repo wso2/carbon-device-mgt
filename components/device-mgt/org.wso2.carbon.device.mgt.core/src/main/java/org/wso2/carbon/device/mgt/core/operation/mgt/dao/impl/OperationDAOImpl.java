@@ -313,7 +313,7 @@ public class OperationDAOImpl implements OperationDAO {
 
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP " +
+            stmt = connection.prepareStatement("SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
                     "OPERATION_CODE  FROM DM_OPERATION o " +
                     "INNER JOIN (Select * from DM_DEVICE_OPERATION_MAPPING dm " +
                     "where dm.DEVICE_ID=? AND dm.STATUS=?) om ON o.ID = om.OPERATION_ID " +

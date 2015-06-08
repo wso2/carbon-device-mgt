@@ -328,7 +328,6 @@ public class OperationDAOImpl implements OperationDAO {
             if (rs.next()) {
                 operation = new Operation();
                 operation.setType(this.getType(rs.getString("TYPE")));
-                operation.setStatus(this.getStatus(rs.getString("STATUS")));
                 operation.setId(rs.getInt("ID"));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
                 if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {

@@ -230,21 +230,17 @@ public class OperationManagerImpl implements OperationManager {
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
                     .getNextOperation(device.getId());
 
-            if (dtoOperation.getType()
-                    .equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND)) {
+            if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND.equals(dtoOperation.getType())) {
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation commandOperation;
                 commandOperation = (org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation) commandOperationDAO
                         .getOperation(dtoOperation.getId());
                 dtoOperation.setEnabled(commandOperation.isEnabled());
-            } else if (dtoOperation.getType()
-                    .equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG)) {
+            } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG.equals(dtoOperation.getType())) {
                 dtoOperation = configOperationDAO.getOperation(dtoOperation.getId());
-            } else if (dtoOperation.getType().equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type
-                    .PROFILE)) {
+            } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.PROFILE.equals(dtoOperation.getType())) {
                 dtoOperation = profileOperationDAO.getOperation(dtoOperation.getId());
-            } else if (dtoOperation.getType().equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type
-                    .POLICY)) {
-
+            } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type
+                    .POLICY.equals(dtoOperation.getType())) {
                 dtoOperation = policyOperationDAO.getOperation(dtoOperation.getId());
             }
 

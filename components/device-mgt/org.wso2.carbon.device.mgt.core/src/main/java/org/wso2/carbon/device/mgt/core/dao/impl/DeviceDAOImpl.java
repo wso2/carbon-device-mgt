@@ -279,7 +279,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             while (resultSet.next()) {
                 Device device = new Device();
                 DeviceType deviceType = new DeviceType();
-                int id = resultSet.getInt(resultSet.getInt(1));
+                int id = resultSet.getInt(1);
                 deviceType.setId(id);
                 deviceType.setName(resultSet.getString(2));
                 device.setId(resultSet.getInt(3));

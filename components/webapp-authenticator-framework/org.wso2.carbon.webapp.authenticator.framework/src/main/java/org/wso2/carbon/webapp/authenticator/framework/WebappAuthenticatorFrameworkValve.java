@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
 
     private static final String AUTHENTICATION_SCHEME = "authentication-scheme";
+    private static final Log log = LogFactory.getLog(WebappAuthenticatorFrameworkValve.class);
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
@@ -40,7 +41,11 @@ public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
             return;
         }
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(authScheme);
-
+        if (authenticator == null) {
+            String msg = "Failed to load an appropriate authenticator to authenticate the request";
+            AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+            return;
+        }
         WebappAuthenticator.Status status = authenticator.authenticate(request, response);
         this.processResponse(request, response, compositeValve, status);
     }
@@ -53,8 +58,9 @@ public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
                 this.getNext().invoke(request, response, compositeValve);
                 break;
             case FAILURE:
-                AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED,
-                        "Failed to authorize the incoming request");
+                String msg = "Failed to authorize incoming request";
+                log.error(msg);
+                AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
                 break;
         }
     }

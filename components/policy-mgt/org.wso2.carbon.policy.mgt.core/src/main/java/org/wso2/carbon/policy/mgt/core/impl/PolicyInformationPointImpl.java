@@ -72,6 +72,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
             pipDevice.setDeviceType(deviceType);
             pipDevice.setDeviceIdentifier(deviceIdentifier);
             pipDevice.setUserId(device.getOwner());
+            pipDevice.setOwnershipType(device.getOwnership());
 
             // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
             // pipDevice.setLongitude();

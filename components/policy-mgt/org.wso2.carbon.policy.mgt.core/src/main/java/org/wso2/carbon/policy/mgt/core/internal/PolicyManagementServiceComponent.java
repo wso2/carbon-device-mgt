@@ -21,7 +21,7 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
@@ -46,7 +46,7 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setPEPService"
  * unbind="unsetPEPService"
  * @scr.reference name="org.wso2.carbon.device.manager"
- * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementService"
+ * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
  * cardinality="1..1"
  * policy="dynamic"
  * bind="setDeviceManagementService"
@@ -129,14 +129,14 @@ public class PolicyManagementServiceComponent {
         PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(null);
     }
 
-    protected void setDeviceManagementService(DeviceManagementService deviceManagerService) {
+    protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Device Management Service");
         }
         PolicyManagementDataHolder.getInstance().setDeviceManagementService(deviceManagerService);
     }
 
-    protected void unsetDeviceManagementService(DeviceManagementService deviceManagementService) {
+    protected void unsetDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting Device Management Service");
         }

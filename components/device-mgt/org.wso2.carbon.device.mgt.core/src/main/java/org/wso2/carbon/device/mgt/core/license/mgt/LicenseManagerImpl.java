@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
-import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactFilter;
@@ -39,7 +39,7 @@ import java.util.Locale;
 
 public class LicenseManagerImpl implements LicenseManager {
 
-    private static Log log = LogFactory.getLog(DeviceManagementServiceProviderImpl.class);
+    private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
     private static final DateFormat format = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
 
     @Override

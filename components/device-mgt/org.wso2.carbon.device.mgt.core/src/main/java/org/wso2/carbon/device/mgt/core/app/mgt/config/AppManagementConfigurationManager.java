@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.core.app.mgt.config;
 
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -47,7 +47,7 @@ public class AppManagementConfigurationManager {
 		return appManagementConfigManager;
 	}
 
-	public synchronized void initConfig() throws AppManagerConnectorException {
+	public synchronized void initConfig() throws ApplicationManagementException {
 		try {
 			File appManagementConfig =
 					new File(AppManagementConfigurationManager.APP_MANAGER_CONFIG_PATH);
@@ -60,7 +60,7 @@ public class AppManagementConfigurationManager {
 		} catch (Exception e) {
 		    /* Catches generic exception as there's no specific task to be carried out catching a particular
             exception */
-			throw new AppManagerConnectorException(
+			throw new ApplicationManagementException(
 					"Error occurred while initializing application management Configurations", e);
 		}
 	}

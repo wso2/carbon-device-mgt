@@ -21,8 +21,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
-import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
 public class DeviceManagementRepositoryTests {
 
@@ -35,7 +35,7 @@ public class DeviceManagementRepositoryTests {
 
     @Test
     public void testAddDeviceManagementService() {
-        DeviceMgtService sourceProvider = new TestDeviceManager();
+        DeviceManagementService sourceProvider = new TestDeviceManager();
         try {
             this.getRepository().addDeviceManagementProvider(sourceProvider);
         } catch (DeviceManagementException e) {
@@ -48,7 +48,7 @@ public class DeviceManagementRepositoryTests {
 
     @Test(dependsOnMethods = "testAddDeviceManagementService")
     public void testRemoveDeviceManagementService() {
-        DeviceMgtService sourceProvider = new TestDeviceManager();
+        DeviceManagementService sourceProvider = new TestDeviceManager();
         try {
             this.getRepository().removeDeviceManagementProvider(sourceProvider);
         } catch (DeviceManagementException e) {

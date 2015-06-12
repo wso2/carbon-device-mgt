@@ -15,16 +15,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.mgt.core;
+package org.wso2.carbon.device.mgt.core.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
+import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
@@ -32,11 +33,10 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.dto.*;
 import org.wso2.carbon.device.mgt.core.email.EmailConstants;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.io.IOException;
@@ -45,21 +45,21 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceManagementServiceProviderImpl implements DeviceManagementService {
+public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService {
 
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
     private DeviceManagementRepository pluginRepository;
 
-    private static Log log = LogFactory.getLog(DeviceManagementServiceProviderImpl.class);
+    private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
 
-    public DeviceManagementServiceProviderImpl(DeviceManagementRepository pluginRepository) {
+    public DeviceManagementProviderServiceImpl(DeviceManagementRepository pluginRepository) {
         this.pluginRepository = pluginRepository;
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
-    public DeviceManagementServiceProviderImpl() {
+    public DeviceManagementProviderServiceImpl() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
@@ -79,24 +79,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementProvider(type);
         return dms.getFeatureManager();
-    }
-
-    @Override
-    public Device getCoreDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-
-        Device convertedDevice = null;
-        try {
-            DeviceType deviceType = this.getDeviceTypeDAO().getDeviceType(deviceId.getType());
-            org.wso2.carbon.device.mgt.core.dto.Device device = this.getDeviceDAO().getDevice(deviceId);
-            if (device != null) {
-                convertedDevice = DeviceManagementDAOUtil.convertDevice(device,
-                        this.getDeviceTypeDAO().getDeviceType(deviceType.getId()));
-            }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "' and type:" + deviceId.getType(), e);
-        }
-        return convertedDevice;
     }
 
     @Override
@@ -253,8 +235,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties)
             throws DeviceManagementException {
 
-        List<NotificationMessages> notificationMessages = DeviceConfigurationManager.getInstance()
-                .getNotificationMessagesConfig().getNotificationMessagesList();
+        List<NotificationMessages> notificationMessages =
+                DeviceConfigurationManager.getInstance().getNotificationMessagesConfig().getNotificationMessagesList();
 
         String messageHeader = "";
         String messageBody = "";
@@ -265,13 +247,13 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         String subject = "";
 
         for (NotificationMessages notificationMessage : notificationMessages) {
-            if (DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE.
-                    equals(notificationMessage.getType())) {
+            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE.equals(
+                    notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
                 messageFooter1 = notificationMessage.getFooterLine1();
                 messageFooter2 = notificationMessage.getFooterLine2();
-                messageFooter3  = notificationMessage.getFooterLine3();
+                messageFooter3 = notificationMessage.getFooterLine3();
                 url = notificationMessage.getUrl();
                 subject = notificationMessage.getSubject();
                 break;
@@ -286,7 +268,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody.trim() + System.getProperty("line.separator") +
                     System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
@@ -322,7 +304,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         String subject = "";
 
         for (NotificationMessages notificationMessage : notificationMessages) {
-            if (DeviceManagementConstants.EmailNotifications.USER_REGISTRATION_NOTIFICATION_TYPE.
+            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.USER_REGISTRATION_NOTIFICATION_TYPE.
                     equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
@@ -343,8 +325,8 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
-                            .USERNAME
-                            + "\\}",
+                    .USERNAME
+                    + "\\}",
                     URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
 
@@ -353,7 +335,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                             .ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
@@ -467,7 +449,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public void updateOperation(DeviceIdentifier deviceId, int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
-        DeviceManagementDataHolder.getInstance().getOperationManager().updateOperation(deviceId,operationId,
+        DeviceManagementDataHolder.getInstance().getOperationManager().updateOperation(deviceId, operationId,
                 operationStatus);
     }
 
@@ -485,7 +467,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
-            Operation.Status status) throws OperationManagementException, DeviceManagementException {
+                                                                    Operation.Status status) throws OperationManagementException, DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsByDeviceAndStatus(identifier,
                 status);
     }
@@ -499,7 +481,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     public List<Device> getAllDevicesOfUser(String userName)
             throws DeviceManagementException {
         List<Device> devicesOfUser = new ArrayList<Device>();
-        List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList;
+        List<org.wso2.carbon.device.mgt.core.dto.Device> devices;
         Device convertedDevice;
         DeviceIdentifier deviceIdentifier;
         DeviceManager dms;
@@ -508,15 +490,15 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         int tenantId = DeviceManagerUtil.getTenantId();
         //Fetch the DeviceList from Core
         try {
-            devicesList = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
+            devices = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the devices of user '"
                     + userName + "'", e);
         }
 
         //Fetch the DeviceList from device plugin dbs & append the properties
-        for (int x = 0; x < devicesList.size(); x++) {
-            device = devicesList.get(x);
+        for (org.wso2.carbon.device.mgt.core.dto.Device aDevicesList : devices) {
+            device = aDevicesList;
             try {
                 //TODO : Possible improvement if DeviceTypes have been cached
                 device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
@@ -620,7 +602,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             devicesList = this.getDeviceDAO().getDevicesByName(deviceName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
-                                                + deviceName + "'", e);
+                    + deviceName + "'", e);
         }
 
         for (int x = 0; x < devicesList.size(); x++) {
@@ -640,7 +622,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                 devicesOfUser.add(convertedDevice);
             } catch (DeviceManagementDAOException e) {
                 log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
-                          device.getDeviceTypeId() + "'", e);
+                        device.getDeviceTypeId() + "'", e);
             }
         }
         return devicesOfUser;

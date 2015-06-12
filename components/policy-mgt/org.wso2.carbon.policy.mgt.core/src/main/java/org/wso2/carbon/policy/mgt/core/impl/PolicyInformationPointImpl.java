@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
@@ -46,7 +46,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
 
     PolicyManager policyManager;
     FeatureManager featureManager;
-    DeviceManagementService deviceManagementService;
+    DeviceManagementProviderService deviceManagementService;
 
     public PolicyInformationPointImpl() {
         deviceManagementService =
@@ -143,7 +143,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         return finalPolicies;
     }
 
-    private DeviceManagementService getDeviceManagementService() {
+    private DeviceManagementProviderService getDeviceManagementService() {
         return PolicyManagementDataHolder.getInstance().getDeviceManagementService();
     }
 

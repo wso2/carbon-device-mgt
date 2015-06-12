@@ -18,13 +18,16 @@
 package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
 import java.util.List;
 
-public class TestDeviceManager implements DeviceMgtService {
+public class TestDeviceManager implements DeviceManagementService {
 
     public static final String DEVICE_TYPE_TEST = "Test";
 
@@ -94,8 +97,26 @@ public class TestDeviceManager implements DeviceMgtService {
     }
 
     @Override
+    public Application[] getApplications(String domain, int pageNumber,
+                                         int size) throws ApplicationManagementException {
+        return new Application[0];
+    }
+
+    @Override
+    public void updateApplicationStatus(DeviceIdentifier deviceId, Application application,
+                                        String status) throws ApplicationManagementException {
+
+    }
+
+    @Override
+    public String getApplicationStatus(DeviceIdentifier deviceId,
+                                       Application application) throws ApplicationManagementException {
+        return null;
+    }
+
+    @Override
     public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
-            throws AppManagerConnectorException {
+            throws ApplicationManagementException {
 
     }
 }

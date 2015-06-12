@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
 
     private void initOperationManager() {
         this.operationManager = new OperationManagerImpl();
-        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(new DeviceManagementServiceProviderImpl());
+        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(new DeviceManagementProviderServiceImpl());
     }
 
     @Test

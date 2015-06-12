@@ -24,22 +24,21 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
-import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
-import org.wso2.carbon.device.mgt.core.app.mgt.AppManagementServiceImpl;
-import org.wso2.carbon.device.mgt.core.app.mgt.RemoteAppManagerConnector;
+import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.app.mgt.RemoteApplicationManager;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -51,11 +50,10 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.device.mgt.user.core.UserManager;
-import org.wso2.carbon.device.mgt.user.core.service.UserManagementService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -72,7 +70,7 @@ import java.util.List;
  * bind="setRealmService"
  * unbind="unsetRealmService"
  * @scr.reference name="device.manager.service"
- * interface="org.wso2.carbon.device.mgt.common.spi.DeviceMgtService"
+ * interface="org.wso2.carbon.device.mgt.common.spi.DeviceManagementService"
  * cardinality="0..n"
  * policy="dynamic"
  * bind="setDeviceManager"
@@ -109,7 +107,7 @@ public class DeviceManagementServiceComponent {
 
     private static final Object LOCK = new Object();
     private boolean isInitialized;
-    private List<DeviceMgtService> deviceManagers = new ArrayList<DeviceMgtService>();
+    private List<DeviceManagementService> deviceManagementServices = new ArrayList<DeviceManagementService>();
 
     protected void activate(ComponentContext componentContext) {
         try {
@@ -131,8 +129,8 @@ public class DeviceManagementServiceComponent {
             /* Initializing app manager connector */
             this.initAppManagerConnector();
 
-            DeviceManagementService deviceManagementProvider =
-                    new DeviceManagementServiceProviderImpl(this.getPluginRepository());
+            DeviceManagementProviderService deviceManagementProvider =
+                    new DeviceManagementProviderServiceImpl(this.getPluginRepository());
             DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
             OperationManagementDAOFactory.init(dsConfig);
 
@@ -149,8 +147,8 @@ public class DeviceManagementServiceComponent {
             }
 
             synchronized (LOCK) {
-                for (DeviceMgtService deviceManager : deviceManagers) {
-                    this.registerDeviceManagementProvider(deviceManager);
+                for (DeviceManagementService deviceManagementService : deviceManagementServices) {
+                    this.registerDeviceManagementProvider(deviceManagementService);
                 }
                 this.isInitialized = true;
             }
@@ -185,23 +183,23 @@ public class DeviceManagementServiceComponent {
         DeviceManagementDataHolder.getInstance().setOperationManager(operationManager);
     }
 
-    private void initAppManagerConnector() throws AppManagerConnectorException {
+    private void initAppManagerConnector() throws ApplicationManagementException {
         AppManagementConfigurationManager.getInstance().initConfig();
         AppManagementConfig appConfig =
                 AppManagementConfigurationManager.getInstance().getAppManagementConfig();
         DeviceManagementDataHolder.getInstance().setAppManagerConfig(appConfig);
-        RemoteAppManagerConnector appManager = new RemoteAppManagerConnector(appConfig, this.getPluginRepository());
+        RemoteApplicationManager appManager = new RemoteApplicationManager(appConfig, this.getPluginRepository());
         DeviceManagementDataHolder.getInstance().setAppManager(appManager);
     }
 
     private void registerServices(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
-            log.debug("Registering OSGi service DeviceManagementServiceImpl");
+            log.debug("Registering OSGi service DeviceManagementProviderServiceImpl");
         }
         /* Registering Device Management Service */
         BundleContext bundleContext = componentContext.getBundleContext();
-        bundleContext.registerService(DeviceManagementService.class.getName(),
-                new DeviceManagementServiceImpl(), null);
+        bundleContext.registerService(DeviceManagementProviderService.class.getName(),
+                new DeviceManagementProviderServiceImpl(), null);
 
         APIPublisherService publisher = new APIPublisherServiceImpl();
         DeviceManagementDataHolder.getInstance().setApiPublisherService(publisher);
@@ -210,7 +208,7 @@ public class DeviceManagementServiceComponent {
         bundleContext.registerService(ServerStartupObserver.class, new APIRegistrationStartupObserver(), null);
 
 	     /* Registering App Management service */
-        bundleContext.registerService(AppManagerConnector.class.getName(), new AppManagementServiceImpl(), null);
+        bundleContext.registerService(ApplicationManager.class.getName(), new ApplicationManagementServiceImpl(), null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config)
@@ -241,12 +239,12 @@ public class DeviceManagementServiceComponent {
         }
     }
 
-    private void registerDeviceManagementProvider(DeviceMgtService deviceManager) {
+    private void registerDeviceManagementProvider(DeviceManagementService deviceManagementService) {
         try {
-            this.getPluginRepository().addDeviceManagementProvider(deviceManager);
+            this.getPluginRepository().addDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while adding device management provider '" +
-                    deviceManager.getProviderType() + "'");
+                    deviceManagementService.getProviderType() + "'");
         }
     }
 
@@ -255,7 +253,7 @@ public class DeviceManagementServiceComponent {
      *
      * @param deviceManager An instance of DeviceManager
      */
-    protected void setDeviceManager(DeviceMgtService deviceManager) {
+    protected void setDeviceManager(DeviceManagementService deviceManager) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Device Management Service Provider: '" + deviceManager.getProviderType() + "'");
         }
@@ -263,7 +261,7 @@ public class DeviceManagementServiceComponent {
             if (isInitialized) {
                 this.registerDeviceManagementProvider(deviceManager);
             }
-            deviceManagers.add(deviceManager);
+            deviceManagementServices.add(deviceManager);
         }
     }
 
@@ -272,7 +270,7 @@ public class DeviceManagementServiceComponent {
      *
      * @param deviceManager An Instance of DeviceManager
      */
-    protected void unsetDeviceManager(DeviceMgtService deviceManager) {
+    protected void unsetDeviceManager(DeviceManagementService deviceManager) {
         if (log.isDebugEnabled()) {
             log.debug("Un setting Device Management Service Provider : '" + deviceManager.getProviderType() + "'");
         }

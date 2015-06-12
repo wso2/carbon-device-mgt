@@ -18,8 +18,7 @@
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.List;
  * Proxy class for all Device Management related operations that take the corresponding plugin type in
  * and resolve the appropriate plugin implementation
  */
-public interface DeviceManagementService extends DeviceManager, LicenseManager, OperationManager {
+public interface DeviceManagementProviderService extends DeviceManager, LicenseManager, OperationManager {
 
     List<Device> getAllDevices(String type) throws DeviceManagementException;
 
@@ -41,14 +40,6 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
     void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String type) throws DeviceManagementException;
-
-    /**
-     * This method returns core device details.
-     * @param deviceId
-     * @return
-     * @throws DeviceManagementException
-     */
-    Device getCoreDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by an user.
@@ -87,4 +78,5 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
      * device list
      */
     List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException;
+
 }

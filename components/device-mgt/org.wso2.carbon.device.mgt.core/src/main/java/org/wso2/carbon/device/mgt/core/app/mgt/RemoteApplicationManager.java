@@ -23,13 +23,12 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.Application;
-import org.wso2.carbon.device.mgt.common.Credential;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnectorException;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.common.spi.DeviceMgtService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -46,7 +45,7 @@ import java.util.List;
 /**
  * Implements AppManagerConnector interface
  */
-public class RemoteAppManagerConnector implements AppManagerConnector {
+public class RemoteApplicationManager implements ApplicationManager {
 
     private ConfigurationContext configCtx;
     private ServiceAuthenticator authenticator;
@@ -55,9 +54,9 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
 
-    private static final Log log = LogFactory.getLog(RemoteAppManagerConnector.class);
+    private static final Log log = LogFactory.getLog(RemoteApplicationManager.class);
 
-    public RemoteAppManagerConnector(AppManagementConfig appManagementConfig, DeviceManagementRepository pluginRepository) {
+    public RemoteApplicationManager(AppManagementConfig appManagementConfig, DeviceManagementRepository pluginRepository) {
 
         IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getDeviceManagementConfigRepository().getIdentityConfigurations();
@@ -75,44 +74,35 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
     }
 
     @Override
-    public Application[] getApplicationList(String domain, int pageNumber,
-                                            int size) throws AppManagerConnectorException {
+    public Application[] getApplications(String domain, int pageNumber,
+                                         int size) throws ApplicationManagementException {
         return new Application[0];
     }
 
     @Override
     public void updateApplicationStatus(DeviceIdentifier deviceId, Application application,
-                                        String status) throws AppManagerConnectorException{
+                                        String status) throws ApplicationManagementException {
 
     }
 
     @Override
     public String getApplicationStatus(DeviceIdentifier deviceId,
-                                       Application application) throws AppManagerConnectorException {
+                                       Application application) throws ApplicationManagementException {
         return null;
     }
 
     @Override
-    public Credential getClientCredentials() throws AppManagerConnectorException {
-        OAuthConsumerAppDTO appInfo = this.getAppInfo();
-
-        Credential credential = new Credential();
-        credential.setConsumerKey(appInfo.getOauthConsumerKey());
-        credential.setConsumerSecret(appInfo.getOauthConsumerSecret());
-        return credential;
-    }
-
-    @Override
     public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
-            throws AppManagerConnectorException {
+            throws ApplicationManagementException {
 
        for(DeviceIdentifier deviceIdentifier:deviceIdentifiers){
-           DeviceMgtService dms = this.getPluginRepository().getDeviceManagementProvider(deviceIdentifier.getType());
+           DeviceManagementService dms =
+                   this.getPluginRepository().getDeviceManagementProvider(deviceIdentifier.getType());
            dms.installApplication(operation,deviceIdentifiers);
        }
     }
 
-    private OAuthConsumerAppDTO getAppInfo() throws AppManagerConnectorException {
+    private OAuthConsumerAppDTO getAppInfo() throws ApplicationManagementException {
         OAuthConsumerAppDTO appInfo = null;
         try {
             OAuthAdminServiceStub oAuthAdminServiceStub =
@@ -147,9 +137,9 @@ public class RemoteAppManagerConnector implements AppManagerConnector {
         return appDTO;
     }
 
-    private void handleException(String msg, Exception e) throws AppManagerConnectorException {
+    private void handleException(String msg, Exception e) throws ApplicationManagementException {
         log.error(msg, e);
-        throw new AppManagerConnectorException(msg, e);
+        throw new ApplicationManagementException(msg, e);
     }
 
     public DeviceManagementRepository getPluginRepository() {

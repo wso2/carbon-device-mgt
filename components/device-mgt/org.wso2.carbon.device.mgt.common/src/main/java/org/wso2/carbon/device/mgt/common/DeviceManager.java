@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.spi;
+package org.wso2.carbon.device.mgt.common;
 
 import org.wso2.carbon.device.mgt.common.*;
 

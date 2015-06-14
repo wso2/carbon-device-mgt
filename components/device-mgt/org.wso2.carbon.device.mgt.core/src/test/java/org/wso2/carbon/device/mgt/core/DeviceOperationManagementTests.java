@@ -63,27 +63,27 @@ public class DeviceOperationManagementTests extends DeviceManagementBaseTest {
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(new DeviceManagementProviderServiceImpl());
     }
 
-    @Test
-    public void testAddOperation() throws Exception {
-        CommandOperation op = new CommandOperation();
-        op.setEnabled(true);
-        op.setType(Operation.Type.COMMAND);
-        op.setCode("OPCODE1");
-
-        List<DeviceIdentifier> deviceIds = new ArrayList<DeviceIdentifier>();
-        DeviceIdentifier deviceId = new DeviceIdentifier();
-        deviceId.setId("4892813d-0b18-4a02-b7b1-61775257400e");
-        deviceId.setType("android");
-        deviceIds.add(deviceId);
-
-        try {
-            boolean isAdded = operationManager.addOperation(op, deviceIds);
-            Assert.assertTrue(isAdded);
-        } catch (OperationManagementException e) {
-            e.printStackTrace();
-            throw new Exception(e);
-        }
-    }
+//    @Test
+//    public void testAddOperation() throws Exception {
+//        CommandOperation op = new CommandOperation();
+//        op.setEnabled(true);
+//        op.setType(Operation.Type.COMMAND);
+//        op.setCode("OPCODE1");
+//
+//        List<DeviceIdentifier> deviceIds = new ArrayList<DeviceIdentifier>();
+//        DeviceIdentifier deviceId = new DeviceIdentifier();
+//        deviceId.setId("4892813d-0b18-4a02-b7b1-61775257400e");
+//        deviceId.setType("android");
+//        deviceIds.add(deviceId);
+//
+//        try {
+//            boolean isAdded = operationManager.addOperation(op, deviceIds);
+//            Assert.assertTrue(isAdded);
+//        } catch (OperationManagementException e) {
+//            e.printStackTrace();
+//            throw new Exception(e);
+//        }
+//    }
 
     public void testGetOperations() {
         try {

@@ -25,13 +25,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.common.DBTypes;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfiguration;
@@ -173,9 +174,10 @@ public class PolicyDAOTestCase {
     public void addDevice() throws DeviceManagementDAOException {
 
         DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        devices = DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType());
+        DeviceType type = DeviceTypeCreator.getDeviceType();
+        devices = DeviceCreator.getDeviceList(type);
         for (Device device : devices) {
-            deviceTypeDAO.addDevice(device);
+            deviceTypeDAO.addDevice(type.getId(), device, -1234);
         }
     }
 
@@ -229,7 +231,7 @@ public class PolicyDAOTestCase {
 
         List<DeviceIdentifier> deviceIdentifierList = new ArrayList<DeviceIdentifier>();
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setId(device.getDeviceIdentificationId());
+        deviceIdentifier.setId(device.getDeviceIdentifier());
         deviceIdentifier.setType("android");
 
         deviceIdentifierList.add(deviceIdentifier);

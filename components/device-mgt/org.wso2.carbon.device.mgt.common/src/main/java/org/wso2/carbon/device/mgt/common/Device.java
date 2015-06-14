@@ -32,7 +32,7 @@ public class Device {
 	private Long dateOfLastUpdate;
 	private String ownership;
 	private Status status;
-	private int deviceTypeId;
+	private String deviceType;
 	private String deviceIdentifier;
 	private String owner;
 	private List<Feature> features;
@@ -43,7 +43,7 @@ public class Device {
     }
 
     public enum OwnerShip {
-        BYOD,COPE
+        BYOD, COPE
     }
 
 	@XmlElement
@@ -110,12 +110,12 @@ public class Device {
 	}
 
 	@XmlElement
-	public int getDeviceTypeId() {
-		return deviceTypeId;
+	public String getDeviceType() {
+		return deviceType;
 	}
 
-	public void setDeviceTypeId(int deviceTypeId) {
-		this.deviceTypeId = deviceTypeId;
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 
 	@XmlElement

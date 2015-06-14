@@ -97,6 +97,11 @@ public class TestDeviceManager implements DeviceManagementService {
     }
 
     @Override
+    public boolean setStatus(DeviceIdentifier deviceId, String currentOwner, EnrollmentStatus status) throws DeviceManagementException {
+        return false;
+    }
+
+    @Override
     public Application[] getApplications(String domain, int pageNumber,
                                          int size) throws ApplicationManagementException {
         return new Application[0];

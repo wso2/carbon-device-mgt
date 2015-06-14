@@ -33,7 +33,6 @@ public class Device implements Serializable {
     private Status status;
     private String ownerId;
     private String ownerShip;
-    private int tenantId;
     private int deviceTypeId;
 	private DeviceType deviceType;
 
@@ -53,11 +52,11 @@ public class Device implements Serializable {
         this.deviceTypeId = deviceTypeId;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -125,11 +124,4 @@ public class Device implements Serializable {
         this.ownerId = ownerId;
     }
 
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
-    }
 }

@@ -20,6 +20,8 @@ package org.wso2.carbon.device.mgt.core.operation.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -28,7 +30,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -69,11 +70,11 @@ public class OperationManagerImpl implements OperationManager {
 
     @Override
     public boolean addOperation(Operation operation,
-                                List<DeviceIdentifier> deviceIdentifiers) throws OperationManagementException {
+                                List<DeviceIdentifier> deviceIds) throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
             log.debug("operation:[" + operation.toString() + "]");
-            for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
+            for (DeviceIdentifier deviceIdentifier : deviceIds) {
                 log.debug("device identifier id:[" + deviceIdentifier.getId() + "] type:[" + deviceIdentifier.getType()
                         + "]");
             }
@@ -86,12 +87,13 @@ public class OperationManagerImpl implements OperationManager {
             int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
 
             Device device;
-            for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
-                device = deviceDAO.getDevice(deviceIdentifier);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            for (DeviceIdentifier deviceId : deviceIds) {
+                device = deviceDAO.getDevice(deviceId, tenantId);
                 if (device == null) {
                     String errorMsg = "The operation not added for device.The device not found for " +
-                            "device Identifier type -'" + deviceIdentifier.getType() + "' and device Id '" +
-                            deviceIdentifier.getId();
+                            "device Identifier type -'" + deviceId.getType() + "' and device Id '" +
+                            deviceId.getId();
                     log.info(errorMsg);
                 } else {
                     operationMappingDAO.addOperationMapping(operationId, device.getId());
@@ -117,21 +119,21 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public List<? extends Operation> getOperations(DeviceIdentifier deviceIdentifier)
-            throws OperationManagementException {
+    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
 
         try {
             List<Operation> operations = new ArrayList<Operation>();
             Device device = null;
 
             try {
-                device = deviceDAO.getDevice(deviceIdentifier);
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                device = deviceDAO.getDevice(deviceId, tenantId);
             } catch (DeviceManagementDAOException e) {
                 e.printStackTrace();
             }
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device " +
-                        "Identifier:" + deviceIdentifier.getId() + " and given type" + deviceIdentifier.getType());
+                        "Identifier:" + deviceId.getId() + " and given type" + deviceId.getType());
             }
             List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList = operationDAO
                     .getOperationsForDevice(device.getId());
@@ -143,17 +145,17 @@ public class OperationManagerImpl implements OperationManager {
             return operations;
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving the list of " +
-                    "operations assigned for '" + deviceIdentifier.getType() + "' device '" + deviceIdentifier.getId()
+                    "operations assigned for '" + deviceId.getType() + "' device '" + deviceId.getId()
                     + "'", e);
         }
     }
 
     @Override
-    public List<? extends Operation> getPendingOperations(DeviceIdentifier deviceIdentifier)
-            throws OperationManagementException {
+    public List<? extends Operation> getPendingOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
-            log.debug("Device identifier id:[" + deviceIdentifier.getId() + "] type:[" + deviceIdentifier.getType()
+            log.debug("Device identifier id:[" + deviceId.getId() + "] type:[" + deviceId.getType()
                     + "]");
         }
 
@@ -164,12 +166,12 @@ public class OperationManagerImpl implements OperationManager {
                 new ArrayList<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation>();
 
         try {
-
-            device = deviceDAO.getDevice(deviceIdentifier);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            device = deviceDAO.getDevice(deviceId, tenantId);
 
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device " +
-                        "Identifier:" + deviceIdentifier.getId() + " and given type:" + deviceIdentifier.getType());
+                        "Identifier:" + deviceId.getId() + " and given type:" + deviceId.getType());
             }
 
             dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
@@ -193,32 +195,33 @@ public class OperationManagerImpl implements OperationManager {
             return operations;
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving the list of " +
-                    "pending operations assigned for '" + deviceIdentifier.getType() + "' device '" +
-                    deviceIdentifier.getId() + "'", e);
+                    "pending operations assigned for '" + deviceId.getType() + "' device '" +
+                    deviceId.getId() + "'", e);
         } catch (DeviceManagementDAOException e) {
             String errorMsg = "Error occurred while retrieving the device " +
-                    "for device Identifier type -'" + deviceIdentifier.getType() + "' and device Id '"
-                    + deviceIdentifier.getId();
+                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '"
+                    + deviceId.getId();
             log.error(errorMsg, e);
             throw new OperationManagementException(errorMsg, e);
         }
     }
 
     @Override
-    public Operation getNextPendingOperation(DeviceIdentifier deviceIdentifier) throws OperationManagementException {
+    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
-            log.debug("device identifier id:[" + deviceIdentifier.getId() + "] type:[" + deviceIdentifier.getType()
+            log.debug("device identifier id:[" + deviceId.getId() + "] type:[" + deviceId.getType()
                     + "]");
         }
         Operation operation = null;
         Device device;
         try {
-            device = deviceDAO.getDevice(deviceIdentifier);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            device = deviceDAO.getDevice(deviceId, tenantId);
 
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device " +
-                        "Identifier:" + deviceIdentifier.getId() + " and given type" + deviceIdentifier.getType());
+                        "Identifier:" + deviceId.getId() + " and given type" + deviceId.getType());
             }
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
                     .getNextOperation(device.getId());
@@ -247,15 +250,15 @@ public class OperationManagerImpl implements OperationManager {
             throw new OperationManagementException("Error occurred while retrieving next pending operation", e);
         } catch (DeviceManagementDAOException e) {
             String errorMsg = "Error occurred while retrieving the device " +
-                    "for device Identifier type -'" + deviceIdentifier.getType() + "' and device Id '"
-                    + deviceIdentifier.getId();
+                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '"
+                    + deviceId.getId();
             log.error(errorMsg, e);
             throw new OperationManagementException(errorMsg, e);
         }
     }
 
     @Override
-    public void updateOperation(DeviceIdentifier deviceIdentifier, int operationId, Operation.Status operationStatus)
+    public void updateOperation(DeviceIdentifier deviceId, int operationId, Operation.Status operationStatus)
             throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
@@ -271,7 +274,8 @@ public class OperationManagerImpl implements OperationManager {
             }
             dtoOperation.setStatus(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf
                     (operationStatus.toString()));
-            Device device = deviceDAO.getDevice(deviceIdentifier);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            Device device = deviceDAO.getDevice(deviceId, tenantId);
 
             OperationManagementDAOFactory.beginTransaction();
             operationDAO.updateOperation(dtoOperation);
@@ -288,8 +292,8 @@ public class OperationManagerImpl implements OperationManager {
             log.error("Error occurred while updating the operation: " + operationId + " status:" + operationStatus, ex);
             throw new OperationManagementException("Error occurred while update operation", ex);
         } catch (DeviceManagementDAOException e) {
-            log.error("Error occurred while fetch the device for device identifier: " + deviceIdentifier.getId() + " " +
-                    "type:" + deviceIdentifier.getType(), e);
+            log.error("Error occurred while fetch the device for device identifier: " + deviceId.getId() + " " +
+                    "type:" + deviceId.getType(), e);
             throw new OperationManagementException("Error occurred while update operation", e);
         }
     }
@@ -321,24 +325,22 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceIdentifier, int operationId)
+    public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException {
-
         Device device;
         Operation operation;
 
         if (log.isDebugEnabled()) {
-            log.debug(
-                    "Operation Id:" + operationId + " Device Type:" + deviceIdentifier.getType() + " Device Identifier:"
-                            +
-                            deviceIdentifier.getId());
+            log.debug("Operation Id:" + operationId + " Device Type:" + deviceId.getType() + " Device Identifier:" +
+                    deviceId.getId());
         }
 
         try {
-            device = deviceDAO.getDevice(deviceIdentifier);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            device = deviceDAO.getDevice(deviceId, tenantId);
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device identifier:" +
-                        deviceIdentifier.getId() + " type:" + deviceIdentifier.getType());
+                        deviceId.getId() + " type:" + deviceId.getType());
             }
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
                     .getOperationByDeviceAndId(device.getId(), operationId);
@@ -368,12 +370,12 @@ public class OperationManagerImpl implements OperationManager {
             operation = OperationDAOUtil.convertOperation(dtoOperation);
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving the list of " +
-                    "operations assigned for '" + deviceIdentifier.getType() + "' device '" + deviceIdentifier.getId()
+                    "operations assigned for '" + deviceId.getType() + "' device '" + deviceId.getId()
                     + "'", e);
         } catch (DeviceManagementDAOException e) {
             String errorMsg = "Error occurred while retrieving the device " +
-                    "for device Identifier type -'" + deviceIdentifier.getType() + "' and device Id '"
-                    + deviceIdentifier.getId();
+                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '"
+                    + deviceId.getId();
             log.error(errorMsg, e);
             throw new OperationManagementException(errorMsg, e);
         }
@@ -381,19 +383,20 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
-                                                                    Operation.Status status) throws OperationManagementException, DeviceManagementException {
+    public List<? extends Operation> getOperationsByDeviceAndStatus(
+            DeviceIdentifier deviceId, Operation.Status status) throws OperationManagementException {
 
         try {
             List<Operation> operations = new ArrayList<Operation>();
             List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList =
                     new ArrayList<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation>();
 
-            Device device = deviceDAO.getDevice(identifier);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            Device device = deviceDAO.getDevice(deviceId, tenantId);
 
             if (device == null) {
-                throw new DeviceManagementException("Device not found for device id:" + identifier.getId() + " " +
-                        "type:" + identifier.getType());
+                throw new OperationManagementException("Device not found for device id:" + deviceId.getId() + " " +
+                        "type:" + deviceId.getType());
             }
 
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status dtoOpStatus = org.wso2.carbon.device
@@ -418,11 +421,11 @@ public class OperationManagerImpl implements OperationManager {
             return operations;
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving the list of " +
-                    "operations assigned for '" + identifier.getType() + "' device '" +
-                    identifier.getId() + "' and status:" + status.toString(), e);
+                    "operations assigned for '" + deviceId.getType() + "' device '" +
+                    deviceId.getId() + "' and status:" + status.toString(), e);
         } catch (DeviceManagementDAOException e) {
             String errorMsg = "Error occurred while retrieving the device " +
-                    "for device Identifier type -'" + identifier.getType() + "' and device Id '" + identifier.getId();
+                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '" + deviceId.getId();
             log.error(errorMsg, e);
             throw new OperationManagementException(errorMsg, e);
         }
@@ -493,4 +496,5 @@ public class OperationManagerImpl implements OperationManager {
             return operationDAO;
         }
     }
+
 }

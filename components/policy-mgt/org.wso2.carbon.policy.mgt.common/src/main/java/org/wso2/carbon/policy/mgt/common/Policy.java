@@ -15,16 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.carbon.policy.mgt.common;
 
-
-import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.device.mgt.common.Device;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +63,7 @@ public class Policy implements Comparable<Policy>, Serializable {
 
     /*These are related to location based policies*/
 
-//    private String latitude;                // Latitude
+    //    private String latitude;                // Latitude
 //    private String longitude;               // Longitude
 //
     private int tenantId;

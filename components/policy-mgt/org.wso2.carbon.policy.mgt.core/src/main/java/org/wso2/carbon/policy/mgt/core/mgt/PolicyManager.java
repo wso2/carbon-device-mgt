@@ -15,11 +15,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
 package org.wso2.carbon.policy.mgt.core.mgt;
 
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;

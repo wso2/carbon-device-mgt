@@ -87,14 +87,7 @@ public class PolicyCreator {
         policy.setOwnershipType("COPE");
 
         policy.setPolicyCriterias(criteria);
-//
-//        policy.setLatitude("6.927079");
-//        policy.setLongitude("79.861243");
 
-/*        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd ");
-        java.util.Date date = new java.util.Date();
-
-        policy.setStartDate(new java.sql.Timestamp(date.getDate()));*/
 
         return policy;
     }
@@ -116,13 +109,6 @@ public class PolicyCreator {
         policy.setCompliance("ENFORCE");
         policy.setOwnershipType("BYOD");
 
-//        List<String> users = new ArrayList<String>();
-//        users.add("Geeth");
-//        users.add("Manoj");
-//        users.add("Milan");
-//        users.add("Dulitha");
-//
-//        policy.setUsers(users);
 
 
         PolicyCriterion criterion = new PolicyCriterion();
@@ -141,10 +127,6 @@ public class PolicyCreator {
 
         policy.setPolicyCriterias(criteria);
 
-/*        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd ");
-        java.util.Date date = new java.util.Date();
-
-        policy.setStartDate(new java.sql.Timestamp(date.getDate()));*/
 
         return policy;
     }
@@ -184,7 +166,7 @@ public class PolicyCreator {
         prop.put("End_time", "4.00 PM");
 
         criterion.setProperties(prop);
-        criterion.setName("LOCATIONGGGGG");
+        criterion.setName("LOCATION");
 
 
         List<PolicyCriterion> criteria = new ArrayList<PolicyCriterion>();
@@ -193,13 +175,6 @@ public class PolicyCreator {
 
         policy.setPolicyCriterias(criteria);
 
-//        policy.setLatitude("6.927079");
-//        policy.setLongitude("79.861243");
-
-/*        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd ");
-        java.util.Date date = new java.util.Date();
-
-        policy.setStartDate(new java.sql.Timestamp(date.getDate()));*/
 
         return policy;
     }

@@ -176,8 +176,4 @@ public class OperationManagementDAOFactory {
         return dataSource;
     }
 
-    public static DataSource getDataSource() {
-        return dataSource;
-    }
-
 }

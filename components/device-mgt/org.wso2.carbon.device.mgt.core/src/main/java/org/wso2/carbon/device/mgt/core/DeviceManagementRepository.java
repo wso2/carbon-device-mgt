@@ -49,7 +49,7 @@ public class DeviceManagementRepository {
         providers.remove(deviceType);
     }
 
-    public DeviceManagementService getDeviceManagementProvider(String type) {
+    public DeviceManagementService getDeviceManagementService(String type) {
         return providers.get(type);
     }
 

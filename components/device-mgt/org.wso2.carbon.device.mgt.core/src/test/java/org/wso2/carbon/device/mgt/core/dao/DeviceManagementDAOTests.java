@@ -27,14 +27,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.Device.Status;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.Device.OwnerShip;
+import org.wso2.carbon.device.mgt.common.Device.Status;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.common.DBTypes;
 import org.wso2.carbon.device.mgt.core.common.TestDBConfiguration;
 import org.wso2.carbon.device.mgt.core.common.TestDBConfigurations;
-import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
@@ -52,7 +52,7 @@ public class DeviceManagementDAOTests {
     private static final Log log = LogFactory.getLog(DeviceManagementDAOTests.class);
 
     @AfterClass
-    public void deleteData() throws Exception{
+    public void deleteData() throws Exception {
         Connection connection = dataSource.getConnection();
         connection.createStatement().execute("DELETE FROM DM_DEVICE");
         connection.createStatement().execute("DELETE FROM DM_DEVICE_TYPE");
@@ -148,20 +148,18 @@ public class DeviceManagementDAOTests {
         DeviceDAO deviceMgtDAO = DeviceManagementDAOFactory.getDeviceDAO();
 
         Device device = new Device();
-        device.setDateOfEnrollment(new Date().getTime());
+        device.setDateOfEnrolment(new Date().getTime());
         device.setDateOfLastUpdate(new Date().getTime());
         device.setDescription("test description");
         device.setStatus(Status.ACTIVE);
-        device.setDeviceIdentificationId("111");
+        device.setDeviceIdentifier("111");
 
         DeviceType deviceType = new DeviceType();
         deviceType.setId(Integer.parseInt("1"));
 
-        device.setDeviceTypeId(deviceType.getId());
-        device.setOwnerShip(OwnerShip.BYOD.toString());
-        device.setOwnerId("111");
-        device.setTenantId(-1234);
-        deviceMgtDAO.addDevice(device);
+        device.setOwnership(OwnerShip.BYOD.toString());
+        device.setOwner("111");
+        deviceMgtDAO.addDevice(deviceType.getId(), device, -1234);
 
         Connection conn = null;
         PreparedStatement stmt = null;

@@ -16,46 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-
 package org.wso2.carbon.device.mgt.common.app.mgt;
-
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.Platform;
-
-import java.util.List;
 
 public class Application {
 
-    private String applicationName;
-    private String appId;
+    private String id;
+    private String packageName;
+    private String platform;
+    private String category;
+    private String name;
     private String locationUrl;
     private String imageUrl;
     private String version;
-    private String appType;
+    private String type;
 
-    public String getAppType() {
-        return appType;
+    public String getType() {
+        return type;
     }
 
-    public void setAppType(String appType) {
-        this.appType = appType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getApplicationName() {
-        return applicationName;
+    public String getName() {
+        return name;
     }
 
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
+    public void setName(String name) {
+        this.name = name;
     }
 
 
-    public String getAppId() {
-        return appId;
+    public String getId() {
+        return id;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setId(String id) {
+        this.id = id;
     }
 
 
@@ -82,6 +79,30 @@ public class Application {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 }

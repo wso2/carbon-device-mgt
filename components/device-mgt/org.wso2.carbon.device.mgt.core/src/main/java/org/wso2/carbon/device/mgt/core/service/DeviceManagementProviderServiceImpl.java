@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
@@ -28,10 +29,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.*;
 import org.wso2.carbon.device.mgt.core.email.EmailConstants;
@@ -49,6 +47,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
+    private EnrollmentDAO enrollmentDAO;
     private DeviceManagementRepository pluginRepository;
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
@@ -57,11 +56,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         this.pluginRepository = pluginRepository;
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        this.enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
     }
 
     public DeviceManagementProviderServiceImpl() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
     @Override
@@ -77,28 +76,43 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public FeatureManager getFeatureManager(String type) {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(type);
+                this.getPluginRepository().getDeviceManagementService(type);
         return dms.getFeatureManager();
     }
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(device.getType());
+                this.getPluginRepository().getDeviceManagementService(device.getType());
         boolean status = dms.enrollDevice(device);
         try {
-            org.wso2.carbon.device.mgt.core.dto.Device deviceDto = DeviceManagementDAOUtil.convertDevice(device);
-            DeviceType deviceType = this.getDeviceTypeDAO().getDeviceType(device.getType());
-            if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), deviceType.getName()))) {
-                deviceDto.setStatus(Device.Status.INACTIVE);
+            if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), device.getDeviceType()))) {
+                device.setStatus(Device.Status.INACTIVE);
             } else {
-                deviceDto.setStatus(Device.Status.ACTIVE);
+                device.setStatus(Device.Status.ACTIVE);
             }
-            deviceDto.setDeviceTypeId(deviceType.getId());
-            this.getDeviceDAO().addDevice(deviceDto);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+            DeviceManagementDAOFactory.beginTransaction();
+
+            DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+            deviceDAO.addDevice(type.getId(), device, tenantId);
+
+            DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
+            try {
+                DeviceManagementDAOFactory.rollbackTransaction();
+            } catch (DeviceManagementDAOException e1) {
+                log.warn("Error occurred while rollbacking the current transaction", e);
+            }
             throw new DeviceManagementException("Error occurred while enrolling the device " +
                     "'" + device.getId() + "'", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
         }
         return status;
     }
@@ -106,13 +120,31 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(device.getType());
+                this.getPluginRepository().getDeviceManagementService(device.getType());
         boolean status = dms.modifyEnrollment(device);
         try {
-            this.getDeviceDAO().updateDevice(DeviceManagementDAOUtil.convertDevice(device));
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+            DeviceManagementDAOFactory.beginTransaction();
+
+            DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+            deviceDAO.updateDevice(type.getId(), device, tenantId);
+
+            DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
+            try {
+                DeviceManagementDAOFactory.rollbackTransaction();
+            } catch (DeviceManagementDAOException e1) {
+                log.warn("Error occurred while rollbacking the current transaction", e);
+            }
             throw new DeviceManagementException("Error occurred while modifying the device " +
                     "'" + device.getId() + "'", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
         }
         return status;
     }
@@ -120,21 +152,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
         return dms.disenrollDevice(deviceId);
     }
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
         return dms.isEnrolled(deviceId);
     }
 
     @Override
     public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
         return dms.isActive(deviceId);
     }
 
@@ -142,93 +174,67 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public boolean setActive(DeviceIdentifier deviceId, boolean status)
             throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
         return dms.setActive(deviceId, status);
     }
 
     @Override
     public List<Device> getAllDevices() throws DeviceManagementException {
-        List<Device> convertedDevicesList = new ArrayList<Device>();
+        List<Device> devices = new ArrayList<Device>();
+        List<Device> allDevices;
         try {
-            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO.getDevices();
-            for (int x = 0; x < devicesList.size(); x++) {
-                org.wso2.carbon.device.mgt.core.dto.Device device = devicesList.get(x);
-                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
-                DeviceManager dms =
-                        this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
-                DeviceType deviceType = this.deviceTypeDAO.getDeviceType(device.getDeviceTypeId());
-                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, deviceType);
-                DeviceIdentifier deviceIdentifier =
-                        DeviceManagementDAOUtil.createDeviceIdentifier(device, deviceType);
-                Device dmsDevice = dms.getDevice(deviceIdentifier);
-                if (dmsDevice != null) {
-                    convertedDevice.setProperties(dmsDevice.getProperties());
-                    convertedDevice.setFeatures(dmsDevice.getFeatures());
-                }
-                convertedDevicesList.add(convertedDevice);
-            }
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            DeviceManagementDAOFactory.getConnection();
+            allDevices = deviceDAO.getDevices(tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining devices all devices", e);
+            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                    "the current tenant", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
         }
-        return convertedDevicesList;
+        for (Device device : allDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            device.setFeatures(dmsDevice.getFeatures());
+            device.setProperties(dmsDevice.getProperties());
+            devices.add(device);
+        }
+        return devices;
     }
 
     @Override
     public List<Device> getAllDevices(String type) throws DeviceManagementException {
-        DeviceManager dms = this.getPluginRepository().getDeviceManagementProvider(type);
-        List<Device> devicesList = new ArrayList<Device>();
+        List<Device> devices = new ArrayList<Device>();
+        List<Device> allDevices;
         try {
-            DeviceType dt = this.getDeviceTypeDAO().getDeviceType(type);
-            List<org.wso2.carbon.device.mgt.core.dto.Device> devices =
-                    this.getDeviceDAO().getDevices(dt.getId());
-
-            for (org.wso2.carbon.device.mgt.core.dto.Device device : devices) {
-                DeviceType deviceType = this.deviceTypeDAO.getDeviceType(device.getDeviceTypeId());
-                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, deviceType);
-                DeviceIdentifier deviceIdentifier =
-                        DeviceManagementDAOUtil.createDeviceIdentifier(device, deviceType);
-                Device dmsDevice = dms.getDevice(deviceIdentifier);
-                if (dmsDevice != null) {
-                    convertedDevice.setProperties(dmsDevice.getProperties());
-                    convertedDevice.setFeatures(dmsDevice.getFeatures());
-                }
-                devicesList.add(convertedDevice);
-            }
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            DeviceManagementDAOFactory.getConnection();
+            allDevices = deviceDAO.getDevices(type, tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for type " +
-                    "'" + type + "'", e);
-        }
-        return devicesList;
-    }
-
-    @Override
-    public List<Device> getDeviceListOfUser(String username) throws DeviceManagementException {
-        List<Device> devicesOfUser = new ArrayList<Device>();
-        try {
-            int tenantId = DeviceManagerUtil.getTenantId();
-            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO
-                    .getDeviceListOfUser(username, tenantId);
-            for (int x = 0; x < devicesList.size(); x++) {
-                org.wso2.carbon.device.mgt.core.dto.Device device = devicesList.get(x);
-                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
-                DeviceManager dms =
-                        this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
-                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
-                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-                deviceIdentifier.setId(device.getDeviceIdentificationId());
-                deviceIdentifier.setType(device.getDeviceType().getName());
-                Device dmsDevice = dms.getDevice(deviceIdentifier);
-                if (dmsDevice != null) {
-                    convertedDevice.setProperties(dmsDevice.getProperties());
-                    convertedDevice.setFeatures(dmsDevice.getFeatures());
-                }
-                devicesOfUser.add(convertedDevice);
+            throw new DeviceManagementException("Error occurred while retrieving all devices of type '" +
+                    type + "' that are being managed within the scope of current tenant", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
             }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining devices for user " +
-                    "'" + username + "'", e);
         }
-        return devicesOfUser;
+
+        for (Device device : allDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            device.setFeatures(dmsDevice.getFeatures());
+            device.setProperties(dmsDevice.getProperties());
+            devices.add(device);
+        }
+        return devices;
     }
 
     @Override
@@ -356,34 +362,33 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-
-        DeviceManager dms = this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
-        Device convertedDevice = null;
+        Device device;
         try {
-            DeviceType deviceType =
-                    this.getDeviceTypeDAO().getDeviceType(deviceId.getType());
-            org.wso2.carbon.device.mgt.core.dto.Device device =
-                    this.getDeviceDAO().getDevice(deviceId);
-            if (device != null) {
-                convertedDevice = DeviceManagementDAOUtil
-                        .convertDevice(device, this.getDeviceTypeDAO().getDeviceType(deviceType.getId()));
-                Device dmsDevice = dms.getDevice(deviceId);
-                if (dmsDevice != null) {
-                    convertedDevice.setProperties(dmsDevice.getProperties());
-                    convertedDevice.setFeatures(dmsDevice.getFeatures());
-                }
-            }
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            device = deviceDAO.getDevice(deviceId, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
                     "'" + deviceId.getId() + "'", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
         }
-        return convertedDevice;
+        if (device != null) {
+            DeviceManager dms = this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+            Device pluginSpecificInfo = dms.getDevice(deviceId);
+            device.setProperties(pluginSpecificInfo.getProperties());
+            device.setFeatures(pluginSpecificInfo.getFeatures());
+        }
+        return device;
     }
 
     @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(device.getType());
+                this.getPluginRepository().getDeviceManagementService(device.getType());
         return dms.updateDeviceInfo(deviceIdentifier, device);
     }
 
@@ -391,15 +396,43 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
             throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
         return dms.setOwnership(deviceId, ownershipType);
     }
 
     @Override
     public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementProvider(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
         return dms.isClaimable(deviceId);
+    }
+
+    @Override
+    public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
+                             EnrollmentStatus status) throws DeviceManagementException {
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            Device device = deviceDAO.getDevice(deviceId, tenantId);
+            boolean success = enrollmentDAO.setStatus(device.getId(), currentOwner, status.toString());
+
+            DeviceManagementDAOFactory.commitTransaction();
+            return success;
+        } catch (DeviceManagementDAOException e) {
+            try {
+                DeviceManagementDAOFactory.rollbackTransaction();
+            } catch (DeviceManagementDAOException e1) {
+                log.warn("Error occurred while rollbacking the current transaction", e);
+            }
+            throw new DeviceManagementException("Error occurred while setting enrollment status", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
     }
 
     @Override
@@ -412,15 +445,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(type, license);
     }
 
-    public DeviceDAO getDeviceDAO() {
-        return deviceDAO;
-    }
-
-    public DeviceTypeDAO getDeviceTypeDAO() {
-        return deviceTypeDAO;
-    }
-
-    public DeviceManagementRepository getPluginRepository() {
+    private DeviceManagementRepository getPluginRepository() {
         return pluginRepository;
     }
 
@@ -466,10 +491,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
-                                                                    Operation.Status status) throws OperationManagementException, DeviceManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsByDeviceAndStatus(identifier,
-                status);
+    public List<? extends Operation> getOperationsByDeviceAndStatus(
+            DeviceIdentifier identifier,
+            Operation.Status status) throws OperationManagementException, DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsByDeviceAndStatus(
+                identifier, status);
     }
 
     @Override
@@ -478,62 +504,42 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getAllDevicesOfUser(String userName)
-            throws DeviceManagementException {
-        List<Device> devicesOfUser = new ArrayList<Device>();
-        List<org.wso2.carbon.device.mgt.core.dto.Device> devices;
-        Device convertedDevice;
-        DeviceIdentifier deviceIdentifier;
-        DeviceManager dms;
-        Device dmsDevice;
-        org.wso2.carbon.device.mgt.core.dto.Device device;
-        int tenantId = DeviceManagerUtil.getTenantId();
-        //Fetch the DeviceList from Core
+    public List<Device> getDevicesOfUser(String username) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<Device>();
+        List<Device> userDevices;
         try {
-            devices = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
+            DeviceManagementDAOFactory.getConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            userDevices = deviceDAO.getDeviceListOfUser(username, tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the devices of user '"
-                    + userName + "'", e);
-        }
-
-        //Fetch the DeviceList from device plugin dbs & append the properties
-        for (org.wso2.carbon.device.mgt.core.dto.Device aDevicesList : devices) {
-            device = aDevicesList;
+            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
+                    "belong to the user '" + username + "'", e);
+        } finally {
             try {
-                //TODO : Possible improvement if DeviceTypes have been cached
-                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
-                dms = this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
-                convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
-                deviceIdentifier = new DeviceIdentifier();
-                deviceIdentifier.setId(device.getDeviceIdentificationId());
-                deviceIdentifier.setType(device.getDeviceType().getName());
-                dmsDevice = dms.getDevice(deviceIdentifier);
-                if (dmsDevice != null) {
-                    convertedDevice.setProperties(dmsDevice.getProperties());
-                    convertedDevice.setFeatures(dmsDevice.getFeatures());
-                }
-                devicesOfUser.add(convertedDevice);
+                DeviceManagementDAOFactory.closeConnection();
             } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
-                        device.getDeviceTypeId() + "'", e);
+                log.warn("Error occurred while closing the connection", e);
             }
         }
-        return devicesOfUser;
+
+        for (Device device : userDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            device.setFeatures(dmsDevice.getFeatures());
+            device.setProperties(dmsDevice.getProperties());
+            devices.add(device);
+        }
+        return devices;
+
     }
 
     @Override
-    public List<Device> getAllDevicesOfRole(String roleName)
-            throws DeviceManagementException {
-        List<Device> devicesOfRole = new ArrayList<Device>();
-        List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList;
+    public List<Device> getAllDevicesOfRole(String roleName) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<Device>();
         List<org.wso2.carbon.device.mgt.user.common.User> users;
-        Device convertedDevice;
-        DeviceIdentifier deviceIdentifier;
-        DeviceManager dms;
-        Device dmsDevice;
-        org.wso2.carbon.device.mgt.core.dto.Device device;
-        String userName = "";
-        int tenantId = DeviceManagerUtil.getTenantId();
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         //Obtaining the list of users of role
         try {
             users = DeviceManagementDataHolder.getInstance().getUserManager().getUsersForTenantAndRole(
@@ -544,87 +550,81 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
 
         //Obtaining the devices per user
+        List<Device> userDevices;
         for (org.wso2.carbon.device.mgt.user.common.User user : users) {
+            String username = null;
+            userDevices = new ArrayList<Device>();
             try {
-                userName = user.getUserName();
-                devicesList = this.getDeviceDAO().getDeviceListOfUser(userName, tenantId);
-                for (int x = 0; x < devicesList.size(); x++) {
-                    device = devicesList.get(x);
-                    try {
-                        //TODO : Possible improvement if DeviceTypes have been cached
-                        device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
-                        dms = this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
-                        convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
-                        deviceIdentifier = new DeviceIdentifier();
-                        deviceIdentifier.setId(device.getDeviceIdentificationId());
-                        deviceIdentifier.setType(device.getDeviceType().getName());
-                        dmsDevice = dms.getDevice(deviceIdentifier);
-                        if (dmsDevice != null) {
-                            convertedDevice.setProperties(dmsDevice.getProperties());
-                            convertedDevice.setFeatures(dmsDevice.getFeatures());
-                        }
-                        devicesOfRole.add(convertedDevice);
-                    } catch (DeviceManagementDAOException e) {
-                        log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
-                                device.getDeviceTypeId() + "'", e);
-                    }
-                }
+                DeviceManagementDAOFactory.getConnection();
+                username = user.getUserName();
+                userDevices = deviceDAO.getDeviceListOfUser(username, tenantId);
             } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while obtaining the devices of user '"
-                        + userName + "'", e);
+                log.error("Error occurred while obtaining the devices of user '" + username + "'", e);
+            } finally {
+                try {
+                    DeviceManagementDAOFactory.closeConnection();
+                } catch (DeviceManagementDAOException e) {
+                    log.warn("Error occurred while closing the connection", e);
+                }
             }
+            for (Device device : userDevices) {
+                Device dmsDevice =
+                        this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                                new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+                devices.add(device);
+            }
+
         }
-        return devicesOfRole;
+        return devices;
     }
 
     @Override
     public int getDeviceCount() throws DeviceManagementException {
         try {
-            int deviceCount = this.deviceDAO.getDeviceCount();
-            return deviceCount;
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            DeviceManagementDAOFactory.getConnection();
+            return deviceDAO.getDeviceCount(tenantId);
         } catch (DeviceManagementDAOException e) {
-            log.error("Error occurred while counting devices", e);
-            throw new DeviceManagementException("Error occurred while counting devices", e);
+            throw new DeviceManagementException("Error occurred while retrieving the device count", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
         }
     }
 
     @Override
-    public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException {
-        List<Device> devicesOfUser = new ArrayList<Device>();
-        List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList;
-        Device convertedDevice;
-        DeviceIdentifier deviceIdentifier;
-        DeviceManager dms;
-        Device dmsDevice;
-        org.wso2.carbon.device.mgt.core.dto.Device device;
-
+    public List<Device> getDevicesByName(String deviceName) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<Device>();
+        List<Device> allDevices;
         try {
-            devicesList = this.getDeviceDAO().getDevicesByName(deviceName, tenantId);
+            DeviceManagementDAOFactory.getConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            allDevices = deviceDAO.getDevicesByName(deviceName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
                     + deviceName + "'", e);
-        }
-
-        for (int x = 0; x < devicesList.size(); x++) {
-            device = devicesList.get(x);
+        } finally {
             try {
-                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
-                dms = this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
-                convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
-                deviceIdentifier = new DeviceIdentifier();
-                deviceIdentifier.setId(device.getDeviceIdentificationId());
-                deviceIdentifier.setType(device.getDeviceType().getName());
-                dmsDevice = dms.getDevice(deviceIdentifier);
-                if (dmsDevice != null) {
-                    convertedDevice.setProperties(dmsDevice.getProperties());
-                    convertedDevice.setFeatures(dmsDevice.getFeatures());
-                }
-                devicesOfUser.add(convertedDevice);
+                DeviceManagementDAOFactory.closeConnection();
             } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
-                        device.getDeviceTypeId() + "'", e);
+                log.warn("Error occurred while closing the connection", e);
             }
         }
-        return devicesOfUser;
+        for (Device device : allDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            device.setFeatures(dmsDevice.getFeatures());
+            device.setProperties(dmsDevice.getProperties());
+            devices.add(device);
+        }
+        return devices;
+
     }
+
 }

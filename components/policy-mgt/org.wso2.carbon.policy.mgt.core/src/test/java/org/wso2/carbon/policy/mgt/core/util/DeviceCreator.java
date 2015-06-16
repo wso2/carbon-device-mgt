@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.policy.mgt.core.util;
 
-import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.common.Device.Status;
 
@@ -34,26 +34,22 @@ public class DeviceCreator {
 
         Device device = new Device();
         device.setId(1);
-        device.setDeviceTypeId(1);
+        device.setDeviceType(deviceType.getName());
         device.setName("Galaxy S6");
-        device.setOwnerId("geeth");
-        device.setOwnerShip("BYOD");
-        device.setTenantId(-1234);
-        device.setDeviceType(deviceType);
+        device.setOwner("geeth");
+        device.setOwnership("BYOD");
         device.setStatus(Status.ACTIVE);
-        device.setDeviceIdentificationId("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+        device.setDeviceIdentifier("aaaaaaaaaaaaaaaaaaaaaaaaaa");
 
 
         Device device2 = new Device();
         device2.setId(2);
-        device2.setDeviceTypeId(1);
+        device2.setDeviceType(deviceType.getName());
         device2.setName("Nexus 5");
-        device2.setOwnerId("manoj");
-        device2.setOwnerShip("BYOD");
-        device2.setTenantId(-1234);
-        device2.setDeviceType(deviceType);
+        device2.setOwner("manoj");
+        device2.setOwnership("BYOD");
         device.setStatus(Status.ACTIVE);
-        device2.setDeviceIdentificationId("bbbbbbbbbbbbbbbbbbbbbbbb");
+        device2.setDeviceIdentifier("bbbbbbbbbbbbbbbbbbbbbbbb");
 
 
         deviceList.add(device);

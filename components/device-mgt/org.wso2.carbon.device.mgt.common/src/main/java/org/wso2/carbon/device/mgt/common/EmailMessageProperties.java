@@ -30,6 +30,7 @@ public class EmailMessageProperties {
     private String enrolmentUrl;
     private String title;
     private String password;
+    private String userName;
 
     public String getUserName() {
         return userName;
@@ -38,8 +39,6 @@ public class EmailMessageProperties {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
-    private String userName;
 
     public String getMessageBody() {
         return messageBody;

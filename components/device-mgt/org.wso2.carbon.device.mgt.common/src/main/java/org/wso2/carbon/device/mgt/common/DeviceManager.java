@@ -15,10 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.carbon.device.mgt.common;
-
-import org.wso2.carbon.device.mgt.common.*;
 
 import java.util.List;
 
@@ -27,6 +24,10 @@ import java.util.List;
  * device type plugin implementation intended to be managed through CDM.
  */
 public interface DeviceManager {
+
+    enum EnrollmentStatus {
+        CREATED, ACTIVE, INACTIVE, SUSPENDED, BLOCKED, REMOVED
+    }
 
     /**
      * Method to retrieve the provider type that implements DeviceManager interface.
@@ -45,7 +46,7 @@ public interface DeviceManager {
     /**
      * Method to enrolling a particular device of type mobile, IoT, etc within CDM.
      *
-     * @param device    Metadata corresponding to the device being enrolled
+     * @param device Metadata corresponding to the device being enrolled
      * @throws DeviceManagementException If some unusual behaviour is observed while enrolling a device
      */
     boolean enrollDevice(Device device) throws DeviceManagementException;
@@ -53,7 +54,7 @@ public interface DeviceManager {
     /**
      * Method to modify the metadata corresponding to device enrollment.
      *
-     * @param device    Modified device enrollment related metadata
+     * @param device Modified device enrollment related metadata
      * @throws DeviceManagementException If some unusual behaviour is observed while modify the enrollment of a
      *                                   device
      */
@@ -62,7 +63,7 @@ public interface DeviceManager {
     /**
      * Method to disenroll a particular device from CDM.
      *
-     * @param deviceId  Fully qualified device identifier
+     * @param deviceId Fully qualified device identifier
      * @throws DeviceManagementException If some unusual behaviour is observed while disenrolling a device
      */
     boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
@@ -70,20 +71,20 @@ public interface DeviceManager {
     /**
      * Method to retrieve the status of the registration process of a particular device.
      *
-     * @param deviceId  Fully qualified device identifier
+     * @param deviceId Fully qualified device identifier
      * @return Status of enrollment
      * @throws DeviceManagementException If some unusual behaviour is observed while checking the enrollment
-     *                      status of the device
+     *                                   status of the device
      */
     boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException;
 
     /**
      * Method to retrieve the status of a particular device.
      *
-     * @param deviceId  Fully qualified device identifier
+     * @param deviceId Fully qualified device identifier
      * @return Returns if the device is active
      * @throws DeviceManagementException If some unusual behaviour is observed while checking the status
-     * of the device
+     *                                   of the device
      */
     boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException;
 
@@ -91,10 +92,10 @@ public interface DeviceManager {
      * Method to set the status indicating whether a particular device registered within CDM is enabled at a given
      * moment.
      *
-     * @param deviceId  Fully qualified device identifier
-     * @param status    Indicates whether the device is active
+     * @param deviceId Fully qualified device identifier
+     * @param status   Indicates whether the device is active
      * @throws DeviceManagementException If some unusual behaviour is observed while updating the active status
-     * of the device
+     *                                   of the device
      */
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
@@ -109,7 +110,7 @@ public interface DeviceManager {
     /**
      * Method to retrieve metadata of a device corresponding to a particular type that carries a specific identifier.
      *
-     * @param deviceId  Fully qualified device identifier
+     * @param deviceId Fully qualified device identifier
      * @return Metadata corresponding to a particular device
      * @throws DeviceManagementException If some unusual behaviour is observed obtaining the device object
      */
@@ -118,8 +119,8 @@ public interface DeviceManager {
     /**
      * Method to update device information.
      *
-     * @param deviceIdentifier   identifier to identify the device
-     * @param device   Updated device information related data
+     * @param deviceIdentifier identifier to identify the device
+     * @param device           Updated device information related data
      * @throws DeviceManagementException If some unusual behaviour is observed while updating the device info
      */
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
@@ -127,13 +128,16 @@ public interface DeviceManager {
     /**
      * Method to set the ownership type of a particular device. i.e. BYOD, COPE.
      *
-     * @param deviceId          Fully qualified device identifier
-     * @param ownershipType     Type of ownership
+     * @param deviceId      Fully qualified device identifier
+     * @param ownershipType Type of ownership
      * @throws DeviceManagementException If some unusual behaviour is observed while setting the ownership
-     * of the device
+     *                                   of the device
      */
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
 
     boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
+                      EnrollmentStatus status) throws DeviceManagementException;
 
 }

@@ -40,7 +40,7 @@ public class ConfigOperation extends Operation {
         properties.add(new Property(name, value, type));
     }
 
-    public class Property implements Serializable {
+    public static class Property implements Serializable {
         private String name;
         private Object value;
         private Class<?> type;

@@ -37,7 +37,7 @@ public class ConfigOperation extends Operation {
         properties.add(new Property(name, value, type));
     }
 
-    public class Property {
+    public static class Property {
         private String name;
         private Object value;
         private Class<?> type;

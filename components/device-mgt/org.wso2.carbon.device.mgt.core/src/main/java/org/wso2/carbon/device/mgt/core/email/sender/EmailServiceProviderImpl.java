@@ -48,26 +48,19 @@ import java.util.concurrent.TimeUnit;
 public class EmailServiceProviderImpl implements EmailService {
 
     private static ThreadPoolExecutor threadPoolExecutor;
+
+    static {
+        EmailConfigurations emailConfig =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                        getDeviceManagementConfigRepository().getEmailConfigurations();
+
+        threadPoolExecutor = new ThreadPoolExecutor(emailConfig.getMinNumOfThread(),
+                emailConfig.getMaxNumOfThread(), emailConfig.getKeepAliveTime(), TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(emailConfig.getThreadQueueCapacity()));
+    }
+
     private static final String EMAIL_URI_SCHEME = "mailto:";
-
     private static Log log = LogFactory.getLog(EmailServiceProviderImpl.class);
-
-    public EmailServiceProviderImpl() {
-        init();
-    }
-
-    private void init() {
-        if (threadPoolExecutor == null) {
-            DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
-            EmailConfigurations emailConfigurations = config.getDeviceManagementConfigRepository()
-                    .getEmailConfigurations();
-
-
-            threadPoolExecutor = new ThreadPoolExecutor(emailConfigurations.getMinNumOfThread(),
-                    emailConfigurations.getMaxNumOfThread(), emailConfigurations.getKeepAliveTime(),TimeUnit.SECONDS,
-                    new LinkedBlockingQueue<Runnable>(emailConfigurations.getThreadQueueCapacity()));
-        }
-    }
 
     @Override
     public void sendEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
@@ -78,7 +71,7 @@ public class EmailServiceProviderImpl implements EmailService {
         }
     }
 
-    class EmailSender implements Runnable {
+    public static class EmailSender implements Runnable {
 
         String to;
         String subject;

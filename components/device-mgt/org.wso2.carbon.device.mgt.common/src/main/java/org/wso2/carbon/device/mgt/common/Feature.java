@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.common;
 import java.io.Serializable;
 import java.util.List;
 
-public class Feature implements Serializable{
+public class Feature implements Serializable {
 
     private int id;
     private String code;
@@ -77,7 +77,7 @@ public class Feature implements Serializable{
         this.description = description;
     }
 
-    public static class MetadataEntry {
+    public static class MetadataEntry implements Serializable {
 
         private int id;
         private Object value;

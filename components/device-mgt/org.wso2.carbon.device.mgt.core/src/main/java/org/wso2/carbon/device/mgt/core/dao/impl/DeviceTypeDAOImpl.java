@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -34,18 +35,12 @@ import java.util.List;
 
 public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 
-    private DataSource dataSource;
-    private static final Log log = LogFactory.getLog(DeviceTypeDAOImpl.class);
-
-    public DeviceTypeDAOImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
     @Override
     public void addDeviceType(DeviceType deviceType) throws DeviceManagementDAOException {
-        Connection conn = this.getConnection();
+        Connection conn;
         PreparedStatement stmt = null;
         try {
+            conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_TYPE (NAME) VALUES (?)");
             stmt.setString(1, deviceType.getName());
             stmt.execute();
@@ -53,7 +48,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
             throw new DeviceManagementDAOException("Error occurred while registering the device type " +
                     "'" + deviceType.getName() + "'", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(conn, stmt, null);
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
 
@@ -64,7 +59,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 
     @Override
     public List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException {
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<DeviceType> deviceTypes =  new ArrayList<DeviceType>();;
@@ -84,13 +79,13 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while fetching the registered device types", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(conn, stmt, rs);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
     }
 
     @Override
     public DeviceType getDeviceType(int id) throws DeviceManagementDAOException {
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -110,13 +105,13 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while fetching the registered device type", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(conn, stmt, rs);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
     }
 
     @Override
     public DeviceType getDeviceType(String type) throws DeviceManagementDAOException {
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         DeviceType deviceType = null;
@@ -137,7 +132,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
             throw new DeviceManagementDAOException("Error occurred while fetch device type id for device type " +
                     "'" + type + "'", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(conn, stmt, rs);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
     }
 
@@ -147,14 +142,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
     }
 
     private Connection getConnection() throws DeviceManagementDAOException {
-        try {
-            return dataSource.getConnection();
-        } catch (SQLException e) {
-            String msg = "Error occurred while obtaining a connection from the device " +
-                    "management metadata repository datasource";
-            log.error(msg, e);
-            throw new DeviceManagementDAOException(msg, e);
-        }
+        return DeviceManagementDAOFactory.getConnection();
     }
 
 }

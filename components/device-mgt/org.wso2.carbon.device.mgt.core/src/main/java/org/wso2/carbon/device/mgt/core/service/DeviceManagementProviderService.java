@@ -33,8 +33,6 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
 
     List<Device> getAllDevices() throws DeviceManagementException;
 
-    List<Device> getDeviceListOfUser(String username) throws DeviceManagementException;
-
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
     void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;
@@ -49,7 +47,7 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getAllDevicesOfUser(String userName) throws DeviceManagementException;
+    List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.
@@ -77,6 +75,6 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException;
+    List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
 
 }

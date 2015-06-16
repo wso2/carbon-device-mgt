@@ -16,20 +16,20 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.operation.mgt.util;
+package org.wso2.carbon.device.mgt.core.dao;
 
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
 
-import java.io.Serializable;
-import java.util.Comparator;
+public interface EnrollmentDAO {
 
-public class OperationCreateTimeComparator implements Comparator<Operation>, Serializable {
+    boolean addEnrollment() throws DeviceManagementDAOException;
 
-    @Override
-    public int compare(Operation o1, Operation o2) {
-        long createdTime1 = java.sql.Timestamp.valueOf(o1.getCreatedTimeStamp()).getTime();
-        long createdTime2 = java.sql.Timestamp.valueOf(o1.getCreatedTimeStamp()).getTime();
-        return (int) (createdTime1 - createdTime2);
-    }
+    boolean updateEnrollment() throws DeviceManagementDAOException;
+
+    boolean removeEnrollment() throws DeviceManagementDAOException;
+
+    boolean setStatus(int deviceId, String currentOwner, String status) throws DeviceManagementDAOException;
+
+    boolean getStatus() throws DeviceManagementDAOException;
 
 }

@@ -56,7 +56,8 @@ public class RemoteApplicationManager implements ApplicationManager {
 
     private static final Log log = LogFactory.getLog(RemoteApplicationManager.class);
 
-    public RemoteApplicationManager(AppManagementConfig appManagementConfig, DeviceManagementRepository pluginRepository) {
+    public RemoteApplicationManager(AppManagementConfig appManagementConfig,
+                                    DeviceManagementRepository pluginRepository) {
 
         IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getDeviceManagementConfigRepository().getIdentityConfigurations();
@@ -92,13 +93,13 @@ public class RemoteApplicationManager implements ApplicationManager {
     }
 
     @Override
-    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIds)
             throws ApplicationManagementException {
 
-       for(DeviceIdentifier deviceIdentifier:deviceIdentifiers){
+       for(DeviceIdentifier deviceId: deviceIds){
            DeviceManagementService dms =
-                   this.getPluginRepository().getDeviceManagementProvider(deviceIdentifier.getType());
-           dms.installApplication(operation,deviceIdentifiers);
+                   this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+           dms.installApplication(operation, deviceIds);
        }
     }
 
@@ -145,4 +146,5 @@ public class RemoteApplicationManager implements ApplicationManager {
     public DeviceManagementRepository getPluginRepository() {
         return pluginRepository;
     }
+
 }

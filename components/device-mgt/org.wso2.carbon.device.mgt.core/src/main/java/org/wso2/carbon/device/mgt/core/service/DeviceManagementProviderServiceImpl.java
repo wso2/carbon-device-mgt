@@ -86,10 +86,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 this.getPluginRepository().getDeviceManagementService(device.getType());
         boolean status = dms.enrollDevice(device);
         try {
-            if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), device.getDeviceType()))) {
-                device.setStatus(Device.Status.INACTIVE);
+            if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))) {
+                device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.INACTIVE);
             } else {
-                device.setStatus(Device.Status.ACTIVE);
+                device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
             }
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 

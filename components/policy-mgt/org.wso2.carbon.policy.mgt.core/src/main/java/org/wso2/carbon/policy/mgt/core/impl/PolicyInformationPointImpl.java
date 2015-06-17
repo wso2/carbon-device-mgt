@@ -71,8 +71,8 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
             pipDevice.setRoles(getRoleOfDevice(device));
             pipDevice.setDeviceType(deviceType);
             pipDevice.setDeviceIdentifier(deviceIdentifier);
-            pipDevice.setUserId(device.getOwner());
-            pipDevice.setOwnershipType(device.getOwnership());
+            pipDevice.setUserId(device.getEnrolmentInfo().getOwner());
+            pipDevice.setOwnershipType(device.getEnrolmentInfo().getOwnership().toString());
 
             // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
             // pipDevice.setLongitude();
@@ -118,7 +118,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     private String[] getRoleOfDevice(Device device) throws PolicyManagementException {
         try {
             return CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getUserStoreManager().getRoleListOfUser(device.getOwner());
+                    getUserStoreManager().getRoleListOfUser(device.getEnrolmentInfo().getOwner());
         } catch (UserStoreException e) {
             String msg = "Error occurred when retrieving roles related to user name.";
             log.error(msg, e);

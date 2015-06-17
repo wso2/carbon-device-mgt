@@ -28,8 +28,9 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.Device.OwnerShip;
-import org.wso2.carbon.device.mgt.common.Device.Status;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo.OwnerShip;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.common.DBTypes;
@@ -148,17 +149,19 @@ public class DeviceManagementDAOTests {
         DeviceDAO deviceMgtDAO = DeviceManagementDAOFactory.getDeviceDAO();
 
         Device device = new Device();
-        device.setDateOfEnrolment(new Date().getTime());
-        device.setDateOfLastUpdate(new Date().getTime());
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setDateOfEnrolment(new Date().getTime());
+        enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
+        device.setEnrolmentInfo(enrolmentInfo);
         device.setDescription("test description");
-        device.setStatus(Status.ACTIVE);
+        device.getEnrolmentInfo().setStatus(Status.ACTIVE);
         device.setDeviceIdentifier("111");
 
         DeviceType deviceType = new DeviceType();
         deviceType.setId(Integer.parseInt("1"));
 
-        device.setOwnership(OwnerShip.BYOD.toString());
-        device.setOwner("111");
+        device.getEnrolmentInfo().setOwnership(OwnerShip.BYOD);
+        device.getEnrolmentInfo().setOwner("111");
         deviceMgtDAO.addDevice(deviceType.getId(), device, -1234);
 
         Connection conn = null;
@@ -169,7 +172,7 @@ public class DeviceManagementDAOTests {
         String status = null;
         try {
             conn = this.getDataSource().getConnection();
-            String sql = "SELECT ID, STATUS from DM_DEVICE DEVICE where DEVICE.DEVICE_IDENTIFICATION = ?";
+            String sql = "SELECT ID, STATUS FROM DM_DEVICE where DEVICE_IDENTIFICATION = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, "111");
 

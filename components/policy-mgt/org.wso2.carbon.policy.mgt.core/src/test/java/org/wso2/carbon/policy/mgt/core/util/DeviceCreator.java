@@ -19,8 +19,8 @@
 package org.wso2.carbon.policy.mgt.core.util;
 
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.common.Device.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,37 +31,36 @@ public class DeviceCreator {
 
     public static List<Device> getDeviceList(DeviceType deviceType) {
 
-
         Device device = new Device();
         device.setId(1);
-        device.setDeviceType(deviceType.getName());
+        device.setType(deviceType.getName());
         device.setName("Galaxy S6");
-        device.setOwner("geeth");
-        device.setOwnership("BYOD");
-        device.setStatus(Status.ACTIVE);
-        device.setDeviceIdentifier("aaaaaaaaaaaaaaaaaaaaaaaaaa");
+        device.setDeviceIdentifier("abc123");
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setOwner("Geeth");
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device.setEnrolmentInfo(enrolmentInfo);
 
-
-        Device device2 = new Device();
-        device2.setId(2);
-        device2.setDeviceType(deviceType.getName());
-        device2.setName("Nexus 5");
-        device2.setOwner("manoj");
-        device2.setOwnership("BYOD");
-        device.setStatus(Status.ACTIVE);
-        device2.setDeviceIdentifier("bbbbbbbbbbbbbbbbbbbbbbbb");
-
+        Device device1 = new Device();
+        device1.setId(1);
+        device1.setType(deviceType.getName());
+        device1.setName("Nexus 5");
+        device1.setDeviceIdentifier("def456");
+        EnrolmentInfo enrolmentInfo1 = new EnrolmentInfo();
+        enrolmentInfo1.setOwner("Manoj");
+        enrolmentInfo1.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo1.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device1.setEnrolmentInfo(enrolmentInfo);
 
         deviceList.add(device);
         // deviceList.add(device2);
 
         return deviceList;
-
     }
 
     public static Device getSingleDevice() {
         return deviceList.get(0);
     }
-
 
 }

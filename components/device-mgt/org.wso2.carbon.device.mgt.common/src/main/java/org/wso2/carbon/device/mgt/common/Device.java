@@ -21,32 +21,17 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement
 public class Device {
 
 	private int id;
+    private String name;
 	private String type;
 	private String description;
-	private String name;
-	private Long dateOfEnrolment;
-	private Long dateOfLastUpdate;
-	private String ownership;
-	private Status status;
-	private String deviceType;
 	private String deviceIdentifier;
-	private String owner;
-	private List<Feature> features;
-	private List<Device.Property> properties;
+    private EnrolmentInfo enrolmentInfo;
+    private List<Feature> features;
+    private List<Device.Property> properties;
 
-    public enum Status {
-        ACTIVE, INACTIVE, UNCLAIMED
-    }
-
-    public enum OwnerShip {
-        BYOD, COPE
-    }
-
-	@XmlElement
 	public int getId() {
 		return id;
 	}
@@ -55,7 +40,22 @@ public class Device {
 		this.id = id;
 	}
 
-	@XmlElement
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 	public String getDescription() {
 		return description;
 	}
@@ -64,61 +64,6 @@ public class Device {
 		this.description = description;
 	}
 
-	@XmlElement
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@XmlElement
-	public Long getDateOfEnrolment() {
-		return dateOfEnrolment;
-	}
-
-	public void setDateOfEnrolment(Long dateOfEnrolment) {
-		this.dateOfEnrolment = dateOfEnrolment;
-	}
-
-	@XmlElement
-	public Long getDateOfLastUpdate() {
-		return dateOfLastUpdate;
-	}
-
-	public void setDateOfLastUpdate(Long dateOfLastUpdate) {
-		this.dateOfLastUpdate = dateOfLastUpdate;
-	}
-
-	@XmlElement
-	public String getOwnership() {
-		return ownership;
-	}
-
-	public void setOwnership(String ownership) {
-		this.ownership = ownership;
-	}
-
-	@XmlElement
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	@XmlElement
-	public String getDeviceType() {
-		return deviceType;
-	}
-
-	public void setDeviceType(String deviceType) {
-		this.deviceType = deviceType;
-	}
-
-	@XmlElement
 	public String getDeviceIdentifier() {
 		return deviceIdentifier;
 	}
@@ -127,16 +72,14 @@ public class Device {
 		this.deviceIdentifier = deviceIdentifier;
 	}
 
-	@XmlElement
-	public String getOwner() {
-		return owner;
-	}
+    public EnrolmentInfo getEnrolmentInfo() {
+        return enrolmentInfo;
+    }
 
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
+    public void setEnrolmentInfo(EnrolmentInfo enrolmentInfo) {
+        this.enrolmentInfo = enrolmentInfo;
+    }
 
-	@XmlElement
 	public List<Feature> getFeatures() {
 		return features;
 	}
@@ -145,16 +88,6 @@ public class Device {
 		this.features = features;
 	}
 
-	@XmlElement
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	@XmlElement
 	public List<Device.Property> getProperties() {
 		return properties;
 	}

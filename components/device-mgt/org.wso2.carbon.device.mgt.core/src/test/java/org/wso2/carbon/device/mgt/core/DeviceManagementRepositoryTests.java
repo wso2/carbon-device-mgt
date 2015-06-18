@@ -26,11 +26,11 @@ import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
 public class DeviceManagementRepositoryTests {
 
-    private DeviceManagementRepository repository;
+    private DeviceManagementPluginRepository repository;
 
     @BeforeClass
     public void initRepository() {
-        this.repository = new DeviceManagementRepository();
+        this.repository = new DeviceManagementPluginRepository();
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DeviceManagementRepositoryTests {
         Assert.assertNull(targetProvider);
     }
 
-    private DeviceManagementRepository getRepository() {
+    private DeviceManagementPluginRepository getRepository() {
         return repository;
     }
 

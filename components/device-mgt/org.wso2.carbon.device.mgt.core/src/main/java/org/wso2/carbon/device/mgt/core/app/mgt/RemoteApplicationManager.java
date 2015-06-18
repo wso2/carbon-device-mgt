@@ -30,7 +30,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
+import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -50,14 +50,14 @@ public class RemoteApplicationManager implements ApplicationManager {
     private ConfigurationContext configCtx;
     private ServiceAuthenticator authenticator;
     private String oAuthAdminServiceUrl;
-    private DeviceManagementRepository pluginRepository;
+    private DeviceManagementPluginRepository pluginRepository;
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
 
     private static final Log log = LogFactory.getLog(RemoteApplicationManager.class);
 
     public RemoteApplicationManager(AppManagementConfig appManagementConfig,
-                                    DeviceManagementRepository pluginRepository) {
+                                    DeviceManagementPluginRepository pluginRepository) {
 
         IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getDeviceManagementConfigRepository().getIdentityConfigurations();
@@ -143,7 +143,7 @@ public class RemoteApplicationManager implements ApplicationManager {
         throw new ApplicationManagementException(msg, e);
     }
 
-    public DeviceManagementRepository getPluginRepository() {
+    public DeviceManagementPluginRepository getPluginRepository() {
         return pluginRepository;
     }
 

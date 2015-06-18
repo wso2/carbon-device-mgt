@@ -22,6 +22,8 @@ import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
 public interface PluginInitializationListener {
 
-    void notify(DeviceManagementService deviceManagementService);
+    void registerDeviceManagementService(DeviceManagementService deviceManagementService);
+
+    void unregisterDeviceManagementService(DeviceManagementService deviceManagementService);
 
 }

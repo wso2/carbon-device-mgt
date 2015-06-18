@@ -27,18 +27,16 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
-import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
+import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
 import org.wso2.carbon.device.mgt.core.dao.*;
-import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.*;
 import org.wso2.carbon.device.mgt.core.email.EmailConstants;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
-import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -52,23 +50,19 @@ public class DeviceManagementProviderServiceImpl implements
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
     private EnrollmentDAO enrollmentDAO;
-    private DeviceManagementRepository pluginRepository;
+    private DeviceManagementPluginRepository pluginRepository;
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
 
-    public DeviceManagementProviderServiceImpl(DeviceManagementRepository pluginRepository) {
+    public DeviceManagementProviderServiceImpl() {
         /* Registering a listener to retrieve events when some device management service plugin is installed after
         * the component is done getting initialized */
         DeviceManagementServiceComponent.registerPluginInitializationListener(this);
 
-        this.pluginRepository = pluginRepository;
+        this.pluginRepository = new DeviceManagementPluginRepository();
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
-    }
-
-    public DeviceManagementProviderServiceImpl() {
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
     }
 
     @Override
@@ -453,7 +447,7 @@ public class DeviceManagementProviderServiceImpl implements
         return DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(type, license);
     }
 
-    private DeviceManagementRepository getPluginRepository() {
+    private DeviceManagementPluginRepository getPluginRepository() {
         return pluginRepository;
     }
 
@@ -636,11 +630,21 @@ public class DeviceManagementProviderServiceImpl implements
     }
 
     @Override
-    public void notify(DeviceManagementService deviceManagementService) {
+    public void registerDeviceManagementService(DeviceManagementService deviceManagementService) {
         try {
             pluginRepository.addDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while registering device management plugin '" +
+                    deviceManagementService.getProviderType() + "'", e);
+        }
+    }
+
+    @Override
+    public void unregisterDeviceManagementService(DeviceManagementService deviceManagementService) {
+        try {
+            pluginRepository.removeDeviceManagementProvider(deviceManagementService);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while un-registering device management plugin '" +
                     deviceManagementService.getProviderType() + "'", e);
         }
     }

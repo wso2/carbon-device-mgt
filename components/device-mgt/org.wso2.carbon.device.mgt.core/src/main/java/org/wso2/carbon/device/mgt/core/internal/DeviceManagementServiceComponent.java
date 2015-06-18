@@ -108,6 +108,7 @@ public class DeviceManagementServiceComponent {
     private static final Object LOCK = new Object();
     private boolean isInitialized;
     private List<DeviceManagementService> deviceManagementServices = new ArrayList<DeviceManagementService>();
+    private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
 
     protected void activate(ComponentContext componentContext) {
         try {
@@ -166,6 +167,10 @@ public class DeviceManagementServiceComponent {
 
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
+    }
+
+    public static void registerPluginInitializationListener(PluginInitializationListener listener) {
+        listeners.add(listener);
     }
 
     private void initLicenseManager() throws LicenseManagementException {
@@ -242,6 +247,9 @@ public class DeviceManagementServiceComponent {
     private void registerDeviceManagementProvider(DeviceManagementService deviceManagementService) {
         try {
             this.getPluginRepository().addDeviceManagementProvider(deviceManagementService);
+            for (PluginInitializationListener listener : listeners) {
+                listener.notify(deviceManagementService);
+            }
         } catch (DeviceManagementException e) {
             log.error("Error occurred while adding device management provider '" +
                     deviceManagementService.getProviderType() + "'");

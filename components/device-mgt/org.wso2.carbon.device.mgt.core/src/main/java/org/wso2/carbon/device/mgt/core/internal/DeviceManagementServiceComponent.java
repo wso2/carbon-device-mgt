@@ -24,6 +24,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
@@ -101,6 +102,7 @@ public class DeviceManagementServiceComponent {
 
     private static final Object LOCK = new Object();
     private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
+    private static List<DeviceManagementService> deviceManagers = new ArrayList<DeviceManagementService>();
 
     protected void activate(ComponentContext componentContext) {
         try {
@@ -152,6 +154,9 @@ public class DeviceManagementServiceComponent {
 
     public static void registerPluginInitializationListener(PluginInitializationListener listener) {
         listeners.add(listener);
+        for(DeviceManagementService deviceManagementService:deviceManagers){
+           listener.registerDeviceManagementService(deviceManagementService);
+        }
     }
 
     private void initLicenseManager() throws LicenseManagementException {
@@ -184,11 +189,9 @@ public class DeviceManagementServiceComponent {
         }
         /* Registering Device Management Service */
         BundleContext bundleContext = componentContext.getBundleContext();
-        DeviceManagementProviderService deviceManagementProvider =
-                new DeviceManagementProviderServiceImpl(this.getPluginRepository());
+        DeviceManagementProviderService deviceManagementProvider = new DeviceManagementProviderServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
-        bundleContext.registerService(DeviceManagementProviderService.class.getName(),
-                deviceManagementProvider, null);
+        bundleContext.registerService(DeviceManagementProviderService.class.getName(), deviceManagementProvider, null);
 
         APIPublisherService publisher = new APIPublisherServiceImpl();
         DeviceManagementDataHolder.getInstance().setApiPublisherService(publisher);
@@ -200,12 +203,9 @@ public class DeviceManagementServiceComponent {
         bundleContext.registerService(ApplicationManager.class.getName(), new ApplicationManagementServiceImpl(), null);
     }
 
-    private void setupDeviceManagementSchema(DataSourceConfig config)
-            throws DeviceManagementException {
-        DeviceManagementSchemaInitializer initializer =
-                new DeviceManagementSchemaInitializer(config);
+    private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {
+        DeviceManagementSchemaInitializer initializer = new DeviceManagementSchemaInitializer(config);
         log.info("Initializing device management repository database schema");
-
         try {
             initializer.createRegistryDatabase();
         } catch (Exception e) {
@@ -238,6 +238,7 @@ public class DeviceManagementServiceComponent {
             log.debug("Setting Device Management Service Provider: '" +
                     deviceManagementService.getProviderType() + "'");
         }
+        deviceManagers.add(deviceManagementService);
         for (PluginInitializationListener listener : listeners) {
             listener.registerDeviceManagementService(deviceManagementService);
         }

@@ -55,14 +55,15 @@ public class DeviceManagementProviderServiceImpl implements
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
 
     public DeviceManagementProviderServiceImpl() {
-        /* Registering a listener to retrieve events when some device management service plugin is installed after
-        * the component is done getting initialized */
-        DeviceManagementServiceComponent.registerPluginInitializationListener(this);
 
         this.pluginRepository = new DeviceManagementPluginRepository();
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
+
+        /* Registering a listener to retrieve events when some device management service plugin is installed after
+        * the component is done getting initialized */
+        DeviceManagementServiceComponent.registerPluginInitializationListener(this);
     }
 
     @Override

@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeviceManagementRepository {
+public class DeviceManagementPluginRepository {
 
     private Map<String, DeviceManagementService> providers;
 
-    public DeviceManagementRepository() {
+    public DeviceManagementPluginRepository() {
         providers = new HashMap<String, DeviceManagementService>();
     }
 

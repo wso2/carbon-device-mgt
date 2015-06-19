@@ -33,7 +33,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
+import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
@@ -73,8 +73,8 @@ import java.util.List;
  * interface="org.wso2.carbon.device.mgt.common.spi.DeviceManagementService"
  * cardinality="0..n"
  * policy="dynamic"
- * bind="setDeviceManager"
- * unbind="unsetDeviceManager"
+ * bind="setDeviceManagementService"
+ * unbind="unsetDeviceManagementService"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1"
@@ -93,21 +93,13 @@ import java.util.List;
  * policy="dynamic"
  * bind="setDataSourceService"
  * unbind="unsetDataSourceService"
- * @scr.reference name="org.wso2.carbon.device.mgt.user.core.usermanager"
- * interface="org.wso2.carbon.device.mgt.user.core.UserManager"
- * cardinality="1..1
- * policy="dynamic"
- * bind="setUserManager"
- * unbind="unsetUserManager"
  */
 public class DeviceManagementServiceComponent {
 
     private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
-    private DeviceManagementRepository pluginRepository = new DeviceManagementRepository();
+    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     private static final Object LOCK = new Object();
-    private boolean isInitialized;
-    private List<DeviceManagementService> deviceManagementServices = new ArrayList<DeviceManagementService>();
     private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
 
     protected void activate(ComponentContext componentContext) {
@@ -131,7 +123,6 @@ public class DeviceManagementServiceComponent {
             this.initAppManagerConnector();
 
             OperationManagementDAOFactory.init(dsConfig);
-
             /* If -Dsetup option enabled then create device management database schema */
             String setupOption =
                     System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
@@ -142,13 +133,6 @@ public class DeviceManagementServiceComponent {
                 }
                 this.setupDeviceManagementSchema(dsConfig);
                 this.setupDefaultLicenses(DeviceManagementDataHolder.getInstance().getLicenseConfig());
-            }
-
-            synchronized (LOCK) {
-                for (DeviceManagementService deviceManagementService : deviceManagementServices) {
-                    this.registerDeviceManagementProvider(deviceManagementService);
-                }
-                this.isInitialized = true;
             }
 
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
@@ -244,49 +228,33 @@ public class DeviceManagementServiceComponent {
         }
     }
 
-    private void registerDeviceManagementProvider(DeviceManagementService deviceManagementService) {
-        try {
-            this.getPluginRepository().addDeviceManagementProvider(deviceManagementService);
-            for (PluginInitializationListener listener : listeners) {
-                listener.notify(deviceManagementService);
-            }
-        } catch (DeviceManagementException e) {
-            log.error("Error occurred while adding device management provider '" +
-                    deviceManagementService.getProviderType() + "'");
-        }
-    }
-
     /**
      * Sets Device Manager service.
      *
-     * @param deviceManager An instance of DeviceManager
+     * @param deviceManagementService An instance of DeviceManagementService
      */
-    protected void setDeviceManager(DeviceManagementService deviceManager) {
+    protected void setDeviceManagementService(DeviceManagementService deviceManagementService) {
         if (log.isDebugEnabled()) {
-            log.debug("Setting Device Management Service Provider: '" + deviceManager.getProviderType() + "'");
+            log.debug("Setting Device Management Service Provider: '" +
+                    deviceManagementService.getProviderType() + "'");
         }
-        synchronized (LOCK) {
-            if (isInitialized) {
-                this.registerDeviceManagementProvider(deviceManager);
-            }
-            deviceManagementServices.add(deviceManager);
+        for (PluginInitializationListener listener : listeners) {
+            listener.registerDeviceManagementService(deviceManagementService);
         }
     }
 
     /**
      * Unsets Device Management service.
      *
-     * @param deviceManager An Instance of DeviceManager
+     * @param deviceManagementService An Instance of DeviceManagementService
      */
-    protected void unsetDeviceManager(DeviceManagementService deviceManager) {
+    protected void unsetDeviceManagementService(DeviceManagementService deviceManagementService) {
         if (log.isDebugEnabled()) {
-            log.debug("Un setting Device Management Service Provider : '" + deviceManager.getProviderType() + "'");
+            log.debug("Un setting Device Management Service Provider : '" +
+                    deviceManagementService.getProviderType() + "'");
         }
-        try {
-            this.getPluginRepository().removeDeviceManagementProvider(deviceManager);
-        } catch (DeviceManagementException e) {
-            log.error("Error occurred while removing device management provider '" +
-                    deviceManager.getProviderType() + "'");
+        for (PluginInitializationListener listener : listeners) {
+            listener.unregisterDeviceManagementService(deviceManagementService);
         }
     }
 
@@ -338,31 +306,7 @@ public class DeviceManagementServiceComponent {
         DeviceManagementDataHolder.getInstance().setRegistryService(null);
     }
 
-    /**
-     * Sets UserManager Service.
-     *
-     * @param userMgtService An instance of UserManager
-     */
-    protected void setUserManager(UserManager userMgtService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting UserManager Service");
-        }
-        DeviceManagementDataHolder.getInstance().setUserManager(userMgtService);
-    }
-
-    /**
-     * Unsets UserManager Service.
-     *
-     * @param userMgtService An instance of UserManager
-     */
-    protected void unsetUserManager(UserManager userMgtService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unsetting UserManager Service");
-        }
-        DeviceManagementDataHolder.getInstance().setUserManager(null);
-    }
-
-    private DeviceManagementRepository getPluginRepository() {
+    private DeviceManagementPluginRepository getPluginRepository() {
         return pluginRepository;
     }
 

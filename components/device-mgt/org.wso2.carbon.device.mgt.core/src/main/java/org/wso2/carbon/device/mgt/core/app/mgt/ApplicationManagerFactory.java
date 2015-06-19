@@ -19,14 +19,14 @@
 package org.wso2.carbon.device.mgt.core.app.mgt;
 
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
-import org.wso2.carbon.device.mgt.core.DeviceManagementRepository;
+import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 
 public class ApplicationManagerFactory {
 
-    private static DeviceManagementRepository pluginRepository = new DeviceManagementRepository();
+    private static DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
-    public DeviceManagementRepository getPluginRepository() {
+    public DeviceManagementPluginRepository getPluginRepository() {
         return pluginRepository;
     }
 

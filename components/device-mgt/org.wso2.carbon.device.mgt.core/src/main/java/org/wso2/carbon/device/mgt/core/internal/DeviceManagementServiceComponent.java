@@ -61,6 +61,8 @@ import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @scr.component name="org.wso2.carbon.device.manager" immediate="true"
@@ -153,9 +155,11 @@ public class DeviceManagementServiceComponent {
     }
 
     public static void registerPluginInitializationListener(PluginInitializationListener listener) {
-        listeners.add(listener);
-        for(DeviceManagementService deviceManagementService:deviceManagers){
-           listener.registerDeviceManagementService(deviceManagementService);
+        synchronized (LOCK) {
+            listeners.add(listener);
+            for (DeviceManagementService deviceManagementService : deviceManagers) {
+                listener.registerDeviceManagementService(deviceManagementService);
+            }
         }
     }
 
@@ -238,9 +242,11 @@ public class DeviceManagementServiceComponent {
             log.debug("Setting Device Management Service Provider: '" +
                     deviceManagementService.getProviderType() + "'");
         }
-        deviceManagers.add(deviceManagementService);
-        for (PluginInitializationListener listener : listeners) {
-            listener.registerDeviceManagementService(deviceManagementService);
+        synchronized (LOCK) {
+            deviceManagers.add(deviceManagementService);
+            for (PluginInitializationListener listener : listeners) {
+                listener.registerDeviceManagementService(deviceManagementService);
+            }
         }
     }
 

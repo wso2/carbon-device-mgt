@@ -55,7 +55,7 @@ public class DeviceMgtUserServiceComponent {
             }
             /* Registering User Management service */
             BundleContext bundleContext = componentContext.getBundleContext();
-            bundleContext.registerService(org.wso2.carbon.device.mgt.user.core.UserManager.class,
+            bundleContext.registerService(org.wso2.carbon.device.mgt.user.core.UserManager.class.getName(),
                     new org.wso2.carbon.device.mgt.user.core.service.UserManagementService(), null);
             if (log.isDebugEnabled()) {
                 log.debug("User management core bundle has been successfully initialized");

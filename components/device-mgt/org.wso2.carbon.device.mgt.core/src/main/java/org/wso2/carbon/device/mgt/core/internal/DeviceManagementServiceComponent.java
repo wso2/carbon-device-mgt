@@ -130,9 +130,6 @@ public class DeviceManagementServiceComponent {
             /* Initializing app manager connector */
             this.initAppManagerConnector();
 
-            DeviceManagementProviderService deviceManagementProvider =
-                    new DeviceManagementProviderServiceImpl(this.getPluginRepository());
-            DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
             OperationManagementDAOFactory.init(dsConfig);
 
             /* If -Dsetup option enabled then create device management database schema */
@@ -203,8 +200,11 @@ public class DeviceManagementServiceComponent {
         }
         /* Registering Device Management Service */
         BundleContext bundleContext = componentContext.getBundleContext();
+        DeviceManagementProviderService deviceManagementProvider =
+                new DeviceManagementProviderServiceImpl(this.getPluginRepository());
+        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
         bundleContext.registerService(DeviceManagementProviderService.class.getName(),
-                new DeviceManagementProviderServiceImpl(), null);
+                deviceManagementProvider, null);
 
         APIPublisherService publisher = new APIPublisherServiceImpl();
         DeviceManagementDataHolder.getInstance().setApiPublisherService(publisher);

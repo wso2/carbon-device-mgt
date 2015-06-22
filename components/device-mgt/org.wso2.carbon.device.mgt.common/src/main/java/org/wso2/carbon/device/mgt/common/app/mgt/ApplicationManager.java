@@ -69,6 +69,5 @@ public interface ApplicationManager {
     void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
             throws ApplicationManagementException;
 
-    void updateApplicationsForDevice(DeviceIdentifier deviceIdentifier, List<Application> applications)
-            throws ApplicationManagementException;
+
 }

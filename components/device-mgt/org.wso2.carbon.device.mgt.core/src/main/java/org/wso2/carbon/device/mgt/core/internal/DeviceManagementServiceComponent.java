@@ -24,7 +24,6 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
@@ -39,7 +38,7 @@ import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementServiceImpl;
-import org.wso2.carbon.device.mgt.core.app.mgt.RemoteApplicationManager;
+import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -54,15 +53,12 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
-import org.wso2.carbon.device.mgt.user.core.UserManager;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @scr.component name="org.wso2.carbon.device.manager" immediate="true"
@@ -183,7 +179,7 @@ public class DeviceManagementServiceComponent {
         AppManagementConfig appConfig =
                 AppManagementConfigurationManager.getInstance().getAppManagementConfig();
         DeviceManagementDataHolder.getInstance().setAppManagerConfig(appConfig);
-        RemoteApplicationManager appManager = new RemoteApplicationManager(appConfig, this.getPluginRepository());
+        ApplicationManagerProviderServiceImpl appManager = new ApplicationManagerProviderServiceImpl(appConfig, this.getPluginRepository());
         DeviceManagementDataHolder.getInstance().setAppManager(appManager);
     }
 

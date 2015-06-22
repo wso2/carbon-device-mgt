@@ -42,7 +42,9 @@ public interface OperationDAO {
 
     Operation getNextOperation(int deviceId) throws OperationManagementDAOException;
 
-    void updateOperationStatus(int deviceId, int operationId,Operation.Status status) throws
-            OperationManagementDAOException;
+    void updateOperationStatus(int deviceId, int operationId,Operation.Status status)
+            throws OperationManagementDAOException;
 
+    void addOperationResponse(int deviceId, int operationId, Object operationResponse)
+            throws OperationManagementDAOException;
 }

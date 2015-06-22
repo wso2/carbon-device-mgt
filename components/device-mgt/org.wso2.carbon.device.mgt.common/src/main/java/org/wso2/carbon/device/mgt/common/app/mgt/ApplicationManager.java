@@ -41,7 +41,8 @@ public interface ApplicationManager {
      * @throws ApplicationManagementException
      */
 
-    Application[] getApplications(String domain, int pageNumber, int size) throws ApplicationManagementException;
+    Application[] getApplications(String domain, int pageNumber, int size)
+            throws ApplicationManagementException;
 
 
     /**
@@ -51,8 +52,8 @@ public interface ApplicationManager {
      * @param application Application details of the app being updated.
      * @param status      Installed/Uninstalled
      */
-    void updateApplicationStatus(DeviceIdentifier deviceId, Application application,
-                                 String status) throws ApplicationManagementException;
+    void updateApplicationStatus(DeviceIdentifier deviceId, Application application, String status)
+            throws ApplicationManagementException;
 
     /**
      * Retrieve the status of an application on a device. Whether it is installed or not.
@@ -61,11 +62,13 @@ public interface ApplicationManager {
      * @param application Application details of the app being searched.
      * @return Status of the application on the device.
      */
-    String getApplicationStatus(DeviceIdentifier deviceId,
-                                Application application) throws ApplicationManagementException;
+    String getApplicationStatus(DeviceIdentifier deviceId, Application application)
+            throws ApplicationManagementException;
 
 
-    void installApplication(Operation operation,
-                            List<DeviceIdentifier> deviceIdentifiers) throws ApplicationManagementException;
+    void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+            throws ApplicationManagementException;
 
+    void updateApplicationsForDevice(DeviceIdentifier deviceIdentifier, List<Application> applications)
+            throws ApplicationManagementException;
 }

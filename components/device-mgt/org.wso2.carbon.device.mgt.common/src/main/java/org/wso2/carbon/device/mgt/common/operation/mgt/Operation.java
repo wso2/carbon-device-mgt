@@ -43,6 +43,7 @@ public class Operation implements Serializable {
     private String createdTimeStamp;
     private boolean isEnabled;
     private Object payLoad;
+    private Object operationResponse;
 
     @Override
     public boolean equals(Object o) {
@@ -73,6 +74,10 @@ public class Operation implements Serializable {
         if (payLoad != null ? !payLoad.equals(operation.payLoad) : operation.payLoad != null) {
             return false;
         }
+        if (operationResponse != null ? !operationResponse
+                .equals(operation.operationResponse) : operation.operationResponse != null) {
+            return false;
+        }
         if (properties != null ? !properties.equals(operation.properties) : operation.properties != null) {
             return false;
         }
@@ -85,7 +90,6 @@ public class Operation implements Serializable {
         if (type != operation.type) {
             return false;
         }
-
         return true;
     }
 
@@ -100,6 +104,7 @@ public class Operation implements Serializable {
         result = 31 * result + (createdTimeStamp != null ? createdTimeStamp.hashCode() : 0);
         result = 31 * result + (isEnabled ? 1 : 0);
         result = 31 * result + (payLoad != null ? payLoad.hashCode() : 0);
+        result = 31 * result + (operationResponse != null ? operationResponse.hashCode() : 0);
         return result;
     }
 
@@ -176,6 +181,14 @@ public class Operation implements Serializable {
 
     public void setPayLoad(Object payLoad) {
         this.payLoad = payLoad;
+    }
+
+    public Object getOperationResponse() {
+        return operationResponse;
+    }
+
+    public void setOperationResponse(Object operationResponse) {
+        this.operationResponse = operationResponse;
     }
 
     @Override

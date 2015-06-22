@@ -31,7 +31,7 @@ public class ApplicationManagerFactory {
     }
 
     public static ApplicationManager getConnector(AppManagementConfig config) {
-        return new RemoteApplicationManager(config, pluginRepository);
+        return new ApplicationManagerProviderServiceImpl(config, pluginRepository);
     }
 
 }

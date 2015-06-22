@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.OwnerShip;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -307,6 +308,28 @@ public class DeviceDAOImpl implements DeviceDAO {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
         return deviceList;
+    }
+
+    @Override
+    public void addDeviceApplications(int deviceId, Object appList) throws DeviceManagementDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql = "INSERT INTO DM_DEVICE_APPLICATIONS(DEVICE_ID, APPLICATIONS) " +
+                         "VALUES (?, ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, deviceId);
+            stmt.setObject(2, appList);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while update application list for device " +
+                    "'" + deviceId + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
     }
 
     private Device loadDevice(ResultSet rs) throws SQLException {

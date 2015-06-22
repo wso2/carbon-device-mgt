@@ -107,6 +107,27 @@ public class OperationDAOImpl implements OperationDAO {
     }
 
     @Override
+    public void addOperationResponse(int deviceId, int operationId, Object operationResponse)
+            throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+
+            stmt = connection.prepareStatement("INSERT INTO DM_DEVICE_OPERATION_RESPONSE(OPERATION_ID,DEVICE_ID," +
+                    "OPERATION_RESPONSE) VALUES(?, ?, ?)");
+            stmt.setInt(1, operationId);
+            stmt.setInt(2, deviceId);
+            stmt.setObject(3, operationResponse);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while inserting operation response", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+    }
+
+    @Override
     public void deleteOperation(int id) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;

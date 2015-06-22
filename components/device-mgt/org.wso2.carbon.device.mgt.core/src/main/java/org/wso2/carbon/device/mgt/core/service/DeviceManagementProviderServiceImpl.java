@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -44,8 +45,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceManagementProviderServiceImpl implements
-        DeviceManagementProviderService, PluginInitializationListener {
+public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService, PluginInitializationListener {
 
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
@@ -349,7 +349,8 @@ public class DeviceManagementProviderServiceImpl implements
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
-            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(messageFooter1.trim());
+            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
+                    messageFooter1.trim());
             messageBuilder.append(System.getProperty("line.separator")).append(messageFooter2.trim());
             messageBuilder.append(System.getProperty("line.separator")).append(messageFooter3.trim());
 
@@ -475,10 +476,8 @@ public class DeviceManagementProviderServiceImpl implements
     }
 
     @Override
-    public void updateOperation(DeviceIdentifier deviceId, int operationId, Operation.Status operationStatus)
-            throws OperationManagementException {
-        DeviceManagementDataHolder.getInstance().getOperationManager().updateOperation(deviceId, operationId,
-                operationStatus);
+    public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException {
+        DeviceManagementDataHolder.getInstance().getOperationManager().updateOperation(deviceId, operation);
     }
 
     @Override
@@ -628,6 +627,12 @@ public class DeviceManagementProviderServiceImpl implements
         }
         return devices;
 
+    }
+
+    @Override
+    public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
+            throws DeviceManagementException {
+        return null;
     }
 
     @Override

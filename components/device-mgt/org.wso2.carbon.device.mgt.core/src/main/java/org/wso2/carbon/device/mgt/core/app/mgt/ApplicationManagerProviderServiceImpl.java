@@ -23,8 +23,10 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -35,6 +37,9 @@ import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
@@ -43,21 +48,23 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 /**
- * Implements AppManagerConnector interface
+ * Implements Application Manager interface
+ *
  */
-public class RemoteApplicationManager implements ApplicationManager {
+public class ApplicationManagerProviderServiceImpl implements ApplicationManager {
 
     private ConfigurationContext configCtx;
     private ServiceAuthenticator authenticator;
     private String oAuthAdminServiceUrl;
     private DeviceManagementPluginRepository pluginRepository;
+    private DeviceDAO deviceDAO;
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
 
-    private static final Log log = LogFactory.getLog(RemoteApplicationManager.class);
+    private static final Log log = LogFactory.getLog(ApplicationManagerProviderServiceImpl.class);
 
-    public RemoteApplicationManager(AppManagementConfig appManagementConfig,
-                                    DeviceManagementPluginRepository pluginRepository) {
+    public ApplicationManagerProviderServiceImpl(AppManagementConfig appManagementConfig,
+            DeviceManagementPluginRepository pluginRepository) {
 
         IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getDeviceManagementConfigRepository().getIdentityConfigurations();
@@ -72,11 +79,12 @@ public class RemoteApplicationManager implements ApplicationManager {
                     "Please check if an appropriate axis2.xml is provided", e);
         }
         this.pluginRepository = pluginRepository;
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
     }
 
     @Override
-    public Application[] getApplications(String domain, int pageNumber,
-                                         int size) throws ApplicationManagementException {
+    public Application[] getApplications(String domain, int pageNumber, int size)
+            throws ApplicationManagementException {
         return new Application[0];
     }
 
@@ -88,7 +96,7 @@ public class RemoteApplicationManager implements ApplicationManager {
 
     @Override
     public String getApplicationStatus(DeviceIdentifier deviceId,
-                                       Application application) throws ApplicationManagementException {
+            Application application) throws ApplicationManagementException {
         return null;
     }
 
@@ -96,11 +104,26 @@ public class RemoteApplicationManager implements ApplicationManager {
     public void installApplication(Operation operation, List<DeviceIdentifier> deviceIds)
             throws ApplicationManagementException {
 
-       for(DeviceIdentifier deviceId: deviceIds){
-           DeviceManagementService dms =
-                   this.getPluginRepository().getDeviceManagementService(deviceId.getType());
-           dms.installApplication(operation, deviceIds);
-       }
+        for (DeviceIdentifier deviceId : deviceIds) {
+            DeviceManagementService dms =
+                    this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+            dms.installApplication(operation, deviceIds);
+        }
+    }
+
+    @Override
+    public void updateApplicationsForDevice(DeviceIdentifier deviceIdentifier, List<Application> applications)
+            throws ApplicationManagementException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            Device device =  deviceDAO.getDevice(deviceIdentifier, tenantId);
+            deviceDAO.addDeviceApplications(device.getId(), applications);
+        }catch (DeviceManagementDAOException deviceDaoEx){
+            String errorMsg = "Error occurred saving application list to the device";
+            log.error(errorMsg+":"+deviceIdentifier.toString());
+            throw new ApplicationManagementException(errorMsg, deviceDaoEx);
+        }
     }
 
     private OAuthConsumerAppDTO getAppInfo() throws ApplicationManagementException {

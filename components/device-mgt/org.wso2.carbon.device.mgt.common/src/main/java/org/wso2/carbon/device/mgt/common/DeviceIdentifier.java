@@ -46,4 +46,11 @@ public class DeviceIdentifier implements Serializable{
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "DeviceIdentifier{" +
+                "id='" + id + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

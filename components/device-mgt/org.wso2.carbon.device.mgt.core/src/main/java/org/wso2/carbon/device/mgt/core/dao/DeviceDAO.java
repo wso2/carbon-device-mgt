@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.core.dao;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 
 import java.util.List;
 
@@ -76,4 +77,5 @@ public interface DeviceDAO {
      */
     List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException;
 
+    void addDeviceApplications(int id, Object applications)  throws DeviceManagementDAOException;
 }

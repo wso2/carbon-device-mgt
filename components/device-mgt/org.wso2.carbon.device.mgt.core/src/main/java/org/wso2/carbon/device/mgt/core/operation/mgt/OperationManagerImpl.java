@@ -258,38 +258,39 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public void updateOperation(DeviceIdentifier deviceId, int operationId, Operation.Status operationStatus)
-            throws OperationManagementException {
+    public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException {
+
+        int operationId = operation.getId();
 
         if (log.isDebugEnabled()) {
-            log.debug("operation Id:" + operationId + " status:" + operationStatus);
+            log.debug("operation Id:" + operationId + " status:" + operation.getStatus());
         }
 
         try {
-            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation =
-                    operationDAO.getOperation(operationId);
 
-            if (dtoOperation == null) {
-                throw new OperationManagementException("Operation not found for operation id:" + operationId);
-            }
-            dtoOperation.setStatus(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf
-                    (operationStatus.toString()));
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             Device device = deviceDAO.getDevice(deviceId, tenantId);
 
-            OperationManagementDAOFactory.beginTransaction();
-            operationDAO.updateOperation(dtoOperation);
-            operationDAO.updateOperationStatus(device.getId(), operationId,
-                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status
-                            .valueOf(operationStatus.toString()));
-            OperationManagementDAOFactory.commitTransaction();
+            if (operation.getStatus() !=null) {
+                OperationManagementDAOFactory.beginTransaction();
+                operationDAO.updateOperationStatus(device.getId(), operationId,
+                        org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status
+                                .valueOf(operation.getStatus().toString()));
+                OperationManagementDAOFactory.commitTransaction();
+            }
+
+            if (operation.getOperationResponse() != null){
+                OperationManagementDAOFactory.beginTransaction();
+                operationDAO.addOperationResponse(device.getId(), operationId, operation.getOperationResponse());
+                OperationManagementDAOFactory.commitTransaction();
+            }
         } catch (OperationManagementDAOException ex) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();
             } catch (OperationManagementDAOException e1) {
                 log.warn("Error occurred while roll-backing the update operation transaction", e1);
             }
-            log.error("Error occurred while updating the operation: " + operationId + " status:" + operationStatus, ex);
+            log.error("Error occurred while updating the operation: " + operationId + " status:" + operation.getStatus(), ex);
             throw new OperationManagementException("Error occurred while update operation", ex);
         } catch (DeviceManagementDAOException e) {
             log.error("Error occurred while fetch the device for device identifier: " + deviceId.getId() + " " +

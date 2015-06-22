@@ -65,4 +65,10 @@ public class ApplicationManagementServiceImpl implements ApplicationManager {
         DeviceManagementDataHolder.getInstance().getAppManager().installApplication(operation, deviceIdentifiers);
     }
 
+    @Override
+    public void updateApplicationsForDevice(DeviceIdentifier deviceIdentifier, List<Application> applications)
+            throws ApplicationManagementException {
+
+       DeviceManagementDataHolder.getInstance().getAppManager().updateApplicationsForDevice(deviceIdentifier,applications);
+    }
 }

@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import java.util.List;
@@ -76,5 +77,14 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
      * device list
      */
     List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
+
+    /**
+     * The method to get application list installed for the device.
+     *
+     * @param deviceIdentifier
+     * @return
+     * @throws DeviceManagementException
+     */
+    List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;
 
 }

@@ -34,16 +34,14 @@ public interface DeviceDAO {
 
 	void updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
-	void updateDeviceStatus(DeviceIdentifier deviceId, Status status, int tenantId) throws DeviceManagementDAOException;
+	void updateDeviceStatus(DeviceIdentifier deviceId, Status status,
+                            int tenantId) throws DeviceManagementDAOException;
 
 	void deleteDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 
 	Device getDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 
 	List<Device> getDevices(int tenantId) throws DeviceManagementDAOException;
-
-    List<Integer> getDeviceIds(List<DeviceIdentifier> devices,
-                               int tenantId) throws DeviceManagementDAOException;
 
 	/**
 	 * @param type - The device type id.

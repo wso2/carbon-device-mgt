@@ -38,6 +38,7 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -537,31 +538,28 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getAllDevicesOfRole(String roleName) throws DeviceManagementException {
+    public List<Device> getAllDevicesOfRole(String role) throws DeviceManagementException {
         List<Device> devices = new ArrayList<Device>();
-        List<org.wso2.carbon.device.mgt.user.common.User> users;
 
+        String[] users;
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        //Obtaining the list of users of role
         try {
-            users = DeviceManagementDataHolder.getInstance().getUserManager().getUsersForTenantAndRole(
-                    tenantId, roleName);
-        } catch (org.wso2.carbon.device.mgt.user.common.UserManagementException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the users of role '"
-                    + roleName + "'", e);
+            users =
+                    DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
+                            tenantId).getUserStoreManager().getUserListOfRole(role);
+        } catch (UserStoreException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the users, who are assigned " +
+                    "with the role '"+ role + "'", e);
         }
 
-        //Obtaining the devices per user
         List<Device> userDevices;
-        for (org.wso2.carbon.device.mgt.user.common.User user : users) {
-            String username = null;
+        for (String user : users) {
             userDevices = new ArrayList<Device>();
             try {
                 DeviceManagementDAOFactory.getConnection();
-                username = user.getUserName();
-                userDevices = deviceDAO.getDeviceListOfUser(username, tenantId);
+                userDevices = deviceDAO.getDeviceListOfUser(user, tenantId);
             } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while obtaining the devices of user '" + username + "'", e);
+                log.error("Error occurred while obtaining the devices of user '" + user + "'", e);
             } finally {
                 try {
                     DeviceManagementDAOFactory.closeConnection();
@@ -577,7 +575,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setProperties(dmsDevice.getProperties());
                 devices.add(device);
             }
-
         }
         return devices;
     }

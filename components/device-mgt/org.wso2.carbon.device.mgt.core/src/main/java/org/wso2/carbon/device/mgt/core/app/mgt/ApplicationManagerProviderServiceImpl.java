@@ -33,6 +33,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
+import org.wso2.carbon.device.mgt.core.api.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -51,7 +52,7 @@ import java.util.List;
  * Implements Application Manager interface
  *
  */
-public class ApplicationManagerProviderServiceImpl implements ApplicationManager {
+public class ApplicationManagerProviderServiceImpl implements ApplicationManagementProviderService {
 
     private ConfigurationContext configCtx;
     private ServiceAuthenticator authenticator;
@@ -155,4 +156,19 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManager
         return pluginRepository;
     }
 
+    @Override
+    public void updateApplicationListInstallInDevice(DeviceIdentifier deviceIdentifier,List<Application> applications)
+            throws ApplicationManagementException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            Device device =  deviceDAO.getDevice(deviceIdentifier, tenantId);
+            deviceDAO.addDeviceApplications(device.getId(), applications);
+        }catch (DeviceManagementDAOException deviceDaoEx){
+            String errorMsg = "Error occurred saving application list to the device";
+            log.error(errorMsg+":"+deviceIdentifier.toString());
+            throw new ApplicationManagementException(errorMsg, deviceDaoEx);
+        }
+
+    }
 }

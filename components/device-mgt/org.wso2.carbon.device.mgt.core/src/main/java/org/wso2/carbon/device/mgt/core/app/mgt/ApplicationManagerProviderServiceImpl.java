@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
@@ -41,6 +42,7 @@ import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
@@ -52,7 +54,8 @@ import java.util.List;
  * Implements Application Manager interface
  *
  */
-public class ApplicationManagerProviderServiceImpl implements ApplicationManagementProviderService {
+public class ApplicationManagerProviderServiceImpl implements ApplicationManagementProviderService,
+        PluginInitializationListener {
 
     private ConfigurationContext configCtx;
     private ServiceAuthenticator authenticator;
@@ -169,6 +172,25 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             log.error(errorMsg+":"+deviceIdentifier.toString());
             throw new ApplicationManagementException(errorMsg, deviceDaoEx);
         }
+    }
 
+    @Override
+    public void registerDeviceManagementService(DeviceManagementService deviceManagementService) {
+        try {
+            pluginRepository.addDeviceManagementProvider(deviceManagementService);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while registering device management plugin '" +
+                    deviceManagementService.getProviderType() + "'", e);
+        }
+    }
+
+    @Override
+    public void unregisterDeviceManagementService(DeviceManagementService deviceManagementService) {
+        try {
+            pluginRepository.removeDeviceManagementProvider(deviceManagementService);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while un-registering device management plugin '" +
+                    deviceManagementService.getProviderType() + "'", e);
+        }
     }
 }

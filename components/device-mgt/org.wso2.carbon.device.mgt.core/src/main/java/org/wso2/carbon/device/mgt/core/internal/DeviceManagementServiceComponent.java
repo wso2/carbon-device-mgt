@@ -25,7 +25,6 @@ import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
@@ -38,7 +37,6 @@ import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
 import org.wso2.carbon.device.mgt.core.api.mgt.ApplicationManagementProviderService;
-import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfigurationManager;
@@ -120,8 +118,6 @@ public class DeviceManagementServiceComponent {
             this.initLicenseManager();
             /*Initialize Operation Manager*/
             this.initOperationsManager();
-            /* Initializing app manager connector */
-            this.initAppManagerConnector();
 
             OperationManagementDAOFactory.init(dsConfig);
             /* If -Dsetup option enabled then create device management database schema */
@@ -175,15 +171,6 @@ public class DeviceManagementServiceComponent {
         DeviceManagementDataHolder.getInstance().setOperationManager(operationManager);
     }
 
-    private void initAppManagerConnector() throws ApplicationManagementException {
-        AppManagementConfigurationManager.getInstance().initConfig();
-        AppManagementConfig appConfig =
-                AppManagementConfigurationManager.getInstance().getAppManagementConfig();
-        DeviceManagementDataHolder.getInstance().setAppManagerConfig(appConfig);
-        ApplicationManagerProviderServiceImpl appManager = new ApplicationManagerProviderServiceImpl(appConfig, this.getPluginRepository());
-        DeviceManagementDataHolder.getInstance().setAppManager(appManager);
-    }
-
     private void registerServices(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
             log.debug("Registering OSGi service DeviceManagementProviderServiceImpl");
@@ -201,7 +188,15 @@ public class DeviceManagementServiceComponent {
         bundleContext.registerService(ServerStartupObserver.class, new APIRegistrationStartupObserver(), null);
 
 	     /* Registering App Management service */
-        bundleContext.registerService(ApplicationManagementProviderService.class.getName(), new ApplicationManagementServiceImpl(), null);
+        try {
+            AppManagementConfigurationManager.getInstance().initConfig();
+            AppManagementConfig appConfig =
+                    AppManagementConfigurationManager.getInstance().getAppManagementConfig();
+            bundleContext.registerService(ApplicationManagementProviderService.class.getName(),
+                    new ApplicationManagerProviderServiceImpl(appConfig, pluginRepository), null);
+        } catch (ApplicationManagementException appMgtEx) {
+            log.error("Application management service not registered.");
+        }
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {

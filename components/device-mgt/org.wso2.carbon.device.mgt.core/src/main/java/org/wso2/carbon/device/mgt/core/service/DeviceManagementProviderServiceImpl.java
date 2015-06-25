@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService, PluginInitializationListener {
@@ -100,6 +101,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
 
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+            device.getEnrolmentInfo().setDateOfEnrolment(new Date().getTime());
+            device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             deviceDAO.addDevice(type.getId(), device, tenantId);
 
             DeviceManagementDAOFactory.commitTransaction();
@@ -121,6 +124,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return status;
     }
 
+
+
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
         DeviceManager dms =
@@ -130,9 +135,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
             DeviceManagementDAOFactory.beginTransaction();
-
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
-            deviceDAO.updateDevice(type.getId(), device, tenantId);
+            deviceDAO.updateDevice(type.getId(),device, tenantId);
 
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
@@ -155,8 +159,24 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+        try {
+            Device device = deviceDAO.getDevice(deviceId,tenantId);
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
+
+            device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
+            device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
+            deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
+
+        } catch (DeviceManagementDAOException e) {
+            String errorMsg =  "Error occurred while fetch device for device Identifier:";
+            log.error(errorMsg + deviceId.toString(),e);
+            throw new DeviceManagementException(errorMsg, e);
+
+        }
         return dms.disenrollDevice(deviceId);
     }
 

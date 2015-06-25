@@ -26,11 +26,11 @@ public class EnrolmentInfo {
     private Status status;
     private String owner;
 
-    public enum Status {
+    public static enum Status {
         CREATED, ACTIVE, INACTIVE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED
     }
 
-    public enum OwnerShip {
+    public static enum OwnerShip {
         BYOD, COPE
     }
 

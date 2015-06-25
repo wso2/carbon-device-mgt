@@ -137,7 +137,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
             deviceDAO.updateDevice(type.getId(),device, tenantId);
-
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             try {
@@ -650,6 +649,22 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
             throws DeviceManagementException {
         return null;
+    }
+
+    @Override
+    public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
+            device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
+            device.getEnrolmentInfo().setStatus(status);
+            deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
+        }catch (DeviceManagementDAOException deviceDaoEx){
+            String errorMsg = "Error occured update device enrolment status:"+device.getId();
+            log.error(errorMsg, deviceDaoEx);
+            throw new DeviceManagementException(errorMsg, deviceDaoEx);
+        }
     }
 
     @Override

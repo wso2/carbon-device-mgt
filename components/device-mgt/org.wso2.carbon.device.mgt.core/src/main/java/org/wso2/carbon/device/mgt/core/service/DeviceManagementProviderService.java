@@ -87,4 +87,5 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
      */
     List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;
 
+    void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status active) throws DeviceManagementException;
 }

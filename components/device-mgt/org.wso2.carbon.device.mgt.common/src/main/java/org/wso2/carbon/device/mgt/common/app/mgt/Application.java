@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.mgt.common.app.mgt;
 
+import java.util.List;
+import java.util.Properties;
+
 public class Application {
 
     private String id;
@@ -29,6 +32,7 @@ public class Application {
     private String imageUrl;
     private String version;
     private String type;
+    private List<Properties> appProperties;
 
     public String getType() {
         return type;
@@ -103,6 +107,14 @@ public class Application {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public List<Properties> getAppProperties() {
+        return appProperties;
+    }
+
+    public void setAppProperties(List<Properties> appProperties) {
+        this.appProperties = appProperties;
     }
 
 }

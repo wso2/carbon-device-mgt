@@ -140,9 +140,9 @@ public interface PolicyAdministratorPoint {
 
     List<Profile> getProfiles() throws PolicyManagementException;
 
-    Feature addFeature(Feature feature) throws  FeatureManagementException;
-
-    Feature updateFeature(Feature feature) throws  FeatureManagementException;
+//    Feature addFeature(Feature feature) throws  FeatureManagementException;
+//
+//    Feature updateFeature(Feature feature) throws  FeatureManagementException;
 
     boolean deleteFeature(int featureId)   throws  FeatureManagementException;
 

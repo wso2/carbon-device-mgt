@@ -41,7 +41,7 @@ public class FeatureManagerImpl implements FeatureManager {
         featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
     }
 
-    @Override
+    /*@Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
         try {
             PolicyManagementDAOFactory.beginTransaction();
@@ -68,9 +68,9 @@ public class FeatureManagerImpl implements FeatureManager {
             throw new FeatureManagementException(msg, e);
         }
         return feature;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public List<Feature> addFeatures(List<Feature> features) throws FeatureManagementException {
         try {
             PolicyManagementDAOFactory.beginTransaction();
@@ -98,9 +98,9 @@ public class FeatureManagerImpl implements FeatureManager {
         }
 
         return features;
-    }
+    }*/
 
-    @Override
+   /* @Override
     public Feature updateFeature(Feature feature) throws FeatureManagementException {
         try {
             PolicyManagementDAOFactory.beginTransaction();
@@ -127,7 +127,7 @@ public class FeatureManagerImpl implements FeatureManager {
             throw new FeatureManagementException(msg, e);
         }
         return feature;
-    }
+    }*/
 
     @Override
     public boolean deleteFeature(Feature feature) throws FeatureManagementException {

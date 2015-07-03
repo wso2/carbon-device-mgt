@@ -21,16 +21,21 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Criterion;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyDAO;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -429,7 +434,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY_CRITERIA_PROPERTIES (POLICY_CRITERION_ID, PROP_KEY, PROP_VALUE, CONTENT) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO DM_POLICY_CRITERIA_PROPERTIES (POLICY_CRITERION_ID, PROP_KEY, PROP_VALUE, " +
+                    "CONTENT) VALUES (?, ?, ?, ?)";
             stmt = conn.prepareStatement(query);
 
             for (PolicyCriterion criterion : policyCriteria) {
@@ -517,7 +523,8 @@ public class PolicyDAOImpl implements PolicyDAO {
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_POLICY SET NAME= ?, TENANT_ID = ?, PROFILE_ID = ?, PRIORITY = ?, COMPLIANCE = ? WHERE ID = ?";
+            String query = "UPDATE DM_POLICY SET NAME= ?, TENANT_ID = ?, PROFILE_ID = ?, PRIORITY = ?, COMPLIANCE = ?" +
+                    " WHERE ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, policy.getPolicyName());
             stmt.setInt(2, policy.getTenantId());
@@ -738,7 +745,6 @@ public class PolicyDAOImpl implements PolicyDAO {
             this.closeConnection();
         }
     }
-
 
 
     @Override
@@ -1060,7 +1066,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE, OWNERSHIP_TYPE) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE, OWNERSHIP_TYPE)" +
+                    " VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, policy.getPolicyName());
@@ -1189,6 +1196,97 @@ public class PolicyDAOImpl implements PolicyDAO {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
             this.closeConnection();
         }
+    }
+
+    @Override
+    public int getAppliedPolicyId(int deviceId) throws PolicyManagerDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, deviceId);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                return resultSet.getInt("POLICY_ID");
+            }
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while getting the applied policy id.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+
+        return 0;
+    }
+
+    @Override
+    public Policy getAppliedPolicy(int deviceId) throws PolicyManagerDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
+        Policy policy = null;
+
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, deviceId);
+            resultSet = stmt.executeQuery();
+
+
+            ByteArrayInputStream bais = null;
+            ObjectInputStream ois = null;
+            byte[] contentBytes;
+            try {
+                contentBytes = (byte[]) resultSet.getBytes("POLICY_CONTENT");
+                bais = new ByteArrayInputStream(contentBytes);
+                ois = new ObjectInputStream(bais);
+                policy = (Policy) ois.readObject();
+            } finally {
+                if (bais != null) {
+                    try {
+                        bais.close();
+                    } catch (IOException e) {
+                        log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                    }
+                }
+                if (ois != null) {
+                    try {
+                        ois.close();
+                    } catch (IOException e) {
+                        log.warn("Error occurred while closing ObjectOutputStream", e);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while getting the applied policy.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } catch (IOException e) {
+            String msg = "Unable to read the byte stream for content";
+            log.error(msg);
+            throw new PolicyManagerDAOException(msg, e);
+        } catch (ClassNotFoundException e) {
+            String msg = "Class not found while converting the object";
+            log.error(msg);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+        return policy;
     }
 
 }

@@ -29,11 +29,11 @@ import java.util.List;
 
 public interface FeatureManager {
 
-    Feature addFeature(Feature feature) throws FeatureManagementException;
+    /*Feature addFeature(Feature feature) throws FeatureManagementException;
 
     public List<Feature> addFeatures(List<Feature> features) throws FeatureManagementException;
 
-    Feature updateFeature(Feature feature) throws FeatureManagementException;
+    Feature updateFeature(Feature feature) throws FeatureManagementException;*/
 
     boolean deleteFeature(Feature feature) throws FeatureManagementException;
 

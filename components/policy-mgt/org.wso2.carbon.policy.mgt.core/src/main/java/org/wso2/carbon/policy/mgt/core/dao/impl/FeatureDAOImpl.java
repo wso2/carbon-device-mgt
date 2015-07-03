@@ -42,7 +42,7 @@ public class FeatureDAOImpl implements FeatureDAO {
     private static final Log log = LogFactory.getLog(FeatureDAOImpl.class);
 
 
-    @Override
+/*    @Override
     public Feature addFeature(Feature feature) throws FeatureManagerDAOException {
 
         Connection conn;
@@ -75,9 +75,9 @@ public class FeatureDAOImpl implements FeatureDAO {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
         return feature;
-    }
+    }*/
 
-    @Override
+  /*  @Override
     public List<Feature> addFeatures(List<Feature> features) throws FeatureManagerDAOException {
 
         Connection conn;
@@ -119,10 +119,10 @@ public class FeatureDAOImpl implements FeatureDAO {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
         return featureList;
-    }
+    }*/
 
 
-    @Override
+  /*  @Override
     public Feature updateFeature(Feature feature) throws FeatureManagerDAOException {
 
         Connection conn;
@@ -147,7 +147,7 @@ public class FeatureDAOImpl implements FeatureDAO {
         }
 
         return feature;
-    }
+    }*/
 
     @Override
     public ProfileFeature addProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException {

@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+
+package org.wso2.carbon.policy.mgt.core.dao;
+
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
+
+import java.util.List;
+import java.util.Map;
+
+public interface MonitoringDAO {
+
+    int setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException;
+
+    void setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException;
+
+    void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature> complianceFeatures)
+            throws MonitoringDAOException;
+
+    ComplianceData getCompliance(int deviceId) throws MonitoringDAOException;
+
+    List<ComplianceFeature> getNoneComplianceFeatures(int policyComplianceStatusId) throws MonitoringDAOException;
+
+    void deleteNoneComplianceData(int deviceId) throws MonitoringDAOException;
+}

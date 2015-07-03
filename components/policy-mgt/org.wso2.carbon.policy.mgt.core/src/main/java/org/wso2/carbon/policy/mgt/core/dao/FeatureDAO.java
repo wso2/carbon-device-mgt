@@ -27,11 +27,11 @@ import java.util.List;
 
 public interface FeatureDAO {
 
-    Feature addFeature(Feature feature) throws FeatureManagerDAOException;
+/*    Feature addFeature(Feature feature) throws FeatureManagerDAOException;
 
     List<Feature> addFeatures(List<Feature> feature) throws FeatureManagerDAOException;
 
-    Feature updateFeature(Feature feature) throws FeatureManagerDAOException;
+    Feature updateFeature(Feature feature) throws FeatureManagerDAOException;*/
 
     ProfileFeature addProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException;
 

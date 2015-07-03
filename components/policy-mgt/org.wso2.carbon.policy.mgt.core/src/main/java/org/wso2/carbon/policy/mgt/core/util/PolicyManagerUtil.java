@@ -90,17 +90,12 @@ public class PolicyManagerUtil {
         //TODO: Get the tenant id proper way. This is has to be fix for test to run.
 
         int tenantId;
-        tenantId = MultitenantConstants.SUPER_TENANT_ID;
-/*        try {
-            if (PrivilegedCarbonContext.getThreadLocalCarbonContext() != null) {
-                tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            } else {
-                tenantId = MultitenantConstants.SUPER_TENANT_ID;
-            }
 
-        } catch (Exception e) {
-
-        }*/
+        if ("Super".equalsIgnoreCase(System.getProperty("GetTenantIDForTest"))) {
+            tenantId = MultitenantConstants.SUPER_TENANT_ID;
+        } else {
+            tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        }
         return tenantId;
     }
 }

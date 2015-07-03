@@ -22,6 +22,9 @@ package org.wso2.carbon.policy.mgt.core;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.Monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
@@ -34,9 +37,11 @@ import java.util.List;
 
 public interface PolicyManagerService {
 
+/*
     Feature addFeature(Feature feature) throws FeatureManagementException;
 
     Feature updateFeature(Feature feature) throws FeatureManagementException;
+*/
 
     Profile addProfile(Profile profile) throws PolicyManagementException;
 
@@ -65,4 +70,11 @@ public interface PolicyManagerService {
     PolicyEvaluationPoint getPEP() throws PolicyManagementException;
 
     int getPolicyCount() throws PolicyManagementException;
+
+    List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+            deviceResponse) throws PolicyComplianceException;
+
+    boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws PolicyComplianceException;
+
+    ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 }

@@ -77,6 +77,8 @@ public class PolicyDAOTestCase {
         TestDBConfiguration dbConfig = getTestDBConfiguration(dbType);
         PoolProperties properties = new PoolProperties();
 
+        System.setProperty("GetTenantIDForTest","Super");
+
         log.info("Database Type : " + dbTypeStr);
 
         switch (dbType) {

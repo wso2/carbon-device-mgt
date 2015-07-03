@@ -61,8 +61,8 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
                     return null;
                 }
                 //TODO : UNCOMMENT THE FOLLOWING CASE
-//                policyAdministratorPoint = policyManagerService.getPAP();
-//                policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
+                policyAdministratorPoint = policyManagerService.getPAP();
+                policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
 
             }
 

@@ -18,10 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.common.app.mgt;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.Properties;
 
-public class Application {
+public class Application implements Serializable {
 
     private String id;
     private String packageName;

@@ -32,7 +32,7 @@ public class Application {
     private String imageUrl;
     private String version;
     private String type;
-    private List<Properties> appProperties;
+    private Properties appProperties;
 
     public String getType() {
         return type;
@@ -109,12 +109,13 @@ public class Application {
         this.category = category;
     }
 
-    public List<Properties> getAppProperties() {
+    public Properties getAppProperties() {
         return appProperties;
     }
 
-    public void setAppProperties(List<Properties> appProperties) {
+    public void setAppProperties(Properties appProperties) {
         this.appProperties = appProperties;
     }
+
 
 }

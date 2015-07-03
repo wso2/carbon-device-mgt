@@ -660,6 +660,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public void updateInstalledApplicationListOfDevice(DeviceIdentifier deviceIdentifier,
+                                                                 List<Application> applications)
+            throws DeviceManagementException {
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            Device device =  deviceDAO.getDevice(deviceIdentifier, tenantId);
+            deviceDAO.addDeviceApplications(device.getId(), applications);
+        }catch (DeviceManagementDAOException deviceDaoEx){
+            String errorMsg = "Error occurred saving application list to the device";
+            log.error(errorMsg+":"+deviceIdentifier.toString());
+            throw new DeviceManagementException(errorMsg, deviceDaoEx);
+        }
+    }
+
+    @Override
     public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
 
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();

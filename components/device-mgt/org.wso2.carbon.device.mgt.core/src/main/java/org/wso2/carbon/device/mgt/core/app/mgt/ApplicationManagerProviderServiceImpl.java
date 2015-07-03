@@ -160,21 +160,6 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     }
 
     @Override
-    public void updateApplicationListInstallInDevice(DeviceIdentifier deviceIdentifier,List<Application> applications)
-            throws ApplicationManagementException {
-
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        try {
-            Device device =  deviceDAO.getDevice(deviceIdentifier, tenantId);
-            deviceDAO.addDeviceApplications(device.getId(), applications);
-        }catch (DeviceManagementDAOException deviceDaoEx){
-            String errorMsg = "Error occurred saving application list to the device";
-            log.error(errorMsg+":"+deviceIdentifier.toString());
-            throw new ApplicationManagementException(errorMsg, deviceDaoEx);
-        }
-    }
-
-    @Override
     public void registerDeviceManagementService(DeviceManagementService deviceManagementService) {
         try {
             pluginRepository.addDeviceManagementProvider(deviceManagementService);

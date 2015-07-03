@@ -75,5 +75,22 @@ public interface DeviceDAO {
      */
     List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException;
 
+	/**
+	 * Get the list of devices that matches with the given device name.
+	 *
+	 * @param id Name of the device
+	 * @param applications List of applications
+	 * @throws DeviceManagementDAOException
+	 */
     void addDeviceApplications(int id, Object applications)  throws DeviceManagementDAOException;
+
+	/**
+	 * Get the list of devices that matches with the given device name.
+	 *
+	 * @param deviceId device id of the device
+	 * @return List of Applications that are installed on the given device.
+	 * @throws DeviceManagementDAOException
+	 */
+	List<Application> getInstalledApplications(int deviceId)
+			throws DeviceManagementDAOException;
 }

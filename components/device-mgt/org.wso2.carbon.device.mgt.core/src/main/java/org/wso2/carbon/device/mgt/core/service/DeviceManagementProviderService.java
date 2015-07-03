@@ -82,7 +82,7 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
      * The method to get application list installed for the device.
      *
      * @param deviceIdentifier
-     * @return
+     * @return List of applications installed on the device
      * @throws DeviceManagementException
      */
     List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;

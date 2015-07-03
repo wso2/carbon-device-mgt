@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
@@ -29,7 +31,11 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +45,8 @@ import java.util.Date;
 import java.util.List;
 
 public class DeviceDAOImpl implements DeviceDAO {
+
+    private static final Log log = LogFactory.getLog(DeviceDAOImpl.class);
 
     @Override
     public void addDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException {
@@ -315,6 +323,50 @@ public class DeviceDAOImpl implements DeviceDAO {
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
+    }
+
+    @Override
+    public List<Application> getInstalledApplications(int deviceId)
+            throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        List<Application> applications = new ArrayList<Application>();
+        Application application;
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+
+        try {
+            conn = this.getConnection();
+            stmt = conn.prepareStatement(
+                    "SELECT DEVICE_ID, APPLICATIONS FROM DM_DEVICE_APPLICATIONS WHERE DEVICE_ID = ?");
+            stmt.setInt(1, deviceId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                byte[] applicationDetails = rs.getBytes("APPLICATIONS");
+                bais = new ByteArrayInputStream(applicationDetails);
+                ois = new ObjectInputStream(bais);
+                application = (Application) ois.readObject();
+                applications.add(application);
+            }
+
+        }catch (IOException e) {
+            String errorMsg = "IO Error occurred while de serialize the Application object";
+            log.error(errorMsg, e);
+            throw new DeviceManagementDAOException(errorMsg, e);
+        } catch (ClassNotFoundException e) {
+            String errorMsg = "Class not found error occurred while de serialize the Application object";
+            log.error(errorMsg, e);
+            throw new DeviceManagementDAOException(errorMsg, e);
+        } catch (SQLException e) {
+            String errorMsg = "SQL Error occurred while retrieving the list of Applications installed in device id '"
+                              + deviceId;
+            log.error(errorMsg, e);
+            throw new DeviceManagementDAOException(errorMsg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return applications;
     }
 
     private Device loadDevice(ResultSet rs) throws SQLException {

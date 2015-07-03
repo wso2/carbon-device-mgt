@@ -648,7 +648,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
             throws DeviceManagementException {
-        return null;
+        Device device = null;
+        try {
+            device = this.getDevice(deviceIdentifier);
+            return deviceDAO.getInstalledApplications(device.getId());
+        }catch (DeviceManagementDAOException deviceDaoEx){
+            String errorMsg = "Error occured while fetching the Application List of device  : " + device.getId();
+            log.error(errorMsg, deviceDaoEx);
+            throw new DeviceManagementException(errorMsg, deviceDaoEx);
+        }
     }
 
     @Override
@@ -661,7 +669,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.getEnrolmentInfo().setStatus(status);
             deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
         }catch (DeviceManagementDAOException deviceDaoEx){
-            String errorMsg = "Error occured update device enrolment status:"+device.getId();
+            String errorMsg = "Error occured update device enrolment status : "+device.getId();
             log.error(errorMsg, deviceDaoEx);
             throw new DeviceManagementException(errorMsg, deviceDaoEx);
         }

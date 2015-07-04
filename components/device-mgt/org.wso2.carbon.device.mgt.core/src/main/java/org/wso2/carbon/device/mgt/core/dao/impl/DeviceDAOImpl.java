@@ -119,13 +119,15 @@ public class DeviceDAOImpl implements DeviceDAO {
         try {
             conn = this.getConnection();
             String sql =
-                    "SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
-                            "t.NAME AS DEVICE_TYPE_NAME, d.DEVICE_IDENTIFICATION, d.TENANT_ID FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
-                            "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?";
+                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                            "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
+                            "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
+                            "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId.getType());
             stmt.setString(2, deviceId.getId());
             stmt.setInt(3, tenantId);
+            stmt.setInt(4, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 device = this.loadDevice(rs);
@@ -147,11 +149,13 @@ public class DeviceDAOImpl implements DeviceDAO {
         List<Device> devices = null;
         try {
             conn = this.getConnection();
-            String sql = "SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_TYPE_ID, " +
-                    "d.DEVICE_IDENTIFICATION, d.TENANT_ID, t.NAME AS DEVICE_TYPE_NAME FROM DM_DEVICE d, DEVICE_TYPE t " +
-                    "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? ";
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                    "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME," +
+                    "d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DEVICE_TYPE t " +
+                    "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
+            stmt.setInt(2, tenantId);
             rs = stmt.executeQuery();
             devices = new ArrayList<Device>();
             while (rs.next()) {
@@ -175,12 +179,14 @@ public class DeviceDAOImpl implements DeviceDAO {
         List<Device> devices = null;
         try {
             conn = this.getConnection();
-            String selectDBQueryForType = "SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
-                    "d.DEVICE_TYPE_ID, d.DEVICE_IDENTIFICATION, d.OWNER, d.TENANT_ID FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                    "WHERE d.DM_DEVICE.DEVICE_TYPE_ID = t.ID AND t.NAME = ? AND d.TENANT_ID = ?";
+            String selectDBQueryForType = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                    "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
+                    "d.DEVICE_IDENTIFICATION, d.OWNER, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
+                    "WHERE d.DM_DEVICE.DEVICE_TYPE_ID = t.ID AND t.NAME = ? AND d.TENANT_ID = ?) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(selectDBQueryForType);
             stmt.setString(1, type);
             stmt.setInt(2, tenantId);
+            stmt.setInt(3, tenantId);
             rs = stmt.executeQuery();
             devices = new ArrayList<Device>();
             while (rs.next()) {
@@ -203,11 +209,13 @@ public class DeviceDAOImpl implements DeviceDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement(
-                    "SELECT t.NAME AS DEVICE_TYPE, d.ID AS DEVICE_ID, d.DESCRIPTION, " +
-                            "d.NAME AS DEVICE_NAME, d.DEVICE_TYPE_ID, d.DEVICE_IDENTIFICATION, d.TENANT_ID FROM " +
-                            "DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.OWNER =? AND d.TENANT_ID = ?");
+                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, d.DEVICE_IDENTIFICATION" +
+                            " e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.DESCRIPTION, " +
+                            "d.NAME, d.DEVICE_IDENTIFICATION FROM " +
+                            "DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.OWNER =? AND d.TENANT_ID = ?) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?");
             stmt.setString(1, username);
             stmt.setInt(2, tenantId);
+            stmt.setInt(3, tenantId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -272,12 +280,15 @@ public class DeviceDAOImpl implements DeviceDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement(
-                    "SELECT d.ID AS DEVICE_ID, d.NAME AS DEVICE_NAME, t.ID AS DEVICE_TYPE_ID, d.DESCRIPTION, " +
-                            "t.NAME AS DEVICE_TYPE, d.DEVICE_TYPE_ID, d.DEVICE_IDENTIFICATION, d.TENANT_ID FROM " +
+                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, d.DEVICE_IDENTIFICATION " +
+                            "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT d.ID AS DEVICE_ID, d.NAME, d.DESCRIPTION, " +
+                            "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM " +
                             "DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID " +
-                            "AND d.NAME LIKE ? AND d.TENANT_ID = ?");
+                            "AND d.NAME LIKE ? AND d.TENANT_ID = ?) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?");
             stmt.setString(1, deviceName + "%");
             stmt.setInt(2, tenantId);
+            stmt.setInt(3, tenantId);
+            stmt.setInt(4, tenantId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -420,8 +431,7 @@ public class DeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public List<Application> getInstalledApplications(int deviceId)
-            throws DeviceManagementDAOException {
+    public List<Application> getInstalledApplications(int deviceId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         List<Application> applications = new ArrayList<Application>();
@@ -443,20 +453,14 @@ public class DeviceDAOImpl implements DeviceDAO {
                 application = (Application) ois.readObject();
                 applications.add(application);
             }
-
-        }catch (IOException e) {
-            String errorMsg = "IO Error occurred while de serialize the Application object";
-            log.error(errorMsg, e);
-            throw new DeviceManagementDAOException(errorMsg, e);
+        } catch (IOException e) {
+            throw new DeviceManagementDAOException("IO Error occurred while de serialize the Application object", e);
         } catch (ClassNotFoundException e) {
-            String errorMsg = "Class not found error occurred while de serialize the Application object";
-            log.error(errorMsg, e);
-            throw new DeviceManagementDAOException(errorMsg, e);
+            throw new DeviceManagementDAOException("Class not found error occurred while de serialize the " +
+                    "Application object", e);
         } catch (SQLException e) {
-            String errorMsg = "SQL Error occurred while retrieving the list of Applications installed in device id '"
-                              + deviceId;
-            log.error(errorMsg, e);
-            throw new DeviceManagementDAOException(errorMsg, e);
+            throw new DeviceManagementDAOException("SQL Error occurred while retrieving the list of Applications " +
+                    "installed in device id '" + deviceId, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -466,9 +470,11 @@ public class DeviceDAOImpl implements DeviceDAO {
     private Device loadDevice(ResultSet rs) throws SQLException {
         Device device = new Device();
         device.setId(rs.getInt("DEVICE_ID"));
+        device.setName(rs.getString("DEVICE_NAME"));
         device.setDescription(rs.getString("DESCRIPTION"));
-        device.setType(rs.getString("DEVICE_TYPE_NAME"));
+        device.setType(rs.getString("DEVICE_TYPE"));
         device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+        device.setEnrolmentInfo(this.loadEnrolment(rs));
         return device;
     }
 

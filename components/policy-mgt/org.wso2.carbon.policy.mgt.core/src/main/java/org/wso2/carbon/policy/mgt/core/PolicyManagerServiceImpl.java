@@ -27,9 +27,14 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.Monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
+import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 
 import java.util.ArrayList;
@@ -41,19 +46,11 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     private static final Log log = LogFactory.getLog(PolicyManagerServiceImpl.class);
 
     PolicyAdministratorPointImpl policyAdministratorPoint;
+    MonitoringManager monitoringManager;
 
     public PolicyManagerServiceImpl() {
         policyAdministratorPoint = new PolicyAdministratorPointImpl();
-    }
-
-    @Override
-    public Feature addFeature(Feature feature) throws FeatureManagementException {
-        return policyAdministratorPoint.addFeature(feature);
-    }
-
-    @Override
-    public Feature updateFeature(Feature feature) throws FeatureManagementException {
-        return policyAdministratorPoint.updateFeature(feature);
+        monitoringManager = new MonitoringManagerImpl();
     }
 
     @Override
@@ -144,7 +141,8 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             FeatureManagementException {
         try {
 
-            List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
+            List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance()
+                    .getPolicyEvaluationPoint().
                     getEffectiveFeatures(deviceIdentifier);
 
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
@@ -210,5 +208,28 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public int getPolicyCount() throws PolicyManagementException {
         return policyAdministratorPoint.getPolicyCount();
+    }
+
+    @Override
+    public List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+            deviceResponse) throws PolicyComplianceException {
+        return monitoringManager.checkPolicyCompliance(deviceIdentifier, deviceResponse);
+    }
+
+    @Override
+    public boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws
+            PolicyComplianceException {
+
+        List<ComplianceFeature> complianceFeatures =
+                monitoringManager.checkPolicyCompliance(deviceIdentifier, response);
+        if (complianceFeatures == null || complianceFeatures.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        return monitoringManager.getDevicePolicyCompliance(deviceIdentifier);
     }
 }

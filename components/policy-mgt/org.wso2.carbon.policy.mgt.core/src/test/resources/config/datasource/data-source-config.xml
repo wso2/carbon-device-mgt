@@ -17,17 +17,9 @@
   ~ under the License.
   -->
 
-<DeviceMgtTestDBConfigurations>
-    <DBType typeName="MySql">
-        <connectionurl>jdbc:mysql://localhost:3306/WSO2CDM</connectionurl>
-        <driverclass>com.mysql.jdbc.Driver</driverclass>
-        <userName>root</userName>
-        <pwd></pwd>
-    </DBType>
-    <DBType typeName="H2">
-        <connectionurl>jdbc:h2:mem:WSO2_TEST_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000</connectionurl>
-        <driverclass>org.h2.Driver</driverclass>
-        <userName>wso2carbon</userName>
-        <pwd>wso2carbon</pwd>
-    </DBType>
-</DeviceMgtTestDBConfigurations>
+<DataSourceConfig>
+    <Url>jdbc:h2:mem:cdm-test-db;DB_CLOSE_DELAY=-1</Url>
+    <DriverClassName>org.h2.Driver</DriverClassName>
+    <User>wso2carbon</User>
+    <Password>wso2carbon</Password>
+</DataSourceConfig>

@@ -74,7 +74,7 @@ public class OperationManagementDAOFactory {
         try {
             currentConnection.set(dataSource.getConnection());
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while retrieving datasource connection", e);
+            throw new OperationManagementDAOException("Error occurred while retrieving config.datasource connection", e);
         }
     }
 

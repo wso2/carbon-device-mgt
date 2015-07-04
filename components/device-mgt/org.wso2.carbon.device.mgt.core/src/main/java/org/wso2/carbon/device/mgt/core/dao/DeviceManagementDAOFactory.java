@@ -71,7 +71,7 @@ public class DeviceManagementDAOFactory {
             conn.setAutoCommit(false);
             currentConnection.set(conn);
         } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while retrieving datasource connection", e);
+            throw new DeviceManagementDAOException("Error occurred while retrieving config.datasource connection", e);
         }
     }
 
@@ -79,7 +79,7 @@ public class DeviceManagementDAOFactory {
         try {
             currentConnection.set(dataSource.getConnection());
         } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while acquiring datasource connection", e);
+            throw new DeviceManagementDAOException("Error occurred while acquiring config.datasource connection", e);
         }
     }
 

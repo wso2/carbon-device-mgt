@@ -23,14 +23,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Parameters;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
-import org.wso2.carbon.device.mgt.core.common.DBTypes;
-import org.wso2.carbon.device.mgt.core.common.TestDBConfiguration;
-import org.wso2.carbon.device.mgt.core.common.TestDBConfigurations;
+import org.wso2.carbon.device.mgt.core.common.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import javax.sql.DataSource;
@@ -43,44 +41,44 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class BaseDeviceManagementDAOTest {
+public abstract class BaseDeviceManagementDAOTest {
 
     private DataSource dataSource;
     private static final Log log = LogFactory.getLog(BaseDeviceManagementDAOTest.class);
 
     @BeforeSuite
     public void setupDataSource() throws Exception {
-        this.dataSource = this.getDataSource(this.readDataSourceConfig());
+        this.initDatSource();
         this.initSQLScript();
+    }
+
+    public void initDatSource() throws Exception {
+        this.dataSource = this.getDataSource(this.readDataSourceConfig());
         DeviceManagementDAOFactory.init(dataSource);
     }
 
-    private DataSource getDataSource(TestDBConfiguration config) {
+    @BeforeClass
+    public abstract void init() throws Exception;
+
+    private DataSource getDataSource(DataSourceConfig config) {
         PoolProperties properties = new PoolProperties();
-        properties.setUrl(config.getConnectionUrl());
-        properties.setDriverClassName(config.getDriverClass());
-        properties.setUsername(config.getUserName());
-        properties.setPassword(config.getPwd());
+        properties.setUrl(config.getUrl());
+        properties.setDriverClassName(config.getDriverClassName());
+        properties.setUsername(config.getUser());
+        properties.setPassword(config.getPassword());
         return new org.apache.tomcat.jdbc.pool.DataSource(properties);
     }
 
-    private TestDBConfiguration readDataSourceConfig() throws DeviceManagementDAOException,
-            DeviceManagementException {
-        File config = new File("src/test/resources/data-source-config.xml");
-        Document doc;
-        TestDBConfigurations dbConfigs;
-
-        doc = DeviceManagerUtil.convertToDocument(config);
-        JAXBContext testDBContext;
-
+    private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {
         try {
-            testDBContext = JAXBContext.newInstance(TestDBConfigurations.class);
+            File file = new File("src/test/resources/config/datasource/data-source-config.xml");
+            Document doc = DeviceManagerUtil.convertToDocument(file);
+            JAXBContext testDBContext = JAXBContext.newInstance(DataSourceConfig.class);
             Unmarshaller unmarshaller = testDBContext.createUnmarshaller();
-            dbConfigs = (TestDBConfigurations) unmarshaller.unmarshal(doc);
+            return (DataSourceConfig) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {
-            throw new DeviceManagementDAOException("Error parsing test db configurations", e);
+            throw new DeviceManagementException("Error occurred while reading data source configuration", e);
         }
-
     }
 
     private void initSQLScript() throws Exception {

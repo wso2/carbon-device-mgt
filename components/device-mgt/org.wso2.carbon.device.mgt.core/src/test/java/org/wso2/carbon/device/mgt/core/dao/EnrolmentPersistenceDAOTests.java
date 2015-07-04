@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.core.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -82,4 +83,9 @@ public class EnrolmentPersistenceDAOTests extends BaseDeviceManagementDAOTest {
         }
     }
 
+    @BeforeClass
+    @Override
+    public void init() throws Exception {
+        this.initDatSource();
+    }
 }

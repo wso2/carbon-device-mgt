@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
+import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
@@ -51,6 +52,12 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setDeviceManagementService"
  * unbind="unsetDeviceManagementService"
+ * @scr.reference name="org.wso2.carbon.policy.mgt.common.policy.monitor"
+ * interface="org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService"
+ * cardinality="0..n"
+ * policy="dynamic"
+ * bind="setPolicyMonitoringService"
+ * unbind="unsetPolicyMonitoringService"
  */
 @SuppressWarnings("unused")
 public class PolicyManagementServiceComponent {
@@ -141,6 +148,23 @@ public class PolicyManagementServiceComponent {
             log.debug("Unsetting Device Management Service");
         }
         PolicyManagementDataHolder.getInstance().setDeviceManagementService(null);
+    }
+
+
+    protected void setPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Policy Monitoring Service");
+        }
+        // TODO: FIX THE device type by taking from properties
+        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService("", policyMonitoringService);
+    }
+
+    protected void unsetPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Policy Monitoring Service");
+        }
+        // TODO: FIX THE device type by taking from properties
+        PolicyManagementDataHolder.getInstance().unsetPolicyMonitoringService("");
     }
 
 }

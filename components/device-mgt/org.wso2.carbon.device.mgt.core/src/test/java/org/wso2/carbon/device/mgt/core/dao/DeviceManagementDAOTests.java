@@ -44,8 +44,9 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
     private static final Log log = LogFactory.getLog(DeviceManagementDAOTests.class);
 
     @BeforeClass
-    public void init() {
-
+    @Override
+    public void init() throws Exception {
+        initDatSource();
     }
 
     @Test
@@ -142,6 +143,7 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
         int id = -1;
         try {
+            Assert.assertNotNull(getDataSource(), "Data Source is not initialized properly");
             conn = getDataSource().getConnection();
             String sql = "SELECT ID FROM DM_DEVICE WHERE DEVICE_IDENTIFICATION = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
@@ -169,6 +171,7 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
         DeviceType deviceType = this.loadDummyDeviceType();
         try {
+            Assert.assertNotNull(getDataSource(), "Data Source is not initialized properly");
             conn = getDataSource().getConnection();
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceType.getName());
@@ -188,6 +191,7 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
     @Test(dependsOnMethods = "testAddDeviceTest")
     public void testSetEnrolmentStatus() {
+        System.out.println("ENROLLLLLLLLLLLLLL");
         Device device = this.loadDummyDevice();
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -247,6 +251,7 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
         device.setEnrolmentInfo(enrolmentInfo);
         device.setDescription("Test Description");
         device.setDeviceIdentifier("1234");
+        device.setType(this.loadDummyDeviceType().getName());
         return device;
     }
 

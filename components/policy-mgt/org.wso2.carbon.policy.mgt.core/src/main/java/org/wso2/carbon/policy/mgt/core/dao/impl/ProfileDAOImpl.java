@@ -279,7 +279,7 @@ public class ProfileDAOImpl implements ProfileDAO {
             return PolicyManagementDAOFactory.getConnection();
         } catch (PolicyManagerDAOException e) {
             throw new ProfileManagerDAOException("Error occurred while obtaining a connection from the policy " +
-                    "management metadata repository datasource", e);
+                    "management metadata repository config.datasource", e);
         }
     }
 

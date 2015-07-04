@@ -131,4 +131,19 @@ public class Device {
 		}
 	}
 
+    @Override
+    public String toString() {
+        return "Device[" +
+                "name=" + name + ";" +
+                "type=" + type + ";" +
+                "description=" + description + ";" +
+                "identifier=" + deviceIdentifier + ";" +
+//                "EnrolmentInfo[" +
+//                "owner=" + enrolmentInfo.getOwner() + ";" +
+//                "ownership=" + enrolmentInfo.getOwnership() + ";" +
+//                "status=" + enrolmentInfo.getStatus() + ";" +
+//                "]" +
+                "]";
+    }
+
 }

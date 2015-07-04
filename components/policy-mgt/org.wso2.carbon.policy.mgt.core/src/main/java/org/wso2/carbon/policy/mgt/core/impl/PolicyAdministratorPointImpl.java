@@ -188,7 +188,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         }
     }
 
-    @Override
+ /*   @Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
         return featureManager.addFeature(feature);
     }
@@ -197,7 +197,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     public Feature updateFeature(Feature feature) throws FeatureManagementException {
         return featureManager.updateFeature(feature);
 
-    }
+    }*/
 
     @Override
     public boolean deleteFeature(int featureId) throws FeatureManagementException {

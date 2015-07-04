@@ -18,24 +18,29 @@
 
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo.OwnerShip;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class DeviceDAOImpl implements DeviceDAO {
+
+    private static final Log log = LogFactory.getLog(DeviceDAOImpl.class);
 
     @Override
     public int addDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException {
@@ -115,8 +120,8 @@ public class DeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql =
                     "SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
-                            "d.DEVICE_TYPE_ID, d.DEVICE_IDENTIFICATION, d.TENANT_ID FROM DM_DEVICE d, DM_DEVICE_TYPE dt WHERE " +
-                            "dt.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?";
+                            "t.NAME AS DEVICE_TYPE_NAME, d.DEVICE_IDENTIFICATION, d.TENANT_ID FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
+                            "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId.getType());
             stmt.setString(2, deviceId.getId());
@@ -409,17 +414,61 @@ public class DeviceDAOImpl implements DeviceDAO {
         }
     }
 
+    @Override
+    public void addDeviceApplications(int id, Object applications) throws DeviceManagementDAOException {
+
+    }
+
+    @Override
+    public List<Application> getInstalledApplications(int deviceId)
+            throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        List<Application> applications = new ArrayList<Application>();
+        Application application;
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+
+        try {
+            conn = this.getConnection();
+            stmt = conn.prepareStatement(
+                    "SELECT DEVICE_ID, APPLICATIONS FROM DM_DEVICE_APPLICATIONS WHERE DEVICE_ID = ?");
+            stmt.setInt(1, deviceId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                byte[] applicationDetails = rs.getBytes("APPLICATIONS");
+                bais = new ByteArrayInputStream(applicationDetails);
+                ois = new ObjectInputStream(bais);
+                application = (Application) ois.readObject();
+                applications.add(application);
+            }
+
+        }catch (IOException e) {
+            String errorMsg = "IO Error occurred while de serialize the Application object";
+            log.error(errorMsg, e);
+            throw new DeviceManagementDAOException(errorMsg, e);
+        } catch (ClassNotFoundException e) {
+            String errorMsg = "Class not found error occurred while de serialize the Application object";
+            log.error(errorMsg, e);
+            throw new DeviceManagementDAOException(errorMsg, e);
+        } catch (SQLException e) {
+            String errorMsg = "SQL Error occurred while retrieving the list of Applications installed in device id '"
+                              + deviceId;
+            log.error(errorMsg, e);
+            throw new DeviceManagementDAOException(errorMsg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return applications;
+    }
+
     private Device loadDevice(ResultSet rs) throws SQLException {
         Device device = new Device();
-        DeviceType deviceType = new DeviceType();
-        deviceType.setId(rs.getInt("ID"));
-        deviceType.setName(rs.getString("DEVICE_NAME"));
-        device.setId(rs.getInt("DEVICE_TYPE_ID"));
+        device.setId(rs.getInt("DEVICE_ID"));
         device.setDescription(rs.getString("DESCRIPTION"));
-        device.setType(rs.getString("DEVICE_TYPE"));
+        device.setType(rs.getString("DEVICE_TYPE_NAME"));
         device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
-        device.setEnrolmentInfo(this.loadEnrolment(rs));
-
         return device;
     }
 

@@ -24,12 +24,15 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -57,6 +60,7 @@ public class OperationManagerImpl implements OperationManager {
     private OperationMappingDAO operationMappingDAO;
     private OperationDAO operationDAO;
     private DeviceDAO deviceDAO;
+    private DeviceTypeDAO deviceTypeDAO;
 
     public OperationManagerImpl() {
         commandOperationDAO = OperationManagementDAOFactory.getCommandOperationDAO();
@@ -66,6 +70,7 @@ public class OperationManagerImpl implements OperationManager {
         operationMappingDAO = OperationManagementDAOFactory.getOperationMappingDAO();
         operationDAO = OperationManagementDAOFactory.getOperationDAO();
         deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
     @Override
@@ -169,6 +174,21 @@ public class OperationManagerImpl implements OperationManager {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             device = deviceDAO.getDevice(deviceId, tenantId);
 
+            if (device.getEnrolmentInfo().getStatus() !=null && !device.getEnrolmentInfo().getStatus().equals(
+                    EnrolmentInfo.Status.ACTIVE)){
+                try {
+                    DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                            .updateDeviceEnrolmentInfo(device,
+                                    EnrolmentInfo.Status.ACTIVE);
+                }catch (DeviceManagementException deviceMgtEx){
+                    String errorMsg = "Error occurred while update enrol status: "+deviceId.toString();
+                    log.error(errorMsg, deviceMgtEx);
+                    throw new OperationManagementException(errorMsg, deviceMgtEx);
+                }
+            }
+
+
+
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device " +
                         "Identifier:" + deviceId.getId() + " and given type:" + deviceId.getType());
@@ -225,6 +245,20 @@ public class OperationManagerImpl implements OperationManager {
             }
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
                     .getNextOperation(device.getId());
+
+            if (device.getEnrolmentInfo().getStatus() !=null && !device.getEnrolmentInfo().getStatus().equals(
+                    EnrolmentInfo.Status.ACTIVE)){
+                try {
+                    DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                            .updateDeviceEnrolmentInfo(device,
+                                    EnrolmentInfo.Status.ACTIVE);
+                }catch (DeviceManagementException deviceMgtEx){
+                    String errorMsg = "Error occurred while update enrol status: "+deviceId.toString();
+                    log.error(errorMsg, deviceMgtEx);
+                    throw new OperationManagementException(errorMsg, deviceMgtEx);
+                }
+            }
+
             if (dtoOperation != null) {
                 if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND
                         .equals(dtoOperation.getType())) {

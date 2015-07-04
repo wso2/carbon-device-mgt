@@ -23,14 +23,12 @@
     <parameter name="useDefaultListeners" value="false"/>
 
     <test name="DAO Unit Tests" preserve-order="true">
-        <parameter name="databaseType" value="H2"/>
         <classes>
+            <class name="org.wso2.carbon.device.mgt.core.dao.BaseDeviceManagementDAOTest"/>
             <class name="org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
-            <!--class name="org.wso2.carbon.device.mgt.core.DeviceOperationManagementTests"/-->
             <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceDAOTests"/>
-            <!--class name="org.wso2.carbon.device.mgt.core.dao.EnrolmentPersistenceDAOTests"/-->
         </classes>
     </test>
 </suite>

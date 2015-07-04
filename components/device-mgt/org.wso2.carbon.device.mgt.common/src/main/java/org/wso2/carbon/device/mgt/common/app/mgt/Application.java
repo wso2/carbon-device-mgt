@@ -18,7 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.common.app.mgt;
 
-public class Application {
+import java.io.Serializable;
+import java.util.Properties;
+
+public class Application implements Serializable {
 
     private int id;
     private String packageName;
@@ -29,6 +32,7 @@ public class Application {
     private String imageUrl;
     private String version;
     private String type;
+    private Properties appProperties;
 
     public String getType() {
         return type;
@@ -113,5 +117,12 @@ public class Application {
         return packageName.equals(target.getPackageName());
     }
 
+    public Properties getAppProperties() {
+        return appProperties;
+    }
+
+    public void setAppProperties(Properties appProperties) {
+        this.appProperties = appProperties;
+    }
 
 }

@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOE
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
+import org.wso2.carbon.policy.mgt.core.dao.impl.MonitoringDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
@@ -67,6 +68,10 @@ public class PolicyManagementDAOFactory {
         return new FeatureDAOImpl();
     }
 
+    public static MonitoringDAO getMonitoringDAO() {
+        return new MonitoringDAOImpl();
+    }
+
     /**
      * Resolve data source from the data source definition
      *
@@ -107,7 +112,7 @@ public class PolicyManagementDAOFactory {
             conn.setAutoCommit(false);
             currentConnection.set(conn);
         } catch (SQLException e) {
-            throw new PolicyManagerDAOException("Error occurred while retrieving datasource connection", e);
+            throw new PolicyManagerDAOException("Error occurred while retrieving config.datasource connection", e);
         }
     }
 

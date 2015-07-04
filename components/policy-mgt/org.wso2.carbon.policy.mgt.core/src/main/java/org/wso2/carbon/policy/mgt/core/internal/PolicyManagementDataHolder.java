@@ -21,8 +21,11 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
+import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
+
+import java.util.Map;
 
 public class PolicyManagementDataHolder {
 
@@ -31,6 +34,8 @@ public class PolicyManagementDataHolder {
     private PolicyEvaluationPoint policyEvaluationPoint;
     private PolicyInformationPoint policyInformationPoint;
     private DeviceManagementProviderService deviceManagementService;
+    private Map<String, PolicyMonitoringService> policyMonitoringServiceMap;
+
     private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
 
     private PolicyManagementDataHolder() {}
@@ -81,5 +86,17 @@ public class PolicyManagementDataHolder {
 
     public void setDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
+    }
+
+    public PolicyMonitoringService getPolicyMonitoringService(String deviceType) {
+        return policyMonitoringServiceMap.get(deviceType);
+    }
+
+    public void setPolicyMonitoringService(String deviceType, PolicyMonitoringService policyMonitoringService) {
+        this.policyMonitoringServiceMap.put(deviceType, policyMonitoringService);
+    }
+
+    public void unsetPolicyMonitoringService(String deviceType) {
+        this.policyMonitoringServiceMap.remove(deviceType);
     }
 }

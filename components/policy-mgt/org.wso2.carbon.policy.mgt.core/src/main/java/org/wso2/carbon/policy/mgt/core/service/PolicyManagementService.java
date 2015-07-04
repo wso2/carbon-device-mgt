@@ -21,6 +21,9 @@ package org.wso2.carbon.policy.mgt.core.service;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.Monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
@@ -42,15 +45,6 @@ public class PolicyManagementService implements PolicyManagerService {
         policyManagerService = new PolicyManagerServiceImpl();
     }
 
-    @Override
-    public Feature addFeature(Feature feature) throws FeatureManagementException {
-        return policyManagerService.addFeature(feature);
-    }
-
-    @Override
-    public Feature updateFeature(Feature feature) throws FeatureManagementException {
-        return policyManagerService.updateFeature(feature);
-    }
 
     @Override
     public Profile addProfile(Profile profile) throws PolicyManagementException {
@@ -121,5 +115,21 @@ public class PolicyManagementService implements PolicyManagerService {
     @Override
     public int getPolicyCount() throws PolicyManagementException {
         return policyManagerService.getPolicyCount();
+    }
+
+    @Override
+    public List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+            deviceResponse) throws PolicyComplianceException {
+        return policyManagerService.CheckPolicyCompliance(deviceIdentifier, deviceResponse);
+    }
+
+    @Override
+    public boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws PolicyComplianceException {
+        return policyManagerService.checkCompliance(deviceIdentifier, response);
+    }
+
+    @Override
+    public ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        return policyManagerService.getDeviceCompliance(deviceIdentifier);
     }
 }

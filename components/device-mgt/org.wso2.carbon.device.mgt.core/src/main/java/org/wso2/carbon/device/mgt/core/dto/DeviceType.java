@@ -26,6 +26,13 @@ public class DeviceType implements Serializable {
     private int id;
     private String name;
 
+    public DeviceType() {
+    }
+
+    public DeviceType(String name) {
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }

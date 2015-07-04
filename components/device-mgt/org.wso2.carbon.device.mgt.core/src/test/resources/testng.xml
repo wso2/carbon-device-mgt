@@ -19,16 +19,18 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="EMM-core-initializer">
+<suite name="DeviceManagementCore">
     <parameter name="useDefaultListeners" value="false"/>
 
     <test name="DAO Unit Tests" preserve-order="true">
-        <parameter name="dbType" value="H2"/>
+        <parameter name="databaseType" value="H2"/>
         <classes>
             <class name="org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
-            <class name="org.wso2.carbon.device.mgt.core.DeviceOperationManagementTests"/>
+            <!--class name="org.wso2.carbon.device.mgt.core.DeviceOperationManagementTests"/-->
+            <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceDAOTests"/>
+            <!--class name="org.wso2.carbon.device.mgt.core.dao.EnrolmentPersistenceDAOTests"/-->
         </classes>
     </test>
 </suite>

@@ -112,7 +112,7 @@ public class PolicyDAOTestCase {
 
     private TestDBConfiguration getTestDBConfiguration(DBTypes dbType) throws PolicyManagerDAOException,
             PolicyManagementException {
-        File deviceMgtConfig = new File("src/test/resources/testdbconfig.xml");
+        File deviceMgtConfig = new File("src/test/resources/data-source-config.xml");
         Document doc;
         TestDBConfigurations dbConfigs;
 

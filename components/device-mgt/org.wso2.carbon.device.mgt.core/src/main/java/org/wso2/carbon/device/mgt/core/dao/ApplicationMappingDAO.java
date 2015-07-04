@@ -18,18 +18,15 @@
  */
 package org.wso2.carbon.device.mgt.core.dao;
 
-import org.wso2.carbon.device.mgt.common.DeviceManager;
+import java.util.List;
 
-public interface EnrollmentDAO {
+public interface ApplicationMappingDAO {
 
-    boolean addEnrollment() throws DeviceManagementDAOException;
+    int addApplicationMapping(int deviceId, int applicationId, int tenantId) throws DeviceManagementDAOException;
 
-    boolean updateEnrollment() throws DeviceManagementDAOException;
+    List<Integer> addApplicationMappings(int deviceId, List<Integer> applicationIds,
+                                         int tenantId) throws DeviceManagementDAOException;
 
-    boolean removeEnrollment() throws DeviceManagementDAOException;
-
-    boolean setStatus(int deviceId, String currentOwner, String status) throws DeviceManagementDAOException;
-
-    boolean getStatus() throws DeviceManagementDAOException;
+    int removeApplicationMapping(int deviceId, int applicationId, int tenantId) throws DeviceManagementDAOException;
 
 }

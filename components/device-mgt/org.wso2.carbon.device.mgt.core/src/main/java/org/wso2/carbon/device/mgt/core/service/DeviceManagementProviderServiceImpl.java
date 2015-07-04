@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
@@ -32,7 +31,7 @@ import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
 import org.wso2.carbon.device.mgt.core.dao.*;
-import org.wso2.carbon.device.mgt.core.dto.*;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.email.EmailConstants;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
@@ -50,7 +49,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
-    private EnrollmentDAO enrollmentDAO;
+    private EnrolmentDAO enrolmentDAO;
     private DeviceManagementPluginRepository pluginRepository;
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
@@ -60,7 +59,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         this.pluginRepository = new DeviceManagementPluginRepository();
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-        this.enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
+        this.enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
 
         /* Registering a listener to retrieve events when some device management service plugin is installed after
         * the component is done getting initialized */
@@ -100,14 +99,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
 
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
-            deviceDAO.addDevice(type.getId(), device, tenantId);
+            int deviceId = deviceDAO.addDevice(type.getId(), device, tenantId);
+            int enrolmentId = enrolmentDAO.addEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
 
+            if (log.isDebugEnabled()) {
+                log.debug("An enrolment is successfully created with the id '" + enrolmentId + "' associated with " +
+                        "the device identified by key '" + device.getDeviceIdentifier() + "', which belongs to " +
+                        "platform '" + device.getType() + " upon the user '" +
+                        device.getEnrolmentInfo().getOwner() + "'");
+            }
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             try {
                 DeviceManagementDAOFactory.rollbackTransaction();
             } catch (DeviceManagementDAOException e1) {
-                log.warn("Error occurred while rollbacking the current transaction", e);
+                log.warn("Error occurred while roll-backing the current transaction", e);
             }
             throw new DeviceManagementException("Error occurred while enrolling the device " +
                     "'" + device.getId() + "'", e);
@@ -128,18 +134,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         boolean status = dms.modifyEnrollment(device);
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-
             DeviceManagementDAOFactory.beginTransaction();
 
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
-            deviceDAO.updateDevice(type.getId(), device, tenantId);
+            int deviceId = deviceDAO.updateDevice(type.getId(), device, tenantId);
+            enrolmentDAO.updateEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
 
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             try {
                 DeviceManagementDAOFactory.rollbackTransaction();
             } catch (DeviceManagementDAOException e1) {
-                log.warn("Error occurred while rollbacking the current transaction", e);
+                log.warn("Error occurred while roll-backing the current transaction", e);
             }
             throw new DeviceManagementException("Error occurred while modifying the device " +
                     "'" + device.getId() + "'", e);
@@ -414,13 +420,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
-                             EnrollmentStatus status) throws DeviceManagementException {
+                             EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
             DeviceManagementDAOFactory.beginTransaction();
 
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             Device device = deviceDAO.getDevice(deviceId, tenantId);
-            boolean success = enrollmentDAO.setStatus(device.getId(), currentOwner, status.toString());
+            boolean success = enrolmentDAO.setStatus(device.getId(), currentOwner, status, tenantId);
 
             DeviceManagementDAOFactory.commitTransaction();
             return success;
@@ -513,7 +519,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             DeviceManagementDAOFactory.getConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            userDevices = deviceDAO.getDeviceListOfUser(username, tenantId);
+            userDevices = deviceDAO.getDevicesOfUser(username, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
                     "belong to the user '" + username + "'", e);
@@ -549,7 +555,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             tenantId).getUserStoreManager().getUserListOfRole(role);
         } catch (UserStoreException e) {
             throw new DeviceManagementException("Error occurred while obtaining the users, who are assigned " +
-                    "with the role '"+ role + "'", e);
+                    "with the role '" + role + "'", e);
         }
 
         List<Device> userDevices;
@@ -557,7 +563,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             userDevices = new ArrayList<Device>();
             try {
                 DeviceManagementDAOFactory.getConnection();
-                userDevices = deviceDAO.getDeviceListOfUser(user, tenantId);
+                userDevices = deviceDAO.getDevicesOfUser(user, tenantId);
             } catch (DeviceManagementDAOException e) {
                 log.error("Error occurred while obtaining the devices of user '" + user + "'", e);
             } finally {

@@ -63,7 +63,7 @@ public class DeviceManagementBaseTest {
     }
     private TestDBConfiguration getTestDBConfiguration(DBTypes dbType) throws DeviceManagementDAOException,
                                                                               DeviceManagementException {
-        File dbConfig = new File("src/test/resources/testdbconfig.xml");
+        File dbConfig = new File("src/test/resources/data-source-config.xml");
         Document doc = DeviceManagerUtil.convertToDocument(dbConfig);
         TestDBConfigurations dbConfigs;
         JAXBContext testDBContext;

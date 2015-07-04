@@ -20,179 +20,238 @@ package org.wso2.carbon.device.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.OwnerShip;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
-import org.wso2.carbon.device.mgt.core.common.DBTypes;
-import org.wso2.carbon.device.mgt.core.common.TestDBConfiguration;
-import org.wso2.carbon.device.mgt.core.common.TestDBConfigurations;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.sql.*;
 import java.util.Date;
 
-public class DeviceManagementDAOTests {
+public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
-    private DataSource dataSource;
+    DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+    DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+
     private static final Log log = LogFactory.getLog(DeviceManagementDAOTests.class);
 
-    @AfterClass
-    public void deleteData() throws Exception {
-        Connection connection = dataSource.getConnection();
-        connection.createStatement().execute("DELETE FROM DM_DEVICE");
-        connection.createStatement().execute("DELETE FROM DM_DEVICE_TYPE");
-    }
-
     @BeforeClass
-    @Parameters("dbType")
-    public void setUpDB(String dbTypeStr) throws Exception {
-        DBTypes dbType = DBTypes.valueOf(dbTypeStr);
-        TestDBConfiguration dbConfig = getTestDBConfiguration(dbType);
+    public void init() {
 
-        switch (dbType) {
-            case H2:
-                PoolProperties properties = new PoolProperties();
-                properties.setUrl(dbConfig.getConnectionUrl());
-                properties.setDriverClassName(dbConfig.getDriverClass());
-                properties.setUsername(dbConfig.getUserName());
-                properties.setPassword(dbConfig.getPwd());
-                dataSource = new org.apache.tomcat.jdbc.pool.DataSource(properties);
-                this.initSQLScript();
-                DeviceManagementDAOFactory.init(dataSource);
-            default:
-        }
-    }
-
-    private TestDBConfiguration getTestDBConfiguration(DBTypes dbType) throws DeviceManagementDAOException,
-            DeviceManagementException {
-        File deviceMgtConfig = new File("src/test/resources/testdbconfig.xml");
-        Document doc;
-        TestDBConfigurations dbConfigs;
-
-        doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
-        JAXBContext testDBContext;
-
-        try {
-            testDBContext = JAXBContext.newInstance(TestDBConfigurations.class);
-            Unmarshaller unmarshaller = testDBContext.createUnmarshaller();
-            dbConfigs = (TestDBConfigurations) unmarshaller.unmarshal(doc);
-        } catch (JAXBException e) {
-            throw new DeviceManagementDAOException("Error parsing test db configurations", e);
-        }
-        for (TestDBConfiguration config : dbConfigs.getDbTypesList()) {
-            if (config.getDbType().equals(dbType.toString())) {
-                return config;
-            }
-        }
-        return null;
-    }
-
-    private void initSQLScript() throws Exception {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            conn = this.getDataSource().getConnection();
-            stmt = conn.createStatement();
-            stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/h2.sql'");
-        } finally {
-            TestUtils.cleanupResources(conn, stmt, null);
-        }
     }
 
     @Test
-    public void addDeviceTypeTest() throws DeviceManagementDAOException, DeviceManagementException {
-        DeviceTypeDAO deviceTypeMgtDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+    public void testAddDeviceTypeTest() {
+        DeviceType deviceType = this.loadDummyDeviceType();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceTypeDAO.addDeviceType(deviceType);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while adding device type '" + deviceType.getName() + "'";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
 
-        DeviceType deviceType = new DeviceType();
-        deviceType.setName("IOS");
-        deviceTypeMgtDAO.addDeviceType(deviceType);
+        int targetTypeId = -1;
+        try {
+            targetTypeId = this.getDeviceTypeId();
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while retrieving target device type id";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
 
+        Assert.assertNotNull(targetTypeId, "Device Type Id is null");
+        deviceType.setId(targetTypeId);
+    }
+
+    @Test(dependsOnMethods = {"testAddDeviceTypeTest"})
+    public void testAddDeviceTest() {
+        DeviceType deviceType = this.loadDummyDeviceType();
+        deviceType.setId(1);
+
+        int tenantId = -1234;
+        Device device = this.loadDummyDevice();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            int deviceId = deviceDAO.addDevice(deviceType.getId(), device, tenantId);
+            device.setId(deviceId);
+            deviceDAO.addEnrollment(device, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while adding '" + device.getType() + "' device with the identifier '" +
+                    device.getDeviceIdentifier() + "'";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
+
+        int targetId = -1;
+        try {
+            targetId = this.getDeviceId();
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while retrieving device id";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
+        Assert.assertNotNull(targetId, "Device Id persisted in device management metadata repository upon '" +
+                device.getType() + "' carrying the identifier '" + device.getDeviceIdentifier() + "', is null");
+    }
+
+    private void addDeviceEnrolment() {
+        Device device = this.loadDummyDevice();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceDAO.addEnrollment(device, -1234);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while adding enrolment configuration upon '" + device.getType() +
+                    "' device with the identifier '" + device.getDeviceIdentifier() + "'";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
+    }
+
+    private int getDeviceId() throws DeviceManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        int id = -1;
+        try {
+            conn = getDataSource().getConnection();
+            String sql = "SELECT ID FROM DM_DEVICE WHERE DEVICE_IDENTIFICATION = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "111");
+            stmt.setInt(2, -1234);
+
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt("ID");
+            }
+            return id;
+        } catch (SQLException e) {
+            String msg = "Error in fetching device by device identification id";
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            TestUtils.cleanupResources(conn, stmt, rs);
+        }
+    }
+
+    private int getDeviceTypeId() throws DeviceManagementDAOException {
         int id = -1;
         Connection conn = null;
         PreparedStatement stmt = null;
-        String sql = "SELECT dt.ID, dt.NAME FROM DM_DEVICE_TYPE dt where dt.NAME = 'IOS'";
+        String sql = "SELECT ID, NAME FROM DM_DEVICE_TYPE WHERE NAME = ?";
+
+        DeviceType deviceType = this.loadDummyDeviceType();
         try {
-            conn = this.getDataSource().getConnection();
+            conn = getDataSource().getConnection();
             stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceType.getName());
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 id = rs.getInt("ID");
             }
+            return id;
         } catch (SQLException e) {
-            throw new DeviceManagementDAOException("error in fetch device type by name IOS", e);
+            String msg = "Error in fetching device type by name IOS";
+            throw new DeviceManagementDAOException(msg, e);
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
         }
-        Assert.assertNotNull(id, "Device Type Id is null");
-        deviceType.setId(id);
     }
 
-    @Test(dependsOnMethods = {"addDeviceTypeTest"})
-    public void addDeviceTest() throws DeviceManagementDAOException, DeviceManagementException {
-        DeviceDAO deviceMgtDAO = DeviceManagementDAOFactory.getDeviceDAO();
+    @Test(dependsOnMethods = "testAddDeviceTest")
+    public void testSetEnrolmentStatus() {
+        Device device = this.loadDummyDevice();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceIdentifier deviceId = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
+            deviceDAO.setEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), Status.ACTIVE, -1234);
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while setting enrolment status";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
+        Status target = null;
+        try {
+            target = this.getEnrolmentStatus();
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while retrieving the target enrolment status";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
 
+        Assert.assertNotNull(target, "Enrolment status retrieved for the device carrying its identifier as '" +
+                device.getDeviceIdentifier() + "' is null");
+        Assert.assertEquals(target, Status.ACTIVE, "Enrolment status retrieved is not as same as what's configured");
+    }
+
+    private Status getEnrolmentStatus() throws DeviceManagementDAOException {
+        Device device = this.loadDummyDevice();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceIdentifier deviceId = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
+            return deviceDAO.getEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), -1234);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving the current status of the " +
+                    "enrolment", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
+    }
+
+    private Device loadDummyDevice() {
         Device device = new Device();
         EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
         enrolmentInfo.setDateOfEnrolment(new Date().getTime());
         enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
+        enrolmentInfo.setOwner("admin");
+        enrolmentInfo.setOwnership(OwnerShip.BYOD);
+        enrolmentInfo.setStatus(Status.CREATED);
         device.setEnrolmentInfo(enrolmentInfo);
-        device.setDescription("test description");
-        device.getEnrolmentInfo().setStatus(Status.ACTIVE);
-        device.setDeviceIdentifier("111");
-
-        DeviceType deviceType = new DeviceType();
-        deviceType.setId(Integer.parseInt("1"));
-
-        device.getEnrolmentInfo().setOwnership(OwnerShip.BYOD);
-        device.getEnrolmentInfo().setOwner("111");
-        deviceMgtDAO.addDevice(deviceType.getId(), device, -1234);
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        Long id = null;
-        String status = null;
-        try {
-            conn = this.getDataSource().getConnection();
-            String sql = "SELECT ID, STATUS FROM DM_DEVICE where DEVICE_IDENTIFICATION = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, "111");
-
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                id = rs.getLong("ID");
-                status = rs.getString("STATUS");
-            }
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error in fetch device by device identification id", e);
-        } finally {
-            TestUtils.cleanupResources(conn, stmt, rs);
-        }
-        Assert.assertNotNull(id, "Device Id is null");
-        Assert.assertNotNull(status, "Device status is null");
-        Assert.assertEquals(status, "ACTIVE", "Enroll device status should active");
+        device.setDescription("Test Description");
+        device.setDeviceIdentifier("1234");
+        return device;
     }
 
-    private DataSource getDataSource() {
-        return dataSource;
+    private DeviceType loadDummyDeviceType() {
+        return new DeviceType("iOS");
     }
 
 }

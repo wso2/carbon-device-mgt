@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.common.app.mgt;
 
 public class Application {
 
-    private String id;
+    private int id;
     private String packageName;
     private String platform;
     private String category;
@@ -47,11 +47,11 @@ public class Application {
     }
 
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -104,5 +104,14 @@ public class Application {
     public void setCategory(String category) {
         this.category = category;
     }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Application)) {
+            return false;
+        }
+        Application target = (Application)o;
+        return packageName.equals(target.getPackageName());
+    }
+
 
 }

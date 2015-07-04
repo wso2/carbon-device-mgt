@@ -39,9 +39,7 @@ import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
@@ -52,7 +50,6 @@ import java.util.List;
 
 /**
  * Implements Application Manager interface
- *
  */
 public class ApplicationManagerProviderServiceImpl implements ApplicationManagementProviderService,
         PluginInitializationListener {
@@ -62,13 +59,15 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     private String oAuthAdminServiceUrl;
     private DeviceManagementPluginRepository pluginRepository;
     private DeviceDAO deviceDAO;
+    private ApplicationDAO applicationDAO;
+    private ApplicationMappingDAO applicationMappingDAO;
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
 
     private static final Log log = LogFactory.getLog(ApplicationManagerProviderServiceImpl.class);
 
     public ApplicationManagerProviderServiceImpl(AppManagementConfig appManagementConfig,
-            DeviceManagementPluginRepository pluginRepository) {
+                                                 DeviceManagementPluginRepository pluginRepository) {
 
         IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getDeviceManagementConfigRepository().getIdentityConfigurations();
@@ -84,6 +83,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
         this.pluginRepository = pluginRepository;
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
+        this.applicationMappingDAO = DeviceManagementDAOFactory.getApplicationMappingDAO();
     }
 
     @Override
@@ -100,7 +101,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
 
     @Override
     public String getApplicationStatus(DeviceIdentifier deviceId,
-            Application application) throws ApplicationManagementException {
+                                       Application application) throws ApplicationManagementException {
         return null;
     }
 
@@ -160,16 +161,17 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     }
 
     @Override
-    public void updateApplicationListInstallInDevice(DeviceIdentifier deviceIdentifier,List<Application> applications)
-            throws ApplicationManagementException {
+    public void updateApplicationListInstallInDevice(
+            DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
-            Device device =  deviceDAO.getDevice(deviceIdentifier, tenantId);
-            deviceDAO.addDeviceApplications(device.getId(), applications);
-        }catch (DeviceManagementDAOException deviceDaoEx){
+            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            List<Integer> applicationIds = applicationDAO.addApplications(applications, tenantId);
+            applicationMappingDAO.addApplicationMappings(device.getId(), applicationIds, tenantId);
+        } catch (DeviceManagementDAOException deviceDaoEx) {
             String errorMsg = "Error occurred saving application list to the device";
-            log.error(errorMsg+":"+deviceIdentifier.toString());
+            log.error(errorMsg + ":" + deviceIdentifier.toString());
             throw new ApplicationManagementException(errorMsg, deviceDaoEx);
         }
     }

@@ -116,7 +116,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
     }
 
-    @Override
+
     public void updateInstalledApplicationListOfDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 
@@ -166,6 +166,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         return pluginRepository;
     }
 
+    @Override
     public void updateApplicationListInstallInDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 

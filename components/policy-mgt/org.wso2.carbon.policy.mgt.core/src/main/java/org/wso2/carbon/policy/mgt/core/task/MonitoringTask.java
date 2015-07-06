@@ -17,17 +17,26 @@
  */
 
 
-package org.wso2.carbon.policy.mgt.common.spi;
+package org.wso2.carbon.policy.mgt.core.task;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.ntask.core.Task;
 
-import java.util.List;
+import java.util.Map;
 
-public interface PolicyMonitoringService {
+public class MonitoringTask implements Task {
 
-    List<ComplianceFeature> checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy, Object response)
-            throws PolicyComplianceException;
+    @Override
+    public void setProperties(Map<String, String> map) {
+
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void execute() {
+
+    }
 }

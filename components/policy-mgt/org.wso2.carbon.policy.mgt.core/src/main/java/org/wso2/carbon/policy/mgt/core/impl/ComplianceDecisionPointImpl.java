@@ -19,5 +19,54 @@
 
 package org.wso2.carbon.policy.mgt.core.impl;
 
-public class ComplianceDecisionPointImpl {
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceDecisionPoint;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
+
+public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
+    @Override
+    public String getNoneComplianceRule(Policy policy) throws PolicyComplianceException {
+        return null;
+    }
+
+    @Override
+    public void setDeviceAsUnreachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+
+    }
+
+    @Override
+    public void setDeviceAsReachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+
+    }
+
+    @Override
+    public void reEnforcePolicy(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+
+    }
+
+    @Override
+    public void markDeviceAsNoneCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+
+    }
+
+    @Override
+    public void markDeviceAsCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+
+    }
+
+    @Override
+    public void deactivateDevice(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+
+    }
+
+    @Override
+    public void activateDevice(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+
+    }
+
+    @Override
+    public void validateDevicePolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyComplianceException {
+
+    }
 }

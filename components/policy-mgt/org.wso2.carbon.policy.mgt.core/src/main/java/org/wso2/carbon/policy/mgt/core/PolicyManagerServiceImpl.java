@@ -27,18 +27,16 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.policy.mgt.common.*;
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
-import org.wso2.carbon.policy.mgt.common.Monitor.PolicyComplianceException;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class PolicyManagerServiceImpl implements PolicyManagerService {
@@ -231,5 +229,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
         return monitoringManager.getDevicePolicyCompliance(deviceIdentifier);
+    }
+
+    @Override
+    public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        return monitoringManager.isCompliance(deviceIdentifier);
     }
 }

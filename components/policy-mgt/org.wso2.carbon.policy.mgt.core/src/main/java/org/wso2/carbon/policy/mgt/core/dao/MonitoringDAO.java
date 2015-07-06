@@ -19,11 +19,10 @@
 
 package org.wso2.carbon.policy.mgt.core.dao;
 
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
 
 import java.util.List;
-import java.util.Map;
 
 public interface MonitoringDAO {
 

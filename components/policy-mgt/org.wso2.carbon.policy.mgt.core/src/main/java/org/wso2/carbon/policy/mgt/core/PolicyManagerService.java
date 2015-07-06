@@ -22,9 +22,9 @@ package org.wso2.carbon.policy.mgt.core;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
-import org.wso2.carbon.policy.mgt.common.Monitor.PolicyComplianceException;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
@@ -77,4 +77,6 @@ public interface PolicyManagerService {
     boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws PolicyComplianceException;
 
     ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
+
+    boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 }

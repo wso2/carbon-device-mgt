@@ -116,7 +116,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
     }
 
-    @Override
+
     public void updateInstalledApplicationListOfDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 

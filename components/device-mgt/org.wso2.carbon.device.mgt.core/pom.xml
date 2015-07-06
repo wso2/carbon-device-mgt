@@ -83,6 +83,8 @@
                             org.wso2.carbon.identity.oauth.stub,
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
+                            org.wso2.carbon.base,
+                            org.wso2.carbon.base.api
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

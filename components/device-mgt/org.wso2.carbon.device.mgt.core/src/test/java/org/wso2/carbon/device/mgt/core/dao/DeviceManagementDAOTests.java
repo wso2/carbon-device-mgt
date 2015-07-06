@@ -191,7 +191,6 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
     @Test(dependsOnMethods = "testAddDeviceTest")
     public void testSetEnrolmentStatus() {
-        System.out.println("ENROLLLLLLLLLLLLLL");
         Device device = this.loadDummyDevice();
         try {
             DeviceManagementDAOFactory.openConnection();

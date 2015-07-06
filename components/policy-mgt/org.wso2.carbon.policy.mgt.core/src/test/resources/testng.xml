@@ -25,7 +25,7 @@
     <test name="DAO Unit Tests" preserve-order="true">
         <parameter name="dbType" value="H2"/>
         <classes>
-            <!--<class name="org.wso2.carbon.policy.mgt.core.PolicyDAOTestCase"/>-->
+            <class name="org.wso2.carbon.policy.mgt.core.PolicyDAOTestCase"/>
         </classes>
     </test>
 </suite>

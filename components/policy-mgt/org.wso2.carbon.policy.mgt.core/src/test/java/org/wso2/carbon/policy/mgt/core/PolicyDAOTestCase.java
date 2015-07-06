@@ -24,10 +24,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
@@ -56,6 +53,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     @Override
     public void init() throws Exception {
         initDatSource();
+        System.setProperty("GetTenantIDForTest", "Super");
     }
 
     @Test
@@ -69,10 +67,12 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     public void addDevice() throws DeviceManagementDAOException {
 
         DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        EnrolmentDAO enrolmentDAO  = DeviceManagementDAOFactory.getEnrollmentDAO();
         DeviceType type = DeviceTypeCreator.getDeviceType();
         devices = DeviceCreator.getDeviceList(type);
         for (Device device : devices) {
-            deviceTypeDAO.addDevice(type.getId(), device, -1234);
+           int id = deviceTypeDAO.addDevice(type.getId(), device, -1234);
+            enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
         }
     }
 

@@ -52,12 +52,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Policy Management Common Bundle</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.policy.mgt.common.internal</Private-Package>
                         <Import-Package>
-                            org.apache.commons.logging,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.dto.*,
-                            org.wso2.carbon.device.mgt.core.operation.*,
                             javax.xml.bind.*,
                         </Import-Package>
                         <Export-Package>

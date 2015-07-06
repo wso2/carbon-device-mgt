@@ -115,10 +115,10 @@ public class DeviceDAOImpl implements DeviceDAO {
         try {
             conn = this.getConnection();
             String sql =
-                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, " +
                             "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
                             "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
-                            "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
+                            "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId.getType());
             stmt.setString(2, deviceId.getId());

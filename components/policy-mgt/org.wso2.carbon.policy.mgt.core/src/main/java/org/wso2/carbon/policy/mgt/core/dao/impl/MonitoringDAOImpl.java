@@ -21,8 +21,8 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.Monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
 import org.wso2.carbon.policy.mgt.core.dao.MonitoringDAO;
 import org.wso2.carbon.policy.mgt.core.dao.MonitoringDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;

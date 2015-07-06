@@ -71,7 +71,8 @@
                             org.wso2.carbon.context.*,
                             org.wso2.carbon.user.api.*,
                             org.wso2.carbon.device.mgt.core.*,
-                            org.wso2.carbon.device.mgt.common.*
+                            org.wso2.carbon.device.mgt.common.*,
+                            org.wso2.carbon.ntask.*
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.policy.mgt.core.internal,
@@ -130,6 +131,12 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ndatasource.rdbms</artifactId>
+        </dependency>
+
+        <!--Ntask dependencies-->
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
         </dependency>
 
         <!-- Policy Management Dependencies-->

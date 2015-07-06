@@ -22,9 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.mgt.core.dao.impl.DeviceDAOImpl;
-import org.wso2.carbon.device.mgt.core.dao.impl.DeviceTypeDAOImpl;
-import org.wso2.carbon.device.mgt.core.dao.impl.EnrollmentDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.*;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
 import javax.sql.DataSource;
@@ -47,8 +45,16 @@ public class DeviceManagementDAOFactory {
 		return new DeviceTypeDAOImpl();
 	}
 
-    public static EnrollmentDAO getEnrollmentDAO() {
-        return new EnrollmentDAOImpl();
+    public static EnrolmentDAO getEnrollmentDAO() {
+        return new EnrolmentDAOImpl();
+    }
+
+    public static ApplicationDAO getApplicationDAO() {
+        return new ApplicationDAOImpl();
+    }
+
+    public static ApplicationMappingDAO getApplicationMappingDAO() {
+        return new ApplicationMappingDAOImpl();
     }
 
 	public static void init(DataSourceConfig config) {
@@ -61,9 +67,19 @@ public class DeviceManagementDAOFactory {
 
     public static void beginTransaction() throws DeviceManagementDAOException {
         try {
+            Connection conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            currentConnection.set(conn);
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving config.datasource connection", e);
+        }
+    }
+
+    public static void openConnection() throws DeviceManagementDAOException {
+        try {
             currentConnection.set(dataSource.getConnection());
         } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while retrieving datasource connection", e);
+            throw new DeviceManagementDAOException("Error occurred while acquiring config.datasource connection", e);
         }
     }
 
@@ -72,8 +88,7 @@ public class DeviceManagementDAOFactory {
             try {
                 currentConnection.set(dataSource.getConnection());
             } catch (SQLException e) {
-                throw new DeviceManagementDAOException("Error occurred while retrieving data source connection",
-                        e);
+                throw new DeviceManagementDAOException("Error occurred while retrieving data source connection", e);
             }
         }
         return currentConnection.get();

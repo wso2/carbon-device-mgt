@@ -32,6 +32,19 @@ public class Device {
     private List<Feature> features;
     private List<Device.Property> properties;
 
+    public Device() {}
+
+    public Device(String name, String type, String description, String deviceId, EnrolmentInfo enrolmentInfo,
+                  List<Feature> features, List<Property> properties) {
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.deviceIdentifier = deviceId;
+        this.enrolmentInfo = enrolmentInfo;
+        this.features = features;
+        this.properties = properties;
+    }
+
 	public int getId() {
 		return id;
 	}
@@ -117,5 +130,20 @@ public class Device {
 			this.value = value;
 		}
 	}
+
+    @Override
+    public String toString() {
+        return "Device[" +
+                "name=" + name + ";" +
+                "type=" + type + ";" +
+                "description=" + description + ";" +
+                "identifier=" + deviceIdentifier + ";" +
+//                "EnrolmentInfo[" +
+//                "owner=" + enrolmentInfo.getOwner() + ";" +
+//                "ownership=" + enrolmentInfo.getOwnership() + ";" +
+//                "status=" + enrolmentInfo.getStatus() + ";" +
+//                "]" +
+                "]";
+    }
 
 }

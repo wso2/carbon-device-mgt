@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,9 +41,9 @@ public class OperationDAOImpl implements OperationDAO {
         ResultSet rs = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement(
-                    "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE)  " +
-                            "VALUES (?, ?, ?, ?)");
+            String sql = "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE)  " +
+                    "VALUES (?, ?, ?, ?)";
+            stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, operation.getType().toString());
             stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
             stmt.setTimestamp(3, null);
@@ -82,8 +83,8 @@ public class OperationDAOImpl implements OperationDAO {
         }
     }
 
-    public void updateOperationStatus(int deviceId, int operationId,Operation.Status status)
-            throws OperationManagementDAOException{
+    public void updateOperationStatus(int deviceId, int operationId, Operation.Status status)
+            throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         try {
@@ -231,7 +232,7 @@ public class OperationDAOImpl implements OperationDAO {
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
-            Operation.Status status) throws OperationManagementDAOException {
+                                                                    Operation.Status status) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -370,7 +371,7 @@ public class OperationDAOImpl implements OperationDAO {
 
 
     public List<? extends Operation> getOperationsByDeviceStatusAndType(int deviceId,
-            Operation.Status status,Operation.Type type) throws OperationManagementDAOException {
+                                                                        Operation.Status status, Operation.Type type) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -380,7 +381,7 @@ public class OperationDAOImpl implements OperationDAO {
 
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE FROM "+
+            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE FROM " +
                     "(SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE " +
                     "FROM DM_OPERATION o WHERE o.TYPE=?) o " +
                     "INNER JOIN (Select * from DM_DEVICE_OPERATION_MAPPING dm " +

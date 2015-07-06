@@ -24,11 +24,6 @@ import java.util.List;
  * device type plugin implementation intended to be managed through CDM.
  */
 public interface DeviceManager {
-
-    enum EnrollmentStatus {
-        CREATED, ACTIVE, INACTIVE, SUSPENDED, BLOCKED, REMOVED
-    }
-
     /**
      * Method to retrieve the provider type that implements DeviceManager interface.
      *
@@ -138,6 +133,6 @@ public interface DeviceManager {
     boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException;
 
     boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
-                      EnrollmentStatus status) throws DeviceManagementException;
+                      EnrolmentInfo.Status status) throws DeviceManagementException;
 
 }

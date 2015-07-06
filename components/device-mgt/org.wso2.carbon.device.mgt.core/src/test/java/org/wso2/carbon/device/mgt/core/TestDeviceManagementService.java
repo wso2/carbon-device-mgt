@@ -21,19 +21,17 @@ import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
-import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
 import java.util.List;
 
-public class TestDeviceManager implements DeviceManagementService {
+public class TestDeviceManagementService implements DeviceManagementService {
 
     public static final String DEVICE_TYPE_TEST = "Test";
 
     @Override
     public String getProviderType() {
-        return TestDeviceManager.DEVICE_TYPE_TEST;
+        return TestDeviceManagementService.DEVICE_TYPE_TEST;
     }
 
     @Override
@@ -97,7 +95,8 @@ public class TestDeviceManager implements DeviceManagementService {
     }
 
     @Override
-    public boolean setStatus(DeviceIdentifier deviceId, String currentOwner, EnrollmentStatus status) throws DeviceManagementException {
+    public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
+                             EnrolmentInfo.Status status) throws DeviceManagementException {
         return false;
     }
 

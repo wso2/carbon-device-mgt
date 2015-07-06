@@ -112,7 +112,7 @@ public class PolicyManagementDAOFactory {
             conn.setAutoCommit(false);
             currentConnection.set(conn);
         } catch (SQLException e) {
-            throw new PolicyManagerDAOException("Error occurred while retrieving datasource connection", e);
+            throw new PolicyManagerDAOException("Error occurred while retrieving config.datasource connection", e);
         }
     }
 

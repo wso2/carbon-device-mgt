@@ -167,7 +167,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     }
 
     @Override
-    public void updateApplicationListInstallInDevice(
+    public void updateApplicationListInstalledInDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();

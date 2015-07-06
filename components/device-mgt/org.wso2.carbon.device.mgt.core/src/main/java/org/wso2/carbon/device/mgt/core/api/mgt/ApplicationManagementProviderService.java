@@ -12,4 +12,6 @@ public interface ApplicationManagementProviderService extends ApplicationManager
     public void updateApplicationListInstallInDevice(DeviceIdentifier deviceIdentifier,
             List<Application> applications)  throws ApplicationManagementException;
 
+    public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
+            throws ApplicationManagementException;
 }

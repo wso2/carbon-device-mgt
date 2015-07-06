@@ -65,7 +65,8 @@ public class ApplicationPersistenceDAOTests extends BaseDeviceManagementDAOTest 
             Assert.fail(msg, e);
         }
 
-        Assert.assertEquals(target, source, "Application added is not as same as what's retrieved");
+        Assert.assertEquals(target.getPackageName(), source.getPackageName(), "Application added is not as same as what's " +
+                "retrieved");
     }
 
     private Application getApplication(String packageName, int tenantId) throws DeviceManagementDAOException {

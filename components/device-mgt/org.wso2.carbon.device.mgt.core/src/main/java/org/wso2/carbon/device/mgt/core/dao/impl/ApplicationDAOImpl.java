@@ -168,43 +168,6 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         }
     }
 
-    @Override
-    public List<Application> getInstalledApplications(int deviceId) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        List<Application> applications = new ArrayList<Application>();
-        Application application;
-        ByteArrayInputStream bais;
-        ObjectInputStream ois;
-
-        try {
-            conn = this.getConnection();
-            stmt = conn.prepareStatement(
-                    "SELECT DEVICE_ID, APPLICATIONS FROM DM_DEVICE_APPLICATIONS WHERE DEVICE_ID = ?");
-            stmt.setInt(1, deviceId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                byte[] applicationDetails = rs.getBytes("APPLICATIONS");
-                bais = new ByteArrayInputStream(applicationDetails);
-                ois = new ObjectInputStream(bais);
-                application = (Application) ois.readObject();
-                applications.add(application);
-            }
-        } catch (IOException e) {
-            throw new DeviceManagementDAOException("IO Error occurred while de serialize the Application object", e);
-        } catch (ClassNotFoundException e) {
-            throw new DeviceManagementDAOException("Class not found error occurred while de serialize the " +
-                    "Application object", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("SQL Error occurred while retrieving the list of Applications " +
-                    "installed in device id '" + deviceId, e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
-        }
-        return applications;
-    }
-
     private Connection getConnection() throws DeviceManagementDAOException {
         return DeviceManagementDAOFactory.getConnection();
     }

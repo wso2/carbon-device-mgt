@@ -51,10 +51,12 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.device.mgt.core.startup.handler.URLPrinterStartupHandler;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +93,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setDataSourceService"
  * unbind="unsetDataSourceService"
+ * @scr.reference name="config.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -197,6 +205,8 @@ public class DeviceManagementServiceComponent {
         } catch (ApplicationManagementException appMgtEx) {
             log.error("Application management service not registered.");
         }
+
+        bundleContext.registerService(ServerStartupObserver.class, new URLPrinterStartupHandler(), null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {
@@ -327,6 +337,20 @@ public class DeviceManagementServiceComponent {
 
     protected void unsetDataSourceService(DataSourceService dataSourceService) {
         //do nothing
+    }
+
+    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting ConfigurationContextService");
+        }
+        DeviceManagementDataHolder.getInstance().setConfigurationContextService(configurationContextService);
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting ConfigurationContextService");
+        }
+        DeviceManagementDataHolder.getInstance().setConfigurationContextService(null);
     }
 
 }

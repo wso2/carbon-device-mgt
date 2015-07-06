@@ -116,6 +116,12 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
     }
 
+    @Override
+    public void updateInstalledApplicationListOfDevice(
+            DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
+
+    }
+
     private OAuthConsumerAppDTO getAppInfo() throws ApplicationManagementException {
         OAuthConsumerAppDTO appInfo = null;
         try {

@@ -123,4 +123,10 @@ public class TestDeviceManagementService implements DeviceManagementService {
             throws ApplicationManagementException {
 
     }
+
+    @Override
+    public void updateInstalledApplicationListOfDevice(DeviceIdentifier deviceIdentifier,
+                                                       List<Application> applications) throws ApplicationManagementException {
+
+    }
 }

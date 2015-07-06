@@ -46,7 +46,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService, PluginInitializationListener {
+public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
+        PluginInitializationListener {
 
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
@@ -648,35 +649,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         return devices;
 
-    }
-
-    @Override
-    public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
-            throws DeviceManagementException {
-        Device device = null;
-        try {
-            device = this.getDevice(deviceIdentifier);
-            return deviceDAO.getInstalledApplications(device.getId());
-        }catch (DeviceManagementDAOException deviceDaoEx){
-            String errorMsg = "Error occured while fetching the Application List of device  : " + device.getId();
-            log.error(errorMsg, deviceDaoEx);
-            throw new DeviceManagementException(errorMsg, deviceDaoEx);
-        }
-    }
-
-    @Override
-    public void updateInstalledApplicationListOfDevice(DeviceIdentifier deviceIdentifier,
-                                                                 List<Application> applications)
-            throws DeviceManagementException {
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        try {
-            Device device =  deviceDAO.getDevice(deviceIdentifier, tenantId);
-            deviceDAO.addDeviceApplications(device.getId(), applications);
-        }catch (DeviceManagementDAOException deviceDaoEx){
-            String errorMsg = "Error occurred saving application list to the device";
-            log.error(errorMsg+":"+deviceIdentifier.toString());
-            throw new DeviceManagementException(errorMsg, deviceDaoEx);
-        }
     }
 
     @Override

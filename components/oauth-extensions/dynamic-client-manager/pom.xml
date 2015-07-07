@@ -30,8 +30,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.mdm</groupId>
     <artifactId>dynamic-client-manager</artifactId>
-    <name>JAX-RS Dynamic Client Manager</name>
-    <description>JAX-RS Dynamic Client Manager</description>
+    <name>WSO2 Carbon - Dynamic Client Registration Impl</name>
+    <description>WSO2 Carbon - Dynamic Client Registration Impl</description>
     <packaging>war</packaging>
 
     <build>

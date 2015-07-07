@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.common;
 public class EnrolmentInfo {
 
     public enum Status {
-        CREATED, ACTIVE, INACTIVE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED
+        CREATED, ACTIVE, INACTIVE, UNREACHABLE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED
     }
 
     public enum OwnerShip {

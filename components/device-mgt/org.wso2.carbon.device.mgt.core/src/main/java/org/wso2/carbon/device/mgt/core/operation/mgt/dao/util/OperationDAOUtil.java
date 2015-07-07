@@ -81,11 +81,19 @@ public class OperationDAOUtil {
         }
         operation.setEnabled(dtoOperation.isEnabled());
         operation.setCode(dtoOperation.getCode());
-        operation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.valueOf(dtoOperation
-                .getType().toString()));
+
+        if(dtoOperation.getType() != null) {
+            operation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.valueOf(dtoOperation
+                    .getType().toString()));
+        }
+
         operation.setCreatedTimeStamp(dtoOperation.getCreatedTimeStamp());
-        operation.setStatus(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Status.valueOf(dtoOperation
-                .getStatus().toString()));
+
+        if(dtoOperation.getStatus() != null) {
+            operation.setStatus(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Status.valueOf(dtoOperation
+                    .getStatus().toString()));
+        }
+
         operation.setId(dtoOperation.getId());
         operation.setPayLoad(dtoOperation.getPayLoad());
         operation.setReceivedTimeStamp(dtoOperation.getReceivedTimeStamp());

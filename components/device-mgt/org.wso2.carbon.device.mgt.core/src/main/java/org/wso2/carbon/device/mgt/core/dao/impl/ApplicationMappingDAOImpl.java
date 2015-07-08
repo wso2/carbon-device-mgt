@@ -18,11 +18,15 @@
  */
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationMappingDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,9 +34,11 @@ import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
 
+    private static final Log log = LogFactory.getLog(ApplicationMappingDAOImpl.class);
     @Override
     public int addApplicationMapping(int deviceId, int applicationId,
                                      int tenantId) throws DeviceManagementDAOException {
@@ -125,40 +131,5 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         return DeviceManagementDAOFactory.getConnection();
     }
 
-    @Override
-    public List<Application> getInstalledApplications(int deviceId) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        List<Application> applications = new ArrayList<Application>();
-        Application application;
-        ByteArrayInputStream bais;
-        ObjectInputStream ois;
 
-        try {
-            conn = this.getConnection();
-            stmt = conn.prepareStatement(
-                    "SELECT DEVICE_ID, APPLICATIONS FROM DM_DEVICE_APPLICATIONS WHERE DEVICE_ID = ?");
-            stmt.setInt(1, deviceId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                byte[] applicationDetails = rs.getBytes("APPLICATIONS");
-                bais = new ByteArrayInputStream(applicationDetails);
-                ois = new ObjectInputStream(bais);
-                application = (Application) ois.readObject();
-                applications.add(application);
-            }
-        } catch (IOException e) {
-            throw new DeviceManagementDAOException("IO Error occurred while de serialize the Application object", e);
-        } catch (ClassNotFoundException e) {
-            throw new DeviceManagementDAOException("Class not found error occurred while de serialize the " +
-                    "Application object", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("SQL Error occurred while retrieving the list of Applications " +
-                    "installed in device id '" + deviceId, e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
-        }
-        return applications;
-    }
 }

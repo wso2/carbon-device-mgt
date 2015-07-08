@@ -32,6 +32,7 @@ import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class ApplicationDAOImpl implements ApplicationDAO {
 
@@ -45,18 +46,20 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         int applicationId = -1;
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PACKAGE_NAME, PLATFORM, CATEGORY, " +
-                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
+                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES,APP_IDENTIFIER) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
+
             stmt.setString(1, application.getName());
-            stmt.setString(2, application.getPackageName());
-            stmt.setString(3, application.getPlatform());
-            stmt.setString(4, application.getCategory());
-            stmt.setString(5, application.getVersion());
-            stmt.setString(6, application.getType());
-            stmt.setString(7, application.getLocationUrl());
-            stmt.setString(8, application.getImageUrl());
-            stmt.setInt(9, tenantId);
+            stmt.setString(2, application.getPlatform());
+            stmt.setString(3, application.getCategory());
+            stmt.setString(4, application.getVersion());
+            stmt.setString(5, application.getType());
+            stmt.setString(6, application.getLocationUrl());
+            stmt.setString(7, application.getImageUrl());
+            stmt.setInt(8, tenantId);
+            stmt.setObject(9,application.getAppProperties());
+            stmt.setString(10,application.getApplicationIdentifier());
             stmt.execute();
 
             rs = stmt.getGeneratedKeys();
@@ -81,18 +84,22 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         List<Integer> applicationIds = new ArrayList<Integer>();
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PACKAGE_NAME, PLATFORM, CATEGORY, " +
-                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
+                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES,APP_IDENTIFIER) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
+
+
             for (Application application : applications) {
                 stmt.setString(1, application.getName());
-                stmt.setString(2, application.getPackageName());
-                stmt.setString(3, application.getPlatform());
-                stmt.setString(4, application.getCategory());
-                stmt.setString(5, application.getVersion());
-                stmt.setString(6, application.getType());
-                stmt.setString(7, application.getLocationUrl());
-                stmt.setString(8, application.getImageUrl());
-                stmt.setInt(9, tenantId);
+                stmt.setString(2, application.getPlatform());
+                stmt.setString(3, application.getCategory());
+                stmt.setString(4, application.getVersion());
+                stmt.setString(5, application.getType());
+                stmt.setString(6, application.getLocationUrl());
+                stmt.setString(7, application.getImageUrl());
+                stmt.setInt(8, tenantId);
+                stmt.setObject(9,application.getAppProperties());
+                stmt.setString(10,application.getApplicationIdentifier());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -150,8 +157,9 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         Application application = null;
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement("SELECT ID, NAME, PACKAGE_NAME, CATEGORY, PLATFORM, TYPE, VERSION, IMAGE_URL, " +
-                    "LOCATION_URL FROM DM_APPLICATION WHERE PACKAGE_NAME = ? AND TENANT_ID = ?");
+            stmt = conn.prepareStatement("SELECT ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
+                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, TENANT_ID FROM DM_APPLICATION WHERE APP_IDENTIFIER = ? " +
+                    "AND TENANT_ID = ?");
             stmt.setString(1, identifier);
             stmt.setInt(2, tenantId);
             rs = stmt.executeQuery();
@@ -172,17 +180,80 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         return DeviceManagementDAOFactory.getConnection();
     }
 
-    private Application loadApplication(ResultSet rs) throws SQLException {
+    @Override
+    public List<Application> getInstalledApplications(int deviceId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        List<Application> applications = new ArrayList<Application>();
+        Application application;
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+
+        try {
+            conn = this.getConnection();
+            stmt = conn.prepareStatement("Select ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
+                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, TENANT_ID From DM_APPLICATION app  " +
+                    "INNER JOIN "+
+                    "(Select APPLICATION_ID  From DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID=?) APPMAP " +
+                    "ON "+
+                    "app.ID = APPMAP.APPLICATION_ID ");
+
+            stmt.setInt(1,deviceId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                application = loadApplication(rs);
+                applications.add(application);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("SQL Error occurred while retrieving the list of Applications " +
+                    "installed in device id '" + deviceId, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return applications;
+    }
+
+    private Application loadApplication(ResultSet rs) throws DeviceManagementDAOException{
+
+        ByteArrayInputStream bais;
+        ObjectInputStream ois;
+        Properties properties;
+
         Application application = new Application();
-        application.setId(rs.getInt("ID"));
-        application.setName(rs.getString("NAME"));
-        application.setPackageName(rs.getString("PACKAGE_NAME"));
-        application.setCategory(rs.getString("CATEGORY"));
-        application.setType(rs.getString("TYPE"));
-        application.setVersion(rs.getString("VERSION"));
-        application.setImageUrl(rs.getString("IMAGE_URL"));
-        application.setLocationUrl(rs.getString("LOCATION_URL"));
-        application.setPlatform(rs.getString("PLATFORM"));
+        try {
+            application.setName(rs.getString("NAME"));
+            application.setType(rs.getString("TYPE"));
+
+            if (rs.getBytes("APP_PROPERTIES") !=null) {
+                byte[] appProperties = rs.getBytes("APP_PROPERTIES");
+                bais = new ByteArrayInputStream(appProperties);
+
+                ois = new ObjectInputStream(bais);
+                properties = (Properties) ois.readObject();
+                application.setAppProperties(properties);
+            }
+            application.setCategory(rs.getString("CATEGORY"));
+            application.setImageUrl(rs.getString("IMAGE_URL"));
+            application.setLocationUrl(rs.getString("LOCATION_URL"));
+            application.setPlatform(rs.getString("PLATFORM"));
+            application.setVersion(rs.getString("VERSION"));
+            application.setApplicationIdentifier(rs.getString("APP_IDENTIFIER"));
+
+        }catch (IOException ex){
+            String errorMsg = "IO error occurred fetch at app properties";
+            log.error(errorMsg, ex);
+            throw new DeviceManagementDAOException(errorMsg, ex);
+        }catch (ClassNotFoundException cex){
+            String errorMsg = "Class not found error occurred fetch at app properties";
+            log.error(errorMsg, cex);
+            throw new DeviceManagementDAOException(errorMsg, cex);
+        }catch (SQLException ex){
+            String errorMsg = "SQL error occurred fetch at application";
+            log.error(errorMsg, ex);
+            throw new DeviceManagementDAOException(errorMsg, ex);
+        }
+
         return application;
     }
 

@@ -30,7 +30,4 @@ public interface ApplicationMappingDAO {
                                          int tenantId) throws DeviceManagementDAOException;
 
     int removeApplicationMapping(int deviceId, int applicationId, int tenantId) throws DeviceManagementDAOException;
-
-    List<Application> getInstalledApplications(int deviceId) throws DeviceManagementDAOException;
-
 }

@@ -189,7 +189,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
          try {
              int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
              device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-             return applicationMappingDAO.getInstalledApplications(device.getId());
+             return applicationDAO.getInstalledApplications(device.getId());
             }catch (DeviceManagementDAOException deviceDaoEx) {
              String errorMsg = "Error occured while fetching the Application List of device : " + device.getId();
              log.error(errorMsg, deviceDaoEx);

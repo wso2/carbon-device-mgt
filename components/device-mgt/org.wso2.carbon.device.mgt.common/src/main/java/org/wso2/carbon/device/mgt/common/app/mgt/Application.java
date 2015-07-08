@@ -24,7 +24,6 @@ import java.util.Properties;
 public class Application implements Serializable {
 
     private int id;
-    private String packageName;
     private String platform;
     private String category;
     private String name;
@@ -33,6 +32,7 @@ public class Application implements Serializable {
     private String version;
     private String type;
     private Properties appProperties;
+    private String applicationIdentifier;
 
     public String getType() {
         return type;
@@ -85,14 +85,6 @@ public class Application implements Serializable {
         this.version = version;
     }
 
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
     public String getPlatform() {
         return platform;
     }
@@ -107,6 +99,14 @@ public class Application implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getApplicationIdentifier() {
+        return applicationIdentifier;
+    }
+
+    public void setApplicationIdentifier(String applicationIdentifier) {
+        this.applicationIdentifier = applicationIdentifier;
     }
 
     public boolean equals(Object o) {
@@ -138,9 +138,6 @@ public class Application implements Serializable {
         if (name != null ? !name.equals(that.name) : that.name != null) {
             return false;
         }
-        if (packageName != null ? !packageName.equals(that.packageName) : that.packageName != null) {
-            return false;
-        }
         if (platform != null ? !platform.equals(that.platform) : that.platform != null) {
             return false;
         }
@@ -150,14 +147,15 @@ public class Application implements Serializable {
         if (version != null ? !version.equals(that.version) : that.version != null) {
             return false;
         }
-
+        if (applicationIdentifier != null ? !applicationIdentifier.equals(that.applicationIdentifier) : that.applicationIdentifier != null) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (packageName != null ? packageName.hashCode() : 0);
         result = 31 * result + (platform != null ? platform.hashCode() : 0);
         result = 31 * result + (category != null ? category.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
@@ -166,6 +164,7 @@ public class Application implements Serializable {
         result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (appProperties != null ? appProperties.hashCode() : 0);
+        result = 31 * result + (applicationIdentifier != null ? applicationIdentifier.hashCode() : 0);
         return result;
     }
 

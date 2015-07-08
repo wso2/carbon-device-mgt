@@ -25,6 +25,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 
+import java.util.Properties;
+
 public class ApplicationPersistenceDAOTests extends BaseDeviceManagementDAOTest {
 
     private static final Log log = LogFactory.getLog(ApplicationPersistenceDAOTests.class);
@@ -33,10 +35,11 @@ public class ApplicationPersistenceDAOTests extends BaseDeviceManagementDAOTest 
     @Test
     public void testAddApplication() {
         /* Initializing source application bean to be tested */
+        Properties properties = new Properties();
         Application source = new Application();
         source.setName("SimpleCalculator");
         source.setCategory("TestCategory");
-        source.setPackageName("com.simple.calculator");
+        source.setApplicationIdentifier("com.simple.calculator");
         source.setType("TestType");
         source.setVersion("1.0.0");
         source.setImageUrl("http://test.org/image/");
@@ -58,14 +61,15 @@ public class ApplicationPersistenceDAOTests extends BaseDeviceManagementDAOTest 
         /* Retrieving the application by its name */
         Application target = null;
         try {
-            target = this.getApplication(source.getPackageName(), -1234);
+            target = this.getApplication(source.getApplicationIdentifier(), -1234);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving application info";
             log.error(msg, e);
             Assert.fail(msg, e);
         }
 
-        Assert.assertEquals(target.getPackageName(), source.getPackageName(), "Application added is not as same as what's " +
+        Assert.assertEquals(target.getApplicationIdentifier(), source.getApplicationIdentifier(), "Application added is not as same as " +
+                "what's " +
                 "retrieved");
     }
 

@@ -55,17 +55,11 @@ public class FaultMessageBodyWriter implements MessageBodyWriter<FaultResponse> 
     public void writeTo(FaultResponse faultResponse, Class<?> aClass, Type type, Annotation[] annotations,
                         MediaType mediaType, MultivaluedMap<String, Object> stringObjectMultivaluedMap,
                         OutputStream outputStream) throws IOException, WebApplicationException {
-        OutputStreamWriter writer = null;
-        try {
-            writer = new OutputStreamWriter(outputStream, UTF_8);
+        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, UTF_8)) {
             JsonObject response = new JsonObject();
             response.addProperty("error", faultResponse.getCode().getValue());
             response.addProperty("error_description", faultResponse.getDescription());
             getGson().toJson(response, type, writer);
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
     }
 

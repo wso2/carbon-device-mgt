@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.identity.oauth.extension;
 
+import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
+import org.wso2.carbon.identity.oauth.extension.profile.UnregistrationProfile;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -28,6 +31,19 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface RegistrationService {
+
+    enum ErrorCode {
+        INVALID_URI("invalid_redirect_uri"), INVALID_CLIENT_METADATA("invalid_client_metadata");
+
+        private String value;
+        private ErrorCode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
     @POST
     Response register(RegistrationProfile profile);

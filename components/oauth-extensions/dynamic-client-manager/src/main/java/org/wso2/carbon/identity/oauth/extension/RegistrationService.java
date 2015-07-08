@@ -19,6 +19,7 @@
 package org.wso2.carbon.identity.oauth.extension;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -30,5 +31,8 @@ public interface RegistrationService {
 
     @POST
     Response register(RegistrationProfile profile);
+
+    @DELETE
+    Response unregister(UnregistrationProfile profile);
 
 }

@@ -39,10 +39,12 @@ import org.wso2.carbon.identity.oauth.extension.ApplicationConstants;
 import org.wso2.carbon.identity.oauth.extension.OAuthApplicationInfo;
 import org.wso2.carbon.identity.oauth.extension.RegistrationProfile;
 import org.wso2.carbon.identity.oauth.extension.RegistrationService;
+import org.wso2.carbon.identity.oauth.extension.UnregistrationProfile;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -72,6 +74,22 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
             return Response.serverError().entity(msg).build();
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
+    @DELETE
+    @Override
+    public Response unregister(UnregistrationProfile profile) {
+        String applicationName = profile.getApplicationName();
+        String consumerKey = profile.getConsumerKey();
+        String userId = profile.getUserId();
+        try {
+            this.unregisterApplication(userId, applicationName, consumerKey);
+            return Response.status(Response.Status.ACCEPTED).build();
+        } catch (APIManagementException e) {
+            String msg = "Error occurred while unregistering client '" + applicationName + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(msg).build();
         }
     }
 
@@ -232,4 +250,45 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
         return null;
     }
 
+    public void unregisterApplication(String userId, String applicationName, String consumerKey)
+            throws APIManagementException {
+
+        String tenantDomain = MultitenantUtils.getTenantDomain(userId);
+        String baseUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+        String userName = MultitenantUtils.getTenantAwareUsername(userId);
+
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
+
+        if (userId == null || userId.isEmpty()) {
+            throw new APIManagementException("Error occurred while unregistering Application: userId cannot be null/empty");
+        }
+        try {
+            OAuthAdminService oAuthAdminService = new OAuthAdminService();
+            OAuthConsumerAppDTO oAuthConsumerAppDTO = oAuthAdminService.getOAuthApplicationData(consumerKey);
+
+            if (oAuthConsumerAppDTO == null) {
+                throw new APIManagementException("Couldn't retrieve OAuth Consumer Application associated with the " +
+                                                 "given consumer key: " + consumerKey);
+            }
+            oAuthAdminService.removeOAuthApplicationData(consumerKey);
+
+            ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
+
+            if (createdServiceProvider == null) {
+                throw new APIManagementException("Couldn't retrieve Service Provider Application " + applicationName);
+            }
+            appMgtService.deleteApplication(applicationName);
+
+        } catch (IdentityApplicationManagementException e) {
+            APIUtil.handleException("Error occurred while removing ServiceProvider for app " + applicationName, e);
+        } catch (Exception e) {
+            APIUtil.handleException("Error occurred while removing OAuthApp " + applicationName, e);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(baseUser);
+        }
+    }
 }

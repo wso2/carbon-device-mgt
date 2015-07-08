@@ -39,7 +39,6 @@ import org.wso2.carbon.identity.oauth.extension.ApplicationConstants;
 import org.wso2.carbon.identity.oauth.extension.OAuthApplicationInfo;
 import org.wso2.carbon.identity.oauth.extension.RegistrationProfile;
 import org.wso2.carbon.identity.oauth.extension.RegistrationService;
-import org.wso2.carbon.identity.oauth.extension.UnregistrationProfile;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -47,6 +46,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
@@ -79,10 +79,9 @@ public class ClientRegistrationServiceImpl implements RegistrationService {
 
     @DELETE
     @Override
-    public Response unregister(UnregistrationProfile profile) {
-        String applicationName = profile.getApplicationName();
-        String consumerKey = profile.getConsumerKey();
-        String userId = profile.getUserId();
+    public Response unregister(@QueryParam("applicationName") String applicationName,
+                               @QueryParam("userId") String userId,
+                               @QueryParam("consumerKey") String consumerKey) {
         try {
             this.unregisterApplication(userId, applicationName, consumerKey);
             return Response.status(Response.Status.ACCEPTED).build();

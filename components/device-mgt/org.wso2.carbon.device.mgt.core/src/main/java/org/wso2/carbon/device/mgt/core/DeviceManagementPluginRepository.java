@@ -36,6 +36,8 @@ public class DeviceManagementPluginRepository {
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
         String deviceType = provider.getType();
         try {
+            /* Initializing Device Management Service Provider */
+            provider.init();
             DeviceManagerUtil.registerDeviceType(deviceType);
         } catch (DeviceManagementException e) {
             throw new DeviceManagementException("Error occurred while adding device management provider '" +

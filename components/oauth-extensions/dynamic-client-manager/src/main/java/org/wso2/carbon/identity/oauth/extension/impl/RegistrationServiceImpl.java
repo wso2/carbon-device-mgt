@@ -64,12 +64,13 @@ public class RegistrationServiceImpl implements RegistrationService {
                     MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            OAuthApplicationInfo info = this.registerApplication(profile);
+            OAuthApplicationInfo info = DynamicClientRegistrationUtil.registerApplication(profile);
             return Response.status(Response.Status.ACCEPTED).entity(info.toString()).build();
         } catch (APIManagementException e) {
             String msg = "Error occurred while registering client '" + profile.getClientName() + "'";
             log.error(msg, e);
-            return Response.serverError().entity(new FaultResponse(ErrorCode.INVALID_CLIENT_METADATA, msg)).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new FaultResponse(ErrorCode.INVALID_CLIENT_METADATA, msg)).build();
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
@@ -82,210 +83,12 @@ public class RegistrationServiceImpl implements RegistrationService {
         String consumerKey = profile.getConsumerKey();
         String userId = profile.getUserId();
         try {
-            this.unregisterApplication(userId, applicationName, consumerKey);
+            DynamicClientRegistrationUtil.unregisterApplication(userId, applicationName, consumerKey);
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (APIManagementException e) {
             String msg = "Error occurred while un-registering client '" + applicationName + "'";
             log.error(msg, e);
             return Response.serverError().entity(new FaultResponse(ErrorCode.INVALID_CLIENT_METADATA, msg)).build();
-        }
-    }
-
-    private OAuthApplicationInfo registerApplication(RegistrationProfile profile) throws APIManagementException {
-        OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
-
-        //Subscriber's name should be passed as a parameter, since it's under the subscriber the OAuth App is created.
-        String userId = profile.getOwner();
-        String applicationName = profile.getClientName();
-        String grantType = profile.getGrantType();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Trying to create OAuth application: '" + applicationName + "'");
-        }
-
-        String callBackURL = profile.getCallbackUrl();
-
-        String tokenScope = profile.getTokenScope();
-        String tokenScopes[] = new String[1];
-        tokenScopes[0] = tokenScope;
-
-        oAuthApplicationInfo.addParameter("tokenScope", Arrays.toString(tokenScopes));
-        OAuthApplicationInfo info;
-        try {
-            info = this.createOAuthApplication(userId, applicationName, callBackURL, grantType);
-        } catch (Exception e) {
-            throw new APIManagementException("Can not create OAuth application  : " + applicationName, e);
-        }
-
-        if (info == null || info.getJsonString() == null) {
-            throw new APIManagementException("OAuth app does not contain required data: '" + applicationName + "'");
-        }
-
-        oAuthApplicationInfo.setClientName(info.getClientName());
-        oAuthApplicationInfo.setClientId(info.getClientId());
-        oAuthApplicationInfo.setCallBackURL(info.getCallBackURL());
-        oAuthApplicationInfo.setClientSecret(info.getClientSecret());
-
-        try {
-            JSONObject jsonObject = new JSONObject(info.getJsonString());
-            if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS)) {
-                oAuthApplicationInfo.addParameter(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS,
-                        jsonObject.get(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS));
-            }
-
-            if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT)) {
-                oAuthApplicationInfo.addParameter(ApplicationConstants.ClientMetadata.
-                        OAUTH_CLIENT_GRANT, jsonObject.get(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT));
-            }
-        } catch (JSONException e) {
-            throw new APIManagementException("Can not retrieve information of the created OAuth application", e);
-        }
-        return oAuthApplicationInfo;
-    }
-
-    public OAuthApplicationInfo createOAuthApplication(
-            String userId, String applicationName, String callbackUrl, String grantType)
-            throws APIManagementException, IdentityException {
-
-        if (userId == null || userId.isEmpty()) {
-            return null;
-        }
-
-        String tenantDomain = MultitenantUtils.getTenantDomain(userId);
-        String baseUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
-        String userName = MultitenantUtils.getTenantAwareUsername(userId);
-
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-
-        // Acting as the provided user. When creating Service Provider/OAuth App,
-        // username is fetched from CarbonContext
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
-
-        try {
-            // Append the username before Application name to make application name unique across two users.
-            applicationName = userName + "_" + applicationName;
-
-            // Create the Service Provider
-            ServiceProvider serviceProvider = new ServiceProvider();
-            serviceProvider.setApplicationName(applicationName);
-            serviceProvider.setDescription("Service Provider for application " + applicationName);
-
-            ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
-            appMgtService.createApplication(serviceProvider);
-
-            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
-            if (createdServiceProvider == null) {
-                throw new APIManagementException("Couldn't create Service Provider Application " + applicationName);
-            }
-
-            // Then Create OAuthApp
-            OAuthAdminService oAuthAdminService = new OAuthAdminService();
-
-            OAuthConsumerAppDTO oAuthConsumerAppDTO = new OAuthConsumerAppDTO();
-            oAuthConsumerAppDTO.setApplicationName(applicationName);
-            oAuthConsumerAppDTO.setCallbackUrl(callbackUrl);
-            oAuthConsumerAppDTO.setGrantTypes(grantType);
-            if (log.isDebugEnabled()) {
-                log.debug("Creating OAuth App " + applicationName);
-            }
-
-            oAuthAdminService.registerOAuthApplicationData(oAuthConsumerAppDTO);
-            if (log.isDebugEnabled()) {
-                log.debug("Created OAuth App " + applicationName);
-            }
-
-            OAuthConsumerAppDTO createdApp = oAuthAdminService.getOAuthApplicationDataByAppName(oAuthConsumerAppDTO
-                    .getApplicationName());
-            if (log.isDebugEnabled()) {
-                log.debug("Retrieved Details for OAuth App " + createdApp.getApplicationName());
-            }
-            // Set the OAuthApp in InboundAuthenticationConfig
-            InboundAuthenticationConfig inboundAuthenticationConfig = new InboundAuthenticationConfig();
-            InboundAuthenticationRequestConfig[] inboundAuthenticationRequestConfigs = new
-                    InboundAuthenticationRequestConfig[1];
-            InboundAuthenticationRequestConfig inboundAuthenticationRequestConfig = new
-                    InboundAuthenticationRequestConfig();
-
-            inboundAuthenticationRequestConfig.setInboundAuthKey(createdApp.getOauthConsumerKey());
-            inboundAuthenticationRequestConfig.setInboundAuthType("oauth2");
-            if (createdApp.getOauthConsumerSecret() != null && !createdApp.
-                    getOauthConsumerSecret().isEmpty()) {
-                Property property = new Property();
-                property.setName("oauthConsumerSecret");
-                property.setValue(createdApp.getOauthConsumerSecret());
-                Property[] properties = {property};
-                inboundAuthenticationRequestConfig.setProperties(properties);
-            }
-
-            inboundAuthenticationRequestConfigs[0] = inboundAuthenticationRequestConfig;
-            inboundAuthenticationConfig.setInboundAuthenticationRequestConfigs(inboundAuthenticationRequestConfigs);
-            createdServiceProvider.setInboundAuthenticationConfig(inboundAuthenticationConfig);
-
-            // Update the Service Provider app to add OAuthApp as an Inbound Authentication Config
-            appMgtService.updateApplication(createdServiceProvider);
-
-            OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
-            oAuthApplicationInfo.setClientId(createdApp.getOauthConsumerKey());
-            oAuthApplicationInfo.setCallBackURL(createdApp.getCallbackUrl());
-            oAuthApplicationInfo.setClientSecret(createdApp.getOauthConsumerSecret());
-            oAuthApplicationInfo.setClientName(createdApp.getApplicationName());
-
-            oAuthApplicationInfo.addParameter(
-                    ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS, createdApp.getCallbackUrl());
-            oAuthApplicationInfo.addParameter(
-                    ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT, createdApp.getGrantTypes());
-            return oAuthApplicationInfo;
-        } catch (IdentityApplicationManagementException e) {
-            APIUtil.handleException("Error occurred while creating ServiceProvider for app " + applicationName, e);
-        } catch (Exception e) {
-            APIUtil.handleException("Error occurred while creating OAuthApp " + applicationName, e);
-        } finally {
-            PrivilegedCarbonContext.endTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(baseUser);
-        }
-        return null;
-    }
-
-    public void unregisterApplication(String userId, String applicationName,
-                                      String consumerKey) throws APIManagementException {
-        String tenantDomain = MultitenantUtils.getTenantDomain(userId);
-        String baseUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
-        String userName = MultitenantUtils.getTenantAwareUsername(userId);
-
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
-
-        if (userId == null || userId.isEmpty()) {
-            throw new APIManagementException("Error occurred while unregistering Application: userId cannot " +
-                    "be null/empty");
-        }
-        try {
-            OAuthAdminService oAuthAdminService = new OAuthAdminService();
-            OAuthConsumerAppDTO oAuthConsumerAppDTO = oAuthAdminService.getOAuthApplicationData(consumerKey);
-
-            if (oAuthConsumerAppDTO == null) {
-                throw new APIManagementException("Couldn't retrieve OAuth Consumer Application associated with the " +
-                        "given consumer key: " + consumerKey);
-            }
-            oAuthAdminService.removeOAuthApplicationData(consumerKey);
-
-            ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
-            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
-
-            if (createdServiceProvider == null) {
-                throw new APIManagementException("Couldn't retrieve Service Provider Application " + applicationName);
-            }
-            appMgtService.deleteApplication(applicationName);
-
-        } catch (IdentityApplicationManagementException e) {
-            APIUtil.handleException("Error occurred while removing ServiceProvider for app " + applicationName, e);
-        } catch (Exception e) {
-            APIUtil.handleException("Error occurred while removing OAuthApp " + applicationName, e);
-        } finally {
-            PrivilegedCarbonContext.endTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(baseUser);
         }
     }
 

@@ -41,9 +41,9 @@ public class DeviceManagementRepositoryTests {
         } catch (DeviceManagementException e) {
             Assert.fail("Unexpected error occurred while invoking addDeviceManagementProvider functionality", e);
         }
-        DeviceManager targetProvider =
+        DeviceManagementService targetProvider =
                 this.getRepository().getDeviceManagementService(TestDeviceManagementService.DEVICE_TYPE_TEST);
-        Assert.assertEquals(targetProvider.getProviderType(), sourceProvider.getProviderType());
+        Assert.assertEquals(targetProvider.getType(), sourceProvider.getType());
     }
 
     @Test(dependsOnMethods = "testAddDeviceManagementService")
@@ -54,7 +54,7 @@ public class DeviceManagementRepositoryTests {
         } catch (DeviceManagementException e) {
             Assert.fail("Unexpected error occurred while invoking removeDeviceManagementProvider functionality", e);
         }
-        DeviceManager targetProvider =
+        DeviceManagementService targetProvider =
                 this.getRepository().getDeviceManagementService(TestDeviceManagementService.DEVICE_TYPE_TEST);
         Assert.assertNull(targetProvider);
     }

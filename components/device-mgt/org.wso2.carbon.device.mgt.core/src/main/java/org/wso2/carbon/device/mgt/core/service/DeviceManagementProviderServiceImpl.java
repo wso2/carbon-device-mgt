@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -69,11 +68,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public String getProviderType() {
-        return null;
-    }
-
-    @Override
     public FeatureManager getFeatureManager() {
         return null;
     }
@@ -81,14 +75,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public FeatureManager getFeatureManager(String type) {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(type);
+                this.getPluginRepository().getDeviceManagementService(type).getDeviceManager();
         return dms.getFeatureManager();
     }
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(device.getType());
+                this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
         boolean status = dms.enrollDevice(device);
         try {
             if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))) {
@@ -134,7 +128,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(device.getType());
+                this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
         boolean status = dms.modifyEnrollment(device);
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -167,7 +161,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         try {
             Device device = deviceDAO.getDevice(deviceId,tenantId);
             DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
@@ -188,14 +182,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         return dms.isEnrolled(deviceId);
     }
 
     @Override
     public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         return dms.isActive(deviceId);
     }
 
@@ -203,7 +197,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public boolean setActive(DeviceIdentifier deviceId, boolean status)
             throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         return dms.setActive(deviceId, status);
     }
 
@@ -227,7 +221,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         for (Device device : allDevices) {
             Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             device.setFeatures(dmsDevice.getFeatures());
             device.setProperties(dmsDevice.getProperties());
@@ -257,7 +252,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         for (Device device : allDevices) {
             Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             device.setFeatures(dmsDevice.getFeatures());
             device.setProperties(dmsDevice.getProperties());
@@ -407,7 +403,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         }
         if (device != null) {
-            DeviceManager dms = this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+            DeviceManager dms =
+                    this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
             Device pluginSpecificInfo = dms.getDevice(deviceId);
             device.setProperties(pluginSpecificInfo.getProperties());
             device.setFeatures(pluginSpecificInfo.getFeatures());
@@ -418,7 +415,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(device.getType());
+                this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
         return dms.updateDeviceInfo(deviceIdentifier, device);
     }
 
@@ -426,14 +423,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
             throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         return dms.setOwnership(deviceId, ownershipType);
     }
 
     @Override
     public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         return dms.isClaimable(deviceId);
     }
 
@@ -552,7 +549,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         for (Device device : userDevices) {
             Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             device.setFeatures(dmsDevice.getFeatures());
             device.setProperties(dmsDevice.getProperties());
@@ -594,7 +592,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
             for (Device device : userDevices) {
                 Device dmsDevice =
-                        this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                        this.getPluginRepository().getDeviceManagementService(
+                                device.getType()).getDeviceManager().getDevice(
                                 new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
@@ -641,7 +640,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         for (Device device : allDevices) {
             Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(device.getType()).getDevice(
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             device.setFeatures(dmsDevice.getFeatures());
             device.setProperties(dmsDevice.getProperties());
@@ -673,7 +673,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             pluginRepository.addDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while registering device management plugin '" +
-                    deviceManagementService.getProviderType() + "'", e);
+                    deviceManagementService.getType() + "'", e);
         }
     }
 
@@ -683,7 +683,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             pluginRepository.removeDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while un-registering device management plugin '" +
-                    deviceManagementService.getProviderType() + "'", e);
+                    deviceManagementService.getType() + "'", e);
         }
     }
 

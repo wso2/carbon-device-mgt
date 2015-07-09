@@ -48,4 +48,5 @@ public class UnregistrationProfile {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
 }

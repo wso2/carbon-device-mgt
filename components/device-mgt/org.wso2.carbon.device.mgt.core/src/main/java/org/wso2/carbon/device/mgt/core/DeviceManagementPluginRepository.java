@@ -34,7 +34,7 @@ public class DeviceManagementPluginRepository {
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getProviderType();
+        String deviceType = provider.getType();
         try {
             DeviceManagerUtil.registerDeviceType(deviceType);
         } catch (DeviceManagementException e) {
@@ -45,7 +45,7 @@ public class DeviceManagementPluginRepository {
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getProviderType();
+        String deviceType = provider.getType();
         providers.remove(deviceType);
     }
 

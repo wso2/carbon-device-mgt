@@ -25,13 +25,6 @@ import java.util.List;
  */
 public interface DeviceManager {
     /**
-     * Method to retrieve the provider type that implements DeviceManager interface.
-     *
-     * @return Returns provider type
-     */
-    String getProviderType();
-
-    /**
      * Method to return feature manager implementation associated with a particular platform-specific plugin.
      *
      * @return Returns an instance of feature manager

@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.identity.oauth.extension;
+package org.wso2.carbon.identity.oauth.extension.profile;
 
 public class RegistrationProfile {
 

@@ -80,9 +80,10 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_POLICY_COMPLIANCE_STATUS WHERE  DEVICE_ID = ?";
+            String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET STATUS = ? WHERE  DEVICE_ID = ?";
             stmt = conn.prepareStatement(query);
-            stmt.setInt(1, deviceId);
+            stmt.setInt(1, 1);
+            stmt.setInt(2, deviceId);
 
             stmt.executeUpdate();
 
@@ -193,15 +194,15 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public void deleteNoneComplianceData(int deviceId) throws MonitoringDAOException {
+    public void deleteNoneComplianceData(int policyComplianceStatusId) throws MonitoringDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_POLICY_COMPLIANCE_STATUS WHERE DEVICE_ID = ?";
+            String query = "DELETE FROM DM_POLICY_COMPLIANCE_FEATURES WHERE COMPLIANCE_STATUS_ID = ?";
             stmt = conn.prepareStatement(query);
-            stmt.setInt(1, deviceId);
+            stmt.setInt(1, policyComplianceStatusId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -211,6 +212,11 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
+
+    }
+
+    @Override
+    public void updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException {
 
     }
 

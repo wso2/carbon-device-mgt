@@ -19,11 +19,21 @@
 
 package org.wso2.carbon.policy.mgt.core.task;
 
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
+import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 
+import java.util.List;
 import java.util.Map;
 
 public class MonitoringTask implements Task {
+
+    private DeviceTypeDAO deviceTypeDAO;
 
     @Override
     public void setProperties(Map<String, String> map) {
@@ -32,11 +42,29 @@ public class MonitoringTask implements Task {
 
     @Override
     public void init() {
-
+        deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
     @Override
     public void execute() {
+        try {
+            List<DeviceType> deviceTypes = deviceTypeDAO.getDeviceTypes();
+
+
+            DeviceManagementProviderService deviceManagementProviderService =
+                    PolicyManagementDataHolder.getInstance().getDeviceManagementService();
+
+            for (DeviceType deviceType : deviceTypes) {
+                PolicyMonitoringService monitoringService =
+                        PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType.getName());
+
+                List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
+                monitoringService.notifyDevices(devices);
+            }
+
+        } catch (Exception e) {
+
+        }
 
     }
 }

@@ -18,33 +18,38 @@
  */
 package org.wso2.carbon.identity.oauth.extension;
 
-public class ApplicationConstants {
+public final class ApplicationConstants {
 
-    public static final String OAUTH_CLIENT_ID = "client_id"; //this means consumer key
-    public static final String OAUTH_CLIENT_SECRET = "client_secret";
-    public static final String OAUTH_REDIRECT_URIS = "redirect_uris";
-    public static final String OAUTH_CALLBACK_URIS = "callback_url";
-    public static final String OAUTH_CLIENT_NAME = "client_name";
-    public static final String OAUTH_CLIENT_TYPE = "client_type";
-    public static final String APP_KEY_TYPE = "key_type";
-    public static final String APP_CALLBACK_URL = "callback_url";
-    public static final String APP_HOME_PAGE = "homepage";
-    public static final String OAUTH_CLIENT_CONTACT = "contact";
-    public static final String APP_LOGOURI = "logouri";
-    public static final String  OAUTH_CLIENT_SCOPE = "scope";
-    public static final String OAUTH_CLIENT_GRANT = "grant_types";
-    public static final String OAUTH_CLIENT_RESPONSETYPE = "response_types";
-    public static final String OAUTH_CLIENT_AUTHMETHOD = "token_endpoint_auth_method";
-    public static final String OAUTH_CLIENT_REGISTRATION_CLIENT_URI = "registration_client_uri";
-    public static final String OAUTH_CLIENT_REGISTRATION_ACCESSTOKEN = "registration_access_token";
-    public static final String OAUTH_CLIENT_CONTACTS = "contacts";
-    public static final String OAUTH_CLIENT_MANUAL = "MANUAL";
-    public static final String OAUTH_CLIENT_PRODUCTION = "PRODUCTION";
-    public static final String OAUTH_CLIENT_SANDBOX = "SANDBOX";
-    public static final String OAUTH_CLIENT_NOACCESSTOKEN = "NO ACCESS TOKEN";
-    public static final String OAUTH_CLIENT_JSONPARAMSTRING = "jsonParams";
-    public static final String OAUTH_CLIENT_USERNAME = "username";
-    public static final String OAUTH_CLIENT_APPLICATION = "application";
-    public static final String VALIDITY_PERIOD = "validityPeriod";
+    public static class ClientMetadata {
+        private ClientMetadata() {
+            throw new AssertionError();
+        }
+        public static final String OAUTH_CLIENT_ID = "client_id"; //this means consumer key
+        public static final String OAUTH_CLIENT_SECRET = "client_secret";
+        public static final String OAUTH_REDIRECT_URIS = "redirect_uris";
+        public static final String OAUTH_CALLBACK_URIS = "callback_url";
+        public static final String OAUTH_CLIENT_NAME = "client_name";
+        public static final String OAUTH_CLIENT_TYPE = "client_type";
+        public static final String APP_KEY_TYPE = "key_type";
+        public static final String APP_CALLBACK_URL = "callback_url";
+        public static final String APP_HOME_PAGE = "homepage";
+        public static final String OAUTH_CLIENT_CONTACT = "contact";
+        public static final String APP_LOGOURI = "logouri";
+        public static final String OAUTH_CLIENT_SCOPE = "scope";
+        public static final String OAUTH_CLIENT_GRANT = "grant_types";
+        public static final String OAUTH_CLIENT_RESPONSETYPE = "response_types";
+        public static final String OAUTH_CLIENT_AUTHMETHOD = "token_endpoint_auth_method";
+        public static final String OAUTH_CLIENT_REGISTRATION_CLIENT_URI = "registration_client_uri";
+        public static final String OAUTH_CLIENT_REGISTRATION_ACCESSTOKEN = "registration_access_token";
+        public static final String OAUTH_CLIENT_CONTACTS = "contacts";
+        public static final String OAUTH_CLIENT_MANUAL = "MANUAL";
+        public static final String OAUTH_CLIENT_PRODUCTION = "PRODUCTION";
+        public static final String OAUTH_CLIENT_SANDBOX = "SANDBOX";
+        public static final String OAUTH_CLIENT_NOACCESSTOKEN = "NO ACCESS TOKEN";
+        public static final String OAUTH_CLIENT_JSONPARAMSTRING = "jsonParams";
+        public static final String OAUTH_CLIENT_USERNAME = "username";
+        public static final String OAUTH_CLIENT_APPLICATION = "application";
+        public static final String VALIDITY_PERIOD = "validityPeriod";
+    }
 
 }

@@ -37,5 +37,9 @@ public interface MonitoringDAO {
 
     List<ComplianceFeature> getNoneComplianceFeatures(int policyComplianceStatusId) throws MonitoringDAOException;
 
-    void deleteNoneComplianceData(int deviceId) throws MonitoringDAOException;
+    void deleteNoneComplianceData(int policyComplianceStatusId) throws MonitoringDAOException;
+
+    void updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException;
+
+
 }

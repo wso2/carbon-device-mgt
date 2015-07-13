@@ -203,7 +203,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             pluginRepository.addDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while registering device management plugin '" +
-                    deviceManagementService.getProviderType() + "'", e);
+                    deviceManagementService.getType() + "'", e);
         }
     }
 
@@ -213,7 +213,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             pluginRepository.removeDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while un-registering device management plugin '" +
-                    deviceManagementService.getProviderType() + "'", e);
+                    deviceManagementService.getType() + "'", e);
         }
     }
 }

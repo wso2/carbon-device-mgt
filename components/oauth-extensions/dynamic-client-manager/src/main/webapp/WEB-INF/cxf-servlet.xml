@@ -33,10 +33,12 @@
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
+            <ref bean="faultResponseWriter"/>
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="RegistrationServiceBean" class="org.wso2.carbon.identity.oauth.extension.impl.ClientRegistrationServiceImpl"/>
+    <bean id="RegistrationServiceBean" class="org.wso2.carbon.identity.oauth.extension.impl.RegistrationServiceImpl"/>
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+    <bean id="faultResponseWriter" class="org.wso2.carbon.identity.oauth.extension.FaultMessageBodyWriter"/>
 </beans>
 

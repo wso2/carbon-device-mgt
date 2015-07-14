@@ -64,7 +64,7 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
             }
         }
 
-        int targetTypeId = -1;
+        Integer targetTypeId = null;
         try {
             targetTypeId = this.getDeviceTypeId(TestDataHolder.TEST_DEVICE_TYPE);
         } catch (DeviceManagementDAOException e) {
@@ -72,7 +72,6 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
             log.error(msg, e);
             Assert.fail(msg, e);
         }
-
         Assert.assertNotNull(targetTypeId, "Device Type Id is null");
         deviceType.setId(targetTypeId);
         TestDataHolder.initialTestDeviceType = deviceType;
@@ -82,7 +81,7 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
     public void testAddDeviceTest() {
 
         int tenantId = TestDataHolder.SUPER_TENANT_ID;
-        Device device = TestDataHolder.generateDummyDeviceData("ios");
+        Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
 
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -143,18 +142,17 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
         }
     }
 
-    private int getDeviceTypeId(String deviceName) throws DeviceManagementDAOException {
+    private int getDeviceTypeId(String deviceTypeName) throws DeviceManagementDAOException {
         int id = -1;
         Connection conn = null;
         PreparedStatement stmt = null;
         String sql = "SELECT ID, NAME FROM DM_DEVICE_TYPE WHERE NAME = ?";
 
-        DeviceType deviceType = TestDataHolder.generateDeviceTypeData("ios");
         try {
             Assert.assertNotNull(getDataSource(), "Data Source is not initialized properly");
             conn = getDataSource().getConnection();
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceType.getName());
+            stmt.setString(1, deviceTypeName);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {

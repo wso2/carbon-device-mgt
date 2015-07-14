@@ -19,9 +19,10 @@
 package org.wso2.carbon.policy.mgt.common;
 
 import java.io.Serializable;
-import org.wso2.carbon.device.mgt.common.Feature;
 
 public class ProfileFeature implements Serializable {
+
+    private static final long serialVersionUID = 19981018L;
 
     private int id;
     private String featureCode;

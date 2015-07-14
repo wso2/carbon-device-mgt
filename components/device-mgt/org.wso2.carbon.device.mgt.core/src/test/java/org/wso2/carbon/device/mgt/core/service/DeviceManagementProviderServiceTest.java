@@ -31,11 +31,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @Override
     public void init() throws Exception {
         initDatSource();
-        DeviceManagementPluginRepository deviceManagementPluginRepository = new DeviceManagementPluginRepository();
-        TestDeviceManagementService testDeviceManagementService = new TestDeviceManagementService();
-        deviceManagementPluginRepository.addDeviceManagementProvider(testDeviceManagementService);
-        deviceManagementProviderService = new DeviceManagementProviderServiceImpl(deviceManagementPluginRepository,
-                true);
     }
 
 
@@ -44,6 +39,12 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     public void testEnrollment() {
 
         try {
+            DeviceManagementPluginRepository deviceManagementPluginRepository = new DeviceManagementPluginRepository();
+            TestDeviceManagementService testDeviceManagementService = new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE);
+            deviceManagementPluginRepository.addDeviceManagementProvider(testDeviceManagementService);
+
+            deviceManagementProviderService = new DeviceManagementProviderServiceImpl(deviceManagementPluginRepository,
+                    true);
             DeviceManagerUtil.registerDeviceType(TestDataHolder.TEST_DEVICE_TYPE);
             TestDataHolder.tenant.set(TestDataHolder.SUPER_TENANT_ID);
             Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);

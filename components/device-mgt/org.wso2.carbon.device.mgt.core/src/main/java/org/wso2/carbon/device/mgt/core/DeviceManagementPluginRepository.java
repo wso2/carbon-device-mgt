@@ -34,22 +34,28 @@ public class DeviceManagementPluginRepository {
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getProviderType();
+        String deviceType = provider.getType();
         try {
+            /* Initializing Device Management Service Provider */
+            provider.init();
             DeviceManagerUtil.registerDeviceType(deviceType);
         } catch (DeviceManagementException e) {
             throw new DeviceManagementException("Error occurred while adding device management provider '" +
                     deviceType + "'");
         }
+
         providers.put(deviceType, provider);
+        System.out.println("@plugin Repo:"+deviceType);
+        System.out.println("@plugin Repo:"+providers.size());
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getProviderType();
+        String deviceType = provider.getType();
         providers.remove(deviceType);
     }
 
     public DeviceManagementService getDeviceManagementService(String type) {
+        System.out.println("@plugin get:"+providers.get(type).toString());
         return providers.get(type);
     }
 

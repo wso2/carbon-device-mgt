@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.policy.mgt.common.monitor;
 
+import org.wso2.carbon.policy.mgt.common.Policy;
+
 import java.util.List;
 
 public class ComplianceData {
@@ -29,6 +31,13 @@ public class ComplianceData {
     List<ComplianceFeature> complianceFeatures;
     private boolean status;
     private String message;
+
+    /**
+     * This parameter is to inform the policy core, weather related device type plugins does need the full policy or
+     * the  part which is none compliance.
+     */
+    private boolean completePolicy;
+    private Policy policy;
 
     public int getId() {
         return id;
@@ -76,5 +85,21 @@ public class ComplianceData {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public boolean isCompletePolicy() {
+        return completePolicy;
+    }
+
+    public void setCompletePolicy(boolean completePolicy) {
+        this.completePolicy = completePolicy;
+    }
+
+    public Policy getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(Policy policy) {
+        this.policy = policy;
     }
 }

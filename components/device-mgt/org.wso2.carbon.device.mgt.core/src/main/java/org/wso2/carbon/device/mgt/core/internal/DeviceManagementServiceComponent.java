@@ -242,7 +242,7 @@ public class DeviceManagementServiceComponent {
     protected void setDeviceManagementService(DeviceManagementService deviceManagementService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Device Management Service Provider: '" +
-                    deviceManagementService.getProviderType() + "'");
+                    deviceManagementService.getType() + "'");
         }
         synchronized (LOCK) {
             deviceManagers.add(deviceManagementService);
@@ -260,7 +260,7 @@ public class DeviceManagementServiceComponent {
     protected void unsetDeviceManagementService(DeviceManagementService deviceManagementService) {
         if (log.isDebugEnabled()) {
             log.debug("Un setting Device Management Service Provider : '" +
-                    deviceManagementService.getProviderType() + "'");
+                    deviceManagementService.getType() + "'");
         }
         for (PluginInitializationListener listener : listeners) {
             listener.unregisterDeviceManagementService(deviceManagementService);

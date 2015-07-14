@@ -31,7 +31,8 @@ public interface ComplianceDecisionPoint {
 
     void setDeviceAsReachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 
-    void reEnforcePolicy(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
+    void reEnforcePolicy(DeviceIdentifier deviceIdentifier, ComplianceData complianceData) throws
+            PolicyComplianceException;
 
     void markDeviceAsNoneCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 
@@ -41,7 +42,7 @@ public interface ComplianceDecisionPoint {
 
     void activateDevice(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 
-    void validateDevicePolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy) throws
+    void validateDevicePolicyCompliance(DeviceIdentifier deviceIdentifier, ComplianceData complianceData) throws
             PolicyComplianceException;
 
 

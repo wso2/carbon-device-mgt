@@ -27,7 +27,7 @@ public class TestDataHolder {
         enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
         device.setEnrolmentInfo(enrolmentInfo);
         device.setDescription("Test Description");
-        device.setDeviceIdentifier("1234");
+        device.setDeviceIdentifier("12345");
         device.setType(deviceType);
         return device;
 

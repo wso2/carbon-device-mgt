@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.common.spi;
 
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 
@@ -25,6 +26,19 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
  * Composite interface that acts as the SPI exposing all device management as well as application management
  * functionalities
  */
-public interface DeviceManagementService extends DeviceManager, ApplicationManager {
+public interface DeviceManagementService extends ApplicationManager {
+
+    /**
+     * Method to retrieve the provider type that implements DeviceManager interface.
+     *
+     * @return Returns provider type
+     */
+    String getType();
+
+    void init() throws DeviceManagementException;
+
+    DeviceManager getDeviceManager();
+
+    ApplicationManager getApplicationManager();
 
 }

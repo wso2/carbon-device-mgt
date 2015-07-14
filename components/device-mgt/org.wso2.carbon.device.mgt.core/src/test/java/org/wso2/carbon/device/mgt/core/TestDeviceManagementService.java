@@ -20,108 +20,73 @@ package org.wso2.carbon.device.mgt.core;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
 import java.util.List;
 
-public class TestDeviceManagementService implements DeviceManagementService {
+public class TestDeviceManagementService implements DeviceManager {
 
-    public static final String DEVICE_TYPE_TEST = TestDataHolder.TEST_DEVICE_TYPE;
+    private String providerType;
 
-    @Override
-    public String getProviderType() {
-        return TestDeviceManagementService.DEVICE_TYPE_TEST;
+    public TestDeviceManagementService(String deviceType){
+        providerType = deviceType;
     }
 
-    @Override
-    public FeatureManager getFeatureManager() {
+    @Override public FeatureManager getFeatureManager() {
         return null;
     }
 
-    @Override
-    public boolean enrollDevice(Device device) throws DeviceManagementException {
+    @Override public boolean enrollDevice(Device device) throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean modifyEnrollment(Device device) throws DeviceManagementException {
+    @Override public boolean modifyEnrollment(Device device) throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
+    @Override public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public List<Device> getAllDevices() throws DeviceManagementException {
+    @Override public List<Device> getAllDevices() throws DeviceManagementException {
         return null;
     }
 
-    @Override
-    public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         return null;
     }
 
-    @Override
-    public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
+    @Override public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device)
+            throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
+    @Override public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
+            throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
+    @Override public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
         return false;
     }
 
-    @Override
-    public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
-                             EnrolmentInfo.Status status) throws DeviceManagementException {
+    @Override public boolean setStatus(DeviceIdentifier deviceId, String currentOwner, EnrolmentInfo.Status status)
+            throws DeviceManagementException {
         return false;
-    }
-
-    @Override
-    public Application[] getApplications(String domain, int pageNumber,
-                                         int size) throws ApplicationManagementException {
-        return new Application[0];
-    }
-
-    @Override
-    public void updateApplicationStatus(DeviceIdentifier deviceId, Application application,
-                                        String status) throws ApplicationManagementException {
-
-    }
-
-    @Override
-    public String getApplicationStatus(DeviceIdentifier deviceId,
-                                       Application application) throws ApplicationManagementException {
-        return null;
-    }
-
-    @Override
-    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
-            throws ApplicationManagementException {
-
     }
 }

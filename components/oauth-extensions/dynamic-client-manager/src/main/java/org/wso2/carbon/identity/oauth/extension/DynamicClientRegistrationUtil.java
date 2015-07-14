@@ -35,59 +35,15 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
-import org.wso2.carbon.identity.oauth.extension.ApplicationConstants;
-import org.wso2.carbon.identity.oauth.extension.OAuthApplicationInfo;
-import org.wso2.carbon.identity.oauth.extension.RegistrationService;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.Arrays;
 
 public class DynamicClientRegistrationUtil {
 
     private static final Log log = LogFactory.getLog(DynamicClientRegistrationUtil.class);
-
-
-    public Response register(RegistrationProfile profile) {
-        try {
-            PrivilegedCarbonContext.startTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                    MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-
-            OAuthApplicationInfo info = this.registerApplication(profile);
-            return Response.status(Response.Status.ACCEPTED).entity(info.toString()).build();
-        } catch (APIManagementException e) {
-            String msg = "Error occurred while registering client '" + profile.getClientName() + "'";
-            log.error(msg, e);
-            return Response.serverError().entity(msg).build();
-        } finally {
-            PrivilegedCarbonContext.endTenantFlow();
-        }
-    }
-
-    public Response unregister(String applicationName, String userId, String consumerKey) {
-        try {
-            this.unregisterApplication(userId, applicationName, consumerKey);
-            return Response.status(Response.Status.ACCEPTED).build();
-        } catch (APIManagementException e) {
-            String msg = "Error occurred while unregistering client '" + applicationName + "'";
-            log.error(msg, e);
-            return Response.serverError().entity(msg).build();
-        }
-    }
-
 
     public static OAuthApplicationInfo registerApplication(RegistrationProfile profile) throws APIManagementException {
         OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();

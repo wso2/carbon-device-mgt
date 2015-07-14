@@ -35,9 +35,11 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
-import org.wso2.carbon.identity.oauth.extension.*;
+import org.wso2.carbon.identity.oauth.extension.DynamicClientRegistrationUtil;
+import org.wso2.carbon.identity.oauth.extension.FaultResponse;
+import org.wso2.carbon.identity.oauth.extension.OAuthApplicationInfo;
+import org.wso2.carbon.identity.oauth.extension.RegistrationService;
 import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
-import org.wso2.carbon.identity.oauth.extension.profile.UnregistrationProfile;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -47,6 +49,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.QueryParam;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

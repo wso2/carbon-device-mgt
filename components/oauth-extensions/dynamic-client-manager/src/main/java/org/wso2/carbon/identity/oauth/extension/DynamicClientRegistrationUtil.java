@@ -58,8 +58,7 @@ public class DynamicClientRegistrationUtil {
 
     private static final Log log = LogFactory.getLog(DynamicClientRegistrationUtil.class);
 
-    @POST
-    @Override
+
     public Response register(RegistrationProfile profile) {
         try {
             PrivilegedCarbonContext.startTenantFlow();
@@ -78,11 +77,7 @@ public class DynamicClientRegistrationUtil {
         }
     }
 
-    @DELETE
-    @Override
-    public Response unregister(@QueryParam("applicationName") String applicationName,
-                               @QueryParam("userId") String userId,
-                               @QueryParam("consumerKey") String consumerKey) {
+    public Response unregister(String applicationName, String userId, String consumerKey) {
         try {
             this.unregisterApplication(userId, applicationName, consumerKey);
             return Response.status(Response.Status.ACCEPTED).build();

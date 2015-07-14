@@ -448,11 +448,12 @@ public class DeviceDAOImpl implements DeviceDAO {
         List<Device> devices = new ArrayList<Device>();
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement("SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_TYPE_ID, " +
+            stmt = conn.prepareStatement("SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, t.NAME AS DEVICE_TYPE, " +
                                          "d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                                          "e.DATE_OF_ENROLMENT FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                                          "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE FROM DM_ENROLMENT e WHERE TENANT_ID = ? " +
-                                         "AND STATUS = ?) e, DM_DEVICE d WHERE DEVICE_ID = e.DEVICE_ID AND d.TENANT_ID = ?");
+                                         "AND STATUS = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_ID = e.DEVICE_ID " +
+                                         "AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?");
             stmt.setInt(1, tenantId);
             stmt.setString(2, status.toString());
             stmt.setInt(3, tenantId);

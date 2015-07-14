@@ -86,10 +86,11 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
                     "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES,APP_IDENTIFIER) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)", Statement.RETURN_GENERATED_KEYS);
 
 
             for (Application application : applications) {
+
                 stmt.setString(1, application.getName());
                 stmt.setString(2, application.getPlatform());
                 stmt.setString(3, application.getCategory());
@@ -117,33 +118,38 @@ public class ApplicationDAOImpl implements ApplicationDAO {
     }
 
     @Override
-    public int removeApplication(String applicationName, int tenantId) throws DeviceManagementDAOException {
+    public List<Integer> removeApplications(List<Application> apps, int tenantId) throws DeviceManagementDAOException {
+
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int applicationId = -1;
+        List<Integer> applicationIds = new ArrayList<Integer>();
+
         try {
             conn = this.getConnection();
             conn.setAutoCommit(false);
-            stmt = conn.prepareStatement("DELETE DM_APPLICATION WHERE NAME = ? AND TENANT_ID = ?");
-            stmt.setString(1, applicationName);
-            stmt.setInt(2, tenantId);
-            stmt.execute();
-            conn.commit();
+            stmt = conn.prepareStatement("DELETE DM_APPLICATION WHERE APP_IDENTIFIER = ? AND TENANT_ID = ?",
+                    Statement.RETURN_GENERATED_KEYS);
 
+            for(Application app:apps){
+                stmt.setString(1, app.getApplicationIdentifier());
+                stmt.setInt(2, tenantId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
             rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                applicationId = rs.getInt(1);
+                applicationIds.add(rs.getInt(1));
             }
-            return applicationId;
+            return applicationIds;
         } catch (SQLException e) {
             try {
                 conn.rollback();
             } catch (SQLException e1) {
                 log.warn("Error occurred while roll-backing the transaction", e);
             }
-            throw new DeviceManagementDAOException("Error occurred while removing application '" +
-                    applicationName + "'", e);
+            throw new DeviceManagementDAOException("Error occurred while removing bulk application list", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

@@ -53,19 +53,35 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     private DeviceTypeDAO deviceTypeDAO;
     private EnrolmentDAO enrolmentDAO;
     private DeviceManagementPluginRepository pluginRepository;
+    private boolean isTest = false;
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
+    private int tenantId;
 
     public DeviceManagementProviderServiceImpl() {
 
         this.pluginRepository = new DeviceManagementPluginRepository();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-        this.enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
-
+        initDataAccessObjects();
         /* Registering a listener to retrieve events when some device management service plugin is installed after
         * the component is done getting initialized */
         DeviceManagementServiceComponent.registerPluginInitializationListener(this);
+    }
+
+
+    /**
+     * This constructor calls from unit tests
+     * @param pluginRepo
+     */
+    public DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test){
+        this.pluginRepository = pluginRepo;
+        initDataAccessObjects();
+        isTest = test;
+    }
+
+    private void initDataAccessObjects() {
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        this.enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
     }
 
     @Override
@@ -87,8 +103,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(device.getType());
+
+        DeviceManager dms = this.getPluginRepository().getDeviceManagementService(device.getType());
         boolean status = dms.enrollDevice(device);
         try {
             if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))) {
@@ -96,7 +112,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } else {
                 device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
             }
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            int tenantId = getTenantId();
 
             DeviceManagementDAOFactory.beginTransaction();
 
@@ -687,4 +703,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
     }
 
+    public int getTenantId() {
+
+        ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
+        int tenant = 0;
+
+        if (isTest){
+            tenant = org.wso2.carbon.device.mgt.core.common.;
+        }else{
+            tenant = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        }
+        return tenant;
+    }
 }

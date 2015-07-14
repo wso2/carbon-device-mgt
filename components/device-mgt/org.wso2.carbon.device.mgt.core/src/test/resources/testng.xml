@@ -24,11 +24,16 @@
 
     <test name="DAO Unit Tests" preserve-order="true">
         <classes>
-            <class name="org.wso2.carbon.device.mgt.core.dao.BaseDeviceManagementDAOTest"/>
-            <class name="org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.dao.DevicePersistTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
-            <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceDAOTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>
+        </classes>
+    </test>
+    <test name="Service Unit Tests" preserve-order="true">
+        <classes>
+            <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>
         </classes>
     </test>
 </suite>

@@ -46,6 +46,7 @@ import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -171,10 +172,32 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+
         try {
             Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            List<Integer> applicationIds = applicationDAO.addApplications(applications, tenantId);
+
+            List<Application> installedAppList = getApplicationListForDevice(deviceIdentifier);
+            List<Application> appsToAdd = new ArrayList<Application>();
+            List<Integer> appIdsToRemove = new ArrayList<Integer>();
+
+            for(Application installedApp:installedAppList){
+                if (!applications.contains(installedApp)){
+                    appIdsToRemove.add(installedApp.getId());
+                }
+            }
+
+            for(Application application:applications){
+                if (!installedAppList.contains(application)){
+                    appsToAdd.add(application);
+                }
+            }
+
+
+            List<Integer> applicationIds = applicationDAO.addApplications(appsToAdd, tenantId);
             applicationMappingDAO.addApplicationMappings(device.getId(), applicationIds, tenantId);
+
+            applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove,tenantId);
+
         } catch (DeviceManagementDAOException deviceDaoEx) {
             String errorMsg = "Error occurred saving application list to the device";
             log.error(errorMsg + ":" + deviceIdentifier.toString());

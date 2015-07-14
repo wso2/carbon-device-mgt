@@ -22,12 +22,13 @@ import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
 import java.util.List;
 
 public class TestDeviceManagementService implements DeviceManagementService {
 
-    public static final String DEVICE_TYPE_TEST = "Test";
+    public static final String DEVICE_TYPE_TEST = TestDataHolder.TEST_DEVICE_TYPE;
 
     @Override
     public String getProviderType() {

@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.dao;
+package org.wso2.carbon.device.mgt.core.common;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +28,7 @@ import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
-import org.wso2.carbon.device.mgt.core.common.DataSourceConfig;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import javax.sql.DataSource;
@@ -41,10 +41,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public abstract class BaseDeviceManagementDAOTest {
+public abstract class BaseDeviceManagementTest {
 
     private DataSource dataSource;
-    private static final Log log = LogFactory.getLog(BaseDeviceManagementDAOTest.class);
+    private static final Log log = LogFactory.getLog(BaseDeviceManagementTest.class);
 
     @BeforeSuite
     public void setupDataSource() throws Exception {

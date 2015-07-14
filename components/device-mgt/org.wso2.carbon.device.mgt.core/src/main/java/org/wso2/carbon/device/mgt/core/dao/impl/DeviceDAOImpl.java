@@ -442,4 +442,32 @@ public class DeviceDAOImpl implements DeviceDAO {
         return enrolmentInfo;
     }
 
+    public List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        List<Device> devices = new ArrayList<Device>();
+        try {
+            conn = this.getConnection();
+            stmt = conn.prepareStatement("SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_TYPE_ID, " +
+                                         "d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                                         "e.DATE_OF_ENROLMENT FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                                         "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE FROM DM_ENROLMENT e WHERE TENANT_ID = ? " +
+                                         "AND STATUS = ?) e, DM_DEVICE d WHERE DEVICE_ID = e.DEVICE_ID AND d.TENANT_ID = ?");
+            stmt.setInt(1, tenantId);
+            stmt.setString(2, status.toString());
+            stmt.setInt(3, tenantId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Device device = this.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while fetching the list of devices that matches to status " +
+                                                   "'" + status + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return devices;
+    }
 }

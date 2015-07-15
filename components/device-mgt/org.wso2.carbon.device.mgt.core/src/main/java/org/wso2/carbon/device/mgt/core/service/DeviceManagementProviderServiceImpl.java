@@ -501,7 +501,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public boolean addOperation(Operation operation, List<DeviceIdentifier> devices) throws
+    public int addOperation(Operation operation, List<DeviceIdentifier> devices) throws
             OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().addOperation(operation, devices);
     }
@@ -754,7 +754,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
 
-    public int getTenantId() {
+
+    private int getTenantId() {
 
         ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
         int tenant = 0;

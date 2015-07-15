@@ -19,12 +19,12 @@
 package org.wso2.carbon.identity.oauth.extension;
 
 import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
-import org.wso2.carbon.identity.oauth.extension.profile.UnregistrationProfile;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -49,6 +49,8 @@ public interface RegistrationService {
     Response register(RegistrationProfile profile);
 
     @DELETE
-    Response unregister(UnregistrationProfile profile);
+    public Response unregister(@QueryParam("applicationName") String applicationName,
+                               @QueryParam("userId") String userId,
+                               @QueryParam("consumerKey") String consumerKey);
 
 }

@@ -242,8 +242,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     this.getPluginRepository().getDeviceManagementService(
                             device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            device.setFeatures(dmsDevice.getFeatures());
-            device.setProperties(dmsDevice.getProperties());
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
             devices.add(device);
         }
         return devices;
@@ -273,8 +275,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     this.getPluginRepository().getDeviceManagementService(
                             device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            device.setFeatures(dmsDevice.getFeatures());
-            device.setProperties(dmsDevice.getProperties());
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
             devices.add(device);
         }
         return devices;
@@ -424,8 +428,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManager dms =
                     this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
             Device pluginSpecificInfo = dms.getDevice(deviceId);
-            device.setProperties(pluginSpecificInfo.getProperties());
-            device.setFeatures(pluginSpecificInfo.getFeatures());
+            if (pluginSpecificInfo != null) {
+                device.setFeatures(pluginSpecificInfo.getFeatures());
+                device.setProperties(pluginSpecificInfo.getProperties());
+            }
         }
         return device;
     }
@@ -570,8 +576,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     this.getPluginRepository().getDeviceManagementService(
                             device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            device.setFeatures(dmsDevice.getFeatures());
-            device.setProperties(dmsDevice.getProperties());
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
             devices.add(device);
         }
         return devices;
@@ -612,8 +620,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                         this.getPluginRepository().getDeviceManagementService(
                                 device.getType()).getDeviceManager().getDevice(
                                 new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
+                if (dmsDevice != null) {
+                    device.setFeatures(dmsDevice.getFeatures());
+                    device.setProperties(dmsDevice.getProperties());
+                }
                 devices.add(device);
             }
         }
@@ -660,8 +670,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     this.getPluginRepository().getDeviceManagementService(
                             device.getType()).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            device.setFeatures(dmsDevice.getFeatures());
-            device.setProperties(dmsDevice.getProperties());
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
             devices.add(device);
         }
         return devices;

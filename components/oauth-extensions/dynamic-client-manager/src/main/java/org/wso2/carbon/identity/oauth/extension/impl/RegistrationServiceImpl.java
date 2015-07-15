@@ -20,26 +20,14 @@ package org.wso2.carbon.identity.oauth.extension.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.impl.utils.APIUtil;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
-import org.wso2.carbon.identity.application.common.model.InboundAuthenticationConfig;
-import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRequestConfig;
-import org.wso2.carbon.identity.application.common.model.Property;
-import org.wso2.carbon.identity.application.common.model.ServiceProvider;
-import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
-import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.oauth.OAuthAdminService;
-import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
-import org.wso2.carbon.identity.oauth.extension.*;
+import org.wso2.carbon.identity.oauth.extension.DynamicClientRegistrationUtil;
+import org.wso2.carbon.identity.oauth.extension.FaultResponse;
+import org.wso2.carbon.identity.oauth.extension.OAuthApplicationInfo;
+import org.wso2.carbon.identity.oauth.extension.RegistrationService;
 import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
-import org.wso2.carbon.identity.oauth.extension.profile.UnregistrationProfile;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -47,7 +35,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
+import javax.ws.rs.QueryParam;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -78,10 +66,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @DELETE
     @Override
-    public Response unregister(UnregistrationProfile profile) {
-        String applicationName = profile.getApplicationName();
-        String consumerKey = profile.getConsumerKey();
-        String userId = profile.getUserId();
+    public Response unregister(@QueryParam("applicationName") String applicationName,
+                               @QueryParam("userId") String userId,
+                               @QueryParam("consumerKey") String consumerKey) {
         try {
             DynamicClientRegistrationUtil.unregisterApplication(userId, applicationName, consumerKey);
             return Response.status(Response.Status.ACCEPTED).build();

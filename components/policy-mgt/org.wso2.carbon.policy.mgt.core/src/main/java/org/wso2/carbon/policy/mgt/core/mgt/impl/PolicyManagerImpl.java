@@ -660,7 +660,7 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             int tenantId = PolicyManagerUtil.getTenantId();
             Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            deviceId = device.getId();
+                deviceId = device.getId();
             boolean exist = policyDAO.checkPolicyAvailable(deviceId);
             PolicyManagementDAOFactory.beginTransaction();
             if (exist) {

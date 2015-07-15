@@ -26,6 +26,9 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOE
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,18 +115,43 @@ public class OperationDAOImpl implements OperationDAO {
             throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
+
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
 
             stmt = connection.prepareStatement("INSERT INTO DM_DEVICE_OPERATION_RESPONSE(OPERATION_ID,DEVICE_ID," +
                     "OPERATION_RESPONSE) VALUES(?, ?, ?)");
+
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(operationResponse);
+
             stmt.setInt(1, operationId);
             stmt.setInt(2, deviceId);
-            stmt.setObject(3, operationResponse);
+            stmt.setBytes(3, bao.toByteArray());
             stmt.executeUpdate();
+
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while inserting operation response", e);
-        } finally {
+        }catch (IOException e) {
+            throw new OperationManagementDAOException("Error occurred while serializing policy operation object", e);
+        }finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
     }

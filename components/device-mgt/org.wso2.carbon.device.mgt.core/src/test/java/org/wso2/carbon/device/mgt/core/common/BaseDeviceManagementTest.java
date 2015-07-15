@@ -101,6 +101,8 @@ public abstract class BaseDeviceManagementTest {
             conn.setAutoCommit(false);
 
             this.cleanupEnrolmentData(conn);
+            this.cleanApplicationMappingData(conn);
+            this.cleanApplicationData(conn);
             this.cleanupDeviceData(conn);
             this.cleanupDeviceTypeData(conn);
 
@@ -126,6 +128,31 @@ public abstract class BaseDeviceManagementTest {
             }
         }
     }
+
+    private void cleanApplicationMappingData(Connection conn) throws SQLException{
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_APPLICATION_MAPPING");
+            stmt.execute();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+    }
+
+    private void cleanApplicationData(Connection conn) throws SQLException{
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("DELETE FROM DM_APPLICATION");
+            stmt.execute();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+    }
+
 
     private void cleanupEnrolmentData(Connection conn) throws SQLException {
         PreparedStatement stmt = null;

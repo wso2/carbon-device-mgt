@@ -34,6 +34,7 @@
     <test name="Service Unit Tests" preserve-order="true">
         <classes>
             <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>
         </classes>
     </test>
 </suite>

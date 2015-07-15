@@ -41,6 +41,7 @@ import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
@@ -62,6 +63,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     private DeviceDAO deviceDAO;
     private ApplicationDAO applicationDAO;
     private ApplicationMappingDAO applicationMappingDAO;
+    private boolean isTest;
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
 
@@ -86,6 +88,14 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
         this.applicationMappingDAO = DeviceManagementDAOFactory.getApplicationMappingDAO();
+    }
+
+    ApplicationManagerProviderServiceImpl(DeviceManagementPluginRepository pluginRepository, boolean testMode) {
+        this.pluginRepository = pluginRepository;
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
+        this.applicationMappingDAO = DeviceManagementDAOFactory.getApplicationMappingDAO();
+        isTest = testMode;
     }
 
     @Override
@@ -171,7 +181,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     public void updateApplicationListInstalledInDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getTenantId();
 
         try {
             Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
@@ -205,12 +215,24 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
     }
 
+    private int getTenantId() {
+
+        int tenantId = 0;
+        if (isTest){
+            tenantId = DeviceManagerUtil.currentTenant.get();
+        }else{
+            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        }
+
+        return tenantId;
+    }
+
     @Override
     public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
             throws ApplicationManagementException {
          Device device = null;
          try {
-             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+             int tenantId = getTenantId();
              device = deviceDAO.getDevice(deviceIdentifier, tenantId);
              return applicationDAO.getInstalledApplications(device.getId());
             }catch (DeviceManagementDAOException deviceDaoEx) {

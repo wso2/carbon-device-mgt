@@ -101,8 +101,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
-
-        System.out.println("dms________"+device.getType());
         boolean status = dms.enrollDevice(device);
         try {
             if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))) {

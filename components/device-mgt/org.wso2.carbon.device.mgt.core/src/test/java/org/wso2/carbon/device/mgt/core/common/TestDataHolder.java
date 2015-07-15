@@ -14,7 +14,7 @@ public class TestDataHolder {
     public static DeviceType initialTestDeviceType;
     public static String TEST_DEVICE_TYPE = "Test";
     public static Integer SUPER_TENANT_ID = -1234;
-    public static ThreadLocal<Integer> tenant = new ThreadLocal<Integer>();
+    public static String initialDeviceIdentifier = "12345";
 
     public static Device generateDummyDeviceData(String deviceType){
 
@@ -30,7 +30,6 @@ public class TestDataHolder {
         device.setDeviceIdentifier("12345");
         device.setType(deviceType);
         return device;
-
     }
 
     public static DeviceType generateDeviceTypeData(String devTypeName){

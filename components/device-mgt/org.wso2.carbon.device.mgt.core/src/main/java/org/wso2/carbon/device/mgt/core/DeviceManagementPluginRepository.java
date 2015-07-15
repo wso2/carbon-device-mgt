@@ -43,10 +43,7 @@ public class DeviceManagementPluginRepository {
             throw new DeviceManagementException("Error occurred while adding device management provider '" +
                     deviceType + "'");
         }
-
         providers.put(deviceType, provider);
-        System.out.println("@plugin Repo:"+deviceType);
-        System.out.println("@plugin Repo:"+providers.size());
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
@@ -55,7 +52,6 @@ public class DeviceManagementPluginRepository {
     }
 
     public DeviceManagementService getDeviceManagementService(String type) {
-        System.out.println("@plugin get:"+providers.get(type).toString());
         return providers.get(type);
     }
 

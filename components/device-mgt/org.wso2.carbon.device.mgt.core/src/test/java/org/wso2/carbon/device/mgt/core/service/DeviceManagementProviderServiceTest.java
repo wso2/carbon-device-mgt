@@ -26,16 +26,13 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     DeviceManagementProviderService deviceManagementProviderService = null;
 
 
-
     @BeforeClass
     @Override
     public void init() throws Exception {
         initDatSource();
     }
 
-
-
-    @Test
+  @Test
     public void testEnrollment() {
 
         try {
@@ -46,10 +43,12 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
             deviceManagementProviderService = new DeviceManagementProviderServiceImpl(deviceManagementPluginRepository,
                     true);
             DeviceManagerUtil.registerDeviceType(TestDataHolder.TEST_DEVICE_TYPE);
-            TestDataHolder.tenant.set(TestDataHolder.SUPER_TENANT_ID);
+            DeviceManagerUtil.currentTenant.set(TestDataHolder.SUPER_TENANT_ID);
+
             Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
             boolean isEnrolled = deviceManagementProviderService.enrollDevice(device);
 
+            Assert.assertEquals(isEnrolled,true,"Enrolment fail");
             if (isEnrolled){
                 TestDataHolder.initialTestDevice = device;
             }
@@ -69,6 +68,5 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
 
     @AfterClass
     public void cleanResources(){
-      //  PrivilegedCarbonContext.endTenantFlow();
     }
 }

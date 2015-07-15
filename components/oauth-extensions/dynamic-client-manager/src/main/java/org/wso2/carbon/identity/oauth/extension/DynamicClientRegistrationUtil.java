@@ -35,8 +35,9 @@ import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
-import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+
+import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
 
 import java.util.Arrays;
 

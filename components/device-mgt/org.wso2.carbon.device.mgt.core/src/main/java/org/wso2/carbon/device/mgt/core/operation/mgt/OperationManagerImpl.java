@@ -74,7 +74,7 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public boolean addOperation(Operation operation,
+    public int addOperation(Operation operation,
                                 List<DeviceIdentifier> deviceIds) throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
@@ -105,7 +105,7 @@ public class OperationManagerImpl implements OperationManager {
                 }
             }
             OperationManagementDAOFactory.commitTransaction();
-            return true;
+            return operationId;
         } catch (OperationManagementDAOException e) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();

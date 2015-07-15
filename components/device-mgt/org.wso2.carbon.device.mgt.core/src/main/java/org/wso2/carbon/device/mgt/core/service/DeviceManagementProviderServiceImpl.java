@@ -704,7 +704,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
     }
 
-    public int getTenantId() {
+    private int getTenantId() {
 
         ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
         int tenant = 0;

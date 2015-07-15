@@ -24,18 +24,17 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
+import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
-import java.util.Date;
+public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
 
-public class EnrolmentPersistenceDAOTests extends BaseDeviceManagementDAOTest {
-
-    private static final Log log = LogFactory.getLog(EnrolmentPersistenceDAOTests.class);
+    private static final Log log = LogFactory.getLog(EnrolmentPersistenceTests.class);
     private EnrolmentDAO enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
 
     @Test
     public void testAddEnrolment() {
-        int deviceId = 1234;
+        int deviceId = TestDataHolder.initialTestDevice.getId();
         String owner = "admin";
 
         /* Initializing source enrolment configuration bean to be tested */
@@ -46,7 +45,7 @@ public class EnrolmentPersistenceDAOTests extends BaseDeviceManagementDAOTest {
         /* Adding dummy enrolment configuration to the device management metadata store */
         try {
             DeviceManagementDAOFactory.openConnection();
-            enrolmentDAO.addEnrollment(deviceId, source, -1234);
+            enrolmentDAO.addEnrollment(deviceId, source, TestDataHolder.SUPER_TENANT_ID);
         } catch (DeviceManagementDAOException e) {
             log.error("Error occurred while adding enrollment", e);
         } finally {
@@ -59,7 +58,7 @@ public class EnrolmentPersistenceDAOTests extends BaseDeviceManagementDAOTest {
         /* Retrieving the enrolment associated with the given deviceId and owner */
         EnrolmentInfo target = null;
         try {
-            target = this.getEnrolmentConfig(deviceId, owner, -1234);
+            target = this.getEnrolmentConfig(deviceId, owner, TestDataHolder.SUPER_TENANT_ID);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving application info";
             log.error(msg, e);

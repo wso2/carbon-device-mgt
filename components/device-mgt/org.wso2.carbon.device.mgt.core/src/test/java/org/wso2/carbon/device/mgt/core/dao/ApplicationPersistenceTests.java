@@ -24,33 +24,25 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
+import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
-import java.util.Properties;
+public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
 
-public class ApplicationPersistenceDAOTests extends BaseDeviceManagementDAOTest {
-
-    private static final Log log = LogFactory.getLog(ApplicationPersistenceDAOTests.class);
+    private static final Log log = LogFactory.getLog(ApplicationPersistenceTests.class);
     private ApplicationDAO applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
 
     @Test
     public void testAddApplication() {
         /* Initializing source application bean to be tested */
-        Properties properties = new Properties();
-        Application source = new Application();
-        source.setName("SimpleCalculator");
-        source.setCategory("TestCategory");
-        source.setApplicationIdentifier("com.simple.calculator");
-        source.setType("TestType");
-        source.setVersion("1.0.0");
-        source.setImageUrl("http://test.org/image/");
-        source.setLocationUrl("http://test.org/location/");
 
         /* Adding dummy application to the application store */
+        String testAppIdentifier = "test sample1";
         try {
             DeviceManagementDAOFactory.openConnection();
-            applicationDAO.addApplication(source, -1234);
+            applicationDAO.addApplication(TestDataHolder.generateApplicationDummyData(testAppIdentifier), -1234);
         } catch (DeviceManagementDAOException e) {
-            log.error("Error occurred while adding application '" + source.getName() + "'", e);
+            log.error("Error occurred while adding application test sample1", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -61,22 +53,22 @@ public class ApplicationPersistenceDAOTests extends BaseDeviceManagementDAOTest 
         /* Retrieving the application by its name */
         Application target = null;
         try {
-            target = this.getApplication(source.getApplicationIdentifier(), -1234);
+            target = this.getApplication(testAppIdentifier, -1234);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving application info";
             log.error(msg, e);
             Assert.fail(msg, e);
         }
 
-        Assert.assertEquals(target.getApplicationIdentifier(), source.getApplicationIdentifier(), "Application added is not as same as " +
+        Assert.assertEquals(target.getApplicationIdentifier(), testAppIdentifier, "Application added is not as same as " +
                 "what's " +
                 "retrieved");
     }
 
-    private Application getApplication(String packageName, int tenantId) throws DeviceManagementDAOException {
+    private Application getApplication(String appIdentifier, int tenantId) throws DeviceManagementDAOException {
         try {
             DeviceManagementDAOFactory.openConnection();
-            return applicationDAO.getApplication(packageName, tenantId);
+            return applicationDAO.getApplication(appIdentifier, tenantId);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();

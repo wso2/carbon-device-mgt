@@ -28,7 +28,7 @@ public interface ApplicationDAO {
 
     List<Integer> addApplications(List<Application> applications, int tenantId) throws DeviceManagementDAOException;
 
-    int removeApplication(String applicationName, int tenantId) throws DeviceManagementDAOException;
+    List<Integer> removeApplications(List<Application> apps, int tenantId) throws DeviceManagementDAOException;
 
     Application getApplication(String identifier, int tenantId) throws DeviceManagementDAOException;
 

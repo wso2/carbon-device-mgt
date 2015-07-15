@@ -27,7 +27,6 @@ public class APIMapperContextListener implements LifecycleListener {
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
         if (Lifecycle.AFTER_INIT_EVENT.equals(lifecycleEvent.getType())) {
-            System.out.println("Deployeddd");
         }
     }
 

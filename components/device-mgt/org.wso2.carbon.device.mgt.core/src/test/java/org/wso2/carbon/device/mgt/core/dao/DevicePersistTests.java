@@ -21,27 +21,24 @@ package org.wso2.carbon.device.mgt.core.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo.OwnerShip;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
+import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
+import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.sql.*;
-import java.util.Date;
 
-public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
+public class DevicePersistTests extends BaseDeviceManagementTest {
 
     DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
     DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
 
-    private static final Log log = LogFactory.getLog(DeviceManagementDAOTests.class);
+    private static final Log log = LogFactory.getLog(DevicePersistTests.class);
 
     @BeforeClass
     @Override
@@ -51,7 +48,7 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
     @Test
     public void testAddDeviceTypeTest() {
-        DeviceType deviceType = this.loadDummyDeviceType();
+        DeviceType deviceType = TestDataHolder.generateDeviceTypeData(TestDataHolder.TEST_DEVICE_TYPE);
         try {
             DeviceManagementDAOFactory.openConnection();
             deviceTypeDAO.addDeviceType(deviceType);
@@ -67,31 +64,31 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
             }
         }
 
-        int targetTypeId = -1;
+        Integer targetTypeId = null;
         try {
-            targetTypeId = this.getDeviceTypeId();
+            targetTypeId = this.getDeviceTypeId(TestDataHolder.TEST_DEVICE_TYPE);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving target device type id";
             log.error(msg, e);
             Assert.fail(msg, e);
         }
-
         Assert.assertNotNull(targetTypeId, "Device Type Id is null");
         deviceType.setId(targetTypeId);
+        TestDataHolder.initialTestDeviceType = deviceType;
     }
 
     @Test(dependsOnMethods = {"testAddDeviceTypeTest"})
     public void testAddDeviceTest() {
-        DeviceType deviceType = this.loadDummyDeviceType();
-        deviceType.setId(1);
 
-        int tenantId = -1234;
-        Device device = this.loadDummyDevice();
+        int tenantId = TestDataHolder.SUPER_TENANT_ID;
+        Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
+
         try {
             DeviceManagementDAOFactory.openConnection();
-            int deviceId = deviceDAO.addDevice(deviceType.getId(), device, tenantId);
+            int deviceId = deviceDAO.addDevice(TestDataHolder.initialTestDeviceType.getId(), device, tenantId);
             device.setId(deviceId);
             deviceDAO.addEnrollment(device, tenantId);
+            TestDataHolder.initialTestDevice = device;
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while adding '" + device.getType() + "' device with the identifier '" +
                     device.getDeviceIdentifier() + "'";
@@ -107,7 +104,8 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
         int targetId = -1;
         try {
-            targetId = this.getDeviceId();
+            targetId = this.getDeviceId(TestDataHolder.initialTestDevice.getDeviceIdentifier(),
+                    TestDataHolder.SUPER_TENANT_ID);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving device id";
             log.error(msg, e);
@@ -117,26 +115,7 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
                 device.getType() + "' carrying the identifier '" + device.getDeviceIdentifier() + "', is null");
     }
 
-    private void addDeviceEnrolment() {
-        Device device = this.loadDummyDevice();
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            deviceDAO.addEnrollment(device, -1234);
-        } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while adding enrolment configuration upon '" + device.getType() +
-                    "' device with the identifier '" + device.getDeviceIdentifier() + "'";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
-        }
-    }
-
-    private int getDeviceId() throws DeviceManagementDAOException {
+    private int getDeviceId(String deviceIdentification, int tenantId) throws DeviceManagementDAOException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -147,8 +126,8 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
             conn = getDataSource().getConnection();
             String sql = "SELECT ID FROM DM_DEVICE WHERE DEVICE_IDENTIFICATION = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, "111");
-            stmt.setInt(2, -1234);
+            stmt.setString(1, deviceIdentification);
+            stmt.setInt(2, tenantId);
 
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -163,18 +142,17 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
         }
     }
 
-    private int getDeviceTypeId() throws DeviceManagementDAOException {
+    private int getDeviceTypeId(String deviceTypeName) throws DeviceManagementDAOException {
         int id = -1;
         Connection conn = null;
         PreparedStatement stmt = null;
         String sql = "SELECT ID, NAME FROM DM_DEVICE_TYPE WHERE NAME = ?";
 
-        DeviceType deviceType = this.loadDummyDeviceType();
         try {
             Assert.assertNotNull(getDataSource(), "Data Source is not initialized properly");
             conn = getDataSource().getConnection();
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceType.getName());
+            stmt.setString(1, deviceTypeName);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -191,11 +169,14 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
 
     @Test(dependsOnMethods = "testAddDeviceTest")
     public void testSetEnrolmentStatus() {
-        Device device = this.loadDummyDevice();
+
+        Device device = TestDataHolder.initialTestDevice;
         try {
             DeviceManagementDAOFactory.openConnection();
             DeviceIdentifier deviceId = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
-            deviceDAO.setEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), Status.ACTIVE, -1234);
+            deviceDAO.setEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), Status.ACTIVE,
+                    TestDataHolder.SUPER_TENANT_ID);
+
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while setting enrolment status";
             log.error(msg, e);
@@ -209,24 +190,26 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
         }
         Status target = null;
         try {
-            target = this.getEnrolmentStatus();
+            target = this.getEnrolmentStatus(device.getDeviceIdentifier(), device.getType(),
+                    TestDataHolder.SUPER_TENANT_ID);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while retrieving the target enrolment status";
             log.error(msg, e);
             Assert.fail(msg, e);
         }
-
         Assert.assertNotNull(target, "Enrolment status retrieved for the device carrying its identifier as '" +
                 device.getDeviceIdentifier() + "' is null");
         Assert.assertEquals(target, Status.ACTIVE, "Enrolment status retrieved is not as same as what's configured");
     }
 
-    private Status getEnrolmentStatus() throws DeviceManagementDAOException {
-        Device device = this.loadDummyDevice();
+    private Status getEnrolmentStatus(String identifier, String deviceType, int tenantId)
+            throws DeviceManagementDAOException {
+
+        Device device = TestDataHolder.generateDummyDeviceData("ios");
         try {
             DeviceManagementDAOFactory.openConnection();
-            DeviceIdentifier deviceId = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
-            return deviceDAO.getEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), -1234);
+            DeviceIdentifier deviceId = new DeviceIdentifier(identifier, deviceType);
+            return deviceDAO.getEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving the current status of the " +
                     "enrolment", e);
@@ -238,24 +221,4 @@ public class DeviceManagementDAOTests extends BaseDeviceManagementDAOTest {
             }
         }
     }
-
-    private Device loadDummyDevice() {
-        Device device = new Device();
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
-        enrolmentInfo.setDateOfEnrolment(new Date().getTime());
-        enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
-        enrolmentInfo.setOwner("admin");
-        enrolmentInfo.setOwnership(OwnerShip.BYOD);
-        enrolmentInfo.setStatus(Status.CREATED);
-        device.setEnrolmentInfo(enrolmentInfo);
-        device.setDescription("Test Description");
-        device.setDeviceIdentifier("1234");
-        device.setType(this.loadDummyDeviceType().getName());
-        return device;
-    }
-
-    private DeviceType loadDummyDeviceType() {
-        return new DeviceType("iOS");
-    }
-
 }

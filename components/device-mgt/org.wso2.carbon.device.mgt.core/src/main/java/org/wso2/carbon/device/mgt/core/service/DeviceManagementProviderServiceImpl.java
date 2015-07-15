@@ -36,6 +36,7 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.io.IOException;
@@ -52,19 +53,35 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     private DeviceTypeDAO deviceTypeDAO;
     private EnrolmentDAO enrolmentDAO;
     private DeviceManagementPluginRepository pluginRepository;
+    private boolean isTest = false;
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
+    private int tenantId;
 
     public DeviceManagementProviderServiceImpl() {
 
         this.pluginRepository = new DeviceManagementPluginRepository();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-        this.enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
-
+        initDataAccessObjects();
         /* Registering a listener to retrieve events when some device management service plugin is installed after
         * the component is done getting initialized */
         DeviceManagementServiceComponent.registerPluginInitializationListener(this);
+    }
+
+
+    /**
+     * This constructor calls from unit tests
+     * @param pluginRepo
+     */
+    DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test){
+        this.pluginRepository = pluginRepo;
+        initDataAccessObjects();
+        isTest = test;
+    }
+
+    private void initDataAccessObjects() {
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+        this.enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
     }
 
     @Override
@@ -81,6 +98,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
+
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
         boolean status = dms.enrollDevice(device);
@@ -90,7 +108,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } else {
                 device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
             }
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            int tenantId = getTenantId();
 
             DeviceManagementDAOFactory.beginTransaction();
 
@@ -575,9 +593,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         String[] users;
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
-            users =
-                    DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
-                            tenantId).getUserStoreManager().getUserListOfRole(role);
+            users =  DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager().getUserListOfRole(role);
         } catch (UserStoreException e) {
             throw new DeviceManagementException("Error occurred while obtaining the users, who are assigned " +
                     "with the role '" + role + "'", e);
@@ -699,6 +716,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
     }
 
+
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException {
         List<Device> devices = new ArrayList<Device>();
         List<Device> allDevices;
@@ -733,6 +751,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             devices.add(device);
         }
         return devices;
+    }
+
+
+    public int getTenantId() {
+
+        ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
+        int tenant = 0;
+
+        if (isTest){
+            tenant = DeviceManagerUtil.currentTenant.get();
+        }else{
+            tenant = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        }
+        return tenant;
     }
 
 }

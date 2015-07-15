@@ -21,58 +21,64 @@ import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 import java.util.List;
 
 public class TestDeviceManagementService implements DeviceManagementService {
 
-    public static final String DEVICE_TYPE_TEST = "Test";
+    private String providerType;
 
-
+    public TestDeviceManagementService(String deviceType){
+        providerType = deviceType;
+    }
     @Override
     public String getType() {
-        return TestDeviceManagementService.DEVICE_TYPE_TEST;
+        return providerType;
     }
 
     @Override
     public void init() throws DeviceManagementException {
-        
+
     }
 
     @Override
     public DeviceManager getDeviceManager() {
-        return null;  
+        return new TestDeviceManager();
     }
 
     @Override
     public ApplicationManager getApplicationManager() {
-        return null;  
+        return null;
     }
 
     @Override
-    public Application[] getApplications(String domain, int pageNumber,
-                                         int size) throws ApplicationManagementException {
-        return new Application[0];  
+    public Application[] getApplications(String domain, int pageNumber, int size)
+            throws ApplicationManagementException {
+        return new Application[0];
     }
 
     @Override
-    public void updateApplicationStatus(DeviceIdentifier deviceId, Application application,
-                                        String status) throws ApplicationManagementException {
-        
+    public void updateApplicationStatus(DeviceIdentifier deviceId, Application application, String status)
+            throws ApplicationManagementException {
+
     }
 
     @Override
-    public String getApplicationStatus(DeviceIdentifier deviceId,
-                                       Application application) throws ApplicationManagementException {
-        return null;  
+    public String getApplicationStatus(DeviceIdentifier deviceId, Application application)
+            throws ApplicationManagementException {
+        return null;
     }
 
     @Override
-    public void installApplication(Operation operation,
-                                   List<DeviceIdentifier> deviceIdentifiers) throws ApplicationManagementException {
-        
-    }
+    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+            throws ApplicationManagementException {
 
+    }
 }

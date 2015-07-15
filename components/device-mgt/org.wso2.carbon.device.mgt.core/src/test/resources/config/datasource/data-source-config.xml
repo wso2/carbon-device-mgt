@@ -18,7 +18,7 @@
   -->
 
 <DataSourceConfig>
-    <Url>jdbc:h2:mem:cdm-test-db;DB_CLOSE_DELAY=-1</Url>
+    <Url>jdbc:h2:mem:cdm-test-db;DB_CLOSE_ON_EXIT=FALSE;MVCC=true</Url>
     <DriverClassName>org.h2.Driver</DriverClassName>
     <User>wso2carbon</User>
     <Password>wso2carbon</Password>

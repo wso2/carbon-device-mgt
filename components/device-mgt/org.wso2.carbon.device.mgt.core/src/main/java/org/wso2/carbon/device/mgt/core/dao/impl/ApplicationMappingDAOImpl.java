@@ -102,8 +102,9 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
     }
 
     @Override
-    public int removeApplicationMapping(int deviceId, int applicationId,
-                                        int tenantId) throws DeviceManagementDAOException {
+    public void removeApplicationMapping(int deviceId, List<Integer> appIdList, int tenantId)
+            throws DeviceManagementDAOException {
+
         Connection conn;
         ResultSet rs;
         int mappingId = -1;
@@ -112,17 +113,15 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             String sql = "DELETE DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, deviceId);
-            stmt.setInt(2, applicationId);
-            stmt.setInt(3, tenantId);
-            stmt.execute();
 
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                mappingId = rs.getInt(1);
+            for(Integer appId:appIdList){
+                stmt.setInt(1, deviceId);
+                stmt.setInt(2, appId);
+                stmt.setInt(3, tenantId);
+                stmt.addBatch();
             }
-            return mappingId;
-        } catch (SQLException e) {
+            stmt.executeBatch();
+       } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mapping", e);
         }
     }

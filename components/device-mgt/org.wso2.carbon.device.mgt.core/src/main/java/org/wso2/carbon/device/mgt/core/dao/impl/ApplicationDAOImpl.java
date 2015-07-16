@@ -86,7 +86,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
                     "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES,APP_IDENTIFIER) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)", Statement.RETURN_GENERATED_KEYS);
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
 
 
             for (Application application : applications) {

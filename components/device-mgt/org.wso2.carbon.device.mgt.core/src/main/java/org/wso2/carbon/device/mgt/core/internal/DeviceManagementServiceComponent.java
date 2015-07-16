@@ -46,6 +46,7 @@ import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementService;
 import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -188,6 +189,10 @@ public class DeviceManagementServiceComponent {
         DeviceManagementProviderService deviceManagementProvider = new DeviceManagementProviderServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
         bundleContext.registerService(DeviceManagementProviderService.class.getName(), deviceManagementProvider, null);
+
+        LicenseManagementService licenseManagementService = new LicenseManagementService();
+        DeviceManagementDataHolder.getInstance().setLicenseManager(new LicenseManagerImpl());
+        bundleContext.registerService(LicenseManagementService.class.getName(), licenseManagementService, null);
 
         APIPublisherService publisher = new APIPublisherServiceImpl();
         DeviceManagementDataHolder.getInstance().setApiPublisherService(publisher);

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="H2 - WSO2DM_DB" uuid="562f415f-d769-4aec-b5fb-5da676b56f37">
+    <database-info product="H2" version="1.3.176 (2014-04-05)" jdbc-version="4.0" driver-name="H2 JDBC Driver" driver-version="1.3.176 (2014-04-05)">
+      <identifier-quote-string>&quot;</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="upper" quoted-identifiers="exact"/>
+    <schema name="PUBLIC" catalog="WSO2DM_DB"/>
+    <table name="DM_COMMAND_OPERATION" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="OPERATION_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="ENABLED" sqlType="BOOLEAN" precision="1" scale="0" nullable="false" jdbcType="16" def="RkFMU0U="/>
+      <primary-key name="CONSTRAINT_2" columns="OPERATION_ID"/>
+      <foreign-key name="FK_DM_OPERATION_COMMAND" columns="OPERATION_ID" ref-table="DM_OPERATION" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+    </table>
+    <table name="DM_CONFIG_OPERATION" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="OPERATION_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="CONSTRAINT_A" columns="OPERATION_ID"/>
+      <foreign-key name="FK_DM_OPERATION_CONFIG" columns="OPERATION_ID" ref-table="DM_OPERATION" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+    </table>
+    <table name="DM_CRITERIA" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfQTEzQjM2M0FfNEFFOV80OEZEXzg5MENfNDBDQjI4RjI5ODE1KQ==" autoIncrement="true"/>
+      <column name="TENANT_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="NAME" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_AF" columns="ID"/>
+      <exported-key name="FK_CRITERIA_POLICY_CRITERIA" table="DM_POLICY_CRITERIA" schema="PUBLIC" catalog="WSO2DM_DB" columns="CRITERIA_ID"/>
+    </table>
+    <table name="DM_DEVICE" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfMzlFRjdDQTlfNzkxMV80RjFGX0E1M0ZfNzUwMzFGRjYyMjdGKQ==" autoIncrement="true"/>
+      <column name="DESCRIPTION" sqlType="CLOB" precision="2147483647" scale="0" nullable="true" jdbcType="2005" def="J05VTEwn"/>
+      <column name="NAME" sqlType="VARCHAR" precision="100" scale="0" nullable="true" jdbcType="12" def="J05VTEwn"/>
+      <column name="DATE_OF_ENROLLMENT" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5" def="TlVMTA=="/>
+      <column name="DATE_OF_LAST_UPDATE" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5" def="TlVMTA=="/>
+      <column name="OWNERSHIP" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12" def="J05VTEwn"/>
+      <column name="STATUS" sqlType="VARCHAR" precision="15" scale="0" nullable="true" jdbcType="12" def="J05VTEwn"/>
+      <column name="DEVICE_TYPE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4" def="TlVMTA=="/>
+      <column name="DEVICE_IDENTIFICATION" sqlType="VARCHAR" precision="300" scale="0" nullable="true" jdbcType="12" def="J05VTEwn"/>
+      <column name="OWNER" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12" def="J05VTEwn"/>
+      <column name="TENANT_ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4" def="MA=="/>
+      <primary-key name="CONSTRAINT_BA" columns="ID"/>
+      <foreign-key name="FK_DM_DEVICE_DM_DEVICE_TYPE2" columns="DEVICE_TYPE_ID" ref-table="DM_DEVICE_TYPE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <exported-key name="FK_DM_DEVICE_OPERATION_MAPPING_DEVICE" table="DM_DEVICE_OPERATION_MAPPING" schema="PUBLIC" catalog="WSO2DM_DB" columns="DEVICE_ID"/>
+      <exported-key name="FK_DEVICE_DEVICE_POLICY" table="DM_DEVICE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" columns="DEVICE_ID"/>
+      <exported-key name="FK_DM_POLICY_DEVCIE_APPLIED" table="DM_DEVICE_POLICY_APPLIED" schema="PUBLIC" catalog="WSO2DM_DB" columns="DEVICE_ID"/>
+      <index name="FK_DM_DEVICE_DM_DEVICE_TYPE2_INDEX_B" unique="false" columns="DEVICE_TYPE_ID"/>
+    </table>
+    <table name="DM_DEVICE_OPERATION_MAPPING" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfMzE0RDA2RUJfN0I4RV80Njk4Xzg4MDJfQjgxMTJDRkNGMzU1KQ==" autoIncrement="true"/>
+      <column name="DEVICE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="OPERATION_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="CONSTRAINT_85" columns="ID"/>
+      <foreign-key name="FK_DM_DEVICE_OPERATION_MAPPING_DEVICE" columns="DEVICE_ID" ref-table="DM_DEVICE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <foreign-key name="FK_DM_DEVICE_OPERATION_MAPPING_OPERATION" columns="OPERATION_ID" ref-table="DM_OPERATION" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <index name="FK_DM_DEVICE_OPERATION_MAPPING_DEVICE_INDEX_8" unique="false" columns="DEVICE_ID"/>
+      <index name="FK_DM_DEVICE_OPERATION_MAPPING_OPERATION_INDEX_8" unique="false" columns="OPERATION_ID"/>
+    </table>
+    <table name="DM_DEVICE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfMTY3NzEyNERfQjcxQl80OEMzXzg2NUNfNzg0NkUwNzc0RkE3KQ==" autoIncrement="true"/>
+      <column name="DEVICE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="POLICY_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="CONSTRAINT_D" columns="ID"/>
+      <foreign-key name="FK_DEVICE_DEVICE_POLICY" columns="DEVICE_ID" ref-table="DM_DEVICE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <foreign-key name="FK_POLICY_DEVICE_POLICY" columns="POLICY_ID" ref-table="DM_POLICY" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <index name="FK_DEVICE_DEVICE_POLICY_INDEX_D" unique="false" columns="DEVICE_ID"/>
+      <index name="FK_POLICY_DEVICE_POLICY_INDEX_D" unique="false" columns="POLICY_ID"/>
+    </table>
+    <table name="DM_DEVICE_POLICY_APPLIED" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfOTIxN0VBQzNfMTEwQ180MjUwXzg0RkVfNjg4QTdCRjY4NDg1KQ==" autoIncrement="true"/>
+      <column name="DEVICE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="POLICY_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="POLICY_CONTENT" sqlType="BLOB" precision="2147483647" scale="0" nullable="true" jdbcType="2004"/>
+      <column name="APPLIED" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6"/>
+      <column name="CREATED_TIME" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="UPDATED_TIME" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="APPLIED_TIME" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <primary-key name="CONSTRAINT_4B" columns="ID"/>
+      <foreign-key name="FK_DM_POLICY_DEVCIE_APPLIED" columns="DEVICE_ID" ref-table="DM_DEVICE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <foreign-key name="FK_DM_POLICY_DEVICE_APPLIED_POLICY" columns="POLICY_ID" ref-table="DM_POLICY" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <index name="FK_DM_POLICY_DEVCIE_APPLIED_INDEX_4" unique="false" columns="DEVICE_ID"/>
+      <index name="FK_DM_POLICY_DEVICE_APPLIED_POLICY_INDEX_4" unique="false" columns="POLICY_ID"/>
+    </table>
+    <table name="DM_DEVICE_TYPE" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfMUZGMjk1RUNfMjUxM180ODI0XzlFQkRfRTkzQUE2ODE1NjIwKQ==" autoIncrement="true"/>
+      <column name="NAME" sqlType="VARCHAR" precision="300" scale="0" nullable="true" jdbcType="12" def="J05VTEwn"/>
+      <primary-key name="CONSTRAINT_B" columns="ID"/>
+      <exported-key name="FK_DM_DEVICE_DM_DEVICE_TYPE2" table="DM_DEVICE" schema="PUBLIC" catalog="WSO2DM_DB" columns="DEVICE_TYPE_ID"/>
+      <exported-key name="FK_DEVICE_TYPE_POLICY_DEVICE_TYPE" table="DM_DEVICE_TYPE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" columns="DEVICE_TYPE_ID"/>
+      <exported-key name="DM_PROFILE_DEVICE_TYPE" table="DM_PROFILE" schema="PUBLIC" catalog="WSO2DM_DB" columns="DEVICE_TYPE_ID"/>
+    </table>
+    <table name="DM_DEVICE_TYPE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="DEVICE_TYPE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="POLICY_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="CONSTRAINT_3" columns="ID"/>
+      <foreign-key name="FK_DEVICE_TYPE_POLICY_DEVICE_TYPE" columns="DEVICE_TYPE_ID" ref-table="DM_DEVICE_TYPE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <foreign-key name="FK_DEVICE_TYPE_POLICY" columns="POLICY_ID" ref-table="DM_POLICY" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <index name="FK_DEVICE_TYPE_POLICY_DEVICE_TYPE_INDEX_3" unique="false" columns="DEVICE_TYPE_ID"/>
+      <index name="FK_DEVICE_TYPE_POLICY_INDEX_3" unique="false" columns="POLICY_ID"/>
+    </table>
+    <table name="DM_OPERATION" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfRkQ5ODgxQzhfN0YyRV80QUY5XzhCODRfMkMyRTA4NDU2Njg0KQ==" autoIncrement="true"/>
+      <column name="TYPE" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12"/>
+      <column name="CREATED_TIMESTAMP" sqlType="TIMESTAMP" precision="23" scale="10" nullable="false" jdbcType="93"/>
+      <column name="RECEIVED_TIMESTAMP" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="STATUS" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="OPERATION_CODE" sqlType="VARCHAR" precision="1000" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_8" columns="ID"/>
+      <exported-key name="FK_DM_OPERATION_COMMAND" table="DM_COMMAND_OPERATION" schema="PUBLIC" catalog="WSO2DM_DB" columns="OPERATION_ID"/>
+      <exported-key name="FK_DM_OPERATION_CONFIG" table="DM_CONFIG_OPERATION" schema="PUBLIC" catalog="WSO2DM_DB" columns="OPERATION_ID"/>
+      <exported-key name="FK_DM_DEVICE_OPERATION_MAPPING_OPERATION" table="DM_DEVICE_OPERATION_MAPPING" schema="PUBLIC" catalog="WSO2DM_DB" columns="OPERATION_ID"/>
+      <exported-key name="FK_DM_OPERATION_PROFILE" table="DM_PROFILE_OPERATION" schema="PUBLIC" catalog="WSO2DM_DB" columns="OPERATION_ID"/>
+    </table>
+    <table name="DM_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfODU0QjZEQzZfM0M1Rl80NTdBX0E2QTVfMTQ0RDIzMkRBMkM1KQ==" autoIncrement="true"/>
+      <column name="NAME" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12" def="J05VTEwn"/>
+      <column name="TENANT_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="PROFILE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="COMPLIANCE" sqlType="VARCHAR" precision="100" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PRIORITY" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="CONSTRAINT_C" columns="ID"/>
+      <foreign-key name="FK_DM_PROFILE_DM_POLICY" columns="PROFILE_ID" ref-table="DM_PROFILE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <exported-key name="FK_POLICY_DEVICE_POLICY" table="DM_DEVICE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" columns="POLICY_ID"/>
+      <exported-key name="FK_DM_POLICY_DEVICE_APPLIED_POLICY" table="DM_DEVICE_POLICY_APPLIED" schema="PUBLIC" catalog="WSO2DM_DB" columns="POLICY_ID"/>
+      <exported-key name="FK_DEVICE_TYPE_POLICY" table="DM_DEVICE_TYPE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" columns="POLICY_ID"/>
+      <exported-key name="FK_POLICY_POLICY_CRITERIA" table="DM_POLICY_CRITERIA" schema="PUBLIC" catalog="WSO2DM_DB" columns="POLICY_ID"/>
+      <exported-key name="FK_ROLE_POLICY_POLICY" table="DM_ROLE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" columns="POLICY_ID"/>
+      <exported-key name="DM_POLICY_USER_POLICY" table="DM_USER_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" columns="POLICY_ID"/>
+      <index name="FK_DM_PROFILE_DM_POLICY_INDEX_C" unique="false" columns="PROFILE_ID"/>
+    </table>
+    <table name="DM_POLICY_CRITERIA" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfOTA5N0U4NUFfQjQ3N180QkUxX0ExMDJfMzk4MzM5MkMxNENFKQ==" autoIncrement="true"/>
+      <column name="CRITERIA_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="POLICY_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="CONSTRAINT_855" columns="ID"/>
+      <foreign-key name="FK_CRITERIA_POLICY_CRITERIA" columns="CRITERIA_ID" ref-table="DM_CRITERIA" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <foreign-key name="FK_POLICY_POLICY_CRITERIA" columns="POLICY_ID" ref-table="DM_POLICY" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <exported-key name="FK_POLICY_CRITERIA_PROPERTIES" table="DM_POLICY_CRITERIA_PROPERTIES" schema="PUBLIC" catalog="WSO2DM_DB" columns="POLICY_CRITERION_ID"/>
+      <index name="FK_CRITERIA_POLICY_CRITERIA_INDEX_8" unique="false" columns="CRITERIA_ID"/>
+      <index name="FK_POLICY_POLICY_CRITERIA_INDEX_8" unique="false" columns="POLICY_ID"/>
+    </table>
+    <table name="DM_POLICY_CRITERIA_PROPERTIES" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfRTQ3RTA2OUVfQzc2N180NTBEXzk2QjlfRjY1RjM1QjVCNzlEKQ==" autoIncrement="true"/>
+      <column name="POLICY_CRITERION_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="PROP_KEY" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PROP_VALUE" sqlType="VARCHAR" precision="100" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONTENT" sqlType="BLOB" precision="2147483647" scale="0" nullable="true" jdbcType="2004" remarks="VGhpcyBpcyB1c2VkIHRvIA=="/>
+      <primary-key name="CONSTRAINT_DB" columns="ID"/>
+      <foreign-key name="FK_POLICY_CRITERIA_PROPERTIES" columns="POLICY_CRITERION_ID" ref-table="DM_POLICY_CRITERIA" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="0" deferrability="2"/>
+      <index name="FK_POLICY_CRITERIA_PROPERTIES_INDEX_D" unique="false" columns="POLICY_CRITERION_ID"/>
+    </table>
+    <table name="DM_PROFILE" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfNjU5NjdFNjVfRjQ0RV80OTY2XzlBNzRfRkUyQzYxQUFENEVEKQ==" autoIncrement="true"/>
+      <column name="PROFILE_NAME" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="TENANT_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="DEVICE_TYPE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="CREATED_TIME" sqlType="TIMESTAMP" precision="23" scale="10" nullable="false" jdbcType="93"/>
+      <column name="UPDATED_TIME" sqlType="TIMESTAMP" precision="23" scale="10" nullable="false" jdbcType="93"/>
+      <primary-key name="CONSTRAINT_21" columns="ID"/>
+      <foreign-key name="DM_PROFILE_DEVICE_TYPE" columns="DEVICE_TYPE_ID" ref-table="DM_DEVICE_TYPE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <exported-key name="FK_DM_PROFILE_DM_POLICY" table="DM_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" columns="PROFILE_ID"/>
+      <exported-key name="FK_DM_PROFILE_DM_POLICY_FEATURES" table="DM_PROFILE_FEATURES" schema="PUBLIC" catalog="WSO2DM_DB" columns="PROFILE_ID"/>
+      <index name="DM_PROFILE_DEVICE_TYPE_INDEX_2" unique="false" columns="DEVICE_TYPE_ID"/>
+    </table>
+    <table name="DM_PROFILE_FEATURES" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfMTY3QzAyQjZfRTg1Ml80RUFFXzlCNTVfOUY2NzUyN0U5NUIyKQ==" autoIncrement="true"/>
+      <column name="PROFILE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="FEATURE_CODE" sqlType="VARCHAR" precision="30" scale="0" nullable="false" jdbcType="12"/>
+      <column name="DEVICE_TYPE_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="CONTENT" sqlType="BLOB" precision="2147483647" scale="0" nullable="true" jdbcType="2004" def="TlVMTA=="/>
+      <primary-key name="CONSTRAINT_4" columns="ID"/>
+      <foreign-key name="FK_DM_PROFILE_DM_POLICY_FEATURES" columns="PROFILE_ID" ref-table="DM_PROFILE" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <index name="FK_DM_PROFILE_DM_POLICY_FEATURES_INDEX_4" unique="false" columns="PROFILE_ID"/>
+    </table>
+    <table name="DM_PROFILE_OPERATION" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="OPERATION_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="ENABLED" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
+      <column name="OPERATION_DETAILS" sqlType="BLOB" precision="2147483647" scale="0" nullable="true" jdbcType="2004" def="TlVMTA=="/>
+      <primary-key name="CONSTRAINT_6" columns="OPERATION_ID"/>
+      <foreign-key name="FK_DM_OPERATION_PROFILE" columns="OPERATION_ID" ref-table="DM_OPERATION" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+    </table>
+    <table name="DM_ROLE_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfRDZCRENDRENfMTgzMF80MUFFXzlFQjVfRkJDNEU2NUJBQjhDKQ==" autoIncrement="true"/>
+      <column name="ROLE_NAME" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="POLICY_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="CONSTRAINT_DD" columns="ID"/>
+      <foreign-key name="FK_ROLE_POLICY_POLICY" columns="POLICY_ID" ref-table="DM_POLICY" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <index name="FK_ROLE_POLICY_POLICY_INDEX_D" unique="false" columns="POLICY_ID"/>
+    </table>
+    <table name="DM_USER_POLICY" schema="PUBLIC" catalog="WSO2DM_DB" type="TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfMzREQTYxMTFfRUVCQV80MDUyXzg4REZfOUZERjRDQzVFRTJCKQ==" autoIncrement="true"/>
+      <column name="POLICY_ID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="USERNAME" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_A6" columns="ID"/>
+      <foreign-key name="DM_POLICY_USER_POLICY" columns="POLICY_ID" ref-table="DM_POLICY" ref-schema="PUBLIC" ref-catalog="WSO2DM_DB" ref-columns="ID" update-rule="1" delete-rule="1" deferrability="2"/>
+      <index name="DM_POLICY_USER_POLICY_INDEX_A" unique="false" columns="POLICY_ID"/>
+    </table>
+  </data-source>
+</component>

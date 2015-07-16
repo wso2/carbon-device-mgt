@@ -108,11 +108,12 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         Connection conn;
         ResultSet rs;
         int mappingId = -1;
+        PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
             String sql = "DELETE DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             for(Integer appId:appIdList){
                 stmt.setInt(1, deviceId);
@@ -123,6 +124,8 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             stmt.executeBatch();
        } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mapping", e);
+        }finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
 

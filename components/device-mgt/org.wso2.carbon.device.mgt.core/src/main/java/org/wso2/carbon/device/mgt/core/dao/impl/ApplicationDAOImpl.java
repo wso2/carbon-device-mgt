@@ -101,13 +101,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 stmt.setInt(8, tenantId);
                 stmt.setObject(9,application.getAppProperties());
                 stmt.setString(10,application.getApplicationIdentifier());
-                stmt.addBatch();
-            }
-            stmt.executeBatch();
+                stmt.executeUpdate();
 
-            rs = stmt.getGeneratedKeys();
-            while (rs.next()) {
-                applicationIds.add(rs.getInt(1));
+                rs = stmt.getGeneratedKeys();
+                if (rs.next()){
+                    applicationIds.add(rs.getInt(1));
+                }
             }
             return applicationIds;
         } catch (SQLException e) {
@@ -228,6 +227,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
 
         Application application = new Application();
         try {
+            application.setId(rs.getInt("ID"));
             application.setName(rs.getString("NAME"));
             application.setType(rs.getString("TYPE"));
 

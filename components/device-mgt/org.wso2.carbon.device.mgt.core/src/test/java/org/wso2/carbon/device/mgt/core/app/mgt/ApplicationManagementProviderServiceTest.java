@@ -62,10 +62,12 @@ public class ApplicationManagementProviderServiceTest {
         Application application1 =  TestDataHolder.generateApplicationDummyData("org.wso2.app1");
         Application application2 = TestDataHolder.generateApplicationDummyData("org.wso2.app2");
         Application application3 = TestDataHolder.generateApplicationDummyData("org.wso2.app3");
+        Application application4 = TestDataHolder.generateApplicationDummyData("org.wso2.app4");
 
         applications.add(application1);
         applications.add(application2);
         applications.add(application3);
+        applications.add(application4);
 
         Device device =  TestDataHolder.initialTestDevice;
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
@@ -83,15 +85,17 @@ public class ApplicationManagementProviderServiceTest {
             Assert.fail(msg, appMgtEx);
         }
 
-        Application application4 = TestDataHolder.generateApplicationDummyData("org.wso2.app3");
+        Application application5 = TestDataHolder.generateApplicationDummyData("org.wso2.app5");
         applications = new ArrayList<Application>();
         applications.add(application4);
         applications.add(application3);
+        applications.add(application5);
 
         try {
             appMgtProvider.updateApplicationListInstalledInDevice(deviceIdentifier, applications);
             List<Application> installedApps = appMgtProvider.getApplicationListForDevice(deviceIdentifier);
-            Assert.assertEquals(installedApps.size(),2,"Num of installed applications should be two");
+            log.info("Number of installed applications:"+installedApps.size());
+            Assert.assertEquals(installedApps.size(),3,"Num of installed applications should be two");
         } catch (ApplicationManagementException appMgtEx){
             String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
             log.error(msg, appMgtEx);

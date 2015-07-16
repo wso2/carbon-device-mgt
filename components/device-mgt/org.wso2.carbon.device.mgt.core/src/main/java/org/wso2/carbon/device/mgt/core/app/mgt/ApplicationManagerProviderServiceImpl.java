@@ -184,33 +184,66 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         int tenantId = getTenantId();
 
         try {
+            DeviceManagementDAOFactory.beginTransaction();
             Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
 
+            if (log.isDebugEnabled()) {
+                log.debug("Device:" + device.getId() + ":identifier:" + deviceIdentifier.getId());
+            }
+
             List<Application> installedAppList = getApplicationListForDevice(deviceIdentifier);
+
+            if (log.isDebugEnabled()) {
+                log.debug("num of apps installed:" + installedAppList.size());
+            }
             List<Application> appsToAdd = new ArrayList<Application>();
             List<Integer> appIdsToRemove = new ArrayList<Integer>();
 
             for(Application installedApp:installedAppList){
                 if (!applications.contains(installedApp)){
+                    if (log.isDebugEnabled()) {
+                        log.debug("Remove app Id:" + installedApp.getId());
+                    }
                     appIdsToRemove.add(installedApp.getId());
                 }
             }
 
+            Application installedApp;
+            List<Integer> applicationIds = new ArrayList<>();
+
             for(Application application:applications){
-                if (!installedAppList.contains(application)){
-                    appsToAdd.add(application);
+                if (!installedAppList.contains(application)) {
+                    installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(), tenantId);
+                    if (installedApp == null){
+                        appsToAdd.add(application);
+                    }else{
+                        applicationIds.add(installedApp.getId());
+                    }
                 }
             }
+            if (log.isDebugEnabled()) {
+                log.debug("num of apps add:" + appsToAdd.size());
+            }
+            applicationIds.addAll(applicationDAO.addApplications(appsToAdd, tenantId));
 
-
-            List<Integer> applicationIds = applicationDAO.addApplications(appsToAdd, tenantId);
+            if (log.isDebugEnabled()) {
+                log.debug("num of app Ids:" + applicationIds.size());
+            }
             applicationMappingDAO.addApplicationMappings(device.getId(), applicationIds, tenantId);
 
+            if (log.isDebugEnabled()) {
+                log.debug("num of remove app Ids:" + appIdsToRemove.size());
+            }
             applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove,tenantId);
-
+            DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException deviceDaoEx) {
             String errorMsg = "Error occurred saving application list to the device";
             log.error(errorMsg + ":" + deviceIdentifier.toString());
+            try {
+                DeviceManagementDAOFactory.rollbackTransaction();
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error occurred while roll back transaction",e);
+            }
             throw new ApplicationManagementException(errorMsg, deviceDaoEx);
         }
     }

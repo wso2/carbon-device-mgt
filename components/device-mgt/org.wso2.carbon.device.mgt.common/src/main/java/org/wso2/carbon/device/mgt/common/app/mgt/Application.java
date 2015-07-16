@@ -118,35 +118,6 @@ public class Application implements Serializable {
         }
 
         Application that = (Application) o;
-
-        if (id != that.id) {
-            return false;
-        }
-        if (appProperties != null ? !appProperties.equals(that.appProperties) : that.appProperties != null) {
-            return false;
-        }
-
-        if (category != null ? !category.equals(that.category) : that.category != null) {
-            return false;
-        }
-        if (imageUrl != null ? !imageUrl.equals(that.imageUrl) : that.imageUrl != null) {
-            return false;
-        }
-        if (locationUrl != null ? !locationUrl.equals(that.locationUrl) : that.locationUrl != null) {
-            return false;
-        }
-        if (name != null ? !name.equals(that.name) : that.name != null) {
-            return false;
-        }
-        if (platform != null ? !platform.equals(that.platform) : that.platform != null) {
-            return false;
-        }
-        if (type != null ? !type.equals(that.type) : that.type != null) {
-            return false;
-        }
-        if (version != null ? !version.equals(that.version) : that.version != null) {
-            return false;
-        }
         if (applicationIdentifier != null ? !applicationIdentifier.equals(that.applicationIdentifier) : that.applicationIdentifier != null) {
             return false;
         }
@@ -156,14 +127,6 @@ public class Application implements Serializable {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (platform != null ? platform.hashCode() : 0);
-        result = 31 * result + (category != null ? category.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (locationUrl != null ? locationUrl.hashCode() : 0);
-        result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (appProperties != null ? appProperties.hashCode() : 0);
         result = 31 * result + (applicationIdentifier != null ? applicationIdentifier.hashCode() : 0);
         return result;
     }

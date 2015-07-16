@@ -79,4 +79,13 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
     List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
 
     void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status active) throws DeviceManagementException;
+
+    /**
+     * This method is used to retrieve list of devices based on the device status
+     *
+     * @param status Device status
+     * @return List of devices
+     * @throws DeviceManagementException
+     */
+    List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException;
 }

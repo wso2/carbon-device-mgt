@@ -1,0 +1,2 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.oauth.extensions.server_${feature.version}/dynamic-client-manager.war,target:${installFolder}/../../deployment/server/webapps/dynamic-client-manager.war,overwrite:true);\

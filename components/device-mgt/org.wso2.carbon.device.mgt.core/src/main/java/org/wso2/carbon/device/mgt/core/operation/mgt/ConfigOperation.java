@@ -26,9 +26,7 @@ import java.util.List;
 
 public class ConfigOperation extends Operation {
 
-    private List<Property> properties;
-
-    public ConfigOperation() {
+/*    public ConfigOperation() {
         properties = new ArrayList<Property>();
     }
 
@@ -38,7 +36,7 @@ public class ConfigOperation extends Operation {
 
     public void addConfigProperty(String name, Object value, Class<?> type) {
         properties.add(new Property(name, value, type));
-    }
+    }*/
 
     public static class Property implements Serializable {
         private String name;

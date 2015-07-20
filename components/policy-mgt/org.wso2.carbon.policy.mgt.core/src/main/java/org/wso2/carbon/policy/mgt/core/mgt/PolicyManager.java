@@ -60,8 +60,10 @@ public interface PolicyManager {
 
     List<Device> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagementException;
 
-    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature> profileFeatures) throws
-            PolicyManagementException;
+    void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature>
+            profileFeatures) throws PolicyManagementException;
+
+    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier,  Policy policy) throws PolicyManagementException;
 
     boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 

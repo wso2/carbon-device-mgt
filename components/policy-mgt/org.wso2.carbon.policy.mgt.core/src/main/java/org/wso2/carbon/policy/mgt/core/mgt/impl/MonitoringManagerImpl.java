@@ -43,7 +43,7 @@ import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
-import java.util.List;
+import java.util.*;
 
 public class MonitoringManagerImpl implements MonitoringManager {
 
@@ -186,4 +186,87 @@ public class MonitoringManagerImpl implements MonitoringManager {
         }
         return complianceData;
     }
+
+    @Override
+    public void addMonitoringOperation(List<Device> devices) throws PolicyComplianceException {
+
+        try {
+
+            ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
+
+            int tenantId = PolicyManagerUtil.getTenantId();
+            Map<Integer, Device> deviceIds = new HashMap<>();
+
+            for (Device device : devices) {
+                deviceIds.put(device.getId(), device);
+            }
+
+            List<ComplianceData> complianceDatas = monitoringDAO.getCompliance(new ArrayList<>(deviceIds.keySet()));
+
+            Map<Integer, Device> deviceIdsToAddOperation = new HashMap<>();
+            Map<Integer, Device> deviceIdsWithExistingOperation = new HashMap<>();
+            Map<Integer, Device> inactiveDeviceIds = new HashMap<>();
+
+            Map<Integer, ComplianceData> tempMap = new HashMap<>();
+
+
+            for (ComplianceData complianceData : complianceDatas) {
+
+                tempMap.put(complianceData.getDeviceId(), complianceData);
+
+                if (complianceData.getAttempts() == 0) {
+                    deviceIdsToAddOperation.put(complianceData.getDeviceId(),
+                            deviceIds.get(complianceData.getDeviceId()));
+                } else {
+                    deviceIdsWithExistingOperation.put(complianceData.getDeviceId(),
+                            deviceIds.get(complianceData.getDeviceId()));
+                }
+                if (complianceData.getAttempts() >= 20) {
+                    inactiveDeviceIds.put(complianceData.getDeviceId(),
+                            deviceIds.get(complianceData.getDeviceId()));
+                }
+            }
+
+            for (Device device : devices) {
+                if (!tempMap.containsKey(device.getId())) {
+                    deviceIdsToAddOperation.put(device.getId(), device);
+                }
+            }
+
+            if (!deviceIdsToAddOperation.isEmpty()) {
+                this.addMonitoringOperationsToDatabase(new ArrayList<>(deviceIdsToAddOperation.values()));
+            }
+
+            if (!deviceIdsWithExistingOperation.isEmpty()) {
+                monitoringDAO.updateAttempts(new ArrayList<>(deviceIdsWithExistingOperation.keySet()), false);
+                decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
+                        new ArrayList<>(deviceIdsWithExistingOperation.values())));
+            }
+
+        } catch (MonitoringDAOException e) {
+            String msg = "Error occurred from monitoring dao.";
+            log.error(msg, e);
+            throw new PolicyComplianceException(msg, e);
+        }
+
+    }
+
+
+    private void addMonitoringOperationsToDatabase(List<Device> devices) throws PolicyComplianceException {
+
+    }
+
+    private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {
+
+        List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+        for (Device device : devices) {
+            DeviceIdentifier identifier = new DeviceIdentifier();
+            identifier.setId(device.getDeviceIdentifier());
+            identifier.setType(device.getType());
+
+            deviceIdentifiers.add(identifier);
+        }
+        return deviceIdentifiers;
+    }
+
 }

@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.policy.mgt.core.task;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
@@ -27,6 +29,8 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
+import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -34,10 +38,14 @@ import java.util.Map;
 public class MonitoringTask implements Task {
 
     private DeviceTypeDAO deviceTypeDAO;
+    private static Log log = LogFactory.getLog(MonitoringTask.class);
+
+    Map<String, String> properties;
+
 
     @Override
     public void setProperties(Map<String, String> map) {
-
+        this.properties = map;
     }
 
     @Override
@@ -47,23 +55,34 @@ public class MonitoringTask implements Task {
 
     @Override
     public void execute() {
+
+        if(log.isDebugEnabled()) {
+            log.debug("Monitoring task started to run.");
+        }
+
         try {
             List<DeviceType> deviceTypes = deviceTypeDAO.getDeviceTypes();
-
-
             DeviceManagementProviderService deviceManagementProviderService =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
+            MonitoringManager monitoringManager = new MonitoringManagerImpl();
 
             for (DeviceType deviceType : deviceTypes) {
                 PolicyMonitoringService monitoringService =
                         PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType.getName());
-
                 List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
-                monitoringService.notifyDevices(devices);
+                if (monitoringService != null && !devices.isEmpty()) {
+                    monitoringManager.addMonitoringOperation(devices);
+                    monitoringService.notifyDevices(devices);
+                }
+            }
+
+            if(log.isDebugEnabled()) {
+                log.debug("Monitoring task running completed.");
             }
 
         } catch (Exception e) {
-
+            String msg = "Error occurred while trying to run a task.";
+            log.error(msg, e);
         }
 
     }

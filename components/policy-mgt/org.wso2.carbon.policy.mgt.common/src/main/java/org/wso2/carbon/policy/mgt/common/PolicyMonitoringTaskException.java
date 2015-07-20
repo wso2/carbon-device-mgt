@@ -19,38 +19,38 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
-public class PolicyVerificationException extends Exception {
+public class PolicyMonitoringTaskException extends Exception {
 
-    private String policyVerificationErrorMessage;
+    private String policyMonitoingErrorMessage;
 
-    public String getPolicyVerificationErrorMessage() {
-        return policyVerificationErrorMessage;
+    public String getPolicyMonitoingErrorMessage() {
+        return policyMonitoingErrorMessage;
     }
 
-    public void setPolicyVerificationErrorMessage(String policyVerificationErrorMessage) {
-        this.policyVerificationErrorMessage = policyVerificationErrorMessage;
+    public void setPolicyMonitoingErrorMessage(String policyMonitoingErrorMessage) {
+        this.policyMonitoingErrorMessage = policyMonitoingErrorMessage;
     }
 
-    public PolicyVerificationException(String message) {
+    public PolicyMonitoringTaskException(String message) {
         super(message);
-        setPolicyVerificationErrorMessage(message);
+        setPolicyMonitoingErrorMessage(message);
     }
 
-    public PolicyVerificationException(String message, Exception ex) {
+    public PolicyMonitoringTaskException(String message, Exception ex) {
         super(message, ex);
-        setPolicyVerificationErrorMessage(message);
+        setPolicyMonitoingErrorMessage(message);
     }
 
-    public PolicyVerificationException(String message, Throwable cause) {
+    public PolicyMonitoringTaskException(String message, Throwable cause) {
         super(message, cause);
-        setPolicyVerificationErrorMessage(message);
+        setPolicyMonitoingErrorMessage(message);
     }
 
-    public PolicyVerificationException() {
+    public PolicyMonitoringTaskException() {
         super();
     }
 
-    public PolicyVerificationException(Throwable cause) {
+    public PolicyMonitoringTaskException(Throwable cause) {
         super(cause);
     }
 

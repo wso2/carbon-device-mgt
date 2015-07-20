@@ -20,14 +20,19 @@
 package org.wso2.carbon.policy.mgt.common.monitor;
 
 
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Policy;
+
+import java.util.List;
 
 public interface ComplianceDecisionPoint {
 
     String getNoneComplianceRule(Policy policy) throws PolicyComplianceException;
 
-    void setDeviceAsUnreachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
+    void setDevicesAsUnreachable(List<DeviceIdentifier> deviceIdentifiers) throws PolicyComplianceException;
+
+    void setDevicesAsUnreachableWith(List<Device> devices) throws PolicyComplianceException;
 
     void setDeviceAsReachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 

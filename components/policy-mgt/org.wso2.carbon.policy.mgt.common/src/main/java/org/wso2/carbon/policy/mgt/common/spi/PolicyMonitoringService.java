@@ -34,4 +34,6 @@ public interface  PolicyMonitoringService {
 
     ComplianceData checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy, Object response)
             throws PolicyComplianceException;
+
+    String getType();
 }

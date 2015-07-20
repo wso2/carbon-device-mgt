@@ -163,7 +163,8 @@ public class PolicyManagementServiceComponent {
             log.debug("Setting Policy Monitoring Service");
         }
         // TODO: FIX THE device type by taking from properties
-        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService("", policyMonitoringService);
+        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(policyMonitoringService.getType(),
+                policyMonitoringService);
     }
 
     protected void unsetPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
@@ -171,7 +172,7 @@ public class PolicyManagementServiceComponent {
             log.debug("Removing the Policy Monitoring Service");
         }
         // TODO: FIX THE device type by taking from properties
-        PolicyManagementDataHolder.getInstance().unsetPolicyMonitoringService("");
+        PolicyManagementDataHolder.getInstance().unsetPolicyMonitoringService(policyMonitoringService.getType());
     }
 
     protected void setTaskService(TaskService taskService) {

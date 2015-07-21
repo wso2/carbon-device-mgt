@@ -23,9 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceDecisionPoint;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
@@ -53,6 +56,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
     private ComplianceDecisionPoint complianceDecisionPoint;
 
     private static final Log log = LogFactory.getLog(MonitoringManagerImpl.class);
+    private static final String OPERATION_MONITOR = "MONITOR";
 
     public MonitoringManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
@@ -247,13 +251,25 @@ public class MonitoringManagerImpl implements MonitoringManager {
             String msg = "Error occurred from monitoring dao.";
             log.error(msg, e);
             throw new PolicyComplianceException(msg, e);
+        } catch (OperationManagementException e) {
+            String msg = "Error occurred while adding monitoring operation to devices";
+            log.error(msg, e);
+            throw new PolicyComplianceException(msg, e);
         }
 
     }
 
 
-    private void addMonitoringOperationsToDatabase(List<Device> devices) throws PolicyComplianceException {
+    private void addMonitoringOperationsToDatabase(List<Device> devices)
+            throws PolicyComplianceException, OperationManagementException {
 
+        List<DeviceIdentifier> deviceIdentifiers = this.getDeviceIdentifiersFromDevices(devices);
+        CommandOperation monitoringOperation = new CommandOperation();
+        monitoringOperation.setEnabled(true);
+        monitoringOperation.setType(Operation.Type.COMMAND);
+        monitoringOperation.setCode(OPERATION_MONITOR);
+        PolicyManagementDataHolder.getInstance().getDeviceManagementService().
+                addOperation(monitoringOperation, deviceIdentifiers);
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {

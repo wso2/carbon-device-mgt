@@ -28,10 +28,12 @@ import org.wso2.carbon.policy.mgt.common.Policy;
 
 import java.util.List;
 
-public interface PolicyMonitoringService {
+public interface  PolicyMonitoringService {
 
     void notifyDevices(List<Device> devices) throws PolicyComplianceException;
 
     ComplianceData checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy, Object response)
             throws PolicyComplianceException;
+
+    String getType();
 }

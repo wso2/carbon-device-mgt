@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.mgt.common.monitor;
 
 import org.wso2.carbon.policy.mgt.common.Policy;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public class ComplianceData {
@@ -30,6 +31,10 @@ public class ComplianceData {
     private int policyId;
     List<ComplianceFeature> complianceFeatures;
     private boolean status;
+    private Timestamp lastRequestedTime;
+    private Timestamp lastSucceededTime;
+    private Timestamp lastFailedTime;
+    private int attempts;
     private String message;
 
     /**
@@ -45,6 +50,38 @@ public class ComplianceData {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Timestamp getLastRequestedTime() {
+        return lastRequestedTime;
+    }
+
+    public void setLastRequestedTime(Timestamp lastRequestedTime) {
+        this.lastRequestedTime = lastRequestedTime;
+    }
+
+    public Timestamp getLastSucceededTime() {
+        return lastSucceededTime;
+    }
+
+    public void setLastSucceededTime(Timestamp lastSucceededTime) {
+        this.lastSucceededTime = lastSucceededTime;
+    }
+
+    public Timestamp getLastFailedTime() {
+        return lastFailedTime;
+    }
+
+    public void setLastFailedTime(Timestamp lastFailedTime) {
+        this.lastFailedTime = lastFailedTime;
+    }
+
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(int attempts) {
+        this.attempts = attempts;
     }
 
     public int getDeviceId() {

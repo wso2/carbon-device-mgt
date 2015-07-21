@@ -30,16 +30,21 @@ public interface MonitoringDAO {
 
     void setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException;
 
-    void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature> complianceFeatures)
+    void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
+            complianceFeatures)
             throws MonitoringDAOException;
 
     ComplianceData getCompliance(int deviceId) throws MonitoringDAOException;
+
+    List<ComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException;
 
     List<ComplianceFeature> getNoneComplianceFeatures(int policyComplianceStatusId) throws MonitoringDAOException;
 
     void deleteNoneComplianceData(int policyComplianceStatusId) throws MonitoringDAOException;
 
     void updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException;
+
+    void updateAttempts(List<Integer> deviceId, boolean reset) throws MonitoringDAOException;
 
 
 }

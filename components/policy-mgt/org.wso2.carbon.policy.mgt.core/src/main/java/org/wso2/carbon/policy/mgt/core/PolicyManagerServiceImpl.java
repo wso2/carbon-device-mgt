@@ -35,6 +35,8 @@ import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,6 +203,11 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public PolicyEvaluationPoint getPEP() throws PolicyManagementException {
         return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+    }
+
+    @Override
+    public TaskScheduleService getTaskScheduleService() throws PolicyMonitoringTaskException {
+        return new TaskScheduleServiceImpl();
     }
 
     @Override

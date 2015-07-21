@@ -716,6 +716,45 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
     }
 
+
+    public List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<Device>();
+        List<Device> allDevices;
+        try {
+            DeviceManagementDAOFactory.getConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            allDevices = deviceDAO.getDevicesByStatus(status, tenantId);
+
+        } catch (DeviceManagementDAOException e) {
+            String errorMsg = "Error occurred while fetching the list of devices that matches to status: '"
+                              + status + "'";
+            log.error(errorMsg, e);
+            throw new DeviceManagementException(errorMsg, e);
+        } finally {
+
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
+
+        for (Device device : allDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        return devices;
+    }
+
+
+
     private int getTenantId() {
 
         ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
@@ -728,4 +767,5 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         return tenant;
     }
+
 }

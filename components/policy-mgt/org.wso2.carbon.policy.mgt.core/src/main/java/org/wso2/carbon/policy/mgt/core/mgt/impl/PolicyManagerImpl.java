@@ -287,8 +287,8 @@ public class PolicyManagerImpl implements PolicyManager {
             policyDAO.deleteAllPolicyRelatedConfigs(policyId);
             policyDAO.deletePolicy(policyId);
 
-            if(log.isDebugEnabled()){
-                log.debug(policy.getProfileId() + "  ----------------------------------");
+            if (log.isDebugEnabled()) {
+                log.debug("Profile ID: " + policy.getProfileId());
             }
 
             featureDAO.deleteFeaturesOfProfile(policy.getProfileId());
@@ -331,8 +331,8 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
-                                                                                                PolicyManagementException {
+    public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy)
+            throws PolicyManagementException {
 
         try {
             PolicyManagementDAOFactory.beginTransaction();
@@ -705,8 +705,7 @@ public class PolicyManagerImpl implements PolicyManager {
 
     @Override
     public void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, int policyId,
-                                                 List<ProfileFeature> profileFeatures) throws
-                                                                                       PolicyManagementException {
+                                                 List<ProfileFeature> profileFeatures) throws PolicyManagementException {
 
         int deviceId = -1;
         try {
@@ -740,8 +739,8 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws
-                                                                                           PolicyManagementException {
+    public void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
+            throws PolicyManagementException {
 
         int deviceId = -1;
         try {

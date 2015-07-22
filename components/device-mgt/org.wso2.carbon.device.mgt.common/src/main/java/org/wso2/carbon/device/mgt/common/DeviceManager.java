@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+
 import java.util.List;
 
 /**
@@ -30,6 +32,20 @@ public interface DeviceManager {
      * @return Returns an instance of feature manager
      */
     FeatureManager getFeatureManager();
+
+    /**
+     * Method to save platform specific Configuration.
+     *
+     * @return Returns the status of the operation
+     */
+    boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException;
+
+    /**
+     * Method to get platform specific Configuration.
+     *
+     * @return Returns the platform specific tenant configurations
+     */
+    TenantConfiguration getConfiguration() throws DeviceManagementException;
 
     /**
      * Method to enrolling a particular device of type mobile, IoT, etc within CDM.

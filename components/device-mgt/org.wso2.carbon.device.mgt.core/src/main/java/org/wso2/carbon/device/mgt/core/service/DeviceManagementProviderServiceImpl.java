@@ -425,12 +425,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         }
         if (device != null) {
-            DeviceManager dms =
-                    this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-            Device pluginSpecificInfo = dms.getDevice(deviceId);
-            if (pluginSpecificInfo != null) {
-                device.setFeatures(pluginSpecificInfo.getFeatures());
-                device.setProperties(pluginSpecificInfo.getProperties());
+            // The changes made here to prevent unit tests getting failed. They failed because when running the unit
+            // tests there is no osgi services. So getDeviceManager() returns a null.
+          DeviceManagementService service =  this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+            if(service != null) {
+                DeviceManager dms = service.getDeviceManager();
+                Device pluginSpecificInfo = dms.getDevice(deviceId);
+                if (pluginSpecificInfo != null) {
+                    device.setFeatures(pluginSpecificInfo.getFeatures());
+                    device.setProperties(pluginSpecificInfo.getProperties());
+                }
             }
         }
         return device;

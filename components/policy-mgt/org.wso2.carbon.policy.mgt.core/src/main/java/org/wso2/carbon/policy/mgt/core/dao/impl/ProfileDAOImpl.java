@@ -46,7 +46,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
-        int tenantId = PolicyManagerUtil.getTenantId();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
@@ -92,7 +92,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
-        int tenantId = PolicyManagerUtil.getTenantId();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();

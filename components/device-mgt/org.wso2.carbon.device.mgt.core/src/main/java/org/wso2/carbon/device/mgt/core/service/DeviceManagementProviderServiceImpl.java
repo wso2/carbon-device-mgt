@@ -53,7 +53,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     private DeviceTypeDAO deviceTypeDAO;
     private EnrolmentDAO enrolmentDAO;
     private DeviceManagementPluginRepository pluginRepository;
-    private boolean isTest = false;
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
     private int tenantId;
@@ -75,7 +74,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test){
         this.pluginRepository = pluginRepo;
         initDataAccessObjects();
-        isTest = test;
     }
 
     private void initDataAccessObjects() {
@@ -108,7 +106,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } else {
                 device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
             }
-            int tenantId = getTenantId();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
             DeviceManagementDAOFactory.beginTransaction();
 
@@ -724,14 +722,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.getConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             allDevices = deviceDAO.getDevicesByStatus(status, tenantId);
-
         } catch (DeviceManagementDAOException e) {
-            String errorMsg = "Error occurred while fetching the list of devices that matches to status: '"
-                              + status + "'";
-            log.error(errorMsg, e);
-            throw new DeviceManagementException(errorMsg, e);
+            throw new DeviceManagementException(
+                    "Error occurred while fetching the list of devices that matches to status: '" + status + "'", e);
         } finally {
-
             try {
                 DeviceManagementDAOFactory.closeConnection();
             } catch (DeviceManagementDAOException e) {
@@ -751,21 +745,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             devices.add(device);
         }
         return devices;
-    }
-
-
-
-    private int getTenantId() {
-
-        ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
-        int tenant = 0;
-
-        if (isTest){
-            tenant = DeviceManagerUtil.currentTenant.get();
-        }else{
-            tenant = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        }
-        return tenant;
     }
 
 }

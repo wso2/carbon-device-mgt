@@ -32,6 +32,8 @@ public interface ProfileDAO {
 
     boolean deleteProfile(Profile profile) throws ProfileManagerDAOException;
 
+    boolean deleteProfile(int policyId) throws ProfileManagerDAOException;
+
     Profile getProfiles(int profileId) throws ProfileManagerDAOException;
 
     List<Profile> getAllProfiles() throws ProfileManagerDAOException;

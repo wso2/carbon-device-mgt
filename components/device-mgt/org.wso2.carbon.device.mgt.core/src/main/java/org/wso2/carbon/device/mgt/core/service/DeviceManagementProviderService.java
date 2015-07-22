@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.service;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import java.util.List;
@@ -39,6 +40,16 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
     void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String type) throws DeviceManagementException;
+
+    /**
+     * Proxy method to get the tenant configuration of a given platform.
+     *
+     * @param type          Device platform
+     * @return Tenant configuration settings of the particular tenant and platform.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * configuration.
+     */
+    TenantConfiguration getConfiguration(String type) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by an user.

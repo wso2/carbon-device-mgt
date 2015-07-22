@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.common.configuration.mgt;
 import java.util.List;
 
 /**
- * Represents an individual configuration entry.
+ * Represents the tenant configuration for a device platform.
  */
 public class TenantConfiguration {
 

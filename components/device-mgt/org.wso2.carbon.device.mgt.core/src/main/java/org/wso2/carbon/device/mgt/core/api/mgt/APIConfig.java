@@ -53,6 +53,7 @@ public class APIConfig {
     private String version;
     private String transports;
     private APIProvider provider;
+    private boolean isSecured;
 
     public void init() throws DeviceManagementException {
         try {
@@ -124,6 +125,16 @@ public class APIConfig {
     @SuppressWarnings("unused")
     public void setTransports(String transports) {
         this.transports = transports;
+    }
+
+    @XmlElement(name = "isSecured", required = false)
+    public boolean isSecured() {
+        return isSecured;
+    }
+
+    @SuppressWarnings("unused")
+    public void setSecured(boolean secured) {
+        isSecured = secured;
     }
 
 }

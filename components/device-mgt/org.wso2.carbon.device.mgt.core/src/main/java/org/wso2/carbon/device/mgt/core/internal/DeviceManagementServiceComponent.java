@@ -35,7 +35,6 @@ import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
-import org.wso2.carbon.device.mgt.core.api.mgt.APIRegistrationStartupObserver;
 import org.wso2.carbon.device.mgt.core.api.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -197,8 +196,6 @@ public class DeviceManagementServiceComponent {
         APIPublisherService publisher = new APIPublisherServiceImpl();
         DeviceManagementDataHolder.getInstance().setApiPublisherService(publisher);
         bundleContext.registerService(APIPublisherService.class, publisher, null);
-
-        bundleContext.registerService(ServerStartupObserver.class, new APIRegistrationStartupObserver(), null);
 
 	     /* Registering App Management service */
         try {

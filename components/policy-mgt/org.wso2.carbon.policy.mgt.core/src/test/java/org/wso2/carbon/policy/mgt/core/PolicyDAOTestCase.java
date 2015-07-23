@@ -133,8 +133,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("addProfileFeatures"))
-    public void addPolicy() throws PolicyManagementException {
-
+    public void addPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy(profile);
         policyManager.addPolicy(policy);
@@ -169,8 +171,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("addPolicyToDevice"))
-    public void addNewPolicy() throws PolicyManagementException {
-
+    public void addNewPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy2(profile);
         policyManager.addPolicy(policy);
@@ -178,8 +182,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
 
     @Test(dependsOnMethods = ("addPolicyToDevice"))
-    public void addThirdPolicy() throws PolicyManagementException {
-
+    public void addThirdPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy4(profile);
         policyManager.addPolicy(policy);
@@ -273,7 +279,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("getRoleRelatedPolicy"))
-    public void addSecondPolicy() throws PolicyManagementException {
+    public void addSecondPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy3(profile);
         policyManager.addPolicy(policy);

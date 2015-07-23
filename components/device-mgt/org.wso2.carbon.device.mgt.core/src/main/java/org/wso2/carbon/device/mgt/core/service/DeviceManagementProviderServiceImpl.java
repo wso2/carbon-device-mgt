@@ -233,6 +233,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
+            enrolmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
             deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
 
         } catch (DeviceManagementDAOException e) {

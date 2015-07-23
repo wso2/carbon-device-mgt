@@ -21,9 +21,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -32,7 +30,6 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -91,17 +88,17 @@ public class OperationManagerImpl implements OperationManager {
 
             int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
 
-            Device device;
+            int enrolmentId;
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             for (DeviceIdentifier deviceId : deviceIds) {
-                device = deviceDAO.getDevice(deviceId, tenantId);
-                if (device == null) {
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+                if (enrolmentId < 0) {
                     String errorMsg = "The operation not added for device.The device not found for " +
                             "device Identifier type -'" + deviceId.getType() + "' and device Id '" +
                             deviceId.getId();
-                    log.info(errorMsg);
+                    log.error(errorMsg);
                 } else {
-                    operationMappingDAO.addOperationMapping(operationId, device.getId());
+                    operationMappingDAO.addOperationMapping(operationId, enrolmentId);
                 }
             }
             OperationManagementDAOFactory.commitTransaction();
@@ -128,20 +125,20 @@ public class OperationManagerImpl implements OperationManager {
 
         try {
             List<Operation> operations = new ArrayList<Operation>();
-            Device device = null;
+            int enrolmentId = -1;
 
             try {
                 int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-                device = deviceDAO.getDevice(deviceId, tenantId);
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
             } catch (DeviceManagementDAOException e) {
                 e.printStackTrace();
             }
-            if (device == null) {
+            if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for given device " +
                         "Identifier:" + deviceId.getId() + " and given type" + deviceId.getType());
             }
             List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList = operationDAO
-                    .getOperationsForDevice(device.getId());
+                    .getOperationsForDevice(enrolmentId);
             Operation operation;
             for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : operationList) {
                 operation = OperationDAOUtil.convertOperation(dtoOperation);
@@ -164,7 +161,7 @@ public class OperationManagerImpl implements OperationManager {
                     + "]");
         }
 
-        Device device;
+        int enrolmentId = -1;
         List<Operation> operations = new ArrayList<Operation>();
 
         List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList =
@@ -172,38 +169,23 @@ public class OperationManagerImpl implements OperationManager {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            device = deviceDAO.getDevice(deviceId, tenantId);
+            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
 
-            if (device.getEnrolmentInfo().getStatus() !=null && !device.getEnrolmentInfo().getStatus().equals(
-                    EnrolmentInfo.Status.ACTIVE)){
-                try {
-                    DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                            .updateDeviceEnrolmentInfo(device,
-                                    EnrolmentInfo.Status.ACTIVE);
-                }catch (DeviceManagementException deviceMgtEx){
-                    String errorMsg = "Error occurred while update enrol status: "+deviceId.toString();
-                    log.error(errorMsg, deviceMgtEx);
-                    throw new OperationManagementException(errorMsg, deviceMgtEx);
-                }
-            }
-
-
-
-            if (device == null) {
+            if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for given device " +
                         "Identifier:" + deviceId.getId() + " and given type:" + deviceId.getType());
             }
 
-            dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
+            dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
                     org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
 
-            dtoOperationList.addAll(configOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
+            dtoOperationList.addAll(configOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
                     org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
 
-            dtoOperationList.addAll(profileOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
+            dtoOperationList.addAll(profileOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
                     org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
 
-            dtoOperationList.addAll(policyOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
+            dtoOperationList.addAll(policyOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
                     org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
 
             Operation operation;
@@ -234,30 +216,17 @@ public class OperationManagerImpl implements OperationManager {
                     + "]");
         }
         Operation operation = null;
-        Device device;
+        int enrolmentId = -1;
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            device = deviceDAO.getDevice(deviceId, tenantId);
+            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
 
-            if (device == null) {
+            if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for given device " +
                         "Identifier:" + deviceId.getId() + " and given type" + deviceId.getType());
             }
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
-                    .getNextOperation(device.getId());
-
-            if (device.getEnrolmentInfo().getStatus() !=null && !device.getEnrolmentInfo().getStatus().equals(
-                    EnrolmentInfo.Status.ACTIVE)){
-                try {
-                    DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                            .updateDeviceEnrolmentInfo(device,
-                                    EnrolmentInfo.Status.ACTIVE);
-                }catch (DeviceManagementException deviceMgtEx){
-                    String errorMsg = "Error occurred while update enrol status: "+deviceId.toString();
-                    log.error(errorMsg, deviceMgtEx);
-                    throw new OperationManagementException(errorMsg, deviceMgtEx);
-                }
-            }
+                    .getNextOperation(enrolmentId);
 
             if (dtoOperation != null) {
                 if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND
@@ -303,11 +272,11 @@ public class OperationManagerImpl implements OperationManager {
         try {
 
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            Device device = deviceDAO.getDevice(deviceId, tenantId);
+            int enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
 
             if (operation.getStatus() !=null) {
                 OperationManagementDAOFactory.beginTransaction();
-                operationDAO.updateOperationStatus(device.getId(), operationId,
+                operationDAO.updateOperationStatus(enrolmentId, operationId,
                         org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status
                                 .valueOf(operation.getStatus().toString()));
                 OperationManagementDAOFactory.commitTransaction();
@@ -315,7 +284,7 @@ public class OperationManagerImpl implements OperationManager {
 
             if (operation.getOperationResponse() != null){
                 OperationManagementDAOFactory.beginTransaction();
-                operationDAO.addOperationResponse(device.getId(), operationId, operation.getOperationResponse());
+                operationDAO.addOperationResponse(enrolmentId, operationId, operation.getOperationResponse());
                 OperationManagementDAOFactory.commitTransaction();
             }
         } catch (OperationManagementDAOException ex) {
@@ -362,7 +331,7 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException {
-        Device device;
+        int enrolmentId = -1;
         Operation operation;
 
         if (log.isDebugEnabled()) {
@@ -372,13 +341,13 @@ public class OperationManagerImpl implements OperationManager {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            device = deviceDAO.getDevice(deviceId, tenantId);
-            if (device == null) {
+            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for given device identifier:" +
                         deviceId.getId() + " type:" + deviceId.getType());
             }
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
-                    .getOperationByDeviceAndId(device.getId(), operationId);
+                    .getOperationByDeviceAndId(enrolmentId, operationId);
 
             if (dtoOperation.getType()
                     .equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND)) {
@@ -400,7 +369,7 @@ public class OperationManagerImpl implements OperationManager {
 
             if (dtoOperation == null) {
                 throw new OperationManagementException("Operation not found for operation Id:" + operationId +
-                        " device" + " Id:" + device.getId());
+                        " device id:" + deviceId.getId());
             }
             operation = OperationDAOUtil.convertOperation(dtoOperation);
         } catch (OperationManagementDAOException e) {
@@ -427,25 +396,28 @@ public class OperationManagerImpl implements OperationManager {
                     new ArrayList<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation>();
 
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            Device device = deviceDAO.getDevice(deviceId, tenantId);
+            int enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
 
-            if (device == null) {
+            if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for device id:" + deviceId.getId() + " " +
                         "type:" + deviceId.getType());
             }
 
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status dtoOpStatus = org.wso2.carbon.device
                     .mgt.core.dto.operation.mgt.Operation.Status.valueOf(status.toString());
-            dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(device.getId(), dtoOpStatus));
+            dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(enrolmentId, dtoOpStatus));
 
-            dtoOperationList.addAll(configOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
-                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
+            dtoOperationList.addAll(
+                    configOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
+                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
 
-            dtoOperationList.addAll(profileOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
-                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
+            dtoOperationList.addAll(
+                    profileOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
+                                                                       org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
 
-            dtoOperationList.addAll(policyOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
-                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
+            dtoOperationList.addAll(
+                    policyOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
+                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
 
             Operation operation;
 

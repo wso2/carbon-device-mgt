@@ -47,7 +47,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
-        PluginInitializationListener {
+                                                            PluginInitializationListener {
 
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
@@ -70,9 +70,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     /**
      * This constructor calls from unit tests
+     *
      * @param pluginRepo
      */
-    DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test){
+    DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test) {
         this.pluginRepository = pluginRepo;
         initDataAccessObjects();
         isTest = test;
@@ -98,31 +99,59 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
-
+        boolean status = false;
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
-        boolean status = dms.enrollDevice(device);
+        dms.enrollDevice(device);
         try {
-            if (dms.isClaimable(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()))) {
+            if (dms.isClaimable(deviceIdentifier)) {
                 device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.INACTIVE);
             } else {
                 device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
             }
             int tenantId = getTenantId();
 
-            DeviceManagementDAOFactory.beginTransaction();
+            Device existingDevice = this.getDevice(deviceIdentifier);
 
-            DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
-            int deviceId = deviceDAO.addDevice(type.getId(), device, tenantId);
-            int enrolmentId = enrolmentDAO.addEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
+            if (existingDevice != null) {
+                EnrolmentInfo existingEnrolmentInfo = existingDevice.getEnrolmentInfo();
+                EnrolmentInfo newEnrolmentInfo = device.getEnrolmentInfo();
+                if (existingEnrolmentInfo != null && newEnrolmentInfo != null) {
+                    if (existingEnrolmentInfo.equals(newEnrolmentInfo)) {
+                        this.modifyEnrollment(device);
+                        status = true;
+                    } else {
+                        this.setStatus(deviceIdentifier, existingEnrolmentInfo.getOwner(), EnrolmentInfo.Status.INACTIVE);
+                        DeviceManagementDAOFactory.beginTransaction();
+                        int enrolmentId = enrolmentDAO.addEnrollment(existingDevice.getId(), newEnrolmentInfo, tenantId);
+                        DeviceManagementDAOFactory.commitTransaction();
 
-            if (log.isDebugEnabled()) {
-                log.debug("An enrolment is successfully created with the id '" + enrolmentId + "' associated with " +
-                        "the device identified by key '" + device.getDeviceIdentifier() + "', which belongs to " +
-                        "platform '" + device.getType() + " upon the user '" +
-                        device.getEnrolmentInfo().getOwner() + "'");
+                        if (log.isDebugEnabled()) {
+                            log.debug("An enrolment is successfully updated with the id '" + enrolmentId +
+                                      "' associated with " + "the device identified by key '" + device.getDeviceIdentifier() +
+                                      "', which belongs to " + "platform '" + device.getType() + " upon the user '" +
+                                      device.getEnrolmentInfo().getOwner() + "'");
+                        }
+                        status = true;
+                    }
+                }
+            } else {
+                DeviceManagementDAOFactory.beginTransaction();
+                DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+                int deviceId = deviceDAO.addDevice(type.getId(), device, tenantId);
+                int enrolmentId = enrolmentDAO.addEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
+                DeviceManagementDAOFactory.commitTransaction();
+
+                if (log.isDebugEnabled()) {
+                    log.debug("An enrolment is successfully created with the id '" + enrolmentId + "' associated with " +
+                              "the device identified by key '" + device.getDeviceIdentifier() + "', which belongs to " +
+                              "platform '" + device.getType() + " upon the user '" +
+                              device.getEnrolmentInfo().getOwner() + "'");
+                }
+                status = true;
             }
-            DeviceManagementDAOFactory.commitTransaction();
+
         } catch (DeviceManagementDAOException e) {
             try {
                 DeviceManagementDAOFactory.rollbackTransaction();
@@ -130,7 +159,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 log.warn("Error occurred while roll-backing the current transaction", e);
             }
             throw new DeviceManagementException("Error occurred while enrolling the device " +
-                    "'" + device.getId() + "'", e);
+                                                "'" + device.getId() + "'", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -140,7 +169,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         return status;
     }
-
 
 
     @Override
@@ -163,7 +191,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 log.warn("Error occurred while roll-backing the current transaction", e);
             }
             throw new DeviceManagementException("Error occurred while modifying the device " +
-                    "'" + device.getId() + "'", e);
+                                                "'" + device.getId() + "'", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -181,7 +209,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         try {
-            Device device = deviceDAO.getDevice(deviceId,tenantId);
+            Device device = deviceDAO.getDevice(deviceId, tenantId);
             DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
 
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
@@ -189,8 +217,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
 
         } catch (DeviceManagementDAOException e) {
-            String errorMsg =  "Error occurred while fetch device for device Identifier:";
-            log.error(errorMsg + deviceId.toString(),e);
+            String errorMsg = "Error occurred while fetch device for device Identifier:";
+            log.error(errorMsg + deviceId.toString(), e);
             throw new DeviceManagementException(errorMsg, e);
 
         }
@@ -229,7 +257,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevices(tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant", e);
+                                                "the current tenant", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -261,7 +289,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevices(type, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving all devices of type '" +
-                    type + "' that are being managed within the scope of current tenant", e);
+                                                type + "' that are being managed within the scope of current tenant", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -317,13 +345,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         try {
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getFirstName(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                                                     URLEncoder.encode(emailMessageProperties.getFirstName(),
+                                                                       EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody.trim() + System.getProperty("line.separator") +
-                    System.getProperty("line.separator") + url.replaceAll("\\{"
-                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
-                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                          System.getProperty("line.separator") + url.replaceAll("\\{"
+                                                                                + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                                                                                URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
+                                                                                                  EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
                     .append(System.getProperty("line.separator"));
@@ -331,12 +359,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             messageBuilder.append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
             messageBuilder.append(messageFooter1.trim())
                     .append(System.getProperty("line.separator")).append(messageFooter2.trim()).append(System
-                    .getProperty("line.separator")).append(messageFooter3.trim());
+                                                                                                               .getProperty("line.separator")).append(messageFooter3.trim());
 
         } catch (IOException e) {
             log.error("IO error in processing enrol email message " + emailMessageProperties);
             throw new DeviceManagementException("Error replacing tags in email template '" +
-                    emailMessageProperties.getSubject() + "'", e);
+                                                emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
         emailMessageProperties.setSubject(subject);
@@ -374,23 +402,23 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         try {
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getFirstName(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                                                     URLEncoder.encode(emailMessageProperties.getFirstName(),
+                                                                       EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
-                    .USERNAME
-                    + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
-                            .ENCODED_SCHEME));
+                                                                .USERNAME
+                                                        + "\\}",
+                                                        URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
+                                                                .ENCODED_SCHEME));
 
             messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.PASSWORD + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
-                            .ENCODED_SCHEME));
+                                                 URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
+                                                         .ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
-                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                                                                                              + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                                                                                              URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
+                                                                                                                EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
             messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
@@ -401,7 +429,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } catch (IOException e) {
             log.error("IO error in processing enrol email message " + emailMessageProperties);
             throw new DeviceManagementException("Error replacing tags in email template '" +
-                    emailMessageProperties.getSubject() + "'", e);
+                                                emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
         emailMessageProperties.setSubject(subject);
@@ -416,7 +444,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device = deviceDAO.getDevice(deviceId, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "'", e);
+                                                "'" + deviceId.getId() + "'", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -502,7 +530,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public int addOperation(Operation operation, List<DeviceIdentifier> devices) throws
-            OperationManagementException {
+                                                                                 OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().addOperation(operation, devices);
     }
 
@@ -562,7 +590,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             userDevices = deviceDAO.getDevicesOfUser(username, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
-                    "belong to the user '" + username + "'", e);
+                                                "belong to the user '" + username + "'", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -593,11 +621,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         String[] users;
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
-            users =  DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            users = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager().getUserListOfRole(role);
         } catch (UserStoreException e) {
             throw new DeviceManagementException("Error occurred while obtaining the users, who are assigned " +
-                    "with the role '" + role + "'", e);
+                                                "with the role '" + role + "'", e);
         }
 
         List<Device> userDevices;
@@ -657,7 +685,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevicesByName(deviceName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
-                    + deviceName + "'", e);
+                                                + deviceName + "'", e);
         } finally {
             try {
                 DeviceManagementDAOFactory.closeConnection();
@@ -689,8 +717,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(status);
             deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
-        }catch (DeviceManagementDAOException deviceDaoEx){
-            String errorMsg = "Error occured update device enrolment status : "+device.getId();
+        } catch (DeviceManagementDAOException deviceDaoEx) {
+            String errorMsg = "Error occured update device enrolment status : " + device.getId();
             log.error(errorMsg, deviceDaoEx);
             throw new DeviceManagementException(errorMsg, deviceDaoEx);
         }
@@ -702,7 +730,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             pluginRepository.addDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while registering device management plugin '" +
-                    deviceManagementService.getType() + "'", e);
+                      deviceManagementService.getType() + "'", e);
         }
     }
 
@@ -712,7 +740,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             pluginRepository.removeDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while un-registering device management plugin '" +
-                    deviceManagementService.getType() + "'", e);
+                      deviceManagementService.getType() + "'", e);
         }
     }
 
@@ -754,15 +782,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
 
-
     private int getTenantId() {
 
         ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
         int tenant = 0;
 
-        if (isTest){
+        if (isTest) {
             tenant = DeviceManagerUtil.currentTenant.get();
-        }else{
+        } else {
             tenant = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         }
         return tenant;

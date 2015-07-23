@@ -97,6 +97,7 @@ public class EmailServiceProviderImpl implements EmailService {
                 if (configContext != null) {
                     serviceClient = new ServiceClient(configContext, null);
                 } else {
+
                     serviceClient = new ServiceClient();
                 }
                 Options options = new Options();

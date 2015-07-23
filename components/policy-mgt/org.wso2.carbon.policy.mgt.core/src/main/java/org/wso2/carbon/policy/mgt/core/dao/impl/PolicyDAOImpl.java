@@ -20,6 +20,7 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Criterion;
@@ -187,7 +188,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         PreparedStatement stmt = null;
         ResultSet generatedKeys;
 
-        int tenantId = PolicyManagerUtil.getTenantId();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_CRITERIA (TENANT_ID, NAME) VALUES (?, ?)";
@@ -217,7 +218,7 @@ public class PolicyDAOImpl implements PolicyDAO {
 
         Connection conn;
         PreparedStatement stmt = null;
-        int tenantId = PolicyManagerUtil.getTenantId();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_CRITERIA SET TENANT_ID = ?,  NAME = ? WHERE ID = ?";
@@ -1062,7 +1063,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
-        int tenantId = PolicyManagerUtil.getTenantId();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();

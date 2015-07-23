@@ -16,13 +16,26 @@
 package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 
 import java.util.List;
+import java.util.Map;
 
 public class TestDeviceManager implements DeviceManager {
 
     @Override
     public FeatureManager getFeatureManager() {
+        return null;
+    }
+
+    @Override
+    public boolean saveConfiguration(TenantConfiguration configuration)
+            throws DeviceManagementException {
+        return false;
+    }
+
+    @Override public TenantConfiguration getConfiguration() throws DeviceManagementException {
         return null;
     }
 

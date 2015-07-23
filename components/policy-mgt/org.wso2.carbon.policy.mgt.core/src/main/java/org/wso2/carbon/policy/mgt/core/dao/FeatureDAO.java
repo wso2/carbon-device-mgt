@@ -53,4 +53,6 @@ public interface FeatureDAO {
 
     boolean deleteFeaturesOfProfile(Profile profile) throws FeatureManagerDAOException;
 
+    boolean deleteFeaturesOfProfile(int profileId) throws FeatureManagerDAOException;
+
 }

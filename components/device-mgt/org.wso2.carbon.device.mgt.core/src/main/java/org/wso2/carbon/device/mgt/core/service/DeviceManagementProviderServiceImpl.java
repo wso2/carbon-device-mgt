@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -85,6 +86,26 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public FeatureManager getFeatureManager() {
         return null;
+    }
+
+    @Override
+    public boolean saveConfiguration(TenantConfiguration configuration)
+            throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementService(configuration.getType()).getDeviceManager();
+        return dms.saveConfiguration(configuration);
+    }
+
+    @Override
+    public TenantConfiguration getConfiguration() throws DeviceManagementException {
+        return null;
+    }
+
+    @Override
+    public TenantConfiguration getConfiguration(String type) throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementService(type).getDeviceManager();
+        return dms.getConfiguration();
     }
 
     @Override
@@ -423,12 +444,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         }
         if (device != null) {
-            DeviceManager dms =
-                    this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-            Device pluginSpecificInfo = dms.getDevice(deviceId);
-            if (pluginSpecificInfo != null) {
-                device.setFeatures(pluginSpecificInfo.getFeatures());
-                device.setProperties(pluginSpecificInfo.getProperties());
+            // The changes made here to prevent unit tests getting failed. They failed because when running the unit
+            // tests there is no osgi services. So getDeviceManager() returns a null.
+          DeviceManagementService service =  this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+            if(service != null) {
+                DeviceManager dms = service.getDeviceManager();
+                Device pluginSpecificInfo = dms.getDevice(deviceId);
+                if (pluginSpecificInfo != null) {
+                    device.setFeatures(pluginSpecificInfo.getFeatures());
+                    device.setProperties(pluginSpecificInfo.getProperties());
+                }
             }
         }
         return device;

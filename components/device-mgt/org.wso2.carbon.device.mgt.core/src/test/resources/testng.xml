@@ -24,17 +24,17 @@
 
     <test name="DAO Unit Tests" preserve-order="true">
         <classes>
-            <class name="org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest"/>
-            <class name="org.wso2.carbon.device.mgt.core.dao.DevicePersistTests"/>
-            <class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>
-            <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
-            <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>
+            <!--<class name="org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest"/>-->
+            <!--<class name="org.wso2.carbon.device.mgt.core.dao.DevicePersistTests"/>-->
+            <!--<class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>-->
+            <!--<class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>-->
+            <!--<class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>-->
         </classes>
     </test>
     <test name="Service Unit Tests" preserve-order="true">
         <classes>
-            <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>
-            <class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>
+            <!--<class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>-->
+            <!--<class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>-->
         </classes>
     </test>
 </suite>

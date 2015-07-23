@@ -22,10 +22,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementAdminService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.sql.DataSource;
@@ -85,17 +89,4 @@ public class PolicyManagerUtil {
         return dataSource;
     }
 
-    public static int getTenantId() {
-
-        //TODO: Get the tenant id proper way. This is has to be fix for test to run.
-
-        int tenantId;
-
-        if ("Super".equalsIgnoreCase(System.getProperty("GetTenantIDForTest"))) {
-            tenantId = MultitenantConstants.SUPER_TENANT_ID;
-        } else {
-            tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        }
-        return tenantId;
-    }
 }

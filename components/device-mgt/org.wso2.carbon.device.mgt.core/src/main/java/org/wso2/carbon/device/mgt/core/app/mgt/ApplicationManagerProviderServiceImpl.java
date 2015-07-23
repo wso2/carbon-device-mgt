@@ -180,10 +180,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     @Override
     public void updateApplicationListInstalledInDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
-
-        int tenantId = getTenantId();
-
         try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
             Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
 
@@ -199,8 +197,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             List<Application> appsToAdd = new ArrayList<Application>();
             List<Integer> appIdsToRemove = new ArrayList<Integer>();
 
-            for(Application installedApp:installedAppList){
-                if (!applications.contains(installedApp)){
+            for (Application installedApp : installedAppList) {
+                if (!applications.contains(installedApp)) {
                     if (log.isDebugEnabled()) {
                         log.debug("Remove app Id:" + installedApp.getId());
                     }
@@ -211,12 +209,12 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             Application installedApp;
             List<Integer> applicationIds = new ArrayList<>();
 
-            for(Application application:applications){
+            for (Application application : applications) {
                 if (!installedAppList.contains(application)) {
                     installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(), tenantId);
-                    if (installedApp == null){
+                    if (installedApp == null) {
                         appsToAdd.add(application);
-                    }else{
+                    } else {
                         applicationIds.add(installedApp.getId());
                     }
                 }
@@ -234,7 +232,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (log.isDebugEnabled()) {
                 log.debug("num of remove app Ids:" + appIdsToRemove.size());
             }
-            applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove,tenantId);
+            applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove, tenantId);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException deviceDaoEx) {
             String errorMsg = "Error occurred saving application list to the device";
@@ -242,37 +240,26 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             try {
                 DeviceManagementDAOFactory.rollbackTransaction();
             } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while roll back transaction",e);
+                log.error("Error occurred while roll back transaction", e);
             }
             throw new ApplicationManagementException(errorMsg, deviceDaoEx);
         }
     }
 
-    private int getTenantId() {
 
-        int tenantId = 0;
-        if (isTest){
-            tenantId = DeviceManagerUtil.currentTenant.get();
-        }else{
-            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        }
-
-        return tenantId;
-    }
 
     @Override
-    public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
-            throws ApplicationManagementException {
-         Device device = null;
-         try {
-             int tenantId = getTenantId();
-             device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-             return applicationDAO.getInstalledApplications(device.getId());
-            }catch (DeviceManagementDAOException deviceDaoEx) {
-             String errorMsg = "Error occured while fetching the Application List of device : " + device.getId();
-             log.error(errorMsg, deviceDaoEx);
-             throw new ApplicationManagementException(errorMsg, deviceDaoEx);
-         }
+    public List<Application> getApplicationListForDevice(
+            DeviceIdentifier deviceId) throws ApplicationManagementException {
+        Device device = null;
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            device = deviceDAO.getDevice(deviceId, tenantId);
+            return applicationDAO.getInstalledApplications(device.getId());
+        } catch (DeviceManagementDAOException e) {
+            throw new ApplicationManagementException("Error occured while fetching the Application List of '" +
+                    deviceId.getType() + "' device carrying the identifier'" + deviceId.getId(), e);
+        }
     }
 
     @Override

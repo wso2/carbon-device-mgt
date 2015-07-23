@@ -22,6 +22,7 @@ package org.wso2.carbon.policy.mgt.core.task;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -32,6 +33,7 @@ import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +58,7 @@ public class MonitoringTask implements Task {
     @Override
     public void execute() {
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Monitoring task started to run.");
         }
 
@@ -72,14 +74,33 @@ public class MonitoringTask implements Task {
                 List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
                 if (monitoringService != null && !devices.isEmpty()) {
                     monitoringManager.addMonitoringOperation(devices);
-                    monitoringService.notifyDevices(devices);
+
+                    List<Device> notifiableDevices = new ArrayList<>();
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Removing inactive and blocked devices from the list for the device type : " +
+                                deviceType);
+                    }
+                    for (Device device : devices) {
+                        if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.INACTIVE) ||
+                                device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.BLOCKED)) {
+                            continue;
+                        } else {
+                            notifiableDevices.add(device);
+                        }
+                    }
+                    if (log.isDebugEnabled()) {
+                        log.debug("Following devices selected to send the notification for " + deviceType);
+                        for (Device device : notifiableDevices) {
+                            log.debug(device.getDeviceIdentifier());
+                        }
+                    }
+                    monitoringService.notifyDevices(notifiableDevices);
                 }
             }
-
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Monitoring task running completed.");
             }
-
         } catch (Exception e) {
             String msg = "Error occurred while trying to run a task.";
             log.error(msg, e);

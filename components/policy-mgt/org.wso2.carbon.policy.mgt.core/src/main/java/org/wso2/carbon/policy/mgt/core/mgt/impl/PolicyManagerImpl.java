@@ -21,11 +21,15 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
@@ -340,9 +344,9 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicy(policy);
             }
             List<Device> deviceList = new ArrayList<Device>();
-            int tenantId = PolicyManagerUtil.getTenantId();
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
-                deviceList.add(deviceDAO.getDevice(deviceIdentifier, tenantId));
+                deviceList.add(service.getDevice(deviceIdentifier));
             }
             policy = policyDAO.addPolicyToDevice(deviceList, policy);
             PolicyManagementDAOFactory.commitTransaction();
@@ -369,7 +373,7 @@ public class PolicyManagerImpl implements PolicyManager {
                          + policy.getId() + " - " + policy.getPolicyName() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             try {
                 PolicyManagementDAOFactory.rollbackTransaction();
             } catch (PolicyManagerDAOException e1) {
@@ -569,8 +573,8 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Integer> policyIdList;
         List<Policy> policies = new ArrayList<Policy>();
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            Device device = service.getDevice(deviceIdentifier);
             policyIdList = policyDAO.getPolicyIdsOfDevice(device);
             List<Policy> tempPolicyList = this.getPolicies();
 
@@ -588,7 +592,7 @@ public class PolicyManagerImpl implements PolicyManager {
                          deviceIdentifier.getId() + " - " + deviceIdentifier.getType() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while getting device related to device identifier (" +
                          deviceIdentifier.getId() + " - " + deviceIdentifier.getType() + ")";
             log.error(msg, e);
@@ -684,7 +688,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Integer> deviceIds;
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
             for (int deviceId : deviceIds) {
                 //TODO FIX ME
@@ -709,8 +713,8 @@ public class PolicyManagerImpl implements PolicyManager {
 
         int deviceId = -1;
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            Device device = service.getDevice(deviceIdentifier);
             deviceId = device.getId();
             boolean exist = policyDAO.checkPolicyAvailable(deviceId);
             PolicyManagementDAOFactory.beginTransaction();
@@ -730,7 +734,7 @@ public class PolicyManagerImpl implements PolicyManager {
                          deviceId + " - " + policyId + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -744,8 +748,8 @@ public class PolicyManagerImpl implements PolicyManager {
 
         int deviceId = -1;
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            Device device = service.getDevice(deviceIdentifier);
             deviceId = device.getId();
             boolean exist = policyDAO.checkPolicyAvailable(deviceId);
             PolicyManagementDAOFactory.beginTransaction();
@@ -770,7 +774,12 @@ public class PolicyManagerImpl implements PolicyManager {
                          deviceId + " - " + policy.getId() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
+            try {
+                PolicyManagementDAOFactory.rollbackTransaction();
+            } catch (PolicyManagerDAOException e1) {
+                log.warn("Error occurred while roll backing the transaction.");
+            }
             String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -782,14 +791,14 @@ public class PolicyManagerImpl implements PolicyManager {
 
         boolean exist;
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            Device device = service.getDevice(deviceIdentifier);
             exist = policyDAO.checkPolicyAvailable(device.getId());
         } catch (PolicyManagerDAOException e) {
             String msg = "Error occurred while checking whether device has a policy to apply.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -801,8 +810,8 @@ public class PolicyManagerImpl implements PolicyManager {
     public boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            Device device = service.getDevice(deviceIdentifier);
             policyDAO.setPolicyApplied(device.getId());
             return true;
         } catch (PolicyManagerDAOException e) {
@@ -810,7 +819,7 @@ public class PolicyManagerImpl implements PolicyManager {
                          deviceIdentifier.getId() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
@@ -836,12 +845,12 @@ public class PolicyManagerImpl implements PolicyManager {
 
         Policy policy;
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            Device device = service.getDevice(deviceIdentifier);
             int policyId = policyDAO.getAppliedPolicyId(device.getId());
             policy = policyDAO.getPolicy(policyId);
 
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while getting device id.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);

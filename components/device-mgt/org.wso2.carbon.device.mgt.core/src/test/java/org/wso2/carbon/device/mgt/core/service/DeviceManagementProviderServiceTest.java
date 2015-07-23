@@ -58,7 +58,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
             deviceManagementProviderService = new DeviceManagementProviderServiceImpl(deviceManagementPluginRepository,
                     true);
             DeviceManagerUtil.registerDeviceType(TestDataHolder.TEST_DEVICE_TYPE);
-            DeviceManagerUtil.currentTenant.set(TestDataHolder.SUPER_TENANT_ID);
 
             Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
             boolean isEnrolled = deviceManagementProviderService.enrollDevice(device);

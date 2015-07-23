@@ -60,9 +60,6 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         System.setProperty("GetTenantIDForTest", "Super");
         this.setUp();
 
-        File file = new File("resources/carbon-home");
-        System.out.println("DDddddddddd");
-        System.out.println(file.getAbsoluteFile());
     }
 
     public void setUp() throws Exception {
@@ -86,7 +83,6 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
                 System.setProperty("carbon.home", file.getAbsolutePath());
             }
         }
-       // CarbonContext.getCurrentContext();
 
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
                 .SUPER_TENANT_DOMAIN_NAME);

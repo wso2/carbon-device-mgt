@@ -181,7 +181,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     public void updateApplicationListInstalledInDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
 
-        int tenantId = getTenantId();
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             DeviceManagementDAOFactory.beginTransaction();
@@ -248,24 +248,24 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
     }
 
-    private int getTenantId() {
-
-        int tenantId = 0;
-        if (isTest){
-            tenantId = DeviceManagerUtil.currentTenant.get();
-        }else{
-            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        }
-
-        return tenantId;
-    }
+//    private int getTenantId() {
+//
+//        int tenantId = 0;
+////        if (isTest){
+////            tenantId = DeviceManagerUtil.currentTenant.get();
+////        }else{
+//            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+////        }
+//
+//        return tenantId;
+//    }
 
     @Override
     public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
             throws ApplicationManagementException {
          Device device = null;
          try {
-             int tenantId = getTenantId();
+             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
              device = deviceDAO.getDevice(deviceIdentifier, tenantId);
              return applicationDAO.getInstalledApplications(device.getId());
             }catch (DeviceManagementDAOException deviceDaoEx) {

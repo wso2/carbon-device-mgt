@@ -129,7 +129,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } else {
                 device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
             }
-            int tenantId = getTenantId();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
             DeviceManagementDAOFactory.beginTransaction();
 
@@ -780,17 +780,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
 
 
-    private int getTenantId() {
-
-        ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
-        int tenant = 0;
-
-        if (isTest){
-            tenant = DeviceManagerUtil.currentTenant.get();
-        }else{
-            tenant = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        }
-        return tenant;
-    }
+//    private int getTenantId() {
+//
+////        ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
+//        int tenant = 0;
+//
+////        if (isTest){
+////            tenant = DeviceManagerUtil.currentTenant.get();
+////        }else{
+//            tenant = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+////        }
+//        return tenant;
+//    }
 
 }

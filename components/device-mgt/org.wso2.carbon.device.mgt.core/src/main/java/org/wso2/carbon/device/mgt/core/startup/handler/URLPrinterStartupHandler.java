@@ -51,11 +51,14 @@ public class URLPrinterStartupHandler implements ServerStartupObserver {
         String mgtConsoleTransport = CarbonUtils.getManagementTransport();
         ConfigurationContextService configContextService =
                 DeviceManagementDataHolder.getInstance().getConfigurationContextService();
-        int httpsPort = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
+        int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
         int httpsProxyPort =
                 CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
                         mgtConsoleTransport);
-        return "https://" + hostName + ":" + httpsPort + "/mdm";
+        if (httpsProxyPort > 0) {
+            port = httpsProxyPort;
+        }
+        return "https://" + hostName + ":" + port + "/mdm";
     }
 
 }

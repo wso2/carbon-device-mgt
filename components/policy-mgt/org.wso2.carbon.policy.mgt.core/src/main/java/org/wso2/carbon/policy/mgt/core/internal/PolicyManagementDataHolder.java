@@ -26,6 +26,7 @@ import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PolicyManagementDataHolder {
@@ -35,7 +36,7 @@ public class PolicyManagementDataHolder {
     private PolicyEvaluationPoint policyEvaluationPoint;
     private PolicyInformationPoint policyInformationPoint;
     private DeviceManagementProviderService deviceManagementService;
-    private Map<String, PolicyMonitoringService> policyMonitoringServiceMap;
+    private Map<String, PolicyMonitoringService> policyMonitoringServiceMap = new HashMap<>();
     private TaskService taskService;
 
     private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();

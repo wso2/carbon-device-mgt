@@ -1,24 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-  ~
-  ~ WSO2 Inc. licenses this file to you under the Apache License,
-  ~ Version 2.0 (the "License"); you may not use this file except
-  ~ in compliance with the License.
-  ~ you may obtain a copy of the License at
-  ~
-  ~   http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing,
-  ~ software distributed under the License is distributed on an
-  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~ KIND, either express or implied.  See the License for the
-  ~ specific language governing permissions and limitations
-  ~ under the License.
-  -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -28,26 +11,22 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.device.mgt.server.feature</artifactId>
+    <artifactId>org.wso2.carbon.device.mgt.extensions.feature</artifactId>
     <packaging>pom</packaging>
     <version>0.9.2-SNAPSHOT</version>
-    <name>WSO2 Carbon - Device Management Server Feature</name>
+    <name>WSO2 Carbon - Device Management Extensions Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the core bundles required for Back-end Device Management functionality
+    <description>This feature contains common extensions used by key device management functionalities
     </description>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+            <artifactId>org.wso2.carbon.device.mgt.extensions</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.commons</groupId>
-            <artifactId>org.wso2.carbon.email.verification</artifactId>
         </dependency>
     </dependencies>
 
@@ -100,22 +79,17 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.extensions:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
                                 </bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.commons:org.wso2.carbon.email.verification
-                                </bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${carbon.identity.version}
-                                </bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.device.mgt.extensions:${carbon.device.mgt.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
+                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.governance.metadata:${carbon.governance.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
@@ -123,4 +97,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

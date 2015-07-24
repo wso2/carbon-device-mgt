@@ -31,9 +31,19 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import javax.servlet.ServletContext;
 
+@SuppressWarnings("unused")
 public class APIPublisherLifecycleListener implements LifecycleListener {
 
     private static final String API_CONFIG_DEFAULT_VERSION = "1.0.0";
+
+    private static final String PARAM_MANAGE_API_NAME = "managed-api-name";
+    private static final String PARAM_MANAGE_API_VERSION = "managed-api-version";
+    private static final String PARAM_MANAGE_API_CONTEXT = "managed-api-context";
+    private static final String PARAM_MANAGE_API_ENDPOINT = "managed-api-endpoint";
+    private static final String PARAM_MANAGE_API_OWNER = "managed-api-owner";
+    private static final String PARAM_MANAGE_API_TRANSPORTS = "managed-api-transports";
+    private static final String PARAM_MANAGE_API_IS_SECURED = "managed-api-isSecured";
+
     private static final Log log = LogFactory.getLog(APIPublisherLifecycleListener.class);
 
     @Override
@@ -64,7 +74,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
     private APIConfig buildApiConfig(ServletContext servletContext) {
         APIConfig apiConfig = new APIConfig();
 
-        String name = servletContext.getInitParameter("managed-api-name");
+        String name = servletContext.getInitParameter(PARAM_MANAGE_API_NAME);
         if (name == null || "".equals(name)) {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-name' attribute is not configured. Therefore, using the default, " +
@@ -74,7 +84,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
         apiConfig.setName(name);
 
-        String version = servletContext.getInitParameter("managed-api-version");
+        String version = servletContext.getInitParameter(PARAM_MANAGE_API_VERSION);
         if (version == null || "".equals(version)) {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-version' attribute is not configured. Therefore, using the " +
@@ -84,7 +94,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
         apiConfig.setVersion(version);
 
-        String context = servletContext.getInitParameter("managed-api-context");
+        String context = servletContext.getInitParameter(PARAM_MANAGE_API_CONTEXT);
         if (context == null || "".equals(context)) {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-context' attribute is not configured. Therefore, using the default, " +
@@ -94,7 +104,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
         apiConfig.setContext(context);
 
-        String endpoint = servletContext.getInitParameter("managed-api-endpoint");
+        String endpoint = servletContext.getInitParameter(PARAM_MANAGE_API_ENDPOINT);
         if (endpoint == null || "".equals(endpoint)) {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-endpoint' attribute is not configured");
@@ -102,7 +112,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
         apiConfig.setEndpoint(endpoint);
 
-        String owner = servletContext.getInitParameter("managed-api-owner");
+        String owner = servletContext.getInitParameter(PARAM_MANAGE_API_OWNER);
         if (owner == null || "".equals(owner)) {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-owner' attribute is not configured");
@@ -110,12 +120,12 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
         apiConfig.setOwner(owner);
 
-        String isSecuredParam = servletContext.getInitParameter("managed-api-isSecured");
+        String isSecuredParam = servletContext.getInitParameter(PARAM_MANAGE_API_IS_SECURED);
         boolean isSecured =
                 (isSecuredParam != null && !"".equals(isSecuredParam)) && Boolean.parseBoolean(isSecuredParam);
         apiConfig.setSecured(isSecured);
 
-        String transports = servletContext.getInitParameter("managed-api-transports");
+        String transports = servletContext.getInitParameter(PARAM_MANAGE_API_TRANSPORTS);
         if (transports == null || "".equals(transports)) {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-transports' attribute is not configured. Therefore using the defaults, " +

@@ -67,11 +67,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         DeviceManagementServiceComponent.registerPluginInitializationListener(this);
     }
 
-
-    /**
-     * This constructor calls from unit tests
-     * @param pluginRepo
-     */
     DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test){
         this.pluginRepository = pluginRepo;
         initDataAccessObjects();
@@ -84,13 +79,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public FeatureManager getFeatureManager() {
-        return null;
-    }
-
-    @Override
-    public boolean saveConfiguration(TenantConfiguration configuration)
-            throws DeviceManagementException {
+    public boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(configuration.getType()).getDeviceManager();
         return dms.saveConfiguration(configuration);
@@ -231,8 +220,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public boolean setActive(DeviceIdentifier deviceId, boolean status)
-            throws DeviceManagementException {
+    public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         return dms.setActive(deviceId, status);
@@ -467,8 +455,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType)
-            throws DeviceManagementException {
+    public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         return dms.setOwnership(deviceId, ownershipType);
@@ -510,13 +497,27 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
-        return DeviceManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
+    public License getLicense(String deviceType, String languageCode) throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementService(deviceType).getDeviceManager();
+        try {
+            return dms.getLicense(languageCode);
+        } catch (LicenseManagementException e) {
+            throw new DeviceManagementException("Error occurred while retrieving license configured for " +
+                    "device type '" + deviceType + "' and language code '" + languageCode + "'", e);
+        }
     }
 
     @Override
-    public boolean addLicense(String type, License license) throws LicenseManagementException {
-        return DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(type, license);
+    public void addLicense(String deviceType, License license) throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementService(deviceType).getDeviceManager();
+        try {
+            dms.addLicense(license);
+        } catch (LicenseManagementException e) {
+            throw new DeviceManagementException("Error occurred while adding license for " +
+                    "device type '" + deviceType + "'", e);
+        }
     }
 
     private DeviceManagementPluginRepository getPluginRepository() {

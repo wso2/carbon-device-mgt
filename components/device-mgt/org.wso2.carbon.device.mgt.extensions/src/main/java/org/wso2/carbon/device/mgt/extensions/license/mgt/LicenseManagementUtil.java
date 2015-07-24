@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.license.mgt;
+package org.wso2.carbon.device.mgt.extensions.license.mgt;
 
 public class LicenseManagementUtil {
 

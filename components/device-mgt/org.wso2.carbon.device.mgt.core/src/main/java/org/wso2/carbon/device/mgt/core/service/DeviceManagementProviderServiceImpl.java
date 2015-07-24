@@ -138,6 +138,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 EnrolmentInfo newEnrolmentInfo = device.getEnrolmentInfo();
                 if (existingEnrolmentInfo != null && newEnrolmentInfo != null) {
                     if (existingEnrolmentInfo.equals(newEnrolmentInfo)) {
+                        device.getEnrolmentInfo().setDateOfEnrolment(existingEnrolmentInfo.getDateOfEnrolment());
                         this.modifyEnrollment(device);
                         status = true;
                     } else {

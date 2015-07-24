@@ -20,19 +20,13 @@ package org.wso2.carbon.policy.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 
 import java.util.List;
 
@@ -110,6 +104,11 @@ public class PolicyManagementService implements PolicyManagerService {
     @Override
     public PolicyEvaluationPoint getPEP() throws PolicyManagementException {
         return policyManagerService.getPEP();
+    }
+
+    @Override
+    public TaskScheduleService getTaskScheduleService() throws PolicyMonitoringTaskException {
+        return policyManagerService.getTaskScheduleService();
     }
 
     @Override

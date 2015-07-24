@@ -36,6 +36,8 @@
 
     <modules>
         <module>org.wso2.carbon.device.mgt.server.feature</module>
+        <module>org.wso2.carbon.device.mgt.extensions.feature</module>
+        <module>org.wso2.carbon.apimgt.webapp.publisher.feature</module>
     </modules>
 
 </project>

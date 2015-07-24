@@ -17,7 +17,8 @@
 ~ under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
@@ -69,25 +70,21 @@
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
-                            org.wso2.carbon.registry.core,
-                            org.wso2.carbon.registry.core.exceptions,
                             org.wso2.carbon.registry.core.service,
-                            org.wso2.carbon.registry.core.session,
                             org.w3c.dom,
-                            org.wso2.carbon.governance.api.exception,
-                            org.wso2.carbon.governance.api.generic,
-                            org.wso2.carbon.governance.api.generic.dataobjects,
-                            org.wso2.carbon.apimgt.api,
-                            org.wso2.carbon.apimgt.api.model,
-                            org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.identity.oauth.stub,
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
+<<<<<<< HEAD
                             org.wso2.carbon.base,
                             org.wso2.carbon.base.api,
                             javax.transaction.*,
                             com.atomikos.icatch.jta,
                             org.apache.tomcat.jdbc.pool.*,
+=======
+                            org.wso2.carbon.apimgt.impl,
+                            org.wso2.carbon.ndatasource.core
+>>>>>>> 1a6526fc77ef7c4d32f8bda23337d54d9335cb2c
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -102,9 +99,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18</version>
                 <configuration>
-		    <systemPropertyVariables>
-            		 <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
-        	    </systemPropertyVariables>
+                    <systemPropertyVariables>
+                        <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
+                    </systemPropertyVariables>
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
@@ -213,6 +210,7 @@
             <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
         </dependency>
         <dependency>
+<<<<<<< HEAD
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.transaction.manager</artifactId>
         </dependency>
@@ -220,6 +218,14 @@
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
             <type>zip</type>
+=======
+            <groupId>org.wso2.tomcat</groupId>
+            <artifactId>tomcat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+>>>>>>> 1a6526fc77ef7c4d32f8bda23337d54d9335cb2c
         </dependency>
     </dependencies>
 

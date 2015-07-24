@@ -29,11 +29,9 @@ import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MonitoringDAOImpl implements MonitoringDAO {
@@ -46,14 +44,17 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS) VALUES" +
-                    " (?, ?, ?) ";
+            String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS, LAST_FAILED_TIME, " +
+                    "ATTEMPTS) VALUES (?, ?, ?, ?, ?) ";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, policyId);
             stmt.setInt(3, 0);
+            stmt.setTimestamp(4, currentTimestamp);
+            stmt.setInt(5, 0);
             stmt.executeUpdate();
 
             generatedKeys = stmt.getGeneratedKeys();
@@ -78,12 +79,15 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
         Connection conn;
         PreparedStatement stmt = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET STATUS = ? WHERE  DEVICE_ID = ?";
+            String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET STATUS = ?, ATTEMPTS=0, LAST_SUCCESS_TIME = ?" +
+                    " WHERE  DEVICE_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, 1);
-            stmt.setInt(2, deviceId);
+            stmt.setTimestamp(2, currentTimestamp);
+            stmt.setInt(3, deviceId);
 
             stmt.executeUpdate();
 
@@ -105,8 +109,8 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_COMPLIANCE_FEATURES (COMPLIANCE_STATUS_ID, FEATURE_CODE, STATUS) " +
-                    "VALUES" +
-                    " (?, ?, ?) ";
+                    "VALUES (?, ?, ?) ";
+
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             for (ComplianceFeature feature : complianceFeatures) {
                 stmt.setInt(1, policyComplianceStatusId);
@@ -145,8 +149,54 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                 complianceData.setDeviceId(resultSet.getInt("DEVICE_ID"));
                 complianceData.setPolicyId(resultSet.getInt("POLICY_ID"));
                 complianceData.setStatus(resultSet.getBoolean("STATUS"));
+                complianceData.setAttempts(resultSet.getInt("ATTEMPTS"));
+                complianceData.setLastRequestedTime(resultSet.getTimestamp("LAST_REQUESTED_TIME"));
+                complianceData.setLastSucceededTime(resultSet.getTimestamp("LAST_SUCCESS_TIME"));
+                complianceData.setLastFailedTime(resultSet.getTimestamp("LAST_FAILED_TIME"));
             }
             return complianceData;
+
+        } catch (SQLException e) {
+            String msg = "Unable to retrieve compliance data from database.";
+            log.error(msg, e);
+            throw new MonitoringDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+    }
+
+    @Override
+    public List<ComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        List<ComplianceData> complianceDataList = null;
+
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_POLICY_COMPLIANCE_STATUS WHERE DEVICE_ID IN (?)";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, makeString(deviceIds));
+
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+
+                ComplianceData complianceData = new ComplianceData();
+
+                complianceData.setId(resultSet.getInt("ID"));
+                complianceData.setDeviceId(resultSet.getInt("DEVICE_ID"));
+                complianceData.setPolicyId(resultSet.getInt("POLICY_ID"));
+                complianceData.setStatus(resultSet.getBoolean("STATUS"));
+                complianceData.setAttempts(resultSet.getInt("ATTEMPTS"));
+                complianceData.setLastRequestedTime(resultSet.getTimestamp("LAST_REQUESTED_TIME"));
+                complianceData.setLastSucceededTime(resultSet.getTimestamp("LAST_SUCCESS_TIME"));
+                complianceData.setLastFailedTime(resultSet.getTimestamp("LAST_FAILED_TIME"));
+
+                complianceDataList.add(complianceData);
+            }
+            return complianceDataList;
 
         } catch (SQLException e) {
             String msg = "Unable to retrieve compliance data from database.";
@@ -217,7 +267,66 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
     @Override
     public void updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        try {
 
+            conn = this.getConnection();
+            String query = "";
+            if (reset) {
+                query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET ATTEMPTS = 0, LAST_REQUESTED_TIME = ? " +
+                        "WHERE DEVICE_ID = ?";
+            } else {
+                query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET ATTEMPTS = ATTEMPTS + 1, LAST_REQUESTED_TIME = ? " +
+                        "WHERE DEVICE_ID = ?";
+            }
+            stmt = conn.prepareStatement(query);
+            stmt.setTimestamp(1, currentTimestamp);
+            stmt.setInt(2, deviceId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            String msg = "Unable to update the attempts  data in database.";
+            log.error(msg, e);
+            throw new MonitoringDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+
+    }
+
+    @Override
+    public void updateAttempts(List<Integer> deviceIds, boolean reset) throws MonitoringDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        try {
+
+            conn = this.getConnection();
+            String query = "";
+            if (reset) {
+                query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET ATTEMPTS = 0, LAST_REQUESTED_TIME = ? " +
+                        "WHERE DEVICE_ID = ?";
+            } else {
+                query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET ATTEMPTS = ATTEMPTS + 1, LAST_REQUESTED_TIME = ? " +
+                        "WHERE DEVICE_ID = ?";
+            }
+            stmt = conn.prepareStatement(query);
+            for (int deviceId : deviceIds) {
+                stmt.setTimestamp(1, currentTimestamp);
+                stmt.setInt(2, deviceId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+
+        } catch (SQLException e) {
+            String msg = "Unable to update the attempts  data in database.";
+            log.error(msg, e);
+            throw new MonitoringDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
     }
 
 
@@ -237,5 +346,15 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         } catch (PolicyManagerDAOException e) {
             log.warn("Unable to close the database connection.");
         }
+    }
+
+    private String makeString(List<Integer> values) {
+
+        StringBuilder buff = new StringBuilder();
+        for (int value : values) {
+            buff.append(value).append(",");
+        }
+        buff.deleteCharAt(buff.length() - 1);
+        return buff.toString();
     }
 }

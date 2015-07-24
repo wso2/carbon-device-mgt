@@ -22,6 +22,6 @@ public interface LicenseManager {
 
     License getLicense(String deviceType, String languageCode) throws LicenseManagementException;
 
-    boolean addLicense(String deviceType, License license) throws LicenseManagementException;
+    void addLicense(String deviceType, License license) throws LicenseManagementException;
 
 }

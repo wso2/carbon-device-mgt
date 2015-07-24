@@ -23,15 +23,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.EnrolmentDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
@@ -39,10 +37,7 @@ import org.wso2.carbon.policy.mgt.common.monitor.ComplianceDecisionPoint;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
-import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
-import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,34 +46,23 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
 
     private static final Log log = LogFactory.getLog(ComplianceDecisionPointImpl.class);
 
-    private EnrolmentDAO enrolmentDAO;
-    private DeviceDAO deviceDAO;
-
-    private PolicyManager policyManager;
-
-    public ComplianceDecisionPointImpl() {
-        enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
-        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        policyManager = new PolicyManagerImpl();
-    }
-
     @Override
     public String getNoneComplianceRule(Policy policy) throws PolicyComplianceException {
         return policy.getCompliance();
     }
 
     @Override
-    public void setDeviceAsUnreachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+    public void setDevicesAsUnreachable(List<DeviceIdentifier> deviceIdentifiers) throws PolicyComplianceException {
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            enrolmentDAO.setStatus(device.getId(), device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.UNREACHABLE, tenantId);
-
-        } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while setting the device as unreachable for " +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
+                Device device = service.getDevice(deviceIdentifier);
+                service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                        EnrolmentInfo.Status.UNREACHABLE);
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while setting the device as unreachable";
             log.error(msg, e);
             throw new PolicyComplianceException(msg, e);
         }
@@ -86,15 +70,34 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     }
 
     @Override
+    public void setDevicesAsUnreachableWith(List<Device> devices) throws PolicyComplianceException {
+        try {
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            for (Device device : devices) {
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(device.getDeviceIdentifier());
+                deviceIdentifier.setType(device.getType());
+                service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                        EnrolmentInfo.Status.UNREACHABLE);
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while setting the device as unreachable";
+            log.error(msg, e);
+            throw new PolicyComplianceException(msg, e);
+        }
+    }
+
+    @Override
     public void setDeviceAsReachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            enrolmentDAO.setStatus(device.getId(), device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.ACTIVE, tenantId);
 
-        } catch (DeviceManagementDAOException e) {
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            Device device = service.getDevice(deviceIdentifier);
+            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                    EnrolmentInfo.Status.ACTIVE);
+
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while setting the device as reachable for " +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
             log.error(msg, e);
@@ -167,12 +170,12 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     public void markDeviceAsNoneCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            enrolmentDAO.setStatus(device.getId(), device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.BLOCKED, tenantId);
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            Device device = service.getDevice(deviceIdentifier);
+            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                    EnrolmentInfo.Status.BLOCKED);
 
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while marking device as none compliance " + deviceIdentifier.getId() + " - " +
                     deviceIdentifier.getType();
             log.error(msg, e);
@@ -184,16 +187,15 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     public void markDeviceAsCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            enrolmentDAO.setStatus(device.getId(), device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.ACTIVE, tenantId);
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            Device device = service.getDevice(deviceIdentifier);
+            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                    EnrolmentInfo.Status.ACTIVE);
 
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while marking device as compliance " + deviceIdentifier.getId() + " - " +
                     deviceIdentifier.getType();
             log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
         }
 
     }
@@ -202,12 +204,13 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     public void deactivateDevice(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            enrolmentDAO.setStatus(device.getId(), device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.INACTIVE, tenantId);
 
-        } catch (DeviceManagementDAOException e) {
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            Device device = service.getDevice(deviceIdentifier);
+            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                    EnrolmentInfo.Status.INACTIVE);
+
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while deactivating the device " + deviceIdentifier.getId() + " - " +
                     deviceIdentifier.getType();
             log.error(msg, e);
@@ -219,12 +222,12 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     public void activateDevice(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
 
         try {
-            int tenantId = PolicyManagerUtil.getTenantId();
-            Device device = deviceDAO.getDevice(deviceIdentifier, tenantId);
-            enrolmentDAO.setStatus(device.getId(), device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.ACTIVE, tenantId);
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            Device device = service.getDevice(deviceIdentifier);
+            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                    EnrolmentInfo.Status.ACTIVE);
 
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementException e) {
             String msg = "Error occurred while activating the device " + deviceIdentifier.getId() + " - " +
                     deviceIdentifier.getType();
             log.error(msg, e);
@@ -256,5 +259,9 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
         if (PolicyManagementConstants.BLOCK.equalsIgnoreCase(compliance)) {
             this.markDeviceAsNoneCompliance(deviceIdentifier);
         }
+    }
+
+    private DeviceManagementProviderService getDeviceManagementProviderService() {
+        return PolicyManagementDataHolder.getInstance().getDeviceManagementService();
     }
 }

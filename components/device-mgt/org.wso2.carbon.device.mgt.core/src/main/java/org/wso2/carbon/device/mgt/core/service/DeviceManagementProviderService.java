@@ -20,6 +20,8 @@ package org.wso2.carbon.device.mgt.core.service;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import java.util.List;
@@ -28,9 +30,9 @@ import java.util.List;
  * Proxy class for all Device Management related operations that take the corresponding plugin type in
  * and resolve the appropriate plugin implementation
  */
-public interface DeviceManagementProviderService extends DeviceManager, LicenseManager, OperationManager {
+public interface DeviceManagementProviderService extends OperationManager {
 
-    List<Device> getAllDevices(String type) throws DeviceManagementException;
+    List<Device> getAllDevices(String deviceType) throws DeviceManagementException;
 
     List<Device> getAllDevices() throws DeviceManagementException;
 
@@ -38,7 +40,17 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
 
     void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;
 
-    FeatureManager getFeatureManager(String type) throws DeviceManagementException;
+    FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;
+
+    /**
+     * Proxy method to get the tenant configuration of a given platform.
+     *
+     * @param deviceType          Device platform
+     * @return Tenant configuration settings of the particular tenant and platform.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * configuration.
+     */
+    TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by an user.
@@ -88,4 +100,38 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
      * @throws DeviceManagementException
      */
     List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException;
+
+    License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
+
+    void addLicense(String deviceType, License license) throws DeviceManagementException;
+
+    boolean modifyEnrollment(Device device) throws DeviceManagementException;
+
+    boolean enrollDevice(Device device) throws DeviceManagementException;
+
+    TenantConfiguration getConfiguration() throws DeviceManagementException;
+
+    boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException;
+
+    boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
+
+    Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
+
+    boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;
+
+    boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
+                      EnrolmentInfo.Status status) throws DeviceManagementException;
+
+
+
 }

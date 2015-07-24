@@ -37,6 +37,8 @@
     <modules>
         <module>org.wso2.carbon.device.mgt.core</module>
         <module>org.wso2.carbon.device.mgt.common</module>
+        <module>org.wso2.carbon.device.mgt.extensions</module>
+        <module>org.wso2.carbon.apimgt.webapp.publisher</module>
     </modules>
 
     <build>

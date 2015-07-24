@@ -26,6 +26,8 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -50,6 +52,7 @@ public abstract class BaseDeviceManagementTest {
     public void setupDataSource() throws Exception {
         this.initDatSource();
         this.initSQLScript();
+        this.initializeCarbonContext();
     }
 
     public void initDatSource() throws Exception {
@@ -67,6 +70,32 @@ public abstract class BaseDeviceManagementTest {
         properties.setUsername(config.getUser());
         properties.setPassword(config.getPassword());
         return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+    }
+
+    private void initializeCarbonContext(){
+
+        if (System.getProperty("carbon.home") == null) {
+            File file = new File("src/test/resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+        }
+
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
+                .SUPER_TENANT_DOMAIN_NAME);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
     private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {

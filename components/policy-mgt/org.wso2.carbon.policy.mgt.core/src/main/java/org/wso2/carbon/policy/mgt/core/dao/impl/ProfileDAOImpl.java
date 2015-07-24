@@ -46,7 +46,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
-        int tenantId = PolicyManagerUtil.getTenantId();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
@@ -92,7 +92,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
-        int tenantId = PolicyManagerUtil.getTenantId();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
@@ -153,6 +153,29 @@ public class ProfileDAOImpl implements ProfileDAO {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
+
+    @Override
+    public boolean deleteProfile(int profileId) throws ProfileManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = this.getConnection();
+            String query = "DELETE FROM DM_PROFILE WHERE ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, profileId);
+            stmt.executeUpdate();
+            return true;
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while deleting the profile from the data base.";
+            log.error(msg);
+            throw new ProfileManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
 
     @Override
     public Profile getProfiles(int profileId) throws ProfileManagerDAOException {

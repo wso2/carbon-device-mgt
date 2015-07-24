@@ -21,7 +21,6 @@ package org.wso2.carbon.policy.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
@@ -130,7 +129,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     @Override
     public void setPolicyUsed(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException {
-        policyManager.addAppliedPolicyToDevice(deviceIdentifier, policy.getId(), policy.getProfile().getProfileFeaturesList());
+        policyManager.addAppliedPolicyToDevice(deviceIdentifier, policy);
     }
 
     @Override

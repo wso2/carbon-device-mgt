@@ -21,17 +21,11 @@ package org.wso2.carbon.policy.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 
 import java.util.List;
 
@@ -68,6 +62,8 @@ public interface PolicyManagerService {
     PolicyInformationPoint getPIP() throws PolicyManagementException;
 
     PolicyEvaluationPoint getPEP() throws PolicyManagementException;
+
+    TaskScheduleService getTaskScheduleService() throws PolicyMonitoringTaskException;
 
     int getPolicyCount() throws PolicyManagementException;
 

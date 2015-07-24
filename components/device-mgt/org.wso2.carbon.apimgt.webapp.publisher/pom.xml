@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <artifactId>device-mgt</artifactId>
+        <groupId>org.wso2.carbon.devicemgt</groupId>
+        <version>0.9.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.apimgt.webapp.publisher</artifactId>
+    <version>0.9.2-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon - API Management Webapp Publisher</name>
+    <description>WSO2 Carbon - API Management Webapp Publisher</description>
+    <url>http://wso2.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.tomcat</groupId>
+            <artifactId>tomcat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>1.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
+                        <Bundle-Description>API Management Webapp Publisher</Bundle-Description>
+                        <Private-Package>org.wso2.carbon.apimgt.webapp.publisher.internal</Private-Package>
+                        <Export-Package>
+                            !org.wso2.carbon.apimgt.webapp.publisher.internal,
+                            org.wso2.carbon.apimgt.webapp.publisher.*
+                        </Export-Package>
+                        <Import-Package>
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.apache.commons.logging,
+                            javax.servlet,
+                            javax.xml.bind.annotation,
+                            org.apache.catalina,
+                            org.apache.catalina.core,
+                            org.wso2.carbon.apimgt.api,
+                            org.wso2.carbon.apimgt.api.model,
+                            org.wso2.carbon.apimgt.impl
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

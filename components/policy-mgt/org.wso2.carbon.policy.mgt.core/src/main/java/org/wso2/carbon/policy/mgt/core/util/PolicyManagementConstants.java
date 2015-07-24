@@ -24,10 +24,17 @@ public final class PolicyManagementConstants {
     public static final String ANY = "ANY";
     public static final String POLICY_BUNDLE = "POLICY_BUNDLE";
 
+    public static final String TENANT_ID = "TENANT_ID";
+
     public static final String MONITOR = "MONITOR";
     public static final String ENFORCE = "ENFORCE";
     public static final String WARN = "WARN";
     public static final String BLOCK = "BLOCK";
+
+
+    public static final String TASK_TYPE = "MONITORING_TASK";
+    public static final String TASK_NAME = "MONITORING";
+    public static final String TASK_CLAZZ = "org.wso2.carbon.policy.mgt.core.task.MonitoringTask";
 
 
 }

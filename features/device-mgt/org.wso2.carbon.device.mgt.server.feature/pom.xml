@@ -118,18 +118,10 @@
                                 </bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
-                                </importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.governance.metadata:${carbon.governance.version}
-                                </importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}
-                                </importFeatureDef>
-
+                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.device.mgt.extensions:${carbon.device.mgt.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon.commons.version}</importFeatureDef>
-                                <!--
-                                <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon.commons.version}
-                                </importFeatureDef>
-                                -->
                             </importFeatures>
                         </configuration>
                     </execution>

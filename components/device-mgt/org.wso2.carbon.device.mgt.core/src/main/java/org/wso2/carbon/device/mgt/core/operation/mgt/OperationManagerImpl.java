@@ -75,7 +75,7 @@ public class OperationManagerImpl implements OperationManager {
 
     @Override
     public int addOperation(Operation operation,
-                                List<DeviceIdentifier> deviceIds) throws OperationManagementException {
+                            List<DeviceIdentifier> deviceIds) throws OperationManagementException {
 
         if (log.isDebugEnabled()) {
             log.debug("operation:[" + operation.toString() + "]");
@@ -127,22 +127,20 @@ public class OperationManagerImpl implements OperationManager {
     public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
 
         try {
-            List<Operation> operations = new ArrayList<Operation>();
-            Device device = null;
+            OperationManagementDAOFactory.getConnection();
 
-            try {
-                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-                device = deviceDAO.getDevice(deviceId, tenantId);
-            } catch (DeviceManagementDAOException e) {
-                e.printStackTrace();
-            }
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            Device device = deviceDAO.getDevice(deviceId, tenantId);
+
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device " +
                         "Identifier:" + deviceId.getId() + " and given type" + deviceId.getType());
             }
-            List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList = operationDAO
-                    .getOperationsForDevice(device.getId());
+            List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList =
+                    operationDAO.getOperationsForDevice(device.getId());
             Operation operation;
+
+            List<Operation> operations = new ArrayList<Operation>();
             for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : operationList) {
                 operation = OperationDAOUtil.convertOperation(dtoOperation);
                 operations.add(operation);
@@ -152,6 +150,15 @@ public class OperationManagerImpl implements OperationManager {
             throw new OperationManagementException("Error occurred while retrieving the list of " +
                     "operations assigned for '" + deviceId.getType() + "' device '" + deviceId.getId()
                     + "'", e);
+        } catch (DeviceManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while retrieving metadata of '" +
+                    deviceId.getType() + "' device carrying the identifier '" + deviceId.getId() + "'");
+        } finally {
+            try {
+                OperationManagementDAOFactory.closeConnection();
+            } catch (OperationManagementDAOException e) {
+                log.warn("Error occurred while closing data source connection", e);
+            }
         }
     }
 
@@ -171,27 +178,20 @@ public class OperationManagerImpl implements OperationManager {
                 new ArrayList<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation>();
 
         try {
+            OperationManagementDAOFactory.getConnection();
+
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             device = deviceDAO.getDevice(deviceId, tenantId);
-
-            if (device.getEnrolmentInfo().getStatus() !=null && !device.getEnrolmentInfo().getStatus().equals(
-                    EnrolmentInfo.Status.ACTIVE)){
-                try {
-                    DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                            .updateDeviceEnrolmentInfo(device,
-                                    EnrolmentInfo.Status.ACTIVE);
-                }catch (DeviceManagementException deviceMgtEx){
-                    String errorMsg = "Error occurred while update enrol status: "+deviceId.toString();
-                    log.error(errorMsg, deviceMgtEx);
-                    throw new OperationManagementException(errorMsg, deviceMgtEx);
-                }
-            }
-
-
 
             if (device == null) {
                 throw new OperationManagementException("Device not found for given device " +
                         "Identifier:" + deviceId.getId() + " and given type:" + deviceId.getType());
+            }
+
+            if (device.getEnrolmentInfo().getStatus() != null && !device.getEnrolmentInfo().getStatus().equals(
+                    EnrolmentInfo.Status.ACTIVE)) {
+                DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                        .updateDeviceEnrolmentInfo(device, EnrolmentInfo.Status.ACTIVE);
             }
 
             dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(device.getId(),
@@ -223,12 +223,20 @@ public class OperationManagerImpl implements OperationManager {
                     + deviceId.getId();
             log.error(errorMsg, e);
             throw new OperationManagementException(errorMsg, e);
+        } catch (DeviceManagementException e) {
+            throw new OperationManagementException("Error occurred while update enrol status: " +
+                    deviceId.toString(), e);
+        } finally {
+            try {
+                OperationManagementDAOFactory.closeConnection();
+            } catch (OperationManagementDAOException e) {
+                log.warn("Error occurred while closing data source connection", e);
+            }
         }
     }
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
-
         if (log.isDebugEnabled()) {
             log.debug("device identifier id:[" + deviceId.getId() + "] type:[" + deviceId.getType()
                     + "]");
@@ -236,6 +244,8 @@ public class OperationManagerImpl implements OperationManager {
         Operation operation = null;
         Device device;
         try {
+            OperationManagementDAOFactory.getConnection();
+
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             device = deviceDAO.getDevice(deviceId, tenantId);
 
@@ -246,16 +256,15 @@ public class OperationManagerImpl implements OperationManager {
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO
                     .getNextOperation(device.getId());
 
-            if (device.getEnrolmentInfo().getStatus() !=null && !device.getEnrolmentInfo().getStatus().equals(
-                    EnrolmentInfo.Status.ACTIVE)){
+            if (device.getEnrolmentInfo().getStatus() != null && !device.getEnrolmentInfo().getStatus().equals(
+                    EnrolmentInfo.Status.ACTIVE)) {
                 try {
                     DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                             .updateDeviceEnrolmentInfo(device,
                                     EnrolmentInfo.Status.ACTIVE);
-                }catch (DeviceManagementException deviceMgtEx){
-                    String errorMsg = "Error occurred while update enrol status: "+deviceId.toString();
-                    log.error(errorMsg, deviceMgtEx);
-                    throw new OperationManagementException(errorMsg, deviceMgtEx);
+                } catch (DeviceManagementException e) {
+                    throw new OperationManagementException("Error occurred while update enrol status: '" +
+                            deviceId.toString() + "'", e);
                 }
             }
 
@@ -283,17 +292,19 @@ public class OperationManagerImpl implements OperationManager {
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving next pending operation", e);
         } catch (DeviceManagementDAOException e) {
-            String errorMsg = "Error occurred while retrieving the device " +
-                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '"
-                    + deviceId.getId();
-            log.error(errorMsg, e);
-            throw new OperationManagementException(errorMsg, e);
+            throw new OperationManagementException("Error occurred while retrieving the device " +
+                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '" + deviceId.getId(), e);
+        } finally {
+            try {
+                OperationManagementDAOFactory.closeConnection();
+            } catch (OperationManagementDAOException e) {
+                log.warn("Error occurred while closing data source connection", e);
+            }
         }
     }
 
     @Override
     public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException {
-
         int operationId = operation.getId();
 
         if (log.isDebugEnabled()) {
@@ -301,35 +312,44 @@ public class OperationManagerImpl implements OperationManager {
         }
 
         try {
+            OperationManagementDAOFactory.beginTransaction();
 
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             Device device = deviceDAO.getDevice(deviceId, tenantId);
 
-            if (operation.getStatus() !=null) {
+            if (operation.getStatus() != null) {
                 OperationManagementDAOFactory.beginTransaction();
                 operationDAO.updateOperationStatus(device.getId(), operationId,
                         org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status
                                 .valueOf(operation.getStatus().toString()));
-                OperationManagementDAOFactory.commitTransaction();
             }
 
-            if (operation.getOperationResponse() != null){
-                OperationManagementDAOFactory.beginTransaction();
+            if (operation.getOperationResponse() != null) {
                 operationDAO.addOperationResponse(device.getId(), operationId, operation.getOperationResponse());
-                OperationManagementDAOFactory.commitTransaction();
             }
-        } catch (OperationManagementDAOException ex) {
+            OperationManagementDAOFactory.commitTransaction();
+        } catch (OperationManagementDAOException e) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();
             } catch (OperationManagementDAOException e1) {
                 log.warn("Error occurred while roll-backing the update operation transaction", e1);
             }
-            log.error("Error occurred while updating the operation: " + operationId + " status:" + operation.getStatus(), ex);
-            throw new OperationManagementException("Error occurred while update operation", ex);
+            throw new OperationManagementException("Error occurred while updating the operation: " + operationId +
+                    " status:" + operation.getStatus(), e);
         } catch (DeviceManagementDAOException e) {
-            log.error("Error occurred while fetch the device for device identifier: " + deviceId.getId() + " " +
-                    "type:" + deviceId.getType(), e);
-            throw new OperationManagementException("Error occurred while update operation", e);
+            try {
+                OperationManagementDAOFactory.rollbackTransaction();
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the update operation transaction", e1);
+            }
+            throw new OperationManagementException("Error occurred while fetching the device for device identifier: " +
+                    deviceId.getId() + "type:" + deviceId.getType(), e);
+        } finally {
+            try {
+                OperationManagementDAOFactory.closeConnection();
+            } catch (OperationManagementDAOException e) {
+                log.warn("Error occurred while closing data source connection", e);
+            }
         }
     }
 
@@ -348,14 +368,13 @@ public class OperationManagerImpl implements OperationManager {
             lookupOperationDAO(operation).deleteOperation(operationId);
             OperationManagementDAOFactory.commitTransaction();
 
-        } catch (OperationManagementDAOException ex) {
+        } catch (OperationManagementDAOException e) {
             try {
                 OperationManagementDAOFactory.rollbackTransaction();
-            } catch (OperationManagementDAOException e) {
-                log.warn("Error occurred while roll-backing the delete operation transaction", e);
+            } catch (OperationManagementDAOException e1) {
+                log.warn("Error occurred while roll-backing the delete operation transaction", e1);
             }
-            log.error("Error occurred while deleting the operation: " + operationId, ex);
-            throw new OperationManagementException("Error occurred while delete operation", ex);
+            throw new OperationManagementException("Error occurred while deleting the operation: " + operationId, e);
         }
     }
 
@@ -371,6 +390,8 @@ public class OperationManagerImpl implements OperationManager {
         }
 
         try {
+            OperationManagementDAOFactory.getConnection();
+
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             device = deviceDAO.getDevice(deviceId, tenantId);
             if (device == null) {
@@ -383,8 +404,9 @@ public class OperationManagerImpl implements OperationManager {
             if (dtoOperation.getType()
                     .equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND)) {
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation commandOperation;
-                commandOperation = (org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation) commandOperationDAO
-                        .getOperation(dtoOperation.getId());
+                commandOperation =
+                        (org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation) commandOperationDAO.
+                                getOperation(dtoOperation.getId());
                 dtoOperation.setEnabled(commandOperation.isEnabled());
             } else if (dtoOperation.getType()
                     .equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG)) {
@@ -413,6 +435,12 @@ public class OperationManagerImpl implements OperationManager {
                     + deviceId.getId();
             log.error(errorMsg, e);
             throw new OperationManagementException(errorMsg, e);
+        } finally {
+            try {
+                OperationManagementDAOFactory.closeConnection();
+            } catch (OperationManagementDAOException e) {
+                log.warn("Error occurred while closing data source connection", e);
+            }
         }
         return operation;
     }
@@ -420,11 +448,11 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(
             DeviceIdentifier deviceId, Operation.Status status) throws OperationManagementException {
-
+        List<Operation> operations = new ArrayList<Operation>();
+        List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList =
+                new ArrayList<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation>();
         try {
-            List<Operation> operations = new ArrayList<Operation>();
-            List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList =
-                    new ArrayList<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation>();
+            OperationManagementDAOFactory.getConnection();
 
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             Device device = deviceDAO.getDevice(deviceId, tenantId);
@@ -459,10 +487,14 @@ public class OperationManagerImpl implements OperationManager {
                     "operations assigned for '" + deviceId.getType() + "' device '" +
                     deviceId.getId() + "' and status:" + status.toString(), e);
         } catch (DeviceManagementDAOException e) {
-            String errorMsg = "Error occurred while retrieving the device " +
-                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '" + deviceId.getId();
-            log.error(errorMsg, e);
-            throw new OperationManagementException(errorMsg, e);
+            throw new OperationManagementException("Error occurred while retrieving the device " +
+                    "for device Identifier type -'" + deviceId.getType() + "' and device Id '" + deviceId.getId(), e);
+        } finally {
+            try {
+                OperationManagementDAOFactory.closeConnection();
+            } catch (OperationManagementDAOException e) {
+                log.warn("Error occurred while closing data source connection", e);
+            }
         }
     }
 
@@ -471,6 +503,8 @@ public class OperationManagerImpl implements OperationManager {
 
         Operation operation;
         try {
+            OperationManagementDAOFactory.getConnection();
+
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.getOperation
                     (operationId);
             if (dtoOperation == null) {
@@ -494,12 +528,17 @@ public class OperationManagerImpl implements OperationManager {
 
                 dtoOperation = policyOperationDAO.getOperation(dtoOperation.getId());
             }
-
             operation = OperationDAOUtil.convertOperation(dtoOperation);
         } catch (OperationManagementDAOException e) {
             String errorMsg = "Error occurred while retrieving the operation with operation Id '" + operationId;
             log.error(errorMsg, e);
             throw new OperationManagementException(errorMsg, e);
+        } finally {
+            try {
+                OperationManagementDAOFactory.closeConnection();
+            } catch (OperationManagementDAOException e) {
+                log.warn("Error occurred while closing data source connection", e);
+            }
         }
         return operation;
     }

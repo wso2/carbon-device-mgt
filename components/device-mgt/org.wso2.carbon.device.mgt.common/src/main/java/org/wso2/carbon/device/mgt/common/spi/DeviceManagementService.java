@@ -24,7 +24,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 
 /**
  * Composite interface that acts as the SPI exposing all device management as well as application management
- * functionalities
+ * functionalities.
  */
 public interface DeviceManagementService extends ApplicationManager {
 

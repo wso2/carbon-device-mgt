@@ -22,7 +22,6 @@ package org.wso2.carbon.device.mgt.core.internal;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -39,7 +38,6 @@ public class DeviceManagementDataHolder {
     private LicenseManager licenseManager;
     private RegistryService registryService;
     private LicenseConfig licenseConfig;
-    private APIPublisherService apiPublisherService;
     private ApplicationManager appManager;
     private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
@@ -104,14 +102,6 @@ public class DeviceManagementDataHolder {
 
     public void setLicenseConfig(LicenseConfig licenseConfig) {
         this.licenseConfig = licenseConfig;
-    }
-
-    public APIPublisherService getApiPublisherService() {
-        return apiPublisherService;
-    }
-
-    public void setApiPublisherService(APIPublisherService apiPublisherService) {
-        this.apiPublisherService = apiPublisherService;
     }
 
     public ApplicationManager getAppManager() {

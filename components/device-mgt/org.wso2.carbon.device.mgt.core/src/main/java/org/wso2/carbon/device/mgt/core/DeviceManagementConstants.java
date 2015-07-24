@@ -26,6 +26,7 @@ public final class DeviceManagementConstants {
 
         public static final String PROPERTY_SETUP = "setup";
         public static final String DEFAULT_LICENSE_CONFIG_XML_NAME = "license-config.xml";
+        public static final String STANDARD_TRANSACTION_MANAGER_JNDI_NAME = "java:comp/TransactionManager";
     }
 
 	public static final class AppManagement {

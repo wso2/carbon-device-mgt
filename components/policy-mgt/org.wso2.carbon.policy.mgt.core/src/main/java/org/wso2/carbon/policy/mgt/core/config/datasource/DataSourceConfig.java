@@ -37,4 +37,15 @@ public class DataSourceConfig {
 	public void setJndiLookupDefinition(JNDILookupDefinition jndiLookupDefinition) {
 		this.jndiLookupDefinition = jndiLookupDefinition;
 	}
+
+    @XmlElement(name="isXA", required = true)
+    public boolean isXAEnabled() {
+        return isXAEnabled;
+    }
+
+    public void setXAEnabled(boolean isXAEnabled) {
+        this.isXAEnabled = isXAEnabled;
+    }
+
+    private boolean isXAEnabled;
 }

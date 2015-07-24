@@ -22,10 +22,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.*;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -36,6 +42,9 @@ public class OperationManagementDAOFactory {
     private static DataSource dataSource;
     private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
+    private static ThreadLocal<TransactionManager> currentTransaction = new ThreadLocal<TransactionManager>();
+    private static ThreadLocal<XAResource> currentResource = new ThreadLocal<XAResource>();
+    private static boolean isXADataSource = false;
 
     public static OperationDAO getCommandOperationDAO() {
         return new CommandOperationDAOImpl();
@@ -66,16 +75,51 @@ public class OperationManagementDAOFactory {
     }
 
     public static void init(DataSourceConfig config) {
+        isXADataSource = config.isXAEnabled();
         dataSource = resolveDataSource(config);
     }
 
     public static void beginTransaction() throws OperationManagementDAOException {
 
-        try {
-            currentConnection.set(dataSource.getConnection());
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while retrieving config.datasource connection", e);
+        if (isXADataSource) {
+            if (currentTransaction.get() == null) {
+                try {
+                    TransactionManager transactionManager = getTransaction();
+                    transactionManager.begin();
+                    currentTransaction.set(transactionManager);
+                    currentResource.remove();
+                }catch(Exception ex){
+                    String errorMsg = "Error in begin transaction";
+                    log.error(errorMsg, ex);
+                    throw new OperationManagementDAOException(errorMsg, ex);
+                }
+            }
+        } else {
+            try {
+                Connection conn = dataSource.getConnection();
+                conn.setAutoCommit(false);
+                currentConnection.set(conn);
+            } catch (SQLException e) {
+                throw new OperationManagementDAOException("Error occurred while retrieving config.datasource connection",
+                        e);
+            }
         }
+    }
+    private static TransactionManager getTransaction() throws DeviceManagementDAOException {
+
+        TransactionManager transactionManager = null;
+
+        try {
+            transactionManager = InitialContext.doLookup(
+                    org.wso2.carbon.device.mgt.core.DeviceManagementConstants.Common.STANDARD_TRANSACTION_MANAGER_JNDI_NAME);
+        } catch (NamingException e) {
+            String errorMsg = "Naming exception occurred lookup " + org.wso2.carbon.device.mgt.core
+                    .DeviceManagementConstants
+                    .Common.STANDARD_TRANSACTION_MANAGER_JNDI_NAME;
+            log.error(errorMsg, e);
+            throw new DeviceManagementDAOException(errorMsg, e);
+        }
+        return transactionManager;
     }
 
     public static Connection getConnection() throws OperationManagementDAOException {
@@ -83,9 +127,22 @@ public class OperationManagementDAOFactory {
         if (currentConnection.get() == null) {
             try {
                 currentConnection.set(dataSource.getConnection());
+                if (isXADataSource && currentTransaction.get() != null && currentResource == null) {
+                    XAResource resource = ((XAConnection) dataSource.getConnection()).getXAResource();
+                    try {
+                        currentTransaction.get().getTransaction().enlistResource(resource);
+                        currentResource.set(resource);
+                    } catch (Exception e) {
+                        // Above code block throws rollback and sql exceptions. But catch generic exception to
+                        // communicate
+                        // common error
+                        String errorMsg = "Error occurred while enlist the resource";
+                        log.error(errorMsg, e);
+                        throw new OperationManagementDAOException(errorMsg, e);
+                    }
+                }
             } catch (SQLException e) {
-                throw new OperationManagementDAOException("Error occurred while retrieving data source connection",
-                        e);
+                throw new OperationManagementDAOException("Error occurred while retrieving data source connection", e);
             }
         }
         return currentConnection.get();
@@ -105,38 +162,60 @@ public class OperationManagementDAOFactory {
     }
 
     public static void commitTransaction() throws OperationManagementDAOException {
-        try {
+
+        if (isXADataSource && currentTransaction.get() != null) {
+            try {
+                currentTransaction.get().commit();
+            } catch (Exception e) {
+                String errorMsg = "Error occurred commit transaction";
+                log.error(errorMsg, e);
+                throw new OperationManagementDAOException(errorMsg, e);
+            }
+            currentResource.remove();
+            currentTransaction.remove();
+        } else {
             Connection conn = currentConnection.get();
             if (conn != null) {
-                conn.commit();
+                try {
+                    conn.commit();
+                } catch (SQLException e) {
+                    throw new OperationManagementDAOException("Error occurred while committing the transaction", e);
+                }
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Datasource connection associated with the current thread is null, hence commit " +
                             "has not been attempted");
                 }
             }
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while committing the transaction", e);
-        } finally {
-            closeConnection();
         }
     }
 
     public static void rollbackTransaction() throws OperationManagementDAOException {
-        try {
-            Connection conn = currentConnection.get();
-            if (conn != null) {
-                conn.rollback();
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Datasource connection associated with the current thread is null, hence rollback " +
-                            "has not been attempted");
-                }
+
+        if (isXADataSource && currentTransaction.get() != null) {
+            try {
+                currentTransaction.get().rollback();
+            } catch (Exception e) {
+                String errorMsg = "Error occurred commit transaction";
+                log.error(errorMsg, e);
+                throw new OperationManagementDAOException(errorMsg, e);
             }
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while rollbacking the transaction", e);
-        } finally {
-            closeConnection();
+            currentResource.remove();
+            currentTransaction.remove();
+        } else {
+            try {
+                Connection conn = currentConnection.get();
+                if (conn != null) {
+                    conn.rollback();
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Datasource connection associated with the current thread is null, hence rollback " +
+                                "has not been attempted");
+                    }
+                }
+            } catch (SQLException e) {
+                throw new OperationManagementDAOException("Error occurred while rollback the transaction", e);
+            }
         }
     }
 

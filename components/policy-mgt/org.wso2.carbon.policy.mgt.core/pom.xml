@@ -72,7 +72,10 @@
                             org.wso2.carbon.user.api.*,
                             org.wso2.carbon.device.mgt.core.*,
                             org.wso2.carbon.device.mgt.common.*,
-                            org.wso2.carbon.ntask.*
+                            org.wso2.carbon.ntask.*,
+                            javax.transaction.*,
+                            com.atomikos.icatch.jta,
+                            org.apache.tomcat.jdbc.pool.*,
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.policy.mgt.core.internal,
@@ -143,6 +146,17 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.policy.mgt.common</artifactId>
+        </dependency>
+
+        <!--transaction Manager dependencies -->
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.transaction.manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
+            <type>zip</type>
         </dependency>
 
         <!--Test Case -->

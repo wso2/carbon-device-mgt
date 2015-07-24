@@ -84,7 +84,10 @@
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
                             org.wso2.carbon.base,
-                            org.wso2.carbon.base.api
+                            org.wso2.carbon.base.api,
+                            javax.transaction.*,
+                            com.atomikos.icatch.jta,
+                            org.apache.tomcat.jdbc.pool.*,
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -208,6 +211,15 @@
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.transaction.manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
+            <type>zip</type>
         </dependency>
     </dependencies>
 

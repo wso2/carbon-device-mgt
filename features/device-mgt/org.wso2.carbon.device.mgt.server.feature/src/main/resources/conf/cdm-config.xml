@@ -23,6 +23,7 @@
             <JndiLookupDefinition>
                 <Name>jdbc/DM_DS</Name>
             </JndiLookupDefinition>
+            <isXA>true</isXA>
         </DataSourceConfiguration>
         <EmailClientConfiguration>
             <minimumThread>8</minimumThread>

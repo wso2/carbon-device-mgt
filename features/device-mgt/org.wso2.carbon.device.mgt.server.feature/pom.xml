@@ -49,6 +49,11 @@
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.email.verification</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.transaction.manager.feature</artifactId>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -119,6 +124,8 @@
                                 </importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}
                                 </importFeatureDef>
+
+                                <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon.commons.version}</importFeatureDef>
                                 <!--
                                 <importFeatureDef>org.wso2.carbon.transaction.manager:${carbon.commons.version}
                                 </importFeatureDef>

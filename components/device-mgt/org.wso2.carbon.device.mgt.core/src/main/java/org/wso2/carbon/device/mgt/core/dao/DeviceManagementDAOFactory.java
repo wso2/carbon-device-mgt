@@ -103,7 +103,7 @@ public class DeviceManagementDAOFactory {
 
     private static TransactionManager getTransaction() throws DeviceManagementDAOException {
 
-        TransactionManager transactionManager = null;
+        TransactionManager transactionManager;
 
         try {
             transactionManager = InitialContext.doLookup(
@@ -130,8 +130,8 @@ public class DeviceManagementDAOFactory {
         if (currentConnection.get() == null) {
             try {
                 currentConnection.set(dataSource.getConnection());
-                if (isXADataSource && currentTransaction.get() != null && currentResource == null) {
-                    XAResource resource = ((XAConnection) dataSource.getConnection()).getXAResource();
+                if (isXADataSource && currentTransaction.get() != null && currentResource.get() == null) {
+                    XAResource resource = ((XAConnection) currentConnection.get()).getXAResource();
                     try {
                         currentTransaction.get().getTransaction().enlistResource(resource);
                         currentResource.set(resource);
@@ -176,6 +176,7 @@ public class DeviceManagementDAOFactory {
 
             currentResource.remove();
             currentTransaction.remove();
+            closeConnection();
         } else {
             Connection conn = currentConnection.get();
             if (conn != null) {

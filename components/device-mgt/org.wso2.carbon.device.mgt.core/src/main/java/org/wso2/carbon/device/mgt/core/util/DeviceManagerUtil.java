@@ -31,7 +31,11 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
+import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -97,6 +101,7 @@ public final class DeviceManagerUtil {
     public static boolean registerDeviceType(String typeName) throws DeviceManagementException {
         boolean status;
         try {
+            DeviceManagementDAOFactory.beginTransaction();
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
             DeviceType deviceType = deviceTypeDAO.getDeviceType(typeName);
             if (deviceType == null) {
@@ -105,7 +110,13 @@ public final class DeviceManagerUtil {
                 deviceTypeDAO.addDeviceType(dt);
             }
             status = true;
-        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.commitTransaction();
+        } catch (Exception e) {
+            try {
+                DeviceManagementDAOFactory.rollbackTransaction();
+            } catch (DeviceManagementDAOException ex) {
+                log.error("roll back transaction fail",ex);
+            }
             throw new DeviceManagementException("Error occurred while registering the device type '" +
                     typeName + "'", e);
         }

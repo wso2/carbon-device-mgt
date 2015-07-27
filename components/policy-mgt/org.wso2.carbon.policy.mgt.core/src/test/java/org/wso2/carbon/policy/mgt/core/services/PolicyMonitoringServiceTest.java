@@ -59,18 +59,18 @@ public class PolicyMonitoringServiceTest implements PolicyMonitoringService {
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
 
-//        List<ProfileFeature> profileFeatures = policy.getProfile().getProfileFeaturesList();
+        List<ProfileFeature> profileFeatures = policy.getProfile().getProfileFeaturesList();
 
-//        for (ProfileFeature pf : profileFeatures) {
-//            log.debug(pf.getFeatureCode());
-//            ComplianceFeature comf = new ComplianceFeature();
-//
-//            comf.setFeatureCode(pf.getFeatureCode());
-//            comf.setCompliance(false);
-//            comf.setMessage("This is a test....");
-//
-//            complianceFeatures.add(comf);
-//        }
+        for (ProfileFeature pf : profileFeatures) {
+            log.debug(pf.getFeatureCode());
+            ComplianceFeature comf = new ComplianceFeature();
+
+            comf.setFeatureCode(pf.getFeatureCode());
+            comf.setCompliance(false);
+            comf.setMessage("This is a test....");
+
+            complianceFeatures.add(comf);
+        }
         data.setComplianceFeatures(complianceFeatures);
         data.setStatus(false);
 

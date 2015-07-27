@@ -130,7 +130,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
             Operation.Status status) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
@@ -146,11 +146,11 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "Select co.OPERATION_ID,ENABLED from DM_COMMAND_OPERATION co " +
                     "INNER JOIN  " +
-                    "(Select * From DM_DEVICE_OPERATION_MAPPING WHERE DEVICE_ID=? " +
+                    "(Select * From DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID=? " +
                     "AND STATUS=? ) dm ON dm.OPERATION_ID = co.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, deviceId);
+            stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());
 
             rs = stmt.executeQuery();
@@ -169,7 +169,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             }
 
         } catch (SQLException e) {
-            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + deviceId +
+            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + enrolmentId +
                     "' with status '" + status.toString();
             log.error(errorMsg);
             throw new OperationManagementDAOException(errorMsg, e);

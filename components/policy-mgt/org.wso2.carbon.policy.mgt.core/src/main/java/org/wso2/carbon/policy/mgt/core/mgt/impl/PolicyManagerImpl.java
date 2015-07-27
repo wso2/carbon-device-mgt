@@ -708,8 +708,8 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, int policyId,
-                                                 List<ProfileFeature> profileFeatures) throws PolicyManagementException {
+    public void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
+            throws PolicyManagementException {
 
         int deviceId = -1;
         try {
@@ -719,9 +719,9 @@ public class PolicyManagerImpl implements PolicyManager {
             boolean exist = policyDAO.checkPolicyAvailable(deviceId);
             PolicyManagementDAOFactory.beginTransaction();
             if (exist) {
-                policyDAO.updateEffectivePolicyToDevice(deviceId, policyId, profileFeatures);
+                policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
             } else {
-                policyDAO.addEffectivePolicyToDevice(deviceId, policyId, profileFeatures);
+                policyDAO.addEffectivePolicyToDevice(deviceId, policy);
             }
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
@@ -731,7 +731,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 log.warn("Error occurred while roll backing the transaction.");
             }
             String msg = "Error occurred while adding the evaluated policy to device (" +
-                         deviceId + " - " + policyId + ")";
+                         deviceId + " - " + policy.getId() + ")";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         } catch (DeviceManagementException e) {
@@ -756,12 +756,10 @@ public class PolicyManagerImpl implements PolicyManager {
             if (exist) {
                 Policy policySaved = policyDAO.getAppliedPolicy(deviceId);
                 if (!policy.equals(policySaved)) {
-                    policyDAO.updateEffectivePolicyToDevice(deviceId, policy.getId(), policy.getProfile().
-                            getProfileFeaturesList());
+                    policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
                 }
             } else {
-                policyDAO.addEffectivePolicyToDevice(deviceId, policy.getId(), policy.getProfile().
-                        getProfileFeaturesList());
+                policyDAO.addEffectivePolicyToDevice(deviceId, policy);
             }
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
@@ -847,8 +845,8 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
-            int policyId = policyDAO.getAppliedPolicyId(device.getId());
-            policy = policyDAO.getPolicy(policyId);
+            //int policyId = policyDAO.getAppliedPolicyId(device.getId());
+            policy = policyDAO.getAppliedPolicy(device.getId());
 
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while getting device id.";

@@ -62,5 +62,8 @@ public interface DeviceDAO {
 
 
     List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException;
+
+    int getEnrolmentByStatus(DeviceIdentifier deviceId, Status status,
+                                    int tenantId) throws DeviceManagementDAOException;
 }
 

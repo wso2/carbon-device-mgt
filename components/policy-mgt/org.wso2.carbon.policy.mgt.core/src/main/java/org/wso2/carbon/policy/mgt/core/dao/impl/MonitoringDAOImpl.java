@@ -190,7 +190,11 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             for (ComplianceFeature feature : complianceFeatures) {
                 stmt.setInt(1, policyComplianceStatusId);
                 stmt.setString(2, feature.getFeatureCode());
-                stmt.setString(3, String.valueOf(feature.isCompliance()));
+                if (feature.isCompliance() == true) {
+                    stmt.setInt(3, 1);
+                } else {
+                    stmt.setInt(3, 0);
+                }
                 stmt.addBatch();
             }
             stmt.executeBatch();

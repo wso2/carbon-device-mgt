@@ -16,13 +16,17 @@
 package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
 import java.util.List;
-import java.util.Map;
 
 public class TestDeviceManager implements DeviceManager {
+
+    public TestDeviceManager() {
+
+    }
 
     @Override
     public FeatureManager getFeatureManager() {
@@ -101,4 +105,15 @@ public class TestDeviceManager implements DeviceManager {
             throws DeviceManagementException {
         return false;
     }
+
+    @Override
+    public License getLicense(String languageCode) throws LicenseManagementException {
+        return null;
+    }
+
+    @Override
+    public void addLicense(License license) throws LicenseManagementException {
+
+    }
+
 }

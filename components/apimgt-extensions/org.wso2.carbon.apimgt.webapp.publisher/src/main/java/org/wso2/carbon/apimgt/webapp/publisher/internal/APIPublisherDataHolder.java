@@ -16,10 +16,29 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.license.mgt;
+package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
-public class LicenseManagementUtil {
+import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 
+public class APIPublisherDataHolder {
 
+    private APIPublisherService apiPublisherService;
+
+    private static APIPublisherDataHolder thisInstance = new APIPublisherDataHolder();
+
+    private APIPublisherDataHolder() {
+    }
+
+    public static APIPublisherDataHolder getInstance() {
+        return thisInstance;
+    }
+
+    public APIPublisherService getApiPublisherService() {
+        return apiPublisherService;
+    }
+
+    public void setApiPublisherService(APIPublisherService apiPublisherService) {
+        this.apiPublisherService = apiPublisherService;
+    }
 
 }

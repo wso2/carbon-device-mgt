@@ -37,11 +37,13 @@
 
     <modules>
         <module>components/device-mgt</module>
+	<module>components/apimgt-extensions</module>
         <module>components/policy-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/oauth-extensions</module>
         <module>features/device-mgt</module>
-        <module>features/policy-mgt</module>
+        <module>features/apimgt-extensions</module>
+	<module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
         <module>features/oauth-extensions</module>
     </modules>
@@ -128,6 +130,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.extensions</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.policy.mgt.common</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
@@ -152,9 +159,9 @@
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.identity</groupId>
-                <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
-                <version>${carbon.identity.version}</version>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.webapp.publisher</artifactId>
+                <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->
 
@@ -830,6 +837,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.core</artifactId>
+                <version>${carbon.identity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
                 <version>${carbon.identity.version}</version>
             </dependency>
             <!-- End of Carbon Identity dependencies -->

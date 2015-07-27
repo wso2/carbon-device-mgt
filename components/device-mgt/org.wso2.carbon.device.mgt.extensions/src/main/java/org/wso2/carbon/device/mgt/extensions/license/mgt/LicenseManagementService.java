@@ -16,23 +16,23 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.license.mgt;
+package org.wso2.carbon.device.mgt.extensions.license.mgt;
 
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
-import org.wso2.carbon.device.mgt.common.license.mgt.License;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 public class LicenseManagementService implements LicenseManager {
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws LicenseManagementException {
-        return DeviceManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
+        //return DeviceManagementDataHolder.getInstance().getLicenseManager().getLicense(deviceType, languageCode);
+        return null;
     }
 
     @Override
-    public boolean addLicense(String deviceType, License license) throws LicenseManagementException {
-        return DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(deviceType, license);
+    public void addLicense(String deviceType, License license) throws LicenseManagementException {
+        //return DeviceManagementDataHolder.getInstance().getLicenseManager().addLicense(deviceType, license);
     }
 
 }

@@ -17,7 +17,8 @@
 ~ under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
@@ -69,23 +70,13 @@
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
-                            org.wso2.carbon.registry.core,
-                            org.wso2.carbon.registry.core.exceptions,
                             org.wso2.carbon.registry.core.service,
-                            org.wso2.carbon.registry.core.session,
                             org.w3c.dom,
-                            org.wso2.carbon.governance.api.exception,
-                            org.wso2.carbon.governance.api.generic,
-                            org.wso2.carbon.governance.api.generic.dataobjects,
-                            org.wso2.carbon.apimgt.api,
-                            org.wso2.carbon.apimgt.api.model,
-                            org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.identity.oauth.stub,
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
-                            org.apache.catalina,
-                            org.apache.catalina.core,
-                            javax.servlet
+                            org.wso2.carbon.apimgt.impl,
+                            org.wso2.carbon.ndatasource.core
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -100,9 +91,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18</version>
                 <configuration>
-		    <systemPropertyVariables>
-            		 <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
-        	    </systemPropertyVariables>
+                    <systemPropertyVariables>
+                        <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
+                    </systemPropertyVariables>
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>

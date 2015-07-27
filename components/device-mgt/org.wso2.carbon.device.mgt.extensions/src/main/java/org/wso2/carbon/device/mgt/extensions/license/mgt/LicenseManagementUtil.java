@@ -16,12 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.common.license.mgt;
+package org.wso2.carbon.device.mgt.extensions.license.mgt;
 
-public interface LicenseManager {
+public class LicenseManagementUtil {
 
-    License getLicense(String deviceType, String languageCode) throws LicenseManagementException;
 
-    void addLicense(String deviceType, License license) throws LicenseManagementException;
 
 }

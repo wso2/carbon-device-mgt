@@ -16,12 +16,11 @@
  *  under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.license.mgt;
+package org.wso2.carbon.device.mgt.extensions.license.mgt;
 
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -35,21 +34,10 @@ public class GenericArtifactManagerFactory {
             new HashMap<Integer, GenericArtifactManager>();
     private static final Object lock = new Object();
 
-    public static GenericArtifactManager getTenantAwareGovernanceArtifactManager() throws
-            LicenseManagementException {
-        Registry registry;
-        int tenantId;
+    public static GenericArtifactManager getTenantAwareGovernanceArtifactManager(
+            Registry registry) throws LicenseManagementException {
         try {
-            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            registry =
-                    DeviceManagementDataHolder.getInstance().getRegistryService().getGovernanceSystemRegistry(
-                            tenantId);
-        } catch (RegistryException e) {
-            throw new LicenseManagementException("Error occurred while initializing tenant system registry " +
-                    "to be used to manipulate License artifacts", e);
-        }
-
-        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GenericArtifactManager artifactManager;
             synchronized (lock) {
                 artifactManager =

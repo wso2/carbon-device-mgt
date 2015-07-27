@@ -16,12 +16,11 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.api.mgt;
+package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -55,11 +54,11 @@ public class APIConfig {
     private APIProvider provider;
     private boolean isSecured;
 
-    public void init() throws DeviceManagementException {
+    public void init() throws APIManagementException {
         try {
             this.provider = APIManagerFactory.getInstance().getAPIProvider(this.getOwner());
         } catch (APIManagementException e) {
-            throw new DeviceManagementException("Error occurred while initializing API provider", e);
+            throw new APIManagementException("Error occurred while initializing API provider", e);
         }
     }
 

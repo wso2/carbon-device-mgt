@@ -18,6 +18,8 @@
 package org.wso2.carbon.device.mgt.common;
 
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
 import java.util.List;
 
@@ -143,5 +145,9 @@ public interface DeviceManager {
 
     boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                       EnrolmentInfo.Status status) throws DeviceManagementException;
+
+    License getLicense(String languageCode) throws LicenseManagementException;
+
+    void addLicense(License license) throws LicenseManagementException;
 
 }

@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core.license.mgt;
+package org.wso2.carbon.device.mgt.extensions.license.mgt;
 
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
@@ -27,19 +27,36 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactFilter;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
+import org.wso2.carbon.registry.api.Registry;
 
 import javax.xml.namespace.QName;
+import java.lang.String;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class LicenseManagerImpl implements LicenseManager {
+public class RegistryBasedLicenseManager implements LicenseManager {
+
+    private Registry registry;
+    private GenericArtifactManager artifactManager;
+
+    public RegistryBasedLicenseManager(Registry registry) {
+        if (registry == null) {
+            throw new IllegalArgumentException("Registry instance provided is null. Hence, " +
+                    "'Registry based license manager cannot be initialized'");
+        }
+        this.registry = registry;
+        try {
+            this.artifactManager = GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager(registry);
+        } catch (LicenseManagementException e) {
+            throw new IllegalStateException("Failed to initialize generic artifact manager bound to " +
+                    "Registry based license manager", e);
+        }
+    }
 
     @Override
     public License getLicense(final String deviceType, final String languageCode) throws LicenseManagementException {
-        GenericArtifactManager artifactManager =
-                GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager();
         try {
             GenericArtifact[] artifacts = artifactManager.findGenericArtifacts(new GenericArtifactFilter() {
                 @Override
@@ -82,9 +99,9 @@ public class LicenseManagerImpl implements LicenseManager {
     }
 
     @Override
-    public boolean addLicense(String deviceType, License license) throws LicenseManagementException {
+    public void addLicense(final String deviceType, final License license) throws LicenseManagementException {
         GenericArtifactManager artifactManager =
-                GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager();
+                GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager(registry);
         try {
             GenericArtifact artifact =
                     artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com",
@@ -99,7 +116,6 @@ public class LicenseManagerImpl implements LicenseManager {
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM,
                     license.getValidFrom().toString());
             artifactManager.addGenericArtifact(artifact);
-            return true;
         } catch (GovernanceException e) {
             throw new LicenseManagementException("Error occurred while adding license for device type " +
                     deviceType + "'", e);

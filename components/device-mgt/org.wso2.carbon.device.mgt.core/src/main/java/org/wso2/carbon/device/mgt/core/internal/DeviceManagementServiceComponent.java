@@ -25,28 +25,19 @@ import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
-import org.wso2.carbon.device.mgt.common.license.mgt.License;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
-import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
-import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherServiceImpl;
-import org.wso2.carbon.device.mgt.core.api.mgt.ApplicationManagementProviderService;
+import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
-import org.wso2.carbon.device.mgt.core.config.license.LicenseConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagementService;
-import org.wso2.carbon.device.mgt.core.license.mgt.LicenseManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -109,6 +100,7 @@ public class DeviceManagementServiceComponent {
     private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
     private static List<DeviceManagementService> deviceManagers = new ArrayList<DeviceManagementService>();
 
+    @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
         try {
             if (log.isDebugEnabled()) {
@@ -122,8 +114,6 @@ public class DeviceManagementServiceComponent {
             DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
             DeviceManagementDAOFactory.init(dsConfig);
 
-            /* Initializing license manager */
-            this.initLicenseManager();
             /*Initialize Operation Manager*/
             this.initOperationsManager();
 
@@ -137,7 +127,6 @@ public class DeviceManagementServiceComponent {
                             "begin");
                 }
                 this.setupDeviceManagementSchema(dsConfig);
-                this.setupDefaultLicenses(DeviceManagementDataHolder.getInstance().getLicenseConfig());
             }
 
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
@@ -151,6 +140,7 @@ public class DeviceManagementServiceComponent {
         }
     }
 
+    @SuppressWarnings("unused")
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
     }
@@ -162,16 +152,6 @@ public class DeviceManagementServiceComponent {
                 listener.registerDeviceManagementService(deviceManagementService);
             }
         }
-    }
-
-    private void initLicenseManager() throws LicenseManagementException {
-        LicenseConfigurationManager.getInstance().initConfig();
-        LicenseConfig licenseConfig =
-                LicenseConfigurationManager.getInstance().getLicenseConfig();
-
-        LicenseManager licenseManager = new LicenseManagerImpl();
-        DeviceManagementDataHolder.getInstance().setLicenseManager(licenseManager);
-        DeviceManagementDataHolder.getInstance().setLicenseConfig(licenseConfig);
     }
 
     private void initOperationsManager() throws OperationManagementException {
@@ -188,14 +168,6 @@ public class DeviceManagementServiceComponent {
         DeviceManagementProviderService deviceManagementProvider = new DeviceManagementProviderServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
         bundleContext.registerService(DeviceManagementProviderService.class.getName(), deviceManagementProvider, null);
-
-        LicenseManagementService licenseManagementService = new LicenseManagementService();
-        DeviceManagementDataHolder.getInstance().setLicenseManager(new LicenseManagerImpl());
-        bundleContext.registerService(LicenseManagementService.class.getName(), licenseManagementService, null);
-
-        APIPublisherService publisher = new APIPublisherServiceImpl();
-        DeviceManagementDataHolder.getInstance().setApiPublisherService(publisher);
-        bundleContext.registerService(APIPublisherService.class, publisher, null);
 
 	     /* Registering App Management service */
         try {
@@ -222,17 +194,6 @@ public class DeviceManagementServiceComponent {
         }
         if (log.isDebugEnabled()) {
             log.debug("Device management metadata repository schema has been successfully initialized");
-        }
-    }
-
-    private void setupDefaultLicenses(LicenseConfig licenseConfig)
-            throws LicenseManagementException {
-        LicenseManager licenseManager = DeviceManagementDataHolder.getInstance().getLicenseManager();
-        for (License license : licenseConfig.getLicenses()) {
-            License extLicense = licenseManager.getLicense(license.getName(), license.getLanguage());
-            if (extLicense == null) {
-                licenseManager.addLicense(license.getName(), license);
-            }
         }
     }
 

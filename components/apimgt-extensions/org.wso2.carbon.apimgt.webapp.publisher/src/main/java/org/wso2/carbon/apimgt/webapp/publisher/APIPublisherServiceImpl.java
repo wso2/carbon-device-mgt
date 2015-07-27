@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.core.api.mgt;
+package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,8 +54,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                         "'. Thus, the API config is updated");
             }
         } else {
-            log.error("API provider configured for the given API configuration is null. Thus, the API is not " +
-                    "published");
+            throw new APIManagementException("API provider configured for the given API configuration is null. " +
+                    "Thus, the API is not published");
         }
     }
 

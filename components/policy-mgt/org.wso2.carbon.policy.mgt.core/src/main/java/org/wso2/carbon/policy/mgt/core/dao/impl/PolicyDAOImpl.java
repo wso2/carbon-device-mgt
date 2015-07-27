@@ -749,7 +749,7 @@ public class PolicyDAOImpl implements PolicyDAO {
 
 
     @Override
-    public void addEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+    public void addEffectivePolicyToDevice(int deviceId, Policy policy)
             throws PolicyManagerDAOException {
 
         Connection conn;
@@ -761,8 +761,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                            "(DEVICE_ID, POLICY_ID, POLICY_CONTENT, CREATED_TIME, UPDATED_TIME) VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
-            stmt.setInt(2, policyId);
-            stmt.setObject(3, profileFeatures);
+            stmt.setInt(2, policy.getId());
+            stmt.setObject(3, policy);
             stmt.setTimestamp(4, currentTimestamp);
             stmt.setTimestamp(5, currentTimestamp);
 
@@ -805,7 +805,7 @@ public class PolicyDAOImpl implements PolicyDAO {
 
 
     @Override
-    public void updateEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+    public void updateEffectivePolicyToDevice(int deviceId, Policy policy)
             throws PolicyManagerDAOException {
 
         Connection conn;
@@ -816,8 +816,8 @@ public class PolicyDAOImpl implements PolicyDAO {
             String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET POLICY_ID = ?, POLICY_CONTENT = ?, UPDATED_TIME = ?, " +
                            "APPLIED = ? WHERE DEVICE_ID = ?";
             stmt = conn.prepareStatement(query);
-            stmt.setInt(1, policyId);
-            stmt.setObject(2, profileFeatures);
+            stmt.setInt(1, policy.getId());
+            stmt.setObject(2, policy);
             stmt.setTimestamp(3, currentTimestamp);
             stmt.setBoolean(4, false);
             stmt.setInt(5, deviceId);

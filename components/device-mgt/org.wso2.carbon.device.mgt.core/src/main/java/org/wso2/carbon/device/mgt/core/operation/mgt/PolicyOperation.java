@@ -22,15 +22,15 @@ import java.util.List;
 
 public class PolicyOperation extends Operation {
 
+    public static final String POLICY_OPERATION_CODE = "POLICY_BUNDLE";
+    private List<ProfileOperation> profileOperations;
+
     public List<ProfileOperation> getProfileOperations() {
         return profileOperations;
     }
-    public static final String POLICY_OPERATION_CODE = "POLICY_BUNDLE";
 
     public void setProfileOperations(List<ProfileOperation> profileOperations) {
         this.profileOperations = profileOperations;
     }
-
-    private List<ProfileOperation> profileOperations;
 
 }

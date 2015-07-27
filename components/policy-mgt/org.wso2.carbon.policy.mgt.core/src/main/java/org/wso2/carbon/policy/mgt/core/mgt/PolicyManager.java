@@ -38,7 +38,7 @@ public interface PolicyManager {
     boolean deletePolicy(int policyId) throws PolicyManagementException;
 
     Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
-            PolicyManagementException;
+                                                                                         PolicyManagementException;
 
     Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagementException;
 
@@ -60,10 +60,10 @@ public interface PolicyManager {
 
     List<Device> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagementException;
 
-    void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature>
-            profileFeatures) throws PolicyManagementException;
+    void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
+            throws PolicyManagementException;
 
-    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier,  Policy policy) throws PolicyManagementException;
+    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
 
     boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 

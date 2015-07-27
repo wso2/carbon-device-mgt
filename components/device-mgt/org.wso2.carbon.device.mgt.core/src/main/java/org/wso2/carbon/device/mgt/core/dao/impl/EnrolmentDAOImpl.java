@@ -77,7 +77,7 @@ public class EnrolmentDAOImpl implements EnrolmentDAO {
             stmt.setString(1, enrolmentInfo.getOwnership().toString());
             stmt.setString(2, enrolmentInfo.getStatus().toString());
             stmt.setTimestamp(3, new Timestamp(enrolmentInfo.getDateOfEnrolment()));
-            stmt.setTimestamp(4, new Timestamp(enrolmentInfo.getDateOfLastUpdate()));
+            stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
             stmt.setInt(5, deviceId);
             stmt.setString(6, enrolmentInfo.getOwner());
             stmt.setInt(7, tenantId);
@@ -156,9 +156,9 @@ public class EnrolmentDAOImpl implements EnrolmentDAO {
             conn = this.getConnection();
             String sql = "SELECT STATUS FROM DM_ENROLMENT WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(2, deviceId);
-            stmt.setString(3, currentOwner);
-            stmt.setInt(4, tenantId);
+            stmt.setInt(1, deviceId);
+            stmt.setString(2, currentOwner);
+            stmt.setInt(3, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 status = EnrolmentInfo.Status.valueOf(rs.getString("STATUS"));

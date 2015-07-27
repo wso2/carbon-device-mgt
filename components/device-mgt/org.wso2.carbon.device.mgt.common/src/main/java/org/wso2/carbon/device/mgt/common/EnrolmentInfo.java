@@ -92,4 +92,23 @@ public class EnrolmentInfo {
         this.device = device;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof EnrolmentInfo) {
+            EnrolmentInfo tempInfo = (EnrolmentInfo) obj;
+            if (owner != null && ownership != null
+                && tempInfo.getOwner() != null && tempInfo.getOwnership() != null) {
+
+                if (owner.equals(tempInfo.getOwner()) && ownership.equals(tempInfo.getOwnership())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 }

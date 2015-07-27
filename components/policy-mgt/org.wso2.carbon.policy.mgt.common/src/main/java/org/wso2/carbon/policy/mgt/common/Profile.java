@@ -24,10 +24,11 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 @XmlRootElement
-public class Profile {
+public class Profile implements Serializable {
 
     private int profileId;
     private String profileName;

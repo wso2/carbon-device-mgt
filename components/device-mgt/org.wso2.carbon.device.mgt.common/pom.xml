@@ -46,6 +46,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Device Management Common Bundle</Bundle-Description>
+                        <Import-Package>javax.transaction.*,javax.xml.bind.annotation.*</Import-Package>
                         <Export-Package>
                             org.wso2.carbon.device.mgt.common.*
                         </Export-Package>
@@ -54,5 +55,11 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.transaction.manager</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

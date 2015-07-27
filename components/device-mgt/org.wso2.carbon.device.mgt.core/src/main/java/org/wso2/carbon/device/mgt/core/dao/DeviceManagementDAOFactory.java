@@ -104,7 +104,6 @@ public class DeviceManagementDAOFactory {
     private static TransactionManager getTransaction() throws DeviceManagementDAOException {
 
         TransactionManager transactionManager;
-
         try {
             transactionManager = InitialContext.doLookup(
                     org.wso2.carbon.device.mgt.core.DeviceManagementConstants.Common.STANDARD_TRANSACTION_MANAGER_JNDI_NAME);
@@ -119,6 +118,7 @@ public class DeviceManagementDAOFactory {
     }
 
     public static void openConnection() throws DeviceManagementDAOException {
+
         try {
             currentConnection.set(dataSource.getConnection());
         } catch (SQLException e) {
@@ -127,6 +127,7 @@ public class DeviceManagementDAOFactory {
     }
 
     public static Connection getConnection() throws DeviceManagementDAOException {
+
         if (currentConnection.get() == null) {
             try {
                 currentConnection.set(dataSource.getConnection());
@@ -152,6 +153,7 @@ public class DeviceManagementDAOFactory {
     }
 
     public static void closeConnection() throws DeviceManagementDAOException {
+
         Connection con = currentConnection.get();
         if (con != null) {
             try {
@@ -231,6 +233,7 @@ public class DeviceManagementDAOFactory {
      * @return data source resolved from the data source definition
      */
     private static DataSource resolveDataSource(DataSourceConfig config) {
+        
         DataSource dataSource = null;
         if (config == null) {
             throw new RuntimeException(

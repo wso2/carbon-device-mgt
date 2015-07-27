@@ -21,6 +21,7 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
+import javax.transaction.Transaction;
 import java.util.List;
 
 /**
@@ -149,5 +150,7 @@ public interface DeviceManager {
     License getLicense(String languageCode) throws LicenseManagementException;
 
     void addLicense(License license) throws LicenseManagementException;
+
+    void setCurrentTransaction(Transaction currentTransactions) throws DeviceManagementException;
 
 }

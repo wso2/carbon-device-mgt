@@ -20,6 +20,7 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
+import javax.transaction.Transaction;
 import java.util.List;
 
 public class TestDeviceManager implements DeviceManager {
@@ -113,6 +114,11 @@ public class TestDeviceManager implements DeviceManager {
 
     @Override
     public void addLicense(License license) throws LicenseManagementException {
+
+    }
+
+    @Override
+    public void setCurrentTransaction(Transaction transaction) throws DeviceManagementException {
 
     }
 

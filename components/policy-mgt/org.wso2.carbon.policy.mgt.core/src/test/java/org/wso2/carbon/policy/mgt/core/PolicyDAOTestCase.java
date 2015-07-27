@@ -21,14 +21,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
@@ -39,7 +39,6 @@ import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.ProfileManagerImpl;
 import org.wso2.carbon.policy.mgt.core.util.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -57,38 +56,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     @Override
     public void init() throws Exception {
         initDatSource();
-        System.setProperty("GetTenantIDForTest", "Super");
-        this.setUp();
-
+        // System.setProperty("GetTenantIDForTest", "Super");
+        initiatePriviledgeCaronContext();
     }
 
-    public void setUp() throws Exception {
-
-
-        if (System.getProperty("carbon.home") == null) {
-            File file = new File("src/test/resources/carbon-home");
-            if (file.exists()) {
-                System.setProperty("carbon.home", file.getAbsolutePath());
-            }
-            file = new File("../resources/carbon-home");
-            if (file.exists()) {
-                System.setProperty("carbon.home", file.getAbsolutePath());
-            }
-            file = new File("../../resources/carbon-home");
-            if (file.exists()) {
-                System.setProperty("carbon.home", file.getAbsolutePath());
-            }
-            file = new File("../../../resources/carbon-home");
-            if (file.exists()) {
-                System.setProperty("carbon.home", file.getAbsolutePath());
-            }
-        }
-
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
-                .SUPER_TENANT_DOMAIN_NAME);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-
-    }
 
     @Test
     public void addDeviceType() throws DeviceManagementDAOException {
@@ -98,15 +69,36 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
 
     @Test(dependsOnMethods = ("addDeviceType"))
-    public void addDevice() throws DeviceManagementDAOException {
+    public void addDevice() throws DeviceManagementDAOException, DeviceManagementException {
 
-        DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        EnrolmentDAO enrolmentDAO  = DeviceManagementDAOFactory.getEnrollmentDAO();
+        DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        EnrolmentDAO enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
         DeviceType type = DeviceTypeCreator.getDeviceType();
         devices = DeviceCreator.getDeviceList(type);
         for (Device device : devices) {
-           int id = deviceTypeDAO.addDevice(type.getId(), device, -1234);
+            int id = deviceDAO.addDevice(type.getId(), device, -1234);
             enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
+        }
+
+        List<Device> devices = deviceDAO.getDevices(-1234);
+
+        for (Device device : devices) {
+            log.debug(device.getDeviceIdentifier() + " ----- X");
+        }
+
+        List<Device> devices2 = deviceDAO.getDevices("android", -1234);
+
+        for (Device device : devices2) {
+            log.debug(device.getDeviceIdentifier() + " ----- XX");
+        }
+
+
+        DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+
+        List<Device> devices3 = service.getAllDevices("android");
+
+        for (Device device : devices3) {
+            log.debug(device.getDeviceIdentifier() + " ----- XXX");
         }
     }
 
@@ -354,4 +346,23 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
 
+    @Test(dependsOnMethods = ("deletPolicy"))
+    public void testMonitorDao() throws PolicyManagementException, DeviceManagementException {
+
+        DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+        PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
+
+        List<Policy> policies = policyManagerService.getPolicies("android");
+        List<Device> devices = service.getAllDevices("android");
+
+        for (Policy policy : policies) {
+            log.debug(policy.getPolicyName() + "-----P");
+        }
+
+        for (Device device : devices) {
+            log.debug(device.getDeviceIdentifier() + " ----- D");
+        }
+
+
+    }
 }

@@ -34,7 +34,9 @@ import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleServiceImpl;
 
@@ -47,10 +49,12 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
     PolicyAdministratorPointImpl policyAdministratorPoint;
     MonitoringManager monitoringManager;
+    private PolicyManager policyManager;
 
     public PolicyManagerServiceImpl() {
         policyAdministratorPoint = new PolicyAdministratorPointImpl();
         monitoringManager = new MonitoringManagerImpl();
+        policyManager = new PolicyManagerImpl();
     }
 
     @Override
@@ -213,6 +217,11 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public int getPolicyCount() throws PolicyManagementException {
         return policyAdministratorPoint.getPolicyCount();
+    }
+
+    @Override
+    public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+        return policyManager.getAppliedPolicyToDevice(deviceIdentifier);
     }
 
     @Override

@@ -38,10 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class PolicyDAOImpl implements PolicyDAO {
 
@@ -755,16 +752,18 @@ public class PolicyDAOImpl implements PolicyDAO {
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_DEVICE_POLICY_APPLIED " +
-                    "(DEVICE_ID, POLICY_ID, POLICY_CONTENT, CREATED_TIME, UPDATED_TIME) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO DM_DEVICE_POLICY_APPLIED (DEVICE_ID, POLICY_ID, POLICY_CONTENT, " +
+                    "CREATED_TIME, UPDATED_TIME, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, policyId);
             stmt.setObject(3, profileFeatures);
             stmt.setTimestamp(4, currentTimestamp);
             stmt.setTimestamp(5, currentTimestamp);
+            stmt.setInt(6, tenantId);
 
             stmt.executeUpdate();
 
@@ -1246,27 +1245,29 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
 
-            ByteArrayInputStream bais = null;
-            ObjectInputStream ois = null;
-            byte[] contentBytes;
-            try {
-                contentBytes = (byte[]) resultSet.getBytes("POLICY_CONTENT");
-                bais = new ByteArrayInputStream(contentBytes);
-                ois = new ObjectInputStream(bais);
-                policy = (Policy) ois.readObject();
-            } finally {
-                if (bais != null) {
-                    try {
-                        bais.close();
-                    } catch (IOException e) {
-                        log.warn("Error occurred while closing ByteArrayOutputStream", e);
+            while (resultSet.next()) {
+                ByteArrayInputStream bais = null;
+                ObjectInputStream ois = null;
+                byte[] contentBytes;
+                try {
+                    contentBytes = (byte[]) resultSet.getBytes("POLICY_CONTENT");
+                    bais = new ByteArrayInputStream(contentBytes);
+                    ois = new ObjectInputStream(bais);
+                    policy = (Policy) ois.readObject();
+                } finally {
+                    if (bais != null) {
+                        try {
+                            bais.close();
+                        } catch (IOException e) {
+                            log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                        }
                     }
-                }
-                if (ois != null) {
-                    try {
-                        ois.close();
-                    } catch (IOException e) {
-                        log.warn("Error occurred while closing ObjectOutputStream", e);
+                    if (ois != null) {
+                        try {
+                            ois.close();
+                        } catch (IOException e) {
+                            log.warn("Error occurred while closing ObjectOutputStream", e);
+                        }
                     }
                 }
             }
@@ -1288,6 +1289,39 @@ public class PolicyDAOImpl implements PolicyDAO {
             this.closeConnection();
         }
         return policy;
+    }
+
+    @Override
+    public HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
+        HashMap<Integer, Integer> devicePolicyIds = new HashMap<>();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, PolicyManagerUtil.makeString(deviceIds));
+            stmt.setInt(2, tenantId);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                devicePolicyIds.put(resultSet.getInt("DEVICE_ID"), resultSet.getInt("POLICY_ID"));
+            }
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while getting the applied policy.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+            this.closeConnection();
+        }
+
+        return devicePolicyIds;
     }
 
 }

@@ -89,4 +89,13 @@ public class PolicyManagerUtil {
         return dataSource;
     }
 
+    public static String makeString(List<Integer> values) {
+
+        StringBuilder buff = new StringBuilder();
+        for (int value : values) {
+            buff.append(value).append(",");
+        }
+        buff.deleteCharAt(buff.length() - 1);
+        return buff.toString();
+    }
 }

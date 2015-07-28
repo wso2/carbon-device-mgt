@@ -27,6 +27,9 @@ import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.Profile;
 import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
+import org.wso2.carbon.policy.mgt.core.enforcement.PolicyDelegationException;
+import org.wso2.carbon.policy.mgt.core.enforcement.PolicyEnforcementDelegator;
+import org.wso2.carbon.policy.mgt.core.enforcement.PolicyEnforcementDelegatorImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
@@ -40,26 +43,38 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     private static final Log log = LogFactory.getLog(PolicyAdministratorPointImpl.class);
 
-
     private PolicyManager policyManager;
     private ProfileManager profileManager;
     private FeatureManager featureManager;
+    private PolicyEnforcementDelegator delegator;
 
     public PolicyAdministratorPointImpl() {
-
-        policyManager = new PolicyManagerImpl();
-        profileManager = new ProfileManagerImpl();
-        featureManager = new FeatureManagerImpl();
+        this.policyManager = new PolicyManagerImpl();
+        this.profileManager = new ProfileManagerImpl();
+        this.featureManager = new FeatureManagerImpl();
+        this.delegator = new PolicyEnforcementDelegatorImpl();
     }
 
     @Override
     public Policy addPolicy(Policy policy) throws PolicyManagementException {
-        return policyManager.addPolicy(policy);
+        Policy resultantPolicy = policyManager.addPolicy(policy);
+        try {
+            delegator.delegate(resultantPolicy, resultantPolicy.getDevices());
+        } catch (PolicyDelegationException e) {
+            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
+        }
+        return resultantPolicy;
     }
 
     @Override
     public Policy updatePolicy(Policy policy) throws PolicyManagementException {
-        return policyManager.updatePolicy(policy);
+        Policy resultantPolicy = policyManager.updatePolicy(policy);
+        try {
+            delegator.delegate(resultantPolicy, resultantPolicy.getDevices());
+        } catch (PolicyDelegationException e) {
+            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
+        }
+        return resultantPolicy;
     }
 
     @Override

@@ -76,7 +76,8 @@
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
                             org.wso2.carbon.apimgt.impl,
-                            org.wso2.carbon.ndatasource.core
+                            org.wso2.carbon.ndatasource.core,
+                            org.apache.axis2.transport.mail
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

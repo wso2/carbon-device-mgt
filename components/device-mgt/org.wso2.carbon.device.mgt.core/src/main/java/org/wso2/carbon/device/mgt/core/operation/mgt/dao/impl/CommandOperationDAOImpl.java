@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -35,15 +33,11 @@ import java.util.List;
 
 public class CommandOperationDAOImpl extends OperationDAOImpl {
 
-    private static final Log log = LogFactory.getLog(CommandOperationDAOImpl.class);
-
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
-
         int operationId = super.addOperation(operation);
         CommandOperation commandOp = (CommandOperation) operation;
         PreparedStatement stmt = null;
-
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_COMMAND_OPERATION(OPERATION_ID, ENABLED) VALUES(?, ?)");
@@ -60,17 +54,14 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public void updateOperation(Operation operation) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
                     "UPDATE DM_COMMAND_OPERATION O SET O.ENABLED=? WHERE O.OPERATION_ID=?");
-
             stmt.setBoolean(1, operation.isEnabled());
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } finally {
@@ -81,12 +72,11 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public void deleteOperation(int id) throws OperationManagementDAOException {
-
         super.deleteOperation(id);
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_COMMAND_OPERATION WHERE OPERATION_ID=?");
+            stmt = connection.prepareStatement("DELETE DM_COMMAND_OPERATION WHERE OPERATION_ID = ?");
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -98,30 +88,23 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
     }
 
     public CommandOperation getOperation(int id) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         CommandOperation commandOperation = null;
-
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT OPERATION_ID, ENABLED FROM DM_COMMAND_OPERATION WHERE OPERATION_ID=?";
-
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
                 commandOperation = new CommandOperation();
-                commandOperation.setEnabled(rs.getInt("ENABLED") == 0 ? false : true);
+                commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
             }
-
         } catch (SQLException e) {
-            String errorMsg = "SQL Error occurred while retrieving the command operation object " + "available for " +
-                    "the id '"
-                    + id;
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("SQL Error occurred while retrieving the command operation " +
+                    "object available for the id '" + id, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
@@ -132,23 +115,19 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
             Operation.Status status) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Operation operation;
 
-        List<Operation> operationList = new ArrayList<Operation>();
-        List<CommandOperation> commandOperationList = new ArrayList<CommandOperation>();
+        List<Operation> operations = new ArrayList<>();
+        List<CommandOperation> commandOperations = new ArrayList<>();
 
-        CommandOperation commandOperation = null;
-
+        CommandOperation commandOperation;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select co.OPERATION_ID,ENABLED from DM_COMMAND_OPERATION co " +
-                    "INNER JOIN  " +
-                    "(Select * From DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID=? " +
+            String sql = "SELECT co.OPERATION_ID,ENABLED FROM DM_COMMAND_OPERATION co " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID=? " +
                     "AND STATUS=? ) dm ON dm.OPERATION_ID = co.OPERATION_ID";
-
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());
@@ -156,27 +135,25 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             rs = stmt.executeQuery();
             while (rs.next()) {
                 commandOperation = new CommandOperation();
-                commandOperation.setEnabled(rs.getInt("ENABLED") == 0 ? false : true);
+                commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
                 commandOperation.setId(rs.getInt("OPERATION_ID"));
-                commandOperationList.add(commandOperation);
+                commandOperations.add(commandOperation);
             }
 
-            for(CommandOperation cmOperation:commandOperationList){
+            for(CommandOperation cmOperation : commandOperations){
                operation =  super.getOperation(cmOperation.getId());
                operation.setEnabled(cmOperation.isEnabled());
                operation.setStatus(status);
-               operationList.add(operation);
+               operations.add(operation);
             }
-
         } catch (SQLException e) {
-            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + enrolmentId +
-                    "' with status '" + status.toString();
-            log.error(errorMsg);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("SQL error occurred while retrieving the operation available " +
+                    "for the device'" + enrolmentId + "' with status '" + status.toString(), e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
         }
-        return operationList;
+        return operations;
     }
+
 }

@@ -43,30 +43,26 @@ import java.util.Arrays;
 
 public class DynamicClientRegistrationUtil {
 
+    private static final String TOKEN_SCOPE = "tokenScope";
     private static final Log log = LogFactory.getLog(DynamicClientRegistrationUtil.class);
 
     public static OAuthApplicationInfo registerApplication(RegistrationProfile profile) throws APIManagementException {
         OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
 
-        //Subscriber's name should be passed as a parameter, since it's under the subscriber the OAuth App is created.
-        String userId = profile.getOwner();
         String applicationName = profile.getClientName();
-        String grantType = profile.getGrantType();
 
         if (log.isDebugEnabled()) {
             log.debug("Trying to create OAuth application: '" + applicationName + "'");
         }
 
-        String callBackURL = profile.getCallbackUrl();
-
         String tokenScope = profile.getTokenScope();
         String tokenScopes[] = new String[1];
         tokenScopes[0] = tokenScope;
 
-        oAuthApplicationInfo.addParameter("tokenScope", Arrays.toString(tokenScopes));
+        oAuthApplicationInfo.addParameter(TOKEN_SCOPE, Arrays.toString(tokenScopes));
         OAuthApplicationInfo info;
         try {
-            info = createOAuthApplication(userId, applicationName, callBackURL, grantType);
+            info = createOAuthApplication(profile);
         } catch (Exception e) {
             throw new APIManagementException("Can not create OAuth application  : " + applicationName, e);
         }
@@ -98,8 +94,15 @@ public class DynamicClientRegistrationUtil {
     }
 
     public static OAuthApplicationInfo createOAuthApplication(
-            String userId, String applicationName, String callbackUrl, String grantType)
+            RegistrationProfile profile)
             throws APIManagementException, IdentityException {
+
+        //Subscriber's name should be passed as a parameter, since it's under the subscriber the OAuth App is created.
+        String userId = profile.getOwner();
+        String applicationName = profile.getClientName();
+        String grantType = profile.getGrantType();
+        String callbackUrl = profile.getCallbackUrl();
+
         if (userId == null || userId.isEmpty()) {
             return null;
         }

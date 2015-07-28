@@ -95,8 +95,9 @@ public class DeviceManagementServiceComponent {
     private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     private static final Object LOCK = new Object();
-    private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
-    private static List<DeviceManagementService> deviceManagers = new ArrayList<DeviceManagementService>();
+    private static List<PluginInitializationListener> listeners = new ArrayList<>();
+    private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
+    private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
@@ -130,6 +131,9 @@ public class DeviceManagementServiceComponent {
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
             this.registerServices(componentContext);
 
+            /* This is a workaround to initialize all Device Management Service Providers after the initialization
+             * of Device Management Service component in order to avoid bundle start up order related complications */
+            notifyStartupListeners();
             if (log.isDebugEnabled()) {
                 log.debug("Device management core bundle has been successfully initialized");
             }
@@ -310,6 +314,16 @@ public class DeviceManagementServiceComponent {
             log.debug("Un-setting ConfigurationContextService");
         }
         DeviceManagementDataHolder.getInstance().setConfigurationContextService(null);
+    }
+
+    public static void registerStartupListener(DeviceManagerStartupListener startupListener) {
+        startupListeners.add(startupListener);
+    }
+
+    public static void notifyStartupListeners() {
+        for (DeviceManagerStartupListener startupListener : startupListeners) {
+            startupListener.notifyObserver();
+        }
     }
 
 }

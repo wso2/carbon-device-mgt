@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.device.mgt.extensions.license.mgt;
 
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
@@ -41,9 +43,10 @@ public class RegistryBasedLicenseManager implements LicenseManager {
     private Registry registry;
     private GenericArtifactManager artifactManager;
 
-    public RegistryBasedLicenseManager(Registry registry) {
+    public RegistryBasedLicenseManager() {
+        Registry registry = CarbonContext.getThreadLocalCarbonContext().getRegistry(RegistryType.SYSTEM_GOVERNANCE);
         if (registry == null) {
-            throw new IllegalArgumentException("Registry instance provided is null. Hence, " +
+            throw new IllegalArgumentException("Registry instance retrieved is null. Hence, " +
                     "'Registry based license manager cannot be initialized'");
         }
         this.registry = registry;

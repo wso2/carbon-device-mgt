@@ -56,6 +56,16 @@
                         <Export-Package>
                             org.wso2.carbon.device.mgt.extensions.*
                         </Export-Package>
+                        <Import-Package>
+                            org.wso2.carbon.governance.api.*,
+                            javax.xml.namespace,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.device.mgt.common.license.mgt,
+                            org.wso2.carbon.registry.api,
+                            org.wso2.carbon.registry.core,
+                            org.wso2.carbon.registry.core.exceptions,
+                            org.wso2.carbon.registry.core.session
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

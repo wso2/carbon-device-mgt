@@ -22,8 +22,10 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
+import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,14 +34,14 @@ public class GenericArtifactManagerFactory {
 
     private static Map<Integer, GenericArtifactManager> tenantArtifactManagers =
             new HashMap<Integer, GenericArtifactManager>();
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
 
     public static GenericArtifactManager getTenantAwareGovernanceArtifactManager(
             Registry registry) throws LicenseManagementException {
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GenericArtifactManager artifactManager;
-            synchronized (lock) {
+            synchronized (LOCK) {
                 artifactManager =
                         tenantArtifactManagers.get(tenantId);
                 if (artifactManager == null) {
@@ -54,7 +56,7 @@ public class GenericArtifactManagerFactory {
             return artifactManager;
         } catch (RegistryException e) {
             throw new LicenseManagementException("Error occurred while initializing GovernanceArtifactManager " +
-                    "associated with tenant '" + CarbonContext.getThreadLocalCarbonContext().getTenantDomain() + "'");
+                    "associated with tenant '" + CarbonContext.getThreadLocalCarbonContext().getTenantDomain() + "'", e);
         }
     }
 

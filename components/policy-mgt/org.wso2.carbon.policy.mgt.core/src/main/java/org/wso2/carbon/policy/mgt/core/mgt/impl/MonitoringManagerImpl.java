@@ -214,21 +214,22 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
             Map<Integer, ComplianceData> tempMap = new HashMap<>();
 
+            if (complianceDatas != null) {
+                for (ComplianceData complianceData : complianceDatas) {
 
-            for (ComplianceData complianceData : complianceDatas) {
+                    tempMap.put(complianceData.getDeviceId(), complianceData);
 
-                tempMap.put(complianceData.getDeviceId(), complianceData);
-
-                if (complianceData.getAttempts() == 0) {
-                    deviceIdsToAddOperation.put(complianceData.getDeviceId(),
-                            deviceIds.get(complianceData.getDeviceId()));
-                } else {
-                    deviceIdsWithExistingOperation.put(complianceData.getDeviceId(),
-                            deviceIds.get(complianceData.getDeviceId()));
-                }
-                if (complianceData.getAttempts() >= 20) {
-                    inactiveDeviceIds.put(complianceData.getDeviceId(),
-                            deviceIds.get(complianceData.getDeviceId()));
+                    if (complianceData.getAttempts() == 0) {
+                        deviceIdsToAddOperation.put(complianceData.getDeviceId(),
+                                                    deviceIds.get(complianceData.getDeviceId()));
+                    } else {
+                        deviceIdsWithExistingOperation.put(complianceData.getDeviceId(),
+                                                           deviceIds.get(complianceData.getDeviceId()));
+                    }
+                    if (complianceData.getAttempts() >= 20) {
+                        inactiveDeviceIds.put(complianceData.getDeviceId(),
+                                              deviceIds.get(complianceData.getDeviceId()));
+                    }
                 }
             }
 

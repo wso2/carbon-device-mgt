@@ -89,12 +89,12 @@ public interface PolicyDAO {
 
     List<String> getPolicyAppliedUsers(int policyId) throws PolicyManagerDAOException;
 
-    void addEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+    void addEffectivePolicyToDevice(int deviceId, Policy policy)
             throws PolicyManagerDAOException;
 
     void setPolicyApplied(int deviceId) throws PolicyManagerDAOException;
 
-    void updateEffectivePolicyToDevice(int deviceId, int policyId, List<ProfileFeature> profileFeatures)
+    void updateEffectivePolicyToDevice(int deviceId, Policy policy)
             throws PolicyManagerDAOException;
 
     boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException;

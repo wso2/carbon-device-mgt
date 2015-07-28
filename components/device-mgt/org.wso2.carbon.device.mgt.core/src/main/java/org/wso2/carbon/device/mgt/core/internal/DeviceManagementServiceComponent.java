@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
-import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -42,7 +41,6 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.device.mgt.core.startup.handler.URLPrinterStartupHandler;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -176,11 +174,9 @@ public class DeviceManagementServiceComponent {
                     AppManagementConfigurationManager.getInstance().getAppManagementConfig();
             bundleContext.registerService(ApplicationManagementProviderService.class.getName(),
                     new ApplicationManagerProviderServiceImpl(appConfig, pluginRepository), null);
-        } catch (ApplicationManagementException appMgtEx) {
-            log.error("Application management service not registered.");
+        } catch (ApplicationManagementException e) {
+            log.error("Application management service not registered.", e);
         }
-
-        bundleContext.registerService(ServerStartupObserver.class, new URLPrinterStartupHandler(), null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {

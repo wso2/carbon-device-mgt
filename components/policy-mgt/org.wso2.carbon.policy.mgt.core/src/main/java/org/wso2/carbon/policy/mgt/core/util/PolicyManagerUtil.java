@@ -21,21 +21,21 @@ package org.wso2.carbon.policy.mgt.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementAdminService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
+import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
-import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -87,6 +87,30 @@ public class PolicyManagerUtil {
             }
         }
         return dataSource;
+    }
+
+    public static Operation transformPolicy(Policy policy) {
+        List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
+        List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
+
+        PolicyOperation policyOperation = new PolicyOperation();
+        policyOperation.setEnabled(true);
+        policyOperation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.POLICY);
+        policyOperation.setCode(PolicyOperation.POLICY_OPERATION_CODE);
+
+        for (ProfileFeature feature : effectiveFeatures) {
+            ProfileOperation profileOperation = new ProfileOperation();
+
+            profileOperation.setCode(feature.getFeatureCode());
+            profileOperation.setEnabled(true);
+            profileOperation.setStatus(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Status.PENDING);
+            profileOperation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.PROFILE);
+            profileOperation.setPayLoad(feature.getContent());
+            profileOperationList.add(profileOperation);
+        }
+        policyOperation.setProfileOperations(profileOperationList);
+        policyOperation.setPayLoad(policyOperation.getProfileOperations());
+        return policyOperation;
     }
 
 }

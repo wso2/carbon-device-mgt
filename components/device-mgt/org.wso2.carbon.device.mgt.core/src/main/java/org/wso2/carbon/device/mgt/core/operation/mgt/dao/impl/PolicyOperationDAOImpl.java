@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
-import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
@@ -38,7 +37,6 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
-
         int operationId = super.addOperation(operation);
         operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
         operation.setId(operationId);
@@ -47,7 +45,6 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
         Connection conn = OperationManagementDAOFactory.getConnection();
 
         PreparedStatement stmt = null;
-
         try {
             stmt = conn.prepareStatement("INSERT INTO DM_POLICY_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
@@ -60,22 +57,18 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;
-
     }
 
     @Override
     public void updateOperation(Operation operation) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ByteArrayOutputStream bao = null;
         ObjectOutputStream oos = null;
         super.updateOperation(operation);
-
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("UPDATE DM_POLICY_OPERATION O SET O.OPERATION_DETAILS=? " +
                     "WHERE O.OPERATION_ID=?");
-
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);
             oos.writeObject(operation);
@@ -83,7 +76,6 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
             stmt.setBytes(1, bao.toByteArray());
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while update policy operation metadata", e);
         } catch (IOException e) {
@@ -109,7 +101,6 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public void deleteOperation(int operationId) throws OperationManagementDAOException {
-
         super.deleteOperation(operationId);
         PreparedStatement stmt = null;
         try {
@@ -126,18 +117,15 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public Operation getOperation(int operationId) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         PolicyOperation policyOperation = null;
 
         ByteArrayInputStream bais;
         ObjectInputStream ois;
-
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_POLICY_OPERATION WHERE OPERATION_ID=?";
-
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, operationId);
             rs = stmt.executeQuery();
@@ -148,21 +136,15 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
                 ois = new ObjectInputStream(bais);
                 policyOperation = (PolicyOperation) ois.readObject();
             }
-
         } catch (IOException e) {
-            String errorMsg = "IO Error occurred while de serialize the policy operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("IO Error occurred while de serialize the policy operation " +
+                    "object", e);
         } catch (ClassNotFoundException e) {
-            String errorMsg = "Class not found error occurred while de serialize the policy operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("Class not found error occurred while de serialize the " +
+                    "policy operation object", e);
         } catch (SQLException e) {
-            String errorMsg = "SQL Error occurred while retrieving the policy operation object " + "available for " +
-                    "the id '"
-                    + operationId;
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("SQL Error occurred while retrieving the policy operation " +
+                    "object available for the id '" + operationId + "'", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
@@ -173,27 +155,22 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
             Operation.Status status) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         PolicyOperation policyOperation;
-
-        List<Operation> operationList = new ArrayList<Operation>();
+        List<Operation> operations = new ArrayList<>();
 
         ByteArrayInputStream bais = null;
         ObjectInputStream ois = null;
-
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "Select po.OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_POLICY_OPERATION po " +
-                    "INNER JOIN  " +
-                    "(Select * From DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID=? " +
-                    "AND STATUS=?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
+            String sql = "SELECT po.OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_POLICY_OPERATION po " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID = ? " +
+                    "AND STATUS = ?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());
-
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -202,22 +179,17 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
                 ois = new ObjectInputStream(bais);
                 policyOperation = (PolicyOperation) ois.readObject();
                 policyOperation.setStatus(status);
-                operationList.add(policyOperation);
+                operations.add(policyOperation);
             }
-
         } catch (IOException e) {
-            String errorMsg = "IO Error occurred while de serialize the profile operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("IO Error occurred while de serialize the profile " +
+                    "operation object", e);
         } catch (ClassNotFoundException e) {
-            String errorMsg = "Class not found error occurred while de serialize the profile operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("Class not found error occurred while de serialize the " +
+                    "profile operation object", e);
         } catch (SQLException e) {
-            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + enrolmentId +
-                    "' with status '" + status.toString();
-            log.error(errorMsg);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("SQL error occurred while retrieving the operation " +
+                    "available for the device'" + enrolmentId + "' with status '" + status.toString(), e);
         } finally {
             if (bais != null) {
                 try {
@@ -236,6 +208,7 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
         }
-        return operationList;
+        return operations;
     }
+
 }

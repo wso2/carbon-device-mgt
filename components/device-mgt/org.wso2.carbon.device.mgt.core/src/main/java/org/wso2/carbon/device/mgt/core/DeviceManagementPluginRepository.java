@@ -17,46 +17,70 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeviceManagementPluginRepository {
+public class DeviceManagementPluginRepository implements DeviceManagerStartupListener {
 
     private Map<String, DeviceManagementService> providers;
+    private boolean isInited;
+    private static final Log log = LogFactory.getLog(DeviceManagementPluginRepository.class);
 
     public DeviceManagementPluginRepository() {
-        providers = new HashMap<String, DeviceManagementService>();
+        providers = Collections.synchronizedMap(new HashMap<String, DeviceManagementService>());
+        DeviceManagementServiceComponent.registerStartupListener(this);
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
         String deviceType = provider.getType();
-        try {
-            /* Initializing Device Management Service Provider */
-            provider.init();
-            DeviceManagerUtil.registerDeviceType(deviceType);
-        } catch (DeviceManagementException e) {
-            throw new DeviceManagementException("Error occurred while adding device management provider '" +
-                    deviceType + "'");
+        synchronized (providers) {
+            try {
+                if (isInited) {
+                    /* Initializing Device Management Service Provider */
+                    provider.init();
+                    DeviceManagerUtil.registerDeviceType(deviceType);
+                }
+            } catch (DeviceManagementException e) {
+                throw new DeviceManagementException("Error occurred while adding device management provider '" +
+                        deviceType + "'", e);
+            }
+            providers.put(deviceType, provider);
         }
-        providers.put(deviceType, provider);
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getType();
-        providers.remove(deviceType);
+        providers.remove(provider.getType());
     }
 
     public DeviceManagementService getDeviceManagementService(String type) {
         return providers.get(type);
     }
 
-    public Collection<DeviceManagementService> getDeviceManagementProviders(){
-        return providers.values();
+    @Override
+    public void notifyObserver() {
+        synchronized (providers) {
+            for (DeviceManagementService provider : providers.values()) {
+                try {
+                    provider.init();
+                    DeviceManagerUtil.registerDeviceType(provider.getType());
+                } catch (Throwable e) {
+                    /* Throwable is caught intentionally as failure of one plugin - due to invalid start up parameters,
+                        etc - should not block the initialization of other device management providers */
+                    log.error("Error occurred while initializing device management provider '" +
+                            provider.getType() + "'", e);
+                }
+            }
+            this.isInited = true;
+        }
     }
 
 }

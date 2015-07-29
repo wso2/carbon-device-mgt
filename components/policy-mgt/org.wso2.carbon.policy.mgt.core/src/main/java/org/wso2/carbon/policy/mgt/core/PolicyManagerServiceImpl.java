@@ -39,6 +39,7 @@ import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleServiceImpl;
+import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
     private static final Log log = LogFactory.getLog(PolicyManagerServiceImpl.class);
 
-    PolicyAdministratorPointImpl policyAdministratorPoint;
+    PolicyAdministratorPoint policyAdministratorPoint;
     MonitoringManager monitoringManager;
     private PolicyManager policyManager;
 
@@ -90,42 +91,16 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         try {
-
-
             Policy policy = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
                     getEffectivePolicy(deviceIdentifier);
 
             if (policy != null) {
-                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
-                deviceIdentifiers.add(deviceIdentifier);
-
-                List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
-                List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-
-                PolicyOperation policyOperation = new PolicyOperation();
-                policyOperation.setEnabled(true);
-                policyOperation.setType(Operation.Type.POLICY);
-                policyOperation.setCode(PolicyOperation.POLICY_OPERATION_CODE);
-
-                for (ProfileFeature feature : effectiveFeatures) {
-                    ProfileOperation profileOperation = new ProfileOperation();
-
-                    profileOperation.setCode(feature.getFeatureCode());
-                    profileOperation.setEnabled(true);
-                    profileOperation.setStatus(Operation.Status.PENDING);
-                    profileOperation.setType(Operation.Type.PROFILE);
-                    profileOperation.setPayLoad(feature.getContent());
-                    profileOperationList.add(profileOperation);
-                }
-                policyOperation.setProfileOperations(profileOperationList);
-                policyOperation.setPayLoad(policyOperation.getProfileOperations());
-                PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                        addOperation(policyOperation, deviceIdentifiers);
-
-            } else {
                 return null;
             }
-
+            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
+            deviceIdentifiers.add(deviceIdentifier);
+            PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(
+                    PolicyManagerUtil.transformPolicy(policy), deviceIdentifiers);
             return policy;
         } catch (PolicyEvaluationException e) {
             String msg = "Error occurred while getting the effective policies from the PEP service for device " +
@@ -147,7 +122,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
             List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance()
                     .getPolicyEvaluationPoint().
-                    getEffectiveFeatures(deviceIdentifier);
+                            getEffectiveFeatures(deviceIdentifier);
 
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
             deviceIdentifiers.add(deviceIdentifier);

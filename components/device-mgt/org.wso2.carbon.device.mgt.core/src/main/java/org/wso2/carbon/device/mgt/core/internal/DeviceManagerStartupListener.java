@@ -16,10 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.license.mgt;
+package org.wso2.carbon.device.mgt.core.internal;
 
-public class LicenseManagementUtil {
+public interface DeviceManagerStartupListener {
 
-
+    void notifyObserver();
 
 }

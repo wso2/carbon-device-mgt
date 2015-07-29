@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
-import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -42,7 +41,6 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.device.mgt.core.startup.handler.URLPrinterStartupHandler;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -97,8 +95,9 @@ public class DeviceManagementServiceComponent {
     private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     private static final Object LOCK = new Object();
-    private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
-    private static List<DeviceManagementService> deviceManagers = new ArrayList<DeviceManagementService>();
+    private static List<PluginInitializationListener> listeners = new ArrayList<>();
+    private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
+    private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
@@ -132,6 +131,9 @@ public class DeviceManagementServiceComponent {
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
             this.registerServices(componentContext);
 
+            /* This is a workaround to initialize all Device Management Service Providers after the initialization
+             * of Device Management Service component in order to avoid bundle start up order related complications */
+            notifyStartupListeners();
             if (log.isDebugEnabled()) {
                 log.debug("Device management core bundle has been successfully initialized");
             }
@@ -176,11 +178,9 @@ public class DeviceManagementServiceComponent {
                     AppManagementConfigurationManager.getInstance().getAppManagementConfig();
             bundleContext.registerService(ApplicationManagementProviderService.class.getName(),
                     new ApplicationManagerProviderServiceImpl(appConfig, pluginRepository), null);
-        } catch (ApplicationManagementException appMgtEx) {
-            log.error("Application management service not registered.");
+        } catch (ApplicationManagementException e) {
+            log.error("Application management service not registered.", e);
         }
-
-        bundleContext.registerService(ServerStartupObserver.class, new URLPrinterStartupHandler(), null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {
@@ -314,6 +314,16 @@ public class DeviceManagementServiceComponent {
             log.debug("Un-setting ConfigurationContextService");
         }
         DeviceManagementDataHolder.getInstance().setConfigurationContextService(null);
+    }
+
+    public static void registerStartupListener(DeviceManagerStartupListener startupListener) {
+        startupListeners.add(startupListener);
+    }
+
+    public static void notifyStartupListeners() {
+        for (DeviceManagerStartupListener startupListener : startupListeners) {
+            startupListener.notifyObserver();
+        }
     }
 
 }

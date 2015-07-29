@@ -18,6 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class EnrolmentInfo {
 
     public enum Status {
@@ -44,6 +48,7 @@ public class EnrolmentInfo {
         this.status = status;
     }
 
+    @XmlElement
     public Long getDateOfEnrolment() {
         return dateOfEnrolment;
     }
@@ -52,6 +57,7 @@ public class EnrolmentInfo {
         this.dateOfEnrolment = dateOfEnrolment;
     }
 
+    @XmlElement
     public Long getDateOfLastUpdate() {
         return dateOfLastUpdate;
     }
@@ -76,6 +82,7 @@ public class EnrolmentInfo {
         this.status = status;
     }
 
+    @XmlElement
     public String getOwner() {
         return owner;
     }

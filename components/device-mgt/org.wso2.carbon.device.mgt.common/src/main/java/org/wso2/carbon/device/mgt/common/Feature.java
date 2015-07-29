@@ -17,9 +17,12 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
+@XmlRootElement
 public class Feature implements Serializable {
 
     private int id;
@@ -29,6 +32,7 @@ public class Feature implements Serializable {
     private String deviceType;
     private List<MetadataEntry> metadataEntries;
 
+    @XmlElement
     public int getId() {
         return id;
     }
@@ -37,6 +41,7 @@ public class Feature implements Serializable {
         this.id = id;
     }
 
+    @XmlElement
     public String getCode() {
         return code;
     }
@@ -45,6 +50,7 @@ public class Feature implements Serializable {
         this.code = code;
     }
 
+    @XmlElement
     public String getName() {
         return name;
     }
@@ -61,6 +67,7 @@ public class Feature implements Serializable {
         this.metadataEntries = metadataEntries;
     }
 
+    @XmlElement
     public String getDeviceType() {
         return deviceType;
     }
@@ -69,6 +76,7 @@ public class Feature implements Serializable {
         this.deviceType = deviceType;
     }
 
+    @XmlElement
     public String getDescription() {
         return description;
     }

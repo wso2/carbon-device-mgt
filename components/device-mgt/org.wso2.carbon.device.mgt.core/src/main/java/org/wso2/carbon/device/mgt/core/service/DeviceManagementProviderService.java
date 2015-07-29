@@ -63,6 +63,16 @@ public interface DeviceManagementProviderService extends OperationManager {
     List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
 
     /**
+     * Method to get the list of devices owned by an user.
+     *
+     * @param groupId of the group
+     * @return List of devices allocated to a particular group
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    List<Device> getDevicesOfGroup(int groupId) throws DeviceManagementException;
+
+    /**
      * Method to get the list of devices owned by users of a particular user-role.
      *
      * @param roleName          Role name of the users

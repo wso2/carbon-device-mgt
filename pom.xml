@@ -37,11 +37,13 @@
 
     <modules>
         <module>components/device-mgt</module>
+        <module>components/group-mgt</module>
 	<module>components/apimgt-extensions</module>
         <module>components/policy-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/oauth-extensions</module>
         <module>features/device-mgt</module>
+        <module>features/group-mgt</module>
         <module>features/apimgt-extensions</module>
 	<module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
@@ -131,6 +133,16 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.extensions</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.group.common</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.group.core</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>

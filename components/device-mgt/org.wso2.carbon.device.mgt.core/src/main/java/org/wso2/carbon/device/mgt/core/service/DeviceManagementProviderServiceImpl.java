@@ -645,6 +645,40 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public List<Device> getDevicesOfGroup(int groupId) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<Device>();
+        List<Device> userDevices;
+        try {
+            DeviceManagementDAOFactory.getConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            userDevices = deviceDAO.getDevicesOfGroup(groupId, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
+                    "assigned to the group '" + groupId + "'", e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.closeConnection();
+            } catch (DeviceManagementDAOException e) {
+                log.warn("Error occurred while closing the connection", e);
+            }
+        }
+
+        for (Device device : userDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        return devices;
+    }
+
+
+    @Override
     public List<Device> getAllDevicesOfRole(String role) throws DeviceManagementException {
         List<Device> devices = new ArrayList<Device>();
 

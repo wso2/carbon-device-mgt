@@ -58,7 +58,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "UPDATE DM_COMMAND_OPERATION O SET O.ENABLED=? WHERE O.OPERATION_ID=?");
+                    "UPDATE DM_COMMAND_OPERATION O SET O.ENABLED = ? WHERE O.OPERATION_ID = ?");
             stmt.setBoolean(1, operation.isEnabled());
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
@@ -72,9 +72,10 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public void deleteOperation(int id) throws OperationManagementDAOException {
-        super.deleteOperation(id);
         PreparedStatement stmt = null;
         try {
+            super.deleteOperation(id);
+
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE DM_COMMAND_OPERATION WHERE OPERATION_ID = ?");
             stmt.setInt(1, id);
@@ -93,7 +94,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         CommandOperation commandOperation = null;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT OPERATION_ID, ENABLED FROM DM_COMMAND_OPERATION WHERE OPERATION_ID=?";
+            String sql = "SELECT OPERATION_ID, ENABLED FROM DM_COMMAND_OPERATION WHERE OPERATION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
@@ -113,21 +114,19 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
-            Operation.Status status) throws OperationManagementDAOException {
+    public List<? extends Operation> getOperationsByDeviceAndStatus(
+            int enrolmentId, Operation.Status status) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Operation operation;
-
-        List<Operation> operations = new ArrayList<>();
-        List<CommandOperation> commandOperations = new ArrayList<>();
 
         CommandOperation commandOperation;
+        List<CommandOperation> commandOperations = new ArrayList<>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT co.OPERATION_ID,ENABLED FROM DM_COMMAND_OPERATION co " +
-                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID=? " +
-                    "AND STATUS=? ) dm ON dm.OPERATION_ID = co.OPERATION_ID";
+            String sql = "SELECT o.ID, co1.ENABLED, co1.STATUS, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.OPERATION_CODE FROM (SELECT co.OPERATION_ID, co.ENABLED FROM DM_COMMAND_OPERATION co " +
+                    "INNER JOIN (SELECT ENROLMENT_ID, OPERATION_ID, STATUS FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID = ? " +
+                    "AND STATUS = ?) dm ON dm.OPERATION_ID = co.OPERATION_ID) co1 INNER JOIN OPERATION o ON co1.OPERATION_ID = o.ID";
+
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());
@@ -137,14 +136,12 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
                 commandOperation = new CommandOperation();
                 commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
                 commandOperation.setId(rs.getInt("OPERATION_ID"));
+                commandOperation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
+                commandOperation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
+                commandOperation.setCreatedTimeStamp(rs.getString("CREATED_TIMESTAMP"));
+                commandOperation.setReceivedTimeStamp(rs.getString("RECEIVED_TIMESTAMP"));
+                commandOperation.setCode(rs.getString("OPERATION_CODE"));
                 commandOperations.add(commandOperation);
-            }
-
-            for(CommandOperation cmOperation : commandOperations){
-               operation =  super.getOperation(cmOperation.getId());
-               operation.setEnabled(cmOperation.isEnabled());
-               operation.setStatus(status);
-               operations.add(operation);
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("SQL error occurred while retrieving the operation available " +
@@ -153,7 +150,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
             OperationManagementDAOFactory.closeConnection();
         }
-        return operations;
+        return commandOperations;
     }
 
 }

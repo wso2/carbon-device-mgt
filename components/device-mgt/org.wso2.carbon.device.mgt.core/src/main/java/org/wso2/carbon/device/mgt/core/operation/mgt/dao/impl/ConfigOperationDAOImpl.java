@@ -63,7 +63,7 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_CONFIG_OPERATION WHERE OPERATION_ID = ?");
+            stmt = connection.prepareStatement("DELETE DM_CONFIG_OPERATION WHERE OPERATION_ID = ?") ;
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -152,8 +152,8 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
     }
 
     @Override
-    public List<? extends Operation> getOperationsByDeviceAndStatus(
-            int enrolmentId, Operation.Status status) throws OperationManagementDAOException {
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
+            Operation.Status status) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ConfigOperation configOperation;
@@ -164,13 +164,12 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT co.OPERATION_ID, co.OPERATION_CONFIG FROM DM_CONFIG_OPERATION co " +
-                    "INNER JOIN  (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID = ? " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID = ? " +
                     "AND STATUS = ?) dm ON dm.OPERATION_ID = co.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());
-
             rs = stmt.executeQuery();
 
             while (rs.next()) {

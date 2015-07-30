@@ -123,9 +123,9 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         List<CommandOperation> commandOperations = new ArrayList<>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, co1.ENABLED, co1.STATUS, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.OPERATION_CODE FROM (SELECT co.OPERATION_ID, co.ENABLED FROM DM_COMMAND_OPERATION co " +
+            String sql = "SELECT o.ID, co1.ENABLED, co1.STATUS, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.OPERATION_CODE FROM (SELECT co.OPERATION_ID, co.ENABLED, dm.STATUS FROM DM_COMMAND_OPERATION co " +
                     "INNER JOIN (SELECT ENROLMENT_ID, OPERATION_ID, STATUS FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID = ? " +
-                    "AND STATUS = ?) dm ON dm.OPERATION_ID = co.OPERATION_ID) co1 INNER JOIN OPERATION o ON co1.OPERATION_ID = o.ID";
+                    "AND STATUS = ?) dm ON dm.OPERATION_ID = co.OPERATION_ID) co1 INNER JOIN DM_OPERATION o ON co1.OPERATION_ID = o.ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);

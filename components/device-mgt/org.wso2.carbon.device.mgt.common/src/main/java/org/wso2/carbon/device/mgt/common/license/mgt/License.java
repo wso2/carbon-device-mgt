@@ -36,7 +36,7 @@ public class License {
     private String text;
 
     public License() {
-        this.validFrom = new Date();
+        this.validTo = new Date();
         this.validFrom = new Date();
     }
 

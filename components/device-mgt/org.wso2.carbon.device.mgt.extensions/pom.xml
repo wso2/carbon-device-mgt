@@ -64,6 +64,7 @@
                             org.wso2.carbon.governance.api.*,
                             javax.xml.namespace,
                             org.wso2.carbon.context,
+                            org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.common.license.mgt,
                             org.wso2.carbon.registry.api,
                             org.wso2.carbon.registry.core,

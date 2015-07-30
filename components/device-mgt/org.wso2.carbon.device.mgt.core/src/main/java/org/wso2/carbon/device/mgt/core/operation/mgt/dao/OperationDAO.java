@@ -46,4 +46,5 @@ public interface OperationDAO {
 
     void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException;
+
 }

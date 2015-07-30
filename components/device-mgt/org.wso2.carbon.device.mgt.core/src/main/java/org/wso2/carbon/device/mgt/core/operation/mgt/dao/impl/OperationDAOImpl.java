@@ -70,8 +70,8 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_OPERATION O SET O.RECEIVED_TIMESTAMP = ? " +
-                    "WHERE O.ID = ?");
+            stmt = connection.prepareStatement("UPDATE DM_OPERATION O SET O.RECEIVED_TIMESTAMP=? " +
+                    "WHERE O.ID=?");
             stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
@@ -87,8 +87,8 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OPERATION_MAPPING O SET O.STATUS = ? " +
-                    "WHERE O.ENROLMENT_ID = ? and O.OPERATION_ID = ?");
+            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OPERATION_MAPPING O SET O.STATUS=? " +
+                    "WHERE O.ENROLMENT_ID=? and O.OPERATION_ID=?");
             stmt.setString(1, status.toString());
             stmt.setInt(2, enrolmentId);
             stmt.setInt(3, operationId);
@@ -110,7 +110,7 @@ public class OperationDAOImpl implements OperationDAO {
         ObjectOutputStream oos = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("INSERT INTO DM_DEVICE_OPERATION_RESPONSE(OPERATION_ID, DEVICE_ID, " +
+            stmt = connection.prepareStatement("INSERT INTO DM_DEVICE_OPERATION_RESPONSE(OPERATION_ID,DEVICE_ID," +
                     "OPERATION_RESPONSE) VALUES(?, ?, ?)");
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);
@@ -240,7 +240,7 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Operation operation;
-        List<Operation> operations = new ArrayList<>();
+        List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE " +
@@ -281,7 +281,7 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Operation operation;
-        List<Operation> operations = new ArrayList<>();
+        List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
@@ -360,7 +360,7 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Operation operation;
-        List<Operation> operations = new ArrayList<>();
+        List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE FROM " +

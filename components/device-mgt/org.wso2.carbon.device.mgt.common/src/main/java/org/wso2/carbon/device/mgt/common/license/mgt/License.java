@@ -35,6 +35,11 @@ public class License {
     private Date validTo;
     private String text;
 
+    public License() {
+        this.validFrom = new Date();
+        this.validFrom = new Date();
+    }
+
     @XmlElement(name = "Provider", required = true)
     public String getProvider() {
         return provider;

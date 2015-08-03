@@ -36,6 +36,7 @@ import java.lang.String;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 @SuppressWarnings("unused")
@@ -79,10 +80,10 @@ public class RegistryBasedLicenseManager implements LicenseManager {
             return this.populateLicense(artifacts[0]);
         } catch (GovernanceException e) {
             throw new LicenseManagementException("Error occurred while retrieving license corresponding to " +
-                    "device type '" + deviceType + "'");
+                    "device type '" + deviceType + "'", e);
         } catch (ParseException e) {
             throw new LicenseManagementException("Error occurred while parsing the ToDate/FromDate date string " +
-                    "of the license configured upon the device type '" + deviceType + "'");
+                    "of the license configured upon the device type '" + deviceType + "'", e);
         }
     }
 
@@ -115,10 +116,14 @@ public class RegistryBasedLicenseManager implements LicenseManager {
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.PROVIDER, license.getProvider());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LANGUAGE, license.getLanguage());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.TEXT, license.getText());
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO,
-                    license.getValidTo().toString());
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM,
-                    license.getValidFrom().toString());
+            Date validTo = license.getValidTo();
+            if (validTo != null) {
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO, validTo.toString());
+            }
+            Date validFrom = license.getValidFrom();
+            if (validFrom != null) {
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM, validFrom.toString());
+            }
             artifactManager.addGenericArtifact(artifact);
         } catch (GovernanceException e) {
             throw new LicenseManagementException("Error occurred while adding license for device type " +

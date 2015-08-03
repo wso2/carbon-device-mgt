@@ -16,7 +16,7 @@
  *  under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.license.mgt;
+package org.wso2.carbon.device.mgt.extensions.license.mgt.registry;
 
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;

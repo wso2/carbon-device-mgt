@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.extensions.license.mgt;
+package org.wso2.carbon.device.mgt.extensions.license.mgt.registry;
 
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.RegistryType;
@@ -38,6 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+@SuppressWarnings("unused")
 public class RegistryBasedLicenseManager implements LicenseManager {
 
     private Registry registry;

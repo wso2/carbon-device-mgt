@@ -30,8 +30,8 @@
     <artifactId>org.wso2.carbon.device.mgt.group.core</artifactId>
     <version>0.9.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Device Management Group Core</name>
-    <description>WSO2 Carbon - Device Management Group Core</description>
+    <name>WSO2 Carbon - Group Management Core</name>
+    <description>WSO2 Carbon - Group Management Core</description>
     <url>http://wso2.org</url>
 
     <build>

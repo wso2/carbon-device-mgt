@@ -99,9 +99,16 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                     removeSharingRoleForGroup(groupId, roleName);
                 }
             }
+            List<Device> groupDevices = getAllDevicesInGroup(groupId);
+            for (Device device : groupDevices){
+                device.setGroupId(0);
+                DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+            }
             this.groupDAO.deleteGroup(groupId);
             log.info("Group removed: " + group.getName());
             return true;
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while removing device from group", e);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while removing group " +
                     "'" + groupId + "' data", e);
@@ -356,7 +363,25 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while adding device in to group", e);
         }
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean removeDeviceFromGroup(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
+        Device device;
+        Group group;
+        try {
+            device = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
+            group = this.getGroupById(groupId);
+            if (device == null || group == null) {
+                return false;
+            }
+            device.setGroupId(0);
+            DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while removing device from group", e);
+        }
+        return true;
     }
 
     private int getDeviceCountInGroup(int groupId) throws GroupManagementException {

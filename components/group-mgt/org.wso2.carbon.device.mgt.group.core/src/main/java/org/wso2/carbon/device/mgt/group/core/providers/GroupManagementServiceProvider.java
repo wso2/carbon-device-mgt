@@ -59,4 +59,6 @@ public interface GroupManagementServiceProvider {
     List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException;
 
     boolean addDeviceToGroup(DeviceIdentifier deviceId, int groupId) throws GroupManagementException;
+
+    boolean removeDeviceFromGroup(DeviceIdentifier deviceId, int groupId) throws GroupManagementException;
 }

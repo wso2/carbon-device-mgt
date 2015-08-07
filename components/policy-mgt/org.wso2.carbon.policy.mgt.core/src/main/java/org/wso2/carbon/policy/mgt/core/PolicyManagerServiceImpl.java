@@ -94,7 +94,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             Policy policy = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
                     getEffectivePolicy(deviceIdentifier);
 
-            if (policy != null) {
+            if (policy == null) {
                 return null;
             }
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();

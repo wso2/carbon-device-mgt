@@ -59,7 +59,7 @@ public abstract class BasePolicyManagementDAOTest {
         OperationManagementDAOFactory.init(dataSource);
     }
 
-    public void initiatePriviledgeCaronContext() throws Exception {
+    public void initiatePrivilegedCaronContext() throws Exception {
 
 
         if (System.getProperty("carbon.home") == null) {

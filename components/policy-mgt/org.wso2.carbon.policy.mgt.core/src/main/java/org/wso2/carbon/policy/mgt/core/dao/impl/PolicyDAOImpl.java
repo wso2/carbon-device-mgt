@@ -413,7 +413,7 @@ public class PolicyDAOImpl implements PolicyDAO {
 
         } catch (SQLException e) {
             String msg = "Error occurred while inserting the criterion to policy (" + policy.getPolicyName() + ") " +
-                         "to database.";
+                    "to database.";
             log.error(msg, e);
             throw new PolicyManagerDAOException(msg, e);
         } finally {
@@ -433,7 +433,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_CRITERIA_PROPERTIES (POLICY_CRITERION_ID, PROP_KEY, PROP_VALUE, " +
-                           "CONTENT) VALUES (?, ?, ?, ?)";
+                    "CONTENT) VALUES (?, ?, ?, ?)";
             stmt = conn.prepareStatement(query);
 
             for (PolicyCriterion criterion : policyCriteria) {
@@ -444,7 +444,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                     stmt.setInt(1, criterion.getId());
                     stmt.setString(2, name);
                     stmt.setString(3, prop.getProperty(name));
-                    stmt.setObject(4, criterion.getObjectMap());
+                    stmt.setBytes(4, PolicyManagerUtil.getBytes(criterion.getObjectMap()));
                     stmt.addBatch();
                 }
                 stmt.executeBatch();
@@ -452,6 +452,10 @@ public class PolicyDAOImpl implements PolicyDAO {
             //   stmt.executeUpdate();
 
         } catch (SQLException e) {
+            String msg = "Error occurred while inserting the criterion properties to database.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } catch (IOException e) {
             String msg = "Error occurred while inserting the criterion properties to database.";
             log.error(msg, e);
             throw new PolicyManagerDAOException(msg, e);
@@ -474,9 +478,9 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "SELECT DPC.ID, DPC.CRITERIA_ID, DPCP.PROP_KEY, DPCP.PROP_VALUE, DPCP.CONTENT FROM " +
-                           "DM_POLICY_CRITERIA DPC LEFT JOIN DM_POLICY_CRITERIA_PROPERTIES DPCP " +
-                           "ON DPCP.POLICY_CRITERION_ID = DPC.ID RIGHT JOIN DM_CRITERIA DC " +
-                           "ON DC.ID=DPC.CRITERIA_ID WHERE DPC.POLICY_ID = ?";
+                    "DM_POLICY_CRITERIA DPC LEFT JOIN DM_POLICY_CRITERIA_PROPERTIES DPCP " +
+                    "ON DPCP.POLICY_CRITERION_ID = DPC.ID RIGHT JOIN DM_CRITERIA DC " +
+                    "ON DC.ID=DPC.CRITERIA_ID WHERE DPC.POLICY_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, policyId);
             resultSet = stmt.executeQuery();
@@ -522,7 +526,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_POLICY SET NAME= ?, TENANT_ID = ?, PROFILE_ID = ?, PRIORITY = ?, COMPLIANCE = ?" +
-                           " WHERE ID = ?";
+                    " WHERE ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, policy.getPolicyName());
             stmt.setInt(2, policy.getTenantId());
@@ -760,7 +764,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, policy.getId());
-            stmt.setObject(3, policy);
+            stmt.setBytes(3, PolicyManagerUtil.getBytes(policy));
             stmt.setTimestamp(4, currentTimestamp);
             stmt.setTimestamp(5, currentTimestamp);
             stmt.setInt(6, tenantId);
@@ -768,6 +772,10 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
+            String msg = "Error occurred while adding the evaluated feature list to device.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } catch (IOException e) {
             String msg = "Error occurred while adding the evaluated feature list to device.";
             log.error(msg, e);
             throw new PolicyManagerDAOException(msg, e);
@@ -813,16 +821,20 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET POLICY_ID = ?, POLICY_CONTENT = ?, UPDATED_TIME = ?, " +
-                           "APPLIED = ? WHERE DEVICE_ID = ?";
+                    "APPLIED = ? WHERE DEVICE_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, policy.getId());
-            stmt.setObject(2, policy);
+            stmt.setBytes(2, PolicyManagerUtil.getBytes(policy));
             stmt.setTimestamp(3, currentTimestamp);
             stmt.setBoolean(4, false);
             stmt.setInt(5, deviceId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
+            String msg = "Error occurred while updating the evaluated feature list to device.";
+            log.error(msg, e);
+            throw new PolicyManagerDAOException(msg, e);
+        } catch (IOException e) {
             String msg = "Error occurred while updating the evaluated feature list to device.";
             log.error(msg, e);
             throw new PolicyManagerDAOException(msg, e);
@@ -1067,7 +1079,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE, OWNERSHIP_TYPE)" +
-                           " VALUES (?, ?, ?, ?, ?, ?)";
+                    " VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, policy.getPolicyName());
@@ -1243,6 +1255,12 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             resultSet = stmt.executeQuery();
+//            log.debug("Logging the statement................." + stmt.toString());
+//            log.debug("+++++++++++++++++++++++++++++");
+//            log.debug(conn.toString());
+
+
+//            log.debug("+++++++++++++++++++++++++++++");
 
             while (resultSet.next()) {
                 ByteArrayInputStream bais = null;
@@ -1288,6 +1306,15 @@ public class PolicyDAOImpl implements PolicyDAO {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
             this.closeConnection();
         }
+//
+//        if (policy != null && log.isDebugEnabled()) {
+//            log.debug("Applied policy logging details started ------------------");
+//            log.debug("Applied policy name " + policy.getPolicyName() + "for the device id " + deviceId);
+//            log.debug(policy.getCompliance());
+//            log.debug(policy.getId());
+//            log.debug(policy.getPriorityId());
+//            log.debug("Applied policy logging details finished....");
+//        }
         return policy;
     }
 

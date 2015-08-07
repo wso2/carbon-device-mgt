@@ -78,6 +78,13 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        if (log.isDebugEnabled()) {
+            log.debug("Adding the compliance details for devices and policies");
+            for (Map.Entry<Integer, Integer> map : devicePolicyMap.entrySet()) {
+                log.debug(map.getKey() + " -- " + map.getValue());
+            }
+        }
+
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS, ATTEMPTS, " +
@@ -104,7 +111,8 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public int setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException {
+    public void setDeviceAsNoneCompliance(int deviceId, int policyId) throws
+            MonitoringDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -112,24 +120,15 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         try {
             conn = this.getConnection();
-//            String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS,
-// LAST_FAILED_TIME, " +
-//                    "ATTEMPTS) VALUES (?, ?, ?, ?, ?) ";
 
             String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS  SET STATUS = 0, LAST_FAILED_TIME = ?, POLICY_ID = ?," +
                     " ATTEMPTS=0 WHERE  DEVICE_ID = ?";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query);
             stmt.setTimestamp(1, currentTimestamp);
             stmt.setInt(2, policyId);
             stmt.setInt(3, deviceId);
             stmt.executeUpdate();
 
-            generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                return generatedKeys.getInt(1);
-            } else {
-                return 0;
-            }
 
         } catch (SQLException e) {
             String msg = "Error occurred while updating the none compliance to the database.";
@@ -142,7 +141,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public int setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException {
+    public void setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -152,19 +151,19 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             conn = this.getConnection();
             String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET STATUS = ?, ATTEMPTS=0, LAST_SUCCESS_TIME = ?" +
                     " WHERE  DEVICE_ID = ?";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query);
             stmt.setInt(1, 1);
             stmt.setTimestamp(2, currentTimestamp);
             stmt.setInt(3, deviceId);
 
             stmt.executeUpdate();
 
-            generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                return generatedKeys.getInt(1);
-            } else {
-                return 0;
-            }
+//            generatedKeys = stmt.getGeneratedKeys();
+//            if (generatedKeys.next()) {
+//                return generatedKeys.getInt(1);
+//            } else {
+//                return 0;
+//            }
 
         } catch (SQLException e) {
             String msg = "Error occurred while deleting the none compliance to the database.";
@@ -214,7 +213,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        ComplianceData complianceData = null;
+        ComplianceData complianceData = new ComplianceData();
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_POLICY_COMPLIANCE_STATUS WHERE DEVICE_ID = ?";

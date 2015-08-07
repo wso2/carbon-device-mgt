@@ -93,13 +93,18 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         PolicyManager manager = new PolicyManagerImpl();
         Policy policy = manager.getAppliedPolicyToDevice(identifier);
 
-        log.debug(policy.getId());
-        log.debug(policy.getPolicyName());
-        log.debug(policy.getCompliance());
+        if (policy != null) {
 
+            log.debug(policy.getId());
+            log.debug(policy.getPolicyName());
+            log.debug(policy.getCompliance());
+        } else {
+            log.debug("Applied policy was a null object.");
+        }
     }
 
-    @Test(dependsOnMethods = ("testMonitorDao"))
+
+    @Test(dependsOnMethods = ("getDeviceAppliedPolicy"))
     public void addComplianceOperation() throws PolicyManagementException, DeviceManagementException,
             PolicyComplianceException {
 
@@ -131,46 +136,43 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
     public void checkComplianceFromMonitoringService() throws PolicyManagementException, DeviceManagementException,
             PolicyComplianceException {
 
+
+
         PolicyMonitoringServiceTest monitoringServiceTest = new PolicyMonitoringServiceTest();
         PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(monitoringServiceTest.getType(),
                 monitoringServiceTest);
 
         DeviceManagementProviderService adminService = new DeviceManagementProviderServiceImpl();
 
-        PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
-
+       // PolicyManager policyManagerService = new PolicyManagerImpl();
 
         List<Device> devices = adminService.getAllDevices();
 
+        for (Device device : devices) {
+            log.debug(device.getDeviceIdentifier());
+            log.debug(device.getType());
+            log.debug(device.getName());
+        }
 
         monitoringServiceTest.notifyDevices(devices);
 
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setId(devices.get(0).getDeviceIdentifier());
-        deviceIdentifier.setType(devices.get(0).getType());
-
-        Policy policy = policyManagerService.getAppliedPolicyToDevice(deviceIdentifier);
+        PolicyManager manager = new PolicyManagerImpl();
+        Policy policy = manager.getAppliedPolicyToDevice(identifier);
 
         Object ob = new Object();
 
-
-        // This has to be removed, until milan sends the full request.
-
-        policy = policyManagerService.getPolicies(ANDROID).get(0);
-
-        // remove above
-
-        monitoringServiceTest.checkPolicyCompliance(deviceIdentifier, policy, ob);
-
-//        MonitoringTask task = new MonitoringTask();
-//        task.execute();
+        monitoringServiceTest.checkPolicyCompliance(identifier, policy, ob);
     }
 
 
     @Test(dependsOnMethods = ("checkComplianceFromMonitoringService"))
-    public void checkCompliance() throws DeviceManagementException, PolicyComplianceException {
+    public void checkCompliance() throws DeviceManagementException, PolicyComplianceException, PolicyManagementException {
 
+        PolicyMonitoringServiceTest monitoringServiceTest = new PolicyMonitoringServiceTest();
+        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(monitoringServiceTest.getType(),
+                monitoringServiceTest);
         DeviceManagementProviderService adminService = new DeviceManagementProviderServiceImpl();
+
 
         List<Device> devices = adminService.getAllDevices();
 
@@ -183,7 +185,10 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
 
         MonitoringManager monitoringManager = new MonitoringManagerImpl();
 
-        monitoringManager.checkPolicyCompliance(deviceIdentifier, ob);
+        log.debug(identifier.getId());
+        log.debug(identifier.getType());
+
+        monitoringManager.checkPolicyCompliance(identifier, ob);
 
     }
 }

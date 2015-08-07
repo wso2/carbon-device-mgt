@@ -57,7 +57,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     public void init() throws Exception {
         initDatSource();
         // System.setProperty("GetTenantIDForTest", "Super");
-        initiatePriviledgeCaronContext();
+        initiatePrivilegedCaronContext();
     }
 
 
@@ -82,23 +82,26 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
         List<Device> devices = deviceDAO.getDevices(-1234);
 
+        log.debug("--- Printing device taken by calling the device dao layer by tenant id.");
         for (Device device : devices) {
-            log.debug(device.getDeviceIdentifier() + " ----- X");
+            log.debug(device.getDeviceIdentifier());
         }
 
+
+        log.debug("--- Printing device taken by calling the device dao layer by tenant id and device type.");
         List<Device> devices2 = deviceDAO.getDevices("android", -1234);
 
         for (Device device : devices2) {
-            log.debug(device.getDeviceIdentifier() + " ----- XX");
+            log.debug(device.getDeviceIdentifier());
         }
-
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
 
+        log.debug("Printing device taken by calling the service layer with device type.");
         List<Device> devices3 = service.getAllDevices("android");
 
         for (Device device : devices3) {
-            log.debug(device.getDeviceIdentifier() + " ----- XXX");
+            log.debug(device.getDeviceIdentifier());
         }
     }
 

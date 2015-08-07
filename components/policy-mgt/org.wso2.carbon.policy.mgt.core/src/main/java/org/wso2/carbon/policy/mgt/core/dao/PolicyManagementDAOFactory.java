@@ -128,6 +128,15 @@ public class PolicyManagementDAOFactory {
                         e);
             }
         }
+//        if (log.isDebugEnabled()) {
+//            log.debug(" Print the connction : :::::::  " + currentConnection.get().toString());
+//            StackTraceElement[] sts = Thread.currentThread().getStackTrace();
+//            for (StackTraceElement st: sts) {
+//                log.debug(st.getClassName()  +  " -- " + st.getLineNumber());
+////                break;
+//            }
+//            log.debug(Thread.currentThread().getStackTrace());
+//        }
         return currentConnection.get();
     }
 

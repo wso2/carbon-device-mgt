@@ -37,9 +37,9 @@ public interface MonitoringDAO {
      */
     void addComplianceDetails(Map<Integer, Integer> devicePolicyMap) throws MonitoringDAOException;
 
-    int setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException;
+    void setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException;
 
-    int setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException;
+    void setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException;
 
     void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
             complianceFeatures)

@@ -18,14 +18,23 @@
 
 package org.wso2.carbon.device.mgt.common.configuration.mgt;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Represents the tenant configuration for a device platform.
  */
-public class TenantConfiguration {
+@XmlRootElement(name="tenantConfiguration")
+@XmlAccessorType(XmlAccessType.NONE)
+public class TenantConfiguration implements Serializable{
 
+	@XmlElement(name="type")
 	private String type;
+	@XmlElement(name="configuration")
 	private List<ConfigurationEntry> configuration;
 
 	public String getType() {

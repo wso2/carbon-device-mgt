@@ -279,13 +279,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         }
         for (Device device : allDevices) {
-            Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
+           DeviceManagementService managementService = this.getPluginRepository().
+                   getDeviceManagementService(device.getType());
+            if(managementService != null) {
+                Device dmsDevice = managementService.getDeviceManager().getDevice(
+                        new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                if (dmsDevice != null) {
+                    device.setFeatures(dmsDevice.getFeatures());
+                    device.setProperties(dmsDevice.getProperties());
+                }
             }
             devices.add(device);
         }
@@ -312,13 +314,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
 
         for (Device device : allDevices) {
-            Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
+
+            DeviceManagementService service = this.getPluginRepository().getDeviceManagementService(device.getType());
+            if (service != null) {
+                Device dmsDevice = service.getDeviceManager().getDevice(
+                        new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                if (dmsDevice != null) {
+                    device.setFeatures(dmsDevice.getFeatures());
+                    device.setProperties(dmsDevice.getProperties());
+                }
             }
             devices.add(device);
         }
@@ -341,7 +345,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         String subject = "";
 
         for (NotificationMessages notificationMessage : notificationMessages) {
-            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE.equals(
+            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE
+                    .equals(
                     notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();

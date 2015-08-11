@@ -29,6 +29,7 @@ import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
+import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -177,9 +178,9 @@ public class FeatureDAOImpl implements FeatureDAO {
                 stmt.setString(2, feature.getFeatureCode());
                 stmt.setInt(3, feature.getDeviceTypeId());
                 if (conn.getMetaData().getDriverName().contains("H2")) {
-                    stmt.setObject(4, feature.getContent(), Types.JAVA_OBJECT);
+                    stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
                 } else {
-                    stmt.setObject(4, feature.getContent());
+                    stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
                 }
                 stmt.addBatch();
                 //Not adding the logic to check the size of the stmt and execute if the size records added is over 1000
@@ -195,6 +196,10 @@ public class FeatureDAOImpl implements FeatureDAO {
             }
 
         } catch (SQLException e) {
+            String msg = "Error occurred while adding the feature list to the database.";
+            log.error(msg, e);
+            throw new FeatureManagerDAOException(msg, e);
+        } catch (IOException e) {
             String msg = "Error occurred while adding the feature list to the database.";
             log.error(msg, e);
             throw new FeatureManagerDAOException(msg, e);
@@ -217,9 +222,9 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             for (ProfileFeature feature : features) {
                 if (conn.getMetaData().getDriverName().contains("H2")) {
-                    stmt.setObject(1, feature.getContent(), Types.JAVA_OBJECT);
+                    stmt.setBytes(1, PolicyManagerUtil.getBytes(feature.getContent()));
                 } else {
-                    stmt.setObject(1, feature.getContent());
+                    stmt.setBytes(1, PolicyManagerUtil.getBytes(feature.getContent()));
                 }
                 stmt.setInt(2, profileId);
                 stmt.setString(3, feature.getFeatureCode());
@@ -229,6 +234,10 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt.executeBatch();
 
         } catch (SQLException e) {
+            String msg = "Error occurred while adding the feature list to the database.";
+            log.error(msg, e);
+            throw new FeatureManagerDAOException(msg, e);
+        } catch (IOException e) {
             String msg = "Error occurred while adding the feature list to the database.";
             log.error(msg, e);
             throw new FeatureManagerDAOException(msg, e);
@@ -313,7 +322,7 @@ public class FeatureDAOImpl implements FeatureDAO {
                     contentBytes = (byte[]) resultSet.getBytes("CONTENT");
                     bais = new ByteArrayInputStream(contentBytes);
                     ois = new ObjectInputStream(bais);
-                    profileFeature.setContent(ois.readObject().toString());
+                    profileFeature.setContent((Object) ois.readObject().toString());
                 } finally {
                     if (bais != null) {
                         try {

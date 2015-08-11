@@ -28,33 +28,31 @@ import org.wso2.carbon.policy.mgt.core.dao.MonitoringDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
+import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 public class MonitoringDAOImpl implements MonitoringDAO {
 
     private static final Log log = LogFactory.getLog(MonitoringDAOImpl.class);
 
     @Override
-    public int setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException {
-
+    public int addComplianceDetails(int deviceId, int policyId) throws MonitoringDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS, LAST_FAILED_TIME, " +
-                    "ATTEMPTS) VALUES (?, ?, ?, ?, ?) ";
+            String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS, ATTEMPTS, " +
+                    "LAST_REQUESTED_TIME) VALUES (?, ?, ?,?, ?) ";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, policyId);
-            stmt.setInt(3, 0);
-            stmt.setTimestamp(4, currentTimestamp);
-            stmt.setInt(5, 0);
+            stmt.setInt(3, 1);
+            stmt.setInt(4, 1);
+            stmt.setTimestamp(5, currentTimestamp);
             stmt.executeUpdate();
 
             generatedKeys = stmt.getGeneratedKeys();
@@ -71,6 +69,74 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
+    }
+
+
+    @Override
+    public void addComplianceDetails(Map<Integer, Integer> devicePolicyMap) throws MonitoringDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet generatedKeys = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        if (log.isDebugEnabled()) {
+            log.debug("Adding the compliance details for devices and policies");
+            for (Map.Entry<Integer, Integer> map : devicePolicyMap.entrySet()) {
+                log.debug(map.getKey() + " -- " + map.getValue());
+            }
+        }
+
+        try {
+            conn = this.getConnection();
+            String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS, ATTEMPTS, " +
+                    "LAST_REQUESTED_TIME) VALUES (?, ?, ?,?, ?) ";
+            stmt = conn.prepareStatement(query);
+            for (Map.Entry<Integer, Integer> map : devicePolicyMap.entrySet()) {
+                stmt.setInt(1, map.getKey());
+                stmt.setInt(2, map.getValue());
+                stmt.setInt(3, 1);
+                stmt.setInt(4, 1);
+                stmt.setTimestamp(5, currentTimestamp);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while adding the none compliance to the database.";
+            log.error(msg, e);
+            throw new MonitoringDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
+        }
+    }
+
+    @Override
+    public void setDeviceAsNoneCompliance(int deviceId, int policyId) throws
+            MonitoringDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet generatedKeys = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        try {
+            conn = this.getConnection();
+
+            String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS  SET STATUS = 0, LAST_FAILED_TIME = ?, POLICY_ID = ?," +
+                    " ATTEMPTS=0 WHERE  DEVICE_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setTimestamp(1, currentTimestamp);
+            stmt.setInt(2, policyId);
+            stmt.setInt(3, deviceId);
+            stmt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while updating the none compliance to the database.";
+            log.error(msg, e);
+            throw new MonitoringDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
+        }
 
     }
 
@@ -79,6 +145,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
         Connection conn;
         PreparedStatement stmt = null;
+        ResultSet generatedKeys = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         try {
             conn = this.getConnection();
@@ -91,12 +158,19 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
             stmt.executeUpdate();
 
+//            generatedKeys = stmt.getGeneratedKeys();
+//            if (generatedKeys.next()) {
+//                return generatedKeys.getInt(1);
+//            } else {
+//                return 0;
+//            }
+
         } catch (SQLException e) {
             String msg = "Error occurred while deleting the none compliance to the database.";
             log.error(msg, e);
             throw new MonitoringDAOException(msg, e);
         } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+            PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
     }
 
@@ -115,7 +189,11 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             for (ComplianceFeature feature : complianceFeatures) {
                 stmt.setInt(1, policyComplianceStatusId);
                 stmt.setString(2, feature.getFeatureCode());
-                stmt.setString(3, String.valueOf(feature.isCompliance()));
+                if (feature.isCompliance() == true) {
+                    stmt.setInt(3, 1);
+                } else {
+                    stmt.setInt(3, 0);
+                }
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -135,7 +213,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        ComplianceData complianceData = null;
+        ComplianceData complianceData = new ComplianceData();
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_POLICY_COMPLIANCE_STATUS WHERE DEVICE_ID = ?";
@@ -171,13 +249,13 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<ComplianceData> complianceDataList = null;
+        List<ComplianceData> complianceDataList = new ArrayList<>();
 
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_POLICY_COMPLIANCE_STATUS WHERE DEVICE_ID IN (?)";
             stmt = conn.prepareStatement(query);
-            stmt.setString(1, makeString(deviceIds));
+            stmt.setString(1, PolicyManagerUtil.makeString(deviceIds));
 
             resultSet = stmt.executeQuery();
 
@@ -348,13 +426,5 @@ public class MonitoringDAOImpl implements MonitoringDAO {
         }
     }
 
-    private String makeString(List<Integer> values) {
 
-        StringBuilder buff = new StringBuilder();
-        for (int value : values) {
-            buff.append(value).append(",");
-        }
-        buff.deleteCharAt(buff.length() - 1);
-        return buff.toString();
-    }
 }

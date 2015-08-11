@@ -24,7 +24,10 @@ import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.common.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
@@ -53,6 +56,35 @@ public abstract class BasePolicyManagementDAOTest {
         this.dataSource = this.getDataSource(this.readDataSourceConfig());
         DeviceManagementDAOFactory.init(dataSource);
         PolicyManagementDAOFactory.init(dataSource);
+        OperationManagementDAOFactory.init(dataSource);
+    }
+
+    public void initiatePrivilegedCaronContext() throws Exception {
+
+
+        if (System.getProperty("carbon.home") == null) {
+            File file = new File("src/test/resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+        }
+
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
+                .SUPER_TENANT_DOMAIN_NAME);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
     }
 
     @BeforeClass

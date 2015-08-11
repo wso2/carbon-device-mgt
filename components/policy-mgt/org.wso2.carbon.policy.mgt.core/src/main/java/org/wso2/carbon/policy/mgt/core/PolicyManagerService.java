@@ -67,6 +67,8 @@ public interface PolicyManagerService {
 
     int getPolicyCount() throws PolicyManagementException;
 
+    Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
+
     List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
             deviceResponse) throws PolicyComplianceException;
 

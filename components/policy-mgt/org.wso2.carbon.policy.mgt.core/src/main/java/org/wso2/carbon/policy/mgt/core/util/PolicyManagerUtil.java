@@ -34,7 +34,9 @@ import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -89,6 +91,16 @@ public class PolicyManagerUtil {
         return dataSource;
     }
 
+    public static String makeString(List<Integer> values) {
+
+        StringBuilder buff = new StringBuilder();
+        for (int value : values) {
+            buff.append(value).append(",");
+        }
+        buff.deleteCharAt(buff.length() - 1);
+        return buff.toString();
+    }
+
     public static Operation transformPolicy(Policy policy) {
         List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
         List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
@@ -113,4 +125,15 @@ public class PolicyManagerUtil {
         return policyOperation;
     }
 
+
+    public static byte[] getBytes(Object obj) throws java.io.IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(obj);
+        oos.flush();
+        oos.close();
+        bos.close();
+        byte[] data = bos.toByteArray();
+        return data;
+    }
 }

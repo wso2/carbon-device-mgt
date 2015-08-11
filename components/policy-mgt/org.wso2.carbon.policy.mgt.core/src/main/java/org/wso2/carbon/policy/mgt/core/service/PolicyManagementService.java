@@ -117,13 +117,19 @@ public class PolicyManagementService implements PolicyManagerService {
     }
 
     @Override
+    public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+        return policyManagerService.getAppliedPolicyToDevice(deviceIdentifier);
+    }
+
+    @Override
     public List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
             deviceResponse) throws PolicyComplianceException {
         return policyManagerService.CheckPolicyCompliance(deviceIdentifier, deviceResponse);
     }
 
     @Override
-    public boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws PolicyComplianceException {
+    public boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws
+            PolicyComplianceException {
         return policyManagerService.checkCompliance(deviceIdentifier, response);
     }
 

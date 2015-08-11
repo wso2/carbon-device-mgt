@@ -22,11 +22,22 @@ package org.wso2.carbon.policy.mgt.core.dao;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface MonitoringDAO {
 
-    int setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException;
+    int addComplianceDetails(int deviceId, int policyId) throws MonitoringDAOException;
+
+    /**
+     * This is getting a list of values with device id and applied policy
+     * @param devicePolicyMap <Device Id, Policy Id>
+     * @throws MonitoringDAOException
+     */
+    void addComplianceDetails(Map<Integer, Integer> devicePolicyMap) throws MonitoringDAOException;
+
+    void setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException;
 
     void setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException;
 

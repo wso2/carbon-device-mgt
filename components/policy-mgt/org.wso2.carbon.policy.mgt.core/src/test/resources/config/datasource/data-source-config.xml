@@ -18,8 +18,23 @@
   -->
 
 <DataSourceConfig>
+
+    <!-- Only of these two can be active at a given time-->
+
+    <!-- For H2 -->
+
     <Url>jdbc:h2:mem:cdm-test-db;DB_CLOSE_DELAY=-1</Url>
     <DriverClassName>org.h2.Driver</DriverClassName>
     <User>wso2carbon</User>
     <Password>wso2carbon</Password>
+
+
+    <!-- For MySql -->
+
+    <!--<Url>jdbc:mysql://localhost:3306/WSO2CDM</Url>-->
+    <!--<DriverClassName>com.mysql.jdbc.Driver</DriverClassName>-->
+    <!--<userName>root</userName>-->
+    <!--<pwd></pwd>-->
+
+
 </DataSourceConfig>

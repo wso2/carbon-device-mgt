@@ -14,7 +14,6 @@
  *  KIND, either express or implied.  See the License for the
  *  specific language governing permissions and limitations
  *  under the License.
- *
  */
 
 package org.wso2.carbon.device.mgt.core.internal;
@@ -45,8 +44,7 @@ public class DeviceManagementDataHolder {
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
-    private DeviceManagementDataHolder() {
-    }
+    private DeviceManagementDataHolder() {}
 
     public static DeviceManagementDataHolder getInstance() {
         return thisInstance;

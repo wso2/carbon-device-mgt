@@ -34,7 +34,9 @@ import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleServiceImpl;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
@@ -48,10 +50,12 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
     PolicyAdministratorPoint policyAdministratorPoint;
     MonitoringManager monitoringManager;
+    private PolicyManager policyManager;
 
     public PolicyManagerServiceImpl() {
         policyAdministratorPoint = new PolicyAdministratorPointImpl();
         monitoringManager = new MonitoringManagerImpl();
+        policyManager = new PolicyManagerImpl();
     }
 
     @Override
@@ -90,7 +94,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             Policy policy = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
                     getEffectivePolicy(deviceIdentifier);
 
-            if (policy != null) {
+            if (policy == null) {
                 return null;
             }
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
@@ -188,6 +192,11 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public int getPolicyCount() throws PolicyManagementException {
         return policyAdministratorPoint.getPolicyCount();
+    }
+
+    @Override
+    public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+        return policyManager.getAppliedPolicyToDevice(deviceIdentifier);
     }
 
     @Override

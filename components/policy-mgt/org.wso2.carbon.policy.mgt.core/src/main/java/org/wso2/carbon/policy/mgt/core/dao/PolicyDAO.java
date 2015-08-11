@@ -25,6 +25,7 @@ import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface PolicyDAO {
@@ -104,4 +105,6 @@ public interface PolicyDAO {
     int getAppliedPolicyId(int deviceId) throws PolicyManagerDAOException;
 
     Policy getAppliedPolicy(int deviceId) throws PolicyManagerDAOException;
-}
+
+    HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException;
+ }

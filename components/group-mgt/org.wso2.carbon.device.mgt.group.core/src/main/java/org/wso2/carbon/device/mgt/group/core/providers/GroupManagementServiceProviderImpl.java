@@ -26,6 +26,8 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.group.common.Group;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
+import org.wso2.carbon.device.mgt.group.common.GroupUser;
+import org.wso2.carbon.device.mgt.group.core.internal.GroupBroker;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
@@ -51,33 +53,41 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
 
     @Override
     public boolean createGroup(Group group) throws GroupManagementException {
+        GroupBroker groupBroker = new GroupBroker(group);
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            group.setTenantId(tenantId);
-            this.groupDAO.addGroup(group);
-            int groupId = this.groupDAO.getGroupByName(group.getName(), group.getTenantId()).getId();
-            if (groupId == 0) {
+            groupBroker.setTenantId(tenantId);
+            int sqlReturn = this.groupDAO.addGroup(groupBroker);
+            if (sqlReturn == -1) {
                 return false;
             }
-            group.setId(groupId);
-            addNewSharingRoleForGroup(group.getOwnerId(), group.getId(), "admin", null);
-            addNewSharingRoleForGroup(group.getOwnerId(), group.getId(), "monitor", null);
-            addNewSharingRoleForGroup(group.getOwnerId(), group.getId(), "operator", null);
-            log.info("Group added: " + group.getName());
+            List<Group> groups = this.groupDAO.getGroupsByName(groupBroker.getName(), groupBroker.getOwner(), groupBroker.getTenantId());
+            if (groups.size() == 0) {
+                return false;
+            }
+            int groupId = groups.get(groups.size() - 1).getId();
+            groupBroker.setId(groupId);
+            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), "admin", null);
+            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), "monitor", null);
+            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), "operator", null);
+            if (log.isDebugEnabled()) {
+                log.debug("Group added: " + groupBroker.getName());
+            }
             return true;
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while adding group " +
-                    "'" + group.getName() + "'", e);
+                    "'" + group.getName() + "' to database", e);
         } catch (GroupManagementException e) {
             throw new GroupManagementException("Error occurred while adding group " +
-                    "'" + group.getName() + "' role to user " + group.getOwnerId(), e);
+                    "'" + group.getName() + "' role to user " + group.getOwner(), e);
         }
     }
 
     @Override
-    public void updateGroup(Group group) throws GroupManagementException {
+    public boolean updateGroup(Group group) throws GroupManagementException {
         try {
-            this.groupDAO.updateGroup(group);
+            int sqlReturn = this.groupDAO.updateGroup(group);
+            return (sqlReturn != -1);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while modifying group " +
                     "'" + group.getName() + "'", e);
@@ -100,13 +110,15 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 }
             }
             List<Device> groupDevices = getAllDevicesInGroup(groupId);
-            for (Device device : groupDevices){
+            for (Device device : groupDevices) {
                 device.setGroupId(0);
                 DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
             }
-            this.groupDAO.deleteGroup(groupId);
-            log.info("Group removed: " + group.getName());
-            return true;
+            int sqlReturn = this.groupDAO.deleteGroup(groupId);
+            if (log.isDebugEnabled()) {
+                log.debug("Group " + group.getName() + " removed: " + (sqlReturn != -1));
+            }
+            return (sqlReturn != -1);
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while removing device from group", e);
         } catch (GroupManagementDAOException e) {
@@ -123,32 +135,40 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         try {
             Group group = this.groupDAO.getGroupById(groupId);
             if (group != null) {
-                group.setDeviceCount(getDeviceCountInGroup(group.getId()));
-                group.setUsers(getUsersForGroup(group.getId()));
+                GroupBroker groupBroker = new GroupBroker(group);
+                groupBroker.setDevices(this.getAllDevicesInGroup(groupId));
+                groupBroker.setUsers(this.getUsersForGroup(groupId));
+                groupBroker.setRoles(this.getAllRolesForGroup(groupId));
+                return groupBroker.getGroup();
+            } else {
+                return null;
             }
-            return group;
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupId, e);
         }
     }
 
     @Override
-    public Group getGroupByName(String groupName) throws GroupManagementException {
+    public List<Group> getGroupByName(String groupName, String owner) throws GroupManagementException {
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            Group group = this.groupDAO.getGroupByName(groupName, tenantId);
-            if (group != null) {
-                group.setDeviceCount(getDeviceCountInGroup(group.getId()));
-                group.setUsers(getUsersForGroup(group.getId()));
+            List<Group> groups = this.groupDAO.getGroupsByName(groupName, owner, tenantId);
+            List<Group> groupsWithData = new ArrayList<>();
+            for (Group group : groups) {
+                GroupBroker groupBroker = new GroupBroker(group);
+                groupBroker.setDevices(this.getAllDevicesInGroup(group.getId()));
+                groupBroker.setUsers(this.getUsersForGroup(group.getId()));
+                groupBroker.setRoles(this.getAllRolesForGroup(group.getId()));
+                groupsWithData.add(groupBroker.getGroup());
             }
-            return group;
+            return groupsWithData;
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupName, e);
         }
     }
 
     @Override
-    public List<Group> getGroupListOfUser(String username) throws GroupManagementException {
+    public List<Group> getGroupsOfUser(String username) throws GroupManagementException {
         UserStoreManager userStoreManager;
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
@@ -173,7 +193,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
 
     @Override
     public int getGroupCountOfUser(String username) throws GroupManagementException {
-        return this.getGroupListOfUser(username).size();
+        return this.getGroupsOfUser(username).size();
     }
 
     @Override
@@ -312,24 +332,31 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override
-    public List<String> getUsersForGroup(int groupId) throws GroupManagementException {
+    public List<GroupUser> getUsersForGroup(int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
-        List<String> userNames;
+        Map<String, GroupUser> groupUserHashMap = new HashMap<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            userNames = new ArrayList<>();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             List<String> rolesForGroup = this.getAllRolesForGroup(groupId);
             for (String role : rolesForGroup) {
                 String[] users = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/" + role);
                 for (String user : users) {
-                    if (!userNames.contains(user)) {
-                        userNames.add(user);
+                    GroupUser groupUser;
+                    if (groupUserHashMap.containsKey(user)) {
+                        groupUser = groupUserHashMap.get(user);
+                        groupUser.getRoles().add(role);
+                    } else {
+                        groupUser = new GroupUser();
+                        groupUser.setUsername(user);
+                        groupUser.setRoles(new ArrayList<String>());
+                        groupUser.getRoles().add(role);
+                        groupUserHashMap.put(user, groupUser);
                     }
                 }
             }
-            return userNames;
+            return new ArrayList<>(groupUserHashMap.values());
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in fetching user list for group id:" + groupId;
             log.error(errorMsg, userStoreEx);

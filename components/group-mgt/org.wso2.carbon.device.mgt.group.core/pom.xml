@@ -50,7 +50,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Device Management Core Group Bundle</Bundle-Description>
+                        <Bundle-Description>Group Management Core Bundle</Bundle-Description>
                         <Private-Package>org.wso2.carbon.device.mgt.group.core.internal</Private-Package>
                         <Import-Package>
                             org.wso2.carbon.device.mgt.group.common.*,

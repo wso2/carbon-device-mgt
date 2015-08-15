@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.group.common;
 
+import org.wso2.carbon.device.mgt.common.Device;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -26,15 +28,15 @@ import java.util.List;
 @XmlRootElement
 public class Group implements Serializable {
 
-    private static final long serialVersionUID = -8101106997837486245L;
     private int id;
     private String description;
     private String name;
     private Long dateOfCreation;
     private Long dateOfLastUpdate;
-    private String ownerId;
-    private int deviceCount;
-    private List<String> users;
+    private String owner;
+    private List<GroupUser> users;
+    private List<Device> devices;
+    private List<String> roles;
     private int tenantId;
 
     @XmlElement
@@ -42,7 +44,7 @@ public class Group implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
+    protected void setId(int id) {
         this.id = id;
     }
 
@@ -83,12 +85,12 @@ public class Group implements Serializable {
     }
 
     @XmlElement
-    public String getOwnerId() {
-        return ownerId;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     @XmlElement
@@ -96,25 +98,49 @@ public class Group implements Serializable {
         return tenantId;
     }
 
-    public void setTenantId(int tenantId) {
+    protected void setTenantId(int tenantId) {
         this.tenantId = tenantId;
     }
 
     @XmlElement
-    public int getDeviceCount() {
-        return deviceCount;
-    }
-
-    public void setDeviceCount(int deviceCount) {
-        this.deviceCount = deviceCount;
-    }
-
-    @XmlElement
-    public List<String> getUsers() {
+    public List<GroupUser> getUsers() {
         return users;
     }
 
-    public void setUsers(List<String> users) {
+    protected void setUsers(List<GroupUser> users) {
         this.users = users;
+    }
+
+    @XmlElement
+    public List<Device> getDevices() {
+        return devices;
+    }
+
+    protected void setDevices(List<Device> devices) {
+        this.devices = devices;
+    }
+
+    @XmlElement
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    protected void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    protected Group getGroup(){
+        Group g = new Group();
+        g.setId(getId());
+        g.setDescription(getDescription());
+        g.setName(getName());
+        g.setDateOfCreation(getDateOfCreation());
+        g.setDateOfLastUpdate(getDateOfLastUpdate());
+        g.setOwner(getOwner());
+        g.setUsers(getUsers());
+        g.setDevices(getDevices());
+        g.setRoles(getRoles());
+        g.setTenantId(getTenantId());
+        return g;
     }
 }

@@ -44,8 +44,13 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Device Management Group Common Bundle</Bundle-Description>
+                        <Bundle-Description>Group Management Common Bundle</Bundle-Description>
+                        <Import-Package>
+                            org.wso2.carbon.device.mgt.common.*,
+                            javax.xml.*
+                        </Import-Package>
                         <Export-Package>
+                            org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.group.common.*
                         </Export-Package>
                     </instructions>
@@ -53,5 +58,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

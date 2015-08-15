@@ -31,25 +31,28 @@ public interface GroupDAO {
      * Add new group
      *
      * @param group new group
+     * @return sql execution result
      * @throws GroupManagementDAOException
      */
-    void addGroup(Group group) throws GroupManagementDAOException;
+    int addGroup(Group group) throws GroupManagementDAOException;
 
     /**
      * Update an existing group
      *
      * @param group updated group
+     * @return sql execution result
      * @throws GroupManagementDAOException
      */
-    void updateGroup(Group group) throws GroupManagementDAOException;
+    int updateGroup(Group group) throws GroupManagementDAOException;
 
     /**
      * Delete an existing group
      *
      * @param groupId group Id to delete
+     * @return sql execution result
      * @throws GroupManagementDAOException
      */
-    void deleteGroup(int groupId) throws GroupManagementDAOException;
+    int deleteGroup(int groupId) throws GroupManagementDAOException;
 
     /**
      * Get group by Id
@@ -72,9 +75,10 @@ public interface GroupDAO {
      * Get the list of Groups that matches with the given Group name.
      *
      * @param groupName of the group.
+     * @param owner  of the group.
      * @param tenantId  of user's tenant
      * @return List of Groups that matches with the given Group name.
      * @throws GroupManagementDAOException
      */
-    Group getGroupByName(String groupName, int tenantId) throws GroupManagementDAOException;
+    List<Group> getGroupsByName(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
 }

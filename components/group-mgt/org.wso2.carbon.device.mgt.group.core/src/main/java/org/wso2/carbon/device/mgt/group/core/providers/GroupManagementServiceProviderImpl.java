@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.group.core.providers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -32,9 +33,11 @@ import org.wso2.carbon.device.mgt.group.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.group.core.internal.DeviceMgtGroupDataHolder;
+import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
-import org.wso2.carbon.user.core.Permission;
+import org.wso2.carbon.user.api.Permission;
+import org.wso2.carbon.user.core.util.UserCoreUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +55,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override
-    public boolean createGroup(Group group) throws GroupManagementException {
+    public boolean createGroup(Group group, String defaultRole, String[] defaultPermissions) throws GroupManagementException {
         GroupBroker groupBroker = new GroupBroker(group);
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
@@ -67,9 +70,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             }
             int groupId = groups.get(groups.size() - 1).getId();
             groupBroker.setId(groupId);
-            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), "admin", null);
-            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), "monitor", null);
-            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), "operator", null);
+            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
             if (log.isDebugEnabled()) {
                 log.debug("Group added: " + groupBroker.getName());
             }
@@ -105,7 +106,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             List<String> groupRoles = getAllRolesForGroup(groupId);
             for (String role : groupRoles) {
                 if (role != null) {
-                    roleName = role.replace("Internal/groups/" + groupId + "/", "");
+                    roleName = role.replace("Internal/group-" + groupId + "-", "");
                     removeSharingRoleForGroup(groupId, roleName);
                 }
             }
@@ -177,8 +178,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             String[] roleList = userStoreManager.getRoleListOfUser(username);
             Map<Integer, Group> groups = new HashMap<>();
             for (String role : roleList) {
-                if (role != null && role.contains("Internal/groups/")) {
-                    int groupId = Integer.parseInt(role.split("/")[2]);
+                if (role != null && role.contains("Internal/group-")) {
+                    int groupId = Integer.parseInt(role.split("-")[1]);
                     if (!groups.containsKey(groupId)) {
                         Group group = getGroupById(groupId);
                         groups.put(groupId, group);
@@ -208,7 +209,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            roles[0] = "Internal/groups/" + groupId + "/" + sharingRole;
+            roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
             userStoreManager.updateRoleListOfUser(username, null, roles);
             return true;
         } catch (UserStoreException userStoreEx) {
@@ -230,7 +231,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            roles[0] = "Internal/groups/" + groupId + "/" + sharingRole;
+            roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
             userStoreManager.updateRoleListOfUser(username, roles, null);
             return true;
         } catch (UserStoreException userStoreEx) {
@@ -241,7 +242,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override
-    public boolean addNewSharingRoleForGroup(String username, int groupId, String roleName, Permission[] permissions) throws GroupManagementException {
+    public boolean addNewSharingRoleForGroup(String username, int groupId, String roleName, String[] permissions) throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
         String[] userNames = new String[1];
@@ -253,9 +254,13 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            role = "Internal//groups/" + groupId + "/" + roleName;
+            role = "Internal/group-" + groupId + "-" + roleName;
             userNames[0] = username;
-            userStoreManager.addRole(role, userNames, permissions);
+            Permission[] carbonPermissions = new Permission[permissions.length];
+            for (int i = 0; i < permissions.length; i++){
+                carbonPermissions[i] = new Permission(permissions[i], CarbonConstants.UI_PERMISSION_ACTION);
+            }
+            userStoreManager.addRole(role, userNames, carbonPermissions);
             return true;
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in adding role to group id:" + groupId;
@@ -276,7 +281,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            role = "Internal/groups/" + groupId + "/" + roleName;
+            role = "Internal/group-" + groupId + "-" + roleName;
             userStoreManager.deleteRole(role);
             return true;
         } catch (UserStoreException userStoreEx) {
@@ -298,8 +303,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             roles = userStoreManager.getRoleNames();
             groupRoles = new ArrayList<>();
             for (String r : roles) {
-                if (r != null && r.contains("Internal/groups/" + groupId + "/")) {
-                    groupRoles.add(r.replace("Internal/groups/" + groupId + "/", ""));
+                if (r != null && r.contains("Internal/group-" + groupId + "-")) {
+                    groupRoles.add(r.replace("Internal/group-" + groupId + "-", ""));
                 }
             }
             return groupRoles;
@@ -320,8 +325,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                     .getUserStoreManager();
             String[] roleList = userStoreManager.getRoleListOfUser(username);
             for (String role : roleList) {
-                if (role != null && role.contains("Internal/groups/" + groupId)) {
-                    String roleName = role.replace("Internal/groups/" + groupId + "/", "");
+                if (role != null && role.contains("Internal/group-" + groupId)) {
+                    String roleName = role.replace("Internal/group-" + groupId + "-", "");
                     groupRoleList.add(roleName);
                 }
             }
@@ -341,7 +346,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                     .getUserStoreManager();
             List<String> rolesForGroup = this.getAllRolesForGroup(groupId);
             for (String role : rolesForGroup) {
-                String[] users = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/" + role);
+                String[] users = userStoreManager.getUserListOfRole("Internal/group-" + groupId + "-" + role);
                 for (String user : users) {
                     GroupUser groupUser;
                     if (groupUserHashMap.containsKey(user)) {
@@ -411,7 +416,63 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         return true;
     }
 
-    private int getDeviceCountInGroup(int groupId) throws GroupManagementException {
-        return getAllDevicesInGroup(groupId).size();
+    @Override
+    public String[] getGroupPermissionsOfUser(String username, int groupId) throws GroupManagementException {
+        UserRealm userRealm;
+        List<String> roles = getGroupRolesForUser(username, groupId);
+        int tenantId = DeviceManagerUtil.getTenantId();
+        try {
+            userRealm = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+            List<String> lstPermissions = new ArrayList<>();
+            String[] resourceIds = userRealm.getAuthorizationManager().getAllowedUIResourcesForUser(username, "/");
+            if (resourceIds != null) {
+                for (String resourceId : resourceIds) {
+                    for (String roleName : roles) {
+                        if (userRealm.getAuthorizationManager().
+                                isRoleAuthorized("Internal/group-" + groupId + "-" + roleName, resourceId,
+                                        CarbonConstants.UI_PERMISSION_ACTION)) {
+                            lstPermissions.add(resourceId);
+                        }
+                    }
+                }
+            }
+            String[] permissions = lstPermissions.toArray(new String[lstPermissions.size()]);
+            String[] optimizedList = UserCoreUtil.optimizePermissions(permissions);
+            return optimizedList;
+        } catch (UserStoreException e) {
+            throw new GroupManagementException("Error occurred while getting user realm", e);
+        }
+    }
+
+    @Override
+    public List<Group> getUserGroupsForPermission(String username, String permission) throws GroupManagementException {
+        UserRealm userRealm;
+        int tenantId = DeviceManagerUtil.getTenantId();
+        Map<Integer, Group> groups = new HashMap<>();
+        try {
+            userRealm = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+            String[] roles = userRealm.getUserStoreManager().getRoleListOfUser(username);
+            List<Device> unGroupedDevices = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getUnGroupedDevicesOfUser(username);
+            for (String role : roles) {
+                if (role != null && role.contains("Internal/group-") && userRealm.getAuthorizationManager().isRoleAuthorized(role, permission, CarbonConstants.UI_PERMISSION_ACTION)) {
+                    int groupId = Integer.parseInt(role.split("-")[1]);
+                    if (!groups.containsKey(groupId)) {
+                        Group group = getGroupById(groupId);
+                        groups.put(groupId, group);
+                    }
+                }
+            }
+            GroupBroker groupBroker = new GroupBroker(new Group());
+            groupBroker.setId(0);
+            groupBroker.setName("Ungrouped");
+            groupBroker.setDescription("Ungrouped devices are listed in here");
+            groupBroker.setDevices(unGroupedDevices);
+            groups.put(0, groupBroker.getGroup());
+        } catch (UserStoreException e) {
+            throw new GroupManagementException("Error occurred while getting user realm", e);
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while getting ungrouped devices", e);
+        }
+        return new ArrayList<>(groups.values());
     }
 }

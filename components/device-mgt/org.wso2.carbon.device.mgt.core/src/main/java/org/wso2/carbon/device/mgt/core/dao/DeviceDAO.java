@@ -45,6 +45,8 @@ public interface DeviceDAO {
 
     List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
 
+    List<Device> getUnGroupedDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
+
     List<Device> getDevicesOfGroup(int groupId, int tenantId) throws DeviceManagementDAOException;
 
     int getDeviceCount(int tenantId) throws DeviceManagementDAOException;

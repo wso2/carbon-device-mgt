@@ -63,6 +63,13 @@ public interface DeviceManagementProviderService extends OperationManager {
     List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
 
     /**
+     * @param username of the user
+     * @return List of un grouped devices owned by a particular user
+     * @throws DeviceManagementException
+     */
+    List<Device> getUnGroupedDevicesOfUser(String username) throws DeviceManagementException;
+
+    /**
      * Method to get the list of devices owned by an user.
      *
      * @param groupId of the group

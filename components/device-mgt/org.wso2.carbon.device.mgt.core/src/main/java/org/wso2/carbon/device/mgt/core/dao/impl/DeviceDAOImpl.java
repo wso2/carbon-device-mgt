@@ -223,15 +223,14 @@ public class DeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql =
                     "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, d1.DEVICE_TYPE, " +
-                    "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                    "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
-                    "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                    "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
-                    "WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? AND e.OWNER = ?";
+                            "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                            "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
+                            "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
+                            "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
+                            "WHERE d1.ID = e.DEVICE_ID AND e.OWNER = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setInt(2, tenantId);
-            stmt.setString(3, username);
+            stmt.setString(2, username);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -240,7 +239,39 @@ public class DeviceDAOImpl implements DeviceDAO {
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while fetching the list of devices belongs to '" +
-                                                   username + "'", e);
+                    username + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return devices;
+    }
+
+    @Override
+    public List<Device> getUnGroupedDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        List<Device> devices = new ArrayList<Device>();
+        try {
+            conn = this.getConnection();
+            String sql =
+                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, d1.DEVICE_TYPE, " +
+                            "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                            "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
+                            "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
+                            "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? AND d.GROUP_ID IS NULL) d1 " +
+                            "WHERE d1.ID = e.DEVICE_ID AND e.OWNER = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            stmt.setString(2, username);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Device device = this.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while fetching the list of devices belongs to '" +
+                    username + "'", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }

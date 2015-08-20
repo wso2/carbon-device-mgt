@@ -33,10 +33,10 @@ public interface GroupManagementServiceProvider {
      * @param deviceGroup to add
      * @param defaultRole of the deviceGroup
      * @param defaultPermissions of the default role
-     * @return is deviceGroup created
+     * @return id of the new group
      * @throws GroupManagementException
      */
-    boolean createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions) throws GroupManagementException;
+    int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions) throws GroupManagementException;
 
     /**
      * @param deviceGroup to update
@@ -177,4 +177,13 @@ public interface GroupManagementServiceProvider {
      * @throws GroupManagementException
      */
     List<DeviceGroup> getUserGroupsForPermission(String username, String permission) throws GroupManagementException;
+
+    /**
+     * @param username of the user
+     * @param groupId to authorize
+     * @param permission to authorize
+     * @return
+     * @throws GroupManagementException
+     */
+    boolean isAuthorized(String username, int groupId, String permission) throws GroupManagementException;
 }

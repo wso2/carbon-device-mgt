@@ -56,18 +56,18 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override
-    public boolean createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions) throws GroupManagementException {
+    public int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions) throws GroupManagementException {
         DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             groupBroker.setTenantId(tenantId);
             int sqlReturn = this.groupDAO.addGroup(groupBroker);
             if (sqlReturn == -1) {
-                return false;
+                return -1;
             }
             List<DeviceGroup> deviceGroups = this.groupDAO.getGroupsByName(groupBroker.getName(), groupBroker.getOwner(), groupBroker.getTenantId());
             if (deviceGroups.size() == 0) {
-                return false;
+                return -1;
             }
             int groupId = deviceGroups.get(deviceGroups.size() - 1).getId();
             groupBroker.setId(groupId);
@@ -75,7 +75,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             if (log.isDebugEnabled()) {
                 log.debug("DeviceGroup added: " + groupBroker.getName());
             }
-            return true;
+            return groupId;
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while adding deviceGroup " +
                     "'" + deviceGroup.getName() + "' to database", e);
@@ -463,6 +463,24 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 }
             }
             return new ArrayList<>(groups.values());
+        } catch (UserStoreException e) {
+            throw new GroupManagementException("Error occurred while getting user realm", e);
+        }
+    }
+
+    @Override
+    public boolean isAuthorized(String username, int groupId, String permission) throws GroupManagementException{
+        UserRealm userRealm;
+        int tenantId = DeviceManagerUtil.getTenantId();
+        try {
+            userRealm = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+            List<String> roles = this.getGroupRolesForUser(username, groupId);
+            for (String role : roles) {
+                if (userRealm.getAuthorizationManager().isRoleAuthorized("Internal/group-"+ groupId + "-" + role, permission, CarbonConstants.UI_PERMISSION_ACTION)) {
+                    return true;
+                }
+            }
+            return false;
         } catch (UserStoreException e) {
             throw new GroupManagementException("Error occurred while getting user realm", e);
         }

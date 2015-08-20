@@ -46,9 +46,9 @@ import org.wso2.carbon.user.core.service.RealmService;
  * unbind="unsetDeviceManagementProviderService"
  */
 
-public class DeviceMgtGroupServiceComponent {
+public class GroupMgtServiceComponent {
 
-    private static Log log = LogFactory.getLog(DeviceMgtGroupServiceComponent.class);
+    private static Log log = LogFactory.getLog(GroupMgtServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
         try {
@@ -64,15 +64,15 @@ public class DeviceMgtGroupServiceComponent {
             GroupManagementDAOFactory.init(dsConfig);
 
             if (log.isDebugEnabled()) {
-                log.debug("Registering OSGi service Group Management Service");
+                log.debug("Registering OSGi service DeviceGroup Management Service");
             }
-            /* Registering Group Management service */
+            /* Registering DeviceGroup Management service */
             BundleContext bundleContext = componentContext.getBundleContext();
             GroupManagementServiceProvider groupManagementServiceProvider = new GroupManagementServiceProviderImpl();
             bundleContext.registerService(GroupManagementServiceProvider.class.getName(),
                     groupManagementServiceProvider, null);
             if (log.isDebugEnabled()) {
-                log.debug("Group management core bundle has been successfully initialized");
+                log.debug("DeviceGroup management core bundle has been successfully initialized");
             }
         } catch (Throwable e) {
             String msg = "Error occurred while initializing group management core bundle";

@@ -19,25 +19,25 @@ package org.wso2.carbon.device.mgt.group.core.internal;
  */
 
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.group.common.Group;
+import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupUser;
 
 import java.util.List;
 
-public class GroupBroker extends Group {
+public class DeviceGroupBroker extends DeviceGroup {
 
-    public GroupBroker(Group group) {
-        this.setId(group.getId());
-        this.setId(group.getId());
-        this.setDescription(group.getDescription());
-        this.setName(group.getName());
-        this.setDateOfCreation(group.getDateOfCreation());
-        this.setDateOfLastUpdate(group.getDateOfLastUpdate());
-        this.setOwner(group.getOwner());
-        this.setUsers(group.getUsers());
-        this.setDevices(group.getDevices());
-        this.setRoles(group.getRoles());
-        this.setTenantId(group.getTenantId());
+    public DeviceGroupBroker(DeviceGroup deviceGroup) {
+        this.setId(deviceGroup.getId());
+        this.setId(deviceGroup.getId());
+        this.setDescription(deviceGroup.getDescription());
+        this.setName(deviceGroup.getName());
+        this.setDateOfCreation(deviceGroup.getDateOfCreation());
+        this.setDateOfLastUpdate(deviceGroup.getDateOfLastUpdate());
+        this.setOwner(deviceGroup.getOwner());
+        this.setUsers(deviceGroup.getUsers());
+        this.setDevices(deviceGroup.getDevices());
+        this.setRoles(deviceGroup.getRoles());
+        this.setTenantId(deviceGroup.getTenantId());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class GroupBroker extends Group {
     }
 
     @Override
-    public Group getGroup() {
+    public DeviceGroup getGroup() {
         return super.getGroup();
     }
 }

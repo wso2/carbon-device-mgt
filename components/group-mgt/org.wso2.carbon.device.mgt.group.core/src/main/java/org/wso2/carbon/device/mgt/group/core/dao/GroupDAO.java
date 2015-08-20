@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.device.mgt.group.core.dao;
 
-import org.wso2.carbon.device.mgt.group.common.Group;
+import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 
 import java.util.List;
 
@@ -28,22 +28,22 @@ import java.util.List;
 public interface GroupDAO {
 
     /**
-     * Add new group
+     * Add new deviceGroup
      *
-     * @param group new group
+     * @param deviceGroup to be added
      * @return sql execution result
      * @throws GroupManagementDAOException
      */
-    int addGroup(Group group) throws GroupManagementDAOException;
+    int addGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException;
 
     /**
-     * Update an existing group
+     * Update an existing deviceGroup
      *
-     * @param group updated group
+     * @param deviceGroup to update
      * @return sql execution result
      * @throws GroupManagementDAOException
      */
-    int updateGroup(Group group) throws GroupManagementDAOException;
+    int updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException;
 
     /**
      * Delete an existing group
@@ -58,27 +58,27 @@ public interface GroupDAO {
      * Get group by Id
      *
      * @param groupId id of required group
-     * @return Group
+     * @return DeviceGroup
      * @throws GroupManagementDAOException
      */
-    Group getGroupById(int groupId) throws GroupManagementDAOException;
+    DeviceGroup getGroupById(int groupId) throws GroupManagementDAOException;
 
     /**
-     * Get the list of Groups belongs to a user.
+     * Get the list of DeviceGroups belongs to a user.
      *
-     * @return List of all Groups.
+     * @return List of all DeviceGroups.
      * @throws GroupManagementDAOException
      */
-    List<Group> getAllGroups() throws GroupManagementDAOException;
+    List<DeviceGroup> getAllGroups() throws GroupManagementDAOException;
 
     /**
-     * Get the list of Groups that matches with the given Group name.
+     * Get the list of Groups that matches with the given DeviceGroup name.
      *
-     * @param groupName of the group.
-     * @param owner  of the group.
+     * @param groupName of the DeviceGroup.
+     * @param owner  of the DeviceGroup.
      * @param tenantId  of user's tenant
-     * @return List of Groups that matches with the given Group name.
+     * @return List of DeviceGroup that matches with the given DeviceGroup name.
      * @throws GroupManagementDAOException
      */
-    List<Group> getGroupsByName(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> getGroupsByName(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
 }

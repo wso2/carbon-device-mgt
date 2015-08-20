@@ -21,30 +21,29 @@ package org.wso2.carbon.device.mgt.group.core.providers;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.group.common.Group;
+import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
 import org.wso2.carbon.device.mgt.group.common.GroupUser;
-import org.wso2.carbon.user.api.Permission;
 
 import java.util.List;
 
 public interface GroupManagementServiceProvider {
 
     /**
-     * @param group to add
-     * @param defaultRole of the group
+     * @param deviceGroup to add
+     * @param defaultRole of the deviceGroup
      * @param defaultPermissions of the default role
-     * @return is group created
+     * @return is deviceGroup created
      * @throws GroupManagementException
      */
-    boolean createGroup(Group group, String defaultRole, String[] defaultPermissions) throws GroupManagementException;
+    boolean createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions) throws GroupManagementException;
 
     /**
-     * @param group to update
+     * @param deviceGroup to update
      * @throws GroupManagementException
-     * @return is group updated
+     * @return is deviceGroup updated
      */
-    boolean updateGroup(Group group) throws GroupManagementException;
+    boolean updateGroup(DeviceGroup deviceGroup) throws GroupManagementException;
 
     /**
      * @param groupId of the group to delete
@@ -58,22 +57,22 @@ public interface GroupManagementServiceProvider {
      * @return group
      * @throws GroupManagementException
      */
-    Group getGroupById(int groupId) throws GroupManagementException;
+    DeviceGroup getGroupById(int groupId) throws GroupManagementException;
 
     /**
      * @param groupName of the group.
      * @param owner  of the group.
-     * @return List of Groups that matches with the given Group name.
+     * @return List of Groups that matches with the given DeviceGroup name.
      * @throws GroupManagementException
      */
-    List<Group> getGroupByName(String groupName, String owner) throws GroupManagementException;
+    List<DeviceGroup> getGroupByName(String groupName, String owner) throws GroupManagementException;
 
     /**
      * @param username of the user
      * @return list of groups
      * @throws GroupManagementException
      */
-    List<Group> getGroupsOfUser(String username) throws GroupManagementException;
+    List<DeviceGroup> getGroupsOfUser(String username) throws GroupManagementException;
 
     /**
      * @param username of the user
@@ -177,5 +176,5 @@ public interface GroupManagementServiceProvider {
      * @return group list with specified permissions
      * @throws GroupManagementException
      */
-    List<Group> getUserGroupsForPermission(String username, String permission) throws GroupManagementException;
+    List<DeviceGroup> getUserGroupsForPermission(String username, String permission) throws GroupManagementException;
 }

@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement
-public class Group implements Serializable {
+public class DeviceGroup implements Serializable {
 
     private int id;
     private String description;
@@ -129,8 +129,8 @@ public class Group implements Serializable {
         this.roles = roles;
     }
 
-    protected Group getGroup(){
-        Group g = new Group();
+    protected DeviceGroup getGroup(){
+        DeviceGroup g = new DeviceGroup();
         g.setId(getId());
         g.setDescription(getDescription());
         g.setName(getName());

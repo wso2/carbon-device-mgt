@@ -106,17 +106,17 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     PolicyManagementDAOFactory.closeConnection();
                 }
 
-                PolicyManagementDAOFactory.beginTransaction();
                 //This was added because update query below that did not return the update table primary key.
 
                 if (!complianceFeatures.isEmpty()) {
-
+                    PolicyManagementDAOFactory.beginTransaction();
                     monitoringDAO.setDeviceAsNoneCompliance(device.getId(), policy.getId());
                     if (log.isDebugEnabled()) {
                         log.debug("Compliance status primary key " + complianceData.getId());
                     }
 //                    complianceData.setId(cmf.getId());
                     monitoringDAO.addNoneComplianceFeatures(complianceData.getId(), device.getId(), complianceFeatures);
+                    PolicyManagementDAOFactory.commitTransaction();
                     complianceDecisionPoint.validateDevicePolicyCompliance(deviceIdentifier, complianceData);
                     List<ProfileFeature> profileFeatures = policy.getProfile().getProfileFeaturesList();
                     for (ComplianceFeature compFeature : complianceFeatures) {
@@ -127,11 +127,12 @@ public class MonitoringManagerImpl implements MonitoringManager {
                         }
                     }
                 } else {
+                    PolicyManagementDAOFactory.beginTransaction();
                     monitoringDAO.setDeviceAsCompliance(device.getId(), policy.getId());
                     //complianceData.setId(cmf.getId());
                     monitoringDAO.deleteNoneComplianceData(complianceData.getId());
+                    PolicyManagementDAOFactory.commitTransaction();
                 }
-                PolicyManagementDAOFactory.commitTransaction();
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("There is no policy applied to this device, hence compliance monitoring was not called.");

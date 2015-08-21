@@ -765,12 +765,11 @@ public class PolicyManagerImpl implements PolicyManager {
     public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         Policy policy;
         try {
-            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             //int policyId = policyDAO.getAppliedPolicyId(device.getId());
+            PolicyManagementDAOFactory.openConnection();
             policy = policyDAO.getAppliedPolicy(device.getId());
-
         } catch (DeviceManagementException e) {
             throw new PolicyManagementException("Error occurred while getting device id.", e);
         } catch (PolicyManagerDAOException e) {

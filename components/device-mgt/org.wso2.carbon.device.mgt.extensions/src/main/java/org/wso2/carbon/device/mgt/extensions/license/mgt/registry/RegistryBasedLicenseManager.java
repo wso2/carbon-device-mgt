@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.device.mgt.extensions.license.mgt.registry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
@@ -44,6 +46,7 @@ public class RegistryBasedLicenseManager implements LicenseManager {
 
     private Registry registry;
     private GenericArtifactManager artifactManager;
+    private static final Log log = LogFactory.getLog(RegistryBasedLicenseManager.class);
 
     public RegistryBasedLicenseManager() {
         Registry registry = CarbonContext.getThreadLocalCarbonContext().getRegistry(RegistryType.SYSTEM_GOVERNANCE);
@@ -65,6 +68,10 @@ public class RegistryBasedLicenseManager implements LicenseManager {
         try {
             GenericArtifact artifact = this.getGenericArtifact(deviceType, languageCode);
             if (artifact == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Generic artifact is null for '" + deviceType + "' device type, Hence license does not " +
+                            "have content");
+                }
                 return null;
             }
             return this.populateLicense(artifact);
@@ -102,19 +109,16 @@ public class RegistryBasedLicenseManager implements LicenseManager {
         try {
             GenericArtifact artifact = this.getGenericArtifact(deviceType, license.getLanguage());
             if (artifact != null) {
+
                 return;
             }
-            GenericArtifactManager artifactManager =
-                    GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager(registry);
             artifact = artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com", deviceType));
-
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.NAME, license.getName());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VERSION, license.getVersion());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.PROVIDER, license.getProvider());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LANGUAGE, license.getLanguage());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.TEXT, license.getText());
             artifact.setAttribute("name", license.getName());
-           // artifact.setId(license.getName());
             Date validTo = license.getValidTo();
             if (validTo != null) {
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO, validTo.toString());
@@ -143,10 +147,7 @@ public class RegistryBasedLicenseManager implements LicenseManager {
                         equalsIgnoreCase(deviceType) && attributeLangVal.equalsIgnoreCase(languageCode));
             }
         });
-        if (artifacts == null || artifacts.length < 1) {
-            return null;
-        }
-        return artifacts[0];
+        return (artifacts == null || artifacts.length < 1) ? null : artifacts[0];
     }
 
 }

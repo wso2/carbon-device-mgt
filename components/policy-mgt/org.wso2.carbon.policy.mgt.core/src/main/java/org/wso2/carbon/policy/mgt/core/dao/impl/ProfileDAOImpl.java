@@ -225,6 +225,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         List<Profile> profileList = new ArrayList<Profile>();
 
         try {
+            //TODO : Fix with TenantID.
             conn = this.getConnection();
             String query = "SELECT * FROM DM_PROFILE";
             stmt = conn.prepareStatement(query);

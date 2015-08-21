@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
@@ -96,6 +97,8 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         }
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+
+        PolicyManagementDataHolder.getInstance().setDeviceManagementService(service);
 
         log.debug("Printing device taken by calling the service layer with device type.");
         List<Device> devices3 = service.getAllDevices("android");

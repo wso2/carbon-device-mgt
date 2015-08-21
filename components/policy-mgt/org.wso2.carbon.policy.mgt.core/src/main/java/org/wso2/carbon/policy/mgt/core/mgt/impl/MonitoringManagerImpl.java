@@ -304,7 +304,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
             if (!deviceIdsWithExistingOperation.isEmpty()) {
                 monitoringDAO.updateAttempts(new ArrayList<>(deviceIdsWithExistingOperation.keySet()), false);
-                //TODO uncomment with proper fix
+                //TODO: Add attempts. This has to be fixed in the get pending operation tables too. This will be
 //                decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
 //                        new ArrayList<>(deviceIdsWithExistingOperation.values())));
             }

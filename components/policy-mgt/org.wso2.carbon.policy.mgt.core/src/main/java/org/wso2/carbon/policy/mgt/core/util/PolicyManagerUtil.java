@@ -31,6 +31,9 @@ import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 
+import javax.cache.Cache;
+import javax.cache.CacheManager;
+import javax.cache.Caching;
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -135,5 +138,11 @@ public class PolicyManagerUtil {
         bos.close();
         byte[] data = bos.toByteArray();
         return data;
+    }
+
+
+    public static Cache getCacheManagerImpl(){
+        return Caching.getCacheManagerFactory()
+                .getCacheManager(PolicyManagementConstants.DM_CACHE_MANAGER).getCache(PolicyManagementConstants.DM_CACHE);
     }
 }

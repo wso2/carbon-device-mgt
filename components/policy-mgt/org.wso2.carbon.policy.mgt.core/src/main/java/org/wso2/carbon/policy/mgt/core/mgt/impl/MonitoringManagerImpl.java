@@ -95,6 +95,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     ComplianceData cmd = monitoringDAO.getCompliance(device.getId());
                     complianceData = monitoringService.checkPolicyCompliance(deviceIdentifier,
                             policy, deviceResponse);
+
                     complianceData.setId(cmd.getId());
                     complianceData.setPolicy(policy);
                     complianceFeatures = complianceData.getComplianceFeatures();
@@ -108,7 +109,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
                 //This was added because update query below that did not return the update table primary key.
 
-                if (!complianceFeatures.isEmpty()) {
+                if (complianceFeatures != null && !complianceFeatures.isEmpty()) {
                     PolicyManagementDAOFactory.beginTransaction();
                     monitoringDAO.setDeviceAsNoneCompliance(device.getId(), policy.getId());
                     if (log.isDebugEnabled()) {

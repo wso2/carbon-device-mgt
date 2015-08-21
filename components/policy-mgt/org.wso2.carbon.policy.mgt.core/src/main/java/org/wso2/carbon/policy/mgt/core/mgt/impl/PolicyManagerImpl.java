@@ -455,14 +455,17 @@ public class PolicyManagerImpl implements PolicyManager {
 
     @Override
     public List<Policy> getPolicies() throws PolicyManagementException {
-
         List<Policy> policyList;
-
+        List<Profile> profileList;
+        try {
+            profileList = profileManager.getAllProfiles();
+        } catch (ProfileManagementException e) {
+            throw new PolicyManagementException("Error occurred while getting all the profiles.", e);
+        }
         try {
             PolicyManagementDAOFactory.openConnection();
             policyList = policyDAO.getAllPolicies();
 //            List<Profile> profileList = profileDAO.getAllProfiles();
-            List<Profile> profileList = profileManager.getAllProfiles();
 
             for (Policy policy : policyList) {
                 for (Profile profile : profileList) {
@@ -481,8 +484,6 @@ public class PolicyManagerImpl implements PolicyManager {
             Collections.sort(policyList);
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting all the policies.", e);
-        } catch (ProfileManagementException e) {
-            throw new PolicyManagementException("Error occurred while getting all the profiles.", e);
         } catch (SQLException e) {
             throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
         } finally {

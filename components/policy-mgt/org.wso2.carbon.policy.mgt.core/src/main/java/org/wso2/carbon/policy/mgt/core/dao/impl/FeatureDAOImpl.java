@@ -201,14 +201,8 @@ public class FeatureDAOImpl implements FeatureDAO {
                 i++;
             }
 
-        } catch (SQLException e) {
-            String msg = "Error occurred while adding the feature list to the database.";
-            log.error(msg, e);
-            throw new FeatureManagerDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred while adding the feature list to the database.";
-            log.error(msg, e);
-            throw new FeatureManagerDAOException(msg, e);
+        } catch (SQLException | IOException e) {
+            throw new FeatureManagerDAOException("Error occurred while adding the feature list to the database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
@@ -243,14 +237,8 @@ public class FeatureDAOImpl implements FeatureDAO {
             }
             stmt.executeBatch();
 
-        } catch (SQLException e) {
-            String msg = "Error occurred while adding the feature list to the database.";
-            log.error(msg, e);
-            throw new FeatureManagerDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred while adding the feature list to the database.";
-            log.error(msg, e);
-            throw new FeatureManagerDAOException(msg, e);
+        } catch (SQLException | IOException e) {
+            throw new FeatureManagerDAOException("Error occurred while adding the feature list to the database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -274,9 +262,7 @@ public class FeatureDAOImpl implements FeatureDAO {
             return true;
 
         } catch (SQLException e) {
-            String msg = "Error occurred while deleting the feature related to a profile.";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Error occurred while deleting the feature related to a profile.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -298,18 +284,14 @@ public class FeatureDAOImpl implements FeatureDAO {
             return true;
 
         } catch (SQLException e) {
-            String msg = "Error occurred while deleting the feature related to a profile.";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Error occurred while deleting the feature related to a profile.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
 
-
     @Override
     public List<ProfileFeature> getAllProfileFeatures() throws FeatureManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -359,34 +341,24 @@ public class FeatureDAOImpl implements FeatureDAO {
 
                 featureList.add(profileFeature);
             }
-
         } catch (SQLException e) {
-            String msg = "Unable to get the list of the features from database.";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Unable to get the list of the features from database.", e);
         } catch (IOException e) {
-            String msg = "Unable to read the byte stream for content";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Unable to read the byte stream for content", e);
         } catch (ClassNotFoundException e) {
-            String msg = "Class not found while converting the object";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Class not found while converting the object", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return featureList;
     }
 
     @Override
     public List<Feature> getAllFeatures(String deviceType) throws FeatureManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Feature> featureList = new ArrayList<Feature>();
-
         try {
             conn = this.getConnection();
             String query = "SELECT f.ID ID, f.NAME NAME, f.CODE CODE, f.DEVICE_TYPE_ID DEVICE_TYPE_ID," +
@@ -404,21 +376,17 @@ public class FeatureDAOImpl implements FeatureDAO {
                 feature.setName(resultSet.getString("NAME"));
                 featureList.add(feature);
             }
-
         } catch (SQLException e) {
-            String msg = "Unable to get the list of the features related device type from database.";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Unable to get the list of the features related device type " +
+                    "from database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return featureList;
     }
 
     @Override
     public List<ProfileFeature> getFeaturesForProfile(int profileId) throws FeatureManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -464,25 +432,16 @@ public class FeatureDAOImpl implements FeatureDAO {
                         }
                     }
                 }
-
                 featureList.add(profileFeature);
             }
-
         } catch (SQLException e) {
-            String msg = "Unable to get the list of the features from database.";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Unable to get the list of the features from database.", e);
         } catch (IOException e) {
-            String msg = "Unable to read the byte stream for content";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Unable to read the byte stream for content", e);
         } catch (ClassNotFoundException e) {
-            String msg = "Class not found while converting the object";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Class not found while converting the object", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return featureList;
     }
@@ -504,9 +463,8 @@ public class FeatureDAOImpl implements FeatureDAO {
             return true;
 
         } catch (SQLException e) {
-            String msg = "Unable to delete the feature " + featureId + " (Feature ID) from database.";
-            log.error(msg);
-            throw new FeatureManagerDAOException(msg, e);
+            throw new FeatureManagerDAOException("Unable to delete the feature " + featureId + " (Feature ID) " +
+                    "from database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -522,12 +480,4 @@ public class FeatureDAOImpl implements FeatureDAO {
         }
     }
 
-    private void closeConnection() {
-
-        try {
-            PolicyManagementDAOFactory.closeConnection();
-        } catch (PolicyManagerDAOException e) {
-            log.warn("Unable to close the database connection.");
-        }
-    }
 }

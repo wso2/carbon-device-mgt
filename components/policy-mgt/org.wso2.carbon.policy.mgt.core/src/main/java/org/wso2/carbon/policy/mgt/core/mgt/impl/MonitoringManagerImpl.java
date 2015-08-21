@@ -52,6 +52,7 @@ import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class MonitoringManagerImpl implements MonitoringManager {
@@ -77,8 +78,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
         try {
-
-
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             PolicyManager manager = new PolicyManagerImpl();
             Device device = service.getDevice(deviceIdentifier);
@@ -91,14 +90,21 @@ public class MonitoringManagerImpl implements MonitoringManager {
                 ComplianceData complianceData;
                 // This was retrieved from database because compliance id must be present for other dao operations to
                 // run.
-                ComplianceData cmd = monitoringDAO.getCompliance(device.getId());
-                complianceData = monitoringService.checkPolicyCompliance(deviceIdentifier,
-                        policy, deviceResponse);
-                complianceData.setId(cmd.getId());
-                complianceData.setPolicy(policy);
-                complianceFeatures = complianceData.getComplianceFeatures();
-                complianceData.setDeviceId(device.getId());
-                complianceData.setPolicyId(policy.getId());
+                try {
+                    PolicyManagementDAOFactory.openConnection();
+                    ComplianceData cmd = monitoringDAO.getCompliance(device.getId());
+                    complianceData = monitoringService.checkPolicyCompliance(deviceIdentifier,
+                            policy, deviceResponse);
+                    complianceData.setId(cmd.getId());
+                    complianceData.setPolicy(policy);
+                    complianceFeatures = complianceData.getComplianceFeatures();
+                    complianceData.setDeviceId(device.getId());
+                    complianceData.setPolicyId(policy.getId());
+                } catch (SQLException e) {
+                    throw new PolicyComplianceException("Error occurred while opening a data source connection", e);
+                } finally {
+                    PolicyManagementDAOFactory.closeConnection();
+                }
 
                 PolicyManagementDAOFactory.beginTransaction();
                 //This was added because update query below that did not return the update table primary key.
@@ -120,88 +126,57 @@ public class MonitoringManagerImpl implements MonitoringManager {
                             }
                         }
                     }
-
                 } else {
                     monitoringDAO.setDeviceAsCompliance(device.getId(), policy.getId());
                     //complianceData.setId(cmf.getId());
                     monitoringDAO.deleteNoneComplianceData(complianceData.getId());
                 }
                 PolicyManagementDAOFactory.commitTransaction();
-
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("There is no policy applied to this device, hence compliance monitoring was not called.");
                 }
             }
-
         } catch (DeviceManagementException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Unable tor retrieve device data from DB for " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
-        } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Unable tor retrieve policy data from DB for device " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyComplianceException("Unable tor retrieve device data from DB for " +
+                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
+        } catch (PolicyManagerDAOException | PolicyManagementException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyComplianceException("Unable tor retrieve policy data from DB for device " +
+                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
         } catch (MonitoringDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Unable to add the none compliance features to database for device " + deviceIdentifier.
-                    getId() + " - " + deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
-        } catch (PolicyManagementException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Unable tor retrieve policy data from DB for device " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyComplianceException("Unable to add the none compliance features to database for device " +
+                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return complianceFeatures;
     }
 
-
     @Override
     public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
-
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             //deviceDAO.getDevice(deviceIdentifier, tenantId);
+            PolicyManagementDAOFactory.openConnection();
             ComplianceData complianceData = monitoringDAO.getCompliance(device.getId());
             if (complianceData == null || !complianceData.isStatus()) {
                 return false;
             }
-
         } catch (DeviceManagementException e) {
-            String msg = "Unable to retrieve device data for " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            throw new PolicyComplianceException("Unable to retrieve device data for " + deviceIdentifier.getId() +
+                    " - " + deviceIdentifier.getType(), e);
 
         } catch (MonitoringDAOException e) {
-            String msg = "Unable to retrieve compliance status for " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            throw new PolicyComplianceException("Unable to retrieve compliance status for " + deviceIdentifier.getId() +
+                    " - " + deviceIdentifier.getType(), e);
+        } catch (SQLException e) {
+            throw new PolicyComplianceException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return true;
     }
@@ -212,6 +187,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         ComplianceData complianceData;
         try {
+            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             complianceData = monitoringDAO.getCompliance(device.getId());
@@ -220,26 +196,23 @@ public class MonitoringManagerImpl implements MonitoringManager {
             complianceData.setComplianceFeatures(complianceFeatures);
 
         } catch (DeviceManagementException e) {
-            String msg = "Unable to retrieve device data for " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            throw new PolicyComplianceException("Unable to retrieve device data for " + deviceIdentifier.getId() +
+                    " - " + deviceIdentifier.getType(), e);
 
         } catch (MonitoringDAOException e) {
-            String msg = "Unable to retrieve compliance data for " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            throw new PolicyComplianceException("Unable to retrieve compliance data for " + deviceIdentifier.getId() +
+                    " - " + deviceIdentifier.getType(), e);
+        } catch (SQLException e) {
+            throw new PolicyComplianceException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return complianceData;
     }
 
     @Override
     public void addMonitoringOperation(List<Device> devices) throws PolicyComplianceException {
-
         try {
-
-
             ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
 
             //int tenantId = PolicyManagerUtil.getTenantId();
@@ -294,7 +267,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
                 }
             }
 
-
             PolicyManagementDAOFactory.beginTransaction();
 
             if (!deviceIdsToAddOperation.isEmpty()) {
@@ -310,38 +282,19 @@ public class MonitoringManagerImpl implements MonitoringManager {
             }
 
             PolicyManagementDAOFactory.commitTransaction();
-
         } catch (MonitoringDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred from monitoring dao.";
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyComplianceException("Error occurred from monitoring dao.", e);
         } catch (OperationManagementException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding monitoring operation to devices";
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyComplianceException("Error occurred while adding monitoring operation to devices", e);
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred reading the applied policies to devices.";
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyComplianceException("Error occurred reading the applied policies to devices.", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
-
     }
-
 
     private void addMonitoringOperationsToDatabase(List<Device> devices)
             throws PolicyComplianceException, OperationManagementException {
@@ -359,7 +312,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {
-
         List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
         for (Device device : devices) {
             DeviceIdentifier identifier = new DeviceIdentifier();

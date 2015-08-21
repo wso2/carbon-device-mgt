@@ -126,12 +126,12 @@ public class PolicyManagementDAOFactory {
         return currentConnection.get();
     }
 
-    public static void closeConnection() throws PolicyManagerDAOException {
+    public static void closeConnection() {
         Connection con = currentConnection.get();
         try {
             con.close();
         } catch (SQLException e) {
-            log.error("Error occurred while close the connection");
+            log.warn("Error occurred while close the connection", e);
         }
         currentConnection.remove();
     }
@@ -149,12 +149,10 @@ public class PolicyManagementDAOFactory {
             }
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Error occurred while committing the transaction", e);
-        } finally {
-            closeConnection();
         }
     }
 
-    public static void rollbackTransaction() throws PolicyManagerDAOException {
+    public static void rollbackTransaction() {
         try {
             Connection conn = currentConnection.get();
             if (conn != null) {
@@ -166,10 +164,12 @@ public class PolicyManagementDAOFactory {
                 }
             }
         } catch (SQLException e) {
-            throw new PolicyManagerDAOException("Error occurred while roll-backing the transaction", e);
-        } finally {
-            closeConnection();
+            log.warn("Error occurred while roll-backing the transaction", e);
         }
+    }
+
+    public static void openConnection() throws SQLException {
+        currentConnection.set(dataSource.getConnection());
     }
 
 }

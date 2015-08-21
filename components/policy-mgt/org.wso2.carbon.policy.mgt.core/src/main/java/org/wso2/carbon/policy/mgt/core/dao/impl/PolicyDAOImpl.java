@@ -51,10 +51,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public Policy addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_DEVICE_TYPE_POLICY (DEVICE_TYPE_ID, POLICY_ID) VALUES (?, ?)";
@@ -62,11 +60,8 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(1, getDeviceTypeId(deviceType));
             stmt.setInt(2, policy.getId());
             stmt.executeQuery();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while adding the device type policy to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while adding the device type policy to database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -76,10 +71,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_ROLE_POLICY (ROLE_NAME, POLICY_ID) VALUES (?, ?)";
@@ -90,11 +83,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while adding the role name with policy to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while adding the role name with policy to database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -103,10 +93,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public Policy addPolicyToUser(List<String> usernameList, Policy policy) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_USER_POLICY (POLICY_ID, USERNAME) VALUES (?, ?)";
@@ -117,11 +105,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while adding the user name with policy to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while adding the user name with policy to database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -130,10 +115,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public Policy addPolicyToDevice(List<Device> devices, Policy policy) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_DEVICE_POLICY (DEVICE_ID, POLICY_ID) VALUES (?, ?)";
@@ -145,9 +128,8 @@ public class PolicyDAOImpl implements PolicyDAO {
             }
             stmt.executeBatch();
         } catch (SQLException e) {
-            String msg = "Error occurred while adding the device ids  with policy to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while adding the device ids  with policy to " +
+                    "database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -156,7 +138,6 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -173,11 +154,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while updating policy priorities in database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while updating policy priorities in database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -202,15 +180,12 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.executeUpdate();
 
             generatedKeys = stmt.getGeneratedKeys();
-
             while (generatedKeys.next()) {
                 criteria.setId(generatedKeys.getInt(1));
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while inserting the criterion (" + criteria.getName() + ") to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while inserting the criterion (" + criteria.getName() +
+                    ") to database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -219,11 +194,9 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public Criterion updateCriterion(Criterion criteria) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_CRITERIA SET NAME = ? WHERE ID = ? AND TENANT_ID = ?";
@@ -232,11 +205,9 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(2, criteria.getId());
             stmt.setInt(3, tenantId);
             stmt.executeUpdate();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while inserting the criterion (" + criteria.getName() + ") to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while inserting the criterion (" + criteria.getName() +
+                    ") to database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -245,7 +216,6 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public Criterion getCriterion(int id) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -265,26 +235,20 @@ public class PolicyDAOImpl implements PolicyDAO {
                 criterion.setName(resultSet.getString("NAME"));
             }
             return criterion;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the policies from the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
     @Override
     public Criterion getCriterion(String name) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         Criterion criterion = new Criterion();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_CRITERIA WHERE NAME= ? AND TENANT_ID = ?";
@@ -298,26 +262,20 @@ public class PolicyDAOImpl implements PolicyDAO {
                 criterion.setName(resultSet.getString("NAME"));
             }
             return criterion;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the policies from the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
     @Override
     public boolean checkCriterionExists(String name) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         boolean exist = false;
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_CRITERIA WHERE NAME = ? AND TENANT_ID = ?";
@@ -325,25 +283,24 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setString(1, name);
             stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
-            exist = resultSet.next();
 
+            if (resultSet.next()) {
+                //TODO: FIXME
+                exist = resultSet.getBoolean(1);
+            }
         } catch (SQLException e) {
-            String msg = "Error occurred while checking whether criterion (" + name + ") exists.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while checking whether criterion (" + name +
+                    ") exists", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return exist;
     }
 
     @Override
     public boolean deleteCriterion(Criterion criteria) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
-
         try {
             conn = this.getConnection();
             String query = "DELETE FROM DM_CRITERIA WHERE ID = ?";
@@ -356,9 +313,8 @@ public class PolicyDAOImpl implements PolicyDAO {
             }
             return true;
         } catch (SQLException e) {
-            String msg = "Unable to delete the policy (" + criteria.getName() + ") from database.";
-            log.error(msg);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Unable to delete the policy (" + criteria.getName() +
+                    ") from database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -366,13 +322,11 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public List<Criterion> getAllPolicyCriteria() throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Criterion> criteria = new ArrayList<Criterion>();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_CRITERIA WHERE TENANT_ID = ?";
@@ -387,14 +341,10 @@ public class PolicyDAOImpl implements PolicyDAO {
                 criteria.add(criterion);
             }
             return criteria;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the policies from the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
@@ -441,11 +391,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public boolean addPolicyCriteriaProperties(List<PolicyCriterion> policyCriteria) throws PolicyManagerDAOException {
-
-
         Connection conn;
         PreparedStatement stmt = null;
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_CRITERIA_PROPERTIES (POLICY_CRITERION_ID, PROP_KEY, PROP_VALUE, " +
@@ -453,7 +400,6 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt = conn.prepareStatement(query);
 
             for (PolicyCriterion criterion : policyCriteria) {
-
                 Properties prop = criterion.getProperties();
                 for (String name : prop.stringPropertyNames()) {
 
@@ -467,30 +413,21 @@ public class PolicyDAOImpl implements PolicyDAO {
             }
             //   stmt.executeUpdate();
 
-        } catch (SQLException e) {
-            String msg = "Error occurred while inserting the criterion properties to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred while inserting the criterion properties to database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+        } catch (SQLException | IOException e) {
+            throw new PolicyManagerDAOException("Error occurred while inserting the criterion properties " +
+                    "to database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
-
         return false;
     }
 
     @Override
     public List<PolicyCriterion> getPolicyCriteria(int policyId) throws PolicyManagerDAOException {
-
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<PolicyCriterion> criteria = new ArrayList<PolicyCriterion>();
-
         try {
             conn = this.getConnection();
             String query = "SELECT DPC.ID, DPC.CRITERIA_ID, DPCP.PROP_KEY, DPCP.PROP_VALUE, DPCP.CONTENT FROM " +
@@ -522,14 +459,11 @@ public class PolicyDAOImpl implements PolicyDAO {
                     prop.setProperty(resultSet.getString("PROP_KEY"), resultSet.getString("PROP_VALUE"));
                 }
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the criteria related to policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the criteria related to policies from " +
+                    "the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return criteria;
     }
@@ -555,9 +489,8 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            String msg = "Error occurred while updating policy (" + policy.getPolicyName() + ") in database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while updating policy (" + policy.getPolicyName() +
+                    ") in database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -566,13 +499,11 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public Policy getPolicy(int policyId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         Policy policy = new Policy();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_POLICY WHERE ID= ? AND TENANT_ID = ? ";
@@ -592,19 +523,15 @@ public class PolicyDAOImpl implements PolicyDAO {
             return policy;
 
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the policies from the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
 
     @Override
     public Policy getPolicyByProfileID(int profileId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -620,7 +547,6 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-
                 policy.setId(resultSet.getInt("ID"));
                 policy.setPolicyName(resultSet.getString("NAME"));
                 policy.setTenantId(resultSet.getInt("TENANT_ID"));
@@ -628,20 +554,15 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
             }
             return policy;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the policies from the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
     @Override
     public List<Policy> getAllPolicies() throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -657,7 +578,6 @@ public class PolicyDAOImpl implements PolicyDAO {
 
             while (resultSet.next()) {
                 Policy policy = new Policy();
-
                 policy.setId(resultSet.getInt("ID"));
                 policy.setProfileId(resultSet.getInt("PROFILE_ID"));
                 policy.setPolicyName(resultSet.getString("NAME"));
@@ -668,14 +588,10 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policies.add(policy);
             }
             return policies;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the policies from the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
@@ -686,12 +602,10 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public List<Integer> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Integer> deviceIdList = new ArrayList<Integer>();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_POLICY WHERE POLICY_ID = ?";
@@ -700,28 +614,21 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-
                 deviceIdList.add(resultSet.getInt("DEVICE_ID"));
             }
             return deviceIdList;
         } catch (SQLException e) {
-            String msg = "Error occurred while getting the device related to policies.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while getting the device related to policies", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
-
     }
 
 
     public List<String> getPolicyAppliedRoles(int policyId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-
         List<String> roleNames = new ArrayList<String>();
         try {
             conn = this.getConnection();
@@ -731,18 +638,13 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-
                 roleNames.add(resultSet.getString("ROLE_NAME"));
             }
             return roleNames;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while getting the roles related to policies.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while getting the roles related to policies", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
@@ -761,30 +663,23 @@ public class PolicyDAOImpl implements PolicyDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-
                 users.add(resultSet.getString("USERNAME"));
             }
             return users;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while getting the roles related to policies.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while getting the roles related to policies", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
 
     @Override
     public void addEffectivePolicyToDevice(int deviceId, Policy policy) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_DEVICE_POLICY_APPLIED (DEVICE_ID, POLICY_ID, POLICY_CONTENT, " +
@@ -796,17 +691,9 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setTimestamp(4, currentTimestamp);
             stmt.setTimestamp(5, currentTimestamp);
             stmt.setInt(6, tenantId);
-
             stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            String msg = "Error occurred while adding the evaluated feature list to device.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred while adding the evaluated feature list to device.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+        } catch (SQLException | IOException e) {
+            throw new PolicyManagerDAOException("Error occurred while adding the evaluated feature list to device", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -815,12 +702,10 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public void setPolicyApplied(int deviceId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET APPLIED_TIME = ?, APPLIED = ? WHERE DEVICE_ID = ? AND" +
@@ -830,13 +715,10 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setBoolean(2, true);
             stmt.setInt(3, deviceId);
             stmt.setInt(4, tenantId);
-
             stmt.executeUpdate();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while updating applied policy to device (" + deviceId + ")";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while updating applied policy to device (" +
+                    deviceId + ")", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -844,14 +726,11 @@ public class PolicyDAOImpl implements PolicyDAO {
 
 
     @Override
-    public void updateEffectivePolicyToDevice(int deviceId, Policy policy)
-            throws PolicyManagerDAOException {
-
+    public void updateEffectivePolicyToDevice(int deviceId, Policy policy) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET POLICY_ID = ?, POLICY_CONTENT = ?, UPDATED_TIME = ?, " +
@@ -865,29 +744,21 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(6, tenantId);
             stmt.executeUpdate();
 
-        } catch (SQLException e) {
-            String msg = "Error occurred while updating the evaluated feature list to device.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred while updating the evaluated feature list to device.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+        } catch (SQLException | IOException e) {
+            throw new PolicyManagerDAOException("Error occurred while updating the evaluated feature list " +
+                    "to device", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
-
     }
 
     @Override
     public boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         boolean exist = false;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
@@ -896,26 +767,21 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
             exist = resultSet.next();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while checking whether device (" + deviceId + ") has a policy to apply.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while checking whether device (" + deviceId +
+                    ") has a policy to apply", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return exist;
     }
 
     @Override
     public List<Integer> getPolicyIdsOfDevice(Device device) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Integer> policyIds = new ArrayList<Integer>();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_POLICY WHERE DEVICE_ID =  ? ";
@@ -926,26 +792,20 @@ public class PolicyDAOImpl implements PolicyDAO {
             while (resultSet.next()) {
                 policyIds.add(resultSet.getInt("POLICY_ID"));
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the device policy table.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the device policy table", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return policyIds;
     }
 
     @Override
     public List<Integer> getPolicyOfRole(String roleName) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Integer> policyIds = new ArrayList<Integer>();
-
         try {
             conn = this.getConnection();
             String query = "SELECT *  FROM DM_ROLE_POLICY WHERE ROLE_NAME = ? ";
@@ -956,26 +816,20 @@ public class PolicyDAOImpl implements PolicyDAO {
             while (resultSet.next()) {
                 policyIds.add(resultSet.getInt("POLICY_ID"));
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the role policy table.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the role policy table", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return policyIds;
     }
 
     @Override
     public List<Integer> getPolicyOfUser(String username) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Integer> policyIds = new ArrayList<Integer>();
-
         try {
             conn = this.getConnection();
             String query = "SELECT *  FROM DM_USER_POLICY WHERE USERNAME = ? ";
@@ -986,25 +840,19 @@ public class PolicyDAOImpl implements PolicyDAO {
             while (resultSet.next()) {
                 policyIds.add(resultSet.getInt("POLICY_ID"));
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the user policy table.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the user policy table", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return policyIds;
     }
 
     @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "DELETE FROM DM_POLICY WHERE ID = ? AND TENANT_ID = ?";
@@ -1018,9 +866,8 @@ public class PolicyDAOImpl implements PolicyDAO {
             }
             return true;
         } catch (SQLException e) {
-            String msg = "Unable to delete the policy (" + policy.getPolicyName() + ") from database.";
-            log.error(msg);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Unable to delete the policy (" + policy.getPolicyName() +
+                    ") from database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -1028,11 +875,9 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "DELETE FROM DM_POLICY WHERE ID = ? AND TENANT_ID = ?";
@@ -1046,9 +891,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             }
             return true;
         } catch (SQLException e) {
-            String msg = "Unable to delete the policy (" + policyId + ") from database.";
-            log.error(msg);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Unable to delete the policy (" + policyId + ") from database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -1056,10 +899,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public boolean deleteAllPolicyRelatedConfigs(int policyId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
-
         try {
             conn = this.getConnection();
 
@@ -1073,27 +914,23 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
 
-
             String devicePolicy = "DELETE FROM DM_DEVICE_POLICY WHERE POLICY_ID = ?";
             stmt = conn.prepareStatement(devicePolicy);
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
-
 
             String deleteCriteria = "DELETE FROM DM_POLICY_CRITERIA WHERE POLICY_ID = ?";
             stmt = conn.prepareStatement(deleteCriteria);
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
 
-
             if (log.isDebugEnabled()) {
                 log.debug("Policy (" + policyId + ") related configs deleted from database.");
             }
             return true;
         } catch (SQLException e) {
-            String msg = "Unable to delete the policy (" + policyId + ") related configs from database.";
-            log.error(msg);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Unable to delete the policy (" + policyId +
+                    ") related configs from database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -1103,17 +940,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         return PolicyManagementDAOFactory.getConnection();
     }
 
-    private void closeConnection() {
-        try {
-            PolicyManagementDAOFactory.closeConnection();
-        } catch (PolicyManagerDAOException e) {
-            log.warn("Unable to close the database connection.");
-        }
-    }
-
-
     private Policy persistPolicy(Policy policy) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
@@ -1149,9 +976,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             }
 
         } catch (SQLException e) {
-            String msg = "Error occurred while adding policy to the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while adding policy to the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
@@ -1167,7 +992,6 @@ public class PolicyDAOImpl implements PolicyDAO {
      * @throws PolicyManagerDAOException
      */
     private int getDeviceTypeId(String deviceType) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -1182,21 +1006,16 @@ public class PolicyDAOImpl implements PolicyDAO {
             while (resultSet.next()) {
                 deviceTypeId = resultSet.getInt("ID");
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while selecting the device type id.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while selecting the device type id", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return deviceTypeId;
     }
 
 
     private int readHighestPriorityOfPolicies() throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -1216,11 +1035,8 @@ public class PolicyDAOImpl implements PolicyDAO {
             if (log.isDebugEnabled()) {
                 log.debug("Priority of the new policy added is (" + priority + ")");
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the highest priority of the policies.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the highest priority of the policies", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
@@ -1229,13 +1045,11 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public int getPolicyCount() throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         int policyCount = 0;
-
         try {
             conn = this.getConnection();
             String query = "SELECT COUNT(ID) AS POLICY_COUNT FROM DM_POLICY WHERE TENANT_ID = ?";
@@ -1247,25 +1061,19 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policyCount = resultSet.getInt("POLICY_COUNT");
             }
             return policyCount;
-
         } catch (SQLException e) {
-            String msg = "Error occurred while reading the policies from the database.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while reading the policies from the database", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
     @Override
     public int getAppliedPolicyId(int deviceId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
@@ -1277,28 +1085,21 @@ public class PolicyDAOImpl implements PolicyDAO {
             while (resultSet.next()) {
                 return resultSet.getInt("POLICY_ID");
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while getting the applied policy id.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while getting the applied policy id", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
-
         return 0;
     }
 
     @Override
     public Policy getAppliedPolicy(int deviceId) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         Policy policy = null;
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
@@ -1336,20 +1137,13 @@ public class PolicyDAOImpl implements PolicyDAO {
             }
 
         } catch (SQLException e) {
-            String msg = "Error occurred while getting the applied policy.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while getting the applied policy", e);
         } catch (IOException e) {
-            String msg = "Unable to read the byte stream for content";
-            log.error(msg);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Unable to read the byte stream for content", e);
         } catch (ClassNotFoundException e) {
-            String msg = "Class not found while converting the object";
-            log.error(msg);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Class not found while converting the object", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
 //
 //        if (policy != null && log.isDebugEnabled()) {
@@ -1365,14 +1159,11 @@ public class PolicyDAOImpl implements PolicyDAO {
 
     @Override
     public HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-
         HashMap<Integer, Integer> devicePolicyIds = new HashMap<>();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
@@ -1384,16 +1175,11 @@ public class PolicyDAOImpl implements PolicyDAO {
             while (resultSet.next()) {
                 devicePolicyIds.put(resultSet.getInt("DEVICE_ID"), resultSet.getInt("POLICY_ID"));
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while getting the applied policy.";
-            log.error(msg, e);
-            throw new PolicyManagerDAOException(msg, e);
+            throw new PolicyManagerDAOException("Error occurred while getting the applied policy", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
-
         return devicePolicyIds;
     }
 

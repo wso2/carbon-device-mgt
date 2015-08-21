@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -33,44 +34,62 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(DeviceManagementProviderServiceTest.class);
-    DeviceManagementProviderService deviceManagementProviderService = null;
+    private DeviceManagementProviderService providerService;
+
+    private static final String NON_EXISTENT_DEVICE_TYPE = "Test";
 
 
     @BeforeClass
     @Override
     public void init() throws Exception {
-        initDatSource();
+        this.initDatSource();
+        this.providerService = new DeviceManagementProviderServiceImpl();
     }
 
+//    @Test
+//    public void testEnrollment() {
+//        try {
+//            DeviceManagementPluginRepository deviceManagementPluginRepository = new DeviceManagementPluginRepository();
+//            TestDeviceManagementService testDeviceManagementService =
+//                    new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE);
+//            deviceManagementPluginRepository.addDeviceManagementProvider(testDeviceManagementService);
+//
+//            deviceManagementProviderService = new DeviceManagementProviderServiceImpl();
+//            DeviceManagerUtil.registerDeviceType(TestDataHolder.TEST_DEVICE_TYPE);
+//
+//            Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
+//            boolean isEnrolled = deviceManagementProviderService.enrollDevice(device);
+//
+//            Assert.assertEquals(isEnrolled, true, "Enrolment fail");
+//            if (isEnrolled) {
+//                TestDataHolder.initialTestDevice = device;
+//            }
+//
+//        } catch (DeviceManagementException e) {
+//            String msg = "Error occurred while adding device type '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
+//            log.error(msg, e);
+//            Assert.fail(msg, e);
+//        } finally {
+//            DeviceManagementDAOFactory.closeConnection();
+//        }
+//    }
+
     @Test
-    public void testEnrollment() {
+    public void testGetFeatureManager() {
         try {
-            DeviceManagementPluginRepository deviceManagementPluginRepository = new DeviceManagementPluginRepository();
-            TestDeviceManagementService testDeviceManagementService =
-                    new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE);
-            deviceManagementPluginRepository.addDeviceManagementProvider(testDeviceManagementService);
-
-            deviceManagementProviderService = new DeviceManagementProviderServiceImpl();
-            DeviceManagerUtil.registerDeviceType(TestDataHolder.TEST_DEVICE_TYPE);
-
-            Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
-            boolean isEnrolled = deviceManagementProviderService.enrollDevice(device);
-
-            Assert.assertEquals(isEnrolled, true, "Enrolment fail");
-            if (isEnrolled) {
-                TestDataHolder.initialTestDevice = device;
-            }
-
+            FeatureManager featureManager = providerService.getFeatureManager(NON_EXISTENT_DEVICE_TYPE);
+            Assert.assertNull(featureManager, "Feature manager retrieved is null, which is expected as the " +
+                    "input device type provided is non existent");
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while adding device type '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
+            String msg = "Error occurred while retrieving feature manager associated with device type '" +
+                    NON_EXISTENT_DEVICE_TYPE + "'";
             log.error(msg, e);
             Assert.fail(msg, e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
         }
     }
 
     @AfterClass
     public void cleanResources() {
     }
+
 }

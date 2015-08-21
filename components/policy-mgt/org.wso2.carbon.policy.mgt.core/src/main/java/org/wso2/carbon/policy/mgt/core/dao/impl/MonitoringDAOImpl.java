@@ -258,7 +258,6 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             throw new MonitoringDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
@@ -303,7 +302,6 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             throw new MonitoringDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
@@ -340,9 +338,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             throw new MonitoringDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
-
     }
 
     @Override
@@ -453,13 +449,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
 
-    private void closeConnection() {
-        try {
-            PolicyManagementDAOFactory.closeConnection();
-        } catch (PolicyManagerDAOException e) {
-            log.warn("Unable to close the database connection.");
-        }
-    }
+
 
 
 }

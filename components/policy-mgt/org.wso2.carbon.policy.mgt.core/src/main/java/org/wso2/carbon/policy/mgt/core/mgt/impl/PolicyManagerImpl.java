@@ -20,7 +20,6 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -34,8 +33,8 @@ import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -125,36 +124,20 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.commitTransaction();
 
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the policy (" +
-                    policy.getId() + " - " + policy.getPolicyName() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the policy (" +
+                    policy.getId() + " - " + policy.getPolicyName() + ")", e);
 
         } catch (ProfileManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the profile related to policy (" +
-                    policy.getId() + " - " + policy.getPolicyName() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the profile related to policy (" +
+                    policy.getId() + " - " + policy.getPolicyName() + ")", e);
         } catch (FeatureManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the features of profile related to policy (" +
-                    policy.getId() + " - " + policy.getPolicyName() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the features of profile related to " +
+                    "policy (" + policy.getId() + " - " + policy.getPolicyName() + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return policy;
     }
@@ -207,17 +190,12 @@ public class PolicyManagerImpl implements PolicyManager {
 //            }
 
             PolicyManagementDAOFactory.commitTransaction();
-
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while updating the policy ("
-                    + policy.getId() + " - " + policy.getPolicyName() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while updating the policy ("
+                    + policy.getId() + " - " + policy.getPolicyName() + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return policy;
     }
@@ -230,21 +208,16 @@ public class PolicyManagerImpl implements PolicyManager {
             bool = policyDAO.updatePolicyPriorities(policies);
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while updating the policy priorities";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while updating the policy priorities", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return bool;
     }
 
     @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagementException {
-
         try {
             PolicyManagementDAOFactory.beginTransaction();
             policyDAO.deleteAllPolicyRelatedConfigs(policy.getId());
@@ -254,46 +227,28 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.commitTransaction();
             return true;
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the policy ("
-                    + policy.getId() + " - " + policy.getPolicyName() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while deleting the policy ("
+                    + policy.getId() + " - " + policy.getPolicyName() + ")", e);
         } catch (ProfileManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the profile for policy ("
-                    + policy.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while deleting the profile for policy ("
+                    + policy.getId() + ")", e);
         } catch (FeatureManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the profile features for policy ("
-                    + policy.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while deleting the profile features for policy ("
+                    + policy.getId() + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
-
     }
 
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
-
         try {
-            Policy policy = policyDAO.getPolicy(policyId);
-
             PolicyManagementDAOFactory.beginTransaction();
+
+            Policy policy = policyDAO.getPolicy(policyId);
             policyDAO.deleteAllPolicyRelatedConfigs(policyId);
             policyDAO.deletePolicy(policyId);
 
@@ -306,50 +261,31 @@ public class PolicyManagerImpl implements PolicyManager {
             profileDAO.deleteProfile(policy.getProfileId());
             PolicyManagementDAOFactory.commitTransaction();
             return true;
-
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the policy ("
-                    + policyId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while deleting the policy (" + policyId + ")", e);
         } catch (ProfileManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the profile for policy ("
-                    + policyId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while deleting the profile for policy ("
+                    + policyId + ")", e);
         } catch (FeatureManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the profile features for policy ("
-                    + policyId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while deleting the profile features for policy ("
+                    + policyId + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
     }
 
     @Override
-    public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy)
-            throws PolicyManagementException {
-
+    public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList,
+                                    Policy policy) throws PolicyManagementException {
         try {
             PolicyManagementDAOFactory.beginTransaction();
             if (policy.getId() == 0) {
                 policyDAO.addPolicy(policy);
             }
-            List<Device> deviceList = new ArrayList<Device>();
+            List<Device> deviceList = new ArrayList<>();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
                 deviceList.add(service.getDevice(deviceIdentifier));
@@ -368,34 +304,21 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
                 policy.setDevices(deviceList);
             }
-
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the policy ("
-                    + policy.getId() + " - " + policy.getPolicyName() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the policy ("
+                    + policy.getId() + " - " + policy.getPolicyName() + ")", e);
         } catch (DeviceManagementException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the policy to device list";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the policy to device list", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
-
         return policy;
     }
 
     @Override
     public Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagementException {
-
         try {
             PolicyManagementDAOFactory.beginTransaction();
             if (policy.getId() == 0) {
@@ -415,19 +338,13 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
                 policy.setRoles(roleNames);
             }
-
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the policy ("
-                    + policy.getId() + " - " + policy.getPolicyName() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the policy ("
+                    + policy.getId() + " - " + policy.getPolicyName() + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
-
         return policy;
     }
 
@@ -453,17 +370,12 @@ public class PolicyManagerImpl implements PolicyManager {
                 }
                 policy.setRoles(usernameList);
             }
-
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the policy ("
-                    + policy.getId() + " - " + policy.getPolicyName() + ") to user list.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the policy ("
+                    + policy.getId() + " - " + policy.getPolicyName() + ") to user list.", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return policy;
     }
@@ -477,6 +389,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<String> roleNames;
 
         try {
+            PolicyManagementDAOFactory.openConnection();
             policy = policyDAO.getPolicyByProfileID(profileId);
             deviceList = getPolicyAppliedDevicesIds(policy.getId());
             roleNames = policyDAO.getPolicyAppliedRoles(policy.getId());
@@ -491,13 +404,15 @@ public class PolicyManagerImpl implements PolicyManager {
             policy.setDevices(deviceList);
 
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policy related to profile ID (" + profileId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the policy related to profile ID (" +
+                    profileId + ")", e);
         } catch (ProfileManagerDAOException e) {
-            String msg = "Error occurred while getting the profile related to profile ID (" + profileId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the profile related to profile ID (" +
+                    profileId + ")", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return policy;
     }
@@ -510,6 +425,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<String> roleNames;
 
         try {
+            PolicyManagementDAOFactory.openConnection();
             policy = policyDAO.getPolicy(policyId);
             deviceList = getPolicyAppliedDevicesIds(policyId);
             roleNames = policyDAO.getPolicyAppliedRoles(policyId);
@@ -524,13 +440,15 @@ public class PolicyManagerImpl implements PolicyManager {
             policy.setDevices(deviceList);
 
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policy related to policy ID (" + policyId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the policy related to policy ID (" +
+                    policyId + ")", e);
         } catch (ProfileManagerDAOException e) {
-            String msg = "Error occurred while getting the profile related to policy ID (" + policyId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the profile related to policy ID (" +
+                    policyId + ")", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return policy;
     }
@@ -541,6 +459,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Policy> policyList;
 
         try {
+            PolicyManagementDAOFactory.openConnection();
             policyList = policyDAO.getAllPolicies();
 //            List<Profile> profileList = profileDAO.getAllProfiles();
             List<Profile> profileList = profileManager.getAllProfiles();
@@ -560,15 +479,14 @@ public class PolicyManagerImpl implements PolicyManager {
 //                policyDAO.getLocationsOfPolicy(policy);
             }
             Collections.sort(policyList);
-
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting all the policies.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting all the policies.", e);
         } catch (ProfileManagementException e) {
-            String msg = "Error occurred while getting all the profiles.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting all the profiles.", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return policyList;
     }
@@ -577,41 +495,41 @@ public class PolicyManagerImpl implements PolicyManager {
     public List<Policy> getPoliciesOfDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
 
         List<Integer> policyIdList;
-        List<Policy> policies = new ArrayList<Policy>();
+        List<Policy> policies = new ArrayList<>();
         try {
+            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             policyIdList = policyDAO.getPolicyIdsOfDevice(device);
-            List<Policy> tempPolicyList = this.getPolicies();
+        } catch (PolicyManagerDAOException e) {
+            throw new PolicyManagementException("Error occurred while getting the policies for device identifier (" +
+                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType() + ")", e);
+        } catch (DeviceManagementException e) {
+            throw new PolicyManagementException("Error occurred while getting device related to device identifier (" +
+                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType() + ")", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while open a data source connection", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
 
-            for (Policy policy : tempPolicyList) {
-                for (Integer i : policyIdList) {
-                    if (policy.getId() == i) {
-                        policies.add(policy);
-                    }
+        List<Policy> tempPolicyList = this.getPolicies();
+
+        for (Policy policy : tempPolicyList) {
+            for (Integer i : policyIdList) {
+                if (policy.getId() == i) {
+                    policies.add(policy);
                 }
             }
-
-            Collections.sort(policies);
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policies for device identifier (" +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting device related to device identifier (" +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
         }
+
+        Collections.sort(policies);
         return policies;
     }
 
     @Override
     public List<Policy> getPoliciesOfDeviceType(String deviceTypeName) throws PolicyManagementException {
-
-        List<Policy> policies = new ArrayList<Policy>();
-
+        List<Policy> policies = new ArrayList<>();
         try {
             List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
             List<Policy> allPolicies = this.getPolicies();
@@ -626,9 +544,7 @@ public class PolicyManagerImpl implements PolicyManager {
             }
             Collections.sort(policies);
         } catch (ProfileManagementException e) {
-            String msg = "Error occurred while getting all the profile features.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting all the profile features.", e);
         }
         return policies;
     }
@@ -636,25 +552,29 @@ public class PolicyManagerImpl implements PolicyManager {
     @Override
     public List<Policy> getPoliciesOfRole(String roleName) throws PolicyManagementException {
 
-        List<Policy> policies = new ArrayList<Policy>();
+        List<Policy> policies = new ArrayList<>();
         List<Integer> policyIdList;
 
         try {
+            PolicyManagementDAOFactory.openConnection();
             policyIdList = policyDAO.getPolicyOfRole(roleName);
-            List<Policy> tempPolicyList = this.getPolicies();
-
-            for (Policy policy : tempPolicyList) {
-                for (Integer i : policyIdList) {
-                    if (policy.getId() == i) {
-                        policies.add(policy);
-                    }
-                }
-            }
 
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policies.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the policies.", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while open a data source connection", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
+
+        List<Policy> tempPolicyList = this.getPolicies();
+
+        for (Policy policy : tempPolicyList) {
+            for (Integer i : policyIdList) {
+                if (policy.getId() == i) {
+                    policies.add(policy);
+                }
+            }
         }
         Collections.sort(policies);
         return policies;
@@ -663,25 +583,27 @@ public class PolicyManagerImpl implements PolicyManager {
     @Override
     public List<Policy> getPoliciesOfUser(String username) throws PolicyManagementException {
 
-        List<Policy> policies = new ArrayList<Policy>();
+        List<Policy> policies = new ArrayList<>();
         List<Integer> policyIdList;
 
         try {
+            PolicyManagementDAOFactory.openConnection();
             policyIdList = policyDAO.getPolicyOfUser(username);
-            List<Policy> tempPolicyList = this.getPolicies();
+        } catch (PolicyManagerDAOException e) {
+            throw new PolicyManagementException("Error occurred while getting the policies.", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while open a data source connection", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
+        List<Policy> tempPolicyList = this.getPolicies();
 
-            for (Policy policy : tempPolicyList) {
-                for (Integer i : policyIdList) {
-                    if (policy.getId() == i) {
-                        policies.add(policy);
-                    }
+        for (Policy policy : tempPolicyList) {
+            for (Integer i : policyIdList) {
+                if (policy.getId() == i) {
+                    policies.add(policy);
                 }
             }
-
-        } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the policies.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
         }
         Collections.sort(policies);
         return policies;
@@ -689,41 +611,41 @@ public class PolicyManagerImpl implements PolicyManager {
 
     @Override
     public List<Device> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagementException {
-
-        List<Device> deviceList = new ArrayList<Device>();
+        List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
-
         try {
+            PolicyManagementDAOFactory.openConnection();
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
             for (int deviceId : deviceIds) {
                 //TODO FIX ME
                 deviceList.add(deviceDAO.getDevice(new DeviceIdentifier(Integer.toString(deviceId), ""), tenantId));
             }
-
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting the device ids related to policy id (" + policyId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the device ids related to policy id (" +
+                    policyId + ")", e);
         } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while getting the devices related to policy id (" + policyId + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the devices related to policy id (" +
+                    policyId + ")", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return deviceList;
     }
 
     @Override
-    public void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
-            throws PolicyManagementException {
-
+    public void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier,
+                                                 Policy policy) throws PolicyManagementException {
         int deviceId = -1;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             deviceId = device.getId();
-            boolean exist = policyDAO.checkPolicyAvailable(deviceId);
+
             PolicyManagementDAOFactory.beginTransaction();
+            boolean exist = policyDAO.checkPolicyAvailable(deviceId);
             if (exist) {
                 policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
             } else {
@@ -731,21 +653,15 @@ public class PolicyManagerImpl implements PolicyManager {
             }
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the evaluated policy to device (" +
-                    deviceId + " - " + policy.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the evaluated policy to device (" +
+                    deviceId + " - " + policy.getId() + ")", e);
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the device details (" +
+                    deviceIdentifier.getId() + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
-
     }
 
     @Override
@@ -758,9 +674,10 @@ public class PolicyManagerImpl implements PolicyManager {
             Device device = service.getDevice(deviceIdentifier);
             deviceId = device.getId();
             // boolean exist = policyDAO.checkPolicyAvailable(deviceId);
-            Policy policySaved = policyDAO.getAppliedPolicy(deviceId);
 
             PolicyManagementDAOFactory.beginTransaction();
+
+            Policy policySaved = policyDAO.getAppliedPolicy(deviceId);
             if (policySaved != null && policySaved.getId() != 0) {
                 if (policy.getId() != policySaved.getId()){
                     policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
@@ -770,24 +687,15 @@ public class PolicyManagerImpl implements PolicyManager {
             }
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the evaluated policy to device (" +
-                    deviceId + " - " + policy.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding the evaluated policy to device (" +
+                    deviceId + " - " + policy.getId() + ")", e);
         } catch (DeviceManagementException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while getting the device details (" +
+                    deviceIdentifier.getId() + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
     }
 
@@ -796,74 +704,82 @@ public class PolicyManagerImpl implements PolicyManager {
 
         boolean exist;
         try {
+            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             exist = policyDAO.checkPolicyAvailable(device.getId());
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while checking whether device has a policy to apply.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while checking whether device has a policy " +
+                    "to apply.", e);
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the device details (" +
+                    deviceIdentifier.getId() + ")", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return exist;
     }
 
     @Override
     public boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
-
         try {
+            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             policyDAO.setPolicyApplied(device.getId());
             return true;
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while setting the policy has applied to device (" +
-                    deviceIdentifier.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while setting the policy has applied to device (" +
+                    deviceIdentifier.getId() + ")", e);
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting the device details (" + deviceIdentifier.getId() + ")";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting the device details (" +
+                    deviceIdentifier.getId() + ")", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
     }
 
     @Override
     public int getPolicyCount() throws PolicyManagementException {
 
-        int policyCount = 0;
+        int policyCount;
         try {
+            PolicyManagementDAOFactory.openConnection();
             policyCount = policyDAO.getPolicyCount();
             return policyCount;
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting policy count";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting policy count", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
     }
 
     @Override
     public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
-
         Policy policy;
         try {
+            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             //int policyId = policyDAO.getAppliedPolicyId(device.getId());
             policy = policyDAO.getAppliedPolicy(device.getId());
 
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting device id.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting device id.", e);
         } catch (PolicyManagerDAOException e) {
-            String msg = "Error occurred while getting policy id or policy.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred while getting policy id or policy.", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return policy;
     }
+
 }

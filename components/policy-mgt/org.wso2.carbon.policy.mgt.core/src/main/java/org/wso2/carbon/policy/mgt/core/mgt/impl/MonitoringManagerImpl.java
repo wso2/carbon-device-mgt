@@ -304,8 +304,9 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
             if (!deviceIdsWithExistingOperation.isEmpty()) {
                 monitoringDAO.updateAttempts(new ArrayList<>(deviceIdsWithExistingOperation.keySet()), false);
-                decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
-                        new ArrayList<>(deviceIdsWithExistingOperation.values())));
+                //TODO uncomment with proper fix
+//                decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
+//                        new ArrayList<>(deviceIdsWithExistingOperation.values())));
             }
 
             PolicyManagementDAOFactory.commitTransaction();

@@ -140,15 +140,22 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
                     }
                 } else {
                     List<ComplianceFeature> noneComplianceFeatures = complianceData.getComplianceFeatures();
+                    List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
                     for (ComplianceFeature feature : noneComplianceFeatures) {
-                        ProfileOperation profileOperation = new ProfileOperation();
 
-                        profileOperation.setCode(feature.getFeatureCode());
-                        profileOperation.setEnabled(true);
-                        profileOperation.setStatus(Operation.Status.PENDING);
-                        profileOperation.setType(Operation.Type.PROFILE);
-                        profileOperation.setPayLoad(feature.getFeature().getContent());
-                        profileOperationList.add(profileOperation);
+                        for (ProfileFeature pf : effectiveFeatures) {
+                            if (pf.getFeatureCode().equalsIgnoreCase(feature.getFeatureCode())) {
+
+                                ProfileOperation profileOperation = new ProfileOperation();
+
+                                profileOperation.setCode(feature.getFeatureCode());
+                                profileOperation.setEnabled(true);
+                                profileOperation.setStatus(Operation.Status.PENDING);
+                                profileOperation.setType(Operation.Type.PROFILE);
+                                profileOperation.setPayLoad(pf.getContent());
+                                profileOperationList.add(profileOperation);
+                            }
+                        }
                     }
                 }
                 policyOperation.setProfileOperations(profileOperationList);

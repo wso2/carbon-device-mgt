@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Profile;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
@@ -140,7 +141,8 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            String msg = "Error occurred while updating feature " + feature.getName() + " (Feature Name) to the database.";
+            String msg = "Error occurred while updating feature " + feature.getName() + " (Feature Name) to the
+            database.";
             log.error(msg, e);
             throw new FeatureManagerDAOException(msg, e);
         } finally {
@@ -156,32 +158,36 @@ public class FeatureDAOImpl implements FeatureDAO {
     }
 
     @Override
-    public ProfileFeature updateProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException {
+    public ProfileFeature updateProfileFeature(ProfileFeature feature, int profileId) throws
+            FeatureManagerDAOException {
         return null;
     }
 
     @Override
-    public List<ProfileFeature> addProfileFeatures(List<ProfileFeature> features, int profileId) throws FeatureManagerDAOException {
+    public List<ProfileFeature> addProfileFeatures(List<ProfileFeature> features, int profileId) throws
+            FeatureManagerDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_PROFILE_FEATURES (PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT) " +
-                    "VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO DM_PROFILE_FEATURES (PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT, " +
+                    "TENANT_ID) VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             for (ProfileFeature feature : features) {
                 stmt.setInt(1, profileId);
                 stmt.setString(2, feature.getFeatureCode());
                 stmt.setInt(3, feature.getDeviceTypeId());
-                if (conn.getMetaData().getDriverName().contains("H2")) {
+               // if (conn.getMetaData().getDriverName().contains("H2")) {
+                //    stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
+               // } else {
                     stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
-                } else {
-                    stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
-                }
+                //}
+                stmt.setInt(5, tenantId);
                 stmt.addBatch();
                 //Not adding the logic to check the size of the stmt and execute if the size records added is over 1000
             }
@@ -210,14 +216,17 @@ public class FeatureDAOImpl implements FeatureDAO {
     }
 
     @Override
-    public List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws FeatureManagerDAOException {
+    public List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws
+            FeatureManagerDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_PROFILE_FEATURES SET CONTENT = ? WHERE PROFILE_ID = ?, FEATURE_CODE = ?";
+            String query = "UPDATE DM_PROFILE_FEATURES SET CONTENT = ? WHERE PROFILE_ID = ? AND FEATURE_CODE = ? AND" +
+                    " TENANT_ID = ?";
 
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             for (ProfileFeature feature : features) {
@@ -228,6 +237,7 @@ public class FeatureDAOImpl implements FeatureDAO {
                 }
                 stmt.setInt(2, profileId);
                 stmt.setString(3, feature.getFeatureCode());
+                stmt.setInt(4, tenantId);
                 stmt.addBatch();
                 //Not adding the logic to check the size of the stmt and execute if the size records added is over 1000
             }
@@ -252,12 +262,14 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         Connection conn;
         PreparedStatement stmt = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_PROFILE_FEATURES WHERE PROFILE_ID = ?";
+            String query = "DELETE FROM DM_PROFILE_FEATURES WHERE PROFILE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profile.getProfileId());
+            stmt.setInt(2, tenantId);
             stmt.executeUpdate();
             return true;
 
@@ -272,14 +284,16 @@ public class FeatureDAOImpl implements FeatureDAO {
 
     @Override
     public boolean deleteFeaturesOfProfile(int profileId) throws FeatureManagerDAOException {
+
         Connection conn;
         PreparedStatement stmt = null;
-
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_PROFILE_FEATURES WHERE PROFILE_ID = ?";
+            String query = "DELETE FROM DM_PROFILE_FEATURES WHERE PROFILE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profileId);
+            stmt.setInt(2, tenantId);
             stmt.executeUpdate();
             return true;
 
@@ -300,11 +314,14 @@ public class FeatureDAOImpl implements FeatureDAO {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<ProfileFeature> featureList = new ArrayList<ProfileFeature>();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
-            String query = "SELECT ID, PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT FROM DM_PROFILE_FEATURES";
+            String query = "SELECT ID, PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT FROM DM_PROFILE_FEATURES " +
+                    "WHERE TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
+            stmt.setInt(1, tenantId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
@@ -406,13 +423,15 @@ public class FeatureDAOImpl implements FeatureDAO {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<ProfileFeature> featureList = new ArrayList<ProfileFeature>();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
             String query = "SELECT ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT FROM DM_PROFILE_FEATURES " +
-                    "WHERE PROFILE_ID = ?";
+                    "WHERE PROFILE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profileId);
+            stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
@@ -473,12 +492,14 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         Connection conn;
         PreparedStatement stmt = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             conn = this.getConnection();
-            String query = "DELETE FROM DM_FEATURES WHERE ID = ?";
+            String query = "DELETE FROM DM_FEATURES WHERE ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, featureId);
+            stmt.setInt(2, tenantId);
             stmt.executeUpdate();
             return true;
 

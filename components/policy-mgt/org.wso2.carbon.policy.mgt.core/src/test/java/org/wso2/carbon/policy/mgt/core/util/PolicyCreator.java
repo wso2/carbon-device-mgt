@@ -37,7 +37,7 @@ public class PolicyCreator {
         List<String> users = new ArrayList<String>();
         users.add("Dilshan");
         policy.setUsers(users);
-        policy.setCompliance("ENFORCE");
+        policy.setCompliance("NOTIFY");
         policy.setOwnershipType("COPE");
 
         return policy;
@@ -52,7 +52,7 @@ public class PolicyCreator {
         policy.setProfile(profile);
         policy.setDevices(DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType()));
 
-        policy.setCompliance("NOTIFY");
+        policy.setCompliance("ENFORCE");
 
         List<String> roles = new ArrayList<String>();
         roles.add("Role_01");

@@ -37,4 +37,9 @@ public final class PolicyManagementConstants {
     public static final String TASK_CLAZZ = "org.wso2.carbon.policy.mgt.core.task.MonitoringTask";
 
 
+    public static final String DM_CACHE_MANAGER = "DM_CACHE_MANAGER";
+    public static final String DM_CACHE = "DM_CACHE";
+
+
+
 }

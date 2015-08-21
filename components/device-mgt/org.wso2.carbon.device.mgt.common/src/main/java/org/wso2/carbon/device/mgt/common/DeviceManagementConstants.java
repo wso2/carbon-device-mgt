@@ -53,8 +53,8 @@ public final class DeviceManagementConstants {
             throw new AssertionError();
         }
 
-        public final static String LANGUAGE_CODE_ENGLISH_US = "en-us";
-        public final static String LANGUAGE_CODE_ENGLISH_UK = "en-uk";
+        public final static String LANGUAGE_CODE_ENGLISH_US = "en_US";
+        public final static String LANGUAGE_CODE_ENGLISH_UK = "en_UK";
     }
 
     public static final class LicenseProperties {
@@ -69,6 +69,7 @@ public final class DeviceManagementConstants {
         public static final String VALID_TO = "overview_validityTo";
         public static final String TEXT = "overview_license";
         public static final String LICENSE_REGISTRY_KEY = "license";
+        public static final String ARTIFACT_NAME = "name";
     }
 
     public static final class NotificationProperties {

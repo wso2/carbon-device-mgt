@@ -69,6 +69,7 @@ public final class DeviceManagementConstants {
         public static final String VALID_TO = "overview_validityTo";
         public static final String TEXT = "overview_license";
         public static final String LICENSE_REGISTRY_KEY = "license";
+        public static final String ARTIFACT_NAME = "name";
     }
 
     public static final class NotificationProperties {

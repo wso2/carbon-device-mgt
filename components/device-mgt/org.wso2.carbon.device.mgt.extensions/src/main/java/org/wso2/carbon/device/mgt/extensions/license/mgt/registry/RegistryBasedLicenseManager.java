@@ -69,7 +69,7 @@ public class RegistryBasedLicenseManager implements LicenseManager {
             GenericArtifact artifact = this.getGenericArtifact(deviceType, languageCode);
             if (artifact == null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Generic artifact is null for '" + deviceType + "' device type, Hence license does not " +
+                    log.debug("Generic artifact is null for '" + deviceType + "' device type. Hence license does not " +
                             "have content");
                 }
                 return null;
@@ -109,7 +109,10 @@ public class RegistryBasedLicenseManager implements LicenseManager {
         try {
             GenericArtifact artifact = this.getGenericArtifact(deviceType, license.getLanguage());
             if (artifact != null) {
-
+                if (log.isDebugEnabled()) {
+                    log.debug("Generic artifact is null for '" + deviceType + "' device type. Hence license does not " +
+                            "have content");
+                }
                 return;
             }
             artifact = artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com", deviceType));
@@ -118,7 +121,7 @@ public class RegistryBasedLicenseManager implements LicenseManager {
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.PROVIDER, license.getProvider());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LANGUAGE, license.getLanguage());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.TEXT, license.getText());
-            artifact.setAttribute("name", license.getName());
+            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.ARTIFACT_NAME, license.getName());
             Date validTo = license.getValidTo();
             if (validTo != null) {
                 artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO, validTo.toString());
@@ -147,7 +150,7 @@ public class RegistryBasedLicenseManager implements LicenseManager {
                         equalsIgnoreCase(deviceType) && attributeLangVal.equalsIgnoreCase(languageCode));
             }
         });
-        return (artifacts == null || artifacts.length < 1) ? null : artifacts[0];
+        return (artifacts == null || artifacts.length == 0) ? null : artifacts[0];
     }
 
 }

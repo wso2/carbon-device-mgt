@@ -199,7 +199,7 @@ public class EnrolmentDAOImpl implements EnrolmentDAO {
         }
     }
 
-    private Connection getConnection() throws DeviceManagementDAOException {
+    private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
 

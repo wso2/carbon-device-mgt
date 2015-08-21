@@ -27,6 +27,8 @@ import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
+import java.sql.SQLException;
+
 public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(ApplicationPersistenceTests.class);
@@ -34,21 +36,15 @@ public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
 
     @Test
     public void testAddApplication() {
-        /* Initializing source application bean to be tested */
-
         /* Adding dummy application to the application store */
         String testAppIdentifier = "test sample1";
         try {
             DeviceManagementDAOFactory.openConnection();
             applicationDAO.addApplication(TestDataHolder.generateApplicationDummyData(testAppIdentifier), -1234);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             log.error("Error occurred while adding application test sample1", e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
         /* Retrieving the application by its name */
         Application target = null;
@@ -66,16 +62,16 @@ public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
     }
 
     private Application getApplication(String appIdentifier, int tenantId) throws DeviceManagementDAOException {
+        Application application = null;
         try {
             DeviceManagementDAOFactory.openConnection();
-            return applicationDAO.getApplication(appIdentifier, tenantId);
+            application = applicationDAO.getApplication(appIdentifier, tenantId);
+        } catch (SQLException e) {
+            log.error("Error occurred while metadata corresponding to the application '" + appIdentifier + "'", e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
+        return application;
     }
 
     @BeforeClass
@@ -83,4 +79,5 @@ public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
     public void init() throws Exception {
         this.initDatSource();
     }
+
 }

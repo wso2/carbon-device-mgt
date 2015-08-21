@@ -237,7 +237,7 @@ public class DeviceDAOImpl implements DeviceDAO {
         return devices;
     }
 
-    private Connection getConnection() throws DeviceManagementDAOException {
+    private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
 

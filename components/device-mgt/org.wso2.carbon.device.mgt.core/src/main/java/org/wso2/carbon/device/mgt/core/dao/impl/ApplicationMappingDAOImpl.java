@@ -129,9 +129,8 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         }
     }
 
-    private Connection getConnection() throws DeviceManagementDAOException {
+    private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
-
 
 }

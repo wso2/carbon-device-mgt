@@ -52,16 +52,12 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
         try {
             DeviceManagementDAOFactory.openConnection();
             deviceTypeDAO.addDeviceType(deviceType);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             String msg = "Error occurred while adding device type '" + deviceType.getName() + "'";
             log.error(msg, e);
             Assert.fail(msg, e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
 
         Integer targetTypeId = null;
@@ -89,17 +85,13 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
             device.setId(deviceId);
             deviceDAO.addEnrollment(device, tenantId);
             TestDataHolder.initialTestDevice = device;
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             String msg = "Error occurred while adding '" + device.getType() + "' device with the identifier '" +
                     device.getDeviceIdentifier() + "'";
             log.error(msg, e);
             Assert.fail(msg, e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
 
         int targetId = -1;
@@ -176,17 +168,12 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
             DeviceIdentifier deviceId = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
             deviceDAO.setEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), Status.ACTIVE,
                     TestDataHolder.SUPER_TENANT_ID);
-
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             String msg = "Error occurred while setting enrolment status";
             log.error(msg, e);
             Assert.fail(msg, e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
         Status target = null;
         try {
@@ -210,15 +197,11 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
             DeviceManagementDAOFactory.openConnection();
             DeviceIdentifier deviceId = new DeviceIdentifier(identifier, deviceType);
             return deviceDAO.getEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), tenantId);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving the current status of the " +
                     "enrolment", e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 }

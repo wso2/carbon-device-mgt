@@ -181,7 +181,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         }
     }
 
-    private Connection getConnection() throws DeviceManagementDAOException {
+    private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
 

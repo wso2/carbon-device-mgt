@@ -27,6 +27,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -60,10 +61,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     private DeviceDAO deviceDAO;
     private ApplicationDAO applicationDAO;
     private ApplicationMappingDAO applicationMappingDAO;
-    private boolean isTest;
 
     private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
-
     private static final Log log = LogFactory.getLog(ApplicationManagerProviderServiceImpl.class);
 
     public ApplicationManagerProviderServiceImpl(AppManagementConfig appManagementConfig,
@@ -87,12 +86,11 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         this.applicationMappingDAO = DeviceManagementDAOFactory.getApplicationMappingDAO();
     }
 
-    ApplicationManagerProviderServiceImpl(DeviceManagementPluginRepository pluginRepository, boolean testMode) {
+    ApplicationManagerProviderServiceImpl(DeviceManagementPluginRepository pluginRepository) {
         this.pluginRepository = pluginRepository;
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
         this.applicationMappingDAO = DeviceManagementDAOFactory.getApplicationMappingDAO();
-        isTest = testMode;
     }
 
     @Override
@@ -124,10 +122,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
     }
 
-
     public void updateInstalledApplicationListOfDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
-
     }
 
     private OAuthConsumerAppDTO getAppInfo() throws ApplicationManagementException {
@@ -191,8 +187,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (log.isDebugEnabled()) {
                 log.debug("num of apps installed:" + installedAppList.size());
             }
-            List<Application> appsToAdd = new ArrayList<Application>();
-            List<Integer> appIdsToRemove = new ArrayList<Integer>();
+            List<Application> appsToAdd = new ArrayList<>();
+            List<Integer> appIdsToRemove = new ArrayList<>();
 
             for (Application installedApp : installedAppList) {
                 if (!applications.contains(installedApp)) {
@@ -231,24 +227,16 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             }
             applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove, tenantId);
             DeviceManagementDAOFactory.commitTransaction();
-        } catch (DeviceManagementDAOException deviceDaoEx) {
-            String errorMsg = "Error occurred saving application list to the device";
-            log.error(errorMsg + ":" + deviceIdentifier.toString());
-            try {
-                DeviceManagementDAOFactory.rollbackTransaction();
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while roll back transaction", e);
-            }
-            throw new ApplicationManagementException(errorMsg, deviceDaoEx);
+        } catch (DeviceManagementDAOException | TransactionManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new ApplicationManagementException("Error occurred saving application list to the device", e);
         }
     }
-
-
 
     @Override
     public List<Application> getApplicationListForDevice(
             DeviceIdentifier deviceId) throws ApplicationManagementException {
-        Device device = null;
+        Device device;
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             device = deviceDAO.getDevice(deviceId, tenantId);
@@ -278,4 +266,5 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                     deviceManagementService.getType() + "'", e);
         }
     }
+
 }

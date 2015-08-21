@@ -69,7 +69,7 @@ public class RegistryBasedLicenseManager implements LicenseManager {
             GenericArtifact artifact = this.getGenericArtifact(deviceType, languageCode);
             if (artifact == null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Generic artifact is null for '" + deviceType + "' device type, Hence license does not " +
+                    log.debug("Generic artifact is null for '" + deviceType + "' device type. Hence license does not " +
                             "have content");
                 }
                 return null;

@@ -61,6 +61,7 @@
                             org.osgi.service.component,
                             org.apache.commons.logging,
                             javax.sql,
+                            javax.cache,
                             javax.naming,
                             javax.xml.bind.*,
                             javax.xml.parsers.*,

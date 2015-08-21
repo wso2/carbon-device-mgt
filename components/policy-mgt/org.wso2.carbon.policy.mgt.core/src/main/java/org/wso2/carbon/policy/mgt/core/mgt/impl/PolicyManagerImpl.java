@@ -291,8 +291,9 @@ public class PolicyManagerImpl implements PolicyManager {
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
 
         try {
-            PolicyManagementDAOFactory.beginTransaction();
             Policy policy = policyDAO.getPolicy(policyId);
+
+            PolicyManagementDAOFactory.beginTransaction();
             policyDAO.deleteAllPolicyRelatedConfigs(policyId);
             policyDAO.deletePolicy(policyId);
 

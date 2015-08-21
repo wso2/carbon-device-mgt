@@ -58,22 +58,22 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Policy addPolicy(Policy policy) throws PolicyManagementException {
         Policy resultantPolicy = policyManager.addPolicy(policy);
-        try {
-            delegator.delegate(resultantPolicy, resultantPolicy.getDevices());
-        } catch (PolicyDelegationException e) {
-            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
-        }
+//        try {
+//            delegator.delegate(resultantPolicy, resultantPolicy.getDevices());
+//        } catch (PolicyDelegationException e) {
+//            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
+//        }
         return resultantPolicy;
     }
 
     @Override
     public Policy updatePolicy(Policy policy) throws PolicyManagementException {
         Policy resultantPolicy = policyManager.updatePolicy(policy);
-        try {
-            delegator.delegate(resultantPolicy, resultantPolicy.getDevices());
-        } catch (PolicyDelegationException e) {
-            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
-        }
+//        try {
+//            delegator.delegate(resultantPolicy, resultantPolicy.getDevices());
+//        } catch (PolicyDelegationException e) {
+//            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
+//        }
         return resultantPolicy;
     }
 

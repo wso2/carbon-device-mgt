@@ -53,8 +53,8 @@ public final class DeviceManagementConstants {
             throw new AssertionError();
         }
 
-        public final static String LANGUAGE_CODE_ENGLISH_US = "en-us";
-        public final static String LANGUAGE_CODE_ENGLISH_UK = "en-uk";
+        public final static String LANGUAGE_CODE_ENGLISH_US = "en_US";
+        public final static String LANGUAGE_CODE_ENGLISH_UK = "en_UK";
     }
 
     public static final class LicenseProperties {

@@ -46,7 +46,7 @@ public class GenericArtifactManagerFactory {
                         tenantArtifactManagers.get(tenantId);
                 if (artifactManager == null) {
                     /* Hack, to fix https://wso2.org/jira/browse/REGISTRY-2427 */
-                    //GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
+                    GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
                     artifactManager =
                             new GenericArtifactManager((org.wso2.carbon.registry.core.Registry) registry,
                                     DeviceManagementConstants.LicenseProperties.LICENSE_REGISTRY_KEY);

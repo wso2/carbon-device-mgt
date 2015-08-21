@@ -6,9 +6,6 @@
     <ui>
         <list>
             <column name="Device Type">
-                <data type="path" value="overview_provider" href="@{storagePath}"/>
-            </column>
-            <column name="Name">
                 <data type="path" value="overview_name" href="@{storagePath}"/>
             </column>
             <column name="Language">
@@ -21,9 +18,6 @@
     </ui>
     <content>
         <table name="Overview">
-            <field type="text" required="true">
-                <name>Provider</name>
-            </field>
             <field type="text" required="true">
                 <name>Name</name>
             </field>

@@ -42,10 +42,9 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
         operation.setId(operationId);
         operation.setEnabled(true);
         PolicyOperation policyOperation = (PolicyOperation) operation;
-        Connection conn = OperationManagementDAOFactory.getConnection();
-
         PreparedStatement stmt = null;
         try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_POLICY_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
             stmt.setInt(1, operationId);

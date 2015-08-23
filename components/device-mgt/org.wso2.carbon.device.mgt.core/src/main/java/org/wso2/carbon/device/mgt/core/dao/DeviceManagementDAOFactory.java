@@ -87,7 +87,7 @@ public class DeviceManagementDAOFactory {
         return currentConnection.get();
     }
 
-    public static void commitTransaction() throws TransactionManagementException {
+    public static void commitTransaction() {
         try {
             Connection conn = currentConnection.get();
             if (conn != null) {
@@ -99,7 +99,7 @@ public class DeviceManagementDAOFactory {
                 }
             }
         } catch (SQLException e) {
-            throw new TransactionManagementException("Error occurred while committing the transaction", e);
+            log.error("Error occurred while committing the transaction", e);
         }
     }
 

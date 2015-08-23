@@ -42,11 +42,9 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
         operation.setId(operationId);
         operation.setEnabled(true);
         ProfileOperation profileOp = (ProfileOperation) operation;
-        Connection conn = OperationManagementDAOFactory.getConnection();
-
         PreparedStatement stmt = null;
-
         try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
             stmt.setInt(1, operationId);

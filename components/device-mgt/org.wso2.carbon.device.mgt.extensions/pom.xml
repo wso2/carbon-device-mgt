@@ -71,7 +71,8 @@
                             org.wso2.carbon.registry.core.exceptions,
                             org.wso2.carbon.registry.core.session,
                             javax.xml.bind,
-                            org.wso2.carbon.utils
+                            org.wso2.carbon.utils,
+                            org.apache.commons.logging
                         </Import-Package>
                     </instructions>
                 </configuration>

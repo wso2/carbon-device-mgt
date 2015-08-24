@@ -189,7 +189,6 @@ public class OperationDAOImpl implements OperationDAO {
                     "available for the id '" + id, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return operation;
     }
@@ -229,7 +228,6 @@ public class OperationDAOImpl implements OperationDAO {
                     "available for the device'" + enrolmentId + "' with id '" + operationId, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return operation;
     }
@@ -271,7 +269,6 @@ public class OperationDAOImpl implements OperationDAO {
                     "available for the device'" + enrolmentId + "' with status '" + status.toString(), e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return operations;
     }
@@ -311,7 +308,6 @@ public class OperationDAOImpl implements OperationDAO {
                     "available for the device'" + enrolmentId + "' with status '", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return operations;
     }
@@ -350,7 +346,6 @@ public class OperationDAOImpl implements OperationDAO {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
     }
 
@@ -393,7 +388,6 @@ public class OperationDAOImpl implements OperationDAO {
                     "for the device'" + enrolmentId + "' with status '" + status.toString(), e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return operations;
     }

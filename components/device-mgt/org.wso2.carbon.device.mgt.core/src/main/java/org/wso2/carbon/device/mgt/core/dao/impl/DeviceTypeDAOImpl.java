@@ -17,15 +17,12 @@
  */
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,7 +59,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<DeviceType> deviceTypes =  new ArrayList<DeviceType>();;
+        List<DeviceType> deviceTypes =  new ArrayList<>();
         try {
             conn = this.getConnection();
             String sql = "SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE";
@@ -141,7 +138,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 
     }
 
-    private Connection getConnection() throws DeviceManagementDAOException {
+    private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
 

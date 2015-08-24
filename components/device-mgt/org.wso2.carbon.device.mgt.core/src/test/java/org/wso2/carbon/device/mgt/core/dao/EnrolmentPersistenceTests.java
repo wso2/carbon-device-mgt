@@ -27,6 +27,8 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
+import java.sql.SQLException;
+
 public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(EnrolmentPersistenceTests.class);
@@ -46,14 +48,10 @@ public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
         try {
             DeviceManagementDAOFactory.openConnection();
             enrolmentDAO.addEnrollment(deviceId, source, TestDataHolder.SUPER_TENANT_ID);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             log.error("Error occurred while adding enrollment", e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
         /* Retrieving the enrolment associated with the given deviceId and owner */
         EnrolmentInfo target = null;
@@ -70,16 +68,16 @@ public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
 
     private EnrolmentInfo getEnrolmentConfig(int deviceId, String currentOwner,
                                              int tenantId) throws DeviceManagementDAOException {
+        EnrolmentInfo enrolmentInfo = null;
         try {
             DeviceManagementDAOFactory.openConnection();
-            return enrolmentDAO.getEnrolment(deviceId, currentOwner, tenantId);
+            enrolmentInfo = enrolmentDAO.getEnrolment(deviceId, currentOwner, tenantId);
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving enrolment corresponding to device id '" + deviceId + "'", e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
+        return enrolmentInfo;
     }
 
     @BeforeClass
@@ -87,4 +85,5 @@ public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
     public void init() throws Exception {
         this.initDatSource();
     }
+
 }

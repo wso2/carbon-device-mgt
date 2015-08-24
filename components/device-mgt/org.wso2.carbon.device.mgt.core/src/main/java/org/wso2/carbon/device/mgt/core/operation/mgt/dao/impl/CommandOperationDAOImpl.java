@@ -35,10 +35,11 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
-        int operationId = super.addOperation(operation);
+        int operationId;
         CommandOperation commandOp = (CommandOperation) operation;
         PreparedStatement stmt = null;
         try {
+            operationId = super.addOperation(operation);
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_COMMAND_OPERATION(OPERATION_ID, ENABLED) VALUES(?, ?)");
             stmt.setInt(1, operationId);
@@ -66,7 +67,6 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             throw new OperationManagementDAOException("Error occurred while adding operation metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
-            OperationManagementDAOFactory.closeConnection();
         }
     }
 
@@ -75,7 +75,6 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         PreparedStatement stmt = null;
         try {
             super.deleteOperation(id);
-
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE DM_COMMAND_OPERATION WHERE OPERATION_ID = ?");
             stmt.setInt(1, id);
@@ -84,7 +83,6 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
-            OperationManagementDAOFactory.closeConnection();
         }
     }
 
@@ -108,7 +106,6 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
                     "object available for the id '" + id, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return commandOperation;
     }
@@ -148,7 +145,6 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
                     "for the device'" + enrolmentId + "' with status '" + status.toString(), e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return commandOperations;
     }

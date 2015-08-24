@@ -38,7 +38,6 @@ import java.util.Properties;
 
 public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
 
-    private static final Log log = LogFactory.getLog(ApplicationMappingDAOImpl.class);
     @Override
     public int addApplicationMapping(int deviceId, int applicationId,
                                      int tenantId) throws DeviceManagementDAOException {
@@ -74,7 +73,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<Integer> mappingIds = new ArrayList<Integer>();
+        List<Integer> mappingIds = new ArrayList<>();
         try {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, " +
@@ -102,12 +101,9 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
     }
 
     @Override
-    public void removeApplicationMapping(int deviceId, List<Integer> appIdList, int tenantId)
-            throws DeviceManagementDAOException {
-
+    public void removeApplicationMapping(int deviceId, List<Integer> appIdList,
+                                         int tenantId) throws DeviceManagementDAOException {
         Connection conn;
-        ResultSet rs;
-        int mappingId = -1;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
@@ -129,9 +125,8 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         }
     }
 
-    private Connection getConnection() throws DeviceManagementDAOException {
+    private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
-
 
 }

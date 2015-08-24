@@ -43,7 +43,7 @@ public class Operation implements Serializable {
     private String createdTimeStamp;
     private boolean isEnabled;
     private Object payLoad;
-    private Object operationResponse;
+    private String operationResponse;
 
     @Override
     public boolean equals(Object o) {
@@ -183,11 +183,11 @@ public class Operation implements Serializable {
         this.payLoad = payLoad;
     }
 
-    public Object getOperationResponse() {
+    public String getOperationResponse() {
         return operationResponse;
     }
 
-    public void setOperationResponse(Object operationResponse) {
+    public void setOperationResponse(String operationResponse) {
         this.operationResponse = operationResponse;
     }
 

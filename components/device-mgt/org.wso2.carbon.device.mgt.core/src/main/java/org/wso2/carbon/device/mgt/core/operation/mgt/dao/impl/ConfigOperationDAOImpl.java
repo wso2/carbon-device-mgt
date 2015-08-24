@@ -41,9 +41,10 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public int addOperation(Operation operation) throws OperationManagementDAOException {
-        int operationId = super.addOperation(operation);
+        int operationId;
         PreparedStatement stmt = null;
         try {
+            operationId = super.addOperation(operation);
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_CONFIG_OPERATION(OPERATION_ID, OPERATION_CONFIG) VALUES(?, ?)");
             stmt.setInt(1, operationId);
@@ -59,9 +60,9 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public void deleteOperation(int id) throws OperationManagementDAOException {
-        super.deleteOperation(id);
         PreparedStatement stmt = null;
         try {
+            super.deleteOperation(id);
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE DM_CONFIG_OPERATION WHERE OPERATION_ID = ?") ;
             stmt.setInt(1, id);
@@ -78,8 +79,8 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
         PreparedStatement stmt = null;
         ByteArrayOutputStream bao = null;
         ObjectOutputStream oos = null;
-        super.updateOperation(operation);
         try {
+            super.updateOperation(operation);
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("UPDATE DM_CONFIG_OPERATION O SET O.OPERATION_CONFIG = ? " +
                     "WHERE O.OPERATION_ID = ?");
@@ -146,7 +147,6 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
                     + operationId, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return configOperation;
     }
@@ -205,7 +205,6 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
                 }
             }
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return operations;
     }

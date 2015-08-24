@@ -58,8 +58,8 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             stmt.setString(6, application.getLocationUrl());
             stmt.setString(7, application.getImageUrl());
             stmt.setInt(8, tenantId);
-            stmt.setObject(9,application.getAppProperties());
-            stmt.setString(10,application.getApplicationIdentifier());
+            stmt.setObject(9, application.getAppProperties());
+            stmt.setString(10, application.getApplicationIdentifier());
             stmt.execute();
 
             rs = stmt.getGeneratedKeys();
@@ -81,7 +81,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs;
-        List<Integer> applicationIds = new ArrayList<Integer>();
+        List<Integer> applicationIds = new ArrayList<>();
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
@@ -99,12 +99,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 stmt.setString(6, application.getLocationUrl());
                 stmt.setString(7, application.getImageUrl());
                 stmt.setInt(8, tenantId);
-                stmt.setObject(9,application.getAppProperties());
-                stmt.setString(10,application.getApplicationIdentifier());
+                stmt.setObject(9, application.getAppProperties());
+                stmt.setString(10, application.getApplicationIdentifier());
                 stmt.executeUpdate();
 
                 rs = stmt.getGeneratedKeys();
-                if (rs.next()){
+                if (rs.next()) {
                     applicationIds.add(rs.getInt(1));
                 }
             }
@@ -118,20 +118,17 @@ public class ApplicationDAOImpl implements ApplicationDAO {
 
     @Override
     public List<Integer> removeApplications(List<Application> apps, int tenantId) throws DeviceManagementDAOException {
-
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int applicationId = -1;
-        List<Integer> applicationIds = new ArrayList<Integer>();
-
+        List<Integer> applicationIds = new ArrayList<>();
         try {
             conn = this.getConnection();
             conn.setAutoCommit(false);
             stmt = conn.prepareStatement("DELETE DM_APPLICATION WHERE APP_IDENTIFIER = ? AND TENANT_ID = ?",
                     Statement.RETURN_GENERATED_KEYS);
 
-            for(Application app:apps){
+            for (Application app : apps) {
                 stmt.setString(1, app.getApplicationIdentifier());
                 stmt.setInt(2, tenantId);
                 stmt.addBatch();
@@ -144,7 +141,9 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             return applicationIds;
         } catch (SQLException e) {
             try {
-                conn.rollback();
+                if (conn != null) {
+                    conn.rollback();
+                }
             } catch (SQLException e1) {
                 log.warn("Error occurred while roll-backing the transaction", e);
             }
@@ -181,7 +180,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         }
     }
 
-    private Connection getConnection() throws DeviceManagementDAOException {
+    private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }
 
@@ -189,21 +188,18 @@ public class ApplicationDAOImpl implements ApplicationDAO {
     public List<Application> getInstalledApplications(int deviceId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
-        List<Application> applications = new ArrayList<Application>();
+        List<Application> applications = new ArrayList<>();
         Application application;
-        ByteArrayInputStream bais;
-        ObjectInputStream ois;
-
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("Select ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
                     "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, TENANT_ID From DM_APPLICATION app  " +
-                    "INNER JOIN "+
+                    "INNER JOIN " +
                     "(Select APPLICATION_ID  From DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID=?) APPMAP " +
-                    "ON "+
+                    "ON " +
                     "app.ID = APPMAP.APPLICATION_ID ");
 
-            stmt.setInt(1,deviceId);
+            stmt.setInt(1, deviceId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -219,8 +215,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         return applications;
     }
 
-    private Application loadApplication(ResultSet rs) throws DeviceManagementDAOException{
-
+    private Application loadApplication(ResultSet rs) throws DeviceManagementDAOException {
         ByteArrayInputStream bais;
         ObjectInputStream ois;
         Properties properties;
@@ -231,7 +226,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             application.setName(rs.getString("NAME"));
             application.setType(rs.getString("TYPE"));
 
-            if (rs.getBytes("APP_PROPERTIES") !=null) {
+            if (rs.getBytes("APP_PROPERTIES") != null) {
                 byte[] appProperties = rs.getBytes("APP_PROPERTIES");
                 bais = new ByteArrayInputStream(appProperties);
 
@@ -246,18 +241,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             application.setVersion(rs.getString("VERSION"));
             application.setApplicationIdentifier(rs.getString("APP_IDENTIFIER"));
 
-        }catch (IOException ex){
-            String errorMsg = "IO error occurred fetch at app properties";
-            log.error(errorMsg, ex);
-            throw new DeviceManagementDAOException(errorMsg, ex);
-        }catch (ClassNotFoundException cex){
-            String errorMsg = "Class not found error occurred fetch at app properties";
-            log.error(errorMsg, cex);
-            throw new DeviceManagementDAOException(errorMsg, cex);
-        }catch (SQLException ex){
-            String errorMsg = "SQL error occurred fetch at application";
-            log.error(errorMsg, ex);
-            throw new DeviceManagementDAOException(errorMsg, ex);
+        } catch (IOException e) {
+            throw new DeviceManagementDAOException("IO error occurred fetch at app properties", e);
+        } catch (ClassNotFoundException e) {
+            throw new DeviceManagementDAOException("Class not found error occurred fetch at app properties", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("SQL error occurred fetch at application", e);
         }
 
         return application;

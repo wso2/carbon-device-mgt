@@ -210,7 +210,6 @@ public class ProfileDAOImpl implements ProfileDAO {
             throw new ProfileManagerDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return profile;
     }
@@ -254,7 +253,6 @@ public class ProfileDAOImpl implements ProfileDAO {
             throw new ProfileManagerDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return profileList;
     }
@@ -292,7 +290,6 @@ public class ProfileDAOImpl implements ProfileDAO {
             throw new ProfileManagerDAOException(msg, e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
         return profileList;
     }
@@ -304,15 +301,6 @@ public class ProfileDAOImpl implements ProfileDAO {
         } catch (PolicyManagerDAOException e) {
             throw new ProfileManagerDAOException("Error occurred while obtaining a connection from the policy " +
                     "management metadata repository config.datasource", e);
-        }
-    }
-
-
-    private void closeConnection() {
-        try {
-            PolicyManagementDAOFactory.closeConnection();
-        } catch (PolicyManagerDAOException e) {
-            log.warn("Unable to close the database connection.");
         }
     }
 

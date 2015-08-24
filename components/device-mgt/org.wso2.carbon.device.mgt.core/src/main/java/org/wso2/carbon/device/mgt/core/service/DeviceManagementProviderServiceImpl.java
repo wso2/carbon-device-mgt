@@ -714,15 +714,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.getConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getUnGroupedDevicesOfUser(username, tenantId);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
                     "belong to the user '" + username + "'", e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
 
         for (Device device : userDevices) {
@@ -747,15 +743,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.getConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getDevicesOfGroup(groupId, tenantId);
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
                     "assigned to the group '" + groupId + "'", e);
         } finally {
-            try {
-                DeviceManagementDAOFactory.closeConnection();
-            } catch (DeviceManagementDAOException e) {
-                log.warn("Error occurred while closing the connection", e);
-            }
+            DeviceManagementDAOFactory.closeConnection();
         }
 
         for (Device device : userDevices) {

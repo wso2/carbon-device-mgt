@@ -72,7 +72,6 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public int addOperation(Operation operation,
                             List<DeviceIdentifier> deviceIds) throws OperationManagementException {
-
         if (log.isDebugEnabled()) {
             log.debug("operation:[" + operation.toString() + "]");
             for (DeviceIdentifier deviceIdentifier : deviceIds) {
@@ -464,9 +463,8 @@ public class OperationManagerImpl implements OperationManager {
             }
             operation = OperationDAOUtil.convertOperation(dtoOperation);
         } catch (OperationManagementDAOException e) {
-            String errorMsg = "Error occurred while retrieving the operation with operation Id '" + operationId;
-            log.error(errorMsg, e);
-            throw new OperationManagementException(errorMsg, e);
+            throw new OperationManagementException("Error occurred while retrieving the operation with operation Id '" +
+                    operationId, e);
         } catch (SQLException e) {
             throw new OperationManagementException("Error occurred while opening a connection to the data source", e);
         } finally {

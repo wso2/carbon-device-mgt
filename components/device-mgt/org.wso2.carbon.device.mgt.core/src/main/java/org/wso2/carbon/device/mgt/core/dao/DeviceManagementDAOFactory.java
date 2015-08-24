@@ -32,6 +32,52 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
+/**
+ * This class intends to act as the primary entity that hides all DAO instantiation related complexities and logic so
+ * that the business objection handling layer doesn't need to be aware of the same providing seamless plug-ability of
+ * different data sources, connection acquisition mechanisms as well as different forms of DAO implementations to the
+ * high-level implementations that require device management related metadata persistence.
+ * <p/>
+ * In addition, this also provides means to handle transactions across multiple device management related DAO objects.
+ * Any high-level business logic that requires transaction handling to be done via utility methods provided in
+ * DeviceManagementDAOFactory should adhere the following guidelines to avoid any unexpected behaviour that can cause
+ * as a result of improper use of the aforementioned utility method.
+ * <p/>
+ * Any transaction that commits data into the underlying data persistence mechanism MUST follow the sequence of
+ * operations mentioned below.
+ * <p/>
+ * <pre>
+ * {@code
+ * try {
+ *      DeviceManagementDAOFactory.beginTransaction();
+ *      .....
+ *      DeviceManagementDAOFactory.commitTransaction();
+ *      return success;
+ * } catch (Exception e) {
+ *      DeviceManagementDAOFactory.rollbackTransaction();
+ *      throw new DeviceManagementException("Error occurred while ...", e);
+ * } finally {
+ *      DeviceManagementDAOFactory.closeConnection();
+ * }
+ * }
+ * </pre>
+ * <p/>
+ * Any transaction that retrieves data from the underlying data persistence mechanism MUST follow the sequence of
+ * operations mentioned below.
+ * <p/>
+ * <pre>
+ * {@code
+ * try {
+ *      DeviceManagementDAOFactory.openConnection();
+ *      .....
+ * } catch (Exception e) {
+ *      throw new DeviceManagementException("Error occurred while ..., e);
+ * } finally {
+ *      DeviceManagementDAOFactory.closeConnection();
+ * }
+ * }
+ * </pre>
+ */
 public class DeviceManagementDAOFactory {
 
     private static DataSource dataSource;

@@ -84,28 +84,48 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public TenantConfiguration getConfiguration(String type) throws DeviceManagementException {
+    public TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(type).getDeviceManager();
+                this.getPluginRepository().getDeviceManagementService(deviceType).getDeviceManager();
+        if (dms == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device type '" + deviceType + "' does not have an associated device management " +
+                        "plugin registered within the framework. Therefore, not attempting getConfiguration method");
+            }
+            return null;
+        }
         return dms.getConfiguration();
     }
 
     @Override
-    public FeatureManager getFeatureManager(String type) {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(type).getDeviceManager();
-        return dms.getFeatureManager();
+    public FeatureManager getFeatureManager(String deviceType) {
+        DeviceManager deviceManager = this.getDeviceManager(deviceType);
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
+                        "Therefore, not attempting method 'getFeatureManager'");
+            }
+            return null;
+        }
+        return deviceManager.getFeatureManager();
     }
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
         boolean status = false;
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
-        dms.enrollDevice(device);
 
-        if (dms.isClaimable(deviceIdentifier)) {
+        DeviceManager deviceManager = this.getDeviceManager(device.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                        "Therefore, not attempting method 'enrollDevice'");
+            }
+            return false;
+        }
+        deviceManager.enrollDevice(device);
+
+        if (deviceManager.isClaimable(deviceIdentifier)) {
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.INACTIVE);
         } else {
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
@@ -176,9 +196,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
-        boolean status = dms.modifyEnrollment(device);
+        DeviceManager deviceManager = this.getDeviceManager(device.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                        "Therefore, not attempting method 'modifyEnrolment'");
+            }
+            return false;
+        }
+        boolean status = deviceManager.modifyEnrollment(device);
         try {
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
@@ -200,11 +226,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-
-        int tenantId = this.getTenantId();
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'dis-enrollDevice'");
+            }
+            return false;
+        }
         try {
+            int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
 
             Device device = deviceDAO.getDevice(deviceId, tenantId);
@@ -218,33 +249,51 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException | TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementException("Error occurred while disenrolling '" + deviceId.getType() +
+            throw new DeviceManagementException("Error occurred while dis-enrolling '" + deviceId.getType() +
                     "' device with the identifier '" + deviceId.getId() + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        return dms.disenrollDevice(deviceId);
+        return deviceManager.disenrollDevice(deviceId);
     }
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-        return dms.isEnrolled(deviceId);
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'isEnrolled'");
+            }
+            return false;
+        }
+        return deviceManager.isEnrolled(deviceId);
     }
 
     @Override
     public boolean isActive(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-        return dms.isActive(deviceId);
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'isActive'");
+            }
+            return false;
+        }
+        return deviceManager.isActive(deviceId);
     }
 
     @Override
     public boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-        return dms.setActive(deviceId, status);
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'setActive'");
+            }
+            return false;
+        }
+        return deviceManager.setActive(deviceId, status);
     }
 
     @Override
@@ -262,15 +311,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
         for (Device device : allDevices) {
-            DeviceManagementService managementService = this.getPluginRepository().
-                    getDeviceManagementService(device.getType());
-            if (managementService != null) {
-                Device dmsDevice = managementService.getDeviceManager().getDevice(
-                        new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-                if (dmsDevice != null) {
-                    device.setFeatures(dmsDevice.getFeatures());
-                    device.setProperties(dmsDevice.getProperties());
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                            "Therefore, not attempting method 'isEnrolled'");
                 }
+                devices.add(device);
+                continue;
+            }
+            Device dmsDevice =
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
             }
             devices.add(device);
         }
@@ -278,30 +332,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getAllDevices(String type) throws DeviceManagementException {
+    public List<Device> getAllDevices(String deviceType) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
-
-            allDevices = deviceDAO.getDevices(type, this.getTenantId());
+            allDevices = deviceDAO.getDevices(deviceType, this.getTenantId());
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving all devices of type '" +
-                    type + "' that are being managed within the scope of current tenant", e);
+                    deviceType + "' that are being managed within the scope of current tenant", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
 
         for (Device device : allDevices) {
-
-            DeviceManagementService service = this.getPluginRepository().getDeviceManagementService(device.getType());
-            if (service != null) {
-                Device dmsDevice = service.getDeviceManager().getDevice(
-                        new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-                if (dmsDevice != null) {
-                    device.setFeatures(dmsDevice.getFeatures());
-                    device.setProperties(dmsDevice.getProperties());
+            DeviceManager deviceManager = this.getDeviceManager(deviceType);
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
+                            "Therefore, not attempting method 'isEnrolled'");
                 }
+                devices.add(device);
+                continue;
+            }
+            Device dmsDevice =
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
             }
             devices.add(device);
         }
@@ -313,7 +371,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             throws DeviceManagementException {
         List<NotificationMessages> notificationMessages =
                 DeviceConfigurationManager.getInstance().getNotificationMessagesConfig().getNotificationMessagesList();
-
         String messageHeader = "";
         String messageBody = "";
         String messageFooter1 = "";
@@ -369,9 +426,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public void sendRegistrationEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
-        List<NotificationMessages> notificationMessages = DeviceConfigurationManager.getInstance()
-                .getNotificationMessagesConfig().getNotificationMessagesList();
-
+        List<NotificationMessages> notificationMessages =
+                DeviceConfigurationManager.getInstance().getNotificationMessagesConfig().getNotificationMessagesList();
         String messageHeader = "";
         String messageBody = "";
         String messageFooter1 = "";
@@ -446,38 +502,60 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (device != null) {
             // The changes made here to prevent unit tests getting failed. They failed because when running the unit
             // tests there is no osgi services. So getDeviceManager() returns a null.
-            DeviceManagementService service = this.getPluginRepository().getDeviceManagementService(deviceId.getType());
-            if (service != null) {
-                DeviceManager dms = service.getDeviceManager();
-                Device pluginSpecificInfo = dms.getDevice(deviceId);
-                if (pluginSpecificInfo != null) {
-                    device.setFeatures(pluginSpecificInfo.getFeatures());
-                    device.setProperties(pluginSpecificInfo.getProperties());
+            DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                            "Therefore, not attempting method 'getDevice'");
                 }
+                return device;
+            }
+            Device pluginSpecificInfo = deviceManager.getDevice(deviceId);
+            if (pluginSpecificInfo != null) {
+                device.setFeatures(pluginSpecificInfo.getFeatures());
+                device.setProperties(pluginSpecificInfo.getProperties());
             }
         }
         return device;
     }
 
     @Override
-    public boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(device.getType()).getDeviceManager();
-        return dms.updateDeviceInfo(deviceIdentifier, device);
+    public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'updateDeviceInfo'");
+            }
+            return false;
+        }
+        return deviceManager.updateDeviceInfo(deviceId, device);
     }
 
     @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-        return dms.setOwnership(deviceId, ownershipType);
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'setOwnership'");
+            }
+            return false;
+        }
+        return deviceManager.setOwnership(deviceId, ownershipType);
     }
 
     @Override
     public boolean isClaimable(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-        return dms.isClaimable(deviceId);
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                        "Therefore, not attempting method 'isClaimable'");
+            }
+            return false;
+        }
+        return deviceManager.isClaimable(deviceId);
     }
 
     @Override
@@ -502,10 +580,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceType).getDeviceManager();
+        DeviceManager deviceManager = this.getDeviceManager(deviceType);
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
+                        "Therefore, not attempting method 'getLicense'");
+            }
+            return null;
+        }
         try {
-            return dms.getLicense(languageCode);
+            return deviceManager.getLicense(languageCode);
         } catch (LicenseManagementException e) {
             throw new DeviceManagementException("Error occurred while retrieving license configured for " +
                     "device type '" + deviceType + "' and language code '" + languageCode + "'", e);
@@ -514,10 +598,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public void addLicense(String deviceType, License license) throws DeviceManagementException {
-        DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceType).getDeviceManager();
+        DeviceManager deviceManager = this.getDeviceManager(deviceType);
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
+                        "Therefore, not attempting method 'isEnrolled'");
+            }
+            return;
+        }
         try {
-            dms.addLicense(license);
+            deviceManager.addLicense(license);
         } catch (LicenseManagementException e) {
             throw new DeviceManagementException("Error occurred while adding license for " +
                     "device type '" + deviceType + "'", e);
@@ -569,10 +659,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(
-            DeviceIdentifier identifier,
+            DeviceIdentifier deviceId,
             Operation.Status status) throws OperationManagementException, DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsByDeviceAndStatus(
-                identifier, status);
+                deviceId, status);
     }
 
     @Override
@@ -595,10 +685,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
 
         for (Device device : userDevices) {
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                            "Therefore, not attempting method 'isEnrolled'");
+                }
+                devices.add(device);
+                continue;
+            }
             Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
@@ -612,7 +709,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<Device> getAllDevicesOfRole(String role) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
-
         String[] users;
         int tenantId = this.getTenantId();
         try {
@@ -754,6 +850,19 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private int getTenantId() {
         return CarbonContext.getThreadLocalCarbonContext().getTenantId();
+    }
+
+    private DeviceManager getDeviceManager(String deviceType) {
+        DeviceManagementService deviceManagementService =
+                this.getPluginRepository().getDeviceManagementService(deviceType);
+        if (deviceManagementService == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device type '" + deviceType + "' does not have an associated device management " +
+                        "plugin registered within the framework. Therefore, returning null");
+            }
+            return null;
+        }
+        return deviceManagementService.getDeviceManager();
     }
 
 }

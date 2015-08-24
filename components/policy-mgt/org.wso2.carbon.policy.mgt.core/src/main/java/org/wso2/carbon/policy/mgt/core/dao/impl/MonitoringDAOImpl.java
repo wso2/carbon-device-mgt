@@ -40,7 +40,6 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
     @Override
     public int addComplianceDetails(int deviceId, int policyId) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
@@ -65,11 +64,8 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             } else {
                 return 0;
             }
-
         } catch (SQLException e) {
-            String msg = "Error occurred while adding the none compliance to the database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Error occurred while adding the none compliance to the database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
@@ -78,7 +74,6 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
     @Override
     public void addComplianceDetails(Map<Integer, Integer> devicePolicyMap) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
@@ -91,7 +86,6 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                 log.debug(map.getKey() + " -- " + map.getValue());
             }
         }
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_COMPLIANCE_STATUS (DEVICE_ID, POLICY_ID, STATUS, ATTEMPTS, " +
@@ -107,30 +101,22 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
-
         } catch (SQLException e) {
-            String msg = "Error occurred while adding the none compliance to the database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Error occurred while adding the none compliance to the database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
     }
 
     @Override
-    public void setDeviceAsNoneCompliance(int deviceId, int policyId) throws
-            MonitoringDAOException {
-
+    public void setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
-
             String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS  SET STATUS = 0, LAST_FAILED_TIME = ?, POLICY_ID = ?," +
                     " ATTEMPTS=0 WHERE  DEVICE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
@@ -141,9 +127,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            String msg = "Error occurred while updating the none compliance to the database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Error occurred while updating the none compliance to the database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
@@ -152,13 +136,11 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
     @Override
     public void setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet generatedKeys = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET STATUS = ?, ATTEMPTS=0, LAST_SUCCESS_TIME = ?" +
@@ -178,9 +160,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 //            }
 
         } catch (SQLException e) {
-            String msg = "Error occurred while deleting the none compliance to the database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Error occurred while deleting the none compliance to the database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
         }
@@ -189,21 +169,18 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     @Override
     public void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
             complianceFeatures) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_COMPLIANCE_FEATURES (COMPLIANCE_STATUS_ID, FEATURE_CODE, STATUS, " +
                     "TENANT_ID) VALUES (?, ?, ?, ?) ";
-
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             for (ComplianceFeature feature : complianceFeatures) {
                 stmt.setInt(1, policyComplianceStatusId);
                 stmt.setString(2, feature.getFeatureCode());
-                if (feature.isCompliance() == true) {
+                if (feature.isCompliance()) {
                     stmt.setInt(3, 1);
                 } else {
                     stmt.setInt(3, 0);
@@ -212,11 +189,9 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
         } catch (SQLException e) {
-            String msg = "Error occurred while adding the none compliance features to the database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Error occurred while adding the none compliance features to the " +
+                    "database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -253,24 +228,19 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             return complianceData;
 
         } catch (SQLException e) {
-            String msg = "Unable to retrieve compliance data from database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Unable to retrieve compliance data from database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
     @Override
     public List<ComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<ComplianceData> complianceDataList = new ArrayList<>();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_POLICY_COMPLIANCE_STATUS WHERE TENANT_ID = ? AND DEVICE_ID IN (?)";
@@ -279,11 +249,8 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             stmt.setString(2, PolicyManagerUtil.makeString(deviceIds));
 
             resultSet = stmt.executeQuery();
-
             while (resultSet.next()) {
-
                 ComplianceData complianceData = new ComplianceData();
-
                 complianceData.setId(resultSet.getInt("ID"));
                 complianceData.setDeviceId(resultSet.getInt("DEVICE_ID"));
                 complianceData.setPolicyId(resultSet.getInt("POLICY_ID"));
@@ -296,21 +263,16 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                 complianceDataList.add(complianceData);
             }
             return complianceDataList;
-
         } catch (SQLException e) {
-            String msg = "Unable to retrieve compliance data from database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Unable to retrieve compliance data from database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
     }
 
     @Override
     public List<ComplianceFeature> getNoneComplianceFeatures(int policyComplianceStatusId) throws
             MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -333,25 +295,18 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                 complianceFeatures.add(feature);
             }
             return complianceFeatures;
-
         } catch (SQLException e) {
-            String msg = "Unable to retrieve compliance features data from database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Unable to retrieve compliance features data from database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
-            this.closeConnection();
         }
-
     }
 
     @Override
     public void deleteNoneComplianceData(int policyComplianceStatusId) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             conn = this.getConnection();
             String query = "DELETE FROM DM_POLICY_COMPLIANCE_FEATURES WHERE COMPLIANCE_STATUS_ID = ? AND TENANT_ID = ?";
@@ -359,11 +314,8 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             stmt.setInt(1, policyComplianceStatusId);
             stmt.setInt(2, tenantId);
             stmt.executeUpdate();
-
         } catch (SQLException e) {
-            String msg = "Unable to delete compliance  data from database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Unable to delete compliance  data from database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -372,14 +324,11 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
     @Override
     public void updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
-
             conn = this.getConnection();
             String query = "";
             if (reset) {
@@ -394,27 +343,20 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             stmt.setInt(2, deviceId);
             stmt.setInt(3, tenantId);
             stmt.executeUpdate();
-
         } catch (SQLException e) {
-            String msg = "Unable to update the attempts  data in database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Unable to update the attempts  data in database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
-
     }
 
     @Override
     public void updateAttempts(List<Integer> deviceIds, boolean reset) throws MonitoringDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
-
             conn = this.getConnection();
             String query = "";
             if (reset) {
@@ -432,16 +374,12 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
         } catch (SQLException e) {
-            String msg = "Unable to update the attempts  data in database.";
-            log.error(msg, e);
-            throw new MonitoringDAOException(msg, e);
+            throw new MonitoringDAOException("Unable to update the attempts  data in database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
-
 
     private Connection getConnection() throws MonitoringDAOException {
         try {
@@ -451,15 +389,5 @@ public class MonitoringDAOImpl implements MonitoringDAO {
                     "management metadata repository config.datasource", e);
         }
     }
-
-
-    private void closeConnection() {
-        try {
-            PolicyManagementDAOFactory.closeConnection();
-        } catch (PolicyManagerDAOException e) {
-            log.warn("Unable to close the database connection.");
-        }
-    }
-
 
 }

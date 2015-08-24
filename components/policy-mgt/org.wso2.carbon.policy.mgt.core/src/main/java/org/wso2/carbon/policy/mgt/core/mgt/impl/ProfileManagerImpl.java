@@ -31,6 +31,7 @@ import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,32 +65,19 @@ public class ProfileManagerImpl implements ProfileManager {
             featureDAO.addProfileFeatures(profile.getProfileFeaturesList(), profile.getProfileId());
             PolicyManagementDAOFactory.commitTransaction();
         } catch (ProfileManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the profile (" + profile.getProfileName() + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while adding the profile (" +
+                    profile.getProfileName() + ")", e);
         } catch (FeatureManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the profile features (" + profile.getProfileName() + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while adding the profile features (" +
+                    profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while adding the profile (" + profile.getProfileName() + ") to the database";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while adding the profile (" +
+                    profile.getProfileName() + ") to the database", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
 
         return profile;
@@ -107,32 +95,19 @@ public class ProfileManagerImpl implements ProfileManager {
             featureDAO.updateProfileFeatures(profile.getProfileFeaturesList(), profile.getProfileId());
             PolicyManagementDAOFactory.commitTransaction();
         } catch (ProfileManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while updating the profile (" + profile.getProfileName() + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while updating the profile (" +
+                    profile.getProfileName() + ")", e);
         } catch (FeatureManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while updating the profile features (" + profile.getProfileName() + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while updating the profile features (" +
+                    profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while updating the profile (" + profile.getProfileName() + ") to the database";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while updating the profile (" +
+                    profile.getProfileName() + ") to the database", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
 
         return profile;
@@ -147,32 +122,19 @@ public class ProfileManagerImpl implements ProfileManager {
             bool = profileDAO.deleteProfile(profile);
             PolicyManagementDAOFactory.commitTransaction();
         } catch (ProfileManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the profile (" + profile.getProfileName() + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while deleting the profile (" +
+                    profile.getProfileName() + ")", e);
         } catch (FeatureManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the features from profile (" + profile.getProfileName() + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while deleting the features from profile (" +
+                    profile.getProfileName() + ")", e);
         } catch (PolicyManagerDAOException e) {
-            try {
-                PolicyManagementDAOFactory.rollbackTransaction();
-            } catch (PolicyManagerDAOException e1) {
-                log.warn("Error occurred while roll backing the transaction.");
-            }
-            String msg = "Error occurred while deleting the profile (" + profile.getProfileName() + ") from database";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new ProfileManagementException("Error occurred while deleting the profile (" +
+                    profile.getProfileName() + ") from database", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return bool;
     }
@@ -184,6 +146,7 @@ public class ProfileManagerImpl implements ProfileManager {
         DeviceType deviceType;
 
         try {
+            PolicyManagementDAOFactory.openConnection();
             profile = profileDAO.getProfiles(profileId);
             featureList = featureDAO.getFeaturesForProfile(profileId);
             deviceType = deviceTypeDAO.getDeviceType(profile.getDeviceType().getId());
@@ -192,17 +155,17 @@ public class ProfileManagerImpl implements ProfileManager {
             profile.setDeviceType(deviceType);
 
         } catch (ProfileManagerDAOException e) {
-            String msg = "Error occurred while getting profile id (" + profileId + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting profile id (" + profileId + ")", e);
         } catch (FeatureManagerDAOException e) {
-            String msg = "Error occurred while getting features related profile id (" + profileId + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting features related profile id (" +
+                    profileId + ")", e);
         } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while getting device type related profile id (" + profileId + ")";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting device type related profile id (" +
+                    profileId + ")", e);
+        } catch (SQLException e) {
+            throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return profile;
     }
@@ -211,6 +174,7 @@ public class ProfileManagerImpl implements ProfileManager {
     public List<Profile> getAllProfiles() throws ProfileManagementException {
         List<Profile> profileList;
         try {
+            PolicyManagementDAOFactory.openConnection();
             profileList = profileDAO.getAllProfiles();
             List<ProfileFeature> featureList = featureDAO.getAllProfileFeatures();
             List<DeviceType> deviceTypes = deviceTypeDAO.getDeviceTypes();
@@ -231,17 +195,15 @@ public class ProfileManagerImpl implements ProfileManager {
                 }
             }
         } catch (ProfileManagerDAOException e) {
-            String msg = "Error occurred while getting profiles";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting profiles", e);
         } catch (FeatureManagerDAOException e) {
-            String msg = "Error occurred while getting features related to profiles";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting features related to profiles", e);
         } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while getting device types related to profiles";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting device types related to profiles", e);
+        } catch (SQLException e) {
+            throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return profileList;
     }
@@ -251,6 +213,7 @@ public class ProfileManagerImpl implements ProfileManager {
         List<Profile> profileList;
         List<ProfileFeature> featureList;
         try {
+            PolicyManagementDAOFactory.openConnection();
             DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
             profileList = profileDAO.getProfilesOfDeviceType(deviceType);
             featureList = featureDAO.getAllProfileFeatures();
@@ -266,18 +229,17 @@ public class ProfileManagerImpl implements ProfileManager {
 
             }
         } catch (ProfileManagerDAOException e) {
-            String msg = "Error occurred while getting profiles";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting profiles", e);
         } catch (DeviceManagementDAOException e) {
-            String msg = "Error occurred while getting device types";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting device types", e);
         } catch (FeatureManagerDAOException e) {
-            String msg = "Error occurred while getting profile features types";
-            log.error(msg, e);
-            throw new ProfileManagementException(msg, e);
+            throw new ProfileManagementException("Error occurred while getting profile features types", e);
+        } catch (SQLException e) {
+            throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
         return profileList;
     }
+
 }

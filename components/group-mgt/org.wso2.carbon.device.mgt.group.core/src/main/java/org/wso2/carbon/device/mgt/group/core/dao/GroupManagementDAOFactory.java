@@ -22,9 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -33,13 +34,75 @@ public class GroupManagementDAOFactory {
 
     private static final Log log = LogFactory.getLog(GroupManagementDAOFactory.class);
     private static DataSource dataSource;
+    private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static GroupDAO getGroupDAO() {
-        return new GroupDAOImpl(dataSource);
+        return new GroupDAOImpl();
     }
 
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
+    }
+
+    public static void init(DataSource dtSource) {
+        dataSource = dtSource;
+    }
+
+    public static void beginTransaction() throws SQLException {
+        Connection conn = dataSource.getConnection();
+        conn.setAutoCommit(false);
+        currentConnection.set(conn);
+    }
+
+    public static Connection getConnection() throws SQLException {
+        if (currentConnection.get() == null) {
+            currentConnection.set(dataSource.getConnection());
+        }
+        return currentConnection.get();
+    }
+
+    public static void commitTransaction() {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.commit();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence commit " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Error occurred while committing the transaction", e);
+        }
+    }
+
+    public static void rollbackTransaction() {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.rollback();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence rollback " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            log.warn("Error occurred while transaction rollback", e);
+        }
+    }
+
+    public static void closeConnection() {
+        Connection con = currentConnection.get();
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while close the connection");
+            }
+            currentConnection.remove();
+        }
     }
 
     /**
@@ -68,11 +131,11 @@ public class GroupManagementDAOFactory {
                 for (JNDILookupDefinition.JNDIProperty prop : jndiPropertyList) {
                     jndiProperties.put(prop.getName(), prop.getValue());
                 }
-                dataSource = DeviceManagementDAOUtil
+                dataSource = GroupManagementDAOUtil
                         .lookupDataSource(jndiConfig.getJndiName(), jndiProperties);
             } else {
                 dataSource =
-                        DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
+                        GroupManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
             }
         }
         return dataSource;

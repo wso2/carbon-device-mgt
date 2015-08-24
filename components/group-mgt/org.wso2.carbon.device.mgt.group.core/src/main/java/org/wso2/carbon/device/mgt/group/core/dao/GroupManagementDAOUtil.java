@@ -47,13 +47,7 @@ public final class GroupManagementDAOUtil {
                 log.warn("Error occurred while closing prepared statement", e);
             }
         }
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                log.warn("Error occurred while closing database connection", e);
-            }
-        }
+        GroupManagementDAOFactory.closeConnection();
     }
 
     public static DataSource lookupDataSource(String dataSourceName,

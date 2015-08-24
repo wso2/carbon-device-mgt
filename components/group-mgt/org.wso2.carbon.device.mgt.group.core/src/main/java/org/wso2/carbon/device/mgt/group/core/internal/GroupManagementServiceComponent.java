@@ -46,9 +46,9 @@ import org.wso2.carbon.user.core.service.RealmService;
  * unbind="unsetDeviceManagementProviderService"
  */
 
-public class GroupMgtServiceComponent {
+public class GroupManagementServiceComponent {
 
-    private static Log log = LogFactory.getLog(GroupMgtServiceComponent.class);
+    private static Log log = LogFactory.getLog(GroupManagementServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
         try {
@@ -86,7 +86,7 @@ public class GroupMgtServiceComponent {
      * @param realmService An instance of RealmService
      */
     protected void setRealmService(RealmService realmService) {
-        DeviceMgtGroupDataHolder.getInstance().setRealmService(realmService);
+        GroupManagementDataHolder.getInstance().setRealmService(realmService);
     }
 
     /**
@@ -95,7 +95,7 @@ public class GroupMgtServiceComponent {
      * @param realmService An instance of RealmService
      */
     protected void unsetRealmService(RealmService realmService) {
-        DeviceMgtGroupDataHolder.getInstance().setRealmService(null);
+        GroupManagementDataHolder.getInstance().setRealmService(null);
     }
 
     /**
@@ -107,7 +107,7 @@ public class GroupMgtServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Setting DeviceManager Service");
         }
-        DeviceMgtGroupDataHolder.getInstance().setDeviceManagementProviderService(deviceMgtService);
+        GroupManagementDataHolder.getInstance().setDeviceManagementProviderService(deviceMgtService);
     }
 
     /**
@@ -119,7 +119,7 @@ public class GroupMgtServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting DeviceManager Service");
         }
-        DeviceMgtGroupDataHolder.getInstance().setDeviceManagementProviderService(null);
+        GroupManagementDataHolder.getInstance().setDeviceManagementProviderService(null);
     }
 
 }

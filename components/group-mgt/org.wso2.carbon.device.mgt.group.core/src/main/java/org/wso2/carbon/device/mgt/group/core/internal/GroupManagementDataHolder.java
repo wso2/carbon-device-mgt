@@ -19,21 +19,20 @@
 package org.wso2.carbon.device.mgt.group.core.internal;
 
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProvider;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
-public class DeviceMgtGroupDataHolder {
+public class GroupManagementDataHolder {
 
-    private static DeviceMgtGroupDataHolder thisInstance = new DeviceMgtGroupDataHolder();
+    private static GroupManagementDataHolder thisInstance = new GroupManagementDataHolder();
     private RealmService realmService;
     private TenantManager tenantManager;
     private DeviceManagementProviderService deviceManagementService;
 
-    private DeviceMgtGroupDataHolder() {
+    private GroupManagementDataHolder() {
     }
 
-    public static DeviceMgtGroupDataHolder getInstance() {
+    public static GroupManagementDataHolder getInstance() {
         return thisInstance;
     }
 

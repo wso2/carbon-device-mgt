@@ -33,7 +33,7 @@ import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBroker;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
-import org.wso2.carbon.device.mgt.group.core.internal.DeviceMgtGroupDataHolder;
+import org.wso2.carbon.device.mgt.group.core.internal.GroupManagementDataHolder;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
@@ -114,7 +114,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             List<Device> groupDevices = getAllDevicesInGroup(groupId);
             for (Device device : groupDevices) {
                 device.setGroupId(0);
-                DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+                GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
             }
             int sqlReturn = this.groupDAO.deleteGroup(groupId);
             if (log.isDebugEnabled()) {
@@ -174,7 +174,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         UserStoreManager userStoreManager;
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             String[] roleList = userStoreManager.getRoleListOfUser(username);
             Map<Integer, DeviceGroup> groups = new HashMap<>();
@@ -208,7 +208,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 return false;
             }
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
             userStoreManager.updateRoleListOfUser(username, null, roles);
@@ -230,7 +230,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 return false;
             }
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
             userStoreManager.updateRoleListOfUser(username, roles, null);
@@ -253,7 +253,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 return false;
             }
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             role = "Internal/group-" + groupId + "-" + roleName;
             userNames[0] = username;
@@ -280,7 +280,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 return false;
             }
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             role = "Internal/group-" + groupId + "-" + roleName;
             userStoreManager.deleteRole(role);
@@ -299,7 +299,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         List<String> groupRoles;
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             roles = userStoreManager.getRoleNames();
             groupRoles = new ArrayList<>();
@@ -322,7 +322,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         List<String> groupRoleList = new ArrayList<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             String[] roleList = userStoreManager.getRoleListOfUser(username);
             for (String role : roleList) {
@@ -343,7 +343,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         Map<String, GroupUser> groupUserHashMap = new HashMap<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             List<String> rolesForGroup = this.getAllRolesForGroup(groupId);
             for (String role : rolesForGroup) {
@@ -374,7 +374,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     public List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException {
         List<Device> devicesInGroup;
         try {
-            devicesInGroup = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevicesOfGroup(groupId);
+            devicesInGroup = GroupManagementDataHolder.getInstance().getDeviceManagementService().getDevicesOfGroup(groupId);
             return devicesInGroup;
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while getting devices in group", e);
@@ -386,13 +386,13 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         Device device;
         DeviceGroup deviceGroup;
         try {
-            device = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
+            device = GroupManagementDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
             deviceGroup = this.getGroupById(groupId);
             if (device == null || deviceGroup == null) {
                 return false;
             }
             device.setGroupId(deviceGroup.getId());
-            DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+            GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while adding device in to deviceGroup", e);
         }
@@ -404,13 +404,13 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         Device device;
         DeviceGroup deviceGroup;
         try {
-            device = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
+            device = GroupManagementDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
             deviceGroup = this.getGroupById(groupId);
             if (device == null || deviceGroup == null) {
                 return false;
             }
             device.setGroupId(0);
-            DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+            GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while removing device from deviceGroup", e);
         }
@@ -423,7 +423,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         List<String> roles = getGroupRolesForUser(username, groupId);
         int tenantId = DeviceManagerUtil.getTenantId();
         try {
-            userRealm = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+            userRealm = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
             List<String> lstPermissions = new ArrayList<>();
             String[] resourceIds = userRealm.getAuthorizationManager().getAllowedUIResourcesForUser(username, "/");
             if (resourceIds != null) {
@@ -451,7 +451,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         int tenantId = DeviceManagerUtil.getTenantId();
         Map<Integer, DeviceGroup> groups = new HashMap<>();
         try {
-            userRealm = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+            userRealm = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
             String[] roles = userRealm.getUserStoreManager().getRoleListOfUser(username);
             for (String role : roles) {
                 if (role != null && role.contains("Internal/group-") && userRealm.getAuthorizationManager().isRoleAuthorized(role, permission, CarbonConstants.UI_PERMISSION_ACTION)) {
@@ -473,7 +473,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         UserRealm userRealm;
         int tenantId = DeviceManagerUtil.getTenantId();
         try {
-            userRealm = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+            userRealm = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
             List<String> roles = this.getGroupRolesForUser(username, groupId);
             for (String role : roles) {
                 if (userRealm.getAuthorizationManager().isRoleAuthorized("Internal/group-"+ groupId + "-" + role, permission, CarbonConstants.UI_PERMISSION_ACTION)) {

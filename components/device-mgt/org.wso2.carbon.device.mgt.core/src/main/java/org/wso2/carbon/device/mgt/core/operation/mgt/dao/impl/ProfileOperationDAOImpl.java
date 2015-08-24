@@ -36,14 +36,14 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
     private static final Log log = LogFactory.getLog(ProfileOperationDAOImpl.class);
 
     public int addOperation(Operation operation) throws OperationManagementDAOException {
-
-        int operationId = super.addOperation(operation);
-        operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
-        operation.setId(operationId);
-        operation.setEnabled(true);
-        ProfileOperation profileOp = (ProfileOperation) operation;
         PreparedStatement stmt = null;
+        int operationId;
         try {
+            operationId = super.addOperation(operation);
+            operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
+            operation.setId(operationId);
+            operation.setEnabled(true);
+            ProfileOperation profileOp = (ProfileOperation) operation;
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
@@ -60,13 +60,11 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public void updateOperation(Operation operation) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ByteArrayOutputStream bao = null;
         ObjectOutputStream oos = null;
-        super.updateOperation(operation);
-
         try {
+            super.updateOperation(operation);
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("UPDATE DM_PROFILE_OPERATION O SET O.OPERATION_DETAILS=? " +
                     "WHERE O.OPERATION_ID=?");
@@ -78,7 +76,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             stmt.setBytes(1, bao.toByteArray());
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while update operation metadata", e);
         } catch (IOException e) {
@@ -104,10 +101,9 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public void deleteOperation(int id) throws OperationManagementDAOException {
-
-        super.deleteOperation(id);
         PreparedStatement stmt = null;
         try {
+            super.deleteOperation(id);
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE DM_PROFILE_OPERATION WHERE OPERATION_ID=?");
             stmt.setInt(1, id);
@@ -120,14 +116,12 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
     }
 
     public Operation getOperation(int id) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ProfileOperation profileOperation = null;
 
         ByteArrayInputStream bais;
         ObjectInputStream ois;
-
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_PROFILE_OPERATION WHERE OPERATION_ID=?";
@@ -142,24 +136,17 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
                 ois = new ObjectInputStream(bais);
                 profileOperation = (ProfileOperation) ois.readObject();
             }
-
         } catch (IOException e) {
-            String errorMsg = "IO Error occurred while de serialize the profile operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("IO Error occurred while de serialize the profile " +
+                    "operation object", e);
         } catch (ClassNotFoundException e) {
-            String errorMsg = "Class not found error occurred while de serialize the profile operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("Class not found error occurred while de serialize the " +
+                    "profile operation object", e);
         } catch (SQLException e) {
-            String errorMsg = "SQL Error occurred while retrieving the command operation object " + "available for " +
-                    "the id '"
-                    + id;
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("SQL Error occurred while retrieving the command " +
+                    "operation object " + "available for the id '" + id, e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return profileOperation;
     }
@@ -167,7 +154,6 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
             Operation.Status status) throws OperationManagementDAOException {
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         ProfileOperation profileOperation;
@@ -200,18 +186,14 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             }
 
         } catch (IOException e) {
-            String errorMsg = "IO Error occurred while de serialize the profile operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("IO Error occurred while de serialize the profile " +
+                    "operation object", e);
         } catch (ClassNotFoundException e) {
-            String errorMsg = "Class not found error occurred while de serialize the profile operation object";
-            log.error(errorMsg, e);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("Class not found error occurred while de serialize the " +
+                    "profile operation object", e);
         } catch (SQLException e) {
-            String errorMsg = "SQL error occurred while retrieving the operation available for the device'" + enrolmentId +
-                    "' with status '" + status.toString();
-            log.error(errorMsg);
-            throw new OperationManagementDAOException(errorMsg, e);
+            throw new OperationManagementDAOException("SQL error occurred while retrieving the operation " +
+                    "available for the device'" + enrolmentId + "' with status '" + status.toString(), e);
         } finally {
             if (bais != null) {
                 try {
@@ -228,8 +210,8 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
                 }
             }
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
-            OperationManagementDAOFactory.closeConnection();
         }
         return operationList;
     }
+
 }

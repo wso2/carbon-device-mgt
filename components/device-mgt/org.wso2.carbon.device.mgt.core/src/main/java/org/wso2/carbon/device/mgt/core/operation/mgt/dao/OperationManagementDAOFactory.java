@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
@@ -69,27 +70,29 @@ public class OperationManagementDAOFactory {
         dataSource = resolveDataSource(config);
     }
 
-    public static void beginTransaction() throws OperationManagementDAOException {
+    public static void beginTransaction() throws TransactionManagementException {
         try {
-            currentConnection.set(dataSource.getConnection());
+            Connection conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            currentConnection.set(conn);
         } catch (SQLException e) {
-            throw new OperationManagementDAOException(
-                "Error occurred while retrieving config.datasource connection", e);
+            throw new TransactionManagementException(
+                    "Error occurred while retrieving config.datasource connection", e);
         }
     }
 
-    public static Connection getConnection() throws OperationManagementDAOException {
+    public static void openConnection() throws SQLException {
+        currentConnection.set(dataSource.getConnection());
+    }
+
+    public static Connection getConnection() throws SQLException {
         if (currentConnection.get() == null) {
-            try {
-                currentConnection.set(dataSource.getConnection());
-            } catch (SQLException e) {
-                throw new OperationManagementDAOException("Error occurred while retrieving data source connection", e);
-            }
+            currentConnection.set(dataSource.getConnection());
         }
         return currentConnection.get();
     }
 
-    public static void closeConnection() throws OperationManagementDAOException {
+    public static void closeConnection() {
         Connection con = currentConnection.get();
         if (con != null) {
             try {
@@ -101,7 +104,7 @@ public class OperationManagementDAOFactory {
         }
     }
 
-    public static void commitTransaction() throws OperationManagementDAOException {
+    public static void commitTransaction() {
         try {
             Connection conn = currentConnection.get();
             if (conn != null) {
@@ -113,13 +116,11 @@ public class OperationManagementDAOFactory {
                 }
             }
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while committing the transaction", e);
-        } finally {
-            closeConnection();
+            log.error("Error occurred while committing the transaction", e);
         }
     }
 
-    public static void rollbackTransaction() throws OperationManagementDAOException {
+    public static void rollbackTransaction() {
         try {
             Connection conn = currentConnection.get();
             if (conn != null) {
@@ -127,13 +128,11 @@ public class OperationManagementDAOFactory {
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Datasource connection associated with the current thread is null, hence rollback " +
-                        "has not been attempted");
+                            "has not been attempted");
                 }
             }
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while roll-backing the transaction", e);
-        } finally {
-            closeConnection();
+            log.error("Error occurred while roll-backing the transaction", e);
         }
     }
 
@@ -147,7 +146,7 @@ public class OperationManagementDAOFactory {
         DataSource dataSource = null;
         if (config == null) {
             throw new RuntimeException("Device Management Repository data source configuration is null and " +
-                "thus, is not initialized");
+                    "thus, is not initialized");
         }
         JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
         if (jndiConfig != null) {

@@ -492,8 +492,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         Device device;
         try {
+            DeviceManagementDAOFactory.openConnection();
             device = deviceDAO.getDevice(deviceId, this.getTenantId());
-        } catch (DeviceManagementDAOException e) {
+        } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
                     "'" + deviceId.getId() + "'", e);
         } finally {
@@ -731,10 +732,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
             for (Device device : userDevices) {
-                Device dmsDevice =
-                        this.getPluginRepository().getDeviceManagementService(
-                                device.getType()).getDeviceManager().getDevice(
-                                new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                Device dmsDevice = this.getDeviceManager(device.getType()).
+                        getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
                 if (dmsDevice != null) {
                     device.setFeatures(dmsDevice.getFeatures());
                     device.setProperties(dmsDevice.getProperties());
@@ -771,10 +770,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
         for (Device device : allDevices) {
-            Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            Device dmsDevice = this.getDeviceManager(device.getType()).
+                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
@@ -835,10 +832,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
 
         for (Device device : allDevices) {
-            Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            Device dmsDevice = this.getDeviceManager(device.getType()).
+                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());

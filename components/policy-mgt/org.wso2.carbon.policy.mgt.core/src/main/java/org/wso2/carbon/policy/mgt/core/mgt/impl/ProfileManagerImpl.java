@@ -147,7 +147,7 @@ public class ProfileManagerImpl implements ProfileManager {
 
         try {
             PolicyManagementDAOFactory.openConnection();
-            profile = profileDAO.getProfiles(profileId);
+            profile = profileDAO.getProfile(profileId);
             featureList = featureDAO.getFeaturesForProfile(profileId);
             deviceType = deviceTypeDAO.getDeviceType(profile.getDeviceType().getId());
 

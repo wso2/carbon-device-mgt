@@ -293,13 +293,16 @@ public class MonitoringManagerImpl implements MonitoringManager {
         } catch (PolicyManagerDAOException e) {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyComplianceException("Error occurred reading the applied policies to devices.", e);
+        } catch (DeviceManagementException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyComplianceException("Error occurred while adding monitoring operation to DB.");
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
     }
 
     private void addMonitoringOperationsToDatabase(List<Device> devices)
-            throws PolicyComplianceException, OperationManagementException {
+            throws PolicyComplianceException, OperationManagementException, DeviceManagementException {
 
         List<DeviceIdentifier> deviceIdentifiers = this.getDeviceIdentifiersFromDevices(devices);
         CommandOperation monitoringOperation = new CommandOperation();
@@ -308,9 +311,10 @@ public class MonitoringManagerImpl implements MonitoringManager {
         monitoringOperation.setCode(OPERATION_MONITOR);
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+        if (service == null) {
+            throw new DeviceManagementException("Error occurred while retrieving Device Management Service");
+        }
         service.addOperation(monitoringOperation, deviceIdentifiers);
-//        PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-//                addOperation(monitoringOperation, deviceIdentifiers);
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {

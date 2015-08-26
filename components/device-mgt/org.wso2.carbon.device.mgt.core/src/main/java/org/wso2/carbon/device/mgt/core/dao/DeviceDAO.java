@@ -22,7 +22,6 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public interface DeviceDAO {
 
     int addDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
-    int updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
+    boolean updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
     int removeDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 

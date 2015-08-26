@@ -67,11 +67,11 @@ public class DeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public int updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException {
+    public boolean updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
-        int deviceId = -1;
+        boolean status = false;
+        int rows;
         try {
             conn = this.getConnection();
             String sql =
@@ -83,18 +83,16 @@ public class DeviceDAOImpl implements DeviceDAO {
             stmt.setString(3, device.getDeviceIdentifier());
             stmt.setInt(4, typeId);
             stmt.setInt(5, tenantId);
-            stmt.executeUpdate();
-
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                deviceId = rs.getInt(1);
+            rows = stmt.executeUpdate();
+            if (rows>0) {
+                status = true;
             }
-            return deviceId;
+            return status;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while enrolling device '" +
                     device.getName() + "'", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
 

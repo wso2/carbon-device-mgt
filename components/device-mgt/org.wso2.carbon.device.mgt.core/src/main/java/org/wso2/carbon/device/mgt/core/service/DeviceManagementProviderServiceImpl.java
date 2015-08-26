@@ -139,6 +139,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             EnrolmentInfo newEnrolmentInfo = device.getEnrolmentInfo();
             if (existingEnrolmentInfo != null && newEnrolmentInfo != null) {
                 if (existingEnrolmentInfo.equals(newEnrolmentInfo)) {
+                    device.setId(existingDevice.getId());
                     device.getEnrolmentInfo().setDateOfEnrolment(existingEnrolmentInfo.getDateOfEnrolment());
                     this.modifyEnrollment(device);
                     status = true;
@@ -210,8 +211,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
 
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
-            int deviceId = deviceDAO.updateDevice(type.getId(), device, tenantId);
-            enrolmentDAO.updateEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
+            deviceDAO.updateDevice(type.getId(), device, tenantId);
+            enrolmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
 
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException | TransactionManagementException e) {

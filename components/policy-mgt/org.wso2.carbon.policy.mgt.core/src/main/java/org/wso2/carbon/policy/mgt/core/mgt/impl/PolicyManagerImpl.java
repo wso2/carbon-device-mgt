@@ -746,12 +746,9 @@ public class PolicyManagerImpl implements PolicyManager {
 
     @Override
     public int getPolicyCount() throws PolicyManagementException {
-
-        int policyCount;
         try {
             PolicyManagementDAOFactory.openConnection();
-            policyCount = policyDAO.getPolicyCount();
-            return policyCount;
+            return policyDAO.getPolicyCount();
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting policy count", e);
         } catch (SQLException e) {

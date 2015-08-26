@@ -228,6 +228,11 @@ public class DynamicClientRegistrationUtil {
             oAuthAdminService.removeOAuthApplicationData(consumerKey);
 
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+
+            if (appMgtService == null) {
+                throw new APIManagementException("Error occurred while retrieving Application Management" +
+                        "Service");
+            }
             ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
 
             if (createdServiceProvider == null) {

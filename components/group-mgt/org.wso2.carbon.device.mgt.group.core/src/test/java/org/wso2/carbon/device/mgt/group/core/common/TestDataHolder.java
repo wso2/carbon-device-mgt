@@ -25,7 +25,7 @@ public class TestDataHolder {
 
     public static Integer SUPER_TENANT_ID = -1234;
 
-    public static DeviceGroup generateDummyGroupData(){
+    public static DeviceGroup generateDummyGroupData() {
         DeviceGroup deviceGroup = new DeviceGroup();
         deviceGroup.setName("Test device group");
         deviceGroup.setDescription("Test description");

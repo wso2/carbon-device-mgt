@@ -30,25 +30,26 @@ import java.util.List;
 public interface GroupManagementServiceProvider {
 
     /**
-     * @param deviceGroup to add
-     * @param defaultRole of the deviceGroup
+     * @param deviceGroup        to add
+     * @param defaultRole        of the deviceGroup
      * @param defaultPermissions of the default role
      * @return id of the new group
      * @throws GroupManagementException
      */
-    int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions) throws GroupManagementException;
+    int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
+            throws GroupManagementException;
 
     /**
      * @param deviceGroup to update
-     * @throws GroupManagementException
      * @return is deviceGroup updated
+     * @throws GroupManagementException
      */
     boolean updateGroup(DeviceGroup deviceGroup) throws GroupManagementException;
 
     /**
      * @param groupId of the group to delete
-     * @throws GroupManagementException
      * @return is group deleted
+     * @throws GroupManagementException
      */
     boolean deleteGroup(int groupId) throws GroupManagementException;
 
@@ -61,7 +62,7 @@ public interface GroupManagementServiceProvider {
 
     /**
      * @param groupName of the group.
-     * @param owner  of the group.
+     * @param owner     of the group.
      * @return List of Groups that matches with the given DeviceGroup name.
      * @throws GroupManagementException
      */
@@ -82,8 +83,8 @@ public interface GroupManagementServiceProvider {
     int getGroupCountOfUser(String username) throws GroupManagementException;
 
     /**
-     * @param username of the user
-     * @param groupId of the group of the group
+     * @param username    of the user
+     * @param groupId     of the group of the group
      * @param sharingRole to be shared
      * @return is group shared
      * @throws GroupManagementException
@@ -91,8 +92,8 @@ public interface GroupManagementServiceProvider {
     boolean shareGroup(String username, int groupId, String sharingRole) throws GroupManagementException;
 
     /**
-     * @param userName of the user
-     * @param groupId of the group of the group
+     * @param userName    of the user
+     * @param groupId     of the group of the group
      * @param sharingRole to be un shared
      * @return is group un shared
      * @throws GroupManagementException
@@ -100,17 +101,18 @@ public interface GroupManagementServiceProvider {
     boolean unShareGroup(String userName, int groupId, String sharingRole) throws GroupManagementException;
 
     /**
-     * @param userName of the user
-     * @param groupId of the group of the group
-     * @param roleName to add
+     * @param userName    of the user
+     * @param groupId     of the group of the group
+     * @param roleName    to add
      * @param permissions to bind with role
-     * @return
+     * @return is role added
      * @throws GroupManagementException
      */
-    boolean addNewSharingRoleForGroup(String userName, int groupId, String roleName, String[] permissions) throws GroupManagementException;
+    boolean addNewSharingRoleForGroup(String userName, int groupId, String roleName, String[] permissions)
+            throws GroupManagementException;
 
     /**
-     * @param groupId of the group of the group
+     * @param groupId  of the group of the group
      * @param roleName to remove
      * @return is role removed
      * @throws GroupManagementException
@@ -126,7 +128,7 @@ public interface GroupManagementServiceProvider {
 
     /**
      * @param userName of the user
-     * @param groupId of the group of the group
+     * @param groupId  of the group of the group
      * @return list of roles
      * @throws GroupManagementException
      */
@@ -148,7 +150,7 @@ public interface GroupManagementServiceProvider {
 
     /**
      * @param deviceId of the device
-     * @param groupId of the group
+     * @param groupId  of the group
      * @return is device added
      * @throws GroupManagementException
      */
@@ -156,7 +158,7 @@ public interface GroupManagementServiceProvider {
 
     /**
      * @param deviceId of the device
-     * @param groupId of the group
+     * @param groupId  of the group
      * @return is device removed
      * @throws GroupManagementException
      */
@@ -164,14 +166,14 @@ public interface GroupManagementServiceProvider {
 
     /**
      * @param username of the user
-     * @param groupId of the group
+     * @param groupId  of the group
      * @return array of permissions
      * @throws GroupManagementException
      */
     String[] getGroupPermissionsOfUser(String username, int groupId) throws GroupManagementException;
 
     /**
-     * @param username of the user
+     * @param username   of the user
      * @param permission to filter
      * @return group list with specified permissions
      * @throws GroupManagementException
@@ -179,10 +181,10 @@ public interface GroupManagementServiceProvider {
     List<DeviceGroup> getUserGroupsForPermission(String username, String permission) throws GroupManagementException;
 
     /**
-     * @param username of the user
-     * @param groupId to authorize
+     * @param username   of the user
+     * @param groupId    to authorize
      * @param permission to authorize
-     * @return
+     * @return is user authorized for permission
      * @throws GroupManagementException
      */
     boolean isAuthorized(String username, int groupId, String permission) throws GroupManagementException;

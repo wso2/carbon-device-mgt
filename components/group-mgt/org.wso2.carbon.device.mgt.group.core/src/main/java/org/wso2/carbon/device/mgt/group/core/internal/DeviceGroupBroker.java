@@ -1,5 +1,3 @@
-package org.wso2.carbon.device.mgt.group.core.internal;
-
 /*
  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,6 +15,8 @@ package org.wso2.carbon.device.mgt.group.core.internal;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package org.wso2.carbon.device.mgt.group.core.internal;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
@@ -40,33 +40,27 @@ public class DeviceGroupBroker extends DeviceGroup {
         this.setTenantId(deviceGroup.getTenantId());
     }
 
-    @Override
-    public void setId(int id) {
+    @Override public void setId(int id) {
         super.setId(id);
     }
 
-    @Override
-    public void setTenantId(int tenantId) {
+    @Override public void setTenantId(int tenantId) {
         super.setTenantId(tenantId);
     }
 
-    @Override
-    public void setUsers(List<GroupUser> users) {
+    @Override public void setUsers(List<GroupUser> users) {
         super.setUsers(users);
     }
 
-    @Override
-    public void setDevices(List<Device> devices) {
+    @Override public void setDevices(List<Device> devices) {
         super.setDevices(devices);
     }
 
-    @Override
-    public void setRoles(List<String> roles) {
+    @Override public void setRoles(List<String> roles) {
         super.setRoles(roles);
     }
 
-    @Override
-    public DeviceGroup getGroup() {
+    @Override public DeviceGroup getGroup() {
         return super.getGroup();
     }
 }

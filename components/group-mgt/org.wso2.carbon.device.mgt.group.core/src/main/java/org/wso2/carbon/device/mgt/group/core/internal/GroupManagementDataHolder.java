@@ -16,6 +16,7 @@
  *  under the License.
  *
  */
+
 package org.wso2.carbon.device.mgt.group.core.internal;
 
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;

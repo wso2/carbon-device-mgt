@@ -46,20 +46,20 @@
             <!-- <Parameter name="ProvisioningDefaultUserstore">PRIMARY</Parameter> -->
             <!-- <Parameter name="ProvisioningDefaultRole">admin</Parameter> -->
             <!-- <Parameter name="IsSuperAdminRoleRequired">true</Parameter> -->
-	</Config>
-	
-	<!-- If this authenticator should skip any URI from authentication, specify it under "SkipAuthentication"
-	<SkipAuthentication>
-            <UrlContains></UrlContains>
-        </SkipAuthentication> -->
-	
-	<!-- If this authenticator should skip any URI from session validation, specify it under "SkipAuthentication
-        <SkipSessionValidation>
-            <UrlContains></UrlContains>
-        </SkipSessionValidation> -->
+        </Config>
+
+        <!-- If this authenticator should skip any URI from authentication, specify it under "SkipAuthentication"
+        <SkipAuthentication>
+                <UrlContains></UrlContains>
+            </SkipAuthentication> -->
+
+        <!-- If this authenticator should skip any URI from session validation, specify it under "SkipAuthentication
+            <SkipSessionValidation>
+                <UrlContains></UrlContains>
+            </SkipSessionValidation> -->
     </Authenticator>
 
-        <!-- Authenticator Configurations for MutualSSLAuthenticator -->
+    <!-- Authenticator Configurations for MutualSSLAuthenticator -->
     <!--Authenticator name="MutualSSLAuthenticator" disabled="false">
 	  <Priority>5</Priority>
 	  <Config>
@@ -68,6 +68,6 @@
 	      <Parameter name="WhiteList"/>
 	  </Config>
     </Authenticator-->
-    
+
 </Authenticators>
 

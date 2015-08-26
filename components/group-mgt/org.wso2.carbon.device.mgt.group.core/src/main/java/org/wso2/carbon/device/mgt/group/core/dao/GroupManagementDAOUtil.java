@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.device.mgt.group.core.dao;
 
 import org.apache.commons.logging.Log;
@@ -22,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ public final class GroupManagementDAOUtil {
 
     private static final Log log = LogFactory.getLog(GroupManagementDAOUtil.class);
 
-    public static void cleanupResources(Connection conn, PreparedStatement stmt, ResultSet rs) {
+    public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
         if (rs != null) {
             try {
                 rs.close();
@@ -50,8 +50,7 @@ public final class GroupManagementDAOUtil {
         GroupManagementDAOFactory.closeConnection();
     }
 
-    public static DataSource lookupDataSource(String dataSourceName,
-                                              final Hashtable<Object, Object> jndiProperties) {
+    public static DataSource lookupDataSource(String dataSourceName, final Hashtable<Object, Object> jndiProperties) {
         try {
             if (jndiProperties == null || jndiProperties.isEmpty()) {
                 return (DataSource) InitialContext.doLookup(dataSourceName);

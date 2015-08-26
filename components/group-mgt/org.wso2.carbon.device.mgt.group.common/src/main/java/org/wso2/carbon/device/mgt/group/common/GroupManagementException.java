@@ -16,20 +16,13 @@
  *  under the License.
  *
  */
+
 package org.wso2.carbon.device.mgt.group.common;
 
 public class GroupManagementException extends Exception {
 
     private static final long serialVersionUID = -312678248574816874L;
     private String errorMessage;
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
 
     public GroupManagementException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
@@ -52,5 +45,13 @@ public class GroupManagementException extends Exception {
 
     public GroupManagementException(Throwable cause) {
         super(cause);
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

@@ -25,8 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement
-public class DeviceGroup implements Serializable {
+@XmlRootElement public class DeviceGroup implements Serializable {
 
     private int id;
     private String description;
@@ -39,8 +38,7 @@ public class DeviceGroup implements Serializable {
     private List<String> roles;
     private int tenantId;
 
-    @XmlElement
-    public int getId() {
+    @XmlElement public int getId() {
         return id;
     }
 
@@ -48,8 +46,7 @@ public class DeviceGroup implements Serializable {
         this.id = id;
     }
 
-    @XmlElement
-    public String getDescription() {
+    @XmlElement public String getDescription() {
         return description;
     }
 
@@ -57,8 +54,7 @@ public class DeviceGroup implements Serializable {
         this.description = description;
     }
 
-    @XmlElement
-    public String getName() {
+    @XmlElement public String getName() {
         return name;
     }
 
@@ -66,8 +62,7 @@ public class DeviceGroup implements Serializable {
         this.name = name;
     }
 
-    @XmlElement
-    public Long getDateOfCreation() {
+    @XmlElement public Long getDateOfCreation() {
         return dateOfCreation;
     }
 
@@ -75,8 +70,7 @@ public class DeviceGroup implements Serializable {
         this.dateOfCreation = dateOfCreation;
     }
 
-    @XmlElement
-    public Long getDateOfLastUpdate() {
+    @XmlElement public Long getDateOfLastUpdate() {
         return dateOfLastUpdate;
     }
 
@@ -84,8 +78,7 @@ public class DeviceGroup implements Serializable {
         this.dateOfLastUpdate = dateOfLastUpdate;
     }
 
-    @XmlElement
-    public String getOwner() {
+    @XmlElement public String getOwner() {
         return owner;
     }
 
@@ -93,8 +86,7 @@ public class DeviceGroup implements Serializable {
         this.owner = owner;
     }
 
-    @XmlElement
-    public int getTenantId() {
+    @XmlElement public int getTenantId() {
         return tenantId;
     }
 
@@ -102,8 +94,7 @@ public class DeviceGroup implements Serializable {
         this.tenantId = tenantId;
     }
 
-    @XmlElement
-    public List<GroupUser> getUsers() {
+    @XmlElement public List<GroupUser> getUsers() {
         return users;
     }
 
@@ -111,8 +102,7 @@ public class DeviceGroup implements Serializable {
         this.users = users;
     }
 
-    @XmlElement
-    public List<Device> getDevices() {
+    @XmlElement public List<Device> getDevices() {
         return devices;
     }
 
@@ -120,8 +110,7 @@ public class DeviceGroup implements Serializable {
         this.devices = devices;
     }
 
-    @XmlElement
-    public List<String> getRoles() {
+    @XmlElement public List<String> getRoles() {
         return roles;
     }
 
@@ -129,7 +118,7 @@ public class DeviceGroup implements Serializable {
         this.roles = roles;
     }
 
-    protected DeviceGroup getGroup(){
+    protected DeviceGroup getGroup() {
         DeviceGroup g = new DeviceGroup();
         g.setId(getId());
         g.setDescription(getDescription());

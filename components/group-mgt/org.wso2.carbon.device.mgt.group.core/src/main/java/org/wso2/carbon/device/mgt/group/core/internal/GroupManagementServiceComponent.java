@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.device.mgt.group.core.internal;
 
 import org.apache.commons.logging.Log;
@@ -57,22 +58,22 @@ public class GroupManagementServiceComponent {
                 log.debug("Initializing group management core bundle");
             }
 
-            DeviceManagementConfig config =
-                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+            DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
 
             DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
             GroupManagementDAOFactory.init(dsConfig);
 
             if (log.isDebugEnabled()) {
-                log.debug("Registering OSGi service DeviceGroup Management Service");
+                log.debug("Registering OSGi service Group Management Service");
             }
             /* Registering DeviceGroup Management service */
             BundleContext bundleContext = componentContext.getBundleContext();
             GroupManagementServiceProvider groupManagementServiceProvider = new GroupManagementServiceProviderImpl();
-            bundleContext.registerService(GroupManagementServiceProvider.class.getName(),
-                    groupManagementServiceProvider, null);
+            bundleContext
+                    .registerService(GroupManagementServiceProvider.class.getName(), groupManagementServiceProvider,
+                            null);
             if (log.isDebugEnabled()) {
-                log.debug("DeviceGroup management core bundle has been successfully initialized");
+                log.debug("Group management core bundle has been successfully initialized");
             }
         } catch (Throwable e) {
             String msg = "Error occurred while initializing group management core bundle";
@@ -117,7 +118,7 @@ public class GroupManagementServiceComponent {
      */
     protected void unsetDeviceManagementProviderService(DeviceManagementProviderService deviceMgtService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting DeviceManager Service");
+            log.debug("Un setting DeviceManager Service");
         }
         GroupManagementDataHolder.getInstance().setDeviceManagementProviderService(null);
     }

@@ -46,11 +46,10 @@ import java.sql.Statement;
 
 public abstract class BaseGroupManagementTest {
 
-    private DataSource dataSource;
     private static final Log log = LogFactory.getLog(BaseGroupManagementTest.class);
+    private DataSource dataSource;
 
-    @BeforeSuite
-    public void setupDataSource() throws Exception {
+    @BeforeSuite public void setupDataSource() throws Exception {
         this.initDatSource();
         this.initSQLScript();
         this.initializeCarbonContext();
@@ -61,8 +60,7 @@ public abstract class BaseGroupManagementTest {
         GroupManagementDAOFactory.init(dataSource);
     }
 
-    @BeforeClass
-    public abstract void init() throws Exception;
+    @BeforeClass public abstract void init() throws Exception;
 
     private DataSource getDataSource(DataSourceConfig config) {
         PoolProperties properties = new PoolProperties();
@@ -73,7 +71,7 @@ public abstract class BaseGroupManagementTest {
         return new org.apache.tomcat.jdbc.pool.DataSource(properties);
     }
 
-    private void initializeCarbonContext(){
+    private void initializeCarbonContext() {
 
         if (System.getProperty("carbon.home") == null) {
             File file = new File("src/test/resources/carbon-home");
@@ -94,8 +92,8 @@ public abstract class BaseGroupManagementTest {
             }
         }
 
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
-                .SUPER_TENANT_DOMAIN_NAME);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
@@ -123,8 +121,7 @@ public abstract class BaseGroupManagementTest {
         }
     }
 
-    @AfterSuite
-    public void deleteData() {
+    @AfterSuite public void deleteData() {
         Connection conn = null;
         try {
             conn = getDataSource().getConnection();

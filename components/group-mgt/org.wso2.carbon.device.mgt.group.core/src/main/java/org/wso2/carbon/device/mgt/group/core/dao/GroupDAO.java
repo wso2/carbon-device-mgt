@@ -30,7 +30,7 @@ public interface GroupDAO {
     /**
      * Add new deviceGroup
      *
-     * @param deviceGroup to be added
+     * @param deviceGroup group to be added
      * @return sql execution result
      * @throws GroupManagementDAOException
      */
@@ -39,7 +39,7 @@ public interface GroupDAO {
     /**
      * Update an existing deviceGroup
      *
-     * @param deviceGroup to update
+     * @param deviceGroup group to update
      * @return sql execution result
      * @throws GroupManagementDAOException
      */
@@ -74,8 +74,8 @@ public interface GroupDAO {
     /**
      * Get the list of Groups that matches with the given DeviceGroup name.
      *
-     * @param groupName of the DeviceGroup.
-     * @param owner  of the DeviceGroup.
+     * @param groupName name of the DeviceGroup.
+     * @param owner     owner of the DeviceGroup.
      * @param tenantId  of user's tenant
      * @return List of DeviceGroup that matches with the given DeviceGroup name.
      * @throws GroupManagementDAOException

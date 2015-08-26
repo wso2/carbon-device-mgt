@@ -1,5 +1,3 @@
-package org.wso2.carbon.device.mgt.group.common;
-
 /*
  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -18,18 +16,18 @@ package org.wso2.carbon.device.mgt.group.common;
  * under the License.
  */
 
+package org.wso2.carbon.device.mgt.group.common;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement
-public class GroupUser implements Serializable{
+@XmlRootElement public class GroupUser implements Serializable {
     private String username;
     private List<String> roles;
 
-    @XmlElement
-    public String getUsername() {
+    @XmlElement public String getUsername() {
         return username;
     }
 
@@ -37,8 +35,7 @@ public class GroupUser implements Serializable{
         this.username = username;
     }
 
-    @XmlElement
-    public List<String> getRoles() {
+    @XmlElement public List<String> getRoles() {
         return roles;
     }
 

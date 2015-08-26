@@ -102,7 +102,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         if (pipDevice.getRoles() != null) {
             policies = policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
         }
-        if(pipDevice.getUserId() != null && !pipDevice.getUserId().isEmpty()) {
+        if (pipDevice.getUserId() != null && !pipDevice.getUserId().isEmpty()) {
             policies = policyFilter.filterUserBasedPolicies(pipDevice.getUserId(), policies);
         }
 

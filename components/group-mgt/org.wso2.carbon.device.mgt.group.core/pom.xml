@@ -67,7 +67,7 @@
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.group.core.internal,
-                            org.wso2.carbon.device.mgt.group.core.*
+                            org.wso2.carbon.device.mgt.group.core.*; version=${carbon.device.mgt.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

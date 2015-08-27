@@ -47,7 +47,7 @@
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Device Management Common Bundle</Bundle-Description>
                         <Export-Package>
-                            org.wso2.carbon.device.mgt.common.*
+                            org.wso2.carbon.device.mgt.common.*; version=${carbon.device.mgt.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

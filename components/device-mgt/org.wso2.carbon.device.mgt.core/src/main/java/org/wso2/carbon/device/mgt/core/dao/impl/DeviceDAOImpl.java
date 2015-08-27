@@ -42,9 +42,8 @@ public class DeviceDAOImpl implements DeviceDAO {
         int deviceId = -1;
         try {
             conn = this.getConnection();
-            String sql =
-                    "INSERT INTO DM_DEVICE(DESCRIPTION, NAME, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION, TENANT_ID) " +
-                            "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO DM_DEVICE(DESCRIPTION, NAME, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION, TENANT_ID) " +
+                    "VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, device.getDescription());
             stmt.setString(2, device.getName());
@@ -74,9 +73,8 @@ public class DeviceDAOImpl implements DeviceDAO {
         int deviceId = -1;
         try {
             conn = this.getConnection();
-            String sql =
-                    "UPDATE DM_DEVICE SET DESCRIPTION = ?, NAME = ? WHERE DEVICE_IDENTIFICATION = ? AND " +
-                            "DEVICE_TYPE_ID = ? AND TENANT_ID = ?";
+            String sql = "UPDATE DM_DEVICE SET DESCRIPTION = ?, NAME = ? WHERE DEVICE_IDENTIFICATION = ? AND " +
+                    "DEVICE_TYPE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, device.getDescription());
             stmt.setString(2, device.getName());

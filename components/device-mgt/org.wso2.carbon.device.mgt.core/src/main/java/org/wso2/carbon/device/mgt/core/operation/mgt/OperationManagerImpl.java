@@ -76,7 +76,7 @@ public class OperationManagerImpl implements OperationManager {
             log.debug("operation:[" + operation.toString() + "]");
             for (DeviceIdentifier deviceIdentifier : deviceIds) {
                 log.debug("device identifier id:[" + deviceIdentifier.getId() + "] type:[" +
-                    deviceIdentifier.getType() + "]");
+                        deviceIdentifier.getType() + "]");
             }
         }
         try {
@@ -167,7 +167,7 @@ public class OperationManagerImpl implements OperationManager {
 
             if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for the given device Identifier:" +
-                    deviceId.getId() + " and given type:" + deviceId.getType());
+                        deviceId.getId() + " and given type:" + deviceId.getType());
             }
 
             dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(

@@ -402,7 +402,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody.trim() + System.getProperty("line.separator") +
                     System.getProperty("line.separator") + url.replaceAll("\\{"
-                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
@@ -458,8 +458,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
-                    .USERNAME
-                    + "\\}",
+                            .USERNAME
+                            + "\\}",
                     URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
 
@@ -468,7 +468,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             .ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 

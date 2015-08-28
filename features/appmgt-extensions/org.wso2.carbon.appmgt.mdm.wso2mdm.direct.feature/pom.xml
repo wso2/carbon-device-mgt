@@ -54,8 +54,8 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.appmgt.mdm.wso2mdm</id>
-                            <propertiesFile>../etc/feature.properties</propertiesFile>
+                            <id>org.wso2.carbon.appmgt.mdm.wso2mdm.direct</id>
+                            <propertiesFile>../../../features/etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:server
@@ -65,6 +65,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
+                                <bundleDef>com.google.code.gson:gson:${google.gson.version}</bundleDef>
                                 <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.appmgt.mdm.wso2mdm.direct:${carbon.device.mgt.version}</bundleDef>
                             </bundles>
                             <importFeatures>

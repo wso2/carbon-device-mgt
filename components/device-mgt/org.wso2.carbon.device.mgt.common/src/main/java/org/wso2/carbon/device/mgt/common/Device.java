@@ -19,9 +19,12 @@ package org.wso2.carbon.device.mgt.common;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
-public class Device {
+public class Device implements Serializable{
+
+	private static final long serialVersionUID = 1998101711L;
 
 	private int id;
     private String name;

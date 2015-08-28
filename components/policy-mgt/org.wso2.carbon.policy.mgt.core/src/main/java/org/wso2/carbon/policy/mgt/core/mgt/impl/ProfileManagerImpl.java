@@ -91,7 +91,7 @@ public class ProfileManagerImpl implements ProfileManager {
 
         try {
             PolicyManagementDAOFactory.beginTransaction();
-            profile = profileDAO.updateProfile(profile);
+            profileDAO.updateProfile(profile);
             featureDAO.updateProfileFeatures(profile.getProfileFeaturesList(), profile.getProfileId());
             PolicyManagementDAOFactory.commitTransaction();
         } catch (ProfileManagerDAOException e) {
@@ -166,6 +166,7 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
+            DeviceManagementDAOFactory.closeConnection();
         }
         return profile;
     }
@@ -204,6 +205,7 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
+            DeviceManagementDAOFactory.closeConnection();
         }
         return profileList;
     }
@@ -238,6 +240,7 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
+            DeviceManagementDAOFactory.closeConnection();
         }
         return profileList;
     }

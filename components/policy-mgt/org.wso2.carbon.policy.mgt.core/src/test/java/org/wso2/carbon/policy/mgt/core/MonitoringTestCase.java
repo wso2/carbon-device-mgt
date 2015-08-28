@@ -81,9 +81,9 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         identifier.setType(ANDROID);
         identifier.setId(devices.get(0).getDeviceIdentifier());
 
-        PolicyAdministratorPoint administratorPoint = new PolicyAdministratorPointImpl();
-
-        administratorPoint.setPolicyUsed(identifier, policies.get(0));
+//        PolicyAdministratorPoint administratorPoint = new PolicyAdministratorPointImpl();
+//
+//        administratorPoint.setPolicyUsed(identifier, policies.get(0));
 
     }
 
@@ -116,9 +116,11 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
 
         DeviceManagementDataHolder.getInstance().setOperationManager(operationManager);
 
-        log.debug(policy.getId());
-        log.debug(policy.getPolicyName());
-        log.debug(policy.getCompliance());
+        if (policy != null) {
+            log.debug(policy.getId());
+            log.debug(policy.getPolicyName());
+            log.debug(policy.getCompliance());
+        }
 
         MonitoringManager monitoringManager = new MonitoringManagerImpl();
 
@@ -137,14 +139,13 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
             PolicyComplianceException {
 
 
-
         PolicyMonitoringServiceTest monitoringServiceTest = new PolicyMonitoringServiceTest();
         PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(monitoringServiceTest.getType(),
                 monitoringServiceTest);
 
         DeviceManagementProviderService adminService = new DeviceManagementProviderServiceImpl();
 
-       // PolicyManager policyManagerService = new PolicyManagerImpl();
+        // PolicyManager policyManagerService = new PolicyManagerImpl();
 
         List<Device> devices = adminService.getAllDevices();
 
@@ -166,7 +167,8 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
 
 
     @Test(dependsOnMethods = ("checkComplianceFromMonitoringService"))
-    public void checkCompliance() throws DeviceManagementException, PolicyComplianceException, PolicyManagementException {
+    public void checkCompliance() throws DeviceManagementException, PolicyComplianceException,
+            PolicyManagementException {
 
         PolicyMonitoringServiceTest monitoringServiceTest = new PolicyMonitoringServiceTest();
         PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(monitoringServiceTest.getType(),

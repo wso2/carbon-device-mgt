@@ -27,19 +27,18 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
+import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PolicyManagerImpl implements PolicyManager {
 
@@ -47,7 +46,6 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private DeviceDAO deviceDAO;
-    //    private DeviceTypeDAO deviceTypeDAO;
     private ProfileManager profileManager;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
@@ -56,7 +54,6 @@ public class PolicyManagerImpl implements PolicyManager {
         this.profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-//        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.profileManager = new ProfileManagerImpl();
     }
 
@@ -71,7 +68,6 @@ public class PolicyManagerImpl implements PolicyManager {
                 Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
                 profile.setCreatedDate(currentTimestamp);
                 profile.setUpdatedDate(currentTimestamp);
-
 
                 profileDAO.addProfile(profile);
                 featureDAO.addProfileFeatures(profile.getProfileFeaturesList(), profile.getProfileId());
@@ -110,17 +106,6 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
-//            if (policy.getEndDate() != null & policy.getStartDate() != null) {
-//                policyDAO.addDatesToPolicy(policy.getStartDate(), policy.getEndDate(), policy);
-//            }
-//
-//            if (policy.getStartTime() != 0 & policy.getEndTime() != 0) {
-//                policyDAO.addTimesToPolicy(policy.getStartTime(), policy.getEndTime(), policy);
-//            }
-//
-//            if (policy.getLatitude() != null && policy.getLongitude() != null) {
-//                policyDAO.addLocationToPolicy(policy.getLatitude(), policy.getLongitude(), policy);
-//            }
             PolicyManagementDAOFactory.commitTransaction();
 
         } catch (PolicyManagerDAOException e) {
@@ -147,7 +132,13 @@ public class PolicyManagerImpl implements PolicyManager {
 
         try {
             PolicyManagementDAOFactory.beginTransaction();
-            policy = policyDAO.updatePolicy(policy);
+            // This will keep track of the policies updated.
+            policyDAO.recordUpdatedPolicy(policy);
+
+            policyDAO.updatePolicy(policy);
+            profileDAO.updateProfile(policy.getProfile());
+            featureDAO.updateProfileFeatures(policy.getProfile().getProfileFeaturesList(), policy.getProfile()
+                    .getProfileId());
             policyDAO.deleteAllPolicyRelatedConfigs(policy.getId());
 
             if (policy.getUsers() != null) {
@@ -177,23 +168,20 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
-//            if (policy.getEndDate() != null & policy.getStartDate() != null) {
-//                policyDAO.addDatesToPolicy(policy.getStartDate(), policy.getEndDate(), policy);
-//            }
-//
-//            if (policy.getStartTime() != 0 & policy.getEndTime() != 0) {
-//                policyDAO.addTimesToPolicy(policy.getStartTime(), policy.getEndTime(), policy);
-//            }
-//
-//            if (policy.getLatitude() != null && policy.getLongitude() != null) {
-//                policyDAO.addLocationToPolicy(policy.getLatitude(), policy.getLongitude(), policy);
-//            }
-
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while updating the policy ("
                     + policy.getId() + " - " + policy.getPolicyName() + ")", e);
+        } catch (ProfileManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while updating the profile (" +
+                    policy.getProfile().getProfileName() + ")", e);
+        } catch (FeatureManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while updating the profile features (" +
+                    policy.getProfile().getProfileName() + ")", e);
+
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
@@ -206,6 +194,7 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             PolicyManagementDAOFactory.beginTransaction();
             bool = policyDAO.updatePolicyPriorities(policies);
+            policyDAO.recordUpdatedPolicies(policies);
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
             PolicyManagementDAOFactory.rollbackTransaction();
@@ -245,12 +234,13 @@ public class PolicyManagerImpl implements PolicyManager {
 
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
+        boolean bool;
         try {
             PolicyManagementDAOFactory.beginTransaction();
 
             Policy policy = policyDAO.getPolicy(policyId);
             policyDAO.deleteAllPolicyRelatedConfigs(policyId);
-            policyDAO.deletePolicy(policyId);
+            bool = policyDAO.deletePolicy(policyId);
 
             if (log.isDebugEnabled()) {
                 log.debug("Profile ID: " + policy.getProfileId());
@@ -260,7 +250,7 @@ public class PolicyManagerImpl implements PolicyManager {
 
             profileDAO.deleteProfile(policy.getProfileId());
             PolicyManagementDAOFactory.commitTransaction();
-            return true;
+            return bool;
         } catch (PolicyManagerDAOException e) {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while deleting the policy (" + policyId + ")", e);
@@ -272,6 +262,41 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while deleting the profile features for policy ("
                     + policyId + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public void activatePolicy(int policyId) throws PolicyManagementException {
+        try {
+            Policy policy = this.getPolicy(policyId);
+            PolicyManagementDAOFactory.beginTransaction();
+            policyDAO.activatePolicy(policyId);
+            policyDAO.recordUpdatedPolicy(policy);
+            PolicyManagementDAOFactory.commitTransaction();
+        } catch (PolicyManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while activating the policy. (Id : " + policyId + ")" +
+                    "", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public void inactivatePolicy(int policyId) throws PolicyManagementException {
+        try {
+            Policy policy = this.getPolicy(policyId);
+            PolicyManagementDAOFactory.beginTransaction();
+            policyDAO.inactivatePolicy(policyId);
+            policyDAO.recordUpdatedPolicy(policy);
+            PolicyManagementDAOFactory.commitTransaction();
+        } catch (PolicyManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while inactivating the policy. (Id : " + policyId +
+                    ")" +
+                    "", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
@@ -391,17 +416,12 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             PolicyManagementDAOFactory.openConnection();
             policy = policyDAO.getPolicyByProfileID(profileId);
-            deviceList = getPolicyAppliedDevicesIds(policy.getId());
+
             roleNames = policyDAO.getPolicyAppliedRoles(policy.getId());
-//            policyDAO.getDatesOfPolicy(policy);
-//            policyDAO.getTimesOfPolicy(policy);
-//            policyDAO.getLocationsOfPolicy(policy);
-
             profile = profileDAO.getProfiles(profileId);
-
             policy.setProfile(profile);
             policy.setRoles(roleNames);
-            policy.setDevices(deviceList);
+
 
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting the policy related to profile ID (" +
@@ -414,6 +434,10 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
+
+        // This is due to connection close in following method too.
+        deviceList = getPolicyAppliedDevicesIds(policy.getId());
+        policy.setDevices(deviceList);
         return policy;
     }
 
@@ -427,17 +451,13 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             PolicyManagementDAOFactory.openConnection();
             policy = policyDAO.getPolicy(policyId);
-            deviceList = getPolicyAppliedDevicesIds(policyId);
-            roleNames = policyDAO.getPolicyAppliedRoles(policyId);
-//            policyDAO.getDatesOfPolicy(policy);
-//            policyDAO.getTimesOfPolicy(policy);
-//            policyDAO.getLocationsOfPolicy(policy);
 
+            roleNames = policyDAO.getPolicyAppliedRoles(policyId);
             Profile profile = profileDAO.getProfiles(policy.getProfileId());
 
             policy.setProfile(profile);
             policy.setRoles(roleNames);
-            policy.setDevices(deviceList);
+
 
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting the policy related to policy ID (" +
@@ -450,11 +470,16 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
+
+        // This is done because connection close in below method too.
+        deviceList = this.getPolicyAppliedDevicesIds(policyId);
+        policy.setDevices(deviceList);
         return policy;
     }
 
     @Override
     public List<Policy> getPolicies() throws PolicyManagementException {
+
         List<Policy> policyList;
         List<Profile> profileList;
         try {
@@ -465,7 +490,6 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
             PolicyManagementDAOFactory.openConnection();
             policyList = policyDAO.getAllPolicies();
-//            List<Profile> profileList = profileDAO.getAllProfiles();
 
             for (Policy policy : policyList) {
                 for (Profile profile : profileList) {
@@ -473,13 +497,9 @@ public class PolicyManagerImpl implements PolicyManager {
                         policy.setProfile(profile);
                     }
                 }
-                policy.setDevices(getPolicyAppliedDevicesIds(policy.getId()));
                 policy.setRoles(policyDAO.getPolicyAppliedRoles(policy.getId()));
                 policy.setUsers(policyDAO.getPolicyAppliedUsers(policy.getId()));
                 policy.setPolicyCriterias(policyDAO.getPolicyCriteria(policy.getId()));
-//                policyDAO.getDatesOfPolicy(policy);
-//                policyDAO.getTimesOfPolicy(policy);
-//                policyDAO.getLocationsOfPolicy(policy);
             }
             Collections.sort(policyList);
         } catch (PolicyManagerDAOException e) {
@@ -489,6 +509,13 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
+
+        // Following is done because connection close has been implemented in every method.
+
+        for (Policy policy : policyList) {
+            policy.setDevices(this.getPolicyAppliedDevicesIds(policy.getId()));
+        }
+
         return policyList;
     }
 
@@ -612,24 +639,43 @@ public class PolicyManagerImpl implements PolicyManager {
 
     @Override
     public List<Device> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagementException {
+
         List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
         try {
             PolicyManagementDAOFactory.openConnection();
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            List<Device> allDevices = service.getAllDevices();
+
+            HashMap<Integer, Device> allDeviceMap = new HashMap<>();
+
+            if(!allDevices.isEmpty()) {
+                allDeviceMap = PolicyManagerUtil.covertDeviceListToMap(allDevices);
+            }
+
             for (int deviceId : deviceIds) {
-                //TODO FIX ME
-                deviceList.add(deviceDAO.getDevice(new DeviceIdentifier(Integer.toString(deviceId), ""), tenantId));
+
+                if(allDeviceMap.containsKey(deviceId)){
+                    if(log.isDebugEnabled()) {
+                        log.debug("Policy Applied device ids .............: " + deviceId + " - Policy Id " + policyId);
+                    }
+                    deviceList.add(allDeviceMap.get(deviceId));
+                }
+
+                //TODO FIX ME -- This is wrong, Device id is not  device identifier, so converting is wrong.
+
+                //deviceList.add(deviceDAO.getDevice(new DeviceIdentifier(Integer.toString(deviceId), ""), tenantId));
             }
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting the device ids related to policy id (" +
                     policyId + ")", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new PolicyManagementException("Error occurred while getting the devices related to policy id (" +
-                    policyId + ")", e);
         } catch (SQLException e) {
             throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (DeviceManagementException e) {
+            throw new PolicyManagementException("Error occurred while getting the devices related to policy id (" +
+                    policyId + ")", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
@@ -666,6 +712,47 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
+    public List<DeviceType> applyChangesMadeToPolicies() throws PolicyManagementException {
+
+        List<DeviceType> changedDeviceTypes = new ArrayList<>();
+        try {
+            //HashMap<Integer, Integer> map = policyDAO.getUpdatedPolicyIdandDeviceTypeId();
+            List<Policy> updatedPolicies = new ArrayList<>();
+//            List<Policy> activePolicies = new ArrayList<>();
+//            List<Policy> inactivePolicies = new ArrayList<>();
+            List<Integer> updatedPolicyIds = new ArrayList<>();
+
+            List<Policy> allPolicies = this.getPolicies();
+
+            for (Policy policy : allPolicies) {
+                if (policy.isUpdated()) {
+                    updatedPolicies.add(policy);
+                    updatedPolicyIds.add(policy.getId());
+                    if (!changedDeviceTypes.contains(policy.getProfile().getDeviceType())) {
+                        changedDeviceTypes.add(policy.getProfile().getDeviceType());
+                    }
+                }
+//                if (policy.isActive()) {
+//                    activePolicies.add(policy);
+//                } else {
+//                    inactivePolicies.add(policy);
+//                }
+            }
+            PolicyManagementDAOFactory.beginTransaction();
+            policyDAO.markPoliciesAsUpdated(updatedPolicyIds);
+            policyDAO.removeRecordsAboutUpdatedPolicies();
+            PolicyManagementDAOFactory.commitTransaction();
+        } catch (PolicyManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while applying the changes to policy operations.", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
+        return changedDeviceTypes;
+    }
+
+
+    @Override
     public void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
             throws PolicyManagementException {
 
@@ -674,13 +761,11 @@ public class PolicyManagerImpl implements PolicyManager {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             deviceId = device.getId();
-            // boolean exist = policyDAO.checkPolicyAvailable(deviceId);
-
             PolicyManagementDAOFactory.beginTransaction();
 
             Policy policySaved = policyDAO.getAppliedPolicy(deviceId);
             if (policySaved != null && policySaved.getId() != 0) {
-                if (policy.getId() != policySaved.getId()){
+                if (policy.getId() != policySaved.getId()) {
                     policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
                 }
             } else {
@@ -780,6 +865,20 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.closeConnection();
         }
         return policy;
+    }
+
+    @Override
+    public HashMap<Integer, Integer> getAppliedPolicyIdsDeviceIds() throws PolicyManagementException {
+        try {
+            PolicyManagementDAOFactory.openConnection();
+            return policyDAO.getAppliedPolicyIdsDeviceIds();
+        } catch (PolicyManagerDAOException e) {
+            throw new PolicyManagementException("Error occurred while reading the policy applied database.", e);
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while reading the policy applied database.", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
     }
 
 }

@@ -50,7 +50,7 @@ public class PolicyCreator {
         policy.setPolicyName("Test_Policy_02");
         policy.setGeneric(true);
         policy.setProfile(profile);
-        policy.setDevices(DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType()));
+        policy.setDevices(DeviceCreator.getDeviceList2(DeviceTypeCreator.getDeviceType()));
 
         policy.setCompliance("ENFORCE");
 
@@ -99,7 +99,7 @@ public class PolicyCreator {
         policy.setPolicyName("Test_Policy_03");
         policy.setGeneric(true);
         policy.setProfile(profile);
-        policy.setDevices(DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType()));
+        policy.setDevices(DeviceCreator.getDeviceList3(DeviceTypeCreator.getDeviceType()));
 
         List<String> roles = new ArrayList<String>();
         roles.add("Role_01");
@@ -138,7 +138,7 @@ public class PolicyCreator {
         policy.setPolicyName("Test_Policy_04");
         policy.setGeneric(true);
         policy.setProfile(profile);
-        policy.setDevices(DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType()));
+        policy.setDevices(DeviceCreator.getDeviceList4(DeviceTypeCreator.getDeviceType()));
 
         policy.setCompliance("MONITOR");
         policy.setOwnershipType("BYOD");

@@ -49,7 +49,7 @@ public abstract class BasePolicyManagementDAOTest {
     @BeforeSuite
     public void setupDataSource() throws Exception {
         this.initDatSource();
-        this.initSQLScript();
+      //  this.initSQLScript();
     }
 
     public void initDatSource() throws Exception {

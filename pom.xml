@@ -47,6 +47,7 @@
 	    <module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
         <module>features/oauth-extensions</module>
+        <module>features/certificate-mgt</module>
     </modules>
 
     <dependencyManagement>

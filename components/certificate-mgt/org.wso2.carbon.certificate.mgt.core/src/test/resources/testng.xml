@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="iOS-MDM-Tests">
+    <test name="Operatoin Bean validation tests" preserve-order="true">
+        <classes>
+            <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateGeneratorTestSuite"/>
+            <class name="org.wso2.carbon.certificate.mgt.core.util.CommonUtil"/>
+        </classes>
+    </test>
+</suite>

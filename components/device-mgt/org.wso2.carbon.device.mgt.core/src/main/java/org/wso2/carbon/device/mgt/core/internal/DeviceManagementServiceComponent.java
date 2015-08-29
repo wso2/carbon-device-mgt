@@ -24,6 +24,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
@@ -36,6 +37,7 @@ import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfiguration
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
+import org.wso2.carbon.device.mgt.core.config.tenant.TenantConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -170,6 +172,11 @@ public class DeviceManagementServiceComponent {
         DeviceManagementProviderService deviceManagementProvider = new DeviceManagementProviderServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProvider);
         bundleContext.registerService(DeviceManagementProviderService.class.getName(), deviceManagementProvider, null);
+
+	    /* Registering Tenant Configuration Management Service */
+	    TenantConfigurationManagementService
+			    tenantConfiguration = new TenantConfigurationManagementServiceImpl();
+	    bundleContext.registerService(TenantConfigurationManagementService.class.getName(), tenantConfiguration, null);
 
 	     /* Registering App Management service */
         try {

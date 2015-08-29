@@ -61,26 +61,36 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     @Override
     public PIPDevice getDeviceData(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         PIPDevice pipDevice = new PIPDevice();
-        org.wso2.carbon.device.mgt.common.Device device;
+        Device device;
 
         DeviceType deviceType = new DeviceType();
         deviceType.setName(deviceIdentifier.getType());
-        deviceManagementService = getDeviceManagementService();
+        DeviceManagementProviderService deviceManagementService = new DeviceManagementProviderServiceImpl();
 
         try {
             device = deviceManagementService.getDevice(deviceIdentifier);
-             /*deviceManagementService.getDeviceType(deviceIdentifier.getType());*/
-            pipDevice.setDevice(device);
-            pipDevice.setRoles(getRoleOfDevice(device));
-            pipDevice.setDeviceType(deviceType);
-            pipDevice.setDeviceIdentifier(deviceIdentifier);
-            pipDevice.setUserId(device.getEnrolmentInfo().getOwner());
-            pipDevice.setOwnershipType(device.getEnrolmentInfo().getOwnership().toString());
+            Thread.currentThread();
 
-            // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
-            // pipDevice.setLongitude();
-            // pipDevice.setAltitude();
-            // pipDevice.setTimestamp();
+            if (device != null) {
+             /*deviceManagementService.getDeviceType(deviceIdentifier.getType());*/
+                pipDevice.setDevice(device);
+                pipDevice.setRoles(getRoleOfDevice(device));
+                pipDevice.setDeviceType(deviceType);
+                pipDevice.setDeviceIdentifier(deviceIdentifier);
+                pipDevice.setUserId(device.getEnrolmentInfo().getOwner());
+                pipDevice.setOwnershipType(device.getEnrolmentInfo().getOwnership().toString());
+
+                // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
+                // pipDevice.setLongitude();
+                // pipDevice.setAltitude();
+                // pipDevice.setTimestamp();
+            } else {
+                // Remove this
+                for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+                    log.debug("StackTraceElement   : " + ste);
+                }
+                throw new PolicyManagementException("Device details cannot be null.");
+            }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred when retrieving the data related to device from the database.";
             log.error(msg, e);

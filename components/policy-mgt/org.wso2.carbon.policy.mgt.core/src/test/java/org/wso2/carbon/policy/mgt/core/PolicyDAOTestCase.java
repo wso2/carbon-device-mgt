@@ -86,20 +86,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
             enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
         }
 
-//        List<Device> devices = deviceDAO.getDevices(-1234);
-//
-//        log.debug("--- Printing device taken by calling the device dao layer by tenant id.");
-//        for (Device device : devices) {
-//            log.debug(device.getDeviceIdentifier());
-//        }
-//
-//
-//        log.debug("--- Printing device taken by calling the device dao layer by tenant id and device type.");
-//        List<Device> devices2 = deviceDAO.getDevices("android", -1234);
-//
-//        for (Device device : devices2) {
-//            log.debug(device.getDeviceIdentifier());
-//        }
+
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
 
@@ -108,7 +95,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         log.debug("Printing device taken by calling the service layer with device type.");
         List<Device> devices3 = service.getAllDevices("android");
 
-        log.debug("Device list size ..........................!" + devices3.size());
+        log.debug("Device list size ...! " + devices3.size());
         for (Device device : devices3) {
             log.debug(device.getDeviceIdentifier());
         }
@@ -118,12 +105,14 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     @Test(dependsOnMethods = ("addDevice"))
     public void addFeatures() throws FeatureManagementException {
 
-        FeatureManager featureManager = new FeatureManagerImpl();
+        //This test case was removed because architecture was changed
+
+//        FeatureManager featureManager = new FeatureManagerImpl();
         featureList = FeatureCreator.getFeatureList();
-        //featureManager.addFeatures(featureList);
-        for (Feature feature : featureList) {
-//            featureManager.addFeature(feature);
-        }
+//        featureManager.addFeatures(featureList);
+//        for (Feature feature : featureList) {
+//           featureManager.addFeature(feature);
+//        }
 
     }
 
@@ -368,7 +357,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
         policyAdministratorPoint.deletePolicy(1);
 
-        log.debug("First policy deleted.");
+        log.debug("First policy deleted..!");
     }
 
 
@@ -382,15 +371,14 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         List<Device> devices = service.getAllDevices("android");
 
         for (Policy policy : policies) {
-            log.debug(policy.getPolicyName() + "-----P");
+            log.debug("Policy Name : " + policy.getPolicyName());
         }
 
         for (Device device : devices) {
-            log.debug(device.getDeviceIdentifier() + " ----- D");
+            log.debug("Device Name : " + device.getDeviceIdentifier());
         }
 
     }
-
 
 
 }

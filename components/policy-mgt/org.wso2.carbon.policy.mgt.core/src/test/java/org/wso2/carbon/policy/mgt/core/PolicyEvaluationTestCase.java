@@ -28,7 +28,11 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.ntask.common.TaskException;
+import org.wso2.carbon.ntask.core.service.TaskService;
+import org.wso2.carbon.ntask.core.service.impl.TaskServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.services.SimplePolicyEvaluationTest;
 
@@ -50,20 +54,22 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test
-    public void activatePolicies() throws PolicyManagementException {
+    public void activatePolicies() throws PolicyManagementException, TaskException {
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
         PolicyAdministratorPoint administratorPoint = policyManagerService.getPAP();
+
         List<Policy> policies = policyManagerService.getPolicies(ANDROID);
 
         for (Policy policy : policies) {
             log.debug("Policy status : " + policy.getPolicyName() + "  - " + policy.isActive() + " - " + policy
-                    .isUpdated());
+                    .isUpdated() + " Policy id : " + policy.getId());
 
             if (!policy.isActive()) {
                 administratorPoint.activatePolicy(policy.getId());
             }
         }
-        administratorPoint.publishChanges();
+        // This cannot be called due to task service cannot be started from the
+        //administratorPoint.publishChanges();
     }
 
     @Test(dependsOnMethods = ("activatePolicies"))
@@ -92,14 +98,14 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
 
 
     @Test(dependsOnMethods = ("getEffectivePolicy"))
-    public void updatePriorities() throws PolicyManagementException {
+    public void updatePriorities() throws PolicyManagementException, TaskException {
 
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
         PolicyAdministratorPoint administratorPoint = policyManagerService.getPAP();
 
         List<Policy> policies = administratorPoint.getPolicies();
 
-        log.debug("Re-enforcing policy started....");
+        log.debug("Re-enforcing policy started...!");
 
         int sixe = policies.size();
 
@@ -110,10 +116,18 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
             x++;
         }
 
-
-
         administratorPoint.updatePolicyPriorities(policies);
-        administratorPoint.publishChanges();
+     //   administratorPoint.publishChanges();
+    }
+
+
+    @Test(dependsOnMethods = ("updatePriorities"))
+    public void checkDelegations() {
+
+        log.debug("Delegation methods calls started because tasks cannot be started due to osgi constraints.....!");
+
+        DelegationTask delegationTask = new DelegationTask();
+        delegationTask.execute();
     }
 
     public void sortPolicies(List<Policy> policyList)  {

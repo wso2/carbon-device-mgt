@@ -20,12 +20,10 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -45,7 +43,6 @@ public class PolicyManagerImpl implements PolicyManager {
     private PolicyDAO policyDAO;
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
-    private DeviceDAO deviceDAO;
     private ProfileManager profileManager;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
@@ -53,7 +50,6 @@ public class PolicyManagerImpl implements PolicyManager {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
         this.profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.profileManager = new ProfileManagerImpl();
     }
 
@@ -306,15 +302,18 @@ public class PolicyManagerImpl implements PolicyManager {
     public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList,
                                     Policy policy) throws PolicyManagementException {
         try {
-            PolicyManagementDAOFactory.beginTransaction();
-            if (policy.getId() == 0) {
-                policyDAO.addPolicy(policy);
-            }
+
             List<Device> deviceList = new ArrayList<>();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
                 deviceList.add(service.getDevice(deviceIdentifier));
             }
+
+            PolicyManagementDAOFactory.beginTransaction();
+            if (policy.getId() == 0) {
+                policyDAO.addPolicy(policy);
+            }
+
             policy = policyDAO.addPolicyToDevice(deviceList, policy);
             PolicyManagementDAOFactory.commitTransaction();
 
@@ -525,9 +524,11 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Integer> policyIdList;
         List<Policy> policies = new ArrayList<>();
         try {
-            PolicyManagementDAOFactory.openConnection();
+
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
+
+            PolicyManagementDAOFactory.openConnection();
             policyIdList = policyDAO.getPolicyIdsOfDevice(device);
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting the policies for device identifier (" +
@@ -643,11 +644,13 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
         try {
-            PolicyManagementDAOFactory.openConnection();
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             List<Device> allDevices = service.getAllDevices();
+
+            PolicyManagementDAOFactory.openConnection();
+            //int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
+
 
             HashMap<Integer, Device> allDeviceMap = new HashMap<>();
 
@@ -790,9 +793,9 @@ public class PolicyManagerImpl implements PolicyManager {
 
         boolean exist;
         try {
-            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
+            PolicyManagementDAOFactory.openConnection();
             exist = policyDAO.checkPolicyAvailable(device.getId());
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while checking whether device has a policy " +
@@ -811,9 +814,10 @@ public class PolicyManagerImpl implements PolicyManager {
     @Override
     public boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         try {
-            PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
+
+            PolicyManagementDAOFactory.openConnection();
             policyDAO.setPolicyApplied(device.getId());
             return true;
         } catch (PolicyManagerDAOException e) {

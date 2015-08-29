@@ -18,11 +18,9 @@
  */
 package org.wso2.carbon.policy.mgt.core.enforcement;
 
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Policy;
 
-import java.util.HashMap;
 import java.util.List;
 
 public interface PolicyEnforcementDelegator {

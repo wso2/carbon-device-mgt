@@ -28,9 +28,18 @@ import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.ntask.common.TaskException;
+import org.wso2.carbon.ntask.core.service.TaskService;
+import org.wso2.carbon.ntask.core.service.impl.TaskServiceImpl;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.common.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
+import org.wso2.carbon.policy.mgt.core.services.PolicyMonitoringServiceTest;
+import org.wso2.carbon.policy.mgt.core.services.SimplePolicyEvaluationTest;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import javax.sql.DataSource;
@@ -49,7 +58,13 @@ public abstract class BasePolicyManagementDAOTest {
     @BeforeSuite
     public void setupDataSource() throws Exception {
         this.initDatSource();
-      //  this.initSQLScript();
+        this.initSQLScript();
+        this.initialize();
+        this.initiatePrivilegedCaronContext();
+    }
+
+    public void initialize() throws TaskException {
+
     }
 
     public void initDatSource() throws Exception {

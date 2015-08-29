@@ -31,6 +31,8 @@ import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
 import org.wso2.carbon.policy.mgt.core.config.PolicyManagementConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleServiceImpl;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -81,6 +83,9 @@ public class PolicyManagementServiceComponent {
 
             componentContext.getBundleContext().registerService(
                     PolicyManagerService.class.getName(), new PolicyManagerServiceImpl(), null);
+
+            TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
+            taskScheduleService.startTask(30000);
 
         } catch (Throwable t) {
             log.error("Error occurred while initializing the Policy management core.", t);

@@ -30,13 +30,12 @@ import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
-import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegator, Runnable {
+public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegator{
 
     private static final Log log = LogFactory.getLog(PolicyEnforcementDelegatorImpl.class);
 
@@ -108,12 +107,4 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
 
     }
 
-    @Override
-    public void run() {
-        try {
-            this.delegate();
-        } catch (PolicyDelegationException e) {
-            log.error("Error occurred while running the policy change delegation thread.", e);
-        }
-    }
 }

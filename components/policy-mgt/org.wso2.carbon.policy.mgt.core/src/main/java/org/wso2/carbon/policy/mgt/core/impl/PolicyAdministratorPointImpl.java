@@ -127,11 +127,16 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
             String taskName = PolicyManagementConstants.DELEGATION_TASK_NAME + "_" + String.valueOf(tenantId);
 
-            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.DELEGATION_TASK_CLAZZ, properties, triggerInfo);
+            if(!taskManager.isTaskScheduled(taskName)) {
 
-            taskManager.registerTask(taskInfo);
-            taskManager.rescheduleTask(taskInfo.getName());
+                TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.DELEGATION_TASK_CLAZZ, properties, triggerInfo);
 
+                taskManager.registerTask(taskInfo);
+                taskManager.rescheduleTask(taskInfo.getName());
+            } else {
+                throw new PolicyManagementException("There is a task already running for policy changes. Please try to apply " +
+                        "changes after few minutes.");
+            }
 
         } catch (TaskException e) {
             String msg = "Error occurred while creating the policy delegation task for tenant " + PrivilegedCarbonContext.

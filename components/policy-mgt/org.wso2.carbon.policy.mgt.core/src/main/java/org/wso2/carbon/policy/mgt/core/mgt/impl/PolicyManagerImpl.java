@@ -188,8 +188,19 @@ public class PolicyManagerImpl implements PolicyManager {
     public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException {
         boolean bool;
         try {
+            List<Policy> existingPolicies = this.getPolicies();
             PolicyManagementDAOFactory.beginTransaction();
             bool = policyDAO.updatePolicyPriorities(policies);
+
+            // This logic is added because ui sends only policy id and priority to update priorities.
+
+            for (Policy policy : policies) {
+                for(Policy exPolicy: existingPolicies) {
+                    if(policy.getId() == exPolicy.getId()) {
+                        policy.setProfile(exPolicy.getProfile());
+                    }
+                }
+            }
             policyDAO.recordUpdatedPolicies(policies);
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {

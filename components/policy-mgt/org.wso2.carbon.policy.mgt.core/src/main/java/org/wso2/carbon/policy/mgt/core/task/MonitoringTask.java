@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
@@ -63,14 +64,13 @@ public class MonitoringTask implements Task {
             log.debug("Monitoring task started to run.");
         }
 
+        MonitoringManager monitoringManager = new MonitoringManagerImpl();
+
         List<DeviceType> deviceTypes = new ArrayList<>();
         try {
-            DeviceManagementDAOFactory.openConnection();
-            deviceTypes = deviceTypeDAO.getDeviceTypes();
-        } catch (Exception e) {
-            log.error("Error occurred while getting the device types.", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+            deviceTypes = monitoringManager.getDeviceTypes();
+        } catch (PolicyComplianceException e) {
+            log.error("Error occurred while getting the device types.");
         }
 
         if (!deviceTypes.isEmpty()) {
@@ -78,7 +78,6 @@ public class MonitoringTask implements Task {
 
                 DeviceManagementProviderService deviceManagementProviderService =
                         PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-                MonitoringManager monitoringManager = new MonitoringManagerImpl();
 
                 for (DeviceType deviceType : deviceTypes) {
                     PolicyMonitoringService monitoringService =

@@ -26,8 +26,13 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfigRepository;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
@@ -54,18 +59,24 @@ import java.util.Map;
 public class MonitoringManagerImpl implements MonitoringManager {
 
     private PolicyDAO policyDAO;
-    private DeviceDAO deviceDAO;
+//    private DeviceDAO deviceDAO;
+    private DeviceTypeDAO deviceTypeDAO;
     private MonitoringDAO monitoringDAO;
     private ComplianceDecisionPoint complianceDecisionPoint;
+    private PolicyConfiguration policyConfiguration;
 
     private static final Log log = LogFactory.getLog(MonitoringManagerImpl.class);
     private static final String OPERATION_MONITOR = "MONITOR";
 
     public MonitoringManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+//        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.monitoringDAO = PolicyManagementDAOFactory.getMonitoringDAO();
         this.complianceDecisionPoint = new ComplianceDecisionPointImpl();
+        this.policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                getDeviceManagementConfigRepository().getPolicyConfiguration();
+
     }
 
     @Override
@@ -242,6 +253,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         Map<Integer, Device> deviceIdsToAddOperation = new HashMap<>();
         Map<Integer, Device> deviceIdsWithExistingOperation = new HashMap<>();
         Map<Integer, Device> inactiveDeviceIds = new HashMap<>();
+        Map<Integer, Device> deviceToMarkUnreachable = new HashMap<>();
         Map<Integer, Integer> firstTimeDeviceIdsWithPolicyIds = new HashMap<>();
 
         Map<Integer, ComplianceData> tempMap = new HashMap<>();
@@ -258,8 +270,12 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     } else {
                         deviceIdsWithExistingOperation.put(complianceData.getDeviceId(),
                                 deviceIds.get(complianceData.getDeviceId()));
+                        if (complianceData.getAttempts() >= policyConfiguration.getMinRetriesToMarkUnreachable()) {
+                            deviceToMarkUnreachable.put(complianceData.getDeviceId(),
+                                    deviceIds.get(complianceData.getDeviceId()));
+                        }
                     }
-                    if (complianceData.getAttempts() >= 20) {
+                    if (complianceData.getAttempts() >= policyConfiguration.getMinRetriesToMarkInactive()) {
                         inactiveDeviceIds.put(complianceData.getDeviceId(),
                                 deviceIds.get(complianceData.getDeviceId()));
                     }
@@ -288,9 +304,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
             if (!deviceIdsWithExistingOperation.isEmpty()) {
                 monitoringDAO.updateAttempts(new ArrayList<>(deviceIdsWithExistingOperation.keySet()), false);
-                //TODO: Add attempts. This has to be fixed in the get pending operation tables too. This will be
-//                decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
-//                        new ArrayList<>(deviceIdsWithExistingOperation.values())));
             }
             PolicyManagementDAOFactory.commitTransaction();
 
@@ -312,6 +325,29 @@ public class MonitoringManagerImpl implements MonitoringManager {
             }
         }
 
+        // TODO : This should be uncommented, this is to mark the device as unreachable, But given the current implementation
+        // we are not able to do so.
+
+//        if(!deviceToMarkUnreachable.isEmpty()) {
+//            decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
+//                       new ArrayList<>(deviceToMarkUnreachable.values())));
+//        }
+
+    }
+
+    @Override
+    public List<DeviceType> getDeviceTypes() throws PolicyComplianceException {
+
+        List<DeviceType> deviceTypes = new ArrayList<>();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceTypes = deviceTypeDAO.getDeviceTypes();
+        } catch (Exception e) {
+            log.error("Error occurred while getting the device types.", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceTypes;
     }
 
     private void addMonitoringOperationsToDatabase(List<Device> devices)
@@ -325,8 +361,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         service.addOperation(monitoringOperation, deviceIdentifiers);
-//        PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-//                addOperation(monitoringOperation, deviceIdentifiers);
+
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {

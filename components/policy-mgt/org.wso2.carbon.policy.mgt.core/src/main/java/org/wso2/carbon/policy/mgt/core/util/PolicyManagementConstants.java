@@ -32,14 +32,18 @@ public final class PolicyManagementConstants {
     public static final String BLOCK = "BLOCK";
 
 
-    public static final String TASK_TYPE = "MONITORING_TASK";
-    public static final String TASK_NAME = "MONITORING";
-    public static final String TASK_CLAZZ = "org.wso2.carbon.policy.mgt.core.task.MonitoringTask";
+    public static final String MONITORING_TASK_TYPE = "MONITORING_TASK";
+    public static final String MONITORING_TASK_NAME = "MONITORING";
+    public static final String MONITORING_TASK_CLAZZ = "org.wso2.carbon.policy.mgt.core.task.MonitoringTask";
 
 
     public static final String DM_CACHE_MANAGER = "DM_CACHE_MANAGER";
     public static final String DM_CACHE = "DM_CACHE";
 
+
+    public static final String DELEGATION_TASK_TYPE = "DELEGATION__TASK";
+    public static final String DELEGATION_TASK_NAME = "DELEGATION";
+    public static final String DELEGATION_TASK_CLAZZ = "org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask";
 
 
 }

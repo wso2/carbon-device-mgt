@@ -33,13 +33,55 @@ public class PolicyFilterImpl implements PolicyFilter {
     private static final Log log = LogFactory.getLog(PolicyFilterImpl.class);
 
     @Override
+    public List<Policy> filterActivePolicies(List<Policy> policies) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies went in to filterActivePolicies : " + policies.size());
+            for (Policy policy : policies) {
+                log.debug("Names of policy went in to  filterActivePolicies : " + policy.getPolicyName());
+            }
+        }
+
+        List<Policy> temp = new ArrayList<Policy>();
+        for (Policy policy : policies) {
+            if (policy.isActive()) {
+                temp.add(policy);
+            }
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies returned from filterActivePolicies :" + policies.size());
+            for (Policy policy : temp) {
+                log.debug("Names of policy filtered in filterActivePolicies : " + policy.getPolicyName());
+            }
+        }
+
+        return temp;
+    }
+
+    @Override
     public List<Policy> filterRolesBasedPolicies(String roles[], List<Policy> policies) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies went in to filterRolesBasedPolicies : " + policies.size());
+            for (Policy policy : policies) {
+                log.debug("Names of policy  went in to filterRolesBasedPolicies : " + policy.getPolicyName());
+            }
+            log.debug("Roles passed to match.");
+            for(String role : roles){
+                log.debug("Role name passed : " + role);
+            }
+        }
 
         List<Policy> temp = new ArrayList<Policy>();
         for (Policy policy : policies) {
 
             List<String> tempRoles = policy.getRoles();
             if (tempRoles.isEmpty()) {
+
+                if(log.isDebugEnabled()) {
+                    log.debug("Roles list is empty.");
+                }
                 temp.add(policy);
                 continue;
             }
@@ -57,11 +99,27 @@ public class PolicyFilterImpl implements PolicyFilter {
                 }
             }
         }
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies returned from filterRolesBasedPolicies : " + policies.size());
+            for (Policy policy : temp) {
+                log.debug("Names of policy filtered in filterRolesBasedPolicies : " + policy.getPolicyName());
+            }
+        }
+
         return temp;
     }
 
     @Override
     public List<Policy> filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies went in to filterOwnershipTypeBasedPolicies : " + policies.size());
+            log.debug("Ownership type : " + ownershipType);
+            for (Policy policy : policies) {
+                log.debug("Names of policy  went in to filterOwnershipTypeBasedPolicies : " + policy.getPolicyName());
+            }
+        }
 
         List<Policy> temp = new ArrayList<Policy>();
         for (Policy policy : policies) {
@@ -70,22 +128,56 @@ public class PolicyFilterImpl implements PolicyFilter {
                 temp.add(policy);
             }
         }
-        return temp;
-    }
 
-    @Override
-    public List<Policy> filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies) {
-        List<Policy> temp = new ArrayList<Policy>();
-        for (Policy policy : policies) {
-            if (deviceType.equalsIgnoreCase(policy.getProfile().getDeviceType().getName())) {
-                temp.add(policy);
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies returned from filterOwnershipTypeBasedPolicies : " + policies.size());
+            for (Policy policy : temp) {
+                log.debug("Names of policy filtered in filterOwnershipTypeBasedPolicies : " + policy.getPolicyName());
             }
         }
         return temp;
     }
 
     @Override
+    public List<Policy> filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies went in to filterDeviceTypeBasedPolicies : " + policies.size());
+            log.debug("Device type  : " + deviceType);
+            for (Policy policy : policies) {
+                log.debug("Names of policy  went in to filterDeviceTypeBasedPolicies : " + policy.getPolicyName());
+            }
+        }
+
+
+        List<Policy> temp = new ArrayList<Policy>();
+        for (Policy policy : policies) {
+            if (deviceType.equalsIgnoreCase(policy.getProfile().getDeviceType().getName())) {
+                temp.add(policy);
+            }
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies returned from filterDeviceTypeBasedPolicies : " + policies.size());
+            for (Policy policy : temp) {
+                log.debug("Names of policy filtered in filterDeviceTypeBasedPolicies : " + policy.getPolicyName());
+            }
+        }
+
+        return temp;
+    }
+
+    @Override
     public List<Policy> filterUserBasedPolicies(String username, List<Policy> policies) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies went in to filterUserBasedPolicies : " + policies.size());
+            log.debug("User name : " + username);
+            for (Policy policy : policies) {
+                log.debug("Names of policy  went in to filterUserBasedPolicies : " + policy.getPolicyName());
+            }
+        }
+
         List<Policy> temp = new ArrayList<Policy>();
 
         for (Policy policy : policies) {
@@ -106,6 +198,14 @@ public class PolicyFilterImpl implements PolicyFilter {
                 }
             }
         }
+
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies returned from filterUserBasedPolicies : " + policies.size());
+            for (Policy policy : temp) {
+                log.debug("Names of policy filtered in filterUserBasedPolicies : " + policy.getPolicyName());
+            }
+        }
+
         return temp;
     }
 }

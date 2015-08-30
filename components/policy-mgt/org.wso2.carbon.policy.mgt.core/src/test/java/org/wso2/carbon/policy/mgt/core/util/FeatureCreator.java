@@ -21,9 +21,14 @@ package org.wso2.carbon.policy.mgt.core.util;
 import org.wso2.carbon.device.mgt.common.Feature;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class FeatureCreator {
+
+    private static List<Feature> featureList = new ArrayList<Feature>();
+
+    private static HashMap<Integer, Feature> featureMap = new HashMap<>();
 
     public static List<Feature> getFeatureList() {
 
@@ -119,7 +124,7 @@ public class FeatureCreator {
         feature11.setDeviceType("android");
 
 
-        List<Feature> featureList = new ArrayList<Feature>();
+        List<Feature> featureList2 = new ArrayList<Feature>();
         featureList.add(feature1);
         featureList.add(feature2);
         featureList.add(feature3);
@@ -132,6 +137,70 @@ public class FeatureCreator {
         featureList.add(feature10);
         featureList.add(feature11);
 
-        return featureList;
+        featureList2.add(feature1);
+        featureList2.add(feature2);
+
+
+        int i = 1;
+        for (Feature feature : featureList) {
+            featureMap.put(i, feature);
+            i++;
+        }
+
+        return featureList2;
+    }
+
+    public static List<Feature> getFeatureList2() {
+        List<Feature> featureList2 = new ArrayList<Feature>();
+
+        featureList2.add(featureMap.get(3));
+        featureList2.add(featureMap.get(4));
+
+        return featureList2;
+    }
+
+    public static List<Feature> getFeatureList3() {
+        List<Feature> featureList2 = new ArrayList<Feature>();
+
+        featureList2.add(featureMap.get(5));
+        featureList2.add(featureMap.get(6));
+        featureList2.add(featureMap.get(7));
+
+        return featureList2;
+    }
+
+    public static List<Feature> getFeatureList4() {
+        List<Feature> featureList2 = new ArrayList<Feature>();
+
+        featureList2.add(featureMap.get(7));
+        featureList2.add(featureMap.get(8));
+        featureList2.add(featureMap.get(9));
+
+        return featureList2;
+    }
+
+    public static List<Feature> getFeatureList5() {
+        List<Feature> featureList2 = new ArrayList<Feature>();
+
+        featureList2.add(featureMap.get(9));
+        featureList2.add(featureMap.get(10));
+        featureList2.add(featureMap.get(11));
+        featureList2.add(featureMap.get(3));
+
+        return featureList2;
+    }
+
+
+    public static List<Feature> getFeatureList6() {
+        List<Feature> featureList2 = new ArrayList<Feature>();
+
+        featureList2.add(featureMap.get(3));
+        featureList2.add(featureMap.get(8));
+        featureList2.add(featureMap.get(9));
+        featureList2.add(featureMap.get(5));
+
+        return featureList2;
     }
 }
+
+

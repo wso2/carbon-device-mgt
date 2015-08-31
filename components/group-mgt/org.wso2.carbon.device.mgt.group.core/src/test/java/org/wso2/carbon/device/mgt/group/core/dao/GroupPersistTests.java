@@ -35,8 +35,8 @@ public class GroupPersistTests extends BaseGroupManagementTest {
     private static final Log log = LogFactory.getLog(GroupPersistTests.class);
     GroupDAO groupDAO = GroupManagementDAOFactory.getGroupDAO();
 
-    @BeforeClass @Override public void init() throws Exception {
-        initDatSource();
+    @BeforeClass @Override public void init() {
+        initDataSource();
     }
 
     @Test public void testAddGroupTest() {
@@ -63,17 +63,12 @@ public class GroupPersistTests extends BaseGroupManagementTest {
     }
 
     private DeviceGroup getLastStoredGroup() throws GroupManagementDAOException {
-        List<DeviceGroup> groups = groupDAO.getAllGroups();
-        if (groups.size() > 0) {
-            return groups.get(groups.size() - 1);
-        } else {
-            return null;
-        }
+        return groupDAO.getLastCreatedGroup(TestDataHolder.OWNER, TestDataHolder.SUPER_TENANT_ID);
     }
 
     public DeviceGroup getGroupById(int groupId) {
         try {
-            return groupDAO.getGroupById(groupId);
+            return groupDAO.getGroup(groupId);
         } catch (GroupManagementDAOException e) {
             String msg = "Error occurred while retrieving group details";
             log.error(msg, e);
@@ -101,6 +96,32 @@ public class GroupPersistTests extends BaseGroupManagementTest {
             Assert.assertEquals((long) group.getDateOfLastUpdate(), time, "Update time is not set");
         } catch (GroupManagementDAOException e) {
             String msg = "Error occurred while updating group details";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = { "testAddGroupTest" }) public void findGroupTest() {
+        try {
+            List<DeviceGroup> groups = groupDAO.getGroups("Test", TestDataHolder.SUPER_TENANT_ID);
+            Assert.assertNotEquals(groups.size(), 0, "No groups found");
+            Assert.assertNotNull(groups.get(0), "Group is null");
+            log.debug("Group found: " + groups.get(0).getName());
+        } catch (GroupManagementDAOException e) {
+            String msg = "Error occurred while find group by name";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = { "testAddGroupTest" }) public void getGroupTest() {
+        try {
+            List<DeviceGroup> groups = groupDAO.getGroups(TestDataHolder.SUPER_TENANT_ID);
+            Assert.assertNotEquals(groups.size(), 0, "No groups found");
+            Assert.assertNotNull(groups.get(0), "Group is null");
+            log.debug("No of Groups found: " + groups.size());
+        } catch (GroupManagementDAOException e) {
+            String msg = "Error occurred while find group by name";
             log.error(msg, e);
             Assert.fail(msg, e);
         }

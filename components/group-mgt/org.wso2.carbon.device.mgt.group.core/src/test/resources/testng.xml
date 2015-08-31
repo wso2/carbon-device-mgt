@@ -23,7 +23,6 @@
 
     <test name="DAO Unit Tests" preserve-order="true">
         <classes>
-            <class name="org.wso2.carbon.device.mgt.group.core.common.BaseGroupManagementTest"/>
             <class name="org.wso2.carbon.device.mgt.group.core.dao.GroupPersistTests"/>
         </classes>
     </test>

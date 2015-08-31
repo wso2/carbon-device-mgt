@@ -57,6 +57,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
 
     @Override public int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
             throws GroupManagementException {
+        if (deviceGroup == null){
+            throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
+        }
         DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
@@ -65,14 +68,13 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             if (sqlReturn == -1) {
                 return -1;
             }
-            List<DeviceGroup> deviceGroups = this.groupDAO
-                    .getGroupsByName(groupBroker.getName(), groupBroker.getOwner(), groupBroker.getTenantId());
-            if (deviceGroups.size() == 0) {
+            DeviceGroup createdDeviceGroup = this.groupDAO.getLastCreatedGroup(groupBroker.getOwner(), tenantId);
+            if (createdDeviceGroup == null) {
                 return -1;
             }
-            int groupId = deviceGroups.get(deviceGroups.size() - 1).getId();
+            int groupId = createdDeviceGroup.getId();
             groupBroker.setId(groupId);
-            addNewSharingRoleForGroup(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
+            addSharing(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
             if (log.isDebugEnabled()) {
                 log.debug("DeviceGroup added: " + groupBroker.getName());
             }
@@ -87,6 +89,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override public boolean updateGroup(DeviceGroup deviceGroup) throws GroupManagementException {
+        if (deviceGroup == null){
+            throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
+        }
         try {
             int sqlReturn = this.groupDAO.updateGroup(deviceGroup);
             return (sqlReturn != -1);
@@ -99,18 +104,18 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     @Override public boolean deleteGroup(int groupId) throws GroupManagementException {
         String roleName;
         try {
-            DeviceGroup deviceGroup = getGroupById(groupId);
+            DeviceGroup deviceGroup = getGroup(groupId);
             if (deviceGroup == null) {
                 return false;
             }
-            List<String> groupRoles = getAllRolesForGroup(groupId);
+            List<String> groupRoles = getRoles(groupId);
             for (String role : groupRoles) {
                 if (role != null) {
                     roleName = role.replace("Internal/group-" + groupId + "-", "");
-                    removeSharingRoleForGroup(groupId, roleName);
+                    removeSharing(groupId, roleName);
                 }
             }
-            List<Device> groupDevices = getAllDevicesInGroup(groupId);
+            List<Device> groupDevices = getDevices(groupId);
             for (Device device : groupDevices) {
                 device.setGroupId(0);
                 GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
@@ -131,14 +136,14 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public DeviceGroup getGroupById(int groupId) throws GroupManagementException {
+    @Override public DeviceGroup getGroup(int groupId) throws GroupManagementException {
         try {
-            DeviceGroup deviceGroup = this.groupDAO.getGroupById(groupId);
+            DeviceGroup deviceGroup = this.groupDAO.getGroup(groupId);
             if (deviceGroup != null) {
                 DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
-                groupBroker.setDevices(this.getAllDevicesInGroup(groupId));
-                groupBroker.setUsers(this.getUsersForGroup(groupId));
-                groupBroker.setRoles(this.getAllRolesForGroup(groupId));
+                groupBroker.setDevices(this.getDevices(groupId));
+                groupBroker.setUsers(this.getUsers(groupId));
+                groupBroker.setRoles(this.getRoles(groupId));
                 return groupBroker.getGroup();
             } else {
                 return null;
@@ -148,16 +153,16 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<DeviceGroup> getGroupByName(String groupName, String owner) throws GroupManagementException {
+    @Override public List<DeviceGroup> findGroups(String groupName, String owner) throws GroupManagementException {
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            List<DeviceGroup> deviceGroups = this.groupDAO.getGroupsByName(groupName, owner, tenantId);
+            List<DeviceGroup> deviceGroups = this.groupDAO.getGroups(groupName, tenantId);
             List<DeviceGroup> groupsWithData = new ArrayList<>();
             for (DeviceGroup deviceGroup : deviceGroups) {
                 DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
-                groupBroker.setDevices(this.getAllDevicesInGroup(deviceGroup.getId()));
-                groupBroker.setUsers(this.getUsersForGroup(deviceGroup.getId()));
-                groupBroker.setRoles(this.getAllRolesForGroup(deviceGroup.getId()));
+                groupBroker.setDevices(this.getDevices(deviceGroup.getId()));
+                groupBroker.setUsers(this.getUsers(deviceGroup.getId()));
+                groupBroker.setRoles(this.getRoles(deviceGroup.getId()));
                 groupsWithData.add(groupBroker.getGroup());
             }
             return groupsWithData;
@@ -166,7 +171,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<DeviceGroup> getGroupsOfUser(String username) throws GroupManagementException {
+    @Override public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
         UserStoreManager userStoreManager;
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
@@ -178,7 +183,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 if (role != null && role.contains("Internal/group-")) {
                     int groupId = Integer.parseInt(role.split("-")[1]);
                     if (!groups.containsKey(groupId)) {
-                        DeviceGroup deviceGroup = getGroupById(groupId);
+                        DeviceGroup deviceGroup = getGroup(groupId);
                         groups.put(groupId, deviceGroup);
                     }
                 }
@@ -189,8 +194,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public int getGroupCountOfUser(String username) throws GroupManagementException {
-        return this.getGroupsOfUser(username).size();
+    @Override public int getGroupCount(String username) throws GroupManagementException {
+        return this.getGroups(username).size();
     }
 
     @Override public boolean shareGroup(String username, int groupId, String sharingRole)
@@ -198,7 +203,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         UserStoreManager userStoreManager;
         String[] roles = new String[1];
         try {
-            DeviceGroup deviceGroup = getGroupById(groupId);
+            DeviceGroup deviceGroup = getGroup(groupId);
             if (deviceGroup == null) {
                 return false;
             }
@@ -220,7 +225,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         UserStoreManager userStoreManager;
         String[] roles = new String[1];
         try {
-            DeviceGroup deviceGroup = getGroupById(groupId);
+            DeviceGroup deviceGroup = getGroup(groupId);
             if (deviceGroup == null) {
                 return false;
             }
@@ -237,13 +242,12 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public boolean addNewSharingRoleForGroup(String username, int groupId, String roleName,
-            String[] permissions) throws GroupManagementException {
+    @Override public boolean addSharing(String username, int groupId, String roleName, String[] permissions) throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
         String[] userNames = new String[1];
         try {
-            DeviceGroup deviceGroup = getGroupById(groupId);
+            DeviceGroup deviceGroup = getGroup(groupId);
             if (deviceGroup == null) {
                 return false;
             }
@@ -265,11 +269,11 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public boolean removeSharingRoleForGroup(int groupId, String roleName) throws GroupManagementException {
+    @Override public boolean removeSharing(int groupId, String roleName) throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
         try {
-            DeviceGroup deviceGroup = getGroupById(groupId);
+            DeviceGroup deviceGroup = getGroup(groupId);
             if (deviceGroup == null) {
                 return false;
             }
@@ -286,7 +290,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<String> getAllRolesForGroup(int groupId) throws GroupManagementException {
+    @Override public List<String> getRoles(int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
         String[] roles;
         List<String> groupRoles;
@@ -309,7 +313,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<String> getGroupRolesForUser(String username, int groupId) throws GroupManagementException {
+    @Override public List<String> getRoles(String username, int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
         List<String> groupRoleList = new ArrayList<>();
         try {
@@ -329,14 +333,14 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<GroupUser> getUsersForGroup(int groupId) throws GroupManagementException {
+    @Override public List<GroupUser> getUsers(int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
         Map<String, GroupUser> groupUserHashMap = new HashMap<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            List<String> rolesForGroup = this.getAllRolesForGroup(groupId);
+            List<String> rolesForGroup = this.getRoles(groupId);
             for (String role : rolesForGroup) {
                 String[] users = userStoreManager.getUserListOfRole("Internal/group-" + groupId + "-" + role);
                 for (String user : users) {
@@ -361,7 +365,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException {
+    @Override public List<Device> getDevices(int groupId) throws GroupManagementException {
         List<Device> devicesInGroup;
         try {
             devicesInGroup = GroupManagementDataHolder.getInstance().getDeviceManagementService()
@@ -372,12 +376,12 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public boolean addDeviceToGroup(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
+    @Override public boolean addDevice(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
         Device device;
         DeviceGroup deviceGroup;
         try {
             device = GroupManagementDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
-            deviceGroup = this.getGroupById(groupId);
+            deviceGroup = this.getGroup(groupId);
             if (device == null || deviceGroup == null) {
                 return false;
             }
@@ -389,13 +393,13 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         return true;
     }
 
-    @Override public boolean removeDeviceFromGroup(DeviceIdentifier deviceId, int groupId)
+    @Override public boolean removeDevice(DeviceIdentifier deviceId, int groupId)
             throws GroupManagementException {
         Device device;
         DeviceGroup deviceGroup;
         try {
             device = GroupManagementDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
-            deviceGroup = this.getGroupById(groupId);
+            deviceGroup = this.getGroup(groupId);
             if (device == null || deviceGroup == null) {
                 return false;
             }
@@ -407,9 +411,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         return true;
     }
 
-    @Override public String[] getGroupPermissionsOfUser(String username, int groupId) throws GroupManagementException {
+    @Override public String[] getPermissions(String username, int groupId) throws GroupManagementException {
         UserRealm userRealm;
-        List<String> roles = getGroupRolesForUser(username, groupId);
+        List<String> roles = getRoles(username, groupId);
         int tenantId = DeviceManagerUtil.getTenantId();
         try {
             userRealm = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
@@ -433,7 +437,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<DeviceGroup> getUserGroupsForPermission(String username, String permission)
+    @Override public List<DeviceGroup> getGroups(String username, String permission)
             throws GroupManagementException {
         UserRealm userRealm;
         int tenantId = DeviceManagerUtil.getTenantId();
@@ -446,7 +450,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                         .isRoleAuthorized(role, permission, CarbonConstants.UI_PERMISSION_ACTION)) {
                     int groupId = Integer.parseInt(role.split("-")[1]);
                     if (!groups.containsKey(groupId)) {
-                        DeviceGroup deviceGroup = getGroupById(groupId);
+                        DeviceGroup deviceGroup = getGroup(groupId);
                         groups.put(groupId, deviceGroup);
                     }
                 }
@@ -463,7 +467,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         int tenantId = DeviceManagerUtil.getTenantId();
         try {
             userRealm = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
-            List<String> roles = this.getGroupRolesForUser(username, groupId);
+            List<String> roles = this.getRoles(username, groupId);
             for (String role : roles) {
                 if (userRealm.getAuthorizationManager()
                         .isRoleAuthorized("Internal/group-" + groupId + "-" + role, permission,

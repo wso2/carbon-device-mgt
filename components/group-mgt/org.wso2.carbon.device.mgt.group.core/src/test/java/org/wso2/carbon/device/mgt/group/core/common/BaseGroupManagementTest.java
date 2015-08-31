@@ -50,17 +50,23 @@ public abstract class BaseGroupManagementTest {
     private DataSource dataSource;
 
     @BeforeSuite public void setupDataSource() throws Exception {
-        this.initDatSource();
+        this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
     }
 
-    public void initDatSource() throws Exception {
-        this.dataSource = this.getDataSource(this.readDataSourceConfig());
-        GroupManagementDAOFactory.init(dataSource);
+    public void initDataSource() {
+        try {
+            this.dataSource = this.getDataSource(this.readDataSourceConfig());
+            GroupManagementDAOFactory.init(dataSource);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while obtaining datasource";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        }
     }
 
-    @BeforeClass public abstract void init() throws Exception;
+    @BeforeClass public abstract void init();
 
     private DataSource getDataSource(DataSourceConfig config) {
         PoolProperties properties = new PoolProperties();
@@ -98,14 +104,15 @@ public abstract class BaseGroupManagementTest {
     }
 
     private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {
+        String fileSrc = "src/test/resources/config/datasource/data-source-config.xml";
         try {
-            File file = new File("src/test/resources/config/datasource/data-source-config.xml");
+            File file = new File(fileSrc);
             Document doc = DeviceManagerUtil.convertToDocument(file);
             JAXBContext testDBContext = JAXBContext.newInstance(DataSourceConfig.class);
             Unmarshaller unmarshaller = testDBContext.createUnmarshaller();
             return (DataSourceConfig) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {
-            throw new DeviceManagementException("Error occurred while reading data source configuration", e);
+            throw new DeviceManagementException("Error occurred while reading data source configuration from " + fileSrc, e);
         }
     }
 

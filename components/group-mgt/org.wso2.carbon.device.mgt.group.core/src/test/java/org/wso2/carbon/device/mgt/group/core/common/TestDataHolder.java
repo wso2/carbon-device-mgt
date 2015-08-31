@@ -24,6 +24,7 @@ import java.util.Date;
 public class TestDataHolder {
 
     public static Integer SUPER_TENANT_ID = -1234;
+    public static String OWNER = "admin";
 
     public static DeviceGroup generateDummyGroupData() {
         DeviceGroup deviceGroup = new DeviceGroup();
@@ -31,9 +32,9 @@ public class TestDataHolder {
         deviceGroup.setDescription("Test description");
         deviceGroup.setDateOfCreation(new Date().getTime());
         deviceGroup.setDateOfLastUpdate(new Date().getTime());
-        deviceGroup.setOwner("admin");
+        deviceGroup.setOwner(OWNER);
         DeviceGroupBroker broker = new DeviceGroupBroker(deviceGroup);
-        broker.setTenantId(-1234);
+        broker.setTenantId(SUPER_TENANT_ID);
         return broker.getGroup();
     }
 

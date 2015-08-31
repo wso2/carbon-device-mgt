@@ -66,8 +66,11 @@ public class PermissionManager {
 				/* Un-marshaling Device Management configuration */
 				JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
 				Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-				PermissionConfiguration permissionConfiguration = (PermissionConfiguration) unmarshaller.unmarshal(permissionStream);
-				this.addPermissions(permissionConfiguration.getPermissions());
+				PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
+						unmarshaller.unmarshal(permissionStream);
+				if((permissionConfiguration != null) && (permissionConfiguration.getPermissions() != null)){
+					this.addPermissions(permissionConfiguration.getPermissions());
+				}
 			}
 		} catch (JAXBException e) {
 			throw new DeviceManagementException("Error occurred while initializing Data Source config", e);

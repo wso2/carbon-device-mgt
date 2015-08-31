@@ -19,7 +19,6 @@
 package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.api.FaultGatewaysException;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 
@@ -40,7 +39,7 @@ public interface APIPublisherService {
      * @param api An instance of the bean that passes metadata related to the API being published
      * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the API
      */
-    void publishAPI(API api) throws APIManagementException, FaultGatewaysException;
+    void publishAPI(API api) throws APIManagementException;
 
     /**
      * This method removes an API that's already published within the underlying API-Management infrastructure.
@@ -56,6 +55,6 @@ public interface APIPublisherService {
      * @param apis A list of the beans that passes metadata related to the APIs being published
      * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the APIs
      */
-    void publishAPIs(List<API> apis) throws APIManagementException, FaultGatewaysException;
+    void publishAPIs(List<API> apis) throws APIManagementException;
 
 }

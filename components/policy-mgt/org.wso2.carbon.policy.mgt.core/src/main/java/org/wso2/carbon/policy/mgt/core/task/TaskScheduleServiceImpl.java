@@ -76,21 +76,27 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
 
                 String taskName = PolicyManagementConstants.MONITORING_TASK_NAME + "_" + String.valueOf(tenantId);
 
-                TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ,
-                        properties, triggerInfo);
+                if (!taskManager.isTaskScheduled(taskName)) {
 
-                taskManager.registerTask(taskInfo);
-                taskManager.rescheduleTask(taskInfo.getName());
+                    TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ,
+                            properties, triggerInfo);
+
+                    taskManager.registerTask(taskInfo);
+                    taskManager.rescheduleTask(taskInfo.getName());
+                } else {
+                    throw new PolicyMonitoringTaskException("Monitoring task is already started for this tenant " +
+                            tenantId);
+                }
 
 
             } catch (TaskException e) {
-                throw new PolicyMonitoringTaskException("Error occurred while creating the task for tenant " + PrivilegedCarbonContext.
-                        getThreadLocalCarbonContext().getTenantId(), e);
+                throw new PolicyMonitoringTaskException("Error occurred while creating the task for tenant " +
+                        PrivilegedCarbonContext.
+                                getThreadLocalCarbonContext().getTenantId(), e);
             }
         } else {
             throw new PolicyMonitoringTaskException("Policy monitoring is not enabled in the cdm-config.xml.");
         }
-
 
     }
 
@@ -103,8 +109,9 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
             TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
             taskManager.deleteTask(taskName);
         } catch (TaskException e) {
-            throw new PolicyMonitoringTaskException("Error occurred while deleting the task for tenant " + PrivilegedCarbonContext.
-                    getThreadLocalCarbonContext().getTenantId(), e);
+            throw new PolicyMonitoringTaskException("Error occurred while deleting the task for tenant " +
+                    PrivilegedCarbonContext.
+                            getThreadLocalCarbonContext().getTenantId(), e);
         }
     }
 
@@ -116,23 +123,30 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
             TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
             TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
-            taskManager.deleteTask(taskName);
-            TriggerInfo triggerInfo = new TriggerInfo();
-            triggerInfo.setIntervalMillis(monitoringFrequency);
-            triggerInfo.setRepeatCount(-1);
+            if (taskManager.isTaskScheduled(taskName)) {
 
-            Map<String, String> properties = new HashMap<>();
-            properties.put("tenantId", String.valueOf(tenantId));
+                taskManager.deleteTask(taskName);
+                TriggerInfo triggerInfo = new TriggerInfo();
+                triggerInfo.setIntervalMillis(monitoringFrequency);
+                triggerInfo.setRepeatCount(-1);
 
-            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ, properties,
-                    triggerInfo);
+                Map<String, String> properties = new HashMap<>();
+                properties.put("tenantId", String.valueOf(tenantId));
 
-            taskManager.registerTask(taskInfo);
-            taskManager.rescheduleTask(taskInfo.getName());
+                TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ, properties,
+                        triggerInfo);
+
+                taskManager.registerTask(taskInfo);
+                taskManager.rescheduleTask(taskInfo.getName());
+            } else {
+                throw new PolicyMonitoringTaskException("Monitoring task has not been started for this tenant " +
+                        tenantId + ". Please start the task first.");
+            }
 
         } catch (TaskException e) {
-            throw new PolicyMonitoringTaskException("Error occurred while updating the task for tenant " + PrivilegedCarbonContext.
-                    getThreadLocalCarbonContext().getTenantId(), e);
+            throw new PolicyMonitoringTaskException("Error occurred while updating the task for tenant " +
+                    PrivilegedCarbonContext.
+                            getThreadLocalCarbonContext().getTenantId(), e);
         }
 
     }

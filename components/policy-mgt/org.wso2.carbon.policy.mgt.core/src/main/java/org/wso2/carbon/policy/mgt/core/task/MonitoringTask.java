@@ -76,10 +76,17 @@ public class MonitoringTask implements Task {
         if (!deviceTypes.isEmpty()) {
             try {
 
+
+
                 DeviceManagementProviderService deviceManagementProviderService =
                         PolicyManagementDataHolder.getInstance().getDeviceManagementService();
 
                 for (DeviceType deviceType : deviceTypes) {
+
+                    if(log.isDebugEnabled()){
+                        log.debug("Running task for device type : " + deviceType.getName() );
+                    }
+
                     PolicyMonitoringService monitoringService =
                             PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType.getName());
                     List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
@@ -90,7 +97,7 @@ public class MonitoringTask implements Task {
 
                         if (log.isDebugEnabled()) {
                             log.debug("Removing inactive and blocked devices from the list for the device type : " +
-                                    deviceType);
+                                    deviceType.getName());
                         }
                         for (Device device : devices) {
                             if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.INACTIVE) ||
@@ -101,7 +108,7 @@ public class MonitoringTask implements Task {
                             }
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug("Following devices selected to send the notification for " + deviceType);
+                            log.debug("Following devices selected to send the notification for " + deviceType.getName());
                             for (Device device : notifiableDevices) {
                                 log.debug(device.getDeviceIdentifier());
                             }

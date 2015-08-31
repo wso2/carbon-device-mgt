@@ -32,6 +32,7 @@ public class EnrolmentInfo implements Serializable{
         BYOD, COPE
     }
 
+    private int id;
     private Device device;
     private Long dateOfEnrolment;
     private Long dateOfLastUpdate;
@@ -46,6 +47,14 @@ public class EnrolmentInfo implements Serializable{
         this.owner = owner;
         this.ownership = ownership;
         this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Long getDateOfEnrolment() {

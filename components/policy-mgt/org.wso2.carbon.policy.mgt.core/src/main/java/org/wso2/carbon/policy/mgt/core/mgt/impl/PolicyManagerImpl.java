@@ -29,6 +29,8 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.core.cache.PolicyCacheManager;
+import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
@@ -44,6 +46,7 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private ProfileManager profileManager;
+    private PolicyCacheManager policyCacheManager;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
     public PolicyManagerImpl() {
@@ -188,15 +191,16 @@ public class PolicyManagerImpl implements PolicyManager {
     public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException {
         boolean bool;
         try {
-            List<Policy> existingPolicies = this.getPolicies();
+//            List<Policy> existingPolicies = this.getPolicies();
+            List<Policy> existingPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
             PolicyManagementDAOFactory.beginTransaction();
             bool = policyDAO.updatePolicyPriorities(policies);
 
             // This logic is added because ui sends only policy id and priority to update priorities.
 
             for (Policy policy : policies) {
-                for(Policy exPolicy: existingPolicies) {
-                    if(policy.getId() == exPolicy.getId()) {
+                for (Policy exPolicy : existingPolicies) {
+                    if (policy.getId() == exPolicy.getId()) {
                         policy.setProfile(exPolicy.getProfile());
                     }
                 }
@@ -553,7 +557,8 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.closeConnection();
         }
 
-        List<Policy> tempPolicyList = this.getPolicies();
+//        List<Policy> tempPolicyList = this.getPolicies();
+        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -570,22 +575,29 @@ public class PolicyManagerImpl implements PolicyManager {
     @Override
     public List<Policy> getPoliciesOfDeviceType(String deviceTypeName) throws PolicyManagementException {
         List<Policy> policies = new ArrayList<>();
-        try {
-            List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
-            List<Policy> allPolicies = this.getPolicies();
+//        try {
+        // List<Profile> profileList = profileManager.getProfilesOfDeviceType(deviceTypeName);
+//            List<Policy> allPolicies = this.getPolicies();
+        List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
 
-            for (Profile profile : profileList) {
-                for (Policy policy : allPolicies) {
-                    if (policy.getProfileId() == profile.getProfileId()) {
-                        policy.setProfile(profile);
-                        policies.add(policy);
-                    }
-                }
+        for (Policy policy : allPolicies) {
+            if (policy.getProfile().getDeviceType().getName().equalsIgnoreCase(deviceTypeName)) {
+                policies.add(policy);
             }
-            Collections.sort(policies);
-        } catch (ProfileManagementException e) {
-            throw new PolicyManagementException("Error occurred while getting all the profile features.", e);
         }
+
+//            for (Profile profile : profileList) {
+//                for (Policy policy : allPolicies) {
+//                    if (policy.getProfileId() == profile.getProfileId()) {
+//                        policy.setProfile(profile);
+//                        policies.add(policy);
+//                    }
+//                }
+//            }
+        Collections.sort(policies);
+//        } catch (ProfileManagementException e) {
+//            throw new PolicyManagementException("Error occurred while getting all the profile features.", e);
+//        }
         return policies;
     }
 
@@ -607,7 +619,8 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.closeConnection();
         }
 
-        List<Policy> tempPolicyList = this.getPolicies();
+//        List<Policy> tempPolicyList = this.getPolicies();
+        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -636,7 +649,8 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
-        List<Policy> tempPolicyList = this.getPolicies();
+//        List<Policy> tempPolicyList = this.getPolicies();
+        List<Policy> tempPolicyList = PolicyCacheManagerImpl.getInstance().getAllPolicies();
 
         for (Policy policy : tempPolicyList) {
             for (Integer i : policyIdList) {
@@ -665,14 +679,14 @@ public class PolicyManagerImpl implements PolicyManager {
 
             HashMap<Integer, Device> allDeviceMap = new HashMap<>();
 
-            if(!allDevices.isEmpty()) {
+            if (!allDevices.isEmpty()) {
                 allDeviceMap = PolicyManagerUtil.covertDeviceListToMap(allDevices);
             }
 
             for (int deviceId : deviceIds) {
 
-                if(allDeviceMap.containsKey(deviceId)){
-                    if(log.isDebugEnabled()) {
+                if (allDeviceMap.containsKey(deviceId)) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Policy Applied device ids .............: " + deviceId + " - Policy Id " + policyId);
                     }
                     deviceList.add(allDeviceMap.get(deviceId));
@@ -706,11 +720,11 @@ public class PolicyManagerImpl implements PolicyManager {
             deviceId = device.getId();
 
             PolicyManagementDAOFactory.beginTransaction();
-            boolean exist = policyDAO.checkPolicyAvailable(deviceId);
+            boolean exist = policyDAO.checkPolicyAvailable(deviceId, device.getEnrolmentInfo().getId());
             if (exist) {
-                policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
+                policyDAO.updateEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
             } else {
-                policyDAO.addEffectivePolicyToDevice(deviceId, policy);
+                policyDAO.addEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
             }
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
@@ -736,7 +750,8 @@ public class PolicyManagerImpl implements PolicyManager {
 //            List<Policy> inactivePolicies = new ArrayList<>();
             List<Integer> updatedPolicyIds = new ArrayList<>();
 
-            List<Policy> allPolicies = this.getPolicies();
+//            List<Policy> allPolicies = this.getPolicies();
+            List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
 
             for (Policy policy : allPolicies) {
                 if (policy.isUpdated()) {
@@ -777,13 +792,13 @@ public class PolicyManagerImpl implements PolicyManager {
             deviceId = device.getId();
             PolicyManagementDAOFactory.beginTransaction();
 
-            Policy policySaved = policyDAO.getAppliedPolicy(deviceId);
+            Policy policySaved = policyDAO.getAppliedPolicy(deviceId, device.getEnrolmentInfo().getId());
             if (policySaved != null && policySaved.getId() != 0) {
                 if (policy.getId() != policySaved.getId()) {
-                    policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
+                    policyDAO.updateEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
                 }
             } else {
-                policyDAO.addEffectivePolicyToDevice(deviceId, policy);
+                policyDAO.addEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
             }
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
@@ -807,7 +822,7 @@ public class PolicyManagerImpl implements PolicyManager {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             Device device = service.getDevice(deviceIdentifier);
             PolicyManagementDAOFactory.openConnection();
-            exist = policyDAO.checkPolicyAvailable(device.getId());
+            exist = policyDAO.checkPolicyAvailable(device.getId(), device.getEnrolmentInfo().getId());
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while checking whether device has a policy " +
                     "to apply.", e);
@@ -829,7 +844,7 @@ public class PolicyManagerImpl implements PolicyManager {
             Device device = service.getDevice(deviceIdentifier);
 
             PolicyManagementDAOFactory.openConnection();
-            policyDAO.setPolicyApplied(device.getId());
+            policyDAO.setPolicyApplied(device.getId(), device.getEnrolmentInfo().getId());
             return true;
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while setting the policy has applied to device (" +
@@ -869,7 +884,7 @@ public class PolicyManagerImpl implements PolicyManager {
             Device device = service.getDevice(deviceIdentifier);
             //int policyId = policyDAO.getAppliedPolicyId(device.getId());
             PolicyManagementDAOFactory.openConnection();
-            policy = policyDAO.getAppliedPolicy(device.getId());
+            policy = policyDAO.getAppliedPolicy(device.getId(), device.getEnrolmentInfo().getId());
         } catch (DeviceManagementException e) {
             throw new PolicyManagementException("Error occurred while getting device id.", e);
         } catch (PolicyManagerDAOException e) {

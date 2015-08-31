@@ -32,12 +32,6 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceIm
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
-import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
-import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
-import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
-import org.wso2.carbon.policy.mgt.core.mgt.impl.FeatureManagerImpl;
-import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
-import org.wso2.carbon.policy.mgt.core.mgt.impl.ProfileManagerImpl;
 import org.wso2.carbon.policy.mgt.core.util.*;
 
 import java.util.ArrayList;
@@ -87,7 +81,6 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         }
 
 
-
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
 
         PolicyManagementDataHolder.getInstance().setDeviceManagementService(service);
@@ -119,38 +112,39 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     @Test(dependsOnMethods = ("addFeatures"))
     public void addProfileFeatures() throws ProfileManagementException {
 
-        ProfileManager profileManager = new ProfileManagerImpl();
-        Profile profile = ProfileCreator.getProfile2(FeatureCreator.getFeatureList2());
+//        ProfileManager profileManager = new ProfileManagerImpl();
+//        Profile profile = ProfileCreator.getProfile2(FeatureCreator.getFeatureList2());
 //        profileManager.addProfile(profile);
 //        profileFeatureList = profile.getProfileFeaturesList();
     }
 
     @Test(dependsOnMethods = ("addProfileFeatures"))
     public void addPolicy() throws PolicyManagementException, ProfileManagementException {
-        ProfileManager profileManager = new ProfileManagerImpl();
+//        ProfileManager profileManager = new ProfileManagerImpl();
         Profile profile = ProfileCreator.getProfile5(FeatureCreator.getFeatureList5());
-        profileManager.addProfile(profile);
-        PolicyManager policyManager = new PolicyManagerImpl();
+//        profileManager.addProfile(profile);
+        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
         policy = PolicyCreator.createPolicy(profile);
-        policyManager.addPolicy(policy);
+        policy = pap.addPolicy(policy);
+        pap.activatePolicy(policy.getId());
     }
 
     @Test(dependsOnMethods = ("addPolicy"))
     public void addPolicyToRole() throws PolicyManagementException {
-        PolicyManager policyManager = new PolicyManagerImpl();
+        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
 
         List<String> roles = new ArrayList<String>();
         roles.add("Test_ROLE_01");
         roles.add("Test_ROLE_02");
         roles.add("Test_ROLE_03");
 
-        policyManager.addPolicyToRole(roles, policy);
+        pap.addPolicyToRole(roles, policy);
 
     }
 
     @Test(dependsOnMethods = ("addPolicyToRole"))
     public void addPolicyToDevice() throws PolicyManagementException {
-        PolicyManager policyManager = new PolicyManagerImpl();
+        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
         Device device = DeviceCreator.getSingleDevice();
 
         List<DeviceIdentifier> deviceIdentifierList = new ArrayList<DeviceIdentifier>();
@@ -159,29 +153,31 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         deviceIdentifier.setType("android");
 
         deviceIdentifierList.add(deviceIdentifier);
-        policyManager.addPolicyToDevice(deviceIdentifierList, policy);
+        pap.addPolicyToDevice(deviceIdentifierList, policy);
 
     }
 
     @Test(dependsOnMethods = ("addPolicyToDevice"))
     public void addNewPolicy() throws PolicyManagementException, ProfileManagementException {
-        ProfileManager profileManager = new ProfileManagerImpl();
+        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
         Profile profile = ProfileCreator.getProfile3(FeatureCreator.getFeatureList3());
-        profileManager.addProfile(profile);
-        PolicyManager policyManager = new PolicyManagerImpl();
+        //pap.addProfile(profile);
+        // PolicyManager policyManager = new PolicyManagerImpl();
         Policy policy = PolicyCreator.createPolicy2(profile);
-        policyManager.addPolicy(policy);
+        policy = pap.addPolicy(policy);
+        pap.activatePolicy(policy.getId());
     }
 
 
     @Test(dependsOnMethods = ("addPolicyToDevice"))
     public void addThirdPolicy() throws PolicyManagementException, ProfileManagementException {
-        ProfileManager profileManager = new ProfileManagerImpl();
+        //ProfileManager profileManager = new ProfileManagerImpl();
         Profile profile = ProfileCreator.getProfile4(FeatureCreator.getFeatureList4());
-        profileManager.addProfile(profile);
-        PolicyManager policyManager = new PolicyManagerImpl();
+        //profileManager.addProfile(profile);
+        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
         Policy policy = PolicyCreator.createPolicy4(profile);
-        policyManager.addPolicy(policy);
+        policy = pap.addPolicy(policy);
+        pap.activatePolicy(policy.getId());
     }
 
     @Test(dependsOnMethods = ("addNewPolicy"))
@@ -273,26 +269,29 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
     @Test(dependsOnMethods = ("getRoleRelatedPolicy"))
     public void addSecondPolicy() throws PolicyManagementException, ProfileManagementException {
-        ProfileManager profileManager = new ProfileManagerImpl();
+        // ProfileManager profileManager = new ProfileManagerImpl();
         Profile profile = ProfileCreator.getProfile(FeatureCreator.getFeatureList());
-        profileManager.addProfile(profile);
-        PolicyManager policyManager = new PolicyManagerImpl();
+        //profileManager.addProfile(profile);
+        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
         Policy policy = PolicyCreator.createPolicy3(profile);
-        policyManager.addPolicy(policy);
+        policy = pap.addPolicy(policy);
+        pap.activatePolicy(policy.getId());
     }
 
     @Test(dependsOnMethods = ("addSecondPolicy"))
     public void updatedPolicy() throws PolicyManagementException {
-        PolicyManager policyManager = new PolicyManagerImpl();
+        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
         Profile profile = ProfileCreator.getProfile3(FeatureCreator.getFeatureList3());
         Policy policy = PolicyCreator.createPolicy3(profile);
         policy.setPolicyName("Policy_05");
-        policy = policyManager.addPolicy(policy);
+        policy = pap.addPolicy(policy);
+        pap.activatePolicy(policy.getId());
         List<String> users = new ArrayList<>();
         users.add("Udara");
         users.add("Dileesha");
         policy.setUsers(users);
-        policyManager.updatePolicy(policy);
+        pap.updatePolicy(policy);
+        pap.activatePolicy(policy.getId());
     }
 
     @Test(dependsOnMethods = ("updatedPolicy"))

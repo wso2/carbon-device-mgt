@@ -248,6 +248,8 @@ public class MonitoringManagerImpl implements MonitoringManager {
             throw new PolicyComplianceException("SQL error occurred while getting monitoring details.", e);
         } catch (PolicyManagerDAOException e) {
             throw new PolicyComplianceException("SQL error occurred while getting policy details.", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
         }
 
         Map<Integer, Device> deviceIdsToAddOperation = new HashMap<>();

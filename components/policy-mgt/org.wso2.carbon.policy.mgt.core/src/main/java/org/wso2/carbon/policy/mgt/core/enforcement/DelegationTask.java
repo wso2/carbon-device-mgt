@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
@@ -56,6 +57,8 @@ public class DelegationTask implements Task {
         try {
             PolicyManager policyManager = new PolicyManagerImpl();
             List<DeviceType> deviceTypes = policyManager.applyChangesMadeToPolicies();
+
+            PolicyCacheManagerImpl.getInstance().rePopulateCache();
 
             if (log.isDebugEnabled()) {
                 log.debug("Number of device types which policies are changed .......... : " + deviceTypes.size());

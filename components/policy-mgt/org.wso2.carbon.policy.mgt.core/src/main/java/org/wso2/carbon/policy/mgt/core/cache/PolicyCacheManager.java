@@ -19,7 +19,8 @@
 
 package org.wso2.carbon.policy.mgt.core.cache;
 
-import org.wso2.carbon.device.mgt.core.policy.mgt.policy.Policy;
+import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 
 import java.util.List;
 
@@ -29,7 +30,9 @@ public interface PolicyCacheManager {
 
     void updateAllPolicies(List<Policy> policies);
 
-    List<Policy> getAllPolicies();
+    List<Policy> getAllPolicies() throws PolicyManagementException;
+
+    void rePopulateCache() throws PolicyManagementException;
 
     void removeAllPolicies();
 
@@ -37,9 +40,11 @@ public interface PolicyCacheManager {
 
     void updatePolicy(Policy policy);
 
+    void updatePolicy(int policyId) throws PolicyManagementException;
+
     void removePolicy(int policyId);
 
-    Policy getPolicy(int policyId);
+    Policy getPolicy(int policyId) throws PolicyManagementException;
 
     void addPolicyToDevice(int deviceId, int policyId);
 

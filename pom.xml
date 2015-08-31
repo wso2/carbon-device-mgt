@@ -1214,7 +1214,7 @@
         <jackson.version>1.9.0</jackson.version>
 
         <!-- AppM properties -->
-        <carbon.appmgt.version>1.1.0-SNAPSHOT</carbon.appmgt.version>
+        <carbon.appmgt.version>1.1.0</carbon.appmgt.version>
         <google.gson.version>2.3.1</google.gson.version>
 
     </properties>

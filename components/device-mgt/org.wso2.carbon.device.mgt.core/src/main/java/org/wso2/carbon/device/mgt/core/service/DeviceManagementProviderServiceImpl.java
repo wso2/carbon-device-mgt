@@ -492,8 +492,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         Device device;
         try {
+            DeviceManagementDAOFactory.openConnection();
             device = deviceDAO.getDevice(deviceId, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                    "'" + deviceId.getId() + "'", e);
+        } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
                     "'" + deviceId.getId() + "'", e);
         } finally {

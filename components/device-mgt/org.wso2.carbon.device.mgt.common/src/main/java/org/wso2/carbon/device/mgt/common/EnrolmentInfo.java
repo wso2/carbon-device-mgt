@@ -18,7 +18,11 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-public class EnrolmentInfo {
+import java.io.Serializable;
+
+public class EnrolmentInfo implements Serializable{
+
+    private static final long serialVersionUID = 1998101712L;
 
     public enum Status {
         CREATED, ACTIVE, INACTIVE, UNREACHABLE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED, DISENROLLMENT_REQUESTED

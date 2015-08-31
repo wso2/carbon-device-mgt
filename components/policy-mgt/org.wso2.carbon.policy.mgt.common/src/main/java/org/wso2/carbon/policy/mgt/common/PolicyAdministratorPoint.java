@@ -40,8 +40,14 @@ public interface PolicyAdministratorPoint {
 
     boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException;
 
+    void activatePolicy(int policyId) throws PolicyManagementException;
+
+    void inactivatePolicy(int policyId) throws PolicyManagementException;
+
     boolean deletePolicy(Policy policy) throws PolicyManagementException;
     boolean deletePolicy(int policyId) throws PolicyManagementException;
+
+    void publishChanges() throws PolicyManagementException;
 
     /**
      * This method adds a policy per device which should be implemented by the related plugins.

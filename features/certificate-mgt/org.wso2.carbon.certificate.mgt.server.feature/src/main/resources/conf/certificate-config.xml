@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<CertificateConfigurations>
+    <CertificateKeystore>
+        <!-- EMM Keystore file location-->
+        <CertificateKeystoreLocation>${carbon.home}/repository/resources/security/wso2cert.jks</CertificateKeystoreLocation>
+        <!-- EMM Keystore type (JKS/PKCS12 etc.)-->
+        <CertificateKeystoreType>JKS</CertificateKeystoreType>
+        <!-- EMM Keystore password-->
+        <CertificateKeystorePassword>wso2carbon</CertificateKeystorePassword>
+        <!-- Certificate authority certificate alias -->
+        <CACertAlias>cacert</CACertAlias>
+        <!-- Certificate authority private key password -->
+        <CAPrivateKeyPassword>cacert</CAPrivateKeyPassword>
+        <!-- Registration authority certificate alias -->
+        <RACertAlias>racert</RACertAlias>
+        <!-- Registration authority private key password -->
+        <RAPrivateKeyPassword>racert</RAPrivateKeyPassword>
+    </CertificateKeystore>
+</CertificateConfigurations>

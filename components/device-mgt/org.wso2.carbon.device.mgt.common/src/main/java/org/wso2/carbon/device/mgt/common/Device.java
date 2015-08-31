@@ -23,7 +23,9 @@ import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement
-public class Device implements Serializable {
+public class Device implements Serializable{
+
+	private static final long serialVersionUID = 1998101711L;
 
 	private int id;
     private String name;

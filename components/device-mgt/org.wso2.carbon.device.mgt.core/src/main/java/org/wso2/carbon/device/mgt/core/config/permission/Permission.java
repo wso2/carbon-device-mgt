@@ -4,7 +4,7 @@
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * You may obtain a copy of the License at
+ * you may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,21 +16,32 @@
  * under the License.
  */
 
+package org.wso2.carbon.device.mgt.core.config.permission;
 
-package org.wso2.carbon.policy.mgt.common;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import java.util.List;
+@XmlRootElement(name = "Permission")
+public class Permission{
 
-public interface PolicyFilter {
+	private String name;
+	private String path;
 
-    List<Policy> filterActivePolicies(List<Policy> policies);
+	public String getName() {
+		return name;
+	}
 
-    List<Policy> filterRolesBasedPolicies(String roles[], List<Policy> policies);
+	@XmlElement(name = "name", required = true)
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    List<Policy> filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies);
+	public String getPath() {
+		return path;
+	}
 
-    List<Policy> filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies);
-
-    List<Policy> filterUserBasedPolicies(String username, List<Policy> policies);
-
+	@XmlElement(name = "path", required = true)
+	public void setPath(String path) {
+		this.path = path;
+	}
 }

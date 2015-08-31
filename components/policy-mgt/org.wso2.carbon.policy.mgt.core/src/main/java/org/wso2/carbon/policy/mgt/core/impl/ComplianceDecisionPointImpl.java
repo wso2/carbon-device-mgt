@@ -166,10 +166,8 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
             }
 
         } catch (OperationManagementException e) {
-            String msg = "Error occurred while re-enforcing the policy to device " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
+            throw new PolicyComplianceException("Error occurred while re-enforcing the policy to device " + deviceIdentifier.getId() + " - " +
+                    deviceIdentifier.getType(), e);
         }
     }
 

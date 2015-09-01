@@ -18,7 +18,6 @@
  */
 package org.wso2.carbon.policy.mgt.core.enforcement;
 
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Policy;
 
@@ -26,6 +25,10 @@ import java.util.List;
 
 public interface PolicyEnforcementDelegator {
 
-    void delegate(Policy policy, List<Device> devices) throws PolicyDelegationException;
+    void delegate() throws PolicyDelegationException;
+
+    Policy getEffectivePolicy(DeviceIdentifier identifier) throws PolicyDelegationException;
+
+    void addPolicyOperation(List<DeviceIdentifier> deviceIdentifiers, Policy policy) throws PolicyDelegationException;
 
 }

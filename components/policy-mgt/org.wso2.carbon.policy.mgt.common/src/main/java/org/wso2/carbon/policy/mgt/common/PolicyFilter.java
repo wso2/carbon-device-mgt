@@ -23,6 +23,8 @@ import java.util.List;
 
 public interface PolicyFilter {
 
+    List<Policy> filterActivePolicies(List<Policy> policies);
+
     List<Policy> filterRolesBasedPolicies(String roles[], List<Policy> policies);
 
     List<Policy> filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies);

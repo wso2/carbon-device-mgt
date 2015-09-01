@@ -42,6 +42,16 @@ public interface PolicyDAO {
 
     boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagerDAOException;
 
+    void activatePolicy(int policyId) throws PolicyManagerDAOException;
+
+    void activatePolicies(List<Integer> policyIds) throws PolicyManagerDAOException;
+
+    void markPoliciesAsUpdated(List<Integer> policyIds) throws PolicyManagerDAOException;
+
+    void inactivatePolicy(int policyId) throws PolicyManagerDAOException;
+
+    HashMap<Integer, Integer> getUpdatedPolicyIdandDeviceTypeId() throws PolicyManagerDAOException;
+
     Criterion addCriterion(Criterion criteria) throws PolicyManagerDAOException;
 
     Criterion updateCriterion(Criterion criteria) throws PolicyManagerDAOException;
@@ -63,6 +73,12 @@ public interface PolicyDAO {
     List<PolicyCriterion> getPolicyCriteria(int policyId) throws PolicyManagerDAOException;
 
     Policy updatePolicy(Policy policy) throws PolicyManagerDAOException;
+
+    void recordUpdatedPolicy(Policy policy) throws PolicyManagerDAOException;
+
+    void recordUpdatedPolicies(List<Policy> policies) throws PolicyManagerDAOException;
+
+    void removeRecordsAboutUpdatedPolicies() throws PolicyManagerDAOException;
 
     Policy getPolicy(int policyId) throws PolicyManagerDAOException;
 
@@ -90,21 +106,23 @@ public interface PolicyDAO {
 
     List<String> getPolicyAppliedUsers(int policyId) throws PolicyManagerDAOException;
 
-    void addEffectivePolicyToDevice(int deviceId, Policy policy)
+    void addEffectivePolicyToDevice(int deviceId, int enrolmentId, Policy policy)
             throws PolicyManagerDAOException;
 
-    void setPolicyApplied(int deviceId) throws PolicyManagerDAOException;
+    void setPolicyApplied(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
-    void updateEffectivePolicyToDevice(int deviceId, Policy policy)
+    void updateEffectivePolicyToDevice(int deviceId, int enrolmentId, Policy policy)
             throws PolicyManagerDAOException;
 
-    boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException;
+    boolean checkPolicyAvailable(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
     int getPolicyCount() throws PolicyManagerDAOException;
 
-    int getAppliedPolicyId(int deviceId) throws PolicyManagerDAOException;
+    int getAppliedPolicyId(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
-    Policy getAppliedPolicy(int deviceId) throws PolicyManagerDAOException;
+    Policy getAppliedPolicy(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
     HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException;
- }
+
+    HashMap<Integer, Integer> getAppliedPolicyIdsDeviceIds() throws PolicyManagerDAOException;
+}

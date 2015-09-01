@@ -19,10 +19,12 @@ package org.wso2.carbon.policy.mgt.core.mgt;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface PolicyManager {
@@ -36,6 +38,10 @@ public interface PolicyManager {
     boolean deletePolicy(Policy policy) throws PolicyManagementException;
 
     boolean deletePolicy(int policyId) throws PolicyManagementException;
+
+    void activatePolicy(int policyId) throws PolicyManagementException;
+
+    void inactivatePolicy(int policyId) throws PolicyManagementException;
 
     Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
                                                                                          PolicyManagementException;
@@ -63,6 +69,8 @@ public interface PolicyManager {
     void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
             throws PolicyManagementException;
 
+    List<DeviceType> applyChangesMadeToPolicies() throws PolicyManagementException;
+
     void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
 
     boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
@@ -72,4 +80,6 @@ public interface PolicyManager {
     int getPolicyCount() throws PolicyManagementException;
 
     Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
+
+    HashMap<Integer, Integer> getAppliedPolicyIdsDeviceIds() throws PolicyManagementException;
 }

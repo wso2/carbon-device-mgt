@@ -27,6 +27,8 @@ import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.core.cache.PolicyCacheManager;
+import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
@@ -47,12 +49,14 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     private PolicyManager policyManager;
     private ProfileManager profileManager;
     private FeatureManager featureManager;
+    private PolicyCacheManager cacheManager;
     // private PolicyEnforcementDelegator delegator;
 
     public PolicyAdministratorPointImpl() {
         this.policyManager = new PolicyManagerImpl();
         this.profileManager = new ProfileManagerImpl();
         this.featureManager = new FeatureManagerImpl();
+        this.cacheManager = PolicyCacheManagerImpl.getInstance();
         // this.delegator = new PolicyEnforcementDelegatorImpl();
     }
 
@@ -64,6 +68,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 //        } catch (PolicyDelegationException e) {
 //            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
 //        }
+        PolicyCacheManagerImpl.getInstance().addPolicy(resultantPolicy);
         return resultantPolicy;
     }
 
@@ -75,32 +80,41 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 //        } catch (PolicyDelegationException e) {
 //            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
 //        }
+        PolicyCacheManagerImpl.getInstance().updatePolicy(resultantPolicy);
         return resultantPolicy;
     }
 
     @Override
     public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagementException {
-        return policyManager.updatePolicyPriorities(policies);
+        boolean bool = policyManager.updatePolicyPriorities(policies);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        return bool;
     }
 
     @Override
     public void activatePolicy(int policyId) throws PolicyManagementException {
         policyManager.activatePolicy(policyId);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
     }
 
     @Override
     public void inactivatePolicy(int policyId) throws PolicyManagementException {
         policyManager.inactivatePolicy(policyId);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
     }
 
     @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagementException {
-        return policyManager.deletePolicy(policy);
+        boolean bool = policyManager.deletePolicy(policy);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        return bool;
     }
 
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
-        return policyManager.deletePolicy(policyId);
+        boolean bool =policyManager.deletePolicy(policyId);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        return bool;
     }
 
     @Override
@@ -127,15 +141,23 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
             String taskName = PolicyManagementConstants.DELEGATION_TASK_NAME + "_" + String.valueOf(tenantId);
 
-            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.DELEGATION_TASK_CLAZZ, properties, triggerInfo);
+            if (!taskManager.isTaskScheduled(taskName)) {
 
-            taskManager.registerTask(taskInfo);
-            taskManager.rescheduleTask(taskInfo.getName());
+                TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.DELEGATION_TASK_CLAZZ,
+                        properties, triggerInfo);
 
+                taskManager.registerTask(taskInfo);
+                taskManager.rescheduleTask(taskInfo.getName());
+            } else {
+                throw new PolicyManagementException("There is a task already running for policy changes. Please try " +
+                        "to apply " +
+                        "changes after few minutes.");
+            }
 
         } catch (TaskException e) {
-            String msg = "Error occurred while creating the policy delegation task for tenant " + PrivilegedCarbonContext.
-                    getThreadLocalCarbonContext().getTenantId();
+            String msg = "Error occurred while creating the policy delegation task for tenant " +
+                    PrivilegedCarbonContext.
+                            getThreadLocalCarbonContext().getTenantId();
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
         }
@@ -180,22 +202,26 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList, Policy policy) throws
             PolicyManagementException {
-        return policyManager.addPolicyToDevice(deviceIdentifierList, policy);
+        policy = policyManager.addPolicyToDevice(deviceIdentifierList, policy);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        return policy;
     }
 
     @Override
     public Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagementException {
-        return policyManager.addPolicyToRole(roleNames, policy);
+        policy = policyManager.addPolicyToRole(roleNames, policy);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        return policy;
     }
 
     @Override
     public List<Policy> getPolicies() throws PolicyManagementException {
-        return policyManager.getPolicies();
+        return PolicyCacheManagerImpl.getInstance().getAllPolicies();
     }
 
     @Override
     public Policy getPolicy(int policyId) throws PolicyManagementException {
-        return policyManager.getPolicy(policyId);
+        return PolicyCacheManagerImpl.getInstance().getPolicy(policyId);
     }
 
     @Override
@@ -306,7 +332,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     @Override
     public int getPolicyCount() throws PolicyManagementException {
-        return policyManager.getPolicyCount();
+        return PolicyCacheManagerImpl.getInstance().getAllPolicies().size();
     }
 
 }

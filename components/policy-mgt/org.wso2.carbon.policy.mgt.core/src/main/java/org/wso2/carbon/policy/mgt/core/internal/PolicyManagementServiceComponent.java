@@ -21,6 +21,8 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
@@ -84,8 +86,12 @@ public class PolicyManagementServiceComponent {
             componentContext.getBundleContext().registerService(
                     PolicyManagerService.class.getName(), new PolicyManagerServiceImpl(), null);
 
-            TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
-            taskScheduleService.startTask(30000);
+            PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                    getDeviceManagementConfigRepository().getPolicyConfiguration();
+            if(policyConfiguration.getMonitoringEnable()) {
+                TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
+                taskScheduleService.startTask(policyConfiguration.getMonitoringFrequency());
+            }
 
         } catch (Throwable t) {
             log.error("Error occurred while initializing the Policy management core.", t);
@@ -165,7 +171,7 @@ public class PolicyManagementServiceComponent {
 
     protected void setPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
         if (log.isDebugEnabled()) {
-            log.debug("Setting Policy Monitoring Service");
+            log.debug("Setting Policy Monitoring Service for " + policyMonitoringService.getType());
         }
         // TODO: FIX THE device type by taking from properties
         PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(policyMonitoringService.getType(),
@@ -174,7 +180,7 @@ public class PolicyManagementServiceComponent {
 
     protected void unsetPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
         if (log.isDebugEnabled()) {
-            log.debug("Removing the Policy Monitoring Service");
+            log.debug("Removing the Policy Monitoring Service for " + policyMonitoringService.getType());
         }
         // TODO: FIX THE device type by taking from properties
         PolicyManagementDataHolder.getInstance().unsetPolicyMonitoringService(policyMonitoringService.getType());

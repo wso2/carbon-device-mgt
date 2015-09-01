@@ -119,17 +119,22 @@ public class PolicyDAOImpl implements PolicyDAO {
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_DEVICE_POLICY (DEVICE_ID, POLICY_ID) VALUES (?, ?)";
+            String query = "INSERT INTO DM_DEVICE_POLICY (DEVICE_ID, POLICY_ID, ENROLMENT_ID, DEVICE) VALUES (?, ?, " +
+                    "?, ?)";
             stmt = conn.prepareStatement(query);
             for (Device device : devices) {
                 stmt.setInt(1, device.getId());
                 stmt.setInt(2, policy.getId());
+                stmt.setInt(3, device.getEnrolmentInfo().getId());
+                stmt.setBytes(4, PolicyManagerUtil.getBytes(device));
                 stmt.addBatch();
             }
             stmt.executeBatch();
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Error occurred while adding the device ids  with policy to " +
                     "database", e);
+        } catch (IOException e) {
+            throw new PolicyManagerDAOException("Error occurred while getting the byte array from device.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -881,7 +886,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
 
     @Override
-    public void addEffectivePolicyToDevice(int deviceId, Policy policy) throws PolicyManagerDAOException {
+    public void addEffectivePolicyToDevice(int deviceId, int enrolmentId, Policy policy) throws
+            PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
@@ -889,7 +895,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_DEVICE_POLICY_APPLIED (DEVICE_ID, POLICY_ID, POLICY_CONTENT, " +
-                    "CREATED_TIME, UPDATED_TIME, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?)";
+                    "CREATED_TIME, UPDATED_TIME, TENANT_ID, ENROLMENT_ID) VALUES (?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, policy.getId());
@@ -897,6 +903,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setTimestamp(4, currentTimestamp);
             stmt.setTimestamp(5, currentTimestamp);
             stmt.setInt(6, tenantId);
+            stmt.setInt(7, enrolmentId);
             stmt.executeUpdate();
         } catch (SQLException | IOException e) {
             throw new PolicyManagerDAOException("Error occurred while adding the evaluated feature list to device", e);
@@ -907,7 +914,7 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public void setPolicyApplied(int deviceId) throws PolicyManagerDAOException {
+    public void setPolicyApplied(int deviceId, int enrollmentId) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
@@ -915,12 +922,13 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET APPLIED_TIME = ?, APPLIED = ? WHERE DEVICE_ID = ? AND" +
-                    " TENANT_ID = ?";
+                    " TENANT_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setTimestamp(1, currentTimestamp);
             stmt.setBoolean(2, true);
             stmt.setInt(3, deviceId);
             stmt.setInt(4, tenantId);
+            stmt.setInt(5, enrollmentId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Error occurred while updating applied policy to device (" +
@@ -932,7 +940,8 @@ public class PolicyDAOImpl implements PolicyDAO {
 
 
     @Override
-    public void updateEffectivePolicyToDevice(int deviceId, Policy policy) throws PolicyManagerDAOException {
+    public void updateEffectivePolicyToDevice(int deviceId, int enrolmentId, Policy policy) throws
+            PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
@@ -940,7 +949,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_DEVICE_POLICY_APPLIED SET POLICY_ID = ?, POLICY_CONTENT = ?, UPDATED_TIME = ?, " +
-                    "APPLIED = ? WHERE DEVICE_ID = ? AND TENANT_ID = ?";
+                    "APPLIED = ? WHERE DEVICE_ID = ? AND TENANT_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, policy.getId());
             stmt.setBytes(2, PolicyManagerUtil.getBytes(policy));
@@ -948,6 +957,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setBoolean(4, false);
             stmt.setInt(5, deviceId);
             stmt.setInt(6, tenantId);
+            stmt.setInt(7, enrolmentId);
             stmt.executeUpdate();
 
         } catch (SQLException | IOException e) {
@@ -959,7 +969,7 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException {
+    public boolean checkPolicyAvailable(int deviceId, int enrollmentId) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -967,10 +977,12 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ? AND " +
+                    "ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, tenantId);
+            stmt.setInt(3, enrollmentId);
             resultSet = stmt.executeQuery();
             exist = resultSet.next();
         } catch (SQLException e) {
@@ -1282,17 +1294,18 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public int getAppliedPolicyId(int deviceId) throws PolicyManagerDAOException {
+    public int getAppliedPolicyId(int deviceId, int enrollmentId) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ? AND ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, tenantId);
+            stmt.setInt(3, enrollmentId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
@@ -1307,7 +1320,7 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public Policy getAppliedPolicy(int deviceId) throws PolicyManagerDAOException {
+    public Policy getAppliedPolicy(int deviceId, int enrollmentId) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -1315,10 +1328,12 @@ public class PolicyDAOImpl implements PolicyDAO {
         Policy policy = null;
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ? AND  " +
+                    "ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, tenantId);
+            stmt.setInt(3, enrollmentId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {

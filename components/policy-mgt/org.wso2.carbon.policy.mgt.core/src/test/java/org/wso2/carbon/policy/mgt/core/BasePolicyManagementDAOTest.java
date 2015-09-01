@@ -26,6 +26,9 @@ import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -61,6 +64,7 @@ public abstract class BasePolicyManagementDAOTest {
         this.initSQLScript();
         this.initialize();
         this.initiatePrivilegedCaronContext();
+        DeviceConfigurationManager.getInstance().initConfig();
     }
 
     public void initialize() throws TaskException {

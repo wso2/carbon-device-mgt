@@ -27,13 +27,16 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.FeatureManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
+import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,26 +61,36 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     @Override
     public PIPDevice getDeviceData(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         PIPDevice pipDevice = new PIPDevice();
-        org.wso2.carbon.device.mgt.common.Device device;
+        Device device;
 
         DeviceType deviceType = new DeviceType();
         deviceType.setName(deviceIdentifier.getType());
-        deviceManagementService = getDeviceManagementService();
+        DeviceManagementProviderService deviceManagementService = new DeviceManagementProviderServiceImpl();
 
         try {
             device = deviceManagementService.getDevice(deviceIdentifier);
-             /*deviceManagementService.getDeviceType(deviceIdentifier.getType());*/
-            pipDevice.setDevice(device);
-            pipDevice.setRoles(getRoleOfDevice(device));
-            pipDevice.setDeviceType(deviceType);
-            pipDevice.setDeviceIdentifier(deviceIdentifier);
-            pipDevice.setUserId(device.getEnrolmentInfo().getOwner());
-            pipDevice.setOwnershipType(device.getEnrolmentInfo().getOwnership().toString());
+            Thread.currentThread();
 
-            // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
-            // pipDevice.setLongitude();
-            // pipDevice.setAltitude();
-            // pipDevice.setTimestamp();
+            if (device != null) {
+             /*deviceManagementService.getDeviceType(deviceIdentifier.getType());*/
+                pipDevice.setDevice(device);
+                pipDevice.setRoles(getRoleOfDevice(device));
+                pipDevice.setDeviceType(deviceType);
+                pipDevice.setDeviceIdentifier(deviceIdentifier);
+                pipDevice.setUserId(device.getEnrolmentInfo().getOwner());
+                pipDevice.setOwnershipType(device.getEnrolmentInfo().getOwnership().toString());
+
+                // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
+                // pipDevice.setLongitude();
+                // pipDevice.setAltitude();
+                // pipDevice.setTimestamp();
+            } else {
+                // Remove this
+                for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+                    log.debug("StackTraceElement   : " + ste);
+                }
+                throw new PolicyManagementException("Device details cannot be null.");
+            }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred when retrieving the data related to device from the database.";
             log.error(msg, e);
@@ -93,6 +106,16 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         List<Policy> policies = policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName());
         PolicyFilter policyFilter = new PolicyFilterImpl();
 
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies for the device type : " + pipDevice.getDeviceType().getName() + " : " +
+                    policies.size());
+            for (Policy policy : policies) {
+                log.debug("Names of policy for above device type : " + policy.getPolicyName());
+            }
+        }
+
+        policies = policyFilter.filterActivePolicies(policies);
+
         if (pipDevice.getDeviceType() != null) {
             policies = policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
         }
@@ -106,6 +129,14 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
             policies = policyFilter.filterUserBasedPolicies(pipDevice.getUserId(), policies);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("No of policies selected for the device type : " + pipDevice.getDeviceType().getName() + " : " +
+                    policies.size());
+            for (Policy policy : policies) {
+                log.debug("Names of selected policy  for above device type : " + policy.getPolicyName());
+            }
+        }
+
         return policies;
     }
 
@@ -117,12 +148,14 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
 
     private String[] getRoleOfDevice(Device device) throws PolicyManagementException {
         try {
-            return CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getUserStoreManager().getRoleListOfUser(device.getEnrolmentInfo().getOwner());
+            UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
+            if (userRealm != null) {
+                return userRealm.getUserStoreManager().getRoleListOfUser(device.getEnrolmentInfo().getOwner());
+            } else {
+                return null;
+            }
         } catch (UserStoreException e) {
-            String msg = "Error occurred when retrieving roles related to user name.";
-            log.error(msg, e);
-            throw new PolicyManagementException(msg, e);
+            throw new PolicyManagementException("Error occurred when retrieving roles related to user name.", e);
         }
     }
 
@@ -139,12 +172,11 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
                 }
             }
         }
-
         return finalPolicies;
     }
 
     private DeviceManagementProviderService getDeviceManagementService() {
-        return PolicyManagementDataHolder.getInstance().getDeviceManagementService();
+        return new DeviceManagementProviderServiceImpl();
     }
 
 }

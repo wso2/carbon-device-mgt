@@ -18,7 +18,11 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-public class EnrolmentInfo {
+import java.io.Serializable;
+
+public class EnrolmentInfo implements Serializable{
+
+    private static final long serialVersionUID = 1998101712L;
 
     public enum Status {
         CREATED, ACTIVE, INACTIVE, UNREACHABLE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED, DISENROLLMENT_REQUESTED
@@ -28,6 +32,7 @@ public class EnrolmentInfo {
         BYOD, COPE
     }
 
+    private int id;
     private Device device;
     private Long dateOfEnrolment;
     private Long dateOfLastUpdate;
@@ -42,6 +47,14 @@ public class EnrolmentInfo {
         this.owner = owner;
         this.ownership = ownership;
         this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Long getDateOfEnrolment() {

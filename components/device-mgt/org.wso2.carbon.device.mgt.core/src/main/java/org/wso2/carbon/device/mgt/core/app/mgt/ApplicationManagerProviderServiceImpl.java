@@ -45,6 +45,7 @@ import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -173,6 +174,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     @Override
     public void updateApplicationListInstalledInDevice(
             DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
+        List<Application> installedAppList = getApplicationListForDevice(deviceIdentifier);
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
@@ -181,8 +183,6 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (log.isDebugEnabled()) {
                 log.debug("Device:" + device.getId() + ":identifier:" + deviceIdentifier.getId());
             }
-
-            List<Application> installedAppList = getApplicationListForDevice(deviceIdentifier);
 
             if (log.isDebugEnabled()) {
                 log.debug("num of apps installed:" + installedAppList.size());
@@ -227,9 +227,13 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             }
             applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove, tenantId);
             DeviceManagementDAOFactory.commitTransaction();
-        } catch (DeviceManagementDAOException | TransactionManagementException e) {
+        } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new ApplicationManagementException("Error occurred saving application list to the device", e);
+        } catch (TransactionManagementException e) {
+            throw new ApplicationManagementException("Error occurred while initializing transaction", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 
@@ -239,11 +243,16 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         Device device;
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            DeviceManagementDAOFactory.openConnection();
             device = deviceDAO.getDevice(deviceId, tenantId);
             return applicationDAO.getInstalledApplications(device.getId());
         } catch (DeviceManagementDAOException e) {
-            throw new ApplicationManagementException("Error occured while fetching the Application List of '" +
+            throw new ApplicationManagementException("Error occurred while fetching the Application List of '" +
                     deviceId.getType() + "' device carrying the identifier'" + deviceId.getId(), e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 

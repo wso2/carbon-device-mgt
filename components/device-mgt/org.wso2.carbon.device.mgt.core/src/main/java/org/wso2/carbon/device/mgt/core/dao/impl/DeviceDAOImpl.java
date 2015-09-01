@@ -48,7 +48,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql =
                     "INSERT INTO DM_DEVICE(DESCRIPTION, NAME, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION, TENANT_ID, GROUP_ID) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+                            "VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, device.getDescription());
             stmt.setString(2, device.getName());
@@ -85,7 +85,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql =
                     "UPDATE DM_DEVICE SET DESCRIPTION = ?, NAME = ?, GROUP_ID = ? WHERE DEVICE_IDENTIFICATION = ? AND " +
-                    "DEVICE_TYPE_ID = ? AND TENANT_ID = ?";
+                            "DEVICE_TYPE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, device.getDescription());
             stmt.setString(2, device.getName());
@@ -193,7 +193,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             String sql =
                     "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, " +
                             "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID " +
-                            "FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, d.GROUP_ID, d.DEVICE_IDENTIFICATION, d.OWNER, t.NAME " +
+                            "FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, d.GROUP_ID, d.DEVICE_IDENTIFICATION,  t.NAME " +
                             "AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
                             "AND d.TENANT_ID = ?) d1 WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);

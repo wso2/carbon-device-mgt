@@ -18,11 +18,15 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class EnrolmentInfo {
+public class EnrolmentInfo implements Serializable{
+
+    private static final long serialVersionUID = 1998101712L;
 
     public enum Status {
         CREATED, ACTIVE, INACTIVE, UNREACHABLE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED, DISENROLLMENT_REQUESTED

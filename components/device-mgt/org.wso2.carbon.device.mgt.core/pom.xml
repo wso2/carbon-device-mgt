@@ -61,6 +61,7 @@
                             org.apache.commons.logging,
                             javax.naming,
                             javax.xml.*,
+                            javax.servlet.*,
                             org.xml.sax,
                             javax.sql.*,
                             org.wso2.carbon.context,
@@ -71,13 +72,19 @@
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
                             org.wso2.carbon.registry.core.service,
+                            org.wso2.carbon.registry.core,
+                            org.wso2.carbon.registry.core.exceptions,
+                            org.wso2.carbon.registry.core.session,
+                            org.wso2.carbon.registry.api,
                             org.w3c.dom,
                             org.wso2.carbon.identity.oauth.stub,
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.ndatasource.core,
-                            org.apache.axis2.transport.mail
+                            org.apache.axis2.transport.mail,
+                            org.apache.catalina,
+                            org.apache.catalina.core
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

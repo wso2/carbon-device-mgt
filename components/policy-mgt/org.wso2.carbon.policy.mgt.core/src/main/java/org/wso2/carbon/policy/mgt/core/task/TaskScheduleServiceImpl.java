@@ -29,7 +29,6 @@ import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 import org.wso2.carbon.ntask.core.TaskInfo.TriggerInfo;
 
 import java.util.HashMap;
@@ -48,13 +47,13 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
-            taskService.registerTaskType(PolicyManagementConstants.TASK_TYPE);
+            taskService.registerTaskType(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
             if (log.isDebugEnabled()) {
                 log.debug("Monitoring task is started for the tenant id " + tenantId);
             }
 
-            TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.TASK_TYPE);
+            TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
             TriggerInfo triggerInfo = new TriggerInfo();
 
@@ -64,9 +63,9 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
             Map<String, String> properties = new HashMap<>();
             properties.put(PolicyManagementConstants.TENANT_ID, String.valueOf(tenantId));
 
-            String taskName = PolicyManagementConstants.TASK_NAME + "_" + String.valueOf(tenantId);
+            String taskName = PolicyManagementConstants.MONITORING_TASK_NAME + "_" + String.valueOf(tenantId);
 
-            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.TASK_CLAZZ, properties, triggerInfo);
+            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ, properties, triggerInfo);
 
             taskManager.registerTask(taskInfo);
             taskManager.rescheduleTask(taskInfo.getName());
@@ -86,9 +85,9 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
     public void stopTask() throws PolicyMonitoringTaskException {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            String taskName = PolicyManagementConstants.TASK_NAME + "_" + String.valueOf(tenantId);
+            String taskName = PolicyManagementConstants.MONITORING_TASK_NAME + "_" + String.valueOf(tenantId);
             TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
-            TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.TASK_TYPE);
+            TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
             taskManager.deleteTask(taskName);
         } catch (TaskException e) {
             String msg = "Error occurred while deleting the task for tenant " + PrivilegedCarbonContext.
@@ -102,10 +101,10 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
     public void updateTask(int monitoringFrequency) throws PolicyMonitoringTaskException {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            String taskName = PolicyManagementConstants.TASK_NAME + "_" + String.valueOf(tenantId);
+            String taskName = PolicyManagementConstants.MONITORING_TASK_NAME + "_" + String.valueOf(tenantId);
             TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
 
-            TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.TASK_TYPE);
+            TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
             taskManager.deleteTask(taskName);
 
@@ -117,7 +116,7 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
             Map<String, String> properties = new HashMap<>();
             properties.put("tenantId", String.valueOf(tenantId));
 
-            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.TASK_CLAZZ, properties, triggerInfo);
+            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ, properties, triggerInfo);
 
             taskManager.registerTask(taskInfo);
             taskManager.rescheduleTask(taskInfo.getName());

@@ -28,16 +28,16 @@ import java.util.List;
 public interface GroupDAO {
 
     /**
-     * Add new deviceGroup
+     * Add new Device Group
      *
-     * @param deviceGroup group to be added
+     * @param deviceGroup to be added
      * @return sql execution result
      * @throws GroupManagementDAOException
      */
     int addGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException;
 
     /**
-     * Update an existing deviceGroup
+     * Update an existing Device Group
      *
      * @param deviceGroup group to update
      * @return sql execution result
@@ -46,7 +46,7 @@ public interface GroupDAO {
     int updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException;
 
     /**
-     * Delete an existing group
+     * Delete an existing Device Group
      *
      * @param groupId group Id to delete
      * @return sql execution result
@@ -55,30 +55,40 @@ public interface GroupDAO {
     int deleteGroup(int groupId) throws GroupManagementDAOException;
 
     /**
-     * Get group by Id
+     * Get device group by Id
      *
-     * @param groupId id of required group
-     * @return DeviceGroup
+     * @param groupId id of Device Group
+     * @return Device Group
      * @throws GroupManagementDAOException
      */
-    DeviceGroup getGroupById(int groupId) throws GroupManagementDAOException;
+    DeviceGroup getGroup(int groupId) throws GroupManagementDAOException;
 
     /**
-     * Get the list of DeviceGroups belongs to a user.
+     * Get the list of Device Groups in tenant.
      *
-     * @return List of all DeviceGroups.
+     * @param tenantId of user's tenant
+     * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroup> getAllGroups() throws GroupManagementDAOException;
+    List<DeviceGroup> getGroups(int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Groups that matches with the given DeviceGroup name.
      *
-     * @param groupName name of the DeviceGroup.
-     * @param owner     owner of the DeviceGroup.
+     * @param groupName name of the Device Group.
      * @param tenantId  of user's tenant
      * @return List of DeviceGroup that matches with the given DeviceGroup name.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroup> getGroupsByName(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> getGroups(String groupName, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Get last created group of user
+     *
+     * @param owner    of the Device Group
+     * @param tenantId of the Device Group
+     * @return last created group
+     * @throws GroupManagementDAOException
+     */
+    DeviceGroup getLastCreatedGroup(String owner, int tenantId) throws GroupManagementDAOException;
 }

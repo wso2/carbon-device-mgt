@@ -27,9 +27,11 @@ import java.util.List;
 
 public class DeviceCreator {
 
-    private static List<Device> deviceList = new ArrayList<Device>();
+    //private static ;
 
     public static List<Device> getDeviceList(DeviceType deviceType) {
+
+        List<Device> deviceList = new ArrayList<Device>();
 
         Device device = new Device();
         device.setId(1);
@@ -42,25 +44,131 @@ public class DeviceCreator {
         enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
         device.setEnrolmentInfo(enrolmentInfo);
 
-        Device device1 = new Device();
-        device1.setId(1);
-        device1.setType(deviceType.getName());
-        device1.setName("Nexus 5");
-        device1.setDeviceIdentifier("def456");
-        EnrolmentInfo enrolmentInfo1 = new EnrolmentInfo();
-        enrolmentInfo1.setOwner("Manoj");
-        enrolmentInfo1.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
-        enrolmentInfo1.setStatus(EnrolmentInfo.Status.ACTIVE);
-        device1.setEnrolmentInfo(enrolmentInfo);
+//        Device device1 = new Device();
+//        device1.setId(2);
+//        device1.setType(deviceType.getName());
+//        device1.setName("Nexus 5");
+//        device1.setDeviceIdentifier("def456");
+//        EnrolmentInfo enrolmentInfo1 = new EnrolmentInfo();
+//        enrolmentInfo1.setOwner("Manoj");
+//        enrolmentInfo1.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+//        enrolmentInfo1.setStatus(EnrolmentInfo.Status.ACTIVE);
+//        device1.setEnrolmentInfo(enrolmentInfo);
 
         deviceList.add(device);
-        // deviceList.add(device2);
+       // deviceList.add(device1);
 
         return deviceList;
     }
 
+
+    public static List<Device> getDeviceList2 (DeviceType deviceType) {
+        List<Device> deviceList = new ArrayList<Device>();
+
+        Device device = new Device();
+        device.setId(2);
+        device.setType(deviceType.getName());
+        device.setName("Apple 5S");
+        device.setDeviceIdentifier("def123");
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setOwner("Dilshan");
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device.setEnrolmentInfo(enrolmentInfo);
+
+        deviceList.add(device);
+        return deviceList;
+    }
+
+    public static List<Device> getDeviceList3 (DeviceType deviceType) {
+        List<Device> deviceList = new ArrayList<Device>();
+
+        Device device = new Device();
+        device.setId(3);
+        device.setType(deviceType.getName());
+        device.setName("Apple 6 Large");
+        device.setDeviceIdentifier("xxxx123");
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setOwner("Harshan");
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device.setEnrolmentInfo(enrolmentInfo);
+
+        deviceList.add(device);
+        return deviceList;
+    }
+
+    public static List<Device> getDeviceList4 (DeviceType deviceType) {
+        List<Device> deviceList = new ArrayList<Device>();
+
+        Device device = new Device();
+        device.setId(4);
+        device.setType(deviceType.getName());
+        device.setName("HTC M");
+        device.setDeviceIdentifier("ppp456");
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setOwner("Dilan");
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device.setEnrolmentInfo(enrolmentInfo);
+
+        deviceList.add(device);
+        return deviceList;
+    }
+
+    public static List<Device> getDeviceList5 (DeviceType deviceType) {
+        List<Device> deviceList = new ArrayList<Device>();
+
+        Device device = new Device();
+        device.setId(5);
+        device.setType(deviceType.getName());
+        device.setName("Sony Experia L");
+        device.setDeviceIdentifier("ssss123");
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setOwner("Milan");
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device.setEnrolmentInfo(enrolmentInfo);
+
+        deviceList.add(device);
+        return deviceList;
+    }
+
+
+    public static List<Device> getDeviceList6 (DeviceType deviceType) {
+        List<Device> deviceList = new ArrayList<Device>();
+
+        Device device = new Device();
+        device.setId(6);
+        device.setType(deviceType.getName());
+        device.setName("Alcatel RTS");
+        device.setDeviceIdentifier("ttt123");
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setOwner("Dileesha");
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device.setEnrolmentInfo(enrolmentInfo);
+
+        deviceList.add(device);
+        return deviceList;
+    }
+
+
     public static Device getSingleDevice() {
-        return deviceList.get(0);
+
+        Device device = new Device();
+        device.setId(1);
+        device.setType("android");
+        device.setName("Galaxy S6");
+        device.setDeviceIdentifier("abc123");
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setOwner("Geeth");
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.ACTIVE);
+        device.setEnrolmentInfo(enrolmentInfo);
+
+
+        return device;
     }
 
 }

@@ -128,9 +128,9 @@ public class DynamicClientRegistrationUtil {
             serviceProvider.setDescription("Service Provider for application " + applicationName);
 
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
-            appMgtService.createApplication(serviceProvider, tenantDomain, userName);
+            appMgtService.createApplication(serviceProvider);
 
-            ServiceProvider createdServiceProvider = appMgtService.getApplicationExcludingFileBasedSPs(applicationName,tenantDomain);
+            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
             if (createdServiceProvider == null) {
                 throw new APIManagementException("Couldn't create Service Provider Application " + applicationName);
             }
@@ -179,7 +179,7 @@ public class DynamicClientRegistrationUtil {
             createdServiceProvider.setInboundAuthenticationConfig(inboundAuthenticationConfig);
 
             // Update the Service Provider app to add OAuthApp as an Inbound Authentication Config
-            appMgtService.updateApplication(createdServiceProvider,tenantDomain,userName);
+            appMgtService.updateApplication(createdServiceProvider);
 
             OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
             oAuthApplicationInfo.setClientId(createdApp.getOauthConsumerKey());
@@ -228,12 +228,12 @@ public class DynamicClientRegistrationUtil {
             oAuthAdminService.removeOAuthApplicationData(consumerKey);
 
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
-            ServiceProvider createdServiceProvider = appMgtService.getApplicationExcludingFileBasedSPs(applicationName,tenantDomain);
+            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
 
             if (createdServiceProvider == null) {
                 throw new APIManagementException("Couldn't retrieve Service Provider Application " + applicationName);
             }
-            appMgtService.deleteApplication(applicationName,tenantDomain,userName);
+            appMgtService.deleteApplication(applicationName);
 
         } catch (IdentityApplicationManagementException e) {
             APIUtil.handleException("Error occurred while removing ServiceProvider for app " + applicationName, e);

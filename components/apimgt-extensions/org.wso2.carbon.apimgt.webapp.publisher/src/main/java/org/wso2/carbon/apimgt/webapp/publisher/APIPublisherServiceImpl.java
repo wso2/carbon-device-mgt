@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
-import org.wso2.carbon.apimgt.api.FaultGatewaysException;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
@@ -38,7 +37,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
     private static final Log log = LogFactory.getLog(APIPublisherServiceImpl.class);
 
     @Override
-    public void publishAPI(API api) throws APIManagementException, FaultGatewaysException {
+    public void publishAPI(API api) throws APIManagementException {
         if (log.isDebugEnabled()) {
             log.debug("Publishing API '" + api.getId() + "'");
         }
@@ -73,7 +72,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
     }
 
     @Override
-    public void publishAPIs(List<API> apis) throws APIManagementException, FaultGatewaysException {
+    public void publishAPIs(List<API> apis) throws APIManagementException {
         if (log.isDebugEnabled()) {
             log.debug("Publishing a batch of APIs");
         }

@@ -52,9 +52,9 @@ import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
 import org.wso2.carbon.certificate.mgt.core.dto.CAStatus;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
-import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
+import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayInputStream;
@@ -292,9 +292,21 @@ public class CertificateGenerator {
         Date validityBeginDate = commonUtil.getValidityStartDate();
         Date validityEndDate = commonUtil.getValidityEndDate();
 
+        X500Name certSubject = request.getSubject();
+
+        if (certSubject == null) {
+            certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+        } else {
+            org.bouncycastle.asn1.x500.RDN[] rdn = certSubject.getRDNs();
+
+            if (rdn == null || rdn.length == 0) {
+                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+            }
+        }
+
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
                 new X500Name(issueSubject), BigInteger.valueOf(System.currentTimeMillis()),
-                validityBeginDate, validityEndDate, request.getSubject(), request.getSubjectPublicKeyInfo());
+                validityBeginDate, validityEndDate, certSubject, request.getSubjectPublicKeyInfo());
 
         ContentSigner sigGen;
         X509Certificate issuedCert;
@@ -461,6 +473,8 @@ public class CertificateGenerator {
             KeyStoreReader keyStoreReader = new KeyStoreReader();
             KeyStore keyStore = keyStoreReader.loadCertificateKeyStore();
             keyStore.setCertificateEntry(certificate.getSerialNumber().toString(), certificate);
+
+            keyStoreReader.saveCertificateKeyStore(keyStore);
         } catch (KeyStoreException e) {
             String errorMsg = "KeySKeyStoreException occurred when saving the generated certificate";
             log.error(errorMsg, e);

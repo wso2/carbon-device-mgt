@@ -59,7 +59,7 @@ import java.util.Map;
 public class MonitoringManagerImpl implements MonitoringManager {
 
     private PolicyDAO policyDAO;
-//    private DeviceDAO deviceDAO;
+    //    private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
     private MonitoringDAO monitoringDAO;
     private ComplianceDecisionPoint complianceDecisionPoint;
@@ -226,8 +226,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
     @Override
     public void addMonitoringOperation(List<Device> devices) throws PolicyComplianceException {
 
-        ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
-
         //int tenantId = PolicyManagerUtil.getTenantId();
         Map<Integer, Device> deviceIds = new HashMap<>();
         List<ComplianceData> complianceDatas;
@@ -327,10 +325,11 @@ public class MonitoringManagerImpl implements MonitoringManager {
             }
         }
 
-        // TODO : This should be uncommented, this is to mark the device as unreachable, But given the current implementation
-        // we are not able to do so.
+        // TODO : This should be uncommented, this is to mark the device as unreachable, But given the current
+        // implementation we are not able to do so.
 
 //        if(!deviceToMarkUnreachable.isEmpty()) {
+//        ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
 //            decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
 //                       new ArrayList<>(deviceToMarkUnreachable.values())));
 //        }

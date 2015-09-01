@@ -48,7 +48,6 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private ProfileManager profileManager;
-    private PolicyCacheManager policyCacheManager;
     private DeviceDAO deviceDAO;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
@@ -109,6 +108,9 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
+            if(policy.isActive()){
+                policyDAO.activatePolicy(policy.getId());
+            }
             PolicyManagementDAOFactory.commitTransaction();
 
         } catch (PolicyManagerDAOException e) {
@@ -713,20 +715,6 @@ public class PolicyManagerImpl implements PolicyManager {
                     policyId + ")", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
-        }
-
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            for (int deviceId : deviceIds) {
-                //TODO FIX ME
-                deviceList.add(deviceDAO.getDevice(new DeviceIdentifier(Integer.toString(deviceId), ""), tenantId));
-            }
-        } catch (SQLException e) {
-            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new PolicyManagementException("Error occurred while retrieving device metadata", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
         }
 
         return deviceList;

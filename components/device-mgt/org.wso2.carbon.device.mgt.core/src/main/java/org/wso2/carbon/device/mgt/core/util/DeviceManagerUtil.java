@@ -23,6 +23,7 @@ import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
@@ -35,6 +36,7 @@ import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -97,6 +99,7 @@ public final class DeviceManagerUtil {
     public static boolean registerDeviceType(String typeName) throws DeviceManagementException {
         boolean status;
         try {
+            DeviceManagementDAOFactory.beginTransaction();
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
             DeviceType deviceType = deviceTypeDAO.getDeviceType(typeName);
             if (deviceType == null) {
@@ -104,10 +107,18 @@ public final class DeviceManagerUtil {
                 dt.setName(typeName);
                 deviceTypeDAO.addDeviceType(dt);
             }
+            DeviceManagementDAOFactory.commitTransaction();
             status = true;
         } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("Error occurred while registering the device type '" +
                     typeName + "'", e);
+        } catch (TransactionManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceManagementException("SQL occurred while registering the device type '" +
+                    typeName + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
         return status;
     }
@@ -120,6 +131,7 @@ public final class DeviceManagerUtil {
      */
     public static boolean unregisterDeviceType(String typeName) throws DeviceManagementException {
         try {
+            DeviceManagementDAOFactory.beginTransaction();
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
             DeviceType deviceType = deviceTypeDAO.getDeviceType(typeName);
             if (deviceType != null) {
@@ -127,10 +139,18 @@ public final class DeviceManagerUtil {
                 dt.setName(typeName);
                 deviceTypeDAO.removeDeviceType(typeName);
             }
+            DeviceManagementDAOFactory.commitTransaction();
             return true;
         } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("Error occurred while registering the device type '" +
                     typeName + "'", e);
+        } catch (TransactionManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceManagementException("SQL occurred while registering the device type '" +
+                    typeName + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 

@@ -59,15 +59,15 @@ public class ConfigurationUtil {
 
 
 	private static ConfigurationUtil configurationUtil;
-	private static final String[] emmConfigEntryNames = { CA_CERT_ALIAS, RA_CERT_ALIAS,
+	private static final String[] certificateConfigEntryNames = { CA_CERT_ALIAS, RA_CERT_ALIAS,
 			CERTIFICATE_KEYSTORE, PATH_CERTIFICATE_KEYSTORE, CERTIFICATE_KEYSTORE_PASSWORD,
 			KEYSTORE_CA_CERT_PRIV_PASSWORD, KEYSTORE_RA_CERT_PRIV_PASSWORD };
 
 	private static Map<String, String> configMap;
 
-	private static Map<String, String> readEMMConfigurations() throws KeystoreException {
+	private static Map<String, String> readCertificateConfigurations() throws KeystoreException {
 
-		String emmConfLocation = System.getProperty(CONF_LOCATION) + File.separator + CERTIFICATE_CONFIG_XML;
+		String certConfLocation = System.getProperty(CONF_LOCATION) + File.separator + CERTIFICATE_CONFIG_XML;
 
 		if (configurationUtil == null || configMap == null) {
 
@@ -76,28 +76,28 @@ public class ConfigurationUtil {
 
 			Document document;
 			try {
-				File fXmlFile = new File(emmConfLocation);
+				File fXmlFile = new File(certConfLocation);
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 				document = documentBuilder.parse(fXmlFile);
 			} catch (ParserConfigurationException e) {
-				throw new KeystoreException("Error parsing configuration in ios-config.xml file");
+				throw new KeystoreException("Error parsing configuration in certificate-config.xml file");
 			} catch (SAXException e) {
-                throw new KeystoreException("SAX exception in ios-config.xml file");
+                throw new KeystoreException("SAX exception in certificate-config.xml file");
             } catch (IOException e) {
-                throw new KeystoreException("Error reading ios-config.xml file");
+                throw new KeystoreException("Error reading certificate-config.xml file");
             }
 
-			for (String configEntry : emmConfigEntryNames) {
+			for (String configEntry : certificateConfigEntryNames) {
 				NodeList elements = document.getElementsByTagName(configEntry);
 				if (elements != null && elements.getLength() > 0) {
 					configMap.put(configEntry, elements.item(0).getTextContent());
 				}
 			}
 
-			String emmKeyStoreLocation = replaceCarbonHomeEnvEntry(configMap.get(PATH_CERTIFICATE_KEYSTORE));
-			if (emmKeyStoreLocation != null) {
-				configMap.put(PATH_CERTIFICATE_KEYSTORE, emmKeyStoreLocation);
+			String certKeyStoreLocation = replaceCarbonHomeEnvEntry(configMap.get(PATH_CERTIFICATE_KEYSTORE));
+			if (certKeyStoreLocation != null) {
+				configMap.put(PATH_CERTIFICATE_KEYSTORE, certKeyStoreLocation);
 			}
 		}
 
@@ -106,7 +106,7 @@ public class ConfigurationUtil {
 
 	public static String getConfigEntry(final String entry) throws KeystoreException {
 
-		Map<String, String> configurationMap = readEMMConfigurations();
+		Map<String, String> configurationMap = readCertificateConfigurations();
 		String configValue = configurationMap.get(entry);
 
 		if (configValue == null) {

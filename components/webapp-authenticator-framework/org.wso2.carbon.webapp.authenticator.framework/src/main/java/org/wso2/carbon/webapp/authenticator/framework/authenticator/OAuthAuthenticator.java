@@ -69,12 +69,13 @@ public class OAuthAuthenticator implements WebappAuthenticator {
         try {
             if (Constants.NO_MATCHING_AUTH_SCHEME.equals(authLevel)) {
                 AuthenticationFrameworkUtil.handleNoMatchAuthScheme(request, response, request.getMethod(),
-                        apiVersion, context);
+                                                                    apiVersion, context);
                 return Status.CONTINUE;
             } else {
                 String bearerToken = this.getBearerToken(request);
                 boolean isAuthenticated =
-                        AuthenticationFrameworkUtil.doAuthenticate(context, apiVersion, bearerToken, authLevel, domain);
+                        AuthenticationFrameworkUtil.doAuthenticate(context, apiVersion,
+                                                                   bearerToken, authLevel, domain);
                 return (isAuthenticated) ? Status.SUCCESS : Status.FAILURE;
             }
         } catch (APIManagementException e) {
@@ -94,7 +95,8 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     private String getBearerToken(Request request) {
 
         MessageBytes authorization =
-                request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
+                request.getCoyoteRequest().getMimeHeaders().
+                        getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
         String tokenValue = null;
 
         if (authorization != null) {

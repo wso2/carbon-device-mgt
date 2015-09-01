@@ -46,7 +46,6 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private ProfileManager profileManager;
-    private PolicyCacheManager policyCacheManager;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
     public PolicyManagerImpl() {
@@ -105,6 +104,9 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
+            if(policy.isActive()){
+                policyDAO.activatePolicy(policy.getId());
+            }
             PolicyManagementDAOFactory.commitTransaction();
 
         } catch (PolicyManagerDAOException e) {

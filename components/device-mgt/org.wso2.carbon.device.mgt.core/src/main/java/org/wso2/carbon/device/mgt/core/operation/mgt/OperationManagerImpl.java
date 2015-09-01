@@ -76,7 +76,7 @@ public class OperationManagerImpl implements OperationManager {
             log.debug("operation:[" + operation.toString() + "]");
             for (DeviceIdentifier deviceIdentifier : deviceIds) {
                 log.debug("device identifier id:[" + deviceIdentifier.getId() + "] type:[" +
-                    deviceIdentifier.getType() + "]");
+                        deviceIdentifier.getType() + "]");
             }
         }
         try {
@@ -129,10 +129,15 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId;
         List<Operation> operations = new ArrayList<>();
         try {
-            OperationManagementDAOFactory.openConnection();
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
 
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            OperationManagementDAOFactory.openConnection();
 
             if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for given device " +
@@ -170,14 +175,20 @@ public class OperationManagerImpl implements OperationManager {
         List<Operation> operations = new ArrayList<>();
         List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList = new ArrayList<>();
         try {
+
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+            
             OperationManagementDAOFactory.openConnection();
-
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
-
             if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for the given device Identifier:" +
-                    deviceId.getId() + " and given type:" + deviceId.getType());
+                        deviceId.getId() + " and given type:" + deviceId.getType());
             }
 
             dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(
@@ -223,10 +234,15 @@ public class OperationManagerImpl implements OperationManager {
         Operation operation = null;
         int enrolmentId;
         try {
-            OperationManagementDAOFactory.openConnection();
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
 
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            OperationManagementDAOFactory.openConnection();
 
             if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for given device " +
@@ -274,11 +290,19 @@ public class OperationManagerImpl implements OperationManager {
         if (log.isDebugEnabled()) {
             log.debug("operation Id:" + operationId + " status:" + operation.getStatus());
         }
+        int enrolmentId;
         try {
-            OperationManagementDAOFactory.beginTransaction();
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            } catch (SQLException e) {
+                throw new OperationManagementException("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
 
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            int enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            OperationManagementDAOFactory.beginTransaction();
 
             if (operation.getStatus() != null) {
                 operationDAO.updateOperationStatus(enrolmentId, operationId,
@@ -337,10 +361,16 @@ public class OperationManagerImpl implements OperationManager {
                     deviceId.getId());
         }
         try {
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+
             OperationManagementDAOFactory.openConnection();
 
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
             if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for given device identifier:" +
                         deviceId.getId() + " type:" + deviceId.getType());
@@ -393,11 +423,16 @@ public class OperationManagerImpl implements OperationManager {
         List<Operation> operations = new ArrayList<>();
         List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList =
                 new ArrayList<>();
+        int enrolmentId;
         try {
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
             OperationManagementDAOFactory.openConnection();
-
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            int enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
 
             if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for device id:" + deviceId.getId() + " " +

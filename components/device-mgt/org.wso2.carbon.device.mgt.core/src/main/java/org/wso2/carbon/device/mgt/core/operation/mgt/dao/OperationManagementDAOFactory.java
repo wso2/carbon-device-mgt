@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
@@ -87,7 +88,9 @@ public class OperationManagementDAOFactory {
 
     public static Connection getConnection() throws SQLException {
         if (currentConnection.get() == null) {
-            currentConnection.set(dataSource.getConnection());
+            throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
+                    "This might have ideally caused by not properly initiating the transaction via " +
+                    "'beginTransaction'/'openConnection' methods");
         }
         return currentConnection.get();
     }

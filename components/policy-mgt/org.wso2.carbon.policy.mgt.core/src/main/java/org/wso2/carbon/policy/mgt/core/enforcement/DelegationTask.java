@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.policy.mgt.core.enforcement;
 
 import org.apache.commons.logging.Log;

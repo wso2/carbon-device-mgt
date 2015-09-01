@@ -20,10 +20,12 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -46,13 +48,14 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private ProfileManager profileManager;
-    private PolicyCacheManager policyCacheManager;
+    private DeviceDAO deviceDAO;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
     public PolicyManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
         this.profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.profileManager = new ProfileManagerImpl();
     }
 
@@ -105,6 +108,9 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
+            if(policy.isActive()){
+                policyDAO.activatePolicy(policy.getId());
+            }
             PolicyManagementDAOFactory.commitTransaction();
 
         } catch (PolicyManagerDAOException e) {
@@ -316,14 +322,18 @@ public class PolicyManagerImpl implements PolicyManager {
     @Override
     public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList,
                                     Policy policy) throws PolicyManagementException {
-        try {
 
-            List<Device> deviceList = new ArrayList<>();
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
-                deviceList.add(service.getDevice(deviceIdentifier));
+        List<Device> deviceList = new ArrayList<>();
+        DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+        for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
+            try {
+                Device device = service.getDevice(deviceIdentifier);
+                deviceList.add(device);
+            } catch (DeviceManagementException e) {
+                throw new PolicyManagementException("Error occurred while retrieving device information", e);
             }
-
+        }
+        try {
             PolicyManagementDAOFactory.beginTransaction();
             if (policy.getId() == 0) {
                 policyDAO.addPolicy(policy);
@@ -347,9 +357,6 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while adding the policy ("
                     + policy.getId() + " - " + policy.getPolicyName() + ")", e);
-        } catch (DeviceManagementException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
-            throw new PolicyManagementException("Error occurred while adding the policy to device list", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
@@ -668,11 +675,13 @@ public class PolicyManagerImpl implements PolicyManager {
 
         List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             List<Device> allDevices = service.getAllDevices();
 
             PolicyManagementDAOFactory.openConnection();
+
             //int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
 
@@ -707,6 +716,7 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
+
         return deviceList;
     }
 

@@ -420,11 +420,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setString(1, name);
             stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
-
-            if (resultSet.next()) {
-                //TODO: FIXME
-                exist = resultSet.getBoolean(1);
-            }
+            exist = resultSet.next();
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Error occurred while checking whether criterion (" + name +
                     ") exists", e);
@@ -1308,7 +1304,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(3, enrollmentId);
             resultSet = stmt.executeQuery();
 
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 return resultSet.getInt("POLICY_ID");
             }
         } catch (SQLException e) {

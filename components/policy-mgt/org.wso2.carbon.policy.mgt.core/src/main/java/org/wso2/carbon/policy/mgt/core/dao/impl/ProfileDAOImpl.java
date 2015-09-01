@@ -28,7 +28,6 @@ import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.ProfileDAO;
 import org.wso2.carbon.policy.mgt.core.dao.ProfileManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -220,7 +219,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<Profile> profileList = new ArrayList<Profile>();
+        List<Profile> profileList = new ArrayList<>();
 
         try {
             //TODO : Fix with TenantID.
@@ -261,8 +260,7 @@ public class ProfileDAOImpl implements ProfileDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<Profile> profileList = new ArrayList<Profile>();
-
+        List<Profile> profileList = new ArrayList<>();
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_PROFILE WHERE DEVICE_TYPE_ID = ?";
@@ -281,7 +279,6 @@ public class ProfileDAOImpl implements ProfileDAO {
 
                 profileList.add(profile);
             }
-
         } catch (SQLException e) {
             String msg = "Error occurred while reading the profile list from the database.";
             log.error(msg, e);
@@ -294,12 +291,7 @@ public class ProfileDAOImpl implements ProfileDAO {
 
 
     private Connection getConnection() throws ProfileManagerDAOException {
-        try {
-            return PolicyManagementDAOFactory.getConnection();
-        } catch (PolicyManagerDAOException e) {
-            throw new ProfileManagerDAOException("Error occurred while obtaining a connection from the policy " +
-                    "management metadata repository config.datasource", e);
-        }
+        return PolicyManagementDAOFactory.getConnection();
     }
 
 }

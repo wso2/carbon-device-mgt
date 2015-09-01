@@ -81,6 +81,7 @@ public class OperationManagerImpl implements OperationManager {
         }
         try {
             OperationManagementDAOFactory.beginTransaction();
+
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                     OperationDAOUtil.convertOperation(operation);
 
@@ -89,7 +90,16 @@ public class OperationManagerImpl implements OperationManager {
             int enrolmentId;
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             for (DeviceIdentifier deviceId : deviceIds) {
-                enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+                try {
+                    DeviceManagementDAOFactory.openConnection();
+                    enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+                } catch (SQLException e) {
+                    throw new OperationManagementException("Error occurred while opening a connection the data " +
+                            "source", e);
+                } finally {
+                    DeviceManagementDAOFactory.closeConnection();
+                }
+
                 if (enrolmentId < 0) {
                     String errorMsg = "The operation not added for device.The device not found for " +
                             "device Identifier type -'" + deviceId.getType() + "' and device Id '" +

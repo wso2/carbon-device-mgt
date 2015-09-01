@@ -382,12 +382,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     private Connection getConnection() throws MonitoringDAOException {
-        try {
-            return PolicyManagementDAOFactory.getConnection();
-        } catch (PolicyManagerDAOException e) {
-            throw new MonitoringDAOException("Error occurred while obtaining a connection from the policy " +
-                    "management metadata repository config.datasource", e);
-        }
+        return PolicyManagementDAOFactory.getConnection();
     }
 
 }

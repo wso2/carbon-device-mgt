@@ -1308,7 +1308,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(3, enrollmentId);
             resultSet = stmt.executeQuery();
 
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 return resultSet.getInt("POLICY_ID");
             }
         } catch (SQLException e) {

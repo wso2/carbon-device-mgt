@@ -21,19 +21,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
+import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.util.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -58,16 +60,28 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
     @Test
     public void addDeviceType() throws DeviceManagementDAOException {
-        DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-        deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+            deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceManagementDAOException("Error occurred while adding dummy device type", e);
+        } catch (TransactionManagementException e) {
+            throw new DeviceManagementDAOException("Error occurred while initiating a transaction to add dummy " +
+                    "device type", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 
 
     @Test(dependsOnMethods = ("addDeviceType"))
-    public void addDevice() throws DeviceManagementDAOException, DeviceManagementException {
+    public void addDevice() throws DeviceManagementException, PolicyManagementException {
 
         DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         EnrolmentDAO enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
+
         DeviceType type = DeviceTypeCreator.getDeviceType();
         devices = DeviceCreator.getDeviceList(type);
         devices.addAll(DeviceCreator.getDeviceList2(type));
@@ -75,9 +89,20 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         devices.addAll(DeviceCreator.getDeviceList4(type));
         devices.addAll(DeviceCreator.getDeviceList5(type));
         devices.addAll(DeviceCreator.getDeviceList6(type));
-        for (Device device : devices) {
-            int id = deviceDAO.addDevice(type.getId(), device, -1234);
-            enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
+
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            for (Device device : devices) {
+                int id = deviceDAO.addDevice(type.getId(), device, -1234);
+                enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
+            }
+        } catch (TransactionManagementException e) {
+            throw new PolicyManagementException("Error occurred while adding device enrolment", e);
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while adding device information", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
 
 
@@ -376,8 +401,6 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         for (Device device : devices) {
             log.debug("Device Name : " + device.getDeviceIdentifier());
         }
-
     }
-
 
 }

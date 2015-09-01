@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
@@ -50,10 +51,16 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
     public void testAddDeviceTypeTest() {
         DeviceType deviceType = TestDataHolder.generateDeviceTypeData(TestDataHolder.TEST_DEVICE_TYPE);
         try {
-            DeviceManagementDAOFactory.openConnection();
+            DeviceManagementDAOFactory.beginTransaction();
             deviceTypeDAO.addDeviceType(deviceType);
-        } catch (DeviceManagementDAOException | SQLException e) {
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while adding device type '" + deviceType.getName() + "'";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction to persist device type '" +
+                    deviceType.getName() + "'";
             log.error(msg, e);
             Assert.fail(msg, e);
         } finally {
@@ -75,19 +82,24 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
 
     @Test(dependsOnMethods = {"testAddDeviceTypeTest"})
     public void testAddDeviceTest() {
-
         int tenantId = TestDataHolder.SUPER_TENANT_ID;
         Device device = TestDataHolder.generateDummyDeviceData(TestDataHolder.TEST_DEVICE_TYPE);
 
         try {
-            DeviceManagementDAOFactory.openConnection();
+            DeviceManagementDAOFactory.beginTransaction();
             int deviceId = deviceDAO.addDevice(TestDataHolder.initialTestDeviceType.getId(), device, tenantId);
             device.setId(deviceId);
             deviceDAO.addEnrollment(device, tenantId);
+            DeviceManagementDAOFactory.commitTransaction();
             TestDataHolder.initialTestDevice = device;
-        } catch (DeviceManagementDAOException | SQLException e) {
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while adding '" + device.getType() + "' device with the identifier '" +
                     device.getDeviceIdentifier() + "'";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
             Assert.fail(msg, e);
         } finally {
@@ -164,12 +176,17 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
 
         Device device = TestDataHolder.initialTestDevice;
         try {
-            DeviceManagementDAOFactory.openConnection();
+            DeviceManagementDAOFactory.beginTransaction();
             DeviceIdentifier deviceId = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
             deviceDAO.setEnrolmentStatus(deviceId, device.getEnrolmentInfo().getOwner(), Status.ACTIVE,
                     TestDataHolder.SUPER_TENANT_ID);
-        } catch (DeviceManagementDAOException | SQLException e) {
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while setting enrolment status";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
             Assert.fail(msg, e);
         } finally {

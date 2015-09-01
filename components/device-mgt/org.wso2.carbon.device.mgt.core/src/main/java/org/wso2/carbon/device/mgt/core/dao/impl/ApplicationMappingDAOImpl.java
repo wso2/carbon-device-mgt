@@ -111,16 +111,16 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            for(Integer appId:appIdList){
+            for (Integer appId : appIdList) {
                 stmt.setInt(1, deviceId);
                 stmt.setInt(2, appId);
                 stmt.setInt(3, tenantId);
                 stmt.addBatch();
             }
             stmt.executeBatch();
-       } catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mapping", e);
-        }finally {
+        } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }

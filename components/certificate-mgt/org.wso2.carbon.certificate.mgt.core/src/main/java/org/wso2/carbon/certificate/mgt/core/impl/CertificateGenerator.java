@@ -69,6 +69,8 @@ import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
@@ -170,6 +172,8 @@ public class CertificateGenerator {
             // cert.checkValidity();
 
             certificate.verify(certificate.getPublicKey());
+
+            saveCertInKeyStore(certificate);
 
             return certificate;
         } catch (NoSuchAlgorithmException e) {
@@ -279,7 +283,7 @@ public class CertificateGenerator {
         }
     }
 
-    public static X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
+    public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
                                                              PKCS10CertificationRequest request,
                                                              String issueSubject)
             throws KeystoreException {
@@ -302,6 +306,8 @@ public class CertificateGenerator {
             issuedCert = new JcaX509CertificateConverter().setProvider(
                     ConfigurationUtil.PROVIDER).getCertificate(
                     certificateBuilder.build(sigGen));
+
+            saveCertInKeyStore(issuedCert);
         } catch (CertIOException e) {
             String errorMsg = "Certificate Input output issue occurred when generating generateCertificateFromCSR";
             log.error(errorMsg, e);
@@ -442,11 +448,23 @@ public class CertificateGenerator {
             String errorMsg = "Input output issue occurred in getCACert";
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
-        } catch (KeystoreException e) {
-            String errorMsg = "Keystore reading error occurred when handling profile request";
+        }
+    }
+
+    private void saveCertInKeyStore(X509Certificate certificate) throws KeystoreException {
+
+        if (certificate == null) {
+            return;
+        }
+
+        try {
+            KeyStoreReader keyStoreReader = new KeyStoreReader();
+            KeyStore keyStore = keyStoreReader.loadCertificateKeyStore();
+            keyStore.setCertificateEntry(certificate.getSerialNumber().toString(), certificate);
+        } catch (KeyStoreException e) {
+            String errorMsg = "KeySKeyStoreException occurred when saving the generated certificate";
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
-
 }

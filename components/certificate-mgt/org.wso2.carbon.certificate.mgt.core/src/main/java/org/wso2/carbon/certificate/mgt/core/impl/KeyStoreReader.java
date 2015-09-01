@@ -82,14 +82,14 @@ public class KeyStoreReader {
         return keystore;
     }
 
-    KeyStore loadMDMKeyStore() throws KeystoreException {
+    KeyStore loadCertificateKeyStore() throws KeystoreException {
         return loadKeyStore(ConfigurationUtil.CERTIFICATE_KEYSTORE, ConfigurationUtil.PATH_CERTIFICATE_KEYSTORE,
                 ConfigurationUtil.CERTIFICATE_KEYSTORE_PASSWORD);
     }
 
     public Certificate getCACertificate() throws KeystoreException {
 
-        KeyStore keystore = loadMDMKeyStore();
+        KeyStore keystore = loadCertificateKeyStore();
         Certificate caCertificate;
 
         try {
@@ -109,7 +109,7 @@ public class KeyStoreReader {
 
     PrivateKey getCAPrivateKey() throws KeystoreException {
 
-        KeyStore keyStore = loadMDMKeyStore();
+        KeyStore keyStore = loadCertificateKeyStore();
         PrivateKey caPrivateKey;
         try {
             caPrivateKey = (PrivateKey) (keyStore.getKey(
@@ -138,7 +138,7 @@ public class KeyStoreReader {
 
     public Certificate getRACertificate() throws KeystoreException {
 
-        KeyStore keystore = loadMDMKeyStore();
+        KeyStore keystore = loadCertificateKeyStore();
         Certificate raCertificate;
         try {
             raCertificate = keystore.getCertificate(ConfigurationUtil.getConfigEntry(ConfigurationUtil.RA_CERT_ALIAS));
@@ -157,7 +157,7 @@ public class KeyStoreReader {
 
     PrivateKey getRAPrivateKey() throws KeystoreException {
 
-        KeyStore keystore = loadMDMKeyStore();
+        KeyStore keystore = loadCertificateKeyStore();
         PrivateKey raPrivateKey;
         try {
             raPrivateKey = (PrivateKey) (keystore.getKey(

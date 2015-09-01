@@ -24,6 +24,7 @@ import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -62,7 +63,7 @@ public class KeyStoreReader {
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CertificateException e) {
-            String errorMsg = "Certificate expired when loading KeyStore";
+            String errorMsg = "CertificateException when loading KeyStore";
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (IOException e) {
@@ -82,8 +83,56 @@ public class KeyStoreReader {
         return keystore;
     }
 
+    private synchronized void saveKeyStore(KeyStore keyStore, String configEntryKeyStorePath,
+                                  String configEntryKeyStorePassword) throws KeystoreException {
+
+        FileOutputStream outputStream = null;
+
+        try {
+            outputStream = new FileOutputStream(
+                    ConfigurationUtil.getConfigEntry(configEntryKeyStorePath));
+            keyStore.store(outputStream, ConfigurationUtil.getConfigEntry(configEntryKeyStorePassword).toCharArray());
+            outputStream.close();
+
+        } catch (KeyStoreException e) {
+            String errorMsg = "KeyStore issue occurred when loading KeyStore";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (FileNotFoundException e) {
+            String errorMsg = "KeyStore file not found when loading KeyStore";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (NoSuchAlgorithmException e) {
+            String errorMsg = "Algorithm not found when loading KeyStore";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (CertificateException e) {
+            String errorMsg = "CertificateException when loading KeyStore";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (IOException e) {
+            String errorMsg = "Input output issue occurred when loading KeyStore";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                log.error("Error closing KeyStore output stream", e);
+            }
+        }
+    }
+
+
     KeyStore loadCertificateKeyStore() throws KeystoreException {
         return loadKeyStore(ConfigurationUtil.CERTIFICATE_KEYSTORE, ConfigurationUtil.PATH_CERTIFICATE_KEYSTORE,
+                ConfigurationUtil.CERTIFICATE_KEYSTORE_PASSWORD);
+    }
+
+    void saveCertificateKeyStore(KeyStore keyStore) throws KeystoreException {
+        saveKeyStore(keyStore, ConfigurationUtil.PATH_CERTIFICATE_KEYSTORE,
                 ConfigurationUtil.CERTIFICATE_KEYSTORE_PASSWORD);
     }
 

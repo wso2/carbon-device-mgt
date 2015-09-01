@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementServiceImpl;
 
 /**
@@ -38,7 +39,7 @@ public class CertificateManagementServiceComponent {
             }
 
             BundleContext bundleContext = componentContext.getBundleContext();
-            bundleContext.registerService(CertificateManagementServiceImpl.class.getName(),
+            bundleContext.registerService(CertificateManagementService.class.getName(),
                     CertificateManagementServiceImpl.getInstance(), null);
 
             if (log.isDebugEnabled()) {

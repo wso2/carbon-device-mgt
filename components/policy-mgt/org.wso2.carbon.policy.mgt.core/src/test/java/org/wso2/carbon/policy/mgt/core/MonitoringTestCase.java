@@ -29,7 +29,6 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementAdminService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -43,7 +42,6 @@ import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.services.PolicyMonitoringServiceTest;
-import org.wso2.carbon.policy.mgt.core.task.MonitoringTask;
 
 import java.util.List;
 
@@ -53,11 +51,12 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
 
     private static final String ANDROID = "android";
 
-    DeviceIdentifier identifier = new DeviceIdentifier();
+    private DeviceIdentifier identifier = new DeviceIdentifier();
 
     @BeforeClass
     @Override
     public void init() throws Exception {
+
     }
 
     @Test
@@ -76,7 +75,6 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         for (Device device : devices) {
             log.debug(device.getDeviceIdentifier() + " ----- D");
         }
-
 
         identifier.setType(ANDROID);
         identifier.setId(devices.get(0).getDeviceIdentifier());

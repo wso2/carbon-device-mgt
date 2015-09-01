@@ -21,15 +21,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
+import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
@@ -40,6 +41,7 @@ import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.ProfileManagerImpl;
 import org.wso2.carbon.policy.mgt.core.util.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -64,8 +66,19 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
     @Test
     public void addDeviceType() throws DeviceManagementDAOException {
-        DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-        deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+            deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceManagementDAOException("Error occurred while adding dummy device type", e);
+        } catch (TransactionManagementException e) {
+            throw new DeviceManagementDAOException("Error occurred while initiating a transaction to add dummy " +
+                    "device type", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 
 
@@ -74,23 +87,43 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
         DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         EnrolmentDAO enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
+
         DeviceType type = DeviceTypeCreator.getDeviceType();
         devices = DeviceCreator.getDeviceList(type);
-        for (Device device : devices) {
-            int id = deviceDAO.addDevice(type.getId(), device, -1234);
-            enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
-        }
 
-        List<Device> devices = deviceDAO.getDevices(-1234);
-
-        log.debug("--- Printing device taken by calling the device dao layer by tenant id.");
-        for (Device device : devices) {
-            log.debug(device.getDeviceIdentifier());
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            for (Device device : devices) {
+                int id = deviceDAO.addDevice(type.getId(), device, -1234);
+                enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
+            }
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceManagementException("Error occurred while adding dummy device info", e);
+        } catch (TransactionManagementException e) {
+            throw new DeviceManagementException("Error occurred while initiating a transaction to add dummy " +
+                    "device info", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
 
 
         log.debug("--- Printing device taken by calling the device dao layer by tenant id and device type.");
-        List<Device> devices2 = deviceDAO.getDevices("android", -1234);
+        List<Device> devices2 = null;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            List<Device> devices = deviceDAO.getDevices(-1234);
+
+            log.debug("--- Printing device taken by calling the device dao layer by tenant id.");
+            for (Device device : devices) {
+                log.debug(device.getDeviceIdentifier());
+            }
+            devices2 = deviceDAO.getDevices("android", -1234);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
 
         for (Device device : devices2) {
             log.debug(device.getDeviceIdentifier());

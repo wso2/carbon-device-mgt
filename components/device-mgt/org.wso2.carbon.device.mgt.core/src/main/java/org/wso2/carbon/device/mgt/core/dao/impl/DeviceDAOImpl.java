@@ -515,4 +515,5 @@ public class DeviceDAOImpl implements DeviceDAO {
         }
         return devices;
     }
+
 }

@@ -278,17 +278,20 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIdentifierList,
-                                    Policy policy) throws PolicyManagementException {
+    public Policy addPolicyToDevice(List<DeviceIdentifier> deviceIds, Policy policy) throws PolicyManagementException {
+        List<Device> deviceList = new ArrayList<>();
+        DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+        for (DeviceIdentifier deviceIdentifier : deviceIds) {
+            try {
+                deviceList.add(service.getDevice(deviceIdentifier));
+            } catch (DeviceManagementException e) {
+                throw new PolicyManagementException("Error occurred while adding the policy to device list", e);
+            }
+        }
         try {
             PolicyManagementDAOFactory.beginTransaction();
             if (policy.getId() == 0) {
                 policyDAO.addPolicy(policy);
-            }
-            List<Device> deviceList = new ArrayList<>();
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
-                deviceList.add(service.getDevice(deviceIdentifier));
             }
             policy = policyDAO.addPolicyToDevice(deviceList, policy);
             PolicyManagementDAOFactory.commitTransaction();
@@ -308,9 +311,6 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while adding the policy ("
                     + policy.getId() + " - " + policy.getPolicyName() + ")", e);
-        } catch (DeviceManagementException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
-            throw new PolicyManagementException("Error occurred while adding the policy to device list", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
@@ -614,25 +614,33 @@ public class PolicyManagerImpl implements PolicyManager {
     public List<Device> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagementException {
         List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             PolicyManagementDAOFactory.openConnection();
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
-            for (int deviceId : deviceIds) {
-                //TODO FIX ME
-                deviceList.add(deviceDAO.getDevice(new DeviceIdentifier(Integer.toString(deviceId), ""), tenantId));
-            }
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting the device ids related to policy id (" +
-                    policyId + ")", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new PolicyManagementException("Error occurred while getting the devices related to policy id (" +
                     policyId + ")", e);
         } catch (SQLException e) {
             throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            for (int deviceId : deviceIds) {
+                //TODO FIX ME
+                deviceList.add(deviceDAO.getDevice(new DeviceIdentifier(Integer.toString(deviceId), ""), tenantId));
+            }
+        } catch (SQLException e) {
+            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (DeviceManagementDAOException e) {
+            throw new PolicyManagementException("Error occurred while retrieving device metadata", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
         return deviceList;
     }
 
@@ -680,7 +688,7 @@ public class PolicyManagerImpl implements PolicyManager {
 
             Policy policySaved = policyDAO.getAppliedPolicy(deviceId);
             if (policySaved != null && policySaved.getId() != 0) {
-                if (policy.getId() != policySaved.getId()){
+                if (policy.getId() != policySaved.getId()) {
                     policyDAO.updateEffectivePolicyToDevice(deviceId, policy);
                 }
             } else {

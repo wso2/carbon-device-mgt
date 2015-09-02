@@ -130,8 +130,16 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         apiConfig.setOwner(owner);
 
         String isSecuredParam = servletContext.getInitParameter(PARAM_MANAGED_API_IS_SECURED);
-        boolean isSecured =
-                (isSecuredParam != null && !isSecuredParam.isEmpty()) && Boolean.parseBoolean(isSecuredParam);
+        boolean isSecured;
+        if (isSecuredParam == null || isSecuredParam.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-isSecured' attribute is not configured. Therefore, using the default, " +
+                        "which is 'true'");
+            }
+            isSecured = false;
+        } else {
+            isSecured = Boolean.parseBoolean(isSecuredParam);
+        }
         apiConfig.setSecured(isSecured);
 
         String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);

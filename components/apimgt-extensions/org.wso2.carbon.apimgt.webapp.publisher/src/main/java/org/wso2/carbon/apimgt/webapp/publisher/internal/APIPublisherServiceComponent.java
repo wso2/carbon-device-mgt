@@ -25,9 +25,16 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherServiceImpl;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="org.wso2.carbon.apimgt.webapp.publisher" immediate="true"
+ * @scr.reference name="config.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  */
 public class APIPublisherServiceComponent {
 
@@ -72,6 +79,20 @@ public class APIPublisherServiceComponent {
 
     protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService service) {
         //do nothing
+    }
+
+    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting ConfigurationContextService");
+        }
+        APIPublisherDataHolder.getInstance().setConfigurationContextService(configurationContextService);
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting ConfigurationContextService");
+        }
+        APIPublisherDataHolder.getInstance().setConfigurationContextService(null);
     }
 
 }

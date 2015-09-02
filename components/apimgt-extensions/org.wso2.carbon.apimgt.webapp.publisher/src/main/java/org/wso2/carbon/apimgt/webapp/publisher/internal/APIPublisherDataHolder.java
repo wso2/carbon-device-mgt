@@ -19,10 +19,12 @@
 package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class APIPublisherDataHolder {
 
     private APIPublisherService apiPublisherService;
+    private ConfigurationContextService configurationContextService;
 
     private static APIPublisherDataHolder thisInstance = new APIPublisherDataHolder();
 
@@ -39,6 +41,14 @@ public class APIPublisherDataHolder {
 
     public void setApiPublisherService(APIPublisherService apiPublisherService) {
         this.apiPublisherService = apiPublisherService;
+    }
+
+    public void setConfigurationContextService(ConfigurationContextService configurationContextService) {
+        this.configurationContextService = configurationContextService;
+    }
+
+    public ConfigurationContextService getConfigurationContextService() {
+        return configurationContextService;
     }
 
 }

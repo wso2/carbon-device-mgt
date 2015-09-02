@@ -54,6 +54,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
             ServletContext servletContext = context.getServletContext();
 
+
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
 
@@ -116,6 +117,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-endpoint' attribute is not configured");
             }
+            endpoint = APIPublisherUtil.getApiEndpointUrl(context);
         }
         apiConfig.setEndpoint(endpoint);
 
@@ -135,10 +137,10 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);
         if (transports == null || transports.isEmpty()) {
             if (log.isDebugEnabled()) {
-                log.debug("'managed-api-transports' attribute is not configured. Therefore using the defaults, " +
-                        "which are 'http' and 'https'");
+                log.debug("'managed-api-transports' attribute is not configured. Therefore using the default, " +
+                        "which is 'https'");
             }
-            transports = "http,https";
+            transports = "https";
         }
         apiConfig.setTransports(transports);
 

@@ -31,6 +31,10 @@ import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
+import org.wso2.carbon.registry.api.GhostResource;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.caching.RegistryCacheEntry;
+import org.wso2.carbon.registry.core.caching.RegistryCacheKey;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;
@@ -152,10 +156,28 @@ public class PolicyManagerUtil {
     }
 
 
-    public static Cache getCacheManagerImpl() {
-        return Caching.getCacheManagerFactory()
-                .getCacheManager(PolicyManagementConstants.DM_CACHE_MANAGER).getCache(PolicyManagementConstants
-                        .DM_CACHE);
+//    public static Cache getCacheManagerImpl() {
+//        return Caching.getCacheManagerFactory()
+//                .getCacheManager(PolicyManagementConstants.DM_CACHE_MANAGER).getCache(PolicyManagementConstants
+//                        .DM_CACHE);
+//    }
+
+
+    public static Cache<Integer, Policy> getPolicyCache(String name){
+        CacheManager manager = getCacheManager();
+        return (manager != null) ? manager.<Integer, Policy>getCache(name) :
+                Caching.getCacheManager().<Integer, Policy>getCache(name);
+    }
+
+    public static Cache<Integer, List<Policy>> getPolicyListCache(String name){
+        CacheManager manager = getCacheManager();
+        return (manager != null) ? manager.<Integer, List<Policy>>getCache(name) :
+                Caching.getCacheManager().<Integer, List<Policy>>getCache(name);
+    }
+
+    private static CacheManager getCacheManager() {
+        return Caching.getCacheManagerFactory().getCacheManager(
+                PolicyManagementConstants.DM_CACHE_MANAGER);
     }
 
 

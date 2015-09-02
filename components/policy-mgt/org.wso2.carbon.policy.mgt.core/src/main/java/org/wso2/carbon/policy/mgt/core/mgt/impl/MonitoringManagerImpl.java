@@ -362,7 +362,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         service.addOperation(monitoringOperation, deviceIdentifiers);
-
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {

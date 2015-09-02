@@ -26,11 +26,13 @@ import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherServiceImpl;
 
+/**
+ * @scr.component name="org.wso2.carbon.apimgt.webapp.publisher" immediate="true"
+ */
 public class APIPublisherServiceComponent {
 
     private static Log log = LogFactory.getLog(APIPublisherServiceComponent.class);
 
-    @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
         try {
             if (log.isDebugEnabled()) {
@@ -48,7 +50,6 @@ public class APIPublisherServiceComponent {
         }
     }
 
-    @SuppressWarnings("unused")
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
     }

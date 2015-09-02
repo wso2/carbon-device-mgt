@@ -77,14 +77,13 @@ public class MonitoringTask implements Task {
             try {
 
 
-
                 DeviceManagementProviderService deviceManagementProviderService =
                         PolicyManagementDataHolder.getInstance().getDeviceManagementService();
 
                 for (DeviceType deviceType : deviceTypes) {
 
-                    if(log.isDebugEnabled()){
-                        log.debug("Running task for device type : " + deviceType.getName() );
+                    if (log.isDebugEnabled()) {
+                        log.debug("Running task for device type : " + deviceType.getName());
                     }
 
                     PolicyMonitoringService monitoringService =
@@ -100,15 +99,21 @@ public class MonitoringTask implements Task {
                                     deviceType.getName());
                         }
                         for (Device device : devices) {
-                            if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.INACTIVE) ||
-                                    device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.BLOCKED)) {
+                            EnrolmentInfo.Status status = device.getEnrolmentInfo().getStatus();
+                            if (status.equals(EnrolmentInfo.Status.INACTIVE) ||
+                                    status.equals(EnrolmentInfo.Status.BLOCKED) ||
+                                    status.equals(EnrolmentInfo.Status.REMOVED) ||
+                                    status.equals(EnrolmentInfo.Status.UNCLAIMED) ||
+                                    status.equals(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED) ||
+                                    status.equals(EnrolmentInfo.Status.SUSPENDED)) {
                                 continue;
                             } else {
                                 notifiableDevices.add(device);
                             }
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug("Following devices selected to send the notification for " + deviceType.getName());
+                            log.debug("Following devices selected to send the notification for " +
+                                    deviceType.getName());
                             for (Device device : notifiableDevices) {
                                 log.debug(device.getDeviceIdentifier());
                             }

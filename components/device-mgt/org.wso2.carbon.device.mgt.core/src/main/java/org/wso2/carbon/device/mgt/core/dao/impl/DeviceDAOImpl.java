@@ -84,7 +84,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             stmt.setInt(4, typeId);
             stmt.setInt(5, tenantId);
             rows = stmt.executeUpdate();
-            if (rows>0) {
+            if (rows > 0) {
                 status = true;
             }
             return status;

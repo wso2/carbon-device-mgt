@@ -439,7 +439,7 @@ public class PolicyManagerImpl implements PolicyManager {
             policy = policyDAO.getPolicyByProfileID(profileId);
 
             roleNames = policyDAO.getPolicyAppliedRoles(policy.getId());
-            profile = profileDAO.getProfiles(profileId);
+            profile = profileDAO.getProfile(profileId);
             policy.setProfile(profile);
             policy.setRoles(roleNames);
 
@@ -474,7 +474,7 @@ public class PolicyManagerImpl implements PolicyManager {
             policy = policyDAO.getPolicy(policyId);
 
             roleNames = policyDAO.getPolicyAppliedRoles(policyId);
-            Profile profile = profileDAO.getProfiles(policy.getProfileId());
+            Profile profile = profileDAO.getProfile(policy.getProfileId());
 
             policy.setProfile(profile);
             policy.setRoles(roleNames);
@@ -871,12 +871,9 @@ public class PolicyManagerImpl implements PolicyManager {
 
     @Override
     public int getPolicyCount() throws PolicyManagementException {
-
-        int policyCount;
         try {
             PolicyManagementDAOFactory.openConnection();
-            policyCount = policyDAO.getPolicyCount();
-            return policyCount;
+            return policyDAO.getPolicyCount();
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting policy count", e);
         } catch (SQLException e) {

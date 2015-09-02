@@ -204,6 +204,25 @@ public class KeyStoreReader {
         return raCertificate;
     }
 
+    public Certificate getCertificateByAlias(String alias) throws KeystoreException {
+
+        KeyStore keystore = loadCertificateKeyStore();
+        Certificate raCertificate;
+        try {
+            raCertificate = keystore.getCertificate(alias);
+        } catch (KeyStoreException e) {
+            String errorMsg = "KeyStore issue occurred when retrieving RA private key";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        }
+
+        if (raCertificate == null) {
+            throw new KeystoreException("RA certificate not found in KeyStore");
+        }
+
+        return raCertificate;
+    }
+
     PrivateKey getRAPrivateKey() throws KeystoreException {
 
         KeyStore keystore = loadCertificateKeyStore();

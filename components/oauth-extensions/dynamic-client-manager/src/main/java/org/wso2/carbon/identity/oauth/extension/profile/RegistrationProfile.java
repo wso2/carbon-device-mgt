@@ -164,6 +164,4 @@ public class RegistrationProfile {
     public void setGrantType(String grantType) {
         this.grantType = grantType;
     }
-
-
 }

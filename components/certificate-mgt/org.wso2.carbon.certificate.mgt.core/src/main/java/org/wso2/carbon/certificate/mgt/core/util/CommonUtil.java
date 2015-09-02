@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.certificate.mgt.core.util;
 
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,6 +39,10 @@ public class CommonUtil {
         calendar.add(Calendar.YEAR, 100);
 
         return calendar.getTime();
+    }
+
+    public static synchronized BigInteger generateSerialNumber() {
+        return BigInteger.valueOf(System.currentTimeMillis());
     }
 
 }

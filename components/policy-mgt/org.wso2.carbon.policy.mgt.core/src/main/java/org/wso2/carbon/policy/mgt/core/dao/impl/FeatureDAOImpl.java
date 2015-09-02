@@ -43,115 +43,6 @@ public class FeatureDAOImpl implements FeatureDAO {
 
     private static final Log log = LogFactory.getLog(FeatureDAOImpl.class);
 
-
-/*    @Override
-    public Feature addFeature(Feature feature) throws FeatureManagerDAOException {
-
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet generatedKeys = null;
-
-        try {
-            conn = this.getConnection();
-            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, feature.getName());
-            stmt.setString(2, feature.getCode());
-            stmt.setString(3, feature.getDescription());
-            int affectedRows = stmt.executeUpdate();
-
-            if (log.isDebugEnabled()) {
-                log.debug(affectedRows + " feature is added.");
-            }
-            generatedKeys = stmt.getGeneratedKeys();
-
-            while (generatedKeys.next()) {
-                feature.setId(generatedKeys.getInt(1));
-            }
-
-        } catch (SQLException e) {
-            String msg = "Error occurred while adding feature to the database.";
-            log.error(msg, e);
-            throw new FeatureManagerDAOException(msg, e);
-        } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
-        }
-        return feature;
-    }*/
-
-  /*  @Override
-    public List<Feature> addFeatures(List<Feature> features) throws FeatureManagerDAOException {
-
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet generatedKeys = null;
-        List<Feature> featureList = new ArrayList<Feature>();
-
-        try {
-            conn = this.getConnection();
-            String query = "INSERT INTO DM_FEATURES (NAME, CODE, DESCRIPTION) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-
-            for (Feature feature : features) {
-                stmt.setString(1, feature.getName());
-                stmt.setString(2, feature.getCode());
-                stmt.setString(3, feature.getDescription());
-                stmt.addBatch();
-            }
-
-            int[] affectedRows = stmt.executeBatch();
-
-            generatedKeys = stmt.getGeneratedKeys();
-
-            if (log.isDebugEnabled()) {
-                log.debug(affectedRows.length + " features are added to the database.");
-            }
-            generatedKeys = stmt.getGeneratedKeys();
-            int i = 0;
-
-            while (generatedKeys.next()) {
-                features.get(i).setId(generatedKeys.getInt(1));
-                i++;
-            }
-        } catch (SQLException e) {
-            String msg = "Error occurred while adding feature to the database.";
-            log.error(msg, e);
-            throw new FeatureManagerDAOException(msg, e);
-        } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, generatedKeys);
-        }
-        return featureList;
-    }*/
-
-
-  /*  @Override
-    public Feature updateFeature(Feature feature) throws FeatureManagerDAOException {
-
-        Connection conn;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = this.getConnection();
-            String query = "UPDATE DM_FEATURES SET NAME = ?, CODE = ?, DESCRIPTION = ? WHERE ID = ?";
-            stmt = conn.prepareStatement(query);
-            stmt.setString(1, feature.getName());
-            stmt.setString(2, feature.getCode());
-            stmt.setString(3, feature.getDescription());
-            stmt.setInt(4, feature.getId());
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            String msg = "Error occurred while updating feature " + feature.getName() + " (Feature Name) to the
-            database.";
-            log.error(msg, e);
-            throw new FeatureManagerDAOException(msg, e);
-        } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, null);
-        }
-
-        return feature;
-    }*/
-
     @Override
     public ProfileFeature addProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException {
         return null;
@@ -247,7 +138,6 @@ public class FeatureDAOImpl implements FeatureDAO {
 
     @Override
     public boolean deleteFeaturesOfProfile(Profile profile) throws FeatureManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -258,9 +148,10 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profile.getProfileId());
             stmt.setInt(2, tenantId);
-            stmt.executeUpdate();
-            return true;
-
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
+            return false;
         } catch (SQLException e) {
             throw new FeatureManagerDAOException("Error occurred while deleting the feature related to a profile.", e);
         } finally {
@@ -270,7 +161,6 @@ public class FeatureDAOImpl implements FeatureDAO {
 
     @Override
     public boolean deleteFeaturesOfProfile(int profileId) throws FeatureManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -280,9 +170,10 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profileId);
             stmt.setInt(2, tenantId);
-            stmt.executeUpdate();
-            return true;
-
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
+            return false;
         } catch (SQLException e) {
             throw new FeatureManagerDAOException("Error occurred while deleting the feature related to a profile.", e);
         } finally {
@@ -448,7 +339,6 @@ public class FeatureDAOImpl implements FeatureDAO {
 
     @Override
     public boolean deleteFeature(int featureId) throws FeatureManagerDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -459,9 +349,10 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, featureId);
             stmt.setInt(2, tenantId);
-            stmt.executeUpdate();
-            return true;
-
+            if(stmt.executeUpdate() > 0) {
+                return true;
+            }
+            return false;
         } catch (SQLException e) {
             throw new FeatureManagerDAOException("Unable to delete the feature " + featureId + " (Feature ID) " +
                     "from database.", e);

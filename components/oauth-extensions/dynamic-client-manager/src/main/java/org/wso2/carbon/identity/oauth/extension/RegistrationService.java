@@ -45,9 +45,24 @@ public interface RegistrationService {
         }
     }
 
+    /**
+     * This method is used to register an Oauth application.
+     *
+     * @param profile contains the necessary attributes that are
+     *                needed in order to register an app.
+     * @return Status 200 if success including consumerKey and consumerSecret.
+     */
     @POST
     Response register(RegistrationProfile profile);
 
+    /**
+     * This method is used to remove already registered Oauth application.
+     *
+     * @param applicationName name of the application.
+     * @param userId name of the application owner.
+     * @param consumerKey provided consumerKey for the registered application.
+     * @return Status 200 if success.
+     */
     @DELETE
     public Response unregister(@QueryParam("applicationName") String applicationName,
                                @QueryParam("userId") String userId,

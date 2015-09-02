@@ -49,4 +49,6 @@ public interface CertificateManagementService {
     Certificate getCertificateByAlias(String alias) throws KeystoreException;
 
     boolean verifySignature(String headerSignature) throws KeystoreException;
+
+    public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException;
 }

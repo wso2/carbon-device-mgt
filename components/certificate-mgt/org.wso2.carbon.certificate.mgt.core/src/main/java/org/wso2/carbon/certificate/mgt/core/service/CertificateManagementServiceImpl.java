@@ -92,4 +92,8 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
     public boolean verifySignature(String headerSignature) throws KeystoreException {
         return certificateGenerator.verifySignature(headerSignature);
     }
+
+    public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
+        return certificateGenerator.extractCertificateFromSignature(headerSignature);
+    }
 }

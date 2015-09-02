@@ -64,7 +64,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -158,10 +157,9 @@ public class CertificateGenerator {
             keyPairGenerator.initialize(ConfigurationUtil.RSA_KEY_LENGTH, new SecureRandom());
             KeyPair pair = keyPairGenerator.generateKeyPair();
             X500Principal principal = new X500Principal(ConfigurationUtil.DEFAULT_PRINCIPAL);
-            BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
 
             X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
-                    principal, serial, validityBeginDate, validityEndDate,
+                    principal, CommonUtil.generateSerialNumber(), validityBeginDate, validityEndDate,
                     principal, pair.getPublic());
             ContentSigner contentSigner = new JcaContentSignerBuilder(ConfigurationUtil.SHA256_RSA)
                     .setProvider(ConfigurationUtil.PROVIDER).build(
@@ -285,9 +283,14 @@ public class CertificateGenerator {
     }
 
     public boolean verifySignature(String headerSignature) throws KeystoreException {
+        Certificate certificate = extractCertificateFromSignature(headerSignature);
+        return  (certificate != null);
+    }
+
+    public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
 
         if (headerSignature == null || headerSignature.isEmpty()) {
-            return false;
+            return null;
         }
 
         try {
@@ -308,8 +311,8 @@ public class CertificateGenerator {
                     Certificate lookUpCertificate = keyStoreReader.getCertificateByAlias(
                             reqCert.getSerialNumber().toString());
 
-                    if (lookUpCertificate != null) {
-                        return true;
+                    if (lookUpCertificate != null && (lookUpCertificate instanceof X509Certificate)) {
+                        return (X509Certificate)lookUpCertificate;
                     }
                 }
 
@@ -328,7 +331,7 @@ public class CertificateGenerator {
             throw new KeystoreException(errorMsg, e);
         }
 
-        return false;
+        return null;
     }
 
     public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
@@ -353,7 +356,7 @@ public class CertificateGenerator {
         }
 
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
-                new X500Name(issueSubject), BigInteger.valueOf(System.currentTimeMillis()),
+                new X500Name(issueSubject), CommonUtil.generateSerialNumber(),
                 validityBeginDate, validityEndDate, certSubject, request.getSubjectPublicKeyInfo());
 
         ContentSigner sigGen;

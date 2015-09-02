@@ -184,7 +184,7 @@ public class OperationManagerImpl implements OperationManager {
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
-            
+
             OperationManagementDAOFactory.openConnection();
             if (enrolmentId < 0) {
                 throw new OperationManagementException("Device not found for the given device Identifier:" +

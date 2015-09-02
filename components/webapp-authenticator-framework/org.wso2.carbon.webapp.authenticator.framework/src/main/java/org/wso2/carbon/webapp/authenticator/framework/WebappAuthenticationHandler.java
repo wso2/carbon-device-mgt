@@ -28,20 +28,17 @@ import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthen
 
 import javax.servlet.http.HttpServletResponse;
 
-public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
+public class WebappAuthenticationHandler extends CarbonTomcatValve {
 
-    private static final String AUTHENTICATION_SCHEME = "authentication-scheme";
-    private static final Log log = LogFactory.getLog(WebappAuthenticatorFrameworkValve.class);
+    private static final Log log = LogFactory.getLog(WebappAuthenticationHandler.class);
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
-        String authScheme =
-                request.getContext().findParameter(WebappAuthenticatorFrameworkValve.AUTHENTICATION_SCHEME);
-        if (authScheme == null || "".equals(authScheme)) {
+        if (this.isNonAdminService(request) || this.skipAuthentication(request) || this.isContextSkipped(request)) {
             this.getNext().invoke(request, response, compositeValve);
             return;
         }
-        WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(authScheme);
+        WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(request);
         if (authenticator == null) {
             String msg = "Failed to load an appropriate authenticator to authenticate the request";
             AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
@@ -49,6 +46,27 @@ public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
         }
         WebappAuthenticator.Status status = authenticator.authenticate(request, response);
         this.processResponse(request, response, compositeValve, status);
+    }
+
+    private boolean isNonAdminService(Request request) {
+        String param = request.getContext().findParameter("isAdminService");
+        return !(param != null && Boolean.parseBoolean(param));
+    }
+
+    private boolean skipAuthentication(Request request) {
+        String param = request.getContext().findParameter("doAuthentication");
+        return (param == null || !Boolean.parseBoolean(param));
+    }
+
+    private boolean isContextSkipped(Request request) {
+        String ctx = request.getContext().getPath();
+        if (ctx == null) {
+            ctx = request.getContextPath();
+            if (ctx == null) {
+                return false;
+            }
+        }
+        return ctx.equals("/Carbon") || ctx.equals("/Services");
     }
 
     private void processResponse(Request request, Response response, CompositeValve compositeValve,

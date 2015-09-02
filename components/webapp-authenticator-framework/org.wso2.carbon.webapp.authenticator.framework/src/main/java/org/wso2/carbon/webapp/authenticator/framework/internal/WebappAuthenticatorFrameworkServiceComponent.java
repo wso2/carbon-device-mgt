@@ -25,7 +25,8 @@ import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
-import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationHandler;
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorFrameworkValve;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
@@ -64,7 +65,7 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             DataHolder.getInstance().setWebappAuthenticatorRepository(repository);
 
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
-            valves.add(new WebappAuthenticatorFrameworkValve());
+            valves.add(new WebappAuthenticationHandler());
             TomcatValveContainer.addValves(valves);
 
             if (log.isDebugEnabled()) {

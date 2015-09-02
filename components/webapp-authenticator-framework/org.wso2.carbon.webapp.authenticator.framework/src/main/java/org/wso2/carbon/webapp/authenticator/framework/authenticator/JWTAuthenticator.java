@@ -36,7 +36,6 @@ import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
-import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticator;
 
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
@@ -51,12 +50,12 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	public static final String SIGNED_JWT_AUTH_USERNAME = "Username";
 	private static final String JWT_AUTHENTICATOR = "JWT";
 
-	@Override
-	public boolean isAuthenticated(Request request) {
-		return false;
-	}
+    @Override
+    public boolean canHandle(Request request) {
+        return false;
+    }
 
-	@Override
+    @Override
 	public Status authenticate(Request request, Response response) {
 		String requestUri = request.getRequestURI();
 		if (requestUri == null || "".equals(requestUri)) {

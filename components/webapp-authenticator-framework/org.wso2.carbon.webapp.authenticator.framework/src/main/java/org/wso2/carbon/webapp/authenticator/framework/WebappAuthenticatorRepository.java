@@ -18,15 +18,18 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WebappAuthenticatorRepository {
 
     private Map<String, WebappAuthenticator> authenticators;
 
     public WebappAuthenticatorRepository() {
-        this.authenticators = new HashMap<String, WebappAuthenticator>();
+        this.authenticators = new ConcurrentHashMap<>();
     }
 
     public void addAuthenticator(WebappAuthenticator authenticator) {
@@ -35,6 +38,10 @@ public class WebappAuthenticatorRepository {
 
     public WebappAuthenticator getAuthenticator(String name) {
         return authenticators.get(name);
+    }
+
+    public Map<String, WebappAuthenticator> getAuthenticators() {
+        return authenticators;
     }
 
 }

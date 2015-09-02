@@ -16,9 +16,21 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.webapp.authenticator.framework;
+package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
-public class APIInfo {
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 
+public interface WebappAuthenticator {
+
+    enum Status {
+        SUCCESS, FAILURE, CONTINUE
+    }
+
+    boolean canHandle(Request request);
+
+    Status authenticate(Request request, Response response);
+
+    String getName();
 
 }

@@ -24,15 +24,25 @@ import org.apache.catalina.util.Base64;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.CharChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
-import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.Constants;
 
 public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     private static final String BASIC_AUTH_AUTHENTICATOR = "BasicAuth";
+    private static final String HEADER_BASIC_AUTH = "authorization";
 
     @Override
-    public boolean isAuthenticated(Request request) {
-        return false;  
+    public boolean canHandle(Request request) {
+        MessageBytes authorization =
+                request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
+        if (authorization != null) {
+            authorization.toBytes();
+            ByteChunk authBC = authorization.getByteChunk();
+            if (authBC.startsWithIgnoreCase("basic ", 0)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -47,7 +57,8 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     private Credentials getCredentials(Request request) {
         Credentials credentials = null;
-        MessageBytes authorization = request.getCoyoteRequest().getMimeHeaders().getValue("authorization");
+        MessageBytes authorization =
+                request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
         if (authorization != null) {
             authorization.toBytes();
             ByteChunk authBC = authorization.getByteChunk();

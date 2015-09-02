@@ -39,6 +39,7 @@ public final class PolicyManagementConstants {
 
     public static final String DM_CACHE_MANAGER = "DM_CACHE_MANAGER";
     public static final String DM_CACHE = "DM_CACHE";
+    public static final String DM_CACHE_LIST = "DM_CACHE_LIST";
 
 
     public static final String DELEGATION_TASK_TYPE = "DELEGATION__TASK";

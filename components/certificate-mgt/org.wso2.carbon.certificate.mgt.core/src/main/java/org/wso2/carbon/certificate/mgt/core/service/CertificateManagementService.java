@@ -33,17 +33,22 @@ public interface CertificateManagementService {
 
     Certificate getRACertificate() throws KeystoreException;
 
-    public List<X509Certificate> getRootCertificates(byte[] ca, byte[] ra) throws KeystoreException;
+    List<X509Certificate> getRootCertificates(byte[] ca, byte[] ra) throws KeystoreException;
 
-    public X509Certificate generateX509Certificate() throws KeystoreException;
+    X509Certificate generateX509Certificate() throws KeystoreException;
 
-    public SCEPResponse getCACertSCEP() throws KeystoreException;
+    SCEPResponse getCACertSCEP() throws KeystoreException;
 
-    public byte[] getCACapsSCEP();
+    byte[] getCACapsSCEP();
 
-    public byte[] getPKIMessageSCEP(InputStream inputStream) throws KeystoreException;
+    byte[] getPKIMessageSCEP(InputStream inputStream) throws KeystoreException;
 
-    public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
-                                                              PKCS10CertificationRequest request,
+    X509Certificate generateCertificateFromCSR(PrivateKey privateKey, PKCS10CertificationRequest request,
                                                               String issueSubject) throws KeystoreException;
+
+    Certificate getCertificateByAlias(String alias) throws KeystoreException;
+
+    boolean verifySignature(String headerSignature) throws KeystoreException;
+
+    public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException;
 }

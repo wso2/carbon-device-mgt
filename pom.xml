@@ -558,6 +558,11 @@
                 <artifactId>axis2</artifactId>
                 <version>${axis2.orbit.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus.orbit.version}</version>
+            </dependency>
 
             <!-- End of Orbit dependencies -->
 
@@ -1251,6 +1256,9 @@
 
         <!-- JSCEP -->
         <jscep.version>2.0.2.wso2v2</jscep.version>
+
+        <!-- Nimbus Jose-->
+        <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>
     </properties>
 
 </project>

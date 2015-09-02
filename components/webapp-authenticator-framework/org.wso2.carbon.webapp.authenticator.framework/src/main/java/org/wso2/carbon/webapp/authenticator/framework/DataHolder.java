@@ -18,19 +18,34 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
+import org.wso2.carbon.user.core.service.RealmService;
+
 public class DataHolder {
 
-    private static WebappAuthenticatorRepository repository;
+    private WebappAuthenticatorRepository repository;
+    private RealmService realmService;
 
     private DataHolder() {}
 
-    public static void setWebappAuthenticatorRepository (WebappAuthenticatorRepository repository) {
-        DataHolder.repository = repository;
+    private static DataHolder thisInstance = new DataHolder();
+
+    public static DataHolder getInstance() {
+        return thisInstance;
     }
 
-    public static WebappAuthenticatorRepository getWebappAuthenticatorRepository() {
+    public void setWebappAuthenticatorRepository (WebappAuthenticatorRepository repository) {
+        this.repository = repository;
+    }
+
+    public WebappAuthenticatorRepository getWebappAuthenticatorRepository() {
         return repository;
     }
 
+    public RealmService getRealmService() {
+        return realmService;
+    }
 
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+    }
 }

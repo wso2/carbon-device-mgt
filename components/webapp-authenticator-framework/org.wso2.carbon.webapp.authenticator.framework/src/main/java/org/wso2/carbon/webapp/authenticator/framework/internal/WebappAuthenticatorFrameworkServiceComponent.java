@@ -20,10 +20,10 @@ package org.wso2.carbon.webapp.authenticator.framework.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
+import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorFrameworkValve;
@@ -34,25 +34,34 @@ import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticator
 import java.util.ArrayList;
 import java.util.List;
 
-public class WebappAuthenticatorFrameworkBundleActivator implements BundleActivator {
 
-    private static final Log log = LogFactory.getLog(WebappAuthenticatorFrameworkBundleActivator.class);
+/**
+ * @scr.component name="org.wso2.carbon.webapp.authenticator" immediate="true"
+ * @scr.reference name="user.realmservice.default"
+ * interface="org.wso2.carbon.user.core.service.RealmService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setRealmService"
+ * unbind="unsetRealmService"
+ */
+public class WebappAuthenticatorFrameworkServiceComponent {
 
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
+    private static final Log log = LogFactory.getLog(WebappAuthenticatorFrameworkServiceComponent.class);
+
+    @SuppressWarnings("unused")
+    protected void activate(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
             log.debug("Starting Web Application Authenticator Framework Bundle");
         }
         try {
             WebappAuthenticatorConfig.init();
-
             WebappAuthenticatorRepository repository = new WebappAuthenticatorRepository();
             for (AuthenticatorConfig config : WebappAuthenticatorConfig.getInstance().getAuthenticators()) {
                 WebappAuthenticator authenticator =
                         (WebappAuthenticator) Class.forName(config.getClassName()).newInstance();
                 repository.addAuthenticator(authenticator);
             }
-            DataHolder.setWebappAuthenticatorRepository(repository);
+            DataHolder.getInstance().setWebappAuthenticatorRepository(repository);
 
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
             valves.add(new WebappAuthenticatorFrameworkValve());
@@ -66,9 +75,19 @@ public class WebappAuthenticatorFrameworkBundleActivator implements BundleActiva
         }
     }
 
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
+    @SuppressWarnings("unused")
+    protected void deactivate(ComponentContext componentContext) {
         //do nothing
     }
 
+    protected void setRealmService(RealmService realmService) {
+        if (log.isDebugEnabled()) {
+            log.debug("RealmService acquired");
+        }
+        DataHolder.getInstance().setRealmService(realmService);
+    }
+
+    protected void unsetRealmService(RealmService realmService) {
+        DataHolder.getInstance().setRealmService(null);
+    }
 }

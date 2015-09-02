@@ -28,6 +28,7 @@ public class ComplianceData {
 
     private int id;
     private int deviceId;
+    private int enrolmentId;
     private int policyId;
     List<ComplianceFeature> complianceFeatures;
     private boolean status;
@@ -50,6 +51,14 @@ public class ComplianceData {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getEnrolmentId() {
+        return enrolmentId;
+    }
+
+    public void setEnrolmentId(int enrolmentId) {
+        this.enrolmentId = enrolmentId;
     }
 
     public Timestamp getLastRequestedTime() {

@@ -64,6 +64,16 @@ public interface DeviceDAO {
     int removeDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 
     /**
+     * This method is used to retrieve a device of a given device-identifier.
+     *
+     * @param deviceIdentifier device id.
+     * @param tenantId tenant id.
+     * @return returns the device object.
+     * @throws DeviceManagementDAOException
+     */
+    Device getDevice(DeviceIdentifier deviceIdentifier, int tenantId) throws DeviceManagementDAOException;
+
+    /**
      * This method is used to retrieve a device of a given id.
      *
      * @param deviceId device id.
@@ -71,7 +81,7 @@ public interface DeviceDAO {
      * @return returns the device object.
      * @throws DeviceManagementDAOException
      */
-    Device getDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
+    Device getDevice(int deviceId, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve all the devices of a given tenant.

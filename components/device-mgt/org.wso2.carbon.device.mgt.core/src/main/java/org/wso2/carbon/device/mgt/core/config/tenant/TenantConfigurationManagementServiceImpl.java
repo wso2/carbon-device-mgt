@@ -36,8 +36,9 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 /**
- * This class implements all the functionality exposed as part of the TenantConfigurationManagementService. Main usage of
- * this module is, saving/retrieving tenant configurations to the registry.
+ * This class implements all the functionality exposed as part of the TenantConfigurationManagementService.
+ * Main usage of this module is  saving/retrieving tenant configurations to the registry.
+ *
  */
 public class TenantConfigurationManagementServiceImpl
 		implements TenantConfigurationManagementService {

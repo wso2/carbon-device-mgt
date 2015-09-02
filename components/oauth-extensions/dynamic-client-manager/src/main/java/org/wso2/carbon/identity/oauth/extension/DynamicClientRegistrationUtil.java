@@ -128,6 +128,10 @@ public class DynamicClientRegistrationUtil {
             serviceProvider.setDescription("Service Provider for application " + applicationName);
 
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+            if (appMgtService == null) {
+                throw new IllegalStateException("Error occurred while retrieving Application Management" +
+                        "Service");
+            }
             appMgtService.createApplication(serviceProvider);
 
             ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
@@ -230,7 +234,7 @@ public class DynamicClientRegistrationUtil {
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
 
             if (appMgtService == null) {
-                throw new APIManagementException("Error occurred while retrieving Application Management" +
+                throw new IllegalStateException("Error occurred while retrieving Application Management" +
                         "Service");
             }
             ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);

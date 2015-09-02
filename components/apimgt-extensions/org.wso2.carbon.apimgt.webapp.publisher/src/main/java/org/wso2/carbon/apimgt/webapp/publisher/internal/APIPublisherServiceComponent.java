@@ -63,7 +63,6 @@ public class APIPublisherServiceComponent {
         APIPublisherService publisher = new APIPublisherServiceImpl();
         APIPublisherDataHolder.getInstance().setApiPublisherService(publisher);
         bundleContext.registerService(APIPublisherService.class, publisher, null);
-
     }
 
     protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {

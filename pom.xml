@@ -37,15 +37,17 @@
 
     <modules>
         <module>components/device-mgt</module>
-	<module>components/apimgt-extensions</module>
+	    <module>components/apimgt-extensions</module>
         <module>components/policy-mgt</module>
+        <module>components/certificate-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/oauth-extensions</module>
         <module>features/device-mgt</module>
         <module>features/apimgt-extensions</module>
-	<module>features/policy-mgt</module>
+	    <module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
         <module>features/oauth-extensions</module>
+        <module>features/certificate-mgt</module>
     </modules>
 
     <dependencyManagement>
@@ -131,6 +133,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.extensions</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
@@ -551,6 +558,11 @@
                 <artifactId>axis2</artifactId>
                 <version>${axis2.orbit.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus.orbit.version}</version>
+            </dependency>
 
             <!-- End of Orbit dependencies -->
 
@@ -931,6 +943,44 @@
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>org.bouncycastle.wso2</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bcprov.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle.wso2</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${bcpkix.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle.wso2</groupId>
+                <artifactId>bcmail-jdk15on</artifactId>
+                <version>${bcmail.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.jscep.wso2</groupId>
+                <artifactId>jscep</artifactId>
+                <version>${jscep.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec.wso2</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${version.commons.codec}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io.wso2</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${version.commons.io}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-lang.wso2</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${version.commons.lang}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1184,6 +1234,9 @@
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.0</carbon.commons.version>
+        <version.commons.codec>1.4.0.wso2v1</version.commons.codec>
+        <version.commons.io>2.4.0.wso2v1</version.commons.io>
+        <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
         <carbon.api.mgt.version>1.4.0</carbon.api.mgt.version>
@@ -1193,6 +1246,19 @@
         <cxf.bindings.version>2.5.11</cxf.bindings.version>
         <json-simple.version>1.1.wso2v1</json-simple.version>
         <jackson.version>1.9.0</jackson.version>
+
+        <!-- BouncyCastle -->
+        <bcprov.wso2.version>1.49.wso2v1</bcprov.wso2.version>
+        <bcpkix.wso2.version>1.49.wso2v1</bcpkix.wso2.version>
+        <bcprov.ext.wso2.version>1.49.wso2v1</bcprov.ext.wso2.version>
+        <bcprov.wso2.version.range>[1.40.wso2v1, 1.50.0)</bcprov.wso2.version.range>
+        <bcmail.wso2.version>1.49.wso2v1</bcmail.wso2.version>
+
+        <!-- JSCEP -->
+        <jscep.version>2.0.2.wso2v2</jscep.version>
+
+        <!-- Nimbus Jose-->
+        <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>
     </properties>
 
 </project>

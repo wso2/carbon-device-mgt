@@ -42,13 +42,13 @@ public class ProfileManagerImpl implements ProfileManager {
     private static Log log = LogFactory.getLog(ProfileManagerImpl.class);
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
-    private DeviceDAO deviceDAO;
+//    private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
 
     public ProfileManagerImpl() {
         profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
-        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+//        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
@@ -91,7 +91,7 @@ public class ProfileManagerImpl implements ProfileManager {
 
         try {
             PolicyManagementDAOFactory.beginTransaction();
-            profile = profileDAO.updateProfile(profile);
+            profileDAO.updateProfile(profile);
             featureDAO.updateProfileFeatures(profile.getProfileFeaturesList(), profile.getProfileId());
             PolicyManagementDAOFactory.commitTransaction();
         } catch (ProfileManagerDAOException e) {
@@ -143,41 +143,62 @@ public class ProfileManagerImpl implements ProfileManager {
     public Profile getProfile(int profileId) throws ProfileManagementException {
         Profile profile;
         List<ProfileFeature> featureList;
-        DeviceType deviceType;
+        DeviceType deviceType = null;
 
         try {
             PolicyManagementDAOFactory.openConnection();
             profile = profileDAO.getProfiles(profileId);
             featureList = featureDAO.getFeaturesForProfile(profileId);
-            deviceType = deviceTypeDAO.getDeviceType(profile.getDeviceType().getId());
-
             profile.setProfileFeaturesList(featureList);
-            profile.setDeviceType(deviceType);
-
         } catch (ProfileManagerDAOException e) {
             throw new ProfileManagementException("Error occurred while getting profile id (" + profileId + ")", e);
         } catch (FeatureManagerDAOException e) {
             throw new ProfileManagementException("Error occurred while getting features related profile id (" +
-                    profileId + ")", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new ProfileManagementException("Error occurred while getting device type related profile id (" +
                     profileId + ")", e);
         } catch (SQLException e) {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceType = deviceTypeDAO.getDeviceType(profile.getDeviceType().getId());
+        } catch (DeviceManagementDAOException e) {
+            throw new ProfileManagementException("Error occurred while getting features related profile id (" +
+                    profileId + ")", e);
+        } catch (SQLException e) {
+            throw new ProfileManagementException("SQL exception occurred while getting features related profile id (" +
+                    profileId + ")", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        profile.setDeviceType(deviceType);
         return profile;
     }
 
     @Override
     public List<Profile> getAllProfiles() throws ProfileManagementException {
         List<Profile> profileList;
+        List<DeviceType> deviceTypes;
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceTypes = deviceTypeDAO.getDeviceTypes();
+        } catch (SQLException e) {
+            throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (DeviceManagementDAOException e) {
+            throw new ProfileManagementException("Error occurred while retrieving device type information", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
         try {
             PolicyManagementDAOFactory.openConnection();
             profileList = profileDAO.getAllProfiles();
             List<ProfileFeature> featureList = featureDAO.getAllProfileFeatures();
-            List<DeviceType> deviceTypes = deviceTypeDAO.getDeviceTypes();
+
             for (Profile profile : profileList) {
 
                 List<ProfileFeature> list = new ArrayList<ProfileFeature>();
@@ -198,12 +219,11 @@ public class ProfileManagerImpl implements ProfileManager {
             throw new ProfileManagementException("Error occurred while getting profiles", e);
         } catch (FeatureManagerDAOException e) {
             throw new ProfileManagementException("Error occurred while getting features related to profiles", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new ProfileManagementException("Error occurred while getting device types related to profiles", e);
         } catch (SQLException e) {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
+            //  DeviceManagementDAOFactory.closeConnection();
         }
         return profileList;
     }
@@ -212,9 +232,22 @@ public class ProfileManagerImpl implements ProfileManager {
     public List<Profile> getProfilesOfDeviceType(String deviceTypeName) throws ProfileManagementException {
         List<Profile> profileList;
         List<ProfileFeature> featureList;
+        DeviceType deviceType;
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
+        } catch (DeviceManagementDAOException e) {
+            throw new ProfileManagementException("Error occurred while retrieving device type information", e);
+        } catch (SQLException e) {
+            throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
         try {
             PolicyManagementDAOFactory.openConnection();
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
+
             profileList = profileDAO.getProfilesOfDeviceType(deviceType);
             featureList = featureDAO.getAllProfileFeatures();
 
@@ -226,18 +259,16 @@ public class ProfileManagerImpl implements ProfileManager {
                     }
                 }
                 profile.setProfileFeaturesList(profileFeatureList);
-
             }
         } catch (ProfileManagerDAOException e) {
             throw new ProfileManagementException("Error occurred while getting profiles", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new ProfileManagementException("Error occurred while getting device types", e);
         } catch (FeatureManagerDAOException e) {
             throw new ProfileManagementException("Error occurred while getting profile features types", e);
         } catch (SQLException e) {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
+
         }
         return profileList;
     }

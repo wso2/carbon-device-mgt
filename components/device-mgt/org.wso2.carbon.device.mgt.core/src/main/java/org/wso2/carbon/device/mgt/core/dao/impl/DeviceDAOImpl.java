@@ -111,7 +111,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql =
                     "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, " +
-                            "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT " +
+                            "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID " +
                             "FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
                             "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
                             "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID " +
@@ -177,7 +177,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             String sql =
                     "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, " +
                             "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID " +
-                            "FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION, d.OWNER, t.NAME " +
+                            "FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION,  t.NAME " +
                             "AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
                             "AND d.TENANT_ID = ?) d1 WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
@@ -208,7 +208,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             String sql =
                     "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
                             "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                            "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.DESCRIPTION, " +
+                            "e.DATE_OF_ENROLMENT , e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.DESCRIPTION, " +
                             "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
                             "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
                             "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? AND e.OWNER = ?";
@@ -473,6 +473,7 @@ public class DeviceDAOImpl implements DeviceDAO {
 
     private EnrolmentInfo loadEnrolment(ResultSet rs) throws SQLException {
         EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setId(rs.getInt("ENROLMENT_ID"));
         enrolmentInfo.setOwner(rs.getString("OWNER"));
         enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
         enrolmentInfo.setDateOfEnrolment(rs.getTimestamp("DATE_OF_ENROLMENT").getTime());
@@ -491,7 +492,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             String sql =
                     "SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, t.NAME AS DEVICE_TYPE, " +
                             "d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                            "e.DATE_OF_ENROLMENT FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                            "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                             "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE FROM DM_ENROLMENT e WHERE TENANT_ID = ? " +
                             "AND STATUS = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_ID = e.DEVICE_ID " +
                             "AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
@@ -513,4 +514,5 @@ public class DeviceDAOImpl implements DeviceDAO {
         }
         return devices;
     }
+
 }

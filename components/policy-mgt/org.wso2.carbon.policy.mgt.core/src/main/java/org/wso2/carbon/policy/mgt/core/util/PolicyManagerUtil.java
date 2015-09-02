@@ -31,10 +31,6 @@ import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
-import org.wso2.carbon.registry.api.GhostResource;
-import org.wso2.carbon.registry.core.RegistryConstants;
-import org.wso2.carbon.registry.core.caching.RegistryCacheEntry;
-import org.wso2.carbon.registry.core.caching.RegistryCacheKey;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;

@@ -21,7 +21,6 @@ package org.wso2.carbon.policy.mgt.core.cache.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.cache.PolicyCacheManager;
@@ -31,7 +30,6 @@ import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import javax.cache.Cache;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,13 +37,7 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     private static final Log log = LogFactory.getLog(PolicyCacheManagerImpl.class);
 
-    private static HashMap<Integer, HashMap<Integer, Policy>> tenantedPolicyMap = new HashMap<>();
-
     private static PolicyCacheManagerImpl policyCacheManager;
-
-//    private static Cache<Integer, Policy> getPolicyCache() {
-//        return PolicyManagerUtil.getPolicyCache(PolicyManagementConstants.DM_CACHE);
-//    }
 
     private static Cache<Integer, List<Policy>> getPolicyListCache() {
         return PolicyManagerUtil.getPolicyListCache(PolicyManagementConstants.DM_CACHE_LIST);
@@ -67,15 +59,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public void addAllPolicies(List<Policy> policies) {
-        // HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        if (cache.isEmpty()) {
-
-//        for (Policy policy : policies) {
-//            cache.put(policy.getId(), policy);
-//        }
-//        }
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         lCache.put(1, policies);
@@ -83,16 +66,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public void updateAllPolicies(List<Policy> policies) {
-////        HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        cache.removeAll();
-////        map.clear();
-////        if (map.isEmpty()) {
-//        for (Policy policy : policies) {
-////                map.put(policy.getId(), policy);
-//            cache.put(policy.getId(), policy);
-//        }
-////        }
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         lCache.removeAll();
@@ -101,43 +74,12 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public List<Policy> getAllPolicies() throws PolicyManagementException {
-//       // HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        Iterator iterator = cache.iterator();
-////        iterator.hasNext()
-//        if (!iterator.hasNext()) {
-//            PolicyManager policyManager = new PolicyManagerImpl();
-//            this.addAllPolicies(policyManager.getPolicies());
-//        }
-//        if (log.isDebugEnabled()) {
-//            //log.debug("No of policies stored in the cache .. : " + map.size());
-//
-//            //Set<Integer> keySet = map.keySet();
-//            Iterator iterator2 = cache.iterator();
-//            while (iterator2.hasNext()) {
-//                org.wso2.carbon.caching.impl.CacheEntry thisEntry = (org.wso2.carbon.caching.impl.CacheEntry)
-// iterator2.next();
-//                log.debug("Policy id in maps .. : " + thisEntry.getKey() + " policy name : " + ((Policy) thisEntry
-// .getValue()).
-//                        getPolicyName() + " Activated : " + ((Policy) thisEntry.getValue()).isActive());
-//            }
-//        }
-//
-//        List<Policy> policies = new ArrayList<>();
-//        while (iterator.hasNext()){
-//            CacheEntry thisEntry = (CacheEntry) iterator.next();
-//            policies.add((Policy) thisEntry.getValue());
-//        }
-//
-//        return policies;
-////        return new ArrayList<>(map.values());
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         if (!lCache.containsKey(1)) {
             PolicyManager policyManager = new PolicyManagerImpl();
             this.addAllPolicies(policyManager.getPolicies());
         }
-
         if (log.isDebugEnabled()) {
             List<Policy> cachedPolicy = lCache.get(1);
             for (Policy policy : cachedPolicy) {
@@ -145,7 +87,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
                         getPolicyName() + " Activated : " + policy.isActive());
             }
         }
-
         return lCache.get(1);
 
     }
@@ -159,10 +100,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public void removeAllPolicies() {
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        cache.removeAll();
-        //HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-        //map.clear();
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         lCache.removeAll();
@@ -170,13 +107,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public void addPolicy(Policy policy) {
-        //HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        if (!cache.containsKey(policy.getId())) {
-//            cache.put(policy.getId(), policy);
-//        } else {
-//            log.warn("Policy id (" + policy.getId() + ") already exist in the map. hence not attempted to store.");
-//        }
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         if (lCache.containsKey(1)) {
@@ -194,12 +124,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public void updatePolicy(Policy policy) {
-        // HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        if (cache.containsKey(policy.getId())) {
-//            cache.remove(policy.getId());
-//            cache.put(policy.getId(), policy);
-//        }
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         if (lCache.containsKey(1)) {
@@ -220,14 +144,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public void updatePolicy(int policyId) throws PolicyManagementException {
-        // HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        if (cache.containsKey(policyId)) {
-//            this.removePolicy(policyId);
-//        }
-//        PolicyManager policyManager = new PolicyManagerImpl();
-//        Policy policy = policyManager.getPolicy(policyId);
-//        cache.put(policyId, policy);
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         if (lCache.containsKey(1)) {
@@ -240,13 +156,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public void removePolicy(int policyId) {
-        // HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        if (cache.containsKey(policyId)) {
-//            cache.remove(policyId);
-//        } else {
-//            log.warn("Policy id (" + policyId + ") does not exist in the cache. Hence not removed.");
-//        }
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         if (lCache.containsKey(1)) {
@@ -265,13 +174,6 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
 
     @Override
     public Policy getPolicy(int policyId) throws PolicyManagementException {
-        //HashMap<Integer, Policy> map = this.getTenantRelatedMap();
-//        Cache<Integer, Policy> cache = getPolicyCache();
-//        if (!cache.containsKey(policyId)) {
-//            this.removeAllPolicies();
-//            this.getAllPolicies();
-//        }
-//        return cache.get(policyId);
 
         Cache<Integer, List<Policy>> lCache = getPolicyListCache();
         if (!lCache.containsKey(1)) {
@@ -306,13 +208,4 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
         return 0;
     }
 
-    private HashMap<Integer, Policy> getTenantRelatedMap() {
-
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        if (!tenantedPolicyMap.containsKey(tenantId)) {
-            HashMap<Integer, Policy> policyMap = new HashMap<>();
-            tenantedPolicyMap.put(tenantId, policyMap);
-        }
-        return tenantedPolicyMap.get(tenantId);
-    }
 }

@@ -77,6 +77,7 @@ import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.SignatureException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -281,6 +282,53 @@ public class CertificateGenerator {
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
+    }
+
+    public boolean verifySignature(String headerSignature) throws KeystoreException {
+
+        if (headerSignature == null || headerSignature.isEmpty()) {
+            return false;
+        }
+
+        try {
+            KeyStoreReader keyStoreReader = new KeyStoreReader();
+            CMSSignedData signedData = new CMSSignedData(Base64.decodeBase64(headerSignature.getBytes()));
+            Store reqStore = signedData.getCertificates();
+            @SuppressWarnings("unchecked")
+            Collection<X509CertificateHolder> reqCerts = reqStore.getMatches(null);
+
+            if (reqCerts != null && reqCerts.size() > 0) {
+                CertificateFactory certificateFactory = CertificateFactory.getInstance(ConfigurationUtil.X_509);
+                X509CertificateHolder holder = reqCerts.iterator().next();
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(holder.getEncoded());
+                X509Certificate reqCert = (X509Certificate) certificateFactory.
+                        generateCertificate(byteArrayInputStream);
+
+                if(reqCert != null && reqCert.getSerialNumber() != null) {
+                    Certificate lookUpCertificate = keyStoreReader.getCertificateByAlias(
+                            reqCert.getSerialNumber().toString());
+
+                    if (lookUpCertificate != null) {
+                        return true;
+                    }
+                }
+
+            }
+        } catch (CMSException e) {
+            String errorMsg = "CMSException when decoding certificate signature";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (IOException e) {
+            String errorMsg = "IOException when decoding certificate signature";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (CertificateException e) {
+            String errorMsg = "CertificateException when decoding certificate signature";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        }
+
+        return false;
     }
 
     public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,

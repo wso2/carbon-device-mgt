@@ -84,4 +84,12 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
                                                               String issueSubject) throws KeystoreException {
         return certificateGenerator.generateCertificateFromCSR(privateKey, request, issueSubject);
     }
+
+    public Certificate getCertificateByAlias(String alias) throws KeystoreException {
+        return keyStoreReader.getCertificateByAlias(alias);
+    }
+
+    public boolean verifySignature(String headerSignature) throws KeystoreException {
+        return certificateGenerator.verifySignature(headerSignature);
+    }
 }

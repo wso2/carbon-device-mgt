@@ -54,7 +54,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             ServletContext servletContext = context.getServletContext();
 
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
-            boolean isManagedApi = (param != null && param.isEmpty()) && Boolean.parseBoolean(param);
+            boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
 
             if (isManagedApi) {
                 APIConfig apiConfig = this.buildApiConfig(servletContext);

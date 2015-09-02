@@ -64,14 +64,18 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
         if (ctx == null || "".equals(ctx)) {
             ctx = request.getContextPath();
             if (ctx == null || "".equals(ctx)) {
-                StringTokenizer tokenizer = new StringTokenizer(request.getRequestURI(), "/");
-                ctx = tokenizer.nextToken();
-                if (ctx == null || "".equals(ctx)) {
-                    return false;
+                String requestUri = request.getRequestURI();
+                if ("/".equals(requestUri)) {
+                    return true;
                 }
+                StringTokenizer tokenizer = new StringTokenizer(request.getRequestURI(), "/");
+                if (!tokenizer.hasMoreTokens()) {
+                   return false;
+                }
+                ctx = tokenizer.nextToken();
             }
         }
-        return ctx.equalsIgnoreCase("carbon") || ctx.equalsIgnoreCase("services");
+        return (ctx.equalsIgnoreCase("carbon") || ctx.equalsIgnoreCase("services"));
     }
 
     private void processResponse(Request request, Response response, CompositeValve compositeValve,

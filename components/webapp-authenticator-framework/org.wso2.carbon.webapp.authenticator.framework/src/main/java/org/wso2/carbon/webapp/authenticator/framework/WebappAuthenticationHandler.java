@@ -27,6 +27,7 @@ import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.StringTokenizer;
 
 public class WebappAuthenticationHandler extends CarbonTomcatValve {
 
@@ -34,7 +35,7 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
-        if (this.isNonAdminService(request) || this.skipAuthentication(request) || this.isContextSkipped(request)) {
+        if (this.isContextSkipped(request) || (this.isNonAdminService(request) && this.skipAuthentication(request))) {
             this.getNext().invoke(request, response, compositeValve);
             return;
         }
@@ -60,13 +61,17 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
 
     private boolean isContextSkipped(Request request) {
         String ctx = request.getContext().getPath();
-        if (ctx == null) {
+        if (ctx == null || "".equals(ctx)) {
             ctx = request.getContextPath();
-            if (ctx == null) {
-                return false;
+            if (ctx == null || "".equals(ctx)) {
+                StringTokenizer tokenizer = new StringTokenizer(request.getRequestURI(), "/");
+                ctx = tokenizer.nextToken();
+                if (ctx == null || "".equals(ctx)) {
+                    return false;
+                }
             }
         }
-        return ctx.equals("/Carbon") || ctx.equals("/Services");
+        return ctx.equalsIgnoreCase("carbon") || ctx.equalsIgnoreCase("services");
     }
 
     private void processResponse(Request request, Response response, CompositeValve compositeValve,

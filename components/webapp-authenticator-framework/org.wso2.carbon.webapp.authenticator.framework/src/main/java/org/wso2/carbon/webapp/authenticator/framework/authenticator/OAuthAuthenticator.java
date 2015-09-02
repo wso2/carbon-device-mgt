@@ -50,7 +50,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
         MessageBytes authorization =
                 request.getCoyoteRequest().getMimeHeaders().
                         getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
-        String tokenValue = null;
+        String tokenValue;
         if (authorization != null) {
             authorization.toBytes();
             ByteChunk authBC = authorization.getByteChunk();

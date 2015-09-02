@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class DeviceDAOImpl implements DeviceDAO {
@@ -450,6 +451,51 @@ public class DeviceDAOImpl implements DeviceDAO {
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
                     "id of device '" + deviceId + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
+    public List<EnrolmentInfo> getEnrolmentsByStatus(List<DeviceIdentifier> deviceIds, Status status,
+                                                     int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<EnrolmentInfo> enrolments = new ArrayList<>();
+        try {
+            conn = this.getConnection();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT e.ID AS ENROLMENT_ID, e.OWNER, e.OWNERSHIP, e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, " +
+                    "e.STATUS FROM DM_ENROLMENT e WHERE e.DEVICE_ID IN (SELECT d.ID FROM DM_DEVICE d " +
+                    "WHERE d.DEVICE_IDENTIFICATION IN (");
+
+            // adding arguments to the sql query
+            Iterator iterator = deviceIds.iterator();
+            while (iterator.hasNext()) {
+                iterator.next();
+                sql.append(" ?");
+                if (iterator.hasNext()) {
+                    sql.append(",");
+                }
+            }
+            sql.append(") AND d.TENANT_ID = ?) AND e.STATUS = ? AND e.TENANT_ID = ?");
+
+            stmt = conn.prepareStatement(sql.toString());
+            int index = 1;
+            for (DeviceIdentifier id : deviceIds) {
+                stmt.setString(index++, id.getId());
+            }
+            stmt.setInt(index++, tenantId);
+            stmt.setString(index++, status.toString());
+            stmt.setInt(index, tenantId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                enrolments.add(this.loadEnrolment(rs));
+            }
+            return enrolments;
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
+                    "ids of devices", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

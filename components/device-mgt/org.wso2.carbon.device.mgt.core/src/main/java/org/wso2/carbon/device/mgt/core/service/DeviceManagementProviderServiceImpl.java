@@ -245,6 +245,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
 
             Device device = deviceDAO.getDevice(deviceId, tenantId);
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device not found for id '" + deviceId.getId() + "'");
+                }
+                throw new DeviceManagementException("Device not found");
+            }
             DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
 
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());

@@ -34,8 +34,8 @@ public interface DeviceDAO {
     /**
      * This method is used to add a device.
      *
-     * @param typeId device type id.
-     * @param device device object.
+     * @param typeId   device type id.
+     * @param device   device object.
      * @param tenantId tenant id.
      * @return returns the id of the persisted device record.
      * @throws DeviceManagementDAOException
@@ -45,8 +45,8 @@ public interface DeviceDAO {
     /**
      * This method is used to update a given device.
      *
-     * @param typeId device type id.
-     * @param device device object.
+     * @param typeId   device type id.
+     * @param device   device object.
      * @param tenantId tenant id.
      * @return returns the id of updated device.
      * @throws DeviceManagementDAOException
@@ -85,7 +85,7 @@ public interface DeviceDAO {
     /**
      * This method is used to retrieve all the devices of a given tenant and device type.
      *
-     * @param type device type.
+     * @param type     device type.
      * @param tenantId tenant id.
      * @return returns list of devices.
      * @throws DeviceManagementDAOException
@@ -94,6 +94,7 @@ public interface DeviceDAO {
 
     /**
      * This method is used to retrieve devices of a given user.
+     *
      * @param username user name.
      * @param tenantId tenant id.
      * @return returns list of devices.
@@ -112,8 +113,9 @@ public interface DeviceDAO {
 
     /**
      * This method is used to retrieve devices of a given device name.
+     *
      * @param deviceName device name.
-     * @param tenantId tenant id.
+     * @param tenantId   tenant id.
      * @return returns list of devices.
      * @throws DeviceManagementDAOException
      */
@@ -122,7 +124,7 @@ public interface DeviceDAO {
     /**
      * This method is used to add an enrollment information of a given device.
      *
-     * @param device device object.
+     * @param device   device object.
      * @param tenantId tenant id.
      * @return returns the id of the enrollment.
      * @throws DeviceManagementDAOException
@@ -132,22 +134,22 @@ public interface DeviceDAO {
     /**
      * This method is used to set the current enrollment status of given device and user.
      *
-     * @param deviceId device id.
+     * @param deviceId     device id.
      * @param currentOwner current user name.
-     * @param status device status.
-     * @param tenantId tenant id.
+     * @param status       device status.
+     * @param tenantId     tenant id.
      * @return returns true if success.
      * @throws DeviceManagementDAOException
      */
     boolean setEnrolmentStatus(DeviceIdentifier deviceId, String currentOwner, Status status,
-                      int tenantId) throws DeviceManagementDAOException;
+                               int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to get the status of current enrollment of a given user and device.
      *
-     * @param deviceId device id.
+     * @param deviceId     device id.
      * @param currentOwner device owner.
-     * @param tenantId tenant id.
+     * @param tenantId     tenant id.
      * @return returns current enrollment status.
      * @throws DeviceManagementDAOException
      */
@@ -157,9 +159,9 @@ public interface DeviceDAO {
     /**
      * This method is used to retrieve current enrollment of a given device and user.
      *
-     * @param deviceId device id.
+     * @param deviceId    device id.
      * @param currentUser user name.
-     * @param tenantId tenant id.
+     * @param tenantId    tenant id.
      * @return returns EnrolmentInfo object.
      * @throws DeviceManagementDAOException
      */
@@ -169,7 +171,7 @@ public interface DeviceDAO {
     /**
      * This method is used to retrieve devices of a given enrollment status.
      *
-     * @param status enrollment status.
+     * @param status   enrollment status.
      * @param tenantId tenant id.
      * @return returns list of devices.
      * @throws DeviceManagementDAOException
@@ -180,12 +182,24 @@ public interface DeviceDAO {
      * This method is used to retrieve the enrollment id of a given device and status.
      *
      * @param deviceId device id.
-     * @param status enrollment status.
+     * @param status   enrollment status.
      * @param tenantId tenant id.
      * @return returns the id of current enrollment.
      * @throws DeviceManagementDAOException
      */
     int getEnrolmentByStatus(DeviceIdentifier deviceId, Status status,
-                                    int tenantId) throws DeviceManagementDAOException;
+                             int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve the enrollment info of a given list of devices and status.
+     *
+     * @param deviceIds A list of device identifiers.
+     * @param status    enrollment status.
+     * @param tenantId  tenant id.
+     * @return returns a list of enrolment info objects.
+     * @throws DeviceManagementDAOException
+     */
+    List<EnrolmentInfo> getEnrolmentsByStatus(List<DeviceIdentifier> deviceIds, Status status,
+                                              int tenantId) throws DeviceManagementDAOException;
 }
 

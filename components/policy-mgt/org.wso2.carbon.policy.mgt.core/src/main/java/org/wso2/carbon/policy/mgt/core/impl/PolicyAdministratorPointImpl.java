@@ -68,7 +68,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 //        } catch (PolicyDelegationException e) {
 //            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
 //        }
-        PolicyCacheManagerImpl.getInstance().addPolicy(resultantPolicy);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
         return resultantPolicy;
     }
 
@@ -80,7 +80,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 //        } catch (PolicyDelegationException e) {
 //            throw new PolicyManagementException("Error occurred while delegating policy operation to the devices", e);
 //        }
-        PolicyCacheManagerImpl.getInstance().updatePolicy(resultantPolicy);
+        PolicyCacheManagerImpl.getInstance().rePopulateCache();
         return resultantPolicy;
     }
 

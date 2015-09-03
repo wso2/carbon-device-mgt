@@ -85,7 +85,17 @@ public class PolicyCacheManagerImpl implements PolicyCacheManager {
             for (Policy policy : cachedPolicy) {
                 log.debug("Policy id in cache .. : " + policy.getId() + " policy name : " + policy.
                         getPolicyName() + " Activated : " + policy.isActive());
+
+                List<String> users = policy.getUsers();
+                for (String user : users) {
+                    log.debug("Users in cached policy : " + user);
+                }
+                List<String> roles = policy.getRoles();
+                for (String role : roles) {
+                    log.debug("Roles in cached policy : " + role);
+                }
             }
+
         }
         return lCache.get(1);
 

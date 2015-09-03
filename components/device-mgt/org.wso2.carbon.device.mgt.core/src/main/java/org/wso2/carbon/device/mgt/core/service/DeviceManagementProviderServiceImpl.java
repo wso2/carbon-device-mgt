@@ -415,7 +415,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody.trim() + System.getProperty("line.separator") +
                     System.getProperty("line.separator") + url.replaceAll("\\{"
-                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
@@ -470,8 +470,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
-                    .USERNAME
-                    + "\\}",
+                            .USERNAME
+                            + "\\}",
                     URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
 
@@ -480,7 +480,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             .ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
@@ -749,10 +749,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
             for (Device device : userDevices) {
-                Device dmsDevice =
-                        this.getPluginRepository().getDeviceManagementService(
-                                device.getType()).getDeviceManager().getDevice(
-                                new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                Device dmsDevice = this.getDeviceManager(device.getType()).
+                        getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
                 if (dmsDevice != null) {
                     device.setFeatures(dmsDevice.getFeatures());
                     device.setProperties(dmsDevice.getProperties());
@@ -793,10 +791,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
         for (Device device : allDevices) {
-            Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            Device dmsDevice = this.getDeviceManager(device.getType()).
+                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
@@ -866,10 +862,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
 
         for (Device device : allDevices) {
-            Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            Device dmsDevice = this.getDeviceManager(device.getType()).
+                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());

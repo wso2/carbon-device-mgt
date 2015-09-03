@@ -25,6 +25,8 @@ import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
+import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
@@ -39,6 +41,7 @@ import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.tenant.TenantConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -177,6 +180,11 @@ public class DeviceManagementServiceComponent {
 	    TenantConfigurationManagementService
 			    tenantConfiguration = new TenantConfigurationManagementServiceImpl();
 	    bundleContext.registerService(TenantConfigurationManagementService.class.getName(), tenantConfiguration, null);
+
+        /* Registering Notification Service */
+        NotificationManagementService notificationManagementService
+                = new NotificationManagementServiceImpl();
+        bundleContext.registerService(NotificationManagementService.class.getName(), notificationManagementService, null);
 
 	     /* Registering App Management service */
         try {

@@ -93,7 +93,7 @@ public interface DeviceManagementProviderService extends OperationManager {
     void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status active) throws DeviceManagementException;
 
     /**
-     * This method is used to retrieve list of devices based on the device status
+     * This method is used to retrieve list of devices based on the device status.
      *
      * @param status Device status
      * @return List of devices

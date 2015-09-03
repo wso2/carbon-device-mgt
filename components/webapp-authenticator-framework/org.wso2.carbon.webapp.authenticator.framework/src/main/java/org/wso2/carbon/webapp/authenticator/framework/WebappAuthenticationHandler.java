@@ -35,7 +35,7 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
-        if (this.isContextSkipped(request) || (this.isNonAdminService(request) && this.skipAuthentication(request))) {
+        if (this.isContextSkipped(request) || (!this.isAdminService(request) && this.skipAuthentication(request))) {
             this.getNext().invoke(request, response, compositeValve);
             return;
         }
@@ -49,9 +49,9 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
         this.processResponse(request, response, compositeValve, status);
     }
 
-    private boolean isNonAdminService(Request request) {
+    private boolean isAdminService(Request request) {
         String param = request.getContext().findParameter("isAdminService");
-        return !(param != null && Boolean.parseBoolean(param));
+        return (param != null && Boolean.parseBoolean(param));
     }
 
     private boolean skipAuthentication(Request request) {

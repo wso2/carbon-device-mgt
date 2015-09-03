@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -63,6 +64,14 @@ public interface DeviceDAO {
      * @throws DeviceManagementDAOException
      */
     Device getDevice(DeviceIdentifier deviceIdentifier, int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     *
+     * @param deviceIdentifier device id.
+     * @return HashMap
+     * @throws DeviceManagementDAOException
+     */
+    HashMap<Integer, Device> getDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve a device of a given id.

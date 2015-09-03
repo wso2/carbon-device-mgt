@@ -28,6 +28,10 @@ import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorFrameworkValve;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
+import org.wso2.carbon.webapp.authenticator.framework.authorizer.PermissionAuthorizerUtil;
+import org.wso2.carbon.webapp.authenticator.framework.authorizer.PermissionAuthorizerValve;
+import org.wso2.carbon.webapp.authenticator.framework.authorizer.config.Permission;
+import org.wso2.carbon.webapp.authenticator.framework.authorizer.config.PermissionAuthorizerConfig;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
 
@@ -54,8 +58,15 @@ public class WebappAuthenticatorFrameworkBundleActivator implements BundleActiva
             }
             DataHolder.setWebappAuthenticatorRepository(repository);
 
+            // Adding permissions to registry
+//            PermissionAuthorizerConfig.init();
+//            for (Permission permission : PermissionAuthorizerConfig.getInstance().getPermissions()) {
+//                PermissionAuthorizerUtil.addPermission(permission);
+//            }
+
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
             valves.add(new WebappAuthenticatorFrameworkValve());
+            valves.add(new PermissionAuthorizerValve());
             TomcatValveContainer.addValves(valves);
 
             if (log.isDebugEnabled()) {

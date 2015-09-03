@@ -26,6 +26,9 @@ import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
 
@@ -34,8 +37,7 @@ public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
-        String authScheme =
-                request.getContext().findParameter(WebappAuthenticatorFrameworkValve.AUTHENTICATION_SCHEME);
+        String authScheme = request.getAuthType();
         if (authScheme == null || "".equals(authScheme)) {
             this.getNext().invoke(request, response, compositeValve);
             return;

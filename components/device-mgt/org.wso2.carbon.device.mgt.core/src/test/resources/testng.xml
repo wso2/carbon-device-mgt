@@ -28,6 +28,7 @@
             <class name="org.wso2.carbon.device.mgt.core.dao.DevicePersistTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementRepositoryTests"/>
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.app.mgt.AppManagementConfigurationManagerTest"/>
             <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>
         </classes>
     </test>

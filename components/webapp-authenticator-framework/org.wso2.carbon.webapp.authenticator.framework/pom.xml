@@ -39,22 +39,62 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Bundle-Activator>org.wso2.carbon.webapp.authenticator.framework.internal.WebappAuthenticatorFrameworkBundleActivator</Bundle-Activator>
-                        <!--<Require-Bundle>org.wso2.carbon.tomcat.patch</Require-Bundle>-->
                         <Private-Package>
                             org.wso2.carbon.webapp.authenticator.framework.internal
                         </Private-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Export-Package>
                             !org.wso2.carbon.webapp.authenticator.framework.internal,
                             org.wso2.carbon.webapp.authenticator.framework.*
                         </Export-Package>
+                        <Import-Package>
+                            com.nimbusds.jose,
+                            com.nimbusds.jose.crypto,
+                            com.nimbusds.jwt,
+                            javax.xml.bind,
+                            javax.xml.bind.annotation,
+                            javax.xml.parsers,
+                            javax.xml.validation,
+                            org.apache.axiom.util.base64,
+                            org.apache.catalina,
+                            org.apache.catalina.connector,
+                            org.apache.catalina.util,
+                            org.apache.commons.logging,
+                            org.apache.coyote,
+                            org.apache.tomcat.util.buf,
+                            org.apache.tomcat.util.http,
+                            org.osgi.service.component,
+                            org.w3c.dom,
+                            org.wso2.carbon.apimgt.api,
+                            org.wso2.carbon.apimgt.core.authenticate,
+                            org.wso2.carbon.apimgt.core.gateway,
+                            org.wso2.carbon.apimgt.impl.dto,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.core.util,
+                            org.wso2.carbon.identity.base,
+                            org.wso2.carbon.identity.core.util,
+                            org.wso2.carbon.tomcat.ext.valves,
+                            org.wso2.carbon.user.api,
+                            org.wso2.carbon.user.core.service,
+                            org.wso2.carbon.user.core.tenant,
+                            org.wso2.carbon.utils,
+                            org.wso2.carbon.utils.multitenancy,
+                            org.xml.sax,
+                            javax.servlet.http,
+                            javax.xml,
+                            org.apache.axis2.transport.http,
+                            org.wso2.carbon.apimgt.impl,
+                            org.wso2.carbon.registry.api
+                        </Import-Package>
                         <!--<Fragment-Host>tomcat</Fragment-Host>-->
                     </instructions>
                 </configuration>
@@ -104,8 +144,8 @@
             <artifactId>org.wso2.carbon.core.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.api</artifactId>
+            <groupId>org.wso2.orbit.com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
         </dependency>
     </dependencies>
 

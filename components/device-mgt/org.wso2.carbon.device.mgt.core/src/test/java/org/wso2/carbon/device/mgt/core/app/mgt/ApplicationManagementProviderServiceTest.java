@@ -42,7 +42,8 @@ public class ApplicationManagementProviderServiceTest {
     @BeforeClass
     public void init() {
         deviceManagementPluginRepository = new DeviceManagementPluginRepository();
-        TestDeviceManagementService testDeviceManagementService = new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE);
+        TestDeviceManagementService testDeviceManagementService =
+                new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE);
         try {
             deviceManagementPluginRepository.addDeviceManagementProvider(testDeviceManagementService);
         } catch (DeviceManagementException e) {
@@ -53,11 +54,11 @@ public class ApplicationManagementProviderServiceTest {
     }
 
     @Test
-    public void updateApplicationTest(){
+    public void updateApplicationTest() {
 
-        List<Application> applications = new ArrayList<Application>();
+        List<Application> applications = new ArrayList<>();
 
-        Application application1 =  TestDataHolder.generateApplicationDummyData("org.wso2.app1");
+        Application application1 = TestDataHolder.generateApplicationDummyData("org.wso2.app1");
         Application application2 = TestDataHolder.generateApplicationDummyData("org.wso2.app2");
         Application application3 = TestDataHolder.generateApplicationDummyData("org.wso2.app3");
         Application application4 = TestDataHolder.generateApplicationDummyData("org.wso2.app4");
@@ -67,34 +68,43 @@ public class ApplicationManagementProviderServiceTest {
         applications.add(application3);
         applications.add(application4);
 
-        Device device =  TestDataHolder.initialTestDevice;
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setId(TestDataHolder.initialDeviceIdentifier);
-        deviceIdentifier.setType(device.getType());
+        Device device = TestDataHolder.initialTestDevice;
+
+        if (device == null) {
+            throw new IllegalStateException("Device information is not available");
+        }
+        DeviceIdentifier deviceId = new DeviceIdentifier();
+
+        String deviceIdentifier = TestDataHolder.initialDeviceIdentifier;
+        if (deviceIdentifier == null) {
+            throw new IllegalStateException("Device identifier is not available");
+        }
+        deviceId.setId(deviceIdentifier);
+        deviceId.setType(device.getType());
 
         AppManagementConfig appManagementConfig = new AppManagementConfig();
         appMgtProvider = new ApplicationManagerProviderServiceImpl(deviceManagementPluginRepository);
 
         try {
-            appMgtProvider.updateApplicationListInstalledInDevice(deviceIdentifier, applications);
-        } catch (ApplicationManagementException appMgtEx){
+            appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);
+        } catch (ApplicationManagementException appMgtEx) {
             String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
             log.error(msg, appMgtEx);
             Assert.fail(msg, appMgtEx);
         }
 
         Application application5 = TestDataHolder.generateApplicationDummyData("org.wso2.app5");
-        applications = new ArrayList<Application>();
+        applications = new ArrayList<>();
         applications.add(application4);
         applications.add(application3);
         applications.add(application5);
 
         try {
-            appMgtProvider.updateApplicationListInstalledInDevice(deviceIdentifier, applications);
-            List<Application> installedApps = appMgtProvider.getApplicationListForDevice(deviceIdentifier);
-            log.info("Number of installed applications:"+installedApps.size());
-            Assert.assertEquals(installedApps.size(),3,"Num of installed applications should be two");
-        } catch (ApplicationManagementException appMgtEx){
+            appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);
+            List<Application> installedApps = appMgtProvider.getApplicationListForDevice(deviceId);
+            log.info("Number of installed applications:" + installedApps.size());
+            Assert.assertEquals(installedApps.size(), 3, "Num of installed applications should be two");
+        } catch (ApplicationManagementException appMgtEx) {
             String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
             log.error(msg, appMgtEx);
             Assert.fail(msg, appMgtEx);

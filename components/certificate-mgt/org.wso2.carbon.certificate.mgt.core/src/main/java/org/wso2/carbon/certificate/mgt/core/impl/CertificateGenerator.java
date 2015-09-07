@@ -52,9 +52,9 @@ import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
 import org.wso2.carbon.certificate.mgt.core.dto.CAStatus;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
-import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
+import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayInputStream;
@@ -64,17 +64,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.SignatureException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -155,10 +157,9 @@ public class CertificateGenerator {
             keyPairGenerator.initialize(ConfigurationUtil.RSA_KEY_LENGTH, new SecureRandom());
             KeyPair pair = keyPairGenerator.generateKeyPair();
             X500Principal principal = new X500Principal(ConfigurationUtil.DEFAULT_PRINCIPAL);
-            BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
 
             X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
-                    principal, serial, validityBeginDate, validityEndDate,
+                    principal, CommonUtil.generateSerialNumber(), validityBeginDate, validityEndDate,
                     principal, pair.getPublic());
             ContentSigner contentSigner = new JcaContentSignerBuilder(ConfigurationUtil.SHA256_RSA)
                     .setProvider(ConfigurationUtil.PROVIDER).build(
@@ -170,6 +171,8 @@ public class CertificateGenerator {
             // cert.checkValidity();
 
             certificate.verify(certificate.getPublicKey());
+
+            saveCertInKeyStore(certificate);
 
             return certificate;
         } catch (NoSuchAlgorithmException e) {
@@ -279,7 +282,59 @@ public class CertificateGenerator {
         }
     }
 
-    public static X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
+    public boolean verifySignature(String headerSignature) throws KeystoreException {
+        Certificate certificate = extractCertificateFromSignature(headerSignature);
+        return  (certificate != null);
+    }
+
+    public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
+
+        if (headerSignature == null || headerSignature.isEmpty()) {
+            return null;
+        }
+
+        try {
+            KeyStoreReader keyStoreReader = new KeyStoreReader();
+            CMSSignedData signedData = new CMSSignedData(Base64.decodeBase64(headerSignature.getBytes()));
+            Store reqStore = signedData.getCertificates();
+            @SuppressWarnings("unchecked")
+            Collection<X509CertificateHolder> reqCerts = reqStore.getMatches(null);
+
+            if (reqCerts != null && reqCerts.size() > 0) {
+                CertificateFactory certificateFactory = CertificateFactory.getInstance(ConfigurationUtil.X_509);
+                X509CertificateHolder holder = reqCerts.iterator().next();
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(holder.getEncoded());
+                X509Certificate reqCert = (X509Certificate) certificateFactory.
+                        generateCertificate(byteArrayInputStream);
+
+                if(reqCert != null && reqCert.getSerialNumber() != null) {
+                    Certificate lookUpCertificate = keyStoreReader.getCertificateByAlias(
+                            reqCert.getSerialNumber().toString());
+
+                    if (lookUpCertificate != null && (lookUpCertificate instanceof X509Certificate)) {
+                        return (X509Certificate)lookUpCertificate;
+                    }
+                }
+
+            }
+        } catch (CMSException e) {
+            String errorMsg = "CMSException when decoding certificate signature";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (IOException e) {
+            String errorMsg = "IOException when decoding certificate signature";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (CertificateException e) {
+            String errorMsg = "CertificateException when decoding certificate signature";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        }
+
+        return null;
+    }
+
+    public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
                                                              PKCS10CertificationRequest request,
                                                              String issueSubject)
             throws KeystoreException {
@@ -288,9 +343,21 @@ public class CertificateGenerator {
         Date validityBeginDate = commonUtil.getValidityStartDate();
         Date validityEndDate = commonUtil.getValidityEndDate();
 
+        X500Name certSubject = request.getSubject();
+
+        if (certSubject == null) {
+            certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+        } else {
+            org.bouncycastle.asn1.x500.RDN[] rdn = certSubject.getRDNs();
+
+            if (rdn == null || rdn.length == 0) {
+                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+            }
+        }
+
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
-                new X500Name(issueSubject), BigInteger.valueOf(System.currentTimeMillis()),
-                validityBeginDate, validityEndDate, request.getSubject(), request.getSubjectPublicKeyInfo());
+                new X500Name(issueSubject), CommonUtil.generateSerialNumber(),
+                validityBeginDate, validityEndDate, certSubject, request.getSubjectPublicKeyInfo());
 
         ContentSigner sigGen;
         X509Certificate issuedCert;
@@ -302,6 +369,8 @@ public class CertificateGenerator {
             issuedCert = new JcaX509CertificateConverter().setProvider(
                     ConfigurationUtil.PROVIDER).getCertificate(
                     certificateBuilder.build(sigGen));
+
+            saveCertInKeyStore(issuedCert);
         } catch (CertIOException e) {
             String errorMsg = "Certificate Input output issue occurred when generating generateCertificateFromCSR";
             log.error(errorMsg, e);
@@ -442,11 +511,25 @@ public class CertificateGenerator {
             String errorMsg = "Input output issue occurred in getCACert";
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
-        } catch (KeystoreException e) {
-            String errorMsg = "Keystore reading error occurred when handling profile request";
+        }
+    }
+
+    private void saveCertInKeyStore(X509Certificate certificate) throws KeystoreException {
+
+        if (certificate == null) {
+            return;
+        }
+
+        try {
+            KeyStoreReader keyStoreReader = new KeyStoreReader();
+            KeyStore keyStore = keyStoreReader.loadCertificateKeyStore();
+            keyStore.setCertificateEntry(certificate.getSerialNumber().toString(), certificate);
+
+            keyStoreReader.saveCertificateKeyStore(keyStore);
+        } catch (KeyStoreException e) {
+            String errorMsg = "KeySKeyStoreException occurred when saving the generated certificate";
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
-
 }

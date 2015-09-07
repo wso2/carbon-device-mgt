@@ -25,12 +25,21 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherServiceImpl;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
+/**
+ * @scr.component name="org.wso2.carbon.apimgt.webapp.publisher" immediate="true"
+ * @scr.reference name="config.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
+ */
 public class APIPublisherServiceComponent {
 
     private static Log log = LogFactory.getLog(APIPublisherServiceComponent.class);
 
-    @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
         try {
             if (log.isDebugEnabled()) {
@@ -48,7 +57,6 @@ public class APIPublisherServiceComponent {
         }
     }
 
-    @SuppressWarnings("unused")
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
     }
@@ -63,7 +71,6 @@ public class APIPublisherServiceComponent {
         APIPublisherService publisher = new APIPublisherServiceImpl();
         APIPublisherDataHolder.getInstance().setApiPublisherService(publisher);
         bundleContext.registerService(APIPublisherService.class, publisher, null);
-
     }
 
     protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {
@@ -72,6 +79,20 @@ public class APIPublisherServiceComponent {
 
     protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService service) {
         //do nothing
+    }
+
+    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting ConfigurationContextService");
+        }
+        APIPublisherDataHolder.getInstance().setConfigurationContextService(configurationContextService);
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting ConfigurationContextService");
+        }
+        APIPublisherDataHolder.getInstance().setConfigurationContextService(null);
     }
 
 }

@@ -31,38 +31,170 @@ import java.util.List;
  */
 public interface DeviceDAO {
 
+    /**
+     * This method is used to add a device.
+     *
+     * @param typeId device type id.
+     * @param device device object.
+     * @param tenantId tenant id.
+     * @return returns the id of the persisted device record.
+     * @throws DeviceManagementDAOException
+     */
     int addDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to update a given device.
+     *
+     * @param typeId device type id.
+     * @param device device object.
+     * @param tenantId tenant id.
+     * @return returns the id of updated device.
+     * @throws DeviceManagementDAOException
+     */
     int updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to remove a device.
+     *
+     * @param deviceId id of the device that should be removed.
+     * @param tenantId tenant id.
+     * @return returns the id of removed device.
+     * @throws DeviceManagementDAOException
+     */
     int removeDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 
-    Device getDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
+    /**
+     * This method is used to retrieve a device of a given device-identifier.
+     *
+     * @param deviceIdentifier device id.
+     * @param tenantId tenant id.
+     * @return returns the device object.
+     * @throws DeviceManagementDAOException
+     */
+    Device getDevice(DeviceIdentifier deviceIdentifier, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to retrieve a device of a given id.
+     *
+     * @param deviceId device id.
+     * @param tenantId tenant id.
+     * @return returns the device object.
+     * @throws DeviceManagementDAOException
+     */
+    Device getDevice(int deviceId, int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve all the devices of a given tenant.
+     *
+     * @param tenantId tenant id.
+     * @return returns a list of devices.
+     * @throws DeviceManagementDAOException
+     */
     List<Device> getDevices(int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to retrieve all the devices of a given tenant and device type.
+     *
+     * @param type device type.
+     * @param tenantId tenant id.
+     * @return returns list of devices.
+     * @throws DeviceManagementDAOException
+     */
     List<Device> getDevices(String type, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to retrieve devices of a given user.
+     * @param username user name.
+     * @param tenantId tenant id.
+     * @return returns list of devices.
+     * @throws DeviceManagementDAOException
+     */
     List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to retrieve the device count of a given tenant.
+     *
+     * @param tenantId tenant id.
+     * @return returns the device count.
+     * @throws DeviceManagementDAOException
+     */
     int getDeviceCount(int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to retrieve devices of a given device name.
+     * @param deviceName device name.
+     * @param tenantId tenant id.
+     * @return returns list of devices.
+     * @throws DeviceManagementDAOException
+     */
     List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to add an enrollment information of a given device.
+     *
+     * @param device device object.
+     * @param tenantId tenant id.
+     * @return returns the id of the enrollment.
+     * @throws DeviceManagementDAOException
+     */
     int addEnrollment(Device device, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to set the current enrollment status of given device and user.
+     *
+     * @param deviceId device id.
+     * @param currentOwner current user name.
+     * @param status device status.
+     * @param tenantId tenant id.
+     * @return returns true if success.
+     * @throws DeviceManagementDAOException
+     */
     boolean setEnrolmentStatus(DeviceIdentifier deviceId, String currentOwner, Status status,
                       int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to get the status of current enrollment of a given user and device.
+     *
+     * @param deviceId device id.
+     * @param currentOwner device owner.
+     * @param tenantId tenant id.
+     * @return returns current enrollment status.
+     * @throws DeviceManagementDAOException
+     */
     Status getEnrolmentStatus(DeviceIdentifier deviceId, String currentOwner,
                               int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to retrieve current enrollment of a given device and user.
+     *
+     * @param deviceId device id.
+     * @param currentUser user name.
+     * @param tenantId tenant id.
+     * @return returns EnrolmentInfo object.
+     * @throws DeviceManagementDAOException
+     */
     EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, String currentUser,
                                int tenantId) throws DeviceManagementDAOException;
 
-
+    /**
+     * This method is used to retrieve devices of a given enrollment status.
+     *
+     * @param status enrollment status.
+     * @param tenantId tenant id.
+     * @return returns list of devices.
+     * @throws DeviceManagementDAOException
+     */
     List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException;
 
+    /**
+     * This method is used to retrieve the enrollment id of a given device and status.
+     *
+     * @param deviceId device id.
+     * @param status enrollment status.
+     * @param tenantId tenant id.
+     * @return returns the id of current enrollment.
+     * @throws DeviceManagementDAOException
+     */
     int getEnrolmentByStatus(DeviceIdentifier deviceId, Status status,
                                     int tenantId) throws DeviceManagementDAOException;
 }

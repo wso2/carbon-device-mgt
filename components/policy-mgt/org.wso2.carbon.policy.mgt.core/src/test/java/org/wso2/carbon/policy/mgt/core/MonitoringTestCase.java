@@ -53,11 +53,12 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
 
     private static final String ANDROID = "android";
 
-    DeviceIdentifier identifier = new DeviceIdentifier();
+    private DeviceIdentifier identifier = new DeviceIdentifier();
 
     @BeforeClass
     @Override
     public void init() throws Exception {
+
     }
 
     @Test

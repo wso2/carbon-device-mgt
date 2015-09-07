@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
+import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 
@@ -53,15 +54,21 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
             ServletContext servletContext = context.getServletContext();
 
+
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
-            boolean isManagedApi = (param != null && param.isEmpty()) && Boolean.parseBoolean(param);
+            boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
 
             if (isManagedApi) {
                 APIConfig apiConfig = this.buildApiConfig(servletContext);
                 try {
                     apiConfig.init();
                     API api = APIPublisherUtil.getAPI(apiConfig);
-                    APIPublisherDataHolder.getInstance().getApiPublisherService().publishAPI(api);
+                    APIPublisherService apiPublisherService =
+                            APIPublisherDataHolder.getInstance().getApiPublisherService();
+                    if (apiPublisherService == null) {
+                        throw new IllegalStateException("API Publisher service is not initialized properly");
+                    }
+                    apiPublisherService.publishAPI(api);
                 } catch (Throwable e) {
                     /* Throwable is caught as none of the RuntimeExceptions that can potentially occur at this point
                     does not seem to be logged anywhere else within the framework */
@@ -110,6 +117,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-endpoint' attribute is not configured");
             }
+            endpoint = APIPublisherUtil.getApiEndpointUrl(context);
         }
         apiConfig.setEndpoint(endpoint);
 
@@ -122,17 +130,25 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         apiConfig.setOwner(owner);
 
         String isSecuredParam = servletContext.getInitParameter(PARAM_MANAGED_API_IS_SECURED);
-        boolean isSecured =
-                (isSecuredParam != null && !isSecuredParam.isEmpty()) && Boolean.parseBoolean(isSecuredParam);
+        boolean isSecured;
+        if (isSecuredParam == null || isSecuredParam.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-isSecured' attribute is not configured. Therefore, using the default, " +
+                        "which is 'true'");
+            }
+            isSecured = false;
+        } else {
+            isSecured = Boolean.parseBoolean(isSecuredParam);
+        }
         apiConfig.setSecured(isSecured);
 
         String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);
         if (transports == null || transports.isEmpty()) {
             if (log.isDebugEnabled()) {
-                log.debug("'managed-api-transports' attribute is not configured. Therefore using the defaults, " +
-                        "which are 'http' and 'https'");
+                log.debug("'managed-api-transports' attribute is not configured. Therefore using the default, " +
+                        "which is 'https'");
             }
-            transports = "http,https";
+            transports = "https";
         }
         apiConfig.setTransports(transports);
 

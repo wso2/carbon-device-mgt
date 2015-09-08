@@ -198,7 +198,7 @@
 
 								<!-- Identity features for ES -->
 								<importFeatureDef>org.wso2.carbon.identity.user.profile:${carbon.identity.version}</importFeatureDef>
-								<importFeatureDef>org.wso2.carbon.identity.application.mgt:${carbon.identity.version}</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.identity.application.mgt.server:${carbon.identity.version}</importFeatureDef>
 								<importFeatureDef>org.wso2.carbon.idp.mgt.server:${carbon.identity.version}</importFeatureDef>
 								<!-- End of Identity features for ES -->
 								<!--*******************************************************************************-->

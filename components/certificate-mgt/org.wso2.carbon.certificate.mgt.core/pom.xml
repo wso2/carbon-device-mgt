@@ -62,6 +62,7 @@
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,
                             org.bouncycastle.asn1.x509,
+                            org.bouncycastle.asn1.pkcs,
                             org.bouncycastle.cert,
                             org.bouncycastle.cert.jcajce,
                             org.bouncycastle.cms,

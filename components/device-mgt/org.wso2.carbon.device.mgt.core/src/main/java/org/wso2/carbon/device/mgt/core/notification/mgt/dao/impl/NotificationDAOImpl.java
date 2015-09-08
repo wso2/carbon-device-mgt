@@ -42,11 +42,10 @@ public class NotificationDAOImpl implements NotificationDAO {
 	public int addNotification(int deviceId, int tenantId, Notification notification) throws
 	                                                               NotificationManagementException {
 		Connection conn;
-		PreparedStatement stmt;
+		PreparedStatement stmt = null;
 		ResultSet rs;
 		int notificationId = -1;
 		try {
-			NotificationManagementDAOFactory.beginTransaction();
 			conn = NotificationManagementDAOFactory.getConnection();
 			String sql =
 					"INSERT INTO DM_NOTIFICATION(DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION, TENANT_ID) " +
@@ -62,14 +61,12 @@ public class NotificationDAOImpl implements NotificationDAO {
 			if (rs.next()) {
 				notificationId = rs.getInt(1);
 			}
-			NotificationManagementDAOFactory.commitTransaction();
 		} catch (Exception e) {
-			NotificationManagementDAOFactory.rollbackTransaction();
 			throw new NotificationManagementException("Error occurred while adding the " +
 			                                          "Notification for device id : " + deviceId,
 			                                          e);
 		} finally {
-			NotificationManagementDAOFactory.closeConnection();
+			NotificationDAOUtil.cleanupResources(stmt, null);
 		}
 		return notificationId;
 	}
@@ -78,10 +75,9 @@ public class NotificationDAOImpl implements NotificationDAO {
 	public int updateNotification(Notification notification)
 			throws NotificationManagementException {
 		Connection conn;
-		PreparedStatement stmt;
+		PreparedStatement stmt = null;
 		int rows;
 		try {
-			NotificationManagementDAOFactory.beginTransaction();
 			conn = NotificationManagementDAOFactory.getConnection();
 			String sql = "UPDATE DM_NOTIFICATION SET OPERATION_ID = ?, STATUS = ?, DESCRIPTION = ? " +
 			             "WHERE NOTIFICATION_ID = ?";
@@ -91,13 +87,11 @@ public class NotificationDAOImpl implements NotificationDAO {
 			stmt.setString(3, notification.getDescription());
 			stmt.setInt(4, notification.getNotificationId());
 			rows = stmt.executeUpdate();
-    		NotificationManagementDAOFactory.commitTransaction();
 		} catch (Exception e) {
-			NotificationManagementDAOFactory.rollbackTransaction();
 			throw new NotificationManagementException("Error occurred while updating the " +
 			                            "Notification id : " + notification.getNotificationId(), e);
 		} finally {
-			NotificationManagementDAOFactory.closeConnection();
+			NotificationDAOUtil.cleanupResources(stmt, null);
 		}
 		return rows;
 	}
@@ -106,23 +100,20 @@ public class NotificationDAOImpl implements NotificationDAO {
 	public int updateNotificationStatus(int notificationId, Notification.Status status)
 			throws NotificationManagementException {
 		Connection conn;
-		PreparedStatement stmt;
+		PreparedStatement stmt = null;
 		int rows;
 		try {
-			NotificationManagementDAOFactory.beginTransaction();
 			conn = NotificationManagementDAOFactory.getConnection();
 			String sql = "UPDATE DM_NOTIFICATION SET STATUS = ? WHERE NOTIFICATION_ID = ?";
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, status.toString());
 			stmt.setInt(2, notificationId);
 			rows = stmt.executeUpdate();
-			NotificationManagementDAOFactory.commitTransaction();
 		} catch (Exception e) {
-			NotificationManagementDAOFactory.rollbackTransaction();
 			throw new NotificationManagementException("Error occurred while updating the status of " +
 			                                          "Notification id : " + notificationId, e);
 		} finally {
-			NotificationManagementDAOFactory.closeConnection();
+			NotificationDAOUtil.cleanupResources(stmt, null);
 		}
 		return rows;
 	}

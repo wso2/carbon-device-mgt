@@ -20,6 +20,7 @@ package org.wso2.carbon.certificate.mgt.core.impl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Extension;
@@ -344,6 +345,7 @@ public class CertificateGenerator {
         Date validityEndDate = commonUtil.getValidityEndDate();
 
         X500Name certSubject = request.getSubject();
+        Attribute attributes[] = request.getAttributes();
 
         if (certSubject == null) {
             certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);

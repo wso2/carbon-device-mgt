@@ -1177,8 +1177,8 @@
 		<!-- Store Features -->
 		<!--+++++++++++++++++++++++++++++++++++++++++++++++-->
 		<!--<product.es.version>2.0.0-SNAPSHOT</product.es.version>-->
-		<carbon.store.version>2.3.5-SNAPSHOT</carbon.store.version>
-		<carbon.social.version>2.3.5-SNAPSHOT</carbon.social.version>
+		<carbon.store.version>2.3.6</carbon.store.version>
+		<carbon.social.version>2.3.6</carbon.social.version>
 		<!--+++++++++++++++++++++++++++++++++++++++++++++++-->
 		<!-- End of Store Features -->
 

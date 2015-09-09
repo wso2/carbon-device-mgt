@@ -27,20 +27,41 @@ import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
 public class WebappAuthenticatorFrameworkValve extends CarbonTomcatValve {
 
     private static final String AUTHENTICATION_SCHEME = "authentication-scheme";
+    private static final String BYPASS_URIS = "bypass-uris";
     private static final Log log = LogFactory.getLog(WebappAuthenticatorFrameworkValve.class);
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
-        String authScheme =
-                request.getContext().findParameter(WebappAuthenticatorFrameworkValve.AUTHENTICATION_SCHEME);
-        if (authScheme == null || "".equals(authScheme)) {
+
+        String authScheme = request.getContext().findParameter(WebappAuthenticatorFrameworkValve.AUTHENTICATION_SCHEME);
+
+        if (authScheme == null || authScheme.isEmpty()) {
             this.getNext().invoke(request, response, compositeValve);
             return;
         }
+
+        String byPassURIs = request.getContext().findParameter(WebappAuthenticatorFrameworkValve.BYPASS_URIS);
+
+        if(byPassURIs != null && !byPassURIs.isEmpty()) {
+
+            List<String> requestURI = Arrays.asList(byPassURIs.split(","));
+
+            if(requestURI != null && requestURI.size() > 0) {
+                for (String pathURI : requestURI) {
+                    if (request.getRequestURI().equals(pathURI)) {
+                        this.getNext().invoke(request, response, compositeValve);
+                        return;
+                    }
+                }
+            }
+        }
+
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(authScheme);
         if (authenticator == null) {
             String msg = "Failed to load an appropriate authenticator to authenticate the request";

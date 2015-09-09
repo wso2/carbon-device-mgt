@@ -14,22 +14,20 @@ public class CertificateAuthenticator implements WebappAuthenticator {
 
     private static final Log log = LogFactory.getLog(CertificateAuthenticator.class);
     private static final String CERTIFICATE_AUTHENTICATOR = "CertificateAuth";
-    private static final String HEADER_MDM_SIGNATURE = "Mdm-Signature";
-    private String[] skippedURIs;
-
-    public CertificateAuthenticator() {
-        skippedURIs = new String[]{
-                "/ios-enrollment/ca",
-                "/ios-enrollment/authenticate",
-                "/ios-enrollment/profile",
-                "/ios-enrollment/scep",
-                "/ios-enrollment/enroll",
-                "/ios-enrollment/enrolled"};
-    }
+    private static final String CERTIFICATE_VERIFICATION_HEADER = "certificate-verification-header";
 
     @Override
     public boolean canHandle(Request request) {
-        return true;
+        String certVerificationHeader = request.getContext().findParameter(CERTIFICATE_VERIFICATION_HEADER);
+
+        if (certVerificationHeader != null && !certVerificationHeader.isEmpty()) {
+
+            String certHeader = request.getHeader(certVerificationHeader);
+
+            return certHeader != null;
+        }
+
+        return false;
     }
 
     @Override
@@ -40,16 +38,17 @@ public class CertificateAuthenticator implements WebappAuthenticator {
             return Status.CONTINUE;
         }
 
-        if(isURISkipped(requestUri)) {
-            return Status.CONTINUE;
-        }
-
-        String headerMDMSignature = request.getHeader(HEADER_MDM_SIGNATURE);
+        String certVerificationHeader = request.getContext().findParameter(CERTIFICATE_VERIFICATION_HEADER);
 
         try {
-            if (headerMDMSignature != null && !headerMDMSignature.isEmpty() &&
-                    DataHolder.getInstance().getCertificateManagementService().verifySignature(headerMDMSignature)) {
-                return Status.SUCCESS;
+            if (certVerificationHeader != null && !certVerificationHeader.isEmpty()) {
+
+                String certHeader = request.getHeader(certVerificationHeader);
+
+                if (certHeader != null && DataHolder.getInstance().getCertificateManagementService().
+                        verifySignature(certHeader)) {
+                    return Status.SUCCESS;
+                }
             }
         } catch (KeystoreException e) {
             log.error("KeystoreException occurred ", e);
@@ -63,16 +62,4 @@ public class CertificateAuthenticator implements WebappAuthenticator {
     public String getName() {
         return CERTIFICATE_AUTHENTICATOR;
     }
-
-    private boolean isURISkipped(String requestUri) {
-
-        for (String element : skippedURIs) {
-            if (element.equals(requestUri)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 }

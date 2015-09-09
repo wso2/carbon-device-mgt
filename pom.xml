@@ -1140,9 +1140,6 @@
     </repositories>
 
     <properties>
-        <!--<testng.version>6.1.1</testng.version>-->
-		<testng.version>6.8.5</testng.version>
-
         <carbon.kernel.version>4.4.1</carbon.kernel.version>
 
 		<carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
@@ -1191,13 +1188,15 @@
 		<!-- End of Additional Stuff from ES Features -->
 
         <!-- Testing -->
-        <automation.test.framework.version>4.3.1</automation.test.framework.version>
-        <automation.utils.version>4.3.0</automation.utils.version>
+        <automation.test.framework.version>4.4.1</automation.test.framework.version>
+        <testng.version>6.8.5</testng.version>
+        <automation.utils.version>4.4.1</automation.utils.version>
         <test.automation.emm.ui.version>1.1.0</test.automation.emm.ui.version>
 
         <!--Eclipse OSGi-->
         <eclipse.equinox.common.version>3.6.100.v20120522-1841</eclipse.equinox.common.version>
-        <eclipse.osgi.version>3.8.1.v20120830-144521</eclipse.osgi.version>
+        <!--<eclipse.osgi.version>3.8.1.v20120830-144521</eclipse.osgi.version>-->
+        <eclipse.osgi.version>3.9.1.v20130814-1242</eclipse.osgi.version>
 
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
 
@@ -1207,7 +1206,7 @@
         <tomcat.jdbc.pooling.version>7.0.34.wso2v2</tomcat.jdbc.pooling.version>
 
 		<!-- Carbon Commons -->
-		<carbon.commons.version>4.4.6</carbon.commons.version>
+		<carbon.commons.version>4.4.7</carbon.commons.version>
 
 		<!--Required because databridge.datapublisher has been moven from commons to analytics.commons-->
 		<!--<carbon.analytics.commons.version>5.0.1-SNAPSHOT</carbon.analytics.commons.version>-->

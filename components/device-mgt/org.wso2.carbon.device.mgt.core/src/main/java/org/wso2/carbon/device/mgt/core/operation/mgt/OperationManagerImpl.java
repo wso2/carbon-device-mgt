@@ -80,34 +80,26 @@ public class OperationManagerImpl implements OperationManager {
             }
         }
         try {
-            OperationManagementDAOFactory.beginTransaction();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            List<EnrolmentInfo> enrolments;
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                enrolments = deviceDAO.getEnrolmentsByStatus(deviceIds, EnrolmentInfo.Status.ACTIVE, tenantId);
+            } catch (SQLException e) {
+                throw new OperationManagementException("Error occurred while opening a connection the data " +
+                        "source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
 
+            OperationManagementDAOFactory.beginTransaction();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                     OperationDAOUtil.convertOperation(operation);
 
             int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
 
-            int enrolmentId;
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            for (DeviceIdentifier deviceId : deviceIds) {
-                try {
-                    DeviceManagementDAOFactory.openConnection();
-                    enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
-                } catch (SQLException e) {
-                    throw new OperationManagementException("Error occurred while opening a connection the data " +
-                            "source", e);
-                } finally {
-                    DeviceManagementDAOFactory.closeConnection();
-                }
-
-                if (enrolmentId < 0) {
-                    String errorMsg = "The operation not added for device.The device not found for " +
-                            "device Identifier type -'" + deviceId.getType() + "' and device Id '" +
-                            deviceId.getId();
-                    log.error(errorMsg);
-                } else {
-                    operationMappingDAO.addOperationMapping(operationId, enrolmentId);
-                }
+            for (EnrolmentInfo enrolmentInfo : enrolments) {
+                operationMappingDAO.addOperationMapping(operationId, enrolmentInfo.getId());
             }
             OperationManagementDAOFactory.commitTransaction();
             return operationId;

@@ -107,12 +107,12 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
 
         log.debug("Re-enforcing policy started...!");
 
-        int sixe = policies.size();
+        int size = policies.size();
 
         sortPolicies(policies);
         int x = 0;
         for (Policy policy : policies) {
-            policy.setPriorityId(sixe - x);
+            policy.setPriorityId(size - x);
             x++;
         }
 

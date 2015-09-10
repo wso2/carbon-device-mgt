@@ -133,8 +133,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
             TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo();
 
-            triggerInfo.setIntervalMillis(0);
-            triggerInfo.setRepeatCount(1);
+            triggerInfo.setRepeatCount(0);
 
             Map<String, String> properties = new HashMap<>();
             properties.put(PolicyManagementConstants.TENANT_ID, String.valueOf(tenantId));

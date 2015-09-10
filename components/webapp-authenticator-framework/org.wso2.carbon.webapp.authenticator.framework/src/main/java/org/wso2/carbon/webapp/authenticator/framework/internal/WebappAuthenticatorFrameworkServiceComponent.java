@@ -21,6 +21,7 @@ package org.wso2.carbon.webapp.authenticator.framework.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -44,6 +45,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
+ * @scr.reference name="org.wso2.carbon.certificate.mgt"
+ * interface="org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService"
+ * policy="dynamic"
+ * cardinality="1..n"
+ * bind="setCertificateManagementService"
+ * unbind="unsetCertificateManagementService"
  */
 public class WebappAuthenticatorFrameworkServiceComponent {
 
@@ -97,5 +104,20 @@ public class WebappAuthenticatorFrameworkServiceComponent {
 
     protected void unsetRealmService(RealmService realmService) {
         DataHolder.getInstance().setRealmService(null);
+    }
+
+    protected void setCertificateManagementService(CertificateManagementService certificateManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting certificate management service");
+        }
+        DataHolder.getInstance().setCertificateManagementService(certificateManagementService);
+    }
+
+    protected void unsetCertificateManagementService(CertificateManagementService certificateManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing certificate management service");
+        }
+
+        DataHolder.getInstance().setCertificateManagementService(null);
     }
 }

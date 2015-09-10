@@ -33,6 +33,7 @@ public class PermissionManager {
 
 	private static PermissionManager permissionManager;
 
+
 	public static PermissionManager getInstance() {
 		if (permissionManager == null) {
 			synchronized (PermissionManager.class) {

@@ -24,34 +24,64 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "PolicyConfiguration")
 public class PolicyConfiguration {
 
-	private String monitoringClass;
-	private int maxRetries;
-	private int minRetriesToMarkUnreachable;
+    private String monitoringClass;
+    private boolean monitoringEnable;
+    private int monitoringFrequency;
+    private int maxRetries;
+    private int minRetriesToMarkUnreachable;
+    private int minRetriesToMarkInactive;
 
-	@XmlElement(name = "monitoringClass", required = true)
-	public String getMonitoringClass() {
-		return monitoringClass;
-	}
+    @XmlElement(name = "monitoringClass", required = true)
+    public String getMonitoringClass() {
+        return monitoringClass;
+    }
 
-	public void setMonitoringClass(String monitoringClass) {
-		this.monitoringClass = monitoringClass;
-	}
+    public void setMonitoringClass(String monitoringClass) {
+        this.monitoringClass = monitoringClass;
+    }
 
-	@XmlElement(name = "maxRetries", required = true)
-	public int getMaxRetries() {
-		return maxRetries;
-	}
+    @XmlElement(name = "maxRetries", required = true)
+    public int getMaxRetries() {
+        return maxRetries;
+    }
 
-	public void setMaxRetries(int maxRetries) {
-		this.maxRetries = maxRetries;
-	}
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
 
-	@XmlElement(name = "minRetriesToMarkUnreachable", required = true)
-	public int getMinRetriesToMarkUnreachable() {
-		return minRetriesToMarkUnreachable;
-	}
+    @XmlElement(name = "minRetriesToMarkUnreachable", required = true)
+    public int getMinRetriesToMarkUnreachable() {
+        return minRetriesToMarkUnreachable;
+    }
 
-	public void setMinRetriesToMarkUnreachable(int minRetriesToMarkUnreachable) {
-		this.minRetriesToMarkUnreachable = minRetriesToMarkUnreachable;
-	}
+    public void setMinRetriesToMarkUnreachable(int minRetriesToMarkUnreachable) {
+        this.minRetriesToMarkUnreachable = minRetriesToMarkUnreachable;
+    }
+
+    @XmlElement(name = "monitoringEnable", required = true)
+    public boolean getMonitoringEnable() {
+        return monitoringEnable;
+    }
+
+    public void setMonitoringEnable(boolean monitoringEnable) {
+        this.monitoringEnable = monitoringEnable;
+    }
+
+    @XmlElement(name = "minRetriesToMarkInactive", required = true)
+    public int getMinRetriesToMarkInactive() {
+        return minRetriesToMarkInactive;
+    }
+
+    public void setMinRetriesToMarkInactive(int minRetriesToMarkInactive) {
+        this.minRetriesToMarkInactive = minRetriesToMarkInactive;
+    }
+
+    @XmlElement(name = "monitoringFrequency", required = true)
+    public int getMonitoringFrequency() {
+        return monitoringFrequency;
+    }
+
+    public void setMonitoringFrequency(int monitoringFrequency) {
+        this.monitoringFrequency = monitoringFrequency;
+    }
 }

@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyDeviceWrapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,19 +36,25 @@ public interface MonitoringDAO {
      * @param devicePolicyMap <Device Id, Policy Id>
      * @throws MonitoringDAOException
      */
+
+    @Deprecated
     void addComplianceDetails(Map<Integer, Integer> devicePolicyMap) throws MonitoringDAOException;
 
-    void setDeviceAsNoneCompliance(int deviceId, int policyId) throws MonitoringDAOException;
+    void addComplianceDetails(List<PolicyDeviceWrapper> policyDeviceWrappers) throws MonitoringDAOException;
 
-    void setDeviceAsCompliance(int deviceId, int policyId) throws MonitoringDAOException;
+    void setDeviceAsNoneCompliance(int deviceId, int enrolmentId, int policyId) throws MonitoringDAOException;
+
+    void setDeviceAsCompliance(int deviceId, int enrolmentId, int policyId) throws MonitoringDAOException;
 
     void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
             complianceFeatures)
             throws MonitoringDAOException;
 
-    ComplianceData getCompliance(int deviceId) throws MonitoringDAOException;
+    ComplianceData getCompliance(int deviceId, int enrolmentId) throws MonitoringDAOException;
 
     List<ComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException;
+
+    List<ComplianceData> getCompliance() throws MonitoringDAOException;
 
     List<ComplianceFeature> getNoneComplianceFeatures(int policyComplianceStatusId) throws MonitoringDAOException;
 

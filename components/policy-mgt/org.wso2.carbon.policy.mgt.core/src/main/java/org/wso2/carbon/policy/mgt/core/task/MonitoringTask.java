@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
@@ -63,24 +64,28 @@ public class MonitoringTask implements Task {
             log.debug("Monitoring task started to run.");
         }
 
+        MonitoringManager monitoringManager = new MonitoringManagerImpl();
+
         List<DeviceType> deviceTypes = new ArrayList<>();
         try {
-            DeviceManagementDAOFactory.openConnection();
-            deviceTypes = deviceTypeDAO.getDeviceTypes();
-        } catch (Exception e) {
-            log.error("Error occurred while getting the device types.", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+            deviceTypes = monitoringManager.getDeviceTypes();
+        } catch (PolicyComplianceException e) {
+            log.error("Error occurred while getting the device types.");
         }
 
         if (!deviceTypes.isEmpty()) {
             try {
 
+
                 DeviceManagementProviderService deviceManagementProviderService =
                         PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-                MonitoringManager monitoringManager = new MonitoringManagerImpl();
 
                 for (DeviceType deviceType : deviceTypes) {
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Running task for device type : " + deviceType.getName());
+                    }
+
                     PolicyMonitoringService monitoringService =
                             PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType.getName());
                     List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
@@ -91,18 +96,24 @@ public class MonitoringTask implements Task {
 
                         if (log.isDebugEnabled()) {
                             log.debug("Removing inactive and blocked devices from the list for the device type : " +
-                                    deviceType);
+                                    deviceType.getName());
                         }
                         for (Device device : devices) {
-                            if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.INACTIVE) ||
-                                    device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.BLOCKED)) {
+                            EnrolmentInfo.Status status = device.getEnrolmentInfo().getStatus();
+                            if (status.equals(EnrolmentInfo.Status.INACTIVE) ||
+                                    status.equals(EnrolmentInfo.Status.BLOCKED) ||
+                                    status.equals(EnrolmentInfo.Status.REMOVED) ||
+                                    status.equals(EnrolmentInfo.Status.UNCLAIMED) ||
+                                    status.equals(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED) ||
+                                    status.equals(EnrolmentInfo.Status.SUSPENDED)) {
                                 continue;
                             } else {
                                 notifiableDevices.add(device);
                             }
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug("Following devices selected to send the notification for " + deviceType);
+                            log.debug("Following devices selected to send the notification for " +
+                                    deviceType.getName());
                             for (Device device : notifiableDevices) {
                                 log.debug(device.getDeviceIdentifier());
                             }

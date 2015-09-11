@@ -152,10 +152,28 @@ public class PolicyManagerUtil {
     }
 
 
-    public static Cache getCacheManagerImpl() {
-        return Caching.getCacheManagerFactory()
-                .getCacheManager(PolicyManagementConstants.DM_CACHE_MANAGER).getCache(PolicyManagementConstants
-                        .DM_CACHE);
+//    public static Cache getCacheManagerImpl() {
+//        return Caching.getCacheManagerFactory()
+//                .getCacheManager(PolicyManagementConstants.DM_CACHE_MANAGER).getCache(PolicyManagementConstants
+//                        .DM_CACHE);
+//    }
+
+
+    public static Cache<Integer, Policy> getPolicyCache(String name){
+        CacheManager manager = getCacheManager();
+        return (manager != null) ? manager.<Integer, Policy>getCache(name) :
+                Caching.getCacheManager().<Integer, Policy>getCache(name);
+    }
+
+    public static Cache<Integer, List<Policy>> getPolicyListCache(String name){
+        CacheManager manager = getCacheManager();
+        return (manager != null) ? manager.<Integer, List<Policy>>getCache(name) :
+                Caching.getCacheManager().<Integer, List<Policy>>getCache(name);
+    }
+
+    private static CacheManager getCacheManager() {
+        return Caching.getCacheManagerFactory().getCacheManager(
+                PolicyManagementConstants.DM_CACHE_MANAGER);
     }
 
 

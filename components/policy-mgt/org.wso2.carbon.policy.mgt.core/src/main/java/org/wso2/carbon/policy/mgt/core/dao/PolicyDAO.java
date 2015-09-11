@@ -106,23 +106,23 @@ public interface PolicyDAO {
 
     List<String> getPolicyAppliedUsers(int policyId) throws PolicyManagerDAOException;
 
-    void addEffectivePolicyToDevice(int deviceId, Policy policy)
+    void addEffectivePolicyToDevice(int deviceId, int enrolmentId, Policy policy)
             throws PolicyManagerDAOException;
 
-    void setPolicyApplied(int deviceId) throws PolicyManagerDAOException;
+    void setPolicyApplied(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
-    void updateEffectivePolicyToDevice(int deviceId, Policy policy)
+    void updateEffectivePolicyToDevice(int deviceId, int enrolmentId, Policy policy)
             throws PolicyManagerDAOException;
 
-    boolean checkPolicyAvailable(int deviceId) throws PolicyManagerDAOException;
+    boolean checkPolicyAvailable(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
     int getPolicyCount() throws PolicyManagerDAOException;
 
-    int getAppliedPolicyId(int deviceId) throws PolicyManagerDAOException;
+    int getAppliedPolicyId(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
-    Policy getAppliedPolicy(int deviceId) throws PolicyManagerDAOException;
+    Policy getAppliedPolicy(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
     HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException;
 
     HashMap<Integer, Integer> getAppliedPolicyIdsDeviceIds() throws PolicyManagerDAOException;
- }
+}

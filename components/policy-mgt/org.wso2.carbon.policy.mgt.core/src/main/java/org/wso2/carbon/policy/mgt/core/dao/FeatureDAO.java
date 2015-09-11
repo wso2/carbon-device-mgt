@@ -25,34 +25,102 @@ import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.List;
 
+/**
+ * This interface represents the key operations related to profile features of device policies.
+ */
 public interface FeatureDAO {
 
-/*    Feature addFeature(Feature feature) throws FeatureManagerDAOException;
-
-    List<Feature> addFeatures(List<Feature> feature) throws FeatureManagerDAOException;
-
-    Feature updateFeature(Feature feature) throws FeatureManagerDAOException;*/
-
+    /**
+     * This method is used to add a feature related to given profile.
+     *
+     * @param feature consists of device specific configurations.
+     * @param profileId id of the profile.
+     * @return returns ProfileFeature object.
+     * @throws FeatureManagerDAOException
+     */
     ProfileFeature addProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException;
 
+    /**
+     * This method is used to update a feature related to given profile.
+     * @param feature consists of device specific configurations.
+     * @param profileId id of the profile.
+     * @return returns updated ProfileFeature object.
+     * @throws FeatureManagerDAOException
+     */
     ProfileFeature updateProfileFeature(ProfileFeature feature, int profileId) throws FeatureManagerDAOException;
 
+    /**
+     * This method is used to add set of features to a given profile.
+     *
+     * @param features consists of device specific configurations.
+     * @param profileId id of the profile.
+     * @return returns list of ProfileFeature objects.
+     * @throws FeatureManagerDAOException
+     */
     List<ProfileFeature> addProfileFeatures(List<ProfileFeature> features, int profileId) throws
             FeatureManagerDAOException;
 
+    /**
+     * This method is used to update set of features to a given profile.
+     *
+     * @param features consists of device specific configurations.
+     * @param profileId id of the profile.
+     * @return returns list of ProfileFeature objects.
+     * @throws FeatureManagerDAOException
+     */
     List<ProfileFeature> updateProfileFeatures(List<ProfileFeature> features, int profileId) throws
             FeatureManagerDAOException;
 
+    /**
+     * This method is used to retrieve all the profile features.
+     *
+     * @return returns list of ProfileFeature objects.
+     * @throws FeatureManagerDAOException
+     */
     List<ProfileFeature> getAllProfileFeatures() throws FeatureManagerDAOException;
 
+    /**
+     * This method is used to retrieve all the profile features based on device type.
+     *
+     * @return returns list of ProfileFeature objects.
+     * @throws FeatureManagerDAOException
+     */
     List<Feature> getAllFeatures(String deviceType) throws FeatureManagerDAOException;
 
-    List<ProfileFeature> getFeaturesForProfile(int ProfileId) throws FeatureManagerDAOException;
+    /**
+     * This method is used to retrieve all the profile features of given profile.
+     *
+     * @param profileId id of the profile.
+     * @return returns list of ProfileFeature objects.
+     * @throws FeatureManagerDAOException
+     */
+    List<ProfileFeature> getFeaturesForProfile(int profileId) throws FeatureManagerDAOException;
 
+    /**
+     * This method is used remove a feature.
+     *
+     * @param featureId id of the removing feature.
+     * @return returns true if success.
+     * @throws FeatureManagerDAOException
+     */
     boolean deleteFeature(int featureId) throws FeatureManagerDAOException;
 
+    /**
+     * This method is used to remove set of features of given profile.
+     *
+     * @param profile that contains features to be removed.
+     * @return returns true if success.
+     * @throws FeatureManagerDAOException
+     */
     boolean deleteFeaturesOfProfile(Profile profile) throws FeatureManagerDAOException;
 
+    /**
+     * This method is used to remove set of features of given profile id.
+     *
+     * @param profileId id of the profile.
+     * @return returns true if success.
+     * @throws FeatureManagerDAOException
+     */
     boolean deleteFeaturesOfProfile(int profileId) throws FeatureManagerDAOException;
 
 }

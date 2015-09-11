@@ -25,6 +25,10 @@ import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.api.model.APIStatus;
 import org.wso2.carbon.apimgt.api.model.URITemplate;
 import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
+import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.ConfigurationContextService;
+import org.wso2.carbon.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -93,6 +97,31 @@ public class APIPublisherUtil {
             }
         }
         return uriTemplates;
+    }
+
+    public static String getServerBaseUrl() {
+        // Hostname
+        String hostName = "localhost";
+        try {
+            hostName = NetworkUtils.getMgtHostName();
+        } catch (Exception ignored) {
+        }
+        // HTTPS port
+        String mgtConsoleTransport = CarbonUtils.getManagementTransport();
+        ConfigurationContextService configContextService =
+                APIPublisherDataHolder.getInstance().getConfigurationContextService();
+        int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
+        int httpsProxyPort =
+                CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
+                        mgtConsoleTransport);
+        if (httpsProxyPort > 0) {
+            port = httpsProxyPort;
+        }
+        return "https://" + hostName + ":" + port;
+    }
+
+    public static String getApiEndpointUrl(String context) {
+        return getServerBaseUrl() + context;
     }
 
 }

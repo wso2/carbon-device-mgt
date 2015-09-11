@@ -26,7 +26,7 @@ public interface EnrolmentDAO {
     int addEnrollment(int deviceId, EnrolmentInfo enrolmentInfo, int tenantId) throws DeviceManagementDAOException;
 
     int updateEnrollment(int deviceId, EnrolmentInfo enrolmentInfo,
-                             int tenantId) throws DeviceManagementDAOException;
+                         int tenantId) throws DeviceManagementDAOException;
 
     int removeEnrollment(int deviceId, String currentOwner, int tenantId) throws DeviceManagementDAOException;
 

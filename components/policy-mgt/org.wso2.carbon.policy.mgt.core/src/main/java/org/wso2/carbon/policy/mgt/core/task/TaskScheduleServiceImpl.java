@@ -22,6 +22,8 @@ package org.wso2.carbon.policy.mgt.core.task;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
@@ -37,47 +39,64 @@ import java.util.Map;
 public class TaskScheduleServiceImpl implements TaskScheduleService {
 
     private static Log log = LogFactory.getLog(TaskScheduleServiceImpl.class);
+    private PolicyConfiguration policyConfiguration;
+
+
+    public TaskScheduleServiceImpl() {
+        this.policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                getDeviceManagementConfigRepository().getPolicyConfiguration();
+    }
 
     @Override
     public void startTask(int monitoringFrequency) throws PolicyMonitoringTaskException {
 
-        if (monitoringFrequency <= 0) {
-            throw new PolicyMonitoringTaskException("Time interval cannot be 0 or less than 0.");
-        }
-        try {
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
-            taskService.registerTaskType(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Monitoring task is started for the tenant id " + tenantId);
+        if (policyConfiguration.getMonitoringEnable()) {
+
+            if (monitoringFrequency <= 0) {
+                throw new PolicyMonitoringTaskException("Time interval cannot be 0 or less than 0.");
             }
+            try {
+                int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+                TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
+                taskService.registerTaskType(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
-            TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
+                if (log.isDebugEnabled()) {
+                    log.debug("Monitoring task is started for the tenant id " + tenantId);
+                }
 
-            TriggerInfo triggerInfo = new TriggerInfo();
+                TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
-            triggerInfo.setIntervalMillis(monitoringFrequency);
-            triggerInfo.setRepeatCount(-1);
+                TriggerInfo triggerInfo = new TriggerInfo();
+                triggerInfo.setIntervalMillis(monitoringFrequency);
+                triggerInfo.setRepeatCount(-1);
 
-            Map<String, String> properties = new HashMap<>();
-            properties.put(PolicyManagementConstants.TENANT_ID, String.valueOf(tenantId));
+                Map<String, String> properties = new HashMap<>();
+                properties.put(PolicyManagementConstants.TENANT_ID, String.valueOf(tenantId));
 
-            String taskName = PolicyManagementConstants.MONITORING_TASK_NAME + "_" + String.valueOf(tenantId);
+                String taskName = PolicyManagementConstants.MONITORING_TASK_NAME + "_" + String.valueOf(tenantId);
 
-            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ, properties, triggerInfo);
+                if (!taskManager.isTaskScheduled(taskName)) {
 
-            taskManager.registerTask(taskInfo);
-            taskManager.rescheduleTask(taskInfo.getName());
+                    TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ,
+                            properties, triggerInfo);
+
+                    taskManager.registerTask(taskInfo);
+                    taskManager.rescheduleTask(taskInfo.getName());
+                } else {
+                    throw new PolicyMonitoringTaskException("Monitoring task is already started for this tenant " +
+                            tenantId);
+                }
 
 
-        } catch (TaskException e) {
-            String msg = "Error occurred while creating the task for tenant " + PrivilegedCarbonContext.
-                    getThreadLocalCarbonContext().getTenantId();
-            log.error(msg, e);
-            throw new PolicyMonitoringTaskException(msg, e);
+            } catch (TaskException e) {
+                throw new PolicyMonitoringTaskException("Error occurred while creating the task for tenant " +
+                        PrivilegedCarbonContext.
+                                getThreadLocalCarbonContext().getTenantId(), e);
+            }
+        } else {
+            throw new PolicyMonitoringTaskException("Policy monitoring is not enabled in the cdm-config.xml.");
         }
-
 
     }
 
@@ -90,10 +109,9 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
             TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
             taskManager.deleteTask(taskName);
         } catch (TaskException e) {
-            String msg = "Error occurred while deleting the task for tenant " + PrivilegedCarbonContext.
-                    getThreadLocalCarbonContext().getTenantId();
-            log.error(msg, e);
-            throw new PolicyMonitoringTaskException(msg, e);
+            throw new PolicyMonitoringTaskException("Error occurred while deleting the task for tenant " +
+                    PrivilegedCarbonContext.
+                            getThreadLocalCarbonContext().getTenantId(), e);
         }
     }
 
@@ -103,29 +121,32 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             String taskName = PolicyManagementConstants.MONITORING_TASK_NAME + "_" + String.valueOf(tenantId);
             TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
-
             TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.MONITORING_TASK_TYPE);
 
-            taskManager.deleteTask(taskName);
+            if (taskManager.isTaskScheduled(taskName)) {
 
-            TriggerInfo triggerInfo = new TriggerInfo();
+                taskManager.deleteTask(taskName);
+                TriggerInfo triggerInfo = new TriggerInfo();
+                triggerInfo.setIntervalMillis(monitoringFrequency);
+                triggerInfo.setRepeatCount(-1);
 
-            triggerInfo.setIntervalMillis(monitoringFrequency);
-            triggerInfo.setRepeatCount(-1);
+                Map<String, String> properties = new HashMap<>();
+                properties.put("tenantId", String.valueOf(tenantId));
 
-            Map<String, String> properties = new HashMap<>();
-            properties.put("tenantId", String.valueOf(tenantId));
+                TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ, properties,
+                        triggerInfo);
 
-            TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.MONITORING_TASK_CLAZZ, properties, triggerInfo);
-
-            taskManager.registerTask(taskInfo);
-            taskManager.rescheduleTask(taskInfo.getName());
+                taskManager.registerTask(taskInfo);
+                taskManager.rescheduleTask(taskInfo.getName());
+            } else {
+                throw new PolicyMonitoringTaskException("Monitoring task has not been started for this tenant " +
+                        tenantId + ". Please start the task first.");
+            }
 
         } catch (TaskException e) {
-            String msg = "Error occurred while updating the task for tenant " + PrivilegedCarbonContext.
-                    getThreadLocalCarbonContext().getTenantId();
-            log.error(msg, e);
-            throw new PolicyMonitoringTaskException(msg, e);
+            throw new PolicyMonitoringTaskException("Error occurred while updating the task for tenant " +
+                    PrivilegedCarbonContext.
+                            getThreadLocalCarbonContext().getTenantId(), e);
         }
 
     }

@@ -37,14 +37,6 @@
     <description>This feature contains oauth functionality
     </description>
 
-    <!--<dependencies>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.mdm</groupId>-->
-            <!--<artifactId>dynamic-client-manager</artifactId>-->
-        <!--</dependency>-->
-    <!--</dependencies>-->
-
     <build>
         <plugins>
             <plugin>
@@ -101,8 +93,6 @@
                 </executions>
             </plugin>
 
-
-
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
@@ -123,20 +113,6 @@
                                     <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
                                 </properties>
                             </adviceFile>
-                            <!--<bundles>-->
-                                <!--<bundleDef>-->
-                                    <!--org.wso2.carbon.devicemgt:org.wso2.carbon.policy.mgt.core:${carbon.device.mgt.version}-->
-                                <!--</bundleDef>-->
-                                <!--<bundleDef>-->
-                                    <!--org.wso2.carbon.devicemgt:org.wso2.carbon.policy.mgt.common:${carbon.device.mgt.version}-->
-                                <!--</bundleDef>-->
-                                <!--<bundleDef>-->
-                                    <!--org.wso2.carbon.devicemgt:org.wso2.carbon.simple.policy.decision.point:${carbon.device.mgt.version}-->
-                                <!--</bundleDef>-->
-                                <!--<bundleDef>-->
-                                    <!--org.wso2.carbon.devicemgt:org.wso2.carbon.policy.information.point:${carbon.device.mgt.version}-->
-                                <!--</bundleDef>-->
-                            <!--</bundles>-->
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
                                 </importFeatureDef>
@@ -145,10 +121,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
-
-
         </plugins>
     </build>
 </project>

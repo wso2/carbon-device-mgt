@@ -36,6 +36,7 @@ public class EnrolmentInfo implements Serializable{
         BYOD, COPE
     }
 
+    private int id;
     private Device device;
     private Long dateOfEnrolment;
     private Long dateOfLastUpdate;
@@ -43,13 +44,22 @@ public class EnrolmentInfo implements Serializable{
     private Status status;
     private String owner;
 
-    public EnrolmentInfo() {}
+    public EnrolmentInfo() {
+    }
 
     public EnrolmentInfo(Device device, String owner, OwnerShip ownership, Status status) {
         this.device = device;
         this.owner = owner;
         this.ownership = ownership;
         this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @XmlElement
@@ -107,19 +117,12 @@ public class EnrolmentInfo implements Serializable{
     public boolean equals(Object obj) {
         if (obj instanceof EnrolmentInfo) {
             EnrolmentInfo tempInfo = (EnrolmentInfo) obj;
-            if (owner != null && ownership != null
-                && tempInfo.getOwner() != null && tempInfo.getOwnership() != null) {
-
-                if (owner.equals(tempInfo.getOwner()) && ownership.equals(tempInfo.getOwnership())) {
+            if (this.owner != null && this.ownership != null) {
+                if (this.owner.equals(tempInfo.getOwner()) && this.ownership.equals(tempInfo.getOwnership())) {
                     return true;
-                } else {
-                    return false;
                 }
-            } else {
-                return false;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 }

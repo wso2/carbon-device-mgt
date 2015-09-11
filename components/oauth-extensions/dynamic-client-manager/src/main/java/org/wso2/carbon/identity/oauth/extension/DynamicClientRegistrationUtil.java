@@ -128,6 +128,10 @@ public class DynamicClientRegistrationUtil {
             serviceProvider.setDescription("Service Provider for application " + applicationName);
 
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+            if (appMgtService == null) {
+                throw new IllegalStateException("Error occurred while retrieving Application Management" +
+                        "Service");
+            }
             appMgtService.createApplication(serviceProvider, tenantDomain, userName);
 
             ServiceProvider createdServiceProvider = appMgtService.getApplicationExcludingFileBasedSPs(applicationName,tenantDomain);
@@ -228,6 +232,10 @@ public class DynamicClientRegistrationUtil {
             oAuthAdminService.removeOAuthApplicationData(consumerKey);
 
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+            if (appMgtService == null) {
+                throw new IllegalStateException("Error occurred while retrieving Application Management" +
+                        "Service");
+            }
             ServiceProvider createdServiceProvider = appMgtService.getApplicationExcludingFileBasedSPs(applicationName,tenantDomain);
 
             if (createdServiceProvider == null) {

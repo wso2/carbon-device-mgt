@@ -25,6 +25,7 @@ import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
@@ -40,6 +41,7 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,87 +59,117 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
 
     @Override public int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
             throws GroupManagementException {
-        if (deviceGroup == null){
+        if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
         }
         DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
+        int tenantId = DeviceManagerUtil.getTenantId();
+        groupBroker.setTenantId(tenantId);
+        int sqlReturn = 0;
         try {
-            int tenantId = DeviceManagerUtil.getTenantId();
-            groupBroker.setTenantId(tenantId);
-            int sqlReturn = this.groupDAO.addGroup(groupBroker);
-            if (sqlReturn == -1) {
-                return -1;
-            }
-            DeviceGroup createdDeviceGroup = this.groupDAO.getLastCreatedGroup(groupBroker.getOwner(), tenantId);
+            GroupManagementDAOFactory.beginTransaction();
+            sqlReturn = this.groupDAO.addGroup(groupBroker);
+            GroupManagementDAOFactory.commitTransaction();
+        } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
+            throw new GroupManagementException("Error occurred while adding deviceGroup " +
+                    "'" + deviceGroup.getName() + "' to database", e);
+        } catch (TransactionManagementException e) {
+            throw new GroupManagementException("Error occurred while initiating transaction", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+        if (sqlReturn == -1) {
+            return -1;
+        }
+        DeviceGroup createdDeviceGroup;
+        try {
+            GroupManagementDAOFactory.openConnection();
+            createdDeviceGroup = this.groupDAO.getLastCreatedGroup(groupBroker.getOwner(), tenantId);
             if (createdDeviceGroup == null) {
                 return -1;
             }
-            int groupId = createdDeviceGroup.getId();
-            groupBroker.setId(groupId);
-            addSharing(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
-            if (log.isDebugEnabled()) {
-                log.debug("DeviceGroup added: " + groupBroker.getName());
-            }
-            return groupId;
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while adding deviceGroup " +
-                    "'" + deviceGroup.getName() + "' to database", e);
-        } catch (GroupManagementException e) {
-            throw new GroupManagementException("Error occurred while adding deviceGroup " +
-                    "'" + deviceGroup.getName() + "' role to user " + deviceGroup.getOwner(), e);
+            throw new GroupManagementException("Error occurred while obtaining last added deviceGroup " +
+                    "'" + deviceGroup.getName() + "' from database", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
+        int groupId = createdDeviceGroup.getId();
+        groupBroker.setId(groupId);
+        addSharing(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
+        if (log.isDebugEnabled()) {
+            log.debug("DeviceGroup added: " + groupBroker.getName());
+        }
+        return groupId;
     }
 
     @Override public boolean updateGroup(DeviceGroup deviceGroup) throws GroupManagementException {
-        if (deviceGroup == null){
+        if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
         }
         try {
+            GroupManagementDAOFactory.beginTransaction();
             int sqlReturn = this.groupDAO.updateGroup(deviceGroup);
+            GroupManagementDAOFactory.commitTransaction();
             return (sqlReturn != -1);
         } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while modifying deviceGroup " +
                     "'" + deviceGroup.getName() + "'", e);
+        } catch (TransactionManagementException e) {
+            throw new GroupManagementException("Error occurred while initiating transaction", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
     @Override public boolean deleteGroup(int groupId) throws GroupManagementException {
         String roleName;
+        DeviceGroup deviceGroup = getGroup(groupId);
+        if (deviceGroup == null) {
+            return false;
+        }
+        List<String> groupRoles = getRoles(groupId);
+        for (String role : groupRoles) {
+            if (role != null) {
+                roleName = role.replace("Internal/group-" + groupId + "-", "");
+                removeSharing(groupId, roleName);
+            }
+        }
+        List<Device> groupDevices = getDevices(groupId);
         try {
-            DeviceGroup deviceGroup = getGroup(groupId);
-            if (deviceGroup == null) {
-                return false;
-            }
-            List<String> groupRoles = getRoles(groupId);
-            for (String role : groupRoles) {
-                if (role != null) {
-                    roleName = role.replace("Internal/group-" + groupId + "-", "");
-                    removeSharing(groupId, roleName);
-                }
-            }
-            List<Device> groupDevices = getDevices(groupId);
             for (Device device : groupDevices) {
                 device.setGroupId(0);
                 GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
             }
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while removing device from group", e);
+        }
+        try {
+            GroupManagementDAOFactory.beginTransaction();
             int sqlReturn = this.groupDAO.deleteGroup(groupId);
+            GroupManagementDAOFactory.commitTransaction();
             if (log.isDebugEnabled()) {
                 log.debug("DeviceGroup " + deviceGroup.getName() + " removed: " + (sqlReturn != -1));
             }
             return (sqlReturn != -1);
-        } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while removing device from group", e);
         } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while removing group " +
                     "'" + groupId + "' data", e);
-        } catch (GroupManagementException e) {
-            throw new GroupManagementException("Error occurred while removing group " +
-                    "'" + groupId + "' roles", e);
+        } catch (TransactionManagementException e) {
+            throw new GroupManagementException("Error occurred while initiating transaction", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
     @Override public DeviceGroup getGroup(int groupId) throws GroupManagementException {
         try {
+            GroupManagementDAOFactory.openConnection();
             DeviceGroup deviceGroup = this.groupDAO.getGroup(groupId);
             if (deviceGroup != null) {
                 DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
@@ -150,12 +182,17 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             }
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupId, e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
     @Override public List<DeviceGroup> findGroups(String groupName, String owner) throws GroupManagementException {
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
+            GroupManagementDAOFactory.openConnection();
             List<DeviceGroup> deviceGroups = this.groupDAO.getGroups(groupName, tenantId);
             List<DeviceGroup> groupsWithData = new ArrayList<>();
             for (DeviceGroup deviceGroup : deviceGroups) {
@@ -168,6 +205,10 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             return groupsWithData;
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupName, e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
@@ -242,7 +283,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public boolean addSharing(String username, int groupId, String roleName, String[] permissions) throws GroupManagementException {
+    @Override public boolean addSharing(String username, int groupId, String roleName, String[] permissions)
+            throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
         String[] userNames = new String[1];
@@ -393,8 +435,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         return true;
     }
 
-    @Override public boolean removeDevice(DeviceIdentifier deviceId, int groupId)
-            throws GroupManagementException {
+    @Override public boolean removeDevice(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
         Device device;
         DeviceGroup deviceGroup;
         try {
@@ -437,8 +478,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
     }
 
-    @Override public List<DeviceGroup> getGroups(String username, String permission)
-            throws GroupManagementException {
+    @Override public List<DeviceGroup> getGroups(String username, String permission) throws GroupManagementException {
         UserRealm userRealm;
         int tenantId = DeviceManagerUtil.getTenantId();
         Map<Integer, DeviceGroup> groups = new HashMap<>();

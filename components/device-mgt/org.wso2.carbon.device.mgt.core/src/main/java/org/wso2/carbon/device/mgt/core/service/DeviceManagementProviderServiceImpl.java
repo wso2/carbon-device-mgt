@@ -732,10 +732,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getUnGroupedDevicesOfUser(String username) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<Device>();
+        List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
         try {
-            DeviceManagementDAOFactory.getConnection();
+            DeviceManagementDAOFactory.openConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getUnGroupedDevicesOfUser(username, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
@@ -761,10 +761,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getDevicesOfGroup(int groupId) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<Device>();
+        List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
         try {
-            DeviceManagementDAOFactory.getConnection();
+            DeviceManagementDAOFactory.openConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getDevicesOfGroup(groupId, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
@@ -787,7 +787,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         return devices;
     }
-
 
     @Override
     public List<Device> getAllDevicesOfRole(String role) throws DeviceManagementException {

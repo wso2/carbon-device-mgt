@@ -21,6 +21,8 @@ package org.wso2.carbon.device.mgt.group.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 
@@ -48,62 +50,86 @@ public class GroupManagementDAOFactory {
         dataSource = dtSource;
     }
 
-    public static void beginTransaction() throws SQLException {
-        Connection conn = dataSource.getConnection();
-        conn.setAutoCommit(false);
+    public static void beginTransaction() throws TransactionManagementException {
+        Connection conn = currentConnection.get();
+        if (conn != null) {
+            throw new IllegalTransactionStateException("A transaction is already active within the context of " +
+                    "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
+                    "transaction is already active is a sign of improper transaction handling");
+        }
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            currentConnection.set(conn);
+        } catch (SQLException e) {
+            throw new TransactionManagementException("Error occurred while retrieving config.datasource connection", e);
+        }
+    }
+
+    public static void openConnection() throws SQLException {
+        Connection conn = currentConnection.get();
+        if (conn != null) {
+            throw new IllegalTransactionStateException("A transaction is already active within the context of " +
+                    "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
+                    "transaction is already active is a sign of improper transaction handling");
+        }
+        conn = dataSource.getConnection();
         currentConnection.set(conn);
     }
 
     public static Connection getConnection() throws SQLException {
-        if (currentConnection.get() == null) {
-            currentConnection.set(dataSource.getConnection());
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
+                    "This might have ideally been caused by not properly initiating the transaction via " +
+                    "'beginTransaction'/'openConnection' methods");
         }
-        return currentConnection.get();
+        return conn;
     }
 
     public static void commitTransaction() {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
+                    "This might have ideally been caused by not properly initiating the transaction via " +
+                    "'beginTransaction'/'openConnection' methods");
+        }
         try {
-            Connection conn = currentConnection.get();
-            if (conn != null) {
-                conn.commit();
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Datasource connection associated with the current thread is null, hence commit "
-                            + "has not been attempted");
-                }
-            }
+            conn.commit();
         } catch (SQLException e) {
             log.error("Error occurred while committing the transaction", e);
         }
     }
 
     public static void rollbackTransaction() {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
+                    "This might have ideally been caused by not properly initiating the transaction via " +
+                    "'beginTransaction'/'openConnection' methods");
+        }
         try {
-            Connection conn = currentConnection.get();
-            if (conn != null) {
-                conn.rollback();
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Datasource connection associated with the current thread is null, hence rollback "
-                            + "has not been attempted");
-                }
-            }
+            conn.rollback();
         } catch (SQLException e) {
-            log.warn("Error occurred while transaction rollback", e);
+            log.warn("Error occurred while roll-backing the transaction", e);
         }
     }
 
     public static void closeConnection() {
-        Connection con = currentConnection.get();
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                log.warn("Error occurred while close the connection");
-            }
-            currentConnection.remove();
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
+                    "This might have ideally been caused by not properly initiating the transaction via " +
+                    "'beginTransaction'/'openConnection' methods");
         }
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            log.warn("Error occurred while close the connection");
+        }
+        currentConnection.remove();
     }
+
 
     /**
      * Resolve data source from the data source definition
@@ -114,18 +140,20 @@ public class GroupManagementDAOFactory {
     private static DataSource resolveDataSource(DataSourceConfig config) {
         DataSource dataSource = null;
         if (config == null) {
-            throw new RuntimeException("Device Management Repository data source configuration " + "is null and " +
-                    "thus, is not initialized");
+            throw new RuntimeException(
+                    "Device Management Repository data source configuration " + "is null and " +
+                            "thus, is not initialized");
         }
         JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
         if (jndiConfig != null) {
             if (log.isDebugEnabled()) {
-                log.debug(
-                        "Initializing Device Management Repository data source using the JNDI " + "Lookup Definition");
+                log.debug("Initializing Device Management Repository data source using the JNDI " +
+                        "Lookup Definition");
             }
-            List<JNDILookupDefinition.JNDIProperty> jndiPropertyList = jndiConfig.getJndiProperties();
+            List<JNDILookupDefinition.JNDIProperty> jndiPropertyList =
+                    jndiConfig.getJndiProperties();
             if (jndiPropertyList != null) {
-                Hashtable<Object, Object> jndiProperties = new Hashtable<Object, Object>();
+                Hashtable<Object, Object> jndiProperties = new Hashtable<>();
                 for (JNDILookupDefinition.JNDIProperty prop : jndiPropertyList) {
                     jndiProperties.put(prop.getName(), prop.getValue());
                 }
@@ -136,4 +164,5 @@ public class GroupManagementDAOFactory {
         }
         return dataSource;
     }
+
 }

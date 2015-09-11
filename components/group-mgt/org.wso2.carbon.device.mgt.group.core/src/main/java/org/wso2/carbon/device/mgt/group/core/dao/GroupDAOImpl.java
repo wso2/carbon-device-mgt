@@ -39,7 +39,6 @@ public class GroupDAOImpl implements GroupDAO {
         PreparedStatement stmt = null;
         int sqlReturn = -1;
         try {
-            GroupManagementDAOFactory.beginTransaction();
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "INSERT INTO DM_GROUP(DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, "
                     + "OWNER, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?)";
@@ -51,12 +50,10 @@ public class GroupDAOImpl implements GroupDAO {
             stmt.setString(5, deviceGroup.getOwner());
             stmt.setInt(6, deviceGroup.getTenantId());
             sqlReturn = stmt.executeUpdate();
-            GroupManagementDAOFactory.commitTransaction();
         } catch (SQLException e) {
             String msg = "Error occurred while adding deviceGroup " +
                     "'" + deviceGroup.getName() + "'";
             log.error(msg, e);
-            GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
@@ -68,7 +65,6 @@ public class GroupDAOImpl implements GroupDAO {
         PreparedStatement stmt = null;
         int sqlReturn = -1;
         try {
-            GroupManagementDAOFactory.beginTransaction();
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "UPDATE DM_GROUP SET DESCRIPTION = ?, NAME = ?, DATE_OF_LAST_UPDATE = ?, OWNER = ? "
                     + "WHERE ID = ?";
@@ -79,12 +75,10 @@ public class GroupDAOImpl implements GroupDAO {
             stmt.setString(4, deviceGroup.getOwner());
             stmt.setInt(5, deviceGroup.getId());
             sqlReturn = stmt.executeUpdate();
-            GroupManagementDAOFactory.commitTransaction();
         } catch (SQLException e) {
             String msg = "Error occurred while updating deviceGroup " +
                     "'" + deviceGroup.getName() + "'";
             log.error(msg, e);
-            GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
@@ -96,18 +90,15 @@ public class GroupDAOImpl implements GroupDAO {
         PreparedStatement stmt = null;
         int sqlReturn = -1;
         try {
-            GroupManagementDAOFactory.beginTransaction();
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "DELETE FROM DM_GROUP WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, groupId);
             sqlReturn = stmt.executeUpdate();
-            GroupManagementDAOFactory.commitTransaction();
         } catch (SQLException e) {
             String msg = "Error occurred while deleting group " +
                     "'" + groupId + "'";
             log.error(msg, e);
-            GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);

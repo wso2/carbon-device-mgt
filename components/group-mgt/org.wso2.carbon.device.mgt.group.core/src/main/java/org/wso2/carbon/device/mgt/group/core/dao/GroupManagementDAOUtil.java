@@ -47,7 +47,6 @@ public final class GroupManagementDAOUtil {
                 log.warn("Error occurred while closing prepared statement", e);
             }
         }
-        GroupManagementDAOFactory.closeConnection();
     }
 
     public static DataSource lookupDataSource(String dataSourceName, final Hashtable<Object, Object> jndiProperties) {

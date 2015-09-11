@@ -23,10 +23,13 @@ import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
+import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
 import org.wso2.carbon.device.mgt.group.core.common.BaseGroupManagementTest;
 import org.wso2.carbon.device.mgt.group.core.common.TestDataHolder;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -42,67 +45,101 @@ public class GroupPersistTests extends BaseGroupManagementTest {
     @Test public void testAddGroupTest() {
         DeviceGroup deviceGroup = TestDataHolder.generateDummyGroupData();
         try {
+            GroupManagementDAOFactory.beginTransaction();
             groupDAO.addGroup(deviceGroup);
+            GroupManagementDAOFactory.commitTransaction();
             log.debug("Group added to database");
         } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while adding device type '" + deviceGroup.getName() + "'";
             log.error(msg, e);
             Assert.fail(msg, e);
-        }
-
-        DeviceGroup group;
-        try {
-            group = getLastStoredGroup();
-            Assert.assertNotNull(group, "Group is null");
-            log.debug("Group name: " + group.getName());
-        } catch (GroupManagementDAOException e) {
-            String msg = "Error occurred while retrieving target device type id";
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction";
             log.error(msg, e);
             Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
+
+        DeviceGroup group = getLastStoredGroup();
+            Assert.assertNotNull(group, "Group is null");
+            log.debug("Group name: " + group.getName());
     }
 
-    private DeviceGroup getLastStoredGroup() throws GroupManagementDAOException {
-        return groupDAO.getLastCreatedGroup(TestDataHolder.OWNER, TestDataHolder.SUPER_TENANT_ID);
+    private DeviceGroup getLastStoredGroup() {
+        try {
+            GroupManagementDAOFactory.openConnection();
+            return groupDAO.getLastCreatedGroup(TestDataHolder.OWNER, TestDataHolder.SUPER_TENANT_ID);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (GroupManagementDAOException e) {
+            String msg = "Error occurred while retrieving last saved group";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+        return null;
     }
 
     public DeviceGroup getGroupById(int groupId) {
         try {
+            GroupManagementDAOFactory.openConnection();
             return groupDAO.getGroup(groupId);
         } catch (GroupManagementDAOException e) {
             String msg = "Error occurred while retrieving group details";
             log.error(msg, e);
             Assert.fail(msg, e);
-            return null;
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
+        return null;
     }
 
     @Test(dependsOnMethods = { "testAddGroupTest" }) public void updateGroupTest() {
         long time = new Date().getTime();
         String name = "Test Updated";
         String desc = "Desc updated";
+        DeviceGroup group = getLastStoredGroup();
+        Assert.assertNotNull(group, "Group is null");
+        group.setDateOfLastUpdate(time);
+        group.setName(name);
+        group.setDescription(desc);
         try {
-            DeviceGroup group = getLastStoredGroup();
-            Assert.assertNotNull(group, "Group is null");
-            group.setDateOfLastUpdate(time);
-            group.setName(name);
-            group.setDescription(desc);
+            GroupManagementDAOFactory.beginTransaction();
             groupDAO.updateGroup(group);
+            GroupManagementDAOFactory.commitTransaction();
             log.debug("Group updated");
-            group = getGroupById(group.getId());
-            Assert.assertNotNull(group, "Group is null");
-            Assert.assertEquals(group.getName(), name, "Group name is null");
-            Assert.assertEquals(group.getDescription(), desc, "Group description is null");
-            Assert.assertEquals((long) group.getDateOfLastUpdate(), time, "Update time is not set");
         } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while updating group details";
             log.error(msg, e);
             Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
+
+        group = getGroupById(group.getId());
+        Assert.assertNotNull(group, "Group is null");
+        Assert.assertEquals(group.getName(), name, "Group name is null");
+        Assert.assertEquals(group.getDescription(), desc, "Group description is null");
+        Assert.assertEquals((long) group.getDateOfLastUpdate(), time, "Update time is not set");
     }
 
     @Test(dependsOnMethods = { "testAddGroupTest" }) public void findGroupTest() {
         try {
+            GroupManagementDAOFactory.openConnection();
             List<DeviceGroup> groups = groupDAO.getGroups("Test", TestDataHolder.SUPER_TENANT_ID);
             Assert.assertNotEquals(groups.size(), 0, "No groups found");
             Assert.assertNotNull(groups.get(0), "Group is null");
@@ -111,11 +148,18 @@ public class GroupPersistTests extends BaseGroupManagementTest {
             String msg = "Error occurred while find group by name";
             log.error(msg, e);
             Assert.fail(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
     @Test(dependsOnMethods = { "testAddGroupTest" }) public void getGroupTest() {
         try {
+            GroupManagementDAOFactory.openConnection();
             List<DeviceGroup> groups = groupDAO.getGroups(TestDataHolder.SUPER_TENANT_ID);
             Assert.assertNotEquals(groups.size(), 0, "No groups found");
             Assert.assertNotNull(groups.get(0), "Group is null");
@@ -124,22 +168,38 @@ public class GroupPersistTests extends BaseGroupManagementTest {
             String msg = "Error occurred while find group by name";
             log.error(msg, e);
             Assert.fail(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
     @Test(dependsOnMethods = { "updateGroupTest" }) public void deleteGroupTest() {
+        DeviceGroup group = getLastStoredGroup();
+        int groupId = 0;
         try {
-            DeviceGroup group = getLastStoredGroup();
             Assert.assertNotNull(group, "Group is null");
-            int groupId = group.getId();
+            groupId = group.getId();
+            GroupManagementDAOFactory.beginTransaction();
             groupDAO.deleteGroup(groupId);
+            GroupManagementDAOFactory.commitTransaction();
             log.debug("Group deleted");
-            group = getGroupById(groupId);
-            Assert.assertNull(group, "Group not deleted");
         } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while updating group details";
             log.error(msg, e);
             Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
+        group = getGroupById(groupId);
+        Assert.assertNull(group, "Group not deleted");
     }
 }

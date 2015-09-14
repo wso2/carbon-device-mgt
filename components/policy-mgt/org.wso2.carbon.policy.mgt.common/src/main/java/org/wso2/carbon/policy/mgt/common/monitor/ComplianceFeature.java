@@ -45,7 +45,7 @@ public class ComplianceFeature {
         this.featureCode = featureCode;
     }
 
-    public boolean isCompliance() {
+    public boolean isCompliant() {
         return compliance;
     }
 

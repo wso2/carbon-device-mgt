@@ -24,8 +24,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Permission")
 public class Permission{
 
-	private String name;
-	private String path;
+	private String name; // permission name
+	private String path; // permission string
+    private String url; // url of the resource
+    private String method; // http method
 
 	public String getName() {
 		return name;
@@ -44,4 +46,22 @@ public class Permission{
 	public void setPath(String path) {
 		this.path = path;
 	}
+
+    public String getUrl() {
+        return url;
+    }
+
+    @XmlElement(name = "url", required = true)
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    @XmlElement(name = "method", required = true)
+    public void setMethod(String method) {
+        this.method = method;
+    }
 }

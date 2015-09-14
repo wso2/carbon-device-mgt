@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
+import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -50,6 +52,12 @@ import java.util.List;
  * cardinality="1..n"
  * bind="setCertificateManagementService"
  * unbind="unsetCertificateManagementService"
+ * @scr.reference name="org.wso2.carbon.device.mgt.core.scep"
+ * interface="org.wso2.carbon.device.mgt.core.scep.SCEPManager"
+ * policy="dynamic"
+ * cardinality="1..n"
+ * bind="setSCEPManagementService"
+ * unbind="unsetSCEPManagementService"
  */
 public class WebappAuthenticatorFrameworkServiceComponent {
 
@@ -111,5 +119,20 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         }
 
         DataHolder.getInstance().setCertificateManagementService(null);
+    }
+
+    protected void setSCEPManagementService(SCEPManager scepManager) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting SCEP management service");
+        }
+        DataHolder.getInstance().setScepManager(scepManager);
+    }
+
+    protected void unsetSCEPManagementService(SCEPManager scepManager) {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing SCEP management service");
+        }
+
+        DataHolder.getInstance().setScepManager(null);
     }
 }

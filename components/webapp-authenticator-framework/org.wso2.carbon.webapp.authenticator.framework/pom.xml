@@ -94,7 +94,9 @@
                             org.apache.axis2.transport.http,
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.certificate.mgt.core.service,
-                            org.wso2.carbon.certificate.mgt.core.exception
+                            org.wso2.carbon.certificate.mgt.core.exception,
+                            org.wso2.carbon.device.mgt.common,
+                            org.wso2.carbon.device.mgt.core.scep
                         </Import-Package>
                         <!--<Fragment-Host>tomcat</Fragment-Host>-->
                     </instructions>
@@ -151,6 +153,14 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
     </dependencies>
 

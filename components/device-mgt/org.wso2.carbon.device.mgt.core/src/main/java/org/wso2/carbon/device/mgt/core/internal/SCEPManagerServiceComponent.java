@@ -4,83 +4,40 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.ios.core.service.IOSEnrollmentService;
+import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
+import org.wso2.carbon.device.mgt.core.scep.SCEPManagerImpl;
 
 /**
- * @scr.component name="org.wso2.carbon.device.ios.enrollment" immediate="true"
- * @scr.reference name="org.wso2.carbon.device.manager"
- * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
- * policy="dynamic"
- * cardinality="1..n"
- * bind="setDeviceManagementService"
- * unbind="unsetDeviceManagementService"
- * @scr.reference name="org.wso2.carbon.certificate.mgt"
- * interface="org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService"
- * policy="dynamic"
- * cardinality="1..n"
- * bind="setCertificateManagementService"
- * unbind="unsetCertificateManagementService"
+ * @scr.component name="org.wso2.carbon.device.mgt.core.scep" immediate="true"
  */
 public class SCEPManagerServiceComponent {
 
-    private static final Log log = LogFactory.getLog(IOSEnrollmentServiceComponent.class);
+    private static final Log log = LogFactory.getLog(SCEPManagerServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Initializing iOS device management core bundle");
+                log.debug("Initializing SCEP core bundle");
             }
 
             BundleContext bundleContext = componentContext.getBundleContext();
-            bundleContext.registerService(IOSEnrollmentService.class.getName(),
-                    IOSEnrollmentService.getInstance(), null);
+            bundleContext.registerService(SCEPManager.class.getName(),
+                    new SCEPManagerImpl(), null);
 
             if (log.isDebugEnabled()) {
-                log.debug("iOS device management core bundle has been successfully initialized");
+                log.debug("SCEP core bundle has been successfully initialized");
             }
         } catch (Throwable e) {
-            String msg = "Error occurred while initializing ios device management core bundle";
+            String msg = "Error occurred while initializing SCEP core bundle";
             log.error(msg, e);
         }
     }
 
     protected void deactivate(ComponentContext ctx) {
         if (log.isDebugEnabled()) {
-            log.debug("Deactivating iOS device management core bundle");
+            log.debug("Deactivating SCEP core bundle");
         }
-    }
-
-    protected void setDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting device management service provider");
-        }
-        IOSEnrollmentServiceHolder.getInstance().setDeviceManagementService(deviceManagementService);
-    }
-
-    protected void unsetDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Removing device management service provider");
-        }
-
-        IOSEnrollmentServiceHolder.getInstance().setDeviceManagementService(null);
-    }
-
-    protected void setCertificateManagementService(CertificateManagementService certificateManagementService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting certificate management service");
-        }
-        IOSEnrollmentServiceHolder.getInstance().setCertificateManagementService(certificateManagementService);
-    }
-
-    protected void unsetCertificateManagementService(CertificateManagementService certificateManagementService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Removing certificate management service");
-        }
-
-        IOSEnrollmentServiceHolder.getInstance().setCertificateManagementService(null);
     }
 
 }

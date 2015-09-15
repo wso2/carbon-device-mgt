@@ -304,7 +304,7 @@ public class DeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public List<Device> getUnGroupedDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException {
+    public List<Device> getUnGroupedDevices(String username, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         List<Device> devices = new ArrayList<>();
@@ -336,7 +336,7 @@ public class DeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public List<Device> getDevicesOfGroup(int groupId, int tenantId) throws DeviceManagementDAOException {
+    public List<Device> getDevices(int groupId, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         List<Device> devices = new ArrayList<>();

@@ -693,7 +693,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getDevicesOfUser(String username) throws DeviceManagementException {
+    public List<Device> getDevices(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
         try {
@@ -731,13 +731,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getUnGroupedDevicesOfUser(String username) throws DeviceManagementException {
+    public List<Device> getUnGroupedDevices(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            userDevices = deviceDAO.getUnGroupedDevicesOfUser(username, tenantId);
+            userDevices = deviceDAO.getUnGroupedDevices(username, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
                     "belong to the user '" + username + "'", e);
@@ -760,13 +760,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getDevicesOfGroup(int groupId) throws DeviceManagementException {
+    public List<Device> getDevices(int groupId) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            userDevices = deviceDAO.getDevicesOfGroup(groupId, tenantId);
+            userDevices = deviceDAO.getDevices(groupId, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
                     "assigned to the group '" + groupId + "'", e);

@@ -413,7 +413,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         List<Device> devicesInGroup;
         try {
             devicesInGroup = GroupManagementDataHolder.getInstance().getDeviceManagementService()
-                    .getDevicesOfGroup(groupId);
+                    .getDevices(groupId);
             return devicesInGroup;
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while getting devices in group", e);

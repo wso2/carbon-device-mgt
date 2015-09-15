@@ -60,24 +60,24 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
+    List<Device> getDevices(String userName) throws DeviceManagementException;
 
     /**
      * @param username of the user
      * @return List of un grouped devices owned by a particular user
      * @throws DeviceManagementException
      */
-    List<Device> getUnGroupedDevicesOfUser(String username) throws DeviceManagementException;
+    List<Device> getUnGroupedDevices(String username) throws DeviceManagementException;
 
     /**
-     * Method to get the list of devices owned by an user.
+     * Method to get the list of devices in group.
      *
      * @param groupId of the group
      * @return List of devices allocated to a particular group
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getDevicesOfGroup(int groupId) throws DeviceManagementException;
+    List<Device> getDevices(int groupId) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.

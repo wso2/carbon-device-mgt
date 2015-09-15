@@ -30,11 +30,8 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.List;
 
 public class DeviceDAOImpl implements DeviceDAO {
 
@@ -157,7 +154,7 @@ public class DeviceDAOImpl implements DeviceDAO {
         HashMap<Integer, Device> deviceHashMap = new HashMap<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, d1.DEVICE_TYPE, d1.TENANT_ID, " +
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, d1.DEVICE_TYPE, e.TENANT_ID, " +
                     "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                     "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, d.GROUP_ID, " +
                     "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
@@ -310,16 +307,16 @@ public class DeviceDAOImpl implements DeviceDAO {
     public List<Device> getUnGroupedDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
-        List<Device> devices = new ArrayList<Device>();
+        List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql =
-                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, d1.DEVICE_TYPE, " +
-                            "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                            "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
-                            "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                            "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? AND d.GROUP_ID IS NULL) d1 " +
-                            "WHERE d1.ID = e.DEVICE_ID AND e.OWNER = ?";
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, " +
+                    "d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                    "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, " +
+                    "(SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
+                    "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
+                    "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? AND d.GROUP_ID IS NULL) d1 " +
+                    "WHERE d1.ID = e.DEVICE_ID AND e.OWNER = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, username);
@@ -342,16 +339,16 @@ public class DeviceDAOImpl implements DeviceDAO {
     public List<Device> getDevicesOfGroup(int groupId, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
-        List<Device> devices = new ArrayList<Device>();
+        List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql =
-                    "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, d1.DEVICE_TYPE, " +
-                            "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                            "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
-                            "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                            "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? AND d.GROUP_ID = ?) d1 " +
-                            "WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.GROUP_ID, " +
+                    "d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                    "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, " +
+                    "(SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
+                    "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
+                    "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? AND d.GROUP_ID = ?) d1 " +
+                    "WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

@@ -168,18 +168,10 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override public DeviceGroup getGroup(int groupId) throws GroupManagementException {
+        DeviceGroup deviceGroup;
         try {
             GroupManagementDAOFactory.openConnection();
-            DeviceGroup deviceGroup = this.groupDAO.getGroup(groupId);
-            if (deviceGroup != null) {
-                DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
-                groupBroker.setDevices(this.getDevices(groupId));
-                groupBroker.setUsers(this.getUsers(groupId));
-                groupBroker.setRoles(this.getRoles(groupId));
-                return groupBroker.getGroup();
-            } else {
-                return null;
-            }
+            deviceGroup = this.groupDAO.getGroup(groupId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupId, e);
         } catch (SQLException e) {
@@ -187,29 +179,39 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
+        if (deviceGroup != null) {
+            DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
+            groupBroker.setDevices(this.getDevices(groupId));
+            groupBroker.setUsers(this.getUsers(groupId));
+            groupBroker.setRoles(this.getRoles(groupId));
+            return groupBroker.getGroup();
+        } else {
+            return null;
+        }
     }
 
     @Override public List<DeviceGroup> findGroups(String groupName, String owner) throws GroupManagementException {
+        List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             GroupManagementDAOFactory.openConnection();
-            List<DeviceGroup> deviceGroups = this.groupDAO.getGroups(groupName, tenantId);
-            List<DeviceGroup> groupsWithData = new ArrayList<>();
-            for (DeviceGroup deviceGroup : deviceGroups) {
-                DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
-                groupBroker.setDevices(this.getDevices(deviceGroup.getId()));
-                groupBroker.setUsers(this.getUsers(deviceGroup.getId()));
-                groupBroker.setRoles(this.getRoles(deviceGroup.getId()));
-                groupsWithData.add(groupBroker.getGroup());
-            }
-            return groupsWithData;
+            deviceGroups = this.groupDAO.getGroups(groupName, tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while obtaining group " + groupName, e);
+            throw new GroupManagementException("Error occurred while finding group " + groupName, e);
         } catch (SQLException e) {
             throw new GroupManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
+        List<DeviceGroup> groupsWithData = new ArrayList<>();
+        for (DeviceGroup deviceGroup : deviceGroups) {
+            DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
+            groupBroker.setDevices(this.getDevices(deviceGroup.getId()));
+            groupBroker.setUsers(this.getUsers(deviceGroup.getId()));
+            groupBroker.setRoles(this.getRoles(deviceGroup.getId()));
+            groupsWithData.add(groupBroker.getGroup());
+        }
+        return groupsWithData;
     }
 
     @Override public List<DeviceGroup> getGroups(String username) throws GroupManagementException {

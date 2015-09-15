@@ -96,4 +96,8 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
         return certificateGenerator.extractCertificateFromSignature(headerSignature);
     }
+
+    public String extractChallengeToken(X509Certificate certificate) {
+        return certificateGenerator.extractChallengeToken(certificate);
+    }
 }

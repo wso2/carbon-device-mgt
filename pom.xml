@@ -42,14 +42,14 @@
         <module>components/policy-mgt</module>
         <module>components/certificate-mgt</module>
         <module>components/webapp-authenticator-framework</module>
-        <module>components/oauth-extensions</module>
+        <module>components/dynamic-client-registration</module>
         <module>features/device-mgt</module>
         <module>features/group-mgt</module>
         <module>features/apimgt-extensions</module>
 	    <module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
-        <module>features/oauth-extensions</module>
         <module>features/certificate-mgt</module>
+        <module>features/dynamic-client-registration</module>
         <module>features/device-store</module>
     </modules>
 
@@ -181,6 +181,21 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.webapp.publisher</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.dynamic.client.web.app.registration</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.mdm</groupId>
+                <artifactId>dynamic-client-web</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->
@@ -999,6 +1014,11 @@
                 <artifactId>commons-lang</artifactId>
                 <version>${version.commons.lang}</version>
             </dependency>
+            <dependency>
+                <groupId>org.json.wso2</groupId>
+                <artifactId>json</artifactId>
+                <version>${json.wso2.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1212,29 +1232,29 @@
         <jaggery.extensions.version>1.4.0</jaggery.extensions.version>
         <jaggery.extensions.sso.version>1.4.0</jaggery.extensions.sso.version>
         <jaggery.extensions.carbon.version>1.4.0</jaggery.extensions.carbon.version>
-		<jaggery.extensions.process.version>1.4.0</jaggery.extensions.process.version>
-		<jaggery.extensions.uuid.version>1.4.0</jaggery.extensions.uuid.version>
-		<jaggery.extensions.test.version>1.4.0</jaggery.extensions.test.version>
-		<!-- End of Jaggery -->
+        <jaggery.extensions.process.version>1.4.0</jaggery.extensions.process.version>
+        <jaggery.extensions.uuid.version>1.4.0</jaggery.extensions.uuid.version>
+        <jaggery.extensions.test.version>1.4.0</jaggery.extensions.test.version>
+        <!-- End of Jaggery -->
 
         <caramel.feature.version>1.4.0</caramel.feature.version>
         <handlebars.feature.version>1.4.0</handlebars.feature.version>
         <markdown.feature.version>1.4.0</markdown.feature.version>
-		<!-- Store Features -->
-		<!--+++++++++++++++++++++++++++++++++++++++++++++++-->
-		<!--<product.es.version>2.0.0-SNAPSHOT</product.es.version>-->
-		<carbon.store.version>2.3.6</carbon.store.version>
-		<carbon.social.version>2.3.6</carbon.social.version>
-		<!--+++++++++++++++++++++++++++++++++++++++++++++++-->
-		<!-- End of Store Features -->
+        <!-- Store Features -->
+        <!--+++++++++++++++++++++++++++++++++++++++++++++++-->
+        <!--<product.es.version>2.0.0-SNAPSHOT</product.es.version>-->
+        <carbon.store.version>2.3.6</carbon.store.version>
+        <carbon.social.version>2.3.6</carbon.social.version>
+        <!--+++++++++++++++++++++++++++++++++++++++++++++++-->
+        <!-- End of Store Features -->
 
-		<!-- Additional Stuff from ES Features -->
-		<!--+++++++++++++++++++++++++++++++++++++++++++++++-->
-		<carbon.dashboards.version>1.0.0</carbon.dashboards.version>
-		<ciphertool.version>1.0.0-wso2v3</ciphertool.version>
-		<el.api.version>2.2</el.api.version>
-		<!--+++++++++++++++++++++++++++++++++++++++++++++++-->
-		<!-- End of Additional Stuff from ES Features -->
+        <!-- Additional Stuff from ES Features -->
+        <!--+++++++++++++++++++++++++++++++++++++++++++++++-->
+        <carbon.dashboards.version>1.0.0</carbon.dashboards.version>
+        <ciphertool.version>1.0.0-wso2v3</ciphertool.version>
+        <el.api.version>2.2</el.api.version>
+        <!--+++++++++++++++++++++++++++++++++++++++++++++++-->
+        <!-- End of Additional Stuff from ES Features -->
 
         <!-- Testing -->
         <automation.test.framework.version>4.4.1</automation.test.framework.version>
@@ -1308,6 +1328,7 @@
 
         <!-- Nimbus Jose-->
         <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>
+        <json.wso2.version>2.0.0.wso2v1</json.wso2.version>
     </properties>
 
 </project>

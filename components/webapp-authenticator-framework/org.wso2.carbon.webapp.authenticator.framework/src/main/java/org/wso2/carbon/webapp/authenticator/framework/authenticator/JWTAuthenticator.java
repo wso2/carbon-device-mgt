@@ -52,7 +52,11 @@ public class JWTAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
-        return false;
+	    String authorizationHeader = request.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
+	    if(decodeAuthorizationHeader(authorizationHeader) != null){
+		    return true;
+	    }
+	    return false;
     }
 
     @Override
@@ -120,6 +124,11 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	}
 
 	private String decodeAuthorizationHeader(String authorizationHeader) {
+
+		if(authorizationHeader == null) {
+			return null;
+		}
+
 		String[] splitValues = authorizationHeader.trim().split(" ");
 		byte[] decodedBytes = Base64Utils.decode(splitValues[1].trim());
 		if (decodedBytes != null) {

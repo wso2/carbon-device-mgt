@@ -20,7 +20,11 @@ package org.wso2.carbon.certificate.mgt.core.impl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Extension;
@@ -366,6 +370,16 @@ public class CertificateGenerator {
         try {
             certificateBuilder.addExtension(X509Extension.keyUsage, true, new KeyUsage(
                     KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+
+            if(attributes != null) {
+                ASN1Encodable extractedValue = getChallengePassword(attributes);
+
+                if(extractedValue != null) {
+                    certificateBuilder.addExtension(PKCSObjectIdentifiers.pkcs_9_at_challengePassword, true,
+                            extractedValue);
+                }
+            }
+
             sigGen = new JcaContentSignerBuilder(ConfigurationUtil.SHA256_RSA)
                     .setProvider(ConfigurationUtil.PROVIDER).build(privateKey);
             issuedCert = new JcaX509CertificateConverter().setProvider(
@@ -388,6 +402,19 @@ public class CertificateGenerator {
         }
 
         return issuedCert;
+    }
+
+    private ASN1Encodable getChallengePassword(Attribute[] attributes) {
+
+        for (Attribute attribute : attributes) {
+            if (PKCSObjectIdentifiers.pkcs_9_at_challengePassword.equals(attribute.getAttrType())) {
+                if(attribute.getAttrValues() != null && attribute.getAttrValues().size() > 0) {
+                    return attribute.getAttrValues().getObjectAt(0);
+                }
+            }
+        }
+
+        return null;
     }
 
     private CMSSignedData getMessageData(final List<X509Certificate> certs) throws KeystoreException {
@@ -533,5 +560,40 @@ public class CertificateGenerator {
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
+    }
+
+    public String extractChallengeToken(X509Certificate certificate) {
+
+        byte[] challengePassword = certificate.getExtensionValue(
+                PKCSObjectIdentifiers.pkcs_9_at_challengePassword.toString());
+
+        if (challengePassword != null) {
+            return new String(challengePassword);
+        }
+
+        return null;
+    }
+
+    private ASN1Primitive toASN1Primitive(byte[] data) {
+
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+        ASN1InputStream inputStream = new ASN1InputStream(byteArrayInputStream);
+
+        try {
+            return inputStream.readObject();
+        } catch (IOException e) {
+            String errorMsg = "IOException occurred when converting binary array to ASN1Primitive";
+            log.error(errorMsg, e);
+        } finally {
+            try {
+                byteArrayInputStream.close();
+                inputStream.close();
+            } catch (IOException e) {
+                String errorMsg = "IOException occurred when closing streams";
+                log.error(errorMsg, e);
+            }
+        }
+
+        return null;
     }
 }

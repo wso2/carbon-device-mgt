@@ -28,6 +28,8 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.util.buf.ByteChunk;
+import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.user.api.TenantManager;
@@ -35,11 +37,13 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+import org.wso2.carbon.webapp.authenticator.framework.Constants;
 import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
 
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
 
 /**
  * This authenticator authenticates HTTP requests using JWT header.
@@ -52,7 +56,11 @@ public class JWTAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
-        return false;
+	    String authorizationHeader = request.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
+	    if(decodeAuthorizationHeader(authorizationHeader) != null){
+		    return true;
+	    }
+	    return false;
     }
 
     @Override

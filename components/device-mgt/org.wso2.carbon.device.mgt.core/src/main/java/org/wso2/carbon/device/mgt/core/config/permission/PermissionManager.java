@@ -25,6 +25,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * This class will add, update custom permissions defined in permission.xml in webapps.
@@ -32,13 +33,16 @@ import java.util.List;
 public class PermissionManager {
 
 	private static PermissionManager permissionManager;
+    private static PermissionHolder rootNode;
 
+	private PermissionManager(){};
 
 	public static PermissionManager getInstance() {
 		if (permissionManager == null) {
 			synchronized (PermissionManager.class) {
 				if (permissionManager == null) {
 					permissionManager = new PermissionManager();
+                    rootNode = new PermissionHolder("/"); // initializing the root node.
 				}
 			}
 		}
@@ -46,6 +50,14 @@ public class PermissionManager {
 	}
 
 	public boolean addPermission(Permission permission) throws DeviceManagementException {
+        StringTokenizer st = new StringTokenizer(permission.getUrl(), "/");
+        PermissionHolder tempRoot = rootNode;
+        PermissionHolder tempChild;
+        while(st.hasMoreTokens()) {
+            tempChild = new PermissionHolder(st.nextToken());
+            tempRoot = addPermissionNode(tempRoot, tempChild);
+        }
+        tempRoot.addPermission(permission.getMethod(), permission); //setting permission to the vertex
 		try {
 			return PermissionUtils.putPermission(permission);
 		} catch (DeviceManagementException e) {
@@ -77,4 +89,39 @@ public class PermissionManager {
 			throw new DeviceManagementException("Error occurred while initializing Data Source config", e);
 		}
 	}
+
+    private PermissionHolder addPermissionNode(PermissionHolder parent, PermissionHolder child) {
+        PermissionHolder existChild = parent.getChild(child.getPathName());
+        if (existChild == null) {
+            parent.addChild(child);
+            return child;
+        }
+        return existChild;
+    }
+
+    public Permission getPermission(String url, String httpMethod) {
+        StringTokenizer st = new StringTokenizer(url, "/");
+        PermissionHolder tempRoot = rootNode;
+        PermissionHolder previousRoot;
+        while (st.hasMoreTokens()) {
+            String currentToken = st.nextToken();
+            previousRoot = tempRoot;
+            tempRoot = tempRoot.getChild(currentToken);
+            if (tempRoot == null) {
+                tempRoot = previousRoot;
+                int leftTokens = st.countTokens();
+                for (int i = 0; i <= leftTokens; i++) {
+                    if (tempRoot == null) {
+                        return null;
+                    }
+                    tempRoot = tempRoot.getChild("*");
+                }
+                break;
+            }
+        }
+        if (tempRoot == null) {
+            return null;
+        }
+        return tempRoot.getPermission(httpMethod);
+    }
 }

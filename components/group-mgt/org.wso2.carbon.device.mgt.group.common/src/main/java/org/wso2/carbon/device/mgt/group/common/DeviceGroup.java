@@ -36,7 +36,6 @@ import java.util.List;
     private List<GroupUser> users;
     private List<Device> devices;
     private List<String> roles;
-    private int tenantId;
 
     @XmlElement public int getId() {
         return id;
@@ -86,14 +85,6 @@ import java.util.List;
         this.owner = owner;
     }
 
-    @XmlElement public int getTenantId() {
-        return tenantId;
-    }
-
-    protected void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
-    }
-
     @XmlElement public List<GroupUser> getUsers() {
         return users;
     }
@@ -129,7 +120,6 @@ import java.util.List;
         g.setUsers(getUsers());
         g.setDevices(getDevices());
         g.setRoles(getRoles());
-        g.setTenantId(getTenantId());
         return g;
     }
 }

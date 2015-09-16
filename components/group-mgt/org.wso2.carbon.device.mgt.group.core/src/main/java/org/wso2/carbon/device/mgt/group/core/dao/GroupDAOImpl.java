@@ -35,9 +35,10 @@ public class GroupDAOImpl implements GroupDAO {
 
     private static final Log log = LogFactory.getLog(GroupDAOImpl.class);
 
-    @Override public int addGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException {
+    @Override public int addGroup(DeviceGroup deviceGroup, int tenantId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
-        int sqlReturn = -1;
+        ResultSet rs;
+        int groupId = -1;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "INSERT INTO DM_GROUP(DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, "
@@ -48,8 +49,13 @@ public class GroupDAOImpl implements GroupDAO {
             stmt.setLong(3, new Date().getTime());
             stmt.setLong(4, new Date().getTime());
             stmt.setString(5, deviceGroup.getOwner());
-            stmt.setInt(6, deviceGroup.getTenantId());
-            sqlReturn = stmt.executeUpdate();
+            stmt.setInt(6, tenantId);
+            stmt.executeUpdate();
+            rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                groupId = rs.getInt(1);
+            }
+            return groupId;
         } catch (SQLException e) {
             String msg = "Error occurred while adding deviceGroup " +
                     "'" + deviceGroup.getName() + "'";
@@ -58,7 +64,6 @@ public class GroupDAOImpl implements GroupDAO {
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
         }
-        return sqlReturn;
     }
 
     @Override public int updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException {
@@ -109,24 +114,15 @@ public class GroupDAOImpl implements GroupDAO {
     @Override public DeviceGroup getGroup(int groupId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        DeviceGroupBroker group;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
-            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER, TENANT_ID "
+            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "
                     + "FROM DM_GROUP WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, groupId);
             resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                group = new DeviceGroupBroker(new DeviceGroup());
-                group.setId(resultSet.getInt(1));
-                group.setDescription(resultSet.getString(2));
-                group.setName(resultSet.getString(3));
-                group.setDateOfCreation(resultSet.getLong(4));
-                group.setDateOfLastUpdate(resultSet.getLong(5));
-                group.setOwner(resultSet.getString(6));
-                group.setTenantId(resultSet.getInt(7));
-                return group.getGroup();
+                return loadGroup(resultSet);
             } else {
                 return null;
             }
@@ -145,22 +141,14 @@ public class GroupDAOImpl implements GroupDAO {
         List<DeviceGroup> deviceGroupList = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
-            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER, TENANT_ID "
+            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "
                     + "FROM DM_GROUP WHERE TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             resultSet = stmt.executeQuery();
             deviceGroupList = new ArrayList<>();
             while (resultSet.next()) {
-                DeviceGroupBroker group = new DeviceGroupBroker(new DeviceGroup());
-                group.setId(resultSet.getInt(1));
-                group.setDescription(resultSet.getString(2));
-                group.setName(resultSet.getString(3));
-                group.setDateOfCreation(resultSet.getLong(4));
-                group.setDateOfLastUpdate(resultSet.getLong(5));
-                group.setOwner(resultSet.getString(6));
-                group.setTenantId(resultSet.getInt(7));
-                deviceGroupList.add(group.getGroup());
+                deviceGroupList.add(loadGroup(resultSet));
             }
         } catch (SQLException e) {
             String msg = "Error occurred while listing all groups in tenant: " + tenantId;
@@ -178,23 +166,14 @@ public class GroupDAOImpl implements GroupDAO {
         List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
-            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER, TENANT_ID "
+            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "
                     + "FROM DM_GROUP WHERE NAME LIKE ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + groupName + "%");
             stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
-            DeviceGroupBroker group;
             while (resultSet.next()) {
-                group = new DeviceGroupBroker(new DeviceGroup());
-                group.setId(resultSet.getInt(1));
-                group.setDescription(resultSet.getString(2));
-                group.setName(resultSet.getString(3));
-                group.setDateOfCreation(resultSet.getLong(4));
-                group.setDateOfLastUpdate(resultSet.getLong(5));
-                group.setOwner(resultSet.getString(6));
-                group.setTenantId(resultSet.getInt(7));
-                deviceGroups.add(group.getGroup());
+                deviceGroups.add(loadGroup(resultSet));
             }
         } catch (SQLException e) {
             String msg = "Error occurred while listing Device Groups by name: " + groupName + " in tenant: " + tenantId;
@@ -206,38 +185,15 @@ public class GroupDAOImpl implements GroupDAO {
         return deviceGroups;
     }
 
-    @Override public DeviceGroup getLastCreatedGroup(String owner, int tenantId) throws GroupManagementDAOException {
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-        DeviceGroupBroker group;
-        try {
-            Connection conn = GroupManagementDAOFactory.getConnection();
-            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER, TENANT_ID "
-                    + "FROM DM_GROUP WHERE OWNER = ? AND TENANT_ID = ? ORDER BY ID DESC LIMIT 1";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, owner);
-            stmt.setInt(2, tenantId);
-            resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-                group = new DeviceGroupBroker(new DeviceGroup());
-                group.setId(resultSet.getInt(1));
-                group.setDescription(resultSet.getString(2));
-                group.setName(resultSet.getString(3));
-                group.setDateOfCreation(resultSet.getLong(4));
-                group.setDateOfLastUpdate(resultSet.getLong(5));
-                group.setOwner(resultSet.getString(6));
-                group.setTenantId(resultSet.getInt(7));
-                return group.getGroup();
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            String msg = "Error occurred while obtaining last created group of user: " + owner;
-            log.error(msg, e);
-            throw new GroupManagementDAOException(msg, e);
-        } finally {
-            GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
-        }
+    private DeviceGroup loadGroup(ResultSet resultSet) throws SQLException {
+        DeviceGroupBroker group = new DeviceGroupBroker(new DeviceGroup());
+        group.setId(resultSet.getInt("ID"));
+        group.setDescription(resultSet.getString("DESCRIPTION"));
+        group.setName(resultSet.getString("NAME"));
+        group.setDateOfCreation(resultSet.getLong("DATE_OF_ENROLLMENT"));
+        group.setDateOfLastUpdate(resultSet.getLong("DATE_OF_LAST_UPDATE"));
+        group.setOwner(resultSet.getString("OWNER"));
+        return group.getGroup();
     }
 
 }

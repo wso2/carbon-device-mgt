@@ -34,7 +34,6 @@ public class TestDataHolder {
         deviceGroup.setDateOfLastUpdate(new Date().getTime());
         deviceGroup.setOwner(OWNER);
         DeviceGroupBroker broker = new DeviceGroupBroker(deviceGroup);
-        broker.setTenantId(SUPER_TENANT_ID);
         return broker.getGroup();
     }
 

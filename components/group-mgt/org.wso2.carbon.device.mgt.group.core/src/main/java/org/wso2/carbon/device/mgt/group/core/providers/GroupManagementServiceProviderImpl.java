@@ -64,11 +64,10 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
         DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
         int tenantId = DeviceManagerUtil.getTenantId();
-        groupBroker.setTenantId(tenantId);
-        int sqlReturn = 0;
+        int groupId = -1;
         try {
             GroupManagementDAOFactory.beginTransaction();
-            sqlReturn = this.groupDAO.addGroup(groupBroker);
+            groupId = this.groupDAO.addGroup(groupBroker, tenantId);
             GroupManagementDAOFactory.commitTransaction();
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
@@ -79,25 +78,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        if (sqlReturn == -1) {
+        if (groupId == -1) {
             return -1;
         }
-        DeviceGroup createdDeviceGroup;
-        try {
-            GroupManagementDAOFactory.openConnection();
-            createdDeviceGroup = this.groupDAO.getLastCreatedGroup(groupBroker.getOwner(), tenantId);
-            if (createdDeviceGroup == null) {
-                return -1;
-            }
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while obtaining last added deviceGroup " +
-                    "'" + deviceGroup.getName() + "' from database", e);
-        } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            GroupManagementDAOFactory.closeConnection();
-        }
-        int groupId = createdDeviceGroup.getId();
         groupBroker.setId(groupId);
         addSharing(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
         if (log.isDebugEnabled()) {
@@ -413,7 +396,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         List<Device> devicesInGroup;
         try {
             devicesInGroup = GroupManagementDataHolder.getInstance().getDeviceManagementService()
-                    .getDevicesOfGroup(groupId);
+                    .getDevices(groupId);
             return devicesInGroup;
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while getting devices in group", e);

@@ -24,6 +24,8 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+
 import java.util.List;
 
 /**
@@ -35,6 +37,8 @@ public interface DeviceManagementProviderService extends OperationManager {
     List<Device> getAllDevices(String deviceType) throws DeviceManagementException;
 
     List<Device> getAllDevices() throws DeviceManagementException;
+
+    List<DeviceType> getDeviceTypes() throws DeviceManagementException;
 
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
@@ -67,17 +71,17 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @return List of un grouped devices owned by a particular user
      * @throws DeviceManagementException
      */
-    List<Device> getUnGroupedDevicesOfUser(String username) throws DeviceManagementException;
+    List<Device> getUnGroupedDevices(String username) throws DeviceManagementException;
 
     /**
-     * Method to get the list of devices owned by an user.
+     * Method to get the list of devices in group.
      *
      * @param groupId of the group
      * @return List of devices allocated to a particular group
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getDevicesOfGroup(int groupId) throws DeviceManagementException;
+    List<Device> getDevices(int groupId) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.

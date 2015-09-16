@@ -121,9 +121,9 @@ public interface DeviceDAO {
      */
     List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
 
-    List<Device> getUnGroupedDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
+    List<Device> getUnGroupedDevices(String username, int tenantId) throws DeviceManagementDAOException;
 
-    List<Device> getDevicesOfGroup(int groupId, int tenantId) throws DeviceManagementDAOException;
+    List<Device> getDevices(int groupId, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve the device count of a given tenant.

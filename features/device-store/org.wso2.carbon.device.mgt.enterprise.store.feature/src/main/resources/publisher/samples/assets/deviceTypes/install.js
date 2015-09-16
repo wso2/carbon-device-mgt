@@ -22,7 +22,7 @@ var installer = function () {
 	 */
 
 	function onAssetTypeInitialisation(context){
-		log.debug('loading device rxt data');
+		log.debug('loading device types rxt data');
 	}
 
 	function onAssetInitialization(context) {
@@ -66,7 +66,7 @@ var installer = function () {
 		//artifact.attributes.images_thumbnail = context.httpContext + artifact.attributes.images_thumbnail;
 		//artifact.attributes.images_banner = context.httpContext + artifact.attributes.images_banner;
 
-		artifact.type = 'device';
+		artifact.type = 'deviceType';
 
 		//Create the deployment object
 		context['artifact'] = artifact;
@@ -80,7 +80,7 @@ var installer = function () {
 		context['path'] = '/_system/governance/' + context.assetType + '/' + artifact.attributes.overview_provider +
 			'/' + artifact.attributes.overview_name + '/' + artifact.attributes.overview_version;
 
-		context['type'] = 'device';
+		context['type'] = 'deviceType';
 		log.debug('tags located: ' + context.tags);
 		log.debug('rate located: ' + context.rate);
 	}

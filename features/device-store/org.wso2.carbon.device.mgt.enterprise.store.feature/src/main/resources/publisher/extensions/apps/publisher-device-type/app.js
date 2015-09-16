@@ -32,7 +32,7 @@ app.server = function(ctx) {
             }]
         },
         configs:{
-            landingPage:'/assets/device/list',
+            landingPage:'/assets/deviceType/list',
             disabledAssets:['ebook', 'api', 'wsdl', 'service','policy','proxy','schema','sequence','servicex','uri','wadl','endpoint','swagger','restservice','comments','soapservice', 'license', 'gadget', 'site', 'server']
         }
     }

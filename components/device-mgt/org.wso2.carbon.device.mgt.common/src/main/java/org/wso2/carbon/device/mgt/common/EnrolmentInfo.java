@@ -54,6 +54,7 @@ public class EnrolmentInfo implements Serializable{
         this.status = status;
     }
 
+    @XmlElement
     public int getId() {
         return id;
     }
@@ -80,6 +81,7 @@ public class EnrolmentInfo implements Serializable{
         this.dateOfLastUpdate = dateOfLastUpdate;
     }
 
+    @XmlElement
     public OwnerShip getOwnership() {
         return ownership;
     }
@@ -88,6 +90,7 @@ public class EnrolmentInfo implements Serializable{
         this.ownership = ownership;
     }
 
+    @XmlElement
     public Status getStatus() {
         return status;
     }
@@ -105,6 +108,7 @@ public class EnrolmentInfo implements Serializable{
         this.owner = owner;
     }
 
+    @XmlElement
     public Device getDevice() {
         return device;
     }

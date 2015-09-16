@@ -37,15 +37,10 @@ public class DeviceGroupBroker extends DeviceGroup {
         this.setUsers(deviceGroup.getUsers());
         this.setDevices(deviceGroup.getDevices());
         this.setRoles(deviceGroup.getRoles());
-        this.setTenantId(deviceGroup.getTenantId());
     }
 
     @Override public void setId(int id) {
         super.setId(id);
-    }
-
-    @Override public void setTenantId(int tenantId) {
-        super.setTenantId(tenantId);
     }
 
     @Override public void setUsers(List<GroupUser> users) {

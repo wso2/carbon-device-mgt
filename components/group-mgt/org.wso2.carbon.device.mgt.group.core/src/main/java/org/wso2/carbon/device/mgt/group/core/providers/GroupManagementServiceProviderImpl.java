@@ -64,11 +64,10 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
         DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
         int tenantId = DeviceManagerUtil.getTenantId();
-        groupBroker.setTenantId(tenantId);
-        int groupId = 0;
+        int groupId = -1;
         try {
             GroupManagementDAOFactory.beginTransaction();
-            groupId = this.groupDAO.addGroup(groupBroker);
+            groupId = this.groupDAO.addGroup(groupBroker, tenantId);
             GroupManagementDAOFactory.commitTransaction();
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();

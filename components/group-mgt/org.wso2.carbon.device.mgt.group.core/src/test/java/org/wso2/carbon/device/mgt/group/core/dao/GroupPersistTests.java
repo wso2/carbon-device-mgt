@@ -46,7 +46,7 @@ public class GroupPersistTests extends BaseGroupManagementTest {
         DeviceGroup deviceGroup = TestDataHolder.generateDummyGroupData();
         try {
             GroupManagementDAOFactory.beginTransaction();
-            groupId = groupDAO.addGroup(deviceGroup);
+            groupId = groupDAO.addGroup(deviceGroup, TestDataHolder.SUPER_TENANT_ID);
             GroupManagementDAOFactory.commitTransaction();
             log.debug("Group added to database");
         } catch (GroupManagementDAOException e) {

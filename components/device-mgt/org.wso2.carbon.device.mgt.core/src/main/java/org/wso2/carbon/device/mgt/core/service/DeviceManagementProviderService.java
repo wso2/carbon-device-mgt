@@ -24,6 +24,8 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+
 import java.util.List;
 
 /**
@@ -35,6 +37,8 @@ public interface DeviceManagementProviderService extends OperationManager {
     List<Device> getAllDevices(String deviceType) throws DeviceManagementException;
 
     List<Device> getAllDevices() throws DeviceManagementException;
+
+    List<DeviceType> getDeviceTypes() throws DeviceManagementException;
 
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
@@ -60,7 +64,7 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getDevices(String userName) throws DeviceManagementException;
+    List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
 
     /**
      * @param username of the user

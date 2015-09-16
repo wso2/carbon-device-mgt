@@ -82,13 +82,4 @@ public interface GroupDAO {
      */
     List<DeviceGroup> getGroups(String groupName, int tenantId) throws GroupManagementDAOException;
 
-    /**
-     * Get last created group of user
-     *
-     * @param owner    of the Device Group
-     * @param tenantId of the Device Group
-     * @return last created group
-     * @throws GroupManagementDAOException
-     */
-    DeviceGroup getLastCreatedGroup(String owner, int tenantId) throws GroupManagementDAOException;
 }

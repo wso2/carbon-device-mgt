@@ -348,6 +348,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return devices;
     }
 
+    @Override public List<DeviceType> getDeviceTypes() throws DeviceManagementException {
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceTypeDAO.getDeviceTypes();
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving all device types'" +
+                    "' that are being managed within the scope of current tenant", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
     @Override
     public List<Device> getAllDevices(String deviceType) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
@@ -728,6 +742,64 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         return devices;
 
+    }
+
+    @Override
+    public List<Device> getUnGroupedDevices(String username) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<>();
+        List<Device> userDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            userDevices = deviceDAO.getUnGroupedDevices(username, tenantId);
+        } catch (DeviceManagementDAOException | SQLException e) {
+            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
+                    "belong to the user '" + username + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        for (Device device : userDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        return devices;
+    }
+
+    @Override
+    public List<Device> getDevices(int groupId) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<>();
+        List<Device> userDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            userDevices = deviceDAO.getDevices(groupId, tenantId);
+        } catch (DeviceManagementDAOException | SQLException e) {
+            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
+                    "assigned to the group '" + groupId + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        for (Device device : userDevices) {
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType()).getDeviceManager().getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        return devices;
     }
 
     @Override

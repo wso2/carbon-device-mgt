@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 
 import java.util.HashMap;
 import java.util.List;
@@ -119,6 +120,10 @@ public interface DeviceDAO {
      * @throws DeviceManagementDAOException
      */
     List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
+
+    List<Device> getUnGroupedDevices(String username, int tenantId) throws DeviceManagementDAOException;
+
+    List<Device> getDevices(int groupId, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve the device count of a given tenant.

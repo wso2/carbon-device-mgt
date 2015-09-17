@@ -71,6 +71,7 @@
                             org.bouncycastle.operator.jcajce,
                             org.bouncycastle.pkcs,
                             org.bouncycastle.util,
+                            org.bouncycastle.asn1.util,
                             org.jscep.message,
                             org.jscep.transaction,
                             org.w3c.dom,

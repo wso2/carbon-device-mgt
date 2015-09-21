@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>device-mgt</artifactId>
+        <groupId>org.wso2.carbon.devicemgt</groupId>
+        <version>0.9.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.device.mgt.es.extensions</artifactId>
+    <version>0.9.2-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon - Enterprise-Store Extensions</name>
+    <description>WSO2 Carbon - Enterprise Store Extensions specific for device types</description>
+    <url>http://wso2.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.store</groupId>
+            <artifactId>jaggery-scxml-executors</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>1.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
+                        <Bundle-Description>Device Management Extensions Bundle</Bundle-Description>
+                        <Export-Package>
+                            org.wso2.carbon.device.mgt.es.extensions.*
+                        </Export-Package>
+                        <Import-Package>
+							org.wso2.carbon.device.mgt.core.*,
+							org.wso2.carbon.device.mgt.common,
+							org.wso2.jaggery.scxml.*,
+							org.wso2.carbon.governance.registry.extensions.*,
+                            org.wso2.carbon.governance.api.*,
+                            org.wso2.carbon.registry.core,
+                            org.wso2.carbon.registry.core.exceptions,
+                            org.wso2.carbon.registry.core.session,
+							org.wso2.carbon.registry.core.internal,
+							org.wso2.carbon.registry.core.jdbc.handlers,
+							org.wso2.carbon.registry.core.service,
+							org.wso2.carbon.context,
+                            org.wso2.carbon.utils,
+                            org.wso2.carbon.base,
+                            org.wso2.carbon.user.api,
+							org.apache.commons.logging
+						</Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

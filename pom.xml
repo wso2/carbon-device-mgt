@@ -43,6 +43,7 @@
         <module>components/certificate-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/dynamic-client-registration</module>
+        <module>components/es-extensions</module>
         <module>features/device-mgt</module>
         <module>features/group-mgt</module>
         <module>features/apimgt-extensions</module>
@@ -51,7 +52,7 @@
         <module>features/certificate-mgt</module>
         <module>features/dynamic-client-registration</module>
         <module>features/device-store</module>
-    </modules>
+	</modules>
 
     <dependencyManagement>
         <dependencies>
@@ -198,6 +199,11 @@
                 <artifactId>dynamic-client-web</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.devicemgt</groupId>
+				<artifactId>org.wso2.carbon.device.mgt.es.extensions</artifactId>
+				<version>${carbon.device.mgt.version}</version>
+			</dependency>
             <!-- Device Management dependencies -->
 
             <!-- Governance dependencies -->
@@ -1019,6 +1025,21 @@
                 <artifactId>json</artifactId>
                 <version>${json.wso2.version}</version>
             </dependency>
+
+            <!--Dependancies for Enterprise Store lifecycle management-->
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+                <version>${carbon.governance.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.store</groupId>
+                <artifactId>jaggery-scxml-executors</artifactId>
+                <version>${carbon.store.version}</version>
+            </dependency>
+            <!--End of dependancies for Enterprise Store lifecycle management-->
+
         </dependencies>
     </dependencyManagement>
 

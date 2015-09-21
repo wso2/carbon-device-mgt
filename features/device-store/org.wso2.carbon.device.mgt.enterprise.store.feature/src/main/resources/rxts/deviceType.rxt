@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <artifactType type="application/vnd.wso2-devicetype+xml" shortName="deviceType" singularLabel="Device Type" pluralLabel="Device Types"
               hasNamespace="false" iconSet="10">
-    <storagePath>/device_type/@{overview_provider}/@{overview_name}/@{overview_version}</storagePath>
+    <storagePath>/deviceTypes/@{overview_provider}/@{overview_name}/@{overview_version}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
     <ui>
         <list>

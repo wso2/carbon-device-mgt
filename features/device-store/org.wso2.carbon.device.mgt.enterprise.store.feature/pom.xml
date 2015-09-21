@@ -40,10 +40,10 @@
 	</description>
 
 	<dependencies>
-		<!--<dependency>-->
-		<!--<groupId>org.wso2.carbon.devicemgt</groupId>-->
-		<!--<artifactId>org.wso2.carbon.device.mgt.core</artifactId>-->
-		<!--</dependency>-->
+		<dependency>
+		<groupId>org.wso2.carbon.devicemgt</groupId>
+		<artifactId>org.wso2.carbon.device.mgt.es.extensions</artifactId>
+		</dependency>
 		<!--<dependency>-->
 		<!--<groupId>org.wso2.carbon.devicemgt</groupId>-->
 		<!--<artifactId>org.wso2.carbon.device.mgt.common</artifactId>-->
@@ -104,11 +104,11 @@
 									</propertyDef>
 								</properties>
 							</adviceFile>
-							<!--<bundles>-->
-								<!--<bundleDef>-->
-									<!--&lt;!&ndash;org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}&ndash;&gt;-->
-								<!--</bundleDef>-->
-							<!--</bundles>-->
+							<bundles>
+								<bundleDef>
+									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.es.extensions:${carbon.device.mgt.version}
+								</bundleDef>
+							</bundles>
 							<importFeatures>
 
 								<!-- Carbon Store - STORE features for ES -->

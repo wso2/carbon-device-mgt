@@ -20,10 +20,7 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
-import org.wso2.carbon.apimgt.api.model.API;
-import org.wso2.carbon.apimgt.api.model.APIIdentifier;
-import org.wso2.carbon.apimgt.api.model.APIStatus;
-import org.wso2.carbon.apimgt.api.model.URITemplate;
+import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -67,8 +64,19 @@ public class APIPublisherUtil {
         api.setEndpointSecured(true);
         api.setStatus(APIStatus.PUBLISHED);
         api.setTransports(config.getTransports());
-
+        api.setScopes(getScopes(config));
         return api;
+    }
+
+    private static Set<Scope> getScopes(APIConfig config){
+        Set<Scope> scopes = new LinkedHashSet<Scope>();
+        Scope sc1 = new Scope();
+        sc1.setKey(config.getContext());
+        sc1.setName("mdm-admin");
+        sc1.setDescription("admin scope");
+        sc1.setRoles("admin");
+        scopes.add(sc1);
+        return scopes;
     }
 
     private static Set<URITemplate> getURITemplates(String endpoint, String authType) {

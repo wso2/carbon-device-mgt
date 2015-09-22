@@ -21,46 +21,75 @@ package org.wso2.carbon.dynamic.client.web.app.registration.internal;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * Dataholder class of DynamicClient Webapp Registration component.
  */
 public class DynamicClientRegistrationDataHolder {
 
-	private RealmService realmService;
-	private RegistryService registryService;
-	private DynamicClientRegistrationService dynamicClientRegistrationService;
+    private RealmService realmService;
+    private RegistryService registryService;
+    private DynamicClientRegistrationService dynamicClientRegistrationService;
+    private ConfigurationContextService configurationContextService;
 
-	public DynamicClientRegistrationService getDynamicClientRegistrationService() {
-		return dynamicClientRegistrationService;
-	}
+    private static DynamicClientRegistrationDataHolder thisInstance =
+            new DynamicClientRegistrationDataHolder();
 
-	public void setDynamicClientRegistrationService(
-			DynamicClientRegistrationService dynamicClientRegistrationService) {
-		this.dynamicClientRegistrationService = dynamicClientRegistrationService;
-	}
+    private DynamicClientRegistrationDataHolder() {
+    }
 
-	private static DynamicClientRegistrationDataHolder thisInstance = new DynamicClientRegistrationDataHolder();
+    public static DynamicClientRegistrationDataHolder getInstance() {
+        return thisInstance;
+    }
 
-	private DynamicClientRegistrationDataHolder() {}
+    public ConfigurationContextService getConfigurationContextService() {
+        if(configurationContextService != null){
+            return configurationContextService;
+        } else {
+            throw new IllegalStateException("ConfigurationContext service has not initialized properly");
+        }
+    }
 
-	public static DynamicClientRegistrationDataHolder getInstance() {
-		return thisInstance;
-	}
+    public void setConfigurationContextService(
+            ConfigurationContextService configurationContextService) {
+        this.configurationContextService = configurationContextService;
+    }
 
-	public RealmService getRealmService() {
-		return realmService;
-	}
+    public DynamicClientRegistrationService getDynamicClientRegistrationService() {
+        if(dynamicClientRegistrationService != null){
+            return dynamicClientRegistrationService;
+        } else {
+            throw new IllegalStateException("DynamicClientRegistration service has not initialized properly");
+        }
+    }
 
-	public void setRealmService(RealmService realmService) {
-		this.realmService = realmService;
-	}
+    public void setDynamicClientRegistrationService(
+            DynamicClientRegistrationService dynamicClientRegistrationService) {
+        this.dynamicClientRegistrationService = dynamicClientRegistrationService;
+    }
 
-	public RegistryService getRegistryService() {
-		return registryService;
-	}
+    public RealmService getRealmService() {
+        if(realmService != null){
+            return realmService;
+        } else {
+            throw new IllegalStateException("RealmService has not initialized properly");
+        }
+    }
 
-	public void setRegistryService(RegistryService registryService) {
-		this.registryService = registryService;
-	}
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+    }
+
+    public RegistryService getRegistryService() {
+        if(registryService != null){
+            return registryService;
+        } else {
+            throw new IllegalStateException("Registry Service has not initialized properly");
+        }
+    }
+
+    public void setRegistryService(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 }

@@ -27,8 +27,8 @@ public class DynamicClientRegistrationConstants {
     public final static String OAUTH_APP_NAME = "appName";
     public final static String OAUTH_CLIENT_KEY = "clientKey";
     public final static String OAUTH_CLIENT_SECRET = "clientSecret";
-    public final static String DYNAMIC_CLIENT_REQUIRED_FLAG_PARAM =
-            "require-dynamic-client-registration";
+    public final static String DYNAMIC_CLIENT_REQUIRED_FLAG =
+            "requireDynamicClientRegistration";
 
     public static final class ContentTypes {
         private ContentTypes() {

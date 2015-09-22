@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Represents a OAuth application with basic data.
+ * Represents an OAuth application with basic data.
  */
 @XmlRootElement(name = "OAuthApp")
 public class OAuthApp {

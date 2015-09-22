@@ -65,9 +65,9 @@ public class PermissionManager {
 	public void initializePermissions(InputStream permissionStream) throws DeviceManagementException {
 		try {
 			if(permissionStream != null){
-				/* Un-marshaling Device Management configuration */
-				JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
-				Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
+				/* Un-marshaling PermissionMgt configuration */
+				JAXBContext jaxbContext = JAXBContext.newInstance(PermissionConfiguration.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 				PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
 						unmarshaller.unmarshal(permissionStream);
 				if((permissionConfiguration != null) && (permissionConfiguration.getPermissions() != null)){
@@ -75,7 +75,7 @@ public class PermissionManager {
 				}
 			}
 		} catch (JAXBException e) {
-			throw new DeviceManagementException("Error occurred while initializing Data Source config", e);
+			throw new DeviceManagementException("Error occurred while initializing Permission configuration.", e);
 		}
 	}
 }

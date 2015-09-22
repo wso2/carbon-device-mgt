@@ -1001,6 +1001,11 @@
                 <artifactId>json</artifactId>
                 <version>${json.wso2.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${json.google.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1259,7 +1264,7 @@
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>1.4.0</carbon.api.mgt.version>
+        <carbon.api.mgt.version>1.3.0-SNAPSHOT</carbon.api.mgt.version>
 
         <!--CXF properties-->
         <cxf.version>2.6.1</cxf.version>
@@ -1281,6 +1286,8 @@
         <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>
 
         <json.wso2.version>2.0.0.wso2v1</json.wso2.version>
+
+        <json.google.version>2.2.4</json.google.version>
     </properties>
 
 </project>

@@ -31,16 +31,21 @@
                 <name>Createdtime</name>
             </field>
             <field type="text" required="true">
-                <name>Action Name</name>
-            </field>
-            <field type="text" required="true">
-                <name>Action Url</name>
+                <name>Action Label</name>
             </field>
             <field type="text" required="true">
                 <name>Thumbnail</name>
             </field>
             <field type="text-area">
                 <name>Description</name>
+            </field>
+        </table>
+        <table name="Sketches" maxoccurs="unbounded">
+            <subheading>
+            <heading>Sketch Name</heading>
+            </subheading>
+            <field type="text">
+                <name>Sketches</name>
             </field>
         </table>
         <table name="Ingredients" maxoccurs="unbounded">

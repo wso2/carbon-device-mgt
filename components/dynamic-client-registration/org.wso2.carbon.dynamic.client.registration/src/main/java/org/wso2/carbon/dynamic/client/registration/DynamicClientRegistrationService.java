@@ -52,10 +52,11 @@ public interface DynamicClientRegistrationService {
 	 * This method will check the existence of an OAuth application provided application-name.
 	 *
 	 * @param applicationName  - OAuth application name
+	 * @param tenantDomain  - Tenant domain of the OAuth application
 	 * @return The status of the operation
 	 * @throws DynamicClientRegistrationException
 	 */
-	public boolean isOAuthApplicationExists(String applicationName)
+	public boolean isOAuthApplicationExists(String applicationName, String tenantDomain)
 			throws DynamicClientRegistrationException;
 
 }

@@ -150,9 +150,10 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
                         "Error occurred while retrieving Application Management" +
                         "Service");
             }
-            appMgtService.createApplication(serviceProvider);
+            appMgtService.createApplication(serviceProvider, tenantDomain, userName);
 
-            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
+            ServiceProvider createdServiceProvider = appMgtService.getServiceProvider(
+                    applicationName, tenantDomain);
             if (createdServiceProvider == null) {
                 throw new DynamicClientRegistrationException(
                         "Couldn't create Service Provider Application " + applicationName);
@@ -207,7 +208,7 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
             createdServiceProvider.setInboundAuthenticationConfig(inboundAuthenticationConfig);
 
             // Update the Service Provider app to add OAuthApp as an Inbound Authentication Config
-            appMgtService.updateApplication(createdServiceProvider);
+            appMgtService.updateApplication(createdServiceProvider, tenantDomain, userName);
 
             OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
             oAuthApplicationInfo.setClientId(createdApp.getOauthConsumerKey());
@@ -271,13 +272,14 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
                         "Error occurred while retrieving Application Management" +
                         "Service");
             }
-            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
+            ServiceProvider createdServiceProvider = appMgtService.getServiceProvider(
+                    applicationName, tenantDomain);
 
             if (createdServiceProvider == null) {
                 throw new DynamicClientRegistrationException(
                         "Couldn't retrieve Service Provider Application " + applicationName);
             }
-            appMgtService.deleteApplication(applicationName);
+            appMgtService.deleteApplication(applicationName, tenantDomain, userName);
             status = true;
         } catch (IdentityApplicationManagementException e) {
             throw new DynamicClientRegistrationException(
@@ -293,7 +295,7 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
     }
 
     @Override
-    public boolean isOAuthApplicationExists(String applicationName)
+    public boolean isOAuthApplicationExists(String applicationName, String tenantDomain)
             throws DynamicClientRegistrationException {
         ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
         if (appMgtService == null) {
@@ -302,7 +304,7 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
                     "Service");
         }
         try {
-            if (appMgtService.getApplication(applicationName) != null) {
+            if (appMgtService.getServiceProvider(applicationName, tenantDomain) != null) {
                 return true;
             }
         } catch (IdentityApplicationManagementException e) {

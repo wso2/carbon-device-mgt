@@ -603,6 +603,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public License getLicense(String deviceType, String languageCode) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(deviceType);
+        License license;
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
@@ -611,7 +612,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return null;
         }
         try {
-            return deviceManager.getLicense(languageCode);
+            license = deviceManager.getLicense(languageCode);
+            if (license == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cannot find a license for '" + deviceType + "' device type");
+                }
+            }
+            return license;
         } catch (LicenseManagementException e) {
             throw new DeviceManagementException("Error occurred while retrieving license configured for " +
                     "device type '" + deviceType + "' and language code '" + languageCode + "'", e);
@@ -850,7 +857,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     deviceManagementService.getType() + "'", e);
         }
     }
-
 
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();

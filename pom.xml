@@ -944,6 +944,20 @@
             </dependency>
             <!-- End of transaction Mgt features -->
 
+            <!--Dependancies for Enterprise Store lifecycle management-->
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+                <version>${carbon.governance.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.store</groupId>
+                <artifactId>jaggery-scxml-executors</artifactId>
+                <version>${carbon.store.version}</version>
+            </dependency>
+            <!--End of dependancies for Enterprise Store lifecycle management-->
+
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>
@@ -1025,20 +1039,6 @@
                 <artifactId>json</artifactId>
                 <version>${json.wso2.version}</version>
             </dependency>
-
-            <!--Dependancies for Enterprise Store lifecycle management-->
-            <dependency>
-                <groupId>org.wso2.carbon.governance</groupId>
-                <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
-                <version>${carbon.governance.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.wso2.carbon.store</groupId>
-                <artifactId>jaggery-scxml-executors</artifactId>
-                <version>${carbon.store.version}</version>
-            </dependency>
-            <!--End of dependancies for Enterprise Store lifecycle management-->
 
         </dependencies>
     </dependencyManagement>

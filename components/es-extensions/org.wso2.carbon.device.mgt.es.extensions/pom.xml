@@ -17,29 +17,6 @@
     <description>WSO2 Carbon - Enterprise Store Extensions specific for device types</description>
     <url>http://wso2.org</url>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon.governance</groupId>
-            <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
-            <version>${carbon.governance.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.store</groupId>
-            <artifactId>jaggery-scxml-executors</artifactId>
-            <version>${carbon.store.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
-            <version>${carbon.device.mgt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-            <version>${carbon.device.mgt.version}</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -79,5 +56,24 @@
             </plugin>
         </plugins>
     </build>
-    
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.store</groupId>
+            <artifactId>jaggery-scxml-executors</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

@@ -50,7 +50,13 @@ public class SCEPManagerImpl implements SCEPManager {
         try {
             DeviceManagementDAOFactory.openConnection();
             HashMap<Integer, Device> deviceHashMap = deviceDAO.getDevice(deviceIdentifier);
-            Integer tenantId = (Integer) deviceHashMap.keySet().toArray()[0];
+            Object[] keySet = deviceHashMap.keySet().toArray();
+
+            if(keySet == null || keySet.length == 0) {
+                throw new SCEPException("Lookup device not found for the device identifier");
+            }
+
+            Integer tenantId = (Integer) keySet[0];
             tenantedDeviceWrapper.setDevice(deviceHashMap.get(tenantId));
             tenantedDeviceWrapper.setTenantId(tenantId);
 

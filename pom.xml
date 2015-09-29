@@ -1205,7 +1205,7 @@
         <!-- Axis2 -->
         <axis2.osgi.version.range>[1.6.1.wso2v11, 1.7.0)</axis2.osgi.version.range>
         <axis2.orbit.version>1.6.1.wso2v11</axis2.orbit.version>
-        <axis2-transports.version>1.1.0-wso2v10</axis2-transports.version>
+        <axis2-transports.version>1.1.0-wso2v12</axis2-transports.version>
 
         <jboss-transaction-api.version>1.0.0.Final</jboss-transaction-api.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>

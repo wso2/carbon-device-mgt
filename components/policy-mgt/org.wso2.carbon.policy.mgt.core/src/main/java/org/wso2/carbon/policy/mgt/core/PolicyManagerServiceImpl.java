@@ -119,40 +119,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws
             FeatureManagementException {
         try {
-
-            List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance()
-                    .getPolicyEvaluationPoint().
-                            getEffectiveFeatures(deviceIdentifier);
-
-            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
-            deviceIdentifiers.add(deviceIdentifier);
-            List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-
-            if (!effectiveFeatures.isEmpty()) {
-                for (ProfileFeature feature : effectiveFeatures) {
-                    ProfileOperation operation = new ProfileOperation();
-
-                    operation.setCode(feature.getFeatureCode());
-                    operation.setPayLoad(feature.getContent());
-                    operation.setStatus(Operation.Status.PENDING);
-                    operation.setType(Operation.Type.PROFILE);
-                    operation.setEnabled(true);
-                    profileOperationList.add(operation);
-                    PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                            addOperation(operation, deviceIdentifiers);
-                }
-            } else {
-                return null;
-            }
-
-            return effectiveFeatures;
+            return PolicyManagementDataHolder.getInstance().
+                    getPolicyEvaluationPoint().getEffectiveFeatures(deviceIdentifier);
         } catch (PolicyEvaluationException e) {
             String msg = "Error occurred while getting the effective features from the PEP service " +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new FeatureManagementException(msg, e);
-        } catch (OperationManagementException e) {
-            String msg = "Error occurred while adding the effective feature to database." +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);

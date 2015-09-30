@@ -18,26 +18,29 @@
 
 package org.wso2.carbon.dynamic.client.web.app.registration.util;
 
+import com.google.gson.stream.JsonReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
 import org.wso2.carbon.dynamic.client.web.app.registration.OAuthApp;
+import org.wso2.carbon.dynamic.client.web.app.registration.OAuthSettings;
 import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientRegistrationDataHolder;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.ConfigurationContextService;
+import org.wso2.carbon.utils.NetworkUtils;
 
 import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.charset.Charset;
 
 /**
@@ -45,12 +48,16 @@ import java.nio.charset.Charset;
  */
 public class DynamicClientWebAppRegistrationUtil {
 
-    private final static String OAUTH_PARAM_GRANT_TYPE = "grant-type";
-    private final static String OAUTH_PARAM_TOKEN_SCOPE = "token-scope";
-    private final static String SP_PARAM_SAAS_APP = "saas-app";
+    private final static String OAUTH_PARAM_GRANT_TYPE = "grantType";
+    private final static String OAUTH_PARAM_TOKEN_SCOPE = "tokenScope";
+    private final static String OAUTH_PARAM_SAAS_APP = "saasApp";
+    private final static String OAUTH_PARAM_CALLBACK_URL = "callbackURL";
+    private static final String JAGGERY_APP_OAUTH_CONFIG_PATH =
+            "config" + File.separator + "oauth.json";
 
     private static final Log log =
             LogFactory.getLog(DynamicClientWebAppRegistrationUtil.class);
+    private static final String CHARSET_UTF_8 = "UTF-8";
 
     public static Registry getGovernanceRegistry() throws DynamicClientRegistrationException {
         try {
@@ -68,8 +75,12 @@ public class DynamicClientWebAppRegistrationUtil {
     public static OAuthApp getOAuthApplicationData(String appName)
             throws DynamicClientRegistrationException {
         Resource resource;
-        String resourcePath = DynamicClientRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" + appName;
+        String resourcePath =
+                DynamicClientRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" + appName;
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Retrieving OAuth application " + appName + " data from Registry");
+            }
             resource = DynamicClientWebAppRegistrationUtil.getRegistryResource(resourcePath);
             if (resource != null) {
                 JAXBContext context = JAXBContext.newInstance(OAuthApp.class);
@@ -92,7 +103,7 @@ public class DynamicClientWebAppRegistrationUtil {
 
     public static boolean putOAuthApplicationData(OAuthApp oAuthApp)
             throws DynamicClientRegistrationException {
-        boolean status = false;
+        boolean status;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Persisting OAuth application data in Registry");
@@ -102,19 +113,23 @@ public class DynamicClientWebAppRegistrationUtil {
             Marshaller marshaller = context.createMarshaller();
             marshaller.marshal(oAuthApp, writer);
 
-            Resource resource = DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
+            Resource resource =
+                    DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
             resource.setContent(writer.toString());
             resource.setMediaType(DynamicClientRegistrationConstants.ContentTypes.MEDIA_TYPE_XML);
             String resourcePath =
                     DynamicClientRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
                     oAuthApp.getWebAppName();
-            status = DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);
+            status =
+                    DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);
         } catch (RegistryException e) {
             throw new DynamicClientRegistrationException(
                     "Error occurred while persisting OAuth application data : " +
                     oAuthApp.getClientName(), e);
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new DynamicClientRegistrationException(
+                    "Error occurred while parsing the OAuth application data : " +
+                    oAuthApp.getWebAppName(), e);
         }
         return status;
     }
@@ -154,43 +169,154 @@ public class DynamicClientWebAppRegistrationUtil {
         }
     }
 
-    public static String getUserName(){
+    public static String getUserName() {
         String username = "";
         RealmService realmService =
                 DynamicClientRegistrationDataHolder.getInstance().getRealmService();
-        if(realmService != null){
+        if (realmService != null) {
             username = realmService.getBootstrapRealmConfiguration().getAdminUserName();
         }
         return username;
     }
 
-    public static RegistrationProfile constructRegistrationProfile(ServletContext servletContext, String webAppName) {
-        RegistrationProfile registrationProfile = new RegistrationProfile();
+    public static RegistrationProfile constructRegistrationProfile(ServletContext servletContext,
+                                                                   String webAppName) {
+        RegistrationProfile registrationProfile;
+        registrationProfile = new RegistrationProfile();
         registrationProfile.setGrantType(servletContext.getInitParameter(
                 DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_GRANT_TYPE));
         registrationProfile.setTokenScope(servletContext.getInitParameter(
                 DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_TOKEN_SCOPE));
         registrationProfile.setOwner(DynamicClientWebAppRegistrationUtil.getUserName());
-        //TODO : Need to get the hostname properly
-        registrationProfile.setCallbackUrl("http://localhost:9763/" + webAppName);
+        String callbackURL = servletContext.getInitParameter(
+                DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_CALLBACK_URL);
+        if ((callbackURL != null) && !callbackURL.isEmpty()) {
+            registrationProfile.setCallbackUrl(callbackURL);
+        } else {
+            registrationProfile.setCallbackUrl(DynamicClientWebAppRegistrationUtil.getCallbackUrl(
+                    webAppName));
+        }
         registrationProfile.setClientName(webAppName);
         registrationProfile.setSaasApp(Boolean.parseBoolean(servletContext.getInitParameter(
-                DynamicClientWebAppRegistrationUtil.SP_PARAM_SAAS_APP)));
+                DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_SAAS_APP)));
+
+        return registrationProfile;
+    }
+
+    public static RegistrationProfile constructRegistrationProfile(
+            OAuthSettings oAuthSettings, String webAppName) {
+        RegistrationProfile registrationProfile = new RegistrationProfile();
+        if (oAuthSettings != null) {
+            registrationProfile.setGrantType(oAuthSettings.getGrantType());
+            registrationProfile.setTokenScope(oAuthSettings.getTokenScope());
+            registrationProfile.setClientName(webAppName);
+            registrationProfile.setSaasApp(oAuthSettings.isSaasApp());
+            registrationProfile.setOwner(DynamicClientWebAppRegistrationUtil.getUserName());
+            if (oAuthSettings.getCallbackURL() != null) {
+                registrationProfile.setCallbackUrl(oAuthSettings.getCallbackURL());
+            } else {
+                registrationProfile.setCallbackUrl(
+                        DynamicClientWebAppRegistrationUtil.getCallbackUrl(webAppName));
+            }
+        } else {
+            log.warn(
+                    "Please configure OAuth settings properly for jaggery app : " + webAppName);
+        }
         return registrationProfile;
     }
 
     public static boolean validateRegistrationProfile(RegistrationProfile registrationProfile) {
         boolean status = true;
-        if(registrationProfile.getGrantType() == null){
+        if (registrationProfile.getGrantType() == null) {
             status = false;
-            log.warn("Required parameter 'grant-type' is missing for initiating Dynamic-Client " +
+            log.warn("Required parameter 'grantType' is missing for initiating Dynamic-Client " +
                      "registration for webapp : " + registrationProfile.getClientName());
         }
-        if(registrationProfile.getTokenScope() == null){
+        if (registrationProfile.getTokenScope() == null) {
             status = false;
-            log.warn("Required parameter 'token-scope' is missing for initiating Dynamic-Client " +
+            log.warn("Required parameter 'tokenScope' is missing for initiating Dynamic-Client " +
                      "registration for webapp : " + registrationProfile.getClientName());
         }
         return status;
+    }
+
+    public static OAuthSettings getJaggeryAppOAuthSettings(ServletContext servletContext) {
+        OAuthSettings oAuthSettings = new OAuthSettings();
+        try {
+            InputStream inputStream =
+                    servletContext.getResourceAsStream(JAGGERY_APP_OAUTH_CONFIG_PATH);
+            if (inputStream != null) {
+                JsonReader reader =
+                        new JsonReader(new InputStreamReader(inputStream, CHARSET_UTF_8));
+                reader.beginObject();
+                while (reader.hasNext()) {
+                    String key = reader.nextName();
+                    switch (key) {
+                        case DynamicClientRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG:
+                            oAuthSettings.setRequireDynamicClientRegistration(reader.nextBoolean());
+                            break;
+                        case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_GRANT_TYPE:
+                            oAuthSettings.setGrantType(reader.nextString());
+                            break;
+                        case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_TOKEN_SCOPE:
+                            oAuthSettings.setTokenScope(reader.nextString());
+                            break;
+                        case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_SAAS_APP:
+                            oAuthSettings.setSaasApp(reader.nextBoolean());
+                            break;
+                        case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_CALLBACK_URL:
+                            oAuthSettings.setCallbackURL(reader.nextString());
+                            break;
+                    }
+                }
+                return oAuthSettings;
+            }
+        } catch (UnsupportedEncodingException e) {
+            log.error("Error occurred while initializing OAuth settings for the Jaggery app.", e);
+        } catch (IOException e) {
+            log.error("Error occurred while initializing OAuth settings for the Jaggery app.", e);
+        }
+        return oAuthSettings;
+    }
+
+    public static String getServerBaseUrl() {
+        // Hostname
+        String hostName = "localhost";
+        try {
+            hostName = NetworkUtils.getMgtHostName();
+        } catch (Exception ignored) {
+        }
+        // HTTPS port
+        String mgtConsoleTransport = CarbonUtils.getManagementTransport();
+        ConfigurationContextService configContextService =
+                DynamicClientRegistrationDataHolder.getInstance().getConfigurationContextService();
+        int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
+        int httpsProxyPort =
+                CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
+                                                  mgtConsoleTransport);
+        if (httpsProxyPort > 0) {
+            port = httpsProxyPort;
+        }
+        return "https://" + hostName + ":" + port;
+    }
+
+    public static String getCallbackUrl(String context) {
+        return getServerBaseUrl() + "/" + context;
+    }
+
+    public static void addClientCredentialsToWebContext(OAuthApp oAuthApp,
+                                                        ServletContext servletContext) {
+        if(oAuthApp != null){
+            //Check for client credentials
+            if ((oAuthApp.getClientKey() != null && !oAuthApp.getClientKey().isEmpty()) &&
+                (oAuthApp.getClientSecret() != null && !oAuthApp.getClientSecret().isEmpty())) {
+                servletContext.setAttribute(DynamicClientRegistrationConstants.OAUTH_CLIENT_KEY,
+                                            oAuthApp.getClientKey());
+                servletContext.setAttribute(DynamicClientRegistrationConstants.OAUTH_CLIENT_SECRET,
+                                            oAuthApp.getClientSecret());
+            } else {
+                log.warn("Client credentials not found for web app : " + oAuthApp.getWebAppName());
+            }
+        }
     }
 }

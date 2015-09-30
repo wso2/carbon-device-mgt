@@ -24,13 +24,7 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
-import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
 import org.wso2.carbon.dynamic.client.web.app.registration.DynamicRegistrationManager;
-import org.wso2.carbon.dynamic.client.web.app.registration.util.DynamicClientRegistrationConstants;
-import org.wso2.carbon.dynamic.client.web.app.registration.util.DynamicClientWebAppRegistrationUtil;
-
-import javax.servlet.ServletContext;
 
 /**
  * This class initiates the dynamic client registration flow for Web applications upon on deployment
@@ -46,25 +40,8 @@ public class DynamicClientWebAppDeploymentLifecycleListener implements Lifecycle
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
         if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
-            ServletContext servletContext = context.getServletContext();
-            String requiredDynamicClientRegistration = servletContext.getInitParameter(
-                    DynamicClientRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG_PARAM);
-            if ((requiredDynamicClientRegistration != null) &&
-                (Boolean.parseBoolean(requiredDynamicClientRegistration))) {
-                DynamicRegistrationManager dynamicRegistrationManager =
-                        DynamicRegistrationManager.getInstance();
-                //Get the application name from web-context
-                String webAppName = context.getBaseName();
-                if (!dynamicRegistrationManager.isRegisteredOAuthApplication(webAppName)) {
-                    RegistrationProfile registrationProfile = DynamicClientWebAppRegistrationUtil
-                            .constructRegistrationProfile(servletContext, webAppName);
-                    if(DynamicClientWebAppRegistrationUtil.validateRegistrationProfile(registrationProfile)){
-                        dynamicRegistrationManager.registerOAuthApplication(registrationProfile);
-                    }
-                }
-            } else {
-                //TODO: Need to have the necessary logic to handle jaggery webapp scenario
-            }
+            DynamicRegistrationManager.getInstance().initiateDynamicClientRegistrationProcess(
+                    context);
         }
     }
 }

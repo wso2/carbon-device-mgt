@@ -132,6 +132,7 @@ public class PublishDeviceTypeValidator implements Execution {
 							  "deployed into CDMF");
 		}
 
+		log.error("`" + deviceTypeName + "` is not a registered device type. You can not promote it to `" + toState + "` lifecycle state.");
 		return false;
 	}
 

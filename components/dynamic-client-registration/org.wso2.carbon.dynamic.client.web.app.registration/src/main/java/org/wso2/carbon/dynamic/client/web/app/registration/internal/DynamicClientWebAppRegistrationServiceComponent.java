@@ -24,6 +24,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="org.wso2.carbon.device.manager" immediate="true"
@@ -45,6 +46,12 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setDynamicClientService"
  * unbind="unsetDynamicClientService"
+ * @scr.reference name="config.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  */
 public class DynamicClientWebAppRegistrationServiceComponent {
 
@@ -131,6 +138,30 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 			log.debug("Un setting Dynamic Client Registration Service");
 		}
 		DynamicClientRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(null);
+	}
+
+	/**
+	 * Sets ConfigurationContext Service.
+	 *
+	 * @param configurationContextService An instance of ConfigurationContextService
+	 */
+	protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting ConfigurationContextService");
+		}
+		DynamicClientRegistrationDataHolder.getInstance().setConfigurationContextService(configurationContextService);
+	}
+
+	/**
+	 * Unsets ConfigurationContext Service.
+	 *
+	 * @param configurationContextService An instance of ConfigurationContextService
+	 */
+	protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Un-setting ConfigurationContextService");
+		}
+		DynamicClientRegistrationDataHolder.getInstance().setConfigurationContextService(null);
 	}
 
 }

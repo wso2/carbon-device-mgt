@@ -19,7 +19,6 @@ package org.wso2.carbon.dynamic.client.web.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;

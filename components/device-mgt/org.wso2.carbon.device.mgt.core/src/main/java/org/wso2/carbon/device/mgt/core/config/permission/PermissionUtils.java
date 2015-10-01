@@ -84,7 +84,7 @@ public class PermissionUtils {
 		return status;
 	}
 
-	public static boolean checkPermissionExistance(Permission permission)
+	public static boolean checkPermissionExistence(Permission permission)
 			throws DeviceManagementException,
 			       org.wso2.carbon.registry.core.exceptions.RegistryException {
 		return PermissionUtils.getGovernanceRegistry().resourceExists(permission.getPath());

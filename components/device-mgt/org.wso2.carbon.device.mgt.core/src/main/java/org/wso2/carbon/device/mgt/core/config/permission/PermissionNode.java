@@ -25,15 +25,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class represents the node of a permission graph.
+ * This class represents the node of a permission tree.
  */
-public class PermissionHolder {
+public class PermissionNode {
 
-    String pathName;
-    Map<String, Permission> permissions = new HashMap<String, Permission>();
-    List<PermissionHolder> children = new ArrayList<PermissionHolder>();
+    private String pathName;
+    private Map<String, Permission> permissions = new HashMap<String, Permission>();
+    private List<PermissionNode> children = new ArrayList<PermissionNode>();
 
-    public PermissionHolder(String pathName) {
+    public PermissionNode(String pathName) {
         this.pathName = pathName;
     }
 
@@ -45,13 +45,13 @@ public class PermissionHolder {
         this.pathName = pathName;
     }
 
-    public List<PermissionHolder> getChildren() {
+    public List<PermissionNode> getChildren() {
         return children;
     }
 
-    public PermissionHolder getChild(String pathName) {
-        PermissionHolder child = null;
-        for (PermissionHolder node : children) {
+    public PermissionNode getChild(String pathName) {
+        PermissionNode child = null;
+        for (PermissionNode node : children) {
             if (node.getPathName().equals(pathName)) {
                 return node;
             }
@@ -59,7 +59,7 @@ public class PermissionHolder {
         return child;
     }
 
-    public void addChild(PermissionHolder node) {
+    public void addChild(PermissionNode node) {
         children.add(node);
     }
 

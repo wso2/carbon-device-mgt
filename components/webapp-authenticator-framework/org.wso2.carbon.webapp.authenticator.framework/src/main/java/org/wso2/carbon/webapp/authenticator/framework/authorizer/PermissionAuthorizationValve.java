@@ -29,9 +29,9 @@ import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthen
 
 import javax.servlet.http.HttpServletResponse;
 
-public class PermissionAuthorizerValve extends CarbonTomcatValve {
+public class PermissionAuthorizationValve extends CarbonTomcatValve {
 
-    private static final Log log = LogFactory.getLog(PermissionAuthorizerValve.class);
+    private static final Log log = LogFactory.getLog(PermissionAuthorizationValve.class);
     private static final String AUTHORIZATION_ENABLED = "authorization-enabled";
 
 
@@ -44,7 +44,7 @@ public class PermissionAuthorizerValve extends CarbonTomcatValve {
             this.processResponse(request, response, compositeValve, WebappAuthenticator.Status.CONTINUE);
             return;
         }
-        // check whether the permission checking function is enabled
+        // check whether the permission checking function is enabled in web.xml
         boolean isEnabled = new Boolean(permissionStatus);
         if (!isEnabled) {
             this.processResponse(request, response, compositeValve, WebappAuthenticator.Status.CONTINUE);

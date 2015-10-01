@@ -39,12 +39,11 @@ public class PermissionAuthorizer {
 
     public WebappAuthenticator.Status authorize(Request request, Response response) {
 
-        // contextOperation is used to get defined operation type from the web.xml
         String requestUri = request.getRequestURI();
         String requestMethod = request.getMethod();
 
         if (requestUri == null || requestUri.isEmpty() ||
-            requestMethod == null || requestMethod.isEmpty()) {
+                requestMethod == null || requestMethod.isEmpty()) {
             return WebappAuthenticator.Status.CONTINUE;
         }
 
@@ -61,7 +60,10 @@ public class PermissionAuthorizer {
         String permissionString = requestPermission.getPath();
 
         // This is added temporarily until authentication works.
+        // TODO remove below line.
         String username = "admin";
+        // TODO uncomment this once the authentication works.
+        //String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
 
         boolean isUserAuthorized;
         try {

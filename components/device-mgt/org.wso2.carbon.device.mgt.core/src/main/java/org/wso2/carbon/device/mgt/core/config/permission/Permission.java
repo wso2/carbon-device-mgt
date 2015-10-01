@@ -21,37 +21,40 @@ package org.wso2.carbon.device.mgt.core.config.permission;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Permission")
-public class Permission{
+/**
+ * This class represents the information related to permission.
+ */
+@XmlRootElement (name = "Permission")
+public class Permission {
 
-	private String name; // permission name
-	private String path; // permission string
+    private String name; // permission name
+    private String path; // permission string
     private String url; // url of the resource
     private String method; // http method
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@XmlElement(name = "name", required = true)
-	public void setName(String name) {
-		this.name = name;
-	}
+    @XmlElement (name = "name", required = true)
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	@XmlElement(name = "path", required = true)
-	public void setPath(String path) {
-		this.path = path;
-	}
+    @XmlElement (name = "path", required = true)
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public String getUrl() {
         return url;
     }
 
-    @XmlElement(name = "url", required = true)
+    @XmlElement (name = "url", required = true)
     public void setUrl(String url) {
         this.url = url;
     }
@@ -60,7 +63,7 @@ public class Permission{
         return method;
     }
 
-    @XmlElement(name = "method", required = true)
+    @XmlElement (name = "method", required = true)
     public void setMethod(String method) {
         this.method = method;
     }

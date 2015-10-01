@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -31,7 +30,7 @@ import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationHandler;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
-import org.wso2.carbon.webapp.authenticator.framework.authorizer.PermissionAuthorizerValve;
+import org.wso2.carbon.webapp.authenticator.framework.authorizer.PermissionAuthorizationValve;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
 
@@ -87,7 +86,7 @@ public class WebappAuthenticatorFrameworkServiceComponent {
 
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
             valves.add(new WebappAuthenticationHandler());
-            valves.add(new PermissionAuthorizerValve());
+            valves.add(new PermissionAuthorizationValve());
             TomcatValveContainer.addValves(valves);
 
             if (log.isDebugEnabled()) {

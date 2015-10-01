@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This class represents implementation of GroupDAO
+ */
 public class GroupDAOImpl implements GroupDAO {
 
     private static final Log log = LogFactory.getLog(GroupDAOImpl.class);

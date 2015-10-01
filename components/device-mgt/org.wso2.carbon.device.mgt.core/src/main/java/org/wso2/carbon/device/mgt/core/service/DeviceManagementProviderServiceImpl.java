@@ -751,6 +751,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Device> getUnGroupedDevices(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
@@ -780,6 +783,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return devices;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Device> getDevices(int groupId) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();

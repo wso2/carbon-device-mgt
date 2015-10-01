@@ -23,9 +23,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * This class holds Device Group user name and assigned group roles of user. Exposed to external access
+ */
 @XmlRootElement public class GroupUser implements Serializable {
     private String username;
-    private List<String> roles;
+    private List<String> groupRoles;
 
     @XmlElement public String getUsername() {
         return username;
@@ -35,11 +38,11 @@ import java.util.List;
         this.username = username;
     }
 
-    @XmlElement public List<String> getRoles() {
-        return roles;
+    @XmlElement public List<String> getGroupRoles() {
+        return groupRoles;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setGroupRoles(List<String> groupRoles) {
+        this.groupRoles = groupRoles;
     }
 }

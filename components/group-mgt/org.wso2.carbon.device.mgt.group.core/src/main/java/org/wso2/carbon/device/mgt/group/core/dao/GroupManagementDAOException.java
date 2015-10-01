@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.group.core.dao;
 
 /**
- * Custom exception class for data access related exceptions.
+ * Custom exception class for group management data access related exceptions.
  */
 public class GroupManagementDAOException extends Exception {
 

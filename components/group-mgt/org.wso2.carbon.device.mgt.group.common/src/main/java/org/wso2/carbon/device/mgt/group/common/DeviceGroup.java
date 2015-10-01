@@ -25,6 +25,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Holds Device Group details and expose to external access
+ */
 @XmlRootElement public class DeviceGroup implements Serializable {
 
     private int id;

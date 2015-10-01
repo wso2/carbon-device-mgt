@@ -303,6 +303,9 @@ public class DeviceDAOImpl implements DeviceDAO {
         return devices;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Device> getUnGroupedDevices(String username, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
@@ -335,6 +338,9 @@ public class DeviceDAOImpl implements DeviceDAO {
         return devices;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Device> getDevices(int groupId, int tenantId) throws DeviceManagementDAOException {
         Connection conn;

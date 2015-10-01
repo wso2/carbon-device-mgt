@@ -19,6 +19,9 @@
 
 package org.wso2.carbon.device.mgt.group.common;
 
+/**
+ * This class represents a custom exception specified for
+ */
 public class GroupManagementException extends Exception {
 
     private static final long serialVersionUID = -312678248574816874L;

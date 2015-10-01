@@ -24,6 +24,9 @@ import org.wso2.carbon.device.mgt.group.common.GroupUser;
 
 import java.util.List;
 
+/**
+ * Use to expose protected methods to core. Use only for internal access
+ */
 public class DeviceGroupBroker extends DeviceGroup {
 
     public DeviceGroupBroker(DeviceGroup deviceGroup) {

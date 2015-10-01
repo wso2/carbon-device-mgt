@@ -23,7 +23,7 @@ import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import java.util.List;
 
 /**
- * This class represents the key operations associated with persisting group related information.
+ * This interface represents the key operations associated with persisting group related information.
  */
 public interface GroupDAO {
 

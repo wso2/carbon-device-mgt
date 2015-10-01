@@ -32,24 +32,47 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
+/**
+ * This class represents factory for group management data operations
+ */
 public class GroupManagementDAOFactory {
 
     private static final Log log = LogFactory.getLog(GroupManagementDAOFactory.class);
     private static DataSource dataSource;
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
+    /**
+     * Get instance of GroupDAO
+     *
+     * @return instance of GroupDAO implementation
+     */
     public static GroupDAO getGroupDAO() {
         return new GroupDAOImpl();
     }
 
+    /**
+     * Initialize factory with datasource configs
+     *
+     * @param config data source configuration
+     */
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
     }
 
+    /**
+     * Initialize factory with existing datasource
+     *
+     * @param dtSource an existing datasource
+     */
     public static void init(DataSource dtSource) {
         dataSource = dtSource;
     }
 
+    /**
+     * Begin transaction with datasource for write data
+     *
+     * @throws TransactionManagementException
+     */
     public static void beginTransaction() throws TransactionManagementException {
         Connection conn = currentConnection.get();
         if (conn != null) {
@@ -66,6 +89,11 @@ public class GroupManagementDAOFactory {
         }
     }
 
+    /**
+     * Open connection to the datasource for read data
+     *
+     * @throws SQLException
+     */
     public static void openConnection() throws SQLException {
         Connection conn = currentConnection.get();
         if (conn != null) {
@@ -77,6 +105,12 @@ public class GroupManagementDAOFactory {
         currentConnection.set(conn);
     }
 
+    /**
+     * Get current connection to datasource
+     *
+     * @return current connection
+     * @throws SQLException
+     */
     public static Connection getConnection() throws SQLException {
         Connection conn = currentConnection.get();
         if (conn == null) {
@@ -87,6 +121,9 @@ public class GroupManagementDAOFactory {
         return conn;
     }
 
+    /**
+     * Commit current transaction to the datasource
+     */
     public static void commitTransaction() {
         Connection conn = currentConnection.get();
         if (conn == null) {
@@ -101,6 +138,9 @@ public class GroupManagementDAOFactory {
         }
     }
 
+    /**
+     * Rollback current transaction on failure
+     */
     public static void rollbackTransaction() {
         Connection conn = currentConnection.get();
         if (conn == null) {
@@ -115,6 +155,9 @@ public class GroupManagementDAOFactory {
         }
     }
 
+    /**
+     * Close data connection associated with current transaction
+     */
     public static void closeConnection() {
         Connection conn = currentConnection.get();
         if (conn == null) {

@@ -23,6 +23,9 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
+/**
+ * This singleton class used to hold binned OSGi services
+ */
 public class GroupManagementDataHolder {
 
     private static GroupManagementDataHolder thisInstance = new GroupManagementDataHolder();
@@ -30,6 +33,9 @@ public class GroupManagementDataHolder {
     private TenantManager tenantManager;
     private DeviceManagementProviderService deviceManagementService;
 
+    /**
+     * Disable external instantiations
+     */
     private GroupManagementDataHolder() {
     }
 

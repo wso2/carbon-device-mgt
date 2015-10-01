@@ -27,6 +27,9 @@ import org.wso2.carbon.device.mgt.group.common.GroupUser;
 
 import java.util.List;
 
+/**
+ * Interface for Group Management Services
+ */
 public interface GroupManagementServiceProvider {
 
     /**

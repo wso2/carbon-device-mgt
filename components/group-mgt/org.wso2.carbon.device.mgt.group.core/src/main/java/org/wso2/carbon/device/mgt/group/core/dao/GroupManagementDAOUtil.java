@@ -28,10 +28,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
 
+/**
+ * This class represents utilities required to work with group management data
+ */
 public final class GroupManagementDAOUtil {
 
     private static final Log log = LogFactory.getLog(GroupManagementDAOUtil.class);
 
+    /**
+     * Cleanup resources used to transaction
+     *
+     * @param stmt Prepared statement used
+     * @param rs Obtained results set
+     */
     public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
         if (rs != null) {
             try {
@@ -49,6 +58,13 @@ public final class GroupManagementDAOUtil {
         }
     }
 
+    /**
+     * Lookup datasource using name and jndi properties
+     *
+     * @param dataSourceName Name of datasource to lookup
+     * @param jndiProperties Hash table of JNDI Properties
+     * @return datasource looked
+     */
     public static DataSource lookupDataSource(String dataSourceName, final Hashtable<Object, Object> jndiProperties) {
         try {
             if (jndiProperties == null || jndiProperties.isEmpty()) {

@@ -20,25 +20,30 @@ package org.wso2.carbon.dynamic.client.registration.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 import org.wso2.carbon.dynamic.client.registration.impl.DynamicClientRegistrationImpl;
 
 /**
- * BundleActivator class of DynamicClientRegistration component.
+ * @scr.component name="org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationServiceComponent"
+ * immediate="true"
+ * @scr.reference name="user.realmservice.default"
+ * interface="org.wso2.carbon.user.core.service.RealmService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setRealmService"
+ * unbind="unsetRealmService"
  */
-public class DynamicClientRegistrationBundleActivator implements BundleActivator{
+public class DynamicClientRegistrationServiceComponent {
 
-	@Override
-	public void start(BundleContext bundleContext) throws Exception {
-		DynamicClientRegistrationService dynamicClientRegistrationService =
-																new DynamicClientRegistrationImpl();
-		bundleContext.registerService(DynamicClientRegistrationService.class.getName(),
-		                                                     dynamicClientRegistrationService, null);
-	}
+    protected void activate(ComponentContext componentContext) {
+        BundleContext bundleContext = componentContext.getBundleContext();
+        bundleContext.registerService(DynamicClientRegistrationService.class.getName(),
+                new DynamicClientRegistrationImpl(), null);
+    }
 
-	@Override
-	public void stop(BundleContext bundleContext) throws Exception {
-
-	}
+    protected void deactivate(ComponentContext componentContext) {
+        //do nothing
+    }
 
 }

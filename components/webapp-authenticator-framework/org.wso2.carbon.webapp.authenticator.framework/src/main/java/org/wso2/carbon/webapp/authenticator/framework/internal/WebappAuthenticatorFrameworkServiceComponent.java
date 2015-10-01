@@ -37,7 +37,6 @@ import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticator
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * @scr.component name="org.wso2.carbon.webapp.authenticator" immediate="true"
  * @scr.reference name="user.realmservice.default"

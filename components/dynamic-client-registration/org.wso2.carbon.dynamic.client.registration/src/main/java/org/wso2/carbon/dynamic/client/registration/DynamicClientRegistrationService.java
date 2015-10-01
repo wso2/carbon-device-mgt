@@ -25,37 +25,39 @@ import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
  */
 public interface DynamicClientRegistrationService {
 
-	/**
-	 * This method will register a new OAuth application using the data provided by
-	 * RegistrationProfile.
-	 *
-	 * @param profile - RegistrationProfile of the OAuth application to be created.
-	 * @return OAuthApplicationInfo object which holds the necessary data of created OAuth app.
-	 * @throws DynamicClientRegistrationException
-	 */
-	public OAuthApplicationInfo registerOAuthApplication(RegistrationProfile profile) throws
-	                                                                                DynamicClientRegistrationException;
+    /**
+     * This method will register a new OAuth application using the data provided by
+     * RegistrationProfile.
+     *
+     * @param profile - RegistrationProfile of the OAuth application to be created.
+     * @return OAuthApplicationInfo object which holds the necessary data of created OAuth app.
+     * @throws DynamicClientRegistrationException
+     *
+     */
+    public OAuthApplicationInfo registerOAuthApplication(
+            RegistrationProfile profile) throws DynamicClientRegistrationException;
 
-	/**
-	 * This method will unregister a created OAuth application.
-	 *
-	 * @param userName - Username of the owner
-	 * @param applicationName - OAuth application name
-	 * @param consumerKey - ConsumerKey of the OAuth application
-	 * @return The status of the operation
-	 * @throws DynamicClientRegistrationException
-	 */
-	public boolean unregisterOAuthApplication(String userName, String applicationName,
-	                                      String consumerKey) throws DynamicClientRegistrationException;
+    /**
+     * This method will unregister a created OAuth application.
+     *
+     * @param userName        - Username of the owner
+     * @param applicationName - OAuth application name
+     * @param consumerKey     - ConsumerKey of the OAuth application
+     * @return The status of the operation
+     * @throws DynamicClientRegistrationException
+     *
+     */
+    public boolean unregisterOAuthApplication(String userName, String applicationName,
+                                              String consumerKey) throws DynamicClientRegistrationException;
 
-	/**
-	 * This method will check the existence of an OAuth application provided application-name.
-	 *
-	 * @param applicationName  - OAuth application name
-	 * @return The status of the operation
-	 * @throws DynamicClientRegistrationException
-	 */
-	public boolean isOAuthApplicationExists(String applicationName)
-			throws DynamicClientRegistrationException;
+    /**
+     * This method will check the existence of an OAuth application provided application-name.
+     *
+     * @param applicationName - OAuth application name
+     * @return The status of the operation
+     * @throws DynamicClientRegistrationException
+     *
+     */
+    public boolean isOAuthApplicationExists(String applicationName) throws DynamicClientRegistrationException;
 
 }

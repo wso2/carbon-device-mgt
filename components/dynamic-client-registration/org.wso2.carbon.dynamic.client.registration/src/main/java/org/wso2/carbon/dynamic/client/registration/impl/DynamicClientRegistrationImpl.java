@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.carbon.dynamic.client.registration.impl;
 
 import org.apache.commons.logging.Log;
@@ -24,10 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.dynamic.client.registration.ApplicationConstants;
-import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
-import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
-import org.wso2.carbon.dynamic.client.registration.OAuthApplicationInfo;
+import org.wso2.carbon.dynamic.client.registration.*;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.InboundAuthenticationConfig;
@@ -36,6 +32,7 @@ import org.wso2.carbon.identity.application.common.model.Property;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
+import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.OAuthAdminService;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -89,16 +86,16 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
             if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS)) {
                 oAuthApplicationInfo
                         .addParameter(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS,
-                                      jsonObject
-                                              .get(ApplicationConstants.ClientMetadata.
-                                                           OAUTH_REDIRECT_URIS));
+                                jsonObject
+                                        .get(ApplicationConstants.ClientMetadata.
+                                                OAUTH_REDIRECT_URIS));
             }
 
             if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT)) {
                 oAuthApplicationInfo.addParameter(ApplicationConstants.ClientMetadata.
-                                                          OAUTH_CLIENT_GRANT, jsonObject
-                                                          .get(ApplicationConstants.ClientMetadata.
-                                                                       OAUTH_CLIENT_GRANT));
+                        OAUTH_CLIENT_GRANT, jsonObject
+                        .get(ApplicationConstants.ClientMetadata.
+                                OAUTH_CLIENT_GRANT));
             }
         } catch (JSONException e) {
             throw new DynamicClientRegistrationException(
@@ -148,11 +145,11 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
             if (appMgtService == null) {
                 throw new IllegalStateException(
                         "Error occurred while retrieving Application Management" +
-                        "Service");
+                                "Service");
             }
-            appMgtService.createApplication(serviceProvider);
+            appMgtService.createApplication(serviceProvider, tenantDomain, userName);
 
-            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
+            ServiceProvider createdServiceProvider = appMgtService.getServiceProvider(applicationName, tenantDomain);
             if (createdServiceProvider == null) {
                 throw new DynamicClientRegistrationException(
                         "Couldn't create Service Provider Application " + applicationName);
@@ -162,22 +159,21 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
             // Then Create OAuthApp
             OAuthAdminService oAuthAdminService = new OAuthAdminService();
 
-            OAuthConsumerAppDTO oAuthConsumerAppDTO = new OAuthConsumerAppDTO();
-            oAuthConsumerAppDTO.setApplicationName(applicationName);
-            oAuthConsumerAppDTO.setCallbackUrl(callbackUrl);
-            oAuthConsumerAppDTO.setGrantTypes(grantType);
+            OAuthConsumerAppDTO oAuthConsumerApp = new OAuthConsumerAppDTO();
+            oAuthConsumerApp.setApplicationName(applicationName);
+            oAuthConsumerApp.setCallbackUrl(callbackUrl);
+            oAuthConsumerApp.setGrantTypes(grantType);
             if (log.isDebugEnabled()) {
                 log.debug("Creating OAuth App " + applicationName);
             }
 
-            oAuthAdminService.registerOAuthApplicationData(oAuthConsumerAppDTO);
+            oAuthAdminService.registerOAuthApplicationData(oAuthConsumerApp);
             if (log.isDebugEnabled()) {
                 log.debug("Created OAuth App " + applicationName);
             }
 
             OAuthConsumerAppDTO createdApp =
-                    oAuthAdminService.getOAuthApplicationDataByAppName(oAuthConsumerAppDTO
-                                                                               .getApplicationName());
+                    oAuthAdminService.getOAuthApplicationDataByAppName(oAuthConsumerApp.getApplicationName());
             if (log.isDebugEnabled()) {
                 log.debug("Retrieved Details for OAuth App " + createdApp.getApplicationName());
             }
@@ -192,12 +188,12 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
             inboundAuthenticationRequestConfig.setInboundAuthKey(createdApp.getOauthConsumerKey());
             inboundAuthenticationRequestConfig.setInboundAuthType("oauth2");
             if (createdApp.getOauthConsumerSecret() != null && !createdApp.
-                                                                                  getOauthConsumerSecret()
-                                                                          .isEmpty()) {
+                    getOauthConsumerSecret()
+                    .isEmpty()) {
                 Property property = new Property();
                 property.setName("oauthConsumerSecret");
                 property.setValue(createdApp.getOauthConsumerSecret());
-                Property[] properties = { property };
+                Property[] properties = {property};
                 inboundAuthenticationRequestConfig.setProperties(properties);
             }
 
@@ -207,7 +203,7 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
             createdServiceProvider.setInboundAuthenticationConfig(inboundAuthenticationConfig);
 
             // Update the Service Provider app to add OAuthApp as an Inbound Authentication Config
-            appMgtService.updateApplication(createdServiceProvider);
+            appMgtService.updateApplication(createdServiceProvider, tenantDomain, userName);
 
             OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
             oAuthApplicationInfo.setClientId(createdApp.getOauthConsumerKey());
@@ -236,8 +232,11 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
 
     @Override
     public boolean unregisterOAuthApplication(String userId, String applicationName,
-                                              String consumerKey)
-            throws DynamicClientRegistrationException {
+                                              String consumerKey) throws DynamicClientRegistrationException {
+        DynamicClientRegistrationUtil.validateUsername(userId);
+        DynamicClientRegistrationUtil.validateApplicationName(applicationName);
+        DynamicClientRegistrationUtil.validateConsumerKey(consumerKey);
+
         boolean status = false;
         String tenantDomain = MultitenantUtils.getTenantDomain(userId);
         String baseUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
@@ -247,44 +246,37 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userName);
 
-        if (userId == null || userId.isEmpty()) {
-            throw new DynamicClientRegistrationException(
-                    "Error occurred while unregistering Application: userId cannot " +
-                    "be null/empty");
-        }
+        OAuthAdminService oAuthAdminService;
+        OAuthConsumerAppDTO oAuthConsumerApp;
         try {
-            OAuthAdminService oAuthAdminService = new OAuthAdminService();
-            OAuthConsumerAppDTO oAuthConsumerAppDTO =
-                    oAuthAdminService.getOAuthApplicationData(consumerKey);
+            oAuthAdminService = new OAuthAdminService();
+            oAuthConsumerApp = oAuthAdminService.getOAuthApplicationData(consumerKey);
+        } catch (IdentityOAuthAdminException e) {
+            throw new DynamicClientRegistrationException("Error occurred while retrieving application data", e);
+        }
 
-            if (oAuthConsumerAppDTO == null) {
-                throw new DynamicClientRegistrationException(
-                        "Couldn't retrieve OAuth Consumer Application associated with the " +
-                        "given consumer key: " + consumerKey);
-            }
+        if (oAuthConsumerApp == null) {
+            throw new DynamicClientRegistrationException(
+                    "No OAuth Consumer Application is associated with the given consumer key: " + consumerKey);
+        }
+
+        try {
             oAuthAdminService.removeOAuthApplicationData(consumerKey);
 
             ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
-
-            if (appMgtService == null) {
-                throw new IllegalStateException(
-                        "Error occurred while retrieving Application Management" +
-                        "Service");
-            }
-            ServiceProvider createdServiceProvider = appMgtService.getApplication(applicationName);
-
+            ServiceProvider createdServiceProvider = appMgtService.getServiceProvider(applicationName, tenantDomain);
             if (createdServiceProvider == null) {
                 throw new DynamicClientRegistrationException(
                         "Couldn't retrieve Service Provider Application " + applicationName);
             }
-            appMgtService.deleteApplication(applicationName);
+            appMgtService.deleteApplication(applicationName, tenantDomain, userName);
             status = true;
         } catch (IdentityApplicationManagementException e) {
             throw new DynamicClientRegistrationException(
-                    "Error occurred while removing ServiceProvider for app " + applicationName, e);
-        } catch (Exception e) {
-            throw new DynamicClientRegistrationException(
-                    "Error occurred while removing OAuthApp " + applicationName, e);
+                    "Error occurred while removing ServiceProvider for application '" + applicationName + "'", e);
+        } catch (IdentityOAuthAdminException e) {
+            throw new DynamicClientRegistrationException("Error occurred while removing application '" +
+                    applicationName + "'", e);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(baseUser);
@@ -293,23 +285,17 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
     }
 
     @Override
-    public boolean isOAuthApplicationExists(String applicationName)
-            throws DynamicClientRegistrationException {
-        ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
-        if (appMgtService == null) {
-            throw new IllegalStateException(
-                    "Error occurred while retrieving Application Management" +
-                    "Service");
-        }
+    public boolean isOAuthApplicationExists(String applicationName) throws DynamicClientRegistrationException {
         try {
-            if (appMgtService.getApplication(applicationName) != null) {
+            if (ApplicationManagementService.getInstance().getServiceProvider(applicationName,
+                    CarbonContext.getThreadLocalCarbonContext().getTenantDomain()) != null) {
                 return true;
             }
         } catch (IdentityApplicationManagementException e) {
             throw new DynamicClientRegistrationException(
-                    "Error occurred while retrieving information of OAuthApp " + applicationName,
-                    e);
+                    "Error occurred while retrieving information of OAuthApp " + applicationName, e);
         }
         return false;
     }
+
 }

@@ -78,12 +78,6 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             }
             DataHolder.getInstance().setWebappAuthenticatorRepository(repository);
 
-            // Adding permissions to registry
-//            PermissionAuthorizerConfig.init();
-//            for (Permission permission : PermissionAuthorizerConfig.getInstance().getPermissions()) {
-//                PermissionAuthorizerUtil.addPermission(permission);
-//            }
-
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
             valves.add(new WebappAuthenticationHandler());
             valves.add(new PermissionAuthorizationValve());

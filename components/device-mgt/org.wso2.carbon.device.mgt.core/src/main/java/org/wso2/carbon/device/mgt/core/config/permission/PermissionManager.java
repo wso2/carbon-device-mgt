@@ -25,7 +25,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * This class will add, update custom permissions defined in permission.xml in webapps.

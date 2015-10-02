@@ -31,51 +31,59 @@ import java.util.List;
  */
 public class PermissionManager {
 
-	private static PermissionManager permissionManager;
+    private static PermissionManager permissionManager;
+    private static PermissionTree permissionTree; // holds the permissions at runtime.
 
-	private PermissionManager(){};
+    private PermissionManager() {
+    }
 
-	public static PermissionManager getInstance() {
-		if (permissionManager == null) {
-			synchronized (PermissionManager.class) {
-				if (permissionManager == null) {
-					permissionManager = new PermissionManager();
-				}
-			}
-		}
-		return permissionManager;
-	}
+    public static PermissionManager getInstance() {
+        if (permissionManager == null) {
+            synchronized (PermissionManager.class) {
+                if (permissionManager == null) {
+                    permissionManager = new PermissionManager();
+                    permissionTree = new PermissionTree();
+                }
+            }
+        }
+        return permissionManager;
+    }
 
-	public boolean addPermission(Permission permission) throws DeviceManagementException {
-		try {
-			return PermissionUtils.putPermission(permission);
-		} catch (DeviceManagementException e) {
-			throw new DeviceManagementException("Error occurred while adding the permission : " +
-			                                    permission.getName(), e);
-		}
-	}
+    public boolean addPermission(Permission permission) throws DeviceManagementException {
+        permissionTree.addPermission(permission); // adding a permission to the tree
+        try {
+            return PermissionUtils.putPermission(permission);
+        } catch (DeviceManagementException e) {
+            throw new DeviceManagementException("Error occurred while adding the permission : " +
+                    permission.getName(), e);
+        }
+    }
 
-	public boolean addPermissions(List<Permission> permissions) throws DeviceManagementException{
-		for(Permission permission:permissions){
-			this.addPermission(permission);
-		}
-		return true;
-	}
+    public boolean addPermissions(List<Permission> permissions) throws DeviceManagementException {
+        for (Permission permission : permissions) {
+            this.addPermission(permission);
+        }
+        return true;
+    }
 
-	public void initializePermissions(InputStream permissionStream) throws DeviceManagementException {
-		try {
-			if(permissionStream != null){
-				/* Un-marshaling Device Management configuration */
-				JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
-				Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-				PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
-						unmarshaller.unmarshal(permissionStream);
-				if((permissionConfiguration != null) && (permissionConfiguration.getPermissions() != null)){
-					this.addPermissions(permissionConfiguration.getPermissions());
-				}
-			}
-		} catch (JAXBException e) {
-			throw new DeviceManagementException("Error occurred while initializing Data Source config", e);
-		}
-	}
+    public void initializePermissions(InputStream permissionStream) throws DeviceManagementException {
+        try {
+            if (permissionStream != null) {
+                /* Un-marshaling Device Management configuration */
+                JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
+                Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
+                PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
+                        unmarshaller.unmarshal(permissionStream);
+                if (permissionConfiguration != null && permissionConfiguration.getPermissions() != null) {
+                    this.addPermissions(permissionConfiguration.getPermissions());
+                }
+            }
+        } catch (JAXBException e) {
+            throw new DeviceManagementException("Error occurred while initializing Data Source config", e);
+        }
+    }
+
+    public Permission getPermission(String url, String httpMethod) {
+        return permissionTree.getPermission(url, httpMethod);
+    }
 }

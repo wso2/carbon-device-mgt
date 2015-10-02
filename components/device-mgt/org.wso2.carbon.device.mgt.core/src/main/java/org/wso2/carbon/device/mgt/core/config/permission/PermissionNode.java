@@ -26,6 +26,8 @@ import java.util.Map;
 
 /**
  * This class represents the node of a permission tree.
+ * It holds the current path name, list of permissions associated with URL
+ * and the set of children.
  */
 public class PermissionNode {
 

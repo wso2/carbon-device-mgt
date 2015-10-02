@@ -30,10 +30,11 @@ public class PermissionTree {
 
     private PermissionNode rootNode;
     private static final String DYNAMIC_PATH_NOTATION = "*";
+    private static final String ROOT = "/";
     private static final Log log = LogFactory.getLog(PermissionTree.class);
 
     public PermissionTree() {
-        rootNode = new PermissionNode("/"); // initializing the root node.
+        rootNode = new PermissionNode(ROOT); // initializing the root node.
     }
 
     /**
@@ -44,7 +45,7 @@ public class PermissionTree {
      * @param permission Permission object.
      */
     public void addPermission(Permission permission) {
-        StringTokenizer st = new StringTokenizer(permission.getUrl(), "/");
+        StringTokenizer st = new StringTokenizer(permission.getUrl(), ROOT);
         PermissionNode tempRoot = rootNode;
         PermissionNode tempChild;
         while (st.hasMoreTokens()) {
@@ -84,7 +85,7 @@ public class PermissionTree {
      * no any permission that is stored with respected to the given request path.
      */
     public Permission getPermission(String url, String httpMethod) {
-        StringTokenizer st = new StringTokenizer(url, "/");
+        StringTokenizer st = new StringTokenizer(url, ROOT);
         PermissionNode tempRoot = rootNode;
         while (st.hasMoreTokens()) {
             String currentToken = st.nextToken();

@@ -26,6 +26,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.core.config.permission.Permission;
 import org.wso2.carbon.device.mgt.core.config.permission.PermissionManager;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.webapp.authenticator.framework.Constants;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 
 import java.util.StringTokenizer;
@@ -68,7 +69,8 @@ public class PermissionAuthorizer {
         boolean isUserAuthorized;
         try {
             isUserAuthorized = CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getAuthorizationManager().isUserAuthorized(username, permissionString, "read");
+                    getAuthorizationManager().isUserAuthorized(username, permissionString,
+                    Constants.PermissionMethod.READ);
         } catch (UserStoreException e) {
             log.error("Error occurred while retrieving user store. " + e.getMessage());
             return WebappAuthenticator.Status.FAILURE;

@@ -21,7 +21,6 @@ public final class Constants {
 
     public static final String AUTHORIZATION_HEADER_PREFIX_BEARER = "Bearer";
     public static final String NO_MATCHING_AUTH_SCHEME = "noMatchedAuthScheme";
-    public static final String PERMISSION_PATH = "/_system/governance/permission/admin/device-mgt/";
 
     public static final class HTTPHeaders {
         private HTTPHeaders() {
@@ -39,17 +38,6 @@ public final class Constants {
 
         public static final String CONTENT_TYPE_ANY = "*/*";
         public static final String CONTENT_TYPE_APPLICATION_XML = "application/xml";
-    }
-
-    public static final class HttpVerb {
-        private HttpVerb() {
-            throw new AssertionError();
-        }
-
-        public static final String GET = "GET";
-        public static final String POST = "POST";
-        public static final String DELETE = "DELETE";
-        public static final String PUT = "PUT";
     }
 
     public static final class PermissionMethod {

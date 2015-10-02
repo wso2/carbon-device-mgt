@@ -26,6 +26,16 @@ public class Permission{
 
 	private String name;
 	private String path;
+	private String scope;
+
+	public String getScope() {
+		return scope;
+	}
+
+	@XmlElement(name = "scope", required = true)
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
 
 	public String getName() {
 		return name;

@@ -17,7 +17,8 @@
  ~ under the License.
  -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -37,17 +38,18 @@
 
     <modules>
         <module>components/device-mgt</module>
-	    <module>components/apimgt-extensions</module>
+        <module>components/apimgt-extensions</module>
         <module>components/policy-mgt</module>
         <module>components/certificate-mgt</module>
         <module>components/webapp-authenticator-framework</module>
-        <module>components/dynamic-client-registration</module>
+        <module>components/identity-extensions</module>
         <module>features/device-mgt</module>
         <module>features/apimgt-extensions</module>
-	    <module>features/policy-mgt</module>
+        <module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
         <module>features/certificate-mgt</module>
         <module>features/dynamic-client-registration</module>
+        <module>features/oauth-extensions</module>
     </modules>
 
     <dependencyManagement>
@@ -184,6 +186,17 @@
                 <groupId>org.wso2.mdm</groupId>
                 <artifactId>dynamic-client-web</artifactId>
                 <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.oauth.extensions</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.wso2.carbon.identity</groupId>
+                        <artifactId>org.wso2.carbon.identity.oauth</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Device Management dependencies -->
 
@@ -370,8 +383,8 @@
                         <artifactId>bcprov-jdk15on</artifactId>
                     </exclusion>
                     <!--<exclusion>-->
-                        <!--<groupId>org.wso2.carbon</groupId>-->
-                        <!--<artifactId>org.wso2.carbon.queuing</artifactId>-->
+                    <!--<groupId>org.wso2.carbon</groupId>-->
+                    <!--<artifactId>org.wso2.carbon.queuing</artifactId>-->
                     <!--</exclusion>-->
                     <exclusion>
                         <groupId>org.wso2.carbon</groupId>
@@ -1006,7 +1019,8 @@
 
     <scm>
         <url>https://github.com/wso2/carbon-device-mgt.git</url>
-        <developerConnection>scm:git:https://github.com/wso2/carbon-device-mgt.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/wso2/carbon-device-mgt.git
+        </developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-device-mgt.git</connection>
         <tag>HEAD</tag>
     </scm>

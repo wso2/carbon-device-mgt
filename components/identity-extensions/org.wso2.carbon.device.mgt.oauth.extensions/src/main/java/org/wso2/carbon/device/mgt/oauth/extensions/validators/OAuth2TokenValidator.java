@@ -31,6 +31,7 @@ public class OAuth2TokenValidator extends DefaultOAuth2TokenValidator {
     @Override
     public boolean validateAccessToken(
             OAuth2TokenValidationMessageContext validationReqDTO) throws IdentityOAuth2Exception {
+        //for now there's no specific logic to handle in token validation
         return true;
     }
 }

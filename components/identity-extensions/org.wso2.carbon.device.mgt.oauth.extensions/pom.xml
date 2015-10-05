@@ -35,6 +35,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
         </dependency>
@@ -68,7 +72,8 @@
                         <Private-Package>org.wso2.carbon.device.mgt.oauth.extensions.internal</Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.oauth.extensions.internal,
-                            org.wso2.carbon.device.mgt.oauth.extensions.*
+                            org.wso2.carbon.device.mgt.oauth.extensions.handlers.*,
+                            org.wso2.carbon.device.mgt.oauth.extensions.validators.*
                         </Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>

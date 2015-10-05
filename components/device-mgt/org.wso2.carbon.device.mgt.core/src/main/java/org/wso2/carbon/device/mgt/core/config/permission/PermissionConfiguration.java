@@ -18,21 +18,26 @@
 
 package org.wso2.carbon.device.mgt.core.config.permission;
 
+import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement(name = "PermissionConfiguration")
+/**
+ * This class represents the information related to permission configuration.
+ */
+@XmlRootElement (name = "PermissionConfiguration")
 public class PermissionConfiguration {
 
-	private List<Permission> permissions;
+    private List<Permission> permissions;
 
-	public List<Permission> getPermissions() {
-		return permissions;
-	}
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
 
-	@XmlElement(name = "Permission", required = true)
-	public void setPermissions(List<Permission> permissions) {
-		this.permissions = permissions;
-	}
+    @XmlElement (name = "Permission", required = true)
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
+    }
 }

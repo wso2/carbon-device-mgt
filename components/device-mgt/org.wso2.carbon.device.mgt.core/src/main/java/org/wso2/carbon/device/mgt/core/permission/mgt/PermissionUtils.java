@@ -16,11 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.config.permission;
+package org.wso2.carbon.device.mgt.core.permission.mgt;
 
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
+import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
@@ -39,20 +41,20 @@ public class PermissionUtils {
 	public static String ADMIN_PERMISSION_REGISTRY_PATH = "/permission/admin";
 	public static String PERMISSION_PROPERTY_NAME = "name";
 
-	public static Registry getGovernanceRegistry() throws DeviceManagementException {
+	public static Registry getGovernanceRegistry() throws PermissionManagementException {
 		try {
 			int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 			return DeviceManagementDataHolder.getInstance().getRegistryService()
 			                                       .getGovernanceSystemRegistry(
 					                                       tenantId);
 		} catch (RegistryException e) {
-			throw new DeviceManagementException(
+			throw new PermissionManagementException(
 					"Error in retrieving governance registry instance: " +
 					e.getMessage(), e);
 		}
 	}
 
-	public static Permission getPermission(String path) throws DeviceManagementException {
+	public static Permission getPermission(String path) throws PermissionManagementException {
 		try {
 			Resource resource = PermissionUtils.getGovernanceRegistry().get(path);
 			Permission permission = new Permission();
@@ -60,13 +62,13 @@ public class PermissionUtils {
 			permission.setPath(resource.getPath());
 			return permission;
 		} catch (RegistryException e) {
-			throw new DeviceManagementException("Error in retrieving registry resource : " +
+			throw new PermissionManagementException("Error in retrieving registry resource : " +
 			                                         e.getMessage(), e);
 		}
 	}
 
 	public static boolean putPermission(Permission permission)
-			throws DeviceManagementException {
+			throws PermissionManagementException {
 		boolean status;
 		try {
 			Resource resource = PermissionUtils.getGovernanceRegistry().newCollection();
@@ -77,27 +79,27 @@ public class PermissionUtils {
 			PermissionUtils.getGovernanceRegistry().commitTransaction();
 			status = true;
 		} catch (RegistryException e) {
-			throw new DeviceManagementException(
+			throw new PermissionManagementException(
 					"Error occurred while persisting permission : " +
 					permission.getName(), e);
 		}
 		return status;
 	}
 
-	public static boolean checkPermissionExistance(Permission permission)
-			throws DeviceManagementException,
+	public static boolean checkPermissionExistence(Permission permission)
+			throws PermissionManagementException,
 			       org.wso2.carbon.registry.core.exceptions.RegistryException {
 		return PermissionUtils.getGovernanceRegistry().resourceExists(permission.getPath());
 	}
 
-	public static Document convertToDocument(File file) throws DeviceManagementException {
+	public static Document convertToDocument(File file) throws PermissionManagementException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
 		try {
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
 			return docBuilder.parse(file);
 		} catch (Exception e) {
-			throw new DeviceManagementException("Error occurred while parsing file, while converting " +
+			throw new PermissionManagementException("Error occurred while parsing file, while converting " +
 			                                    "to a org.w3c.dom.Document", e);
 		}
 	}

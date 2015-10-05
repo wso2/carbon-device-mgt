@@ -21,6 +21,8 @@ package org.wso2.carbon.device.mgt.oauth.extensions.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
+import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -31,6 +33,18 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
+ * @scr.reference name="identity.oauth2.validation.service"
+ * interface="org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setOAuth2ValidationService"
+ * unbind="unsetOAuth2ValidationService"
+ * @scr.reference name="permission.manager.service"
+ * interface="org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setPermissionManagerService"
+ * unbind="unsetPermissionManagerService"
  */
 public class OAuthExtensionServiceComponent {
 
@@ -72,6 +86,54 @@ public class OAuthExtensionServiceComponent {
             log.debug("Unsetting Realm Service");
         }
         OAuthExtensionsDataHolder.getInstance().setRealmService(null);
+    }
+
+    /**
+     * Sets OAuth2TokenValidation Service.
+     *
+     * @param tokenValidationService An instance of OAuth2TokenValidationService
+     */
+    protected void setOAuth2ValidationService(OAuth2TokenValidationService tokenValidationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting OAuth2TokenValidation Service");
+        }
+        OAuthExtensionsDataHolder.getInstance().setoAuth2TokenValidationService(tokenValidationService);
+    }
+
+    /**
+     * Unsets OAuth2TokenValidation Service.
+     *
+     * @param tokenValidationService An instance of OAuth2TokenValidationService
+     */
+    protected void unsetOAuth2ValidationService(OAuth2TokenValidationService tokenValidationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting OAuth2TokenValidation Service");
+        }
+        OAuthExtensionsDataHolder.getInstance().setoAuth2TokenValidationService(null);
+    }
+
+    /**
+     * Sets PermissionManagerService Service.
+     *
+     * @param permissionManagerService An instance of PermissionManagerService
+     */
+    protected void setPermissionManagerService(PermissionManagerService permissionManagerService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting PermissionManager Service");
+        }
+        OAuthExtensionsDataHolder.getInstance().setPermissionManagerService(permissionManagerService);
+    }
+
+    /**
+     * Unsets PermissionManagerService Service.
+     *
+     * @param permissionManagerService An instance of PermissionManagerService
+     */
+    protected void unsetPermissionManagerService(PermissionManagerService permissionManagerService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting PermissionManager Service");
+        }
+        OAuthExtensionsDataHolder.getInstance().setPermissionManagerService(null);
     }
 
 }

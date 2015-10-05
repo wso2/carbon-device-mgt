@@ -20,6 +20,7 @@ package org.wso2.carbon.webapp.authenticator.framework;
 
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
+import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 public class DataHolder {
@@ -28,6 +29,8 @@ public class DataHolder {
     private RealmService realmService;
     private CertificateManagementService certificateManagementService;
     private SCEPManager scepManager;
+    private OAuth2TokenValidationService oAuth2TokenValidationService;
+
     private static DataHolder thisInstance = new DataHolder();
 
     private DataHolder() {}
@@ -45,6 +48,9 @@ public class DataHolder {
     }
 
     public RealmService getRealmService() {
+        if (realmService == null) {
+            throw new IllegalStateException("Realm service is not initialized properly");
+        }
         return realmService;
     }
 
@@ -53,6 +59,9 @@ public class DataHolder {
     }
 
     public CertificateManagementService getCertificateManagementService() {
+        if (certificateManagementService == null) {
+            throw new IllegalStateException("CertificateManagement service is not initialized properly");
+        }
         return certificateManagementService;
     }
 
@@ -61,10 +70,25 @@ public class DataHolder {
     }
 
     public SCEPManager getScepManager() {
+        if (scepManager == null) {
+            throw new IllegalStateException("SCEPManager service is not initialized properly");
+        }
         return scepManager;
     }
 
     public void setScepManager(SCEPManager scepManager) {
         this.scepManager = scepManager;
+    }
+
+    public OAuth2TokenValidationService getoAuth2TokenValidationService() {
+        if (oAuth2TokenValidationService == null) {
+            throw new IllegalStateException("OAuth2TokenValidation service is not initialized properly");
+        }
+        return oAuth2TokenValidationService;
+    }
+
+    public void setoAuth2TokenValidationService(
+            OAuth2TokenValidationService oAuth2TokenValidationService) {
+        this.oAuth2TokenValidationService = oAuth2TokenValidationService;
     }
 }

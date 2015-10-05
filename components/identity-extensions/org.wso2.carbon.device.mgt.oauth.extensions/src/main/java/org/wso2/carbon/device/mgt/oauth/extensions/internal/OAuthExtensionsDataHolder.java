@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.oauth.extensions.internal;
 
+import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
+import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -26,6 +28,8 @@ import org.wso2.carbon.user.core.service.RealmService;
 public class OAuthExtensionsDataHolder {
 
     private RealmService realmService;
+    private OAuth2TokenValidationService oAuth2TokenValidationService;
+    private PermissionManagerService permissionManagerService;
 
     private static OAuthExtensionsDataHolder thisInstance = new OAuthExtensionsDataHolder();
 
@@ -36,10 +40,36 @@ public class OAuthExtensionsDataHolder {
     }
 
     public RealmService getRealmService() {
+        if (realmService == null) {
+            throw new IllegalStateException("Realm service is not initialized properly");
+        }
         return realmService;
     }
 
     public void setRealmService(RealmService realmService) {
         this.realmService = realmService;
+    }
+
+    public OAuth2TokenValidationService getoAuth2TokenValidationService() {
+        if (oAuth2TokenValidationService == null) {
+            throw new IllegalStateException("OAuth2TokenValidation service is not initialized properly");
+        }
+        return oAuth2TokenValidationService;
+    }
+
+    public void setoAuth2TokenValidationService(
+            OAuth2TokenValidationService oAuth2TokenValidationService) {
+        this.oAuth2TokenValidationService = oAuth2TokenValidationService;
+    }
+
+    public void setPermissionManagerService(PermissionManagerService permissionManagerService) {
+        this.permissionManagerService = permissionManagerService;
+    }
+
+    public PermissionManagerService getPermissionManagerService() {
+        if (permissionManagerService == null) {
+            throw new IllegalStateException("PermissionManager service is not initialized properly");
+        }
+        return permissionManagerService;
     }
 }

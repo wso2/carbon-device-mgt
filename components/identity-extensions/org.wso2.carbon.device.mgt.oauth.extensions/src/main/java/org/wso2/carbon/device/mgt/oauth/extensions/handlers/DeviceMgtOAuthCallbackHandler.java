@@ -55,6 +55,7 @@ public class DeviceMgtOAuthCallbackHandler  extends AbstractOAuthCallbackHandler
                 String[] scopes = oauthCallback.getRequestedScope();
                 oauthCallback.setApprovedScope(scopes);
                 oauthCallback.setValidScope(true);
+                //TODO Need to write the necessary logic to validate the scope
             }
         }
 

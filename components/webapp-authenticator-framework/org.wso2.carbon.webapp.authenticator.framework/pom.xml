@@ -95,6 +95,7 @@
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.certificate.mgt.core.service,
                             org.wso2.carbon.certificate.mgt.core.exception,
+                            org.wso2.carbon.device.mgt.core.config.permission,
                             org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.core.scep
                         </Import-Package>

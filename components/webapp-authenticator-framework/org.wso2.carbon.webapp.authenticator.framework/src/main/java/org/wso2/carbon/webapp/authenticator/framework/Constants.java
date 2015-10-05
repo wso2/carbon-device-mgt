@@ -40,4 +40,14 @@ public final class Constants {
         public static final String CONTENT_TYPE_APPLICATION_XML = "application/xml";
     }
 
+    public static final class PermissionMethod {
+        private PermissionMethod() {
+            throw new AssertionError();
+        }
+
+        public static final String READ = "read";
+        public static final String WRITE = "write";
+        public static final String DELETE = "delete";
+        public static final String ACTION = "action";
+    }
 }

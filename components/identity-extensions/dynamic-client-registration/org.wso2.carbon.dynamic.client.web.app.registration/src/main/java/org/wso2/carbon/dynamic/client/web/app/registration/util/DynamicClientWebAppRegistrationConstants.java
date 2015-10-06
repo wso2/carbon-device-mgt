@@ -21,7 +21,7 @@ package org.wso2.carbon.dynamic.client.web.app.registration.util;
 /**
  * Holds the constants to be used in Dynamic client web app registration component.
  */
-public class DynamicClientRegistrationConstants {
+public class DynamicClientWebAppRegistrationConstants {
 
     public final static String OAUTH_APP_DATA_REGISTRY_PATH = "/OAuth";
     public final static String OAUTH_APP_NAME = "appName";

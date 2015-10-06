@@ -76,7 +76,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Setting Realm Service");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setRealmService(realmService);
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setRealmService(realmService);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Unsetting Realm Service");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setRealmService(null);
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setRealmService(null);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Setting Registry Service");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setRegistryService(registryService);
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setRegistryService(registryService);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Un setting Registry Service");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setRegistryService(null);
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setRegistryService(null);
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Setting Dynamic Client Registration Service");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(
 				dynamicClientRegistrationService);
 	}
 
@@ -137,7 +137,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Un setting Dynamic Client Registration Service");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(null);
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(null);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Setting ConfigurationContextService");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setConfigurationContextService(configurationContextService);
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setConfigurationContextService(configurationContextService);
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Un-setting ConfigurationContextService");
 		}
-		DynamicClientRegistrationDataHolder.getInstance().setConfigurationContextService(null);
+		DynamicClientWebAppRegistrationDataHolder.getInstance().setConfigurationContextService(null);
 	}
 
 }

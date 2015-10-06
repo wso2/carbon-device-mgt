@@ -26,20 +26,20 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 /**
  * Dataholder class of DynamicClient Webapp Registration component.
  */
-public class DynamicClientRegistrationDataHolder {
+public class DynamicClientWebAppRegistrationDataHolder {
 
     private RealmService realmService;
     private RegistryService registryService;
     private DynamicClientRegistrationService dynamicClientRegistrationService;
     private ConfigurationContextService configurationContextService;
 
-    private static DynamicClientRegistrationDataHolder thisInstance =
-            new DynamicClientRegistrationDataHolder();
+    private static DynamicClientWebAppRegistrationDataHolder thisInstance =
+            new DynamicClientWebAppRegistrationDataHolder();
 
-    private DynamicClientRegistrationDataHolder() {
+    private DynamicClientWebAppRegistrationDataHolder() {
     }
 
-    public static DynamicClientRegistrationDataHolder getInstance() {
+    public static DynamicClientWebAppRegistrationDataHolder getInstance() {
         return thisInstance;
     }
 

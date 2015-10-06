@@ -26,7 +26,7 @@ import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationExce
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
 import org.wso2.carbon.dynamic.client.web.app.registration.OAuthApp;
 import org.wso2.carbon.dynamic.client.web.app.registration.OAuthSettings;
-import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientRegistrationDataHolder;
+import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientWebAppRegistrationDataHolder;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Registry;
@@ -62,7 +62,7 @@ public class DynamicClientWebAppRegistrationUtil {
     public static Registry getGovernanceRegistry() throws DynamicClientRegistrationException {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            return DynamicClientRegistrationDataHolder.getInstance().getRegistryService()
+            return DynamicClientWebAppRegistrationDataHolder.getInstance().getRegistryService()
                                                       .getGovernanceSystemRegistry(
                                                               tenantId);
         } catch (RegistryException e) {
@@ -76,7 +76,7 @@ public class DynamicClientWebAppRegistrationUtil {
             throws DynamicClientRegistrationException {
         Resource resource;
         String resourcePath =
-                DynamicClientRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" + appName;
+                DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" + appName;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Retrieving OAuth application " + appName + " data from Registry");
@@ -88,7 +88,7 @@ public class DynamicClientWebAppRegistrationUtil {
                 return (OAuthApp) unmarshaller.unmarshal(
                         new StringReader(new String((byte[]) resource.getContent(), Charset
                                 .forName(
-                                        DynamicClientRegistrationConstants.CharSets.CHARSET_UTF8))));
+                                        DynamicClientWebAppRegistrationConstants.CharSets.CHARSET_UTF8))));
             }
             return new OAuthApp();
         } catch (JAXBException e) {
@@ -116,9 +116,9 @@ public class DynamicClientWebAppRegistrationUtil {
             Resource resource =
                     DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
             resource.setContent(writer.toString());
-            resource.setMediaType(DynamicClientRegistrationConstants.ContentTypes.MEDIA_TYPE_XML);
+            resource.setMediaType(DynamicClientWebAppRegistrationConstants.ContentTypes.MEDIA_TYPE_XML);
             String resourcePath =
-                    DynamicClientRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
+                    DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
                     oAuthApp.getWebAppName();
             status =
                     DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);
@@ -172,7 +172,7 @@ public class DynamicClientWebAppRegistrationUtil {
     public static String getUserName() {
         String username = "";
         RealmService realmService =
-                DynamicClientRegistrationDataHolder.getInstance().getRealmService();
+                DynamicClientWebAppRegistrationDataHolder.getInstance().getRealmService();
         if (realmService != null) {
             username = realmService.getBootstrapRealmConfiguration().getAdminUserName();
         }
@@ -252,7 +252,7 @@ public class DynamicClientWebAppRegistrationUtil {
                 while (reader.hasNext()) {
                     String key = reader.nextName();
                     switch (key) {
-                        case DynamicClientRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG:
+                        case DynamicClientWebAppRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG:
                             oAuthSettings.setRequireDynamicClientRegistration(reader.nextBoolean());
                             break;
                         case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_GRANT_TYPE:
@@ -289,7 +289,7 @@ public class DynamicClientWebAppRegistrationUtil {
         // HTTPS port
         String mgtConsoleTransport = CarbonUtils.getManagementTransport();
         ConfigurationContextService configContextService =
-                DynamicClientRegistrationDataHolder.getInstance().getConfigurationContextService();
+                DynamicClientWebAppRegistrationDataHolder.getInstance().getConfigurationContextService();
         int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
         int httpsProxyPort =
                 CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
@@ -310,9 +310,9 @@ public class DynamicClientWebAppRegistrationUtil {
             //Check for client credentials
             if ((oAuthApp.getClientKey() != null && !oAuthApp.getClientKey().isEmpty()) &&
                 (oAuthApp.getClientSecret() != null && !oAuthApp.getClientSecret().isEmpty())) {
-                servletContext.setAttribute(DynamicClientRegistrationConstants.OAUTH_CLIENT_KEY,
+                servletContext.setAttribute(DynamicClientWebAppRegistrationConstants.OAUTH_CLIENT_KEY,
                                             oAuthApp.getClientKey());
-                servletContext.setAttribute(DynamicClientRegistrationConstants.OAUTH_CLIENT_SECRET,
+                servletContext.setAttribute(DynamicClientWebAppRegistrationConstants.OAUTH_CLIENT_SECRET,
                                             oAuthApp.getClientSecret());
             } else {
                 log.warn("Client credentials not found for web app : " + oAuthApp.getWebAppName());

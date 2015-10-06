@@ -55,7 +55,7 @@ public class Permission {
         return scope;
     }
 
-    @XmlElement(name = "scope", required = true)
+    @XmlElement(name = "scope", required = false)
 	public void setScope(String scope) {
 		this.scope = scope;
 	}

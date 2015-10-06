@@ -45,7 +45,7 @@ import org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementSe
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.permission.mgt.RegistryBasedPermissionManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
@@ -191,7 +191,7 @@ public class DeviceManagementServiceComponent {
 
         /* Registering PermissionManager Service */
         PermissionManagerService permissionManagerService
-                = RegistryBasedPermissionManagerServiceImpl.getInstance();
+                = PermissionManagerServiceImpl.getInstance();
         bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
 
 	     /* Registering App Management service */

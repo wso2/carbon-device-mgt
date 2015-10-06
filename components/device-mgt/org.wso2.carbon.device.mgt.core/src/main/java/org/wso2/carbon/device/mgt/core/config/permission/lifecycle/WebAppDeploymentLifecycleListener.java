@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.core.config.permission.PermissionConfiguration;
-import org.wso2.carbon.device.mgt.core.permission.mgt.RegistryBasedPermissionManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
 
 import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
@@ -35,6 +35,10 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.InputStream;
 
+/**
+ * This listener class will initiate the permission addition of permissions defined in
+ * permission.xml of any web-app.
+ */
 @SuppressWarnings("unused")
 public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 
@@ -56,7 +60,7 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 							unmarshaller.unmarshal(permissionStream);
 					if (permissionConfiguration != null &&
 					    permissionConfiguration.getPermissions() != null) {
-						RegistryBasedPermissionManagerServiceImpl.getInstance().addPermissions(
+						PermissionManagerServiceImpl.getInstance().addPermissions(
 								permissionConfiguration.getPermissions());
 					}
 				}

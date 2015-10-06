@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.device.mgt.common.permission.mgt;
 
+/**
+ * Custom exception class of Permission related operations.
+ */
 public class PermissionManagementException extends Exception {
 
     private static final long serialVersionUID = -3151279311929070298L;

@@ -30,6 +30,7 @@ import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
 import org.wso2.carbon.webapp.authenticator.framework.Constants;
@@ -122,6 +123,8 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
                                 IdentityUtil.getTenantIdOFUser(username));
                         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
+                                MultitenantUtils.getTenantDomain(username));
                     } catch (IdentityException e) {
                         throw new AuthenticationException(
                                 "Error occurred while retrieving the tenant ID of user '" +

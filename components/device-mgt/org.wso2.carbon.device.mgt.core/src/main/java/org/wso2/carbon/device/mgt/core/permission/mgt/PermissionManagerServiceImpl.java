@@ -29,21 +29,21 @@ import java.util.Properties;
  * This class will add, update custom permissions defined in permission.xml in webapps and it will
  * use Registry as the persistence storage.
  */
-public class RegistryBasedPermissionManagerServiceImpl implements PermissionManagerService {
+public class PermissionManagerServiceImpl implements PermissionManagerService {
 
     public static final String URL_PROPERTY = "URL";
     public static final String HTTP_METHOD_PROPERTY = "HTTP_METHOD";
-    private static RegistryBasedPermissionManagerServiceImpl registryBasedPermissionManager;
+    private static PermissionManagerServiceImpl registryBasedPermissionManager;
     private static PermissionTree permissionTree; // holds the permissions at runtime.
 
-    private RegistryBasedPermissionManagerServiceImpl() {
+    private PermissionManagerServiceImpl() {
     }
 
-    public static RegistryBasedPermissionManagerServiceImpl getInstance() {
+    public static PermissionManagerServiceImpl getInstance() {
         if (registryBasedPermissionManager == null) {
-            synchronized (RegistryBasedPermissionManagerServiceImpl.class) {
+            synchronized (PermissionManagerServiceImpl.class) {
                 if (registryBasedPermissionManager == null) {
-                    registryBasedPermissionManager = new RegistryBasedPermissionManagerServiceImpl();
+                    registryBasedPermissionManager = new PermissionManagerServiceImpl();
                     permissionTree = new PermissionTree();
                 }
             }

@@ -31,6 +31,7 @@ import org.wso2.carbon.registry.core.Registry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.StringTokenizer;
 
 /**
  * Utility class which holds necessary utility methods required for persisting permissions in
@@ -71,12 +72,16 @@ public class PermissionUtils {
 			throws PermissionManagementException {
 		boolean status;
 		try {
-			Resource resource = PermissionUtils.getGovernanceRegistry().newCollection();
-			resource.addProperty(PERMISSION_PROPERTY_NAME, permission.getName());
-			PermissionUtils.getGovernanceRegistry().beginTransaction();
-			PermissionUtils.getGovernanceRegistry().put(ADMIN_PERMISSION_REGISTRY_PATH +
-			                                         permission.getPath(), resource);
-			PermissionUtils.getGovernanceRegistry().commitTransaction();
+			StringTokenizer tokenizer = new StringTokenizer(permission.getPath(), "/");
+			String lastToken = "", currentToken, tempPath;
+			while(tokenizer.hasMoreTokens()){
+				currentToken = tokenizer.nextToken();
+				tempPath = lastToken + "/" + currentToken;
+				if(!checkResourceExists(tempPath)){
+                    createRegistryCollection(tempPath, currentToken.substring(0));
+				}
+				lastToken = tempPath;
+			}
 			status = true;
 		} catch (RegistryException e) {
 			throw new PermissionManagementException(
@@ -86,10 +91,21 @@ public class PermissionUtils {
 		return status;
 	}
 
-	public static boolean checkPermissionExistence(Permission permission)
+	public static void createRegistryCollection(String path, String resourceName)
+			throws PermissionManagementException,
+			       RegistryException {
+		Resource resource = PermissionUtils.getGovernanceRegistry().newCollection();
+		resource.addProperty(PERMISSION_PROPERTY_NAME, resourceName);
+		PermissionUtils.getGovernanceRegistry().beginTransaction();
+		PermissionUtils.getGovernanceRegistry().put(ADMIN_PERMISSION_REGISTRY_PATH +
+		                                            path, resource);
+		PermissionUtils.getGovernanceRegistry().commitTransaction();
+	}
+
+	public static boolean checkResourceExists(String path)
 			throws PermissionManagementException,
 			       org.wso2.carbon.registry.core.exceptions.RegistryException {
-		return PermissionUtils.getGovernanceRegistry().resourceExists(permission.getPath());
+		return PermissionUtils.getGovernanceRegistry().resourceExists(path);
 	}
 
 	public static Document convertToDocument(File file) throws PermissionManagementException {

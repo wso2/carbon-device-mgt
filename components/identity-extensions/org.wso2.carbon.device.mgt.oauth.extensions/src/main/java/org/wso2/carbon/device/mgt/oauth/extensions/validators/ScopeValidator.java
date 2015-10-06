@@ -28,12 +28,14 @@ import org.wso2.carbon.device.mgt.oauth.extensions.internal.OAuthExtensionsDataH
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
+import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.Properties;
 
 /**
- * Custom OAuth2Token Scope validation implementation.
+ * Custom OAuth2Token Scope validation implementation for DeviceManagement. This will validate the
+ * user permissions before dispatching the HTTP request to the actual endpoint.
  */
 public class ScopeValidator extends OAuth2ScopeValidator {
 
@@ -72,6 +74,11 @@ public class ScopeValidator extends OAuth2ScopeValidator {
             status = CarbonContext.getThreadLocalCarbonContext().getUserRealm().
                     getAuthorizationManager().isUserAuthorized(username, permission.getPath(),
                                                                ScopeValidator.PermissionMethod.READ);
+            UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
+            if(userRealm != null && userRealm.getAuthorizationManager() != null){
+                status = userRealm.getAuthorizationManager().isUserAuthorized(username, permission.getPath(),
+                                                                              ScopeValidator.PermissionMethod.READ);
+            }
 
         } catch (PermissionManagementException e) {
             log.error("Error occurred while validating the resource scope for : " + resource +

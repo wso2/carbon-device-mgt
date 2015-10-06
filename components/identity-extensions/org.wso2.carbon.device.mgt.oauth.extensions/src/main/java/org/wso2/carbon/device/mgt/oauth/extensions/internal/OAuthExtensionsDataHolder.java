@@ -23,7 +23,7 @@ import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
- * Created by harshan on 10/2/15.
+ * This holds the OSGi service references required for oauth extensions bundle.
  */
 public class OAuthExtensionsDataHolder {
 

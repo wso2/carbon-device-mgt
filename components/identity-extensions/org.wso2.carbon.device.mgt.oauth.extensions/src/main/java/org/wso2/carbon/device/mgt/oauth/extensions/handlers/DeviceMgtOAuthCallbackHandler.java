@@ -27,7 +27,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 
 /**
- * Created by harshan on 10/1/15.
+ * This class represents a Custom OAuthCallback Handler implementation. This should be implemented
+ * if there's any necessity of custom logic to authorize OAuthCallbacks.
  */
 public class DeviceMgtOAuthCallbackHandler  extends AbstractOAuthCallbackHandler {
 
@@ -55,7 +56,7 @@ public class DeviceMgtOAuthCallbackHandler  extends AbstractOAuthCallbackHandler
                 String[] scopes = oauthCallback.getRequestedScope();
                 oauthCallback.setApprovedScope(scopes);
                 oauthCallback.setValidScope(true);
-                //TODO Need to write the necessary logic to validate the scope
+                //Add the necessary logic if we are doing the scope validation upon token issue
             }
         }
 

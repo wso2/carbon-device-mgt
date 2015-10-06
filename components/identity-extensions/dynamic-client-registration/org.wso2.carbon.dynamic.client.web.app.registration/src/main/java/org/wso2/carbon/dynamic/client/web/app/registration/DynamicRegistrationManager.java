@@ -123,8 +123,8 @@ public class DynamicRegistrationManager {
             //Check whether this is an already registered application
             if (!dynamicRegistrationManager.isRegisteredOAuthApplication(webAppName)) {
                 //Construct the RegistrationProfile
-                registrationProfile = DynamicClientWebAppRegistrationUtil
-                        .constructRegistrationProfile(servletContext, webAppName);
+                registrationProfile = DynamicClientWebAppRegistrationUtil.
+                                           constructRegistrationProfile(servletContext, webAppName);
                 //Register the OAuth application
                 oAuthApp = dynamicRegistrationManager.registerOAuthApplication(
                         registrationProfile);

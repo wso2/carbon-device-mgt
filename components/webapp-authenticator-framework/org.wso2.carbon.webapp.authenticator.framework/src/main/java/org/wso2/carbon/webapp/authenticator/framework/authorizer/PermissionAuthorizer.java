@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
-import org.wso2.carbon.device.mgt.core.permission.mgt.RegistryBasedPermissionManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.webapp.authenticator.framework.Constants;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
@@ -49,7 +49,8 @@ public class PermissionAuthorizer {
             return WebappAuthenticator.Status.CONTINUE;
         }
 
-        RegistryBasedPermissionManagerServiceImpl registryBasedPermissionManager = RegistryBasedPermissionManagerServiceImpl.getInstance();
+        PermissionManagerServiceImpl
+                registryBasedPermissionManager = PermissionManagerServiceImpl.getInstance();
         Properties properties = new Properties();
         properties.put("",requestUri);
         properties.put("",requestMethod);

@@ -31,13 +31,11 @@ import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationHandler;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
-import org.wso2.carbon.webapp.authenticator.framework.authorizer.PermissionAuthorizationValve;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * @scr.component name="org.wso2.carbon.webapp.authenticator" immediate="true"

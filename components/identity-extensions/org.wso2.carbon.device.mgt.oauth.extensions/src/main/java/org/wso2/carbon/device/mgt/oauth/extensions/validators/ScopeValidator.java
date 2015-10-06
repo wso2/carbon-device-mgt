@@ -70,8 +70,8 @@ public class ScopeValidator extends OAuth2ScopeValidator {
                 getPermissionManagerService();
         try {
             Permission permission = permissionManagerService.getPermission(properties);
-            if(permission != null){
-                String username = accessTokenDO.getAuthzUser();
+            if((permission != null) && (accessTokenDO.getAuthzUser() != null)) {
+                String username = accessTokenDO.getAuthzUser().getUserName();
                 UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
                 if(userRealm != null && userRealm.getAuthorizationManager() != null){
                     status = userRealm.getAuthorizationManager().isUserAuthorized(username, permission.getPath(),

@@ -70,16 +70,14 @@ public class ScopeValidator extends OAuth2ScopeValidator {
                 getPermissionManagerService();
         try {
             Permission permission = permissionManagerService.getPermission(properties);
-            String username = accessTokenDO.getAuthzUser();
-            status = CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getAuthorizationManager().isUserAuthorized(username, permission.getPath(),
-                                                               ScopeValidator.PermissionMethod.READ);
-            UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
-            if(userRealm != null && userRealm.getAuthorizationManager() != null){
-                status = userRealm.getAuthorizationManager().isUserAuthorized(username, permission.getPath(),
-                                                                              ScopeValidator.PermissionMethod.READ);
+            if(permission != null){
+                String username = accessTokenDO.getAuthzUser();
+                UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
+                if(userRealm != null && userRealm.getAuthorizationManager() != null){
+                    status = userRealm.getAuthorizationManager().isUserAuthorized(username, permission.getPath(),
+                                                                                  PermissionMethod.READ);
+                }
             }
-
         } catch (PermissionManagementException e) {
             log.error("Error occurred while validating the resource scope for : " + resource +
                       ", Msg = " + e.getMessage(), e);

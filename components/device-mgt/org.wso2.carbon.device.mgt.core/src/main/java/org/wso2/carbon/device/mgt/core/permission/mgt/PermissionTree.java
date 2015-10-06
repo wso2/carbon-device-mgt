@@ -87,18 +87,19 @@ public class PermissionTree {
      */
     public Permission getPermission(String url, String httpMethod) {
         StringTokenizer st = new StringTokenizer(url, ROOT);
-        PermissionNode tempRoot = rootNode;
+        PermissionNode tempRoot;
+        PermissionNode currentRoot = rootNode;
         while (st.hasMoreTokens()) {
             String currentToken = st.nextToken();
 
             // returns the child node which matches with the 'currentToken' path.
-            tempRoot = tempRoot.getChild(currentToken);
+            tempRoot = currentRoot.getChild(currentToken);
 
             // if tempRoot is null, that means 'currentToken' is not matched with the child's path.
             // It means that it is at a point where the request must have dynamic path variables.
             // Therefor it looks for '*' in the request path. ('*' denotes dynamic path variable).
             if (tempRoot == null) {
-                tempRoot = tempRoot.getChild(DYNAMIC_PATH_NOTATION);
+                tempRoot = currentRoot.getChild(DYNAMIC_PATH_NOTATION);
                 // if tempRoot is null, that means there is no any permission which matches with the
                 // given path
                 if (tempRoot == null) {
@@ -108,7 +109,8 @@ public class PermissionTree {
                     return null;
                 }
             }
+            currentRoot = tempRoot;
         }
-        return tempRoot.getPermission(httpMethod);
+        return currentRoot.getPermission(httpMethod);
     }
 }

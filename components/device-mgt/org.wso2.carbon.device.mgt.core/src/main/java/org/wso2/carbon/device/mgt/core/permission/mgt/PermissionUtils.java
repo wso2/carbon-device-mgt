@@ -55,6 +55,10 @@ public class PermissionUtils {
 		}
 	}
 
+	public static String getAbsolutePermissionPath(String permissionPath) {
+		return PermissionUtils.ADMIN_PERMISSION_REGISTRY_PATH + permissionPath;
+	}
+
 	public static Permission getPermission(String path) throws PermissionManagementException {
 		try {
 			Resource resource = PermissionUtils.getGovernanceRegistry().get(path);
@@ -97,8 +101,7 @@ public class PermissionUtils {
 		Resource resource = PermissionUtils.getGovernanceRegistry().newCollection();
 		resource.addProperty(PERMISSION_PROPERTY_NAME, resourceName);
 		PermissionUtils.getGovernanceRegistry().beginTransaction();
-		PermissionUtils.getGovernanceRegistry().put(ADMIN_PERMISSION_REGISTRY_PATH +
-		                                            path, resource);
+		PermissionUtils.getGovernanceRegistry().put(path, resource);
 		PermissionUtils.getGovernanceRegistry().commitTransaction();
 	}
 

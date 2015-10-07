@@ -20,7 +20,7 @@ package org.wso2.carbon.dynamic.client.web;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-public class RegistrationResponse extends Response {
+public abstract class RegistrationResponse extends Response {
 
     @Override
     public Object getEntity() {

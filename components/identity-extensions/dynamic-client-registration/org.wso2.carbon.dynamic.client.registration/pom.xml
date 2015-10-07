@@ -38,6 +38,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>1.4.0</version>
                 <extensions>true</extensions>
@@ -47,7 +51,6 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Dynamic Client Registration Bundle</Bundle-Description>
-                        <Bundle-Activator>org.wso2.carbon.dynamic.client.registration.internal.DynamicClientRegistrationBundleActivator</Bundle-Activator>
                         <Private-Package>org.wso2.carbon.dynamic.client.registration.internal</Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.dynamic.client.registration.internal,

@@ -37,7 +37,7 @@ import java.util.Properties;
  * Custom OAuth2Token Scope validation implementation for DeviceManagement. This will validate the
  * user permissions before dispatching the HTTP request to the actual endpoint.
  */
-public class ScopeValidator extends OAuth2ScopeValidator {
+public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
 
     private static final String URL_PROPERTY = "URL";
     private static final String HTTP_METHOD_PROPERTY = "HTTP_METHOD";
@@ -52,7 +52,7 @@ public class ScopeValidator extends OAuth2ScopeValidator {
         public static final String ACTION = "action";
     }
 
-    private static final Log log = LogFactory.getLog(ScopeValidator.class);
+    private static final Log log = LogFactory.getLog(PermissionBasedScopeValidator.class);
 
     @Override
     public boolean validateScope(AccessTokenDO accessTokenDO, String resource)
@@ -64,8 +64,8 @@ public class ScopeValidator extends OAuth2ScopeValidator {
         String method = resource.substring(++idx, resource.length());
 
         Properties properties = new Properties();
-        properties.put(ScopeValidator.URL_PROPERTY, url);
-        properties.put(ScopeValidator.HTTP_METHOD_PROPERTY, method);
+        properties.put(PermissionBasedScopeValidator.URL_PROPERTY, url);
+        properties.put(PermissionBasedScopeValidator.HTTP_METHOD_PROPERTY, method);
         PermissionManagerService permissionManagerService = OAuthExtensionsDataHolder.getInstance().
                 getPermissionManagerService();
         try {

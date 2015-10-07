@@ -25,6 +25,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.dynamic.client.registration.*;
+import org.wso2.carbon.dynamic.client.registration.internal.DynamicClientRegistrationDataHolder;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.*;
@@ -153,7 +154,8 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
 
             serviceProvider.setDescription("Service Provider for application " + applicationName);
 
-            ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+            ApplicationManagementService appMgtService = DynamicClientRegistrationDataHolder.
+                                                   getInstance().getApplicationManagementService();
             if (appMgtService == null) {
                 throw new IllegalStateException(
                         "Error occurred while retrieving Application Management" +
@@ -164,7 +166,7 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
                     applicationName, tenantDomain);
 
             if (existingServiceProvider == null) {
-                appMgtService.createApplication(serviceProvider, userName, tenantDomain);
+                appMgtService.createApplication(serviceProvider, tenantDomain, userName);
             }
 
             ServiceProvider createdServiceProvider = appMgtService.getServiceProvider(
@@ -324,7 +326,8 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
         try {
             oAuthAdminService.removeOAuthApplicationData(consumerKey);
 
-            ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+            ApplicationManagementService appMgtService = DynamicClientRegistrationDataHolder.
+                                                    getInstance().getApplicationManagementService();
 
             if (appMgtService == null) {
                 throw new IllegalStateException(
@@ -357,15 +360,17 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
 
     @Override
     public boolean isOAuthApplicationExists(String applicationName) throws DynamicClientRegistrationException {
-        ApplicationManagementService appMgtService = ApplicationManagementService.getInstance();
+        ApplicationManagementService appMgtService = DynamicClientRegistrationDataHolder.
+                                                    getInstance().getApplicationManagementService();
         if (appMgtService == null) {
             throw new IllegalStateException(
                     "Error occurred while retrieving Application Management" +
                             "Service");
         }
         try {
-            if (ApplicationManagementService.getInstance().getServiceProvider(applicationName,
-                           CarbonContext.getThreadLocalCarbonContext().getTenantDomain()) != null) {
+            if (appMgtService.getServiceProvider(applicationName,
+                                                 CarbonContext.getThreadLocalCarbonContext()
+                                                              .getTenantDomain()) != null) {
                 return true;
             }
         } catch (IdentityApplicationManagementException e) {

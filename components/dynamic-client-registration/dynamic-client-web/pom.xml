@@ -37,7 +37,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.2</version>
@@ -61,7 +60,6 @@
             </plugin>
         </plugins>
     </build>
-
 
     <dependencies>
         <dependency>
@@ -149,6 +147,20 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

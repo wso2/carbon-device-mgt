@@ -7,7 +7,7 @@ target
 *.iws
 *.ipr
 .idea
-
+*.ids
 # Mac crap
 .DS_Store
 

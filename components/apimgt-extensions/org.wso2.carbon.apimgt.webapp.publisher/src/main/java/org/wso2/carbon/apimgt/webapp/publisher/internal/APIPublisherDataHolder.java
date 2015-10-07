@@ -36,6 +36,9 @@ public class APIPublisherDataHolder {
     }
 
     public APIPublisherService getApiPublisherService() {
+        if (apiPublisherService == null) {
+            throw new IllegalStateException("APIPublisher service is not initialized properly");
+        }
         return apiPublisherService;
     }
 
@@ -48,6 +51,9 @@ public class APIPublisherDataHolder {
     }
 
     public ConfigurationContextService getConfigurationContextService() {
+        if (configurationContextService == null) {
+            throw new IllegalStateException("ConfigurationContext service is not initialized properly");
+        }
         return configurationContextService;
     }
 

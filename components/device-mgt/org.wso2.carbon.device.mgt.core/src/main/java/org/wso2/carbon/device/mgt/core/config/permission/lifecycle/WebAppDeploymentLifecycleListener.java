@@ -24,12 +24,21 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.core.config.permission.PermissionManager;
+import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
+import org.wso2.carbon.device.mgt.core.config.permission.PermissionConfiguration;
+import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
 
 import javax.servlet.ServletContext;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.InputStream;
 
+/**
+ * This listener class will initiate the permission addition of permissions defined in
+ * permission.xml of any web-app.
+ */
 @SuppressWarnings("unused")
 public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 
@@ -42,12 +51,29 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 			StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
 			ServletContext servletContext = context.getServletContext();
 			try {
-				PermissionManager.getInstance().initializePermissions(servletContext.getResourceAsStream(PERMISSION_CONFIG_PATH));
-			} catch (DeviceManagementException e) {
-				log.error("Exception occurred while adding the permissions from webapp : "
-				          + servletContext.getContextPath(),e);
-			}
-		}
+				InputStream permissionStream = servletContext.getResourceAsStream(PERMISSION_CONFIG_PATH);
+				if (permissionStream != null) {
+                /* Un-marshaling Device Management configuration */
+					JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
+					Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
+					PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
+							unmarshaller.unmarshal(permissionStream);
+					if (permissionConfiguration != null &&
+					    permissionConfiguration.getPermissions() != null) {
+						PermissionManagerServiceImpl.getInstance().addPermissions(
+								permissionConfiguration.getPermissions());
+					}
+				}
+			} catch (JAXBException e) {
+                log.error(
+                        "Exception occurred while parsing the permission configuration of webapp : "
+                        + servletContext.getContextPath(), e);
+            } catch (PermissionManagementException e) {
+                log.error("Exception occurred while adding the permissions from webapp : "
+                          + servletContext.getContextPath(), e);
+            }
+
+        }
 	}
 
 }

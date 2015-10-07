@@ -82,6 +82,7 @@
                             org.wso2.carbon.core.util,
                             org.wso2.carbon.identity.base,
                             org.wso2.carbon.identity.core.util,
+                            org.wso2.carbon.identity.oauth2.*,
                             org.wso2.carbon.tomcat.ext.valves,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.service,
@@ -95,8 +96,9 @@
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.certificate.mgt.core.service,
                             org.wso2.carbon.certificate.mgt.core.exception,
-                            org.wso2.carbon.device.mgt.core.config.permission,
+                            org.wso2.carbon.device.mgt.core.permission.mgt,
                             org.wso2.carbon.device.mgt.common,
+                            org.wso2.carbon.device.mgt.common.permission.mgt,
                             org.wso2.carbon.device.mgt.core.scep
                         </Import-Package>
                         <!--<Fragment-Host>tomcat</Fragment-Host>-->
@@ -142,6 +144,10 @@
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity</groupId>
+            <artifactId>org.wso2.carbon.identity.oauth</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

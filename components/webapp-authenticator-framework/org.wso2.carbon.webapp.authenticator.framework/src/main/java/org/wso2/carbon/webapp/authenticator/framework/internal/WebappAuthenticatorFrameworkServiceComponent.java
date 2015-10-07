@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
+import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -30,7 +31,6 @@ import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationHandler;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
-import org.wso2.carbon.webapp.authenticator.framework.authorizer.PermissionAuthorizationValve;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
 
@@ -57,6 +57,12 @@ import java.util.List;
  * cardinality="1..n"
  * bind="setSCEPManagementService"
  * unbind="unsetSCEPManagementService"
+ * @scr.reference name="identity.oauth2.validation.service"
+ * interface="org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setOAuth2ValidationService"
+ * unbind="unsetOAuth2ValidationService"
  */
 public class WebappAuthenticatorFrameworkServiceComponent {
 
@@ -79,7 +85,7 @@ public class WebappAuthenticatorFrameworkServiceComponent {
 
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
             valves.add(new WebappAuthenticationHandler());
-            valves.add(new PermissionAuthorizationValve());
+            //valves.add(new PermissionAuthorizationValve());
             TomcatValveContainer.addValves(valves);
 
             if (log.isDebugEnabled()) {
@@ -134,5 +140,29 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         }
 
         DataHolder.getInstance().setScepManager(null);
+    }
+
+    /**
+     * Sets OAuth2TokenValidation Service.
+     *
+     * @param tokenValidationService An instance of OAuth2TokenValidationService
+     */
+    protected void setOAuth2ValidationService(OAuth2TokenValidationService tokenValidationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting OAuth2TokenValidationService Service");
+        }
+        DataHolder.getInstance().setoAuth2TokenValidationService(tokenValidationService);
+    }
+
+    /**
+     * Unsets OAuth2TokenValidation Service.
+     *
+     * @param tokenValidationService An instance of OAuth2TokenValidationService
+     */
+    protected void unsetOAuth2ValidationService(OAuth2TokenValidationService tokenValidationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting OAuth2TokenValidationService Service");
+        }
+        DataHolder.getInstance().setoAuth2TokenValidationService(null);
     }
 }

@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.core.config.permission;
 
+import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;

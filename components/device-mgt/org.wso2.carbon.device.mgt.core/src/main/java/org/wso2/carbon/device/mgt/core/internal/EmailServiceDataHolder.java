@@ -42,6 +42,9 @@ public class EmailServiceDataHolder {
     }
 
     public ConfigurationContextService getConfigurationContextService() {
+        if (configurationContextService == null) {
+            throw new IllegalStateException("ConfigurationContext service is not initialized properly");
+        }
         return configurationContextService;
     }
 

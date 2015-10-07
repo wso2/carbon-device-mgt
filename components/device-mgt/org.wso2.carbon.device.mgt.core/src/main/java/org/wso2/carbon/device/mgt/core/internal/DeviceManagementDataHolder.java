@@ -51,6 +51,9 @@ public class DeviceManagementDataHolder {
     }
 
     public RealmService getRealmService() {
+        if (realmService == null) {
+            throw new IllegalStateException("Realm service is not initialized properly");
+        }
         return realmService;
     }
 
@@ -79,6 +82,9 @@ public class DeviceManagementDataHolder {
     }
 
     public RegistryService getRegistryService() {
+        if (registryService == null) {
+            throw new IllegalStateException("Registry service is not initialized properly");
+        }
         return registryService;
     }
 
@@ -127,6 +133,9 @@ public class DeviceManagementDataHolder {
     }
 
     public ConfigurationContextService getConfigurationContextService() {
+        if (configurationContextService == null) {
+            throw new IllegalStateException("ConfigurationContext service is not initialized properly");
+        }
         return configurationContextService;
     }
 

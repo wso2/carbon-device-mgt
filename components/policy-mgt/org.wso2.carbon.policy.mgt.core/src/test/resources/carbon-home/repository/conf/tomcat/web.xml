@@ -481,7 +481,7 @@
 
     <!-- ===================== Default MIME Type Mappings =================== -->
     <!-- When serving static resources, Tomcat will automatically generate    -->
-    <!-- a "Content-Type" header based on the resource's filename extension,  -->
+    <!-- a "Content-Type" header based on the resource's filename extensions,  -->
     <!-- based on these mappings.  Additional mappings can be added here (to  -->
     <!-- apply to all web applications), or in your own application's web.xml -->
     <!-- deployment descriptor.                                               -->
@@ -1003,7 +1003,7 @@
     </mime-mapping>
     <!--
         <mime-mapping>
-            <extension>shtml</extension>
+            <extensions>shtml</extensions>
             <mime-type>text/x-server-parsed-html</mime-type>
         </mime-mapping>
     -->

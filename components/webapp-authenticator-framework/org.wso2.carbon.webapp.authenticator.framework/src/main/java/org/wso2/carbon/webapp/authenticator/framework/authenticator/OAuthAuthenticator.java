@@ -24,12 +24,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
-import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.core.authenticate.APITokenValidator;
 import org.wso2.carbon.apimgt.core.gateway.APITokenAuthenticator;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.identity.base.IdentityException;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
 import org.wso2.carbon.webapp.authenticator.framework.Constants;
+import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
 
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -40,6 +45,8 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     private static final String OAUTH_AUTHENTICATOR = "OAuth";
     private static final String REGEX_BEARER_PATTERN = "[B|b]earer\\s";
     private static final Pattern PATTERN = Pattern.compile(REGEX_BEARER_PATTERN);
+    private static final String BEARER_TOKEN_TYPE = "bearer";
+    private static final String RESOURCE_KEY = "resource";
 
     private static APITokenAuthenticator authenticator = new APITokenAuthenticator();
 
@@ -66,6 +73,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     @Override
     public Status authenticate(Request request, Response response) {
         String requestUri = request.getRequestURI();
+        String requestMethod = request.getMethod();
         if (requestUri == null || "".equals(requestUri)) {
             return Status.CONTINUE;
         }
@@ -76,29 +84,61 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             return Status.CONTINUE;
         }
         String apiVersion = tokenizer.nextToken();
-        String domain = request.getHeader(APITokenValidator.getAPIManagerClientDomainHeader());
         String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion,
-                request.getRequestURI(), request.getMethod());
-
+                                                                         requestUri,
+                                                                         requestMethod);
         try {
             if (Constants.NO_MATCHING_AUTH_SCHEME.equals(authLevel)) {
-                AuthenticationFrameworkUtil.handleNoMatchAuthScheme(request, response, request.getMethod(),
-                                                                    apiVersion, context);
+                AuthenticationFrameworkUtil
+                        .handleNoMatchAuthScheme(request, response, requestMethod,
+                                                 apiVersion, context);
                 return Status.CONTINUE;
             } else {
                 String bearerToken = this.getBearerToken(request);
-                boolean isAuthenticated =
-                        AuthenticationFrameworkUtil.doAuthenticate(context, apiVersion,
-                                                                   bearerToken, authLevel, domain);
-                return (isAuthenticated) ? Status.SUCCESS : Status.FAILURE;
+                // Create a OAuth2TokenValidationRequestDTO object for validating access token
+                OAuth2TokenValidationRequestDTO dto = new OAuth2TokenValidationRequestDTO();
+                //Set the access token info
+                OAuth2TokenValidationRequestDTO.OAuth2AccessToken oAuth2AccessToken =
+                        dto.new OAuth2AccessToken();
+                oAuth2AccessToken.setTokenType(OAuthAuthenticator.BEARER_TOKEN_TYPE);
+                oAuth2AccessToken.setIdentifier(bearerToken);
+                dto.setAccessToken(oAuth2AccessToken);
+                //Set the resource context param. This will be used in scope validation.
+                OAuth2TokenValidationRequestDTO.TokenValidationContextParam
+                        resourceContextParam = dto.new TokenValidationContextParam();
+                resourceContextParam.setKey(OAuthAuthenticator.RESOURCE_KEY);
+                resourceContextParam.setValue(requestUri + ":" + requestMethod);
+
+                OAuth2TokenValidationRequestDTO.TokenValidationContextParam []
+                        tokenValidationContextParams = new OAuth2TokenValidationRequestDTO.TokenValidationContextParam[1];
+                tokenValidationContextParams[0] = resourceContextParam;
+                dto.setContext(tokenValidationContextParams);
+
+                OAuth2TokenValidationResponseDTO oAuth2TokenValidationResponseDTO =
+                        DataHolder.getInstance().
+                                getoAuth2TokenValidationService().validate(dto);
+                if (oAuth2TokenValidationResponseDTO.isValid()) {
+                    String username = oAuth2TokenValidationResponseDTO.getAuthorizedUser();
+                    try {
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
+                                IdentityUtil.getTenantIdOFUser(username));
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
+                                MultitenantUtils.getTenantDomain(username));
+                    } catch (IdentityException e) {
+                        throw new AuthenticationException(
+                                "Error occurred while retrieving the tenant ID of user '" +
+                                username + "'", e);
+                    }
+                    boolean isAuthenticated = oAuth2TokenValidationResponseDTO.isValid();
+                    return (isAuthenticated) ? Status.SUCCESS : Status.FAILURE;
+                }
             }
-        } catch (APIManagementException e) {
-            log.error("Error occurred while key validation", e);
-            return Status.FAILURE;
         } catch (AuthenticationException e) {
             log.error("Failed to authenticate the incoming request", e);
             return Status.FAILURE;
         }
+        return Status.FAILURE;
     }
 
     @Override

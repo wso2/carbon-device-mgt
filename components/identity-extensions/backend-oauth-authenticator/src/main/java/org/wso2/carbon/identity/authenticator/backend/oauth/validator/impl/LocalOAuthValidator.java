@@ -1,4 +1,3 @@
-
 /*
 *  Copyright (c) 2015 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
@@ -38,19 +37,11 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
      * @return OAuthValidationRespond with the validated results.
      */
     public OAuthValidationRespond validateToken(String token) {
-        // create an OAuth token validating request DTO
         OAuth2TokenValidationRequestDTO validationRequest = new OAuth2TokenValidationRequestDTO();
-        // create access token object to validate and populate it
         OAuth2TokenValidationRequestDTO.OAuth2AccessToken accessToken =
                 validationRequest.new OAuth2AccessToken();
         accessToken.setTokenType(OauthAuthenticatorConstants.BEARER_TOKEN_TYPE);
         accessToken.setIdentifier(token);
-        //the workaround till the version is upgraded in both is and EMM to be the same.
-        OAuth2TokenValidationRequestDTO.TokenValidationContextParam tokenValidationContextParam[] =
-                new OAuth2TokenValidationRequestDTO.TokenValidationContextParam[1];
-        //==
-        validationRequest.setContext(tokenValidationContextParam);
-        //set the token to the validation request
         validationRequest.setAccessToken(accessToken);
         OAuth2TokenValidationService validationService = new OAuth2TokenValidationService();
         OAuth2ClientApplicationDTO respond =  validationService.

@@ -18,7 +18,7 @@
 package org.wso2.carbon.identity.authenticator.backend.oauth;
 
 /**
- *Custom exception for backend OAuth authentication
+ * Custom exception for backend OAuth authentication
  */
 @SuppressWarnings("unused")
 public class AuthenticatorException extends Exception {

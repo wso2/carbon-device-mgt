@@ -17,34 +17,28 @@
 */
 package org.wso2.carbon.identity.authenticator.backend.oauth.validator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.authenticator.backend.oauth.AuthenticatorException;
 import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.impl.ExternalOAuthValidator;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.impl.LocalOAuthValidator;
 
 /**
- * the class validate the configurations and provide the most suitable implementation according to the configuration.
+ * The class validate the configurations and provide the most suitable implementation according to the configuration.
  * Factory class for OAuthValidator.
  */
 public class OAuthValidatorFactory {
-    private static Log log = LogFactory.getLog(OAuthValidatorFactory.class);
 
     /**
-     * the method check the configuration and provide the appropriate implementation for OAuth2TokenValidator
-     *
+     * The method check the configuration and provide the appropriate implementation for OAuth2TokenValidator
      * @return OAuth2TokenValidator
      */
-    public static OAuth2TokenValidator getValidator(boolean isRemote ,String hostURL) {
-       if(isRemote){
-            if(!(hostURL == null || hostURL.trim().isEmpty())){
+    public static OAuth2TokenValidator getValidator(boolean isRemote, String hostURL) throws IllegalArgumentException {
+        if (isRemote) {
+            if (!(hostURL == null || hostURL.trim().isEmpty())) {
                 hostURL = hostURL + OauthAuthenticatorConstants.OAUTH_ENDPOINT_POSTFIX;
                 return new ExternalOAuthValidator(hostURL);
-            }else {
-                log.error("IDP Configuration error",
-                        new AuthenticatorException("Remote server name and ip both can't be empty"));
-                return null;
+            } else {
+                throw new IllegalArgumentException("Remote server name and ip both can't be empty");
             }
         }
         return new LocalOAuthValidator();

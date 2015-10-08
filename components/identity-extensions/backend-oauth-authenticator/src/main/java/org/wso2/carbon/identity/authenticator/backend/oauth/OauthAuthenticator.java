@@ -41,18 +41,24 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
     private static final Log log = LogFactory.getLog(OauthAuthenticator.class);
     private static final int PRIORITY = 5;
     private static final int ACCESS_TOKEN_INDEX = 1;
+    private OAuth2TokenValidator tokenValidator;
 
-    private static String hostUrl = "";
-    private static boolean isRemote = false;
-
-    static {
+    public OauthAuthenticator() {
         AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
-        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
-
+        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
+                getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
+        boolean isRemote;
+        String hostUrl;
         if (authenticatorConfig != null) {
             isRemote = Boolean.parseBoolean(authenticatorConfig.getParameters().get("isRemote"));
             hostUrl = authenticatorConfig.getParameters().get("hostURL");
-
+        }else{
+            throw new IllegalArgumentException("Configuration parameters need to be defined in Authenticators.xml");
+        }
+        try {
+            tokenValidator = OAuthValidatorFactory.getValidator(isRemote, hostUrl);
+        } catch (IllegalArgumentException e) {
+            log.error("Failed to initialise Authenticator",e);
         }
     }
 
@@ -65,10 +71,8 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
     public boolean isHandle(MessageContext messageContext) {
         HttpServletRequest httpServletRequest = getHttpRequest(messageContext);
         String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
-
         if (headerValue != null && !headerValue.trim().isEmpty()) {
             String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);
-
             if (OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BEARER.equals(headerPart[0])) {
                 return true;
             }
@@ -88,38 +92,25 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
     public boolean isAuthenticated(MessageContext messageContext) {
         HttpServletRequest httpServletRequest = getHttpRequest(messageContext);
         String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
-        //split the header value to separate the identity type and the token.
         String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);
         String accessToken = headerPart[ACCESS_TOKEN_INDEX];
-        OAuth2TokenValidator tokenValidator = OAuthValidatorFactory.getValidator(isRemote,hostUrl);
-
-        if (tokenValidator == null) {
-            log.error("OAuthValidationFactory failed to return a validator",
-                    new AuthenticatorException("OAuthValidatorFactory Failed to determine the validator"));
-            return false;
-        }
-
-        OAuthValidationRespond respond = null;
+        OAuthValidationRespond response = null;
         try {
-            respond = tokenValidator.validateToken(accessToken);
+            response = tokenValidator.validateToken(accessToken);
         } catch (RemoteException e) {
             log.error("Failed to validate the OAuth token provided.", e);
         }
-
-        if (respond != null && respond.isValid()) {
+        if (response != null && response.isValid()) {
             HttpSession session;
-
             if ((session = httpServletRequest.getSession(false)) != null) {
-                session.setAttribute(MultitenantConstants.TENANT_DOMAIN, respond.getTenantDomain());
-                session.setAttribute(ServerConstants.USER_LOGGED_IN, respond.getUserName());
-
+                session.setAttribute(MultitenantConstants.TENANT_DOMAIN, response.getTenantDomain());
+                session.setAttribute(ServerConstants.USER_LOGGED_IN, response.getUserName());
                 if (log.isDebugEnabled()) {
                     log.debug("Authentication successful for " + session.getAttribute(ServerConstants.USER_LOGGED_IN));
                 }
             }
             return true;
         }
-
         if (log.isDebugEnabled()) {
             log.debug("Authentication failed.Illegal attempt from session " + httpServletRequest.getSession().getId());
         }

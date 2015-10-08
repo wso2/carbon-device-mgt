@@ -21,15 +21,14 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.httpclient.Header;
+import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
+import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
+import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationRespond;
 import org.wso2.carbon.identity.oauth2.stub.OAuth2TokenValidationServiceStub;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2ClientApplicationDTO;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_OAuth2AccessToken;
-import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_TokenValidationContextParam;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationRespond;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -37,8 +36,7 @@ import java.util.List;
 
 /**
  * Handles the Authentication form external IDP servers.
- * Currently only supports WSO2 IS.
- * External IDP support is planned for future.
+ * Currently only supports WSO@ IS
  */
 public class ExternalOAuthValidator implements OAuth2TokenValidator{
     protected String hostURL ;
@@ -54,20 +52,11 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
      * @return OAuthValidationRespond with the validated results.
      */
     public OAuthValidationRespond validateToken(String token) throws RemoteException {
-
-        // create an OAuth token validating request DTO
         OAuth2TokenValidationRequestDTO validationRequest = new OAuth2TokenValidationRequestDTO();
-
-        // create access token object to validate and populate it
         OAuth2TokenValidationRequestDTO_OAuth2AccessToken accessToken =
                 new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
         accessToken.setTokenType(OauthAuthenticatorConstants.BEARER_TOKEN_TYPE);
         accessToken.setIdentifier(token);
-        OAuth2TokenValidationRequestDTO_TokenValidationContextParam tokenValidationContextParam[] =
-                new OAuth2TokenValidationRequestDTO_TokenValidationContextParam[1];
-        validationRequest.setContext(tokenValidationContextParam);
-
-        //set the token to the validation request
         validationRequest.setAccessToken(accessToken);
         OAuth2TokenValidationServiceStub validationService =
                 new OAuth2TokenValidationServiceStub(hostURL);
@@ -85,14 +74,12 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
         boolean isValid = respond.getAccessTokenValidationResponse().getValid();
         String userName = null;
         String tenantDomain = null;
-
         if(isValid){
             userName = MultitenantUtils.getTenantAwareUsername(
                     respond.getAccessTokenValidationResponse().getAuthorizedUser());
             tenantDomain =
                     MultitenantUtils.getTenantDomain(respond.getAccessTokenValidationResponse().getAuthorizedUser());
         }
-
         return new OAuthValidationRespond(userName,tenantDomain,isValid);
     }
 }

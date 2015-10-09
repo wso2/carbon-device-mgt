@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.dynamic.client.web.app.registration;
+package org.wso2.carbon.dynamic.client.web.app.registration.dto;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Represents OAuthConfiguration data.
  */
 @XmlRootElement(name = "OAuthSettings")
-public class OAuthSettings {
+public class JaggeryOAuthConfigurationSettings {
 
     private String grantType;
     private boolean saasApp;

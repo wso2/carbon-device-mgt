@@ -24,6 +24,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 import org.wso2.carbon.dynamic.client.registration.impl.DynamicClientRegistrationImpl;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
+import org.wso2.carbon.identity.core.util.IdentityCoreInitializedEvent;
 
 /**
  * @scr.component name="org.wso2.carbon.dynamic.client.registration" immediate="true"
@@ -82,4 +83,5 @@ public class DynamicClientRegistrationServiceComponent {
         }
         DynamicClientRegistrationDataHolder.getInstance().setApplicationManagementService(null);
     }
+
 }

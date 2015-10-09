@@ -21,7 +21,10 @@ package org.wso2.carbon.dynamic.client.web.app.registration.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.util.tracker.ServiceTracker;
+import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
+import org.wso2.carbon.dynamic.client.web.app.registration.WebAppRegistrationServerStartupObserver;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -55,16 +58,18 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  */
 public class DynamicClientWebAppRegistrationServiceComponent {
 
+	private ServiceTracker serviceTracker;
 	private static Log log = LogFactory.getLog(DynamicClientWebAppRegistrationServiceComponent.class);
 
 	@SuppressWarnings("unused")
 	protected void activate(ComponentContext componentContext) {
-
+        componentContext.getBundleContext().registerService(ServerStartupObserver.class.getName(),
+                                               new WebAppRegistrationServerStartupObserver(), null) ;
 	}
 
 	@SuppressWarnings("unused")
 	protected void deactivate(ComponentContext componentContext) {
-		//do nothing
+
 	}
 
 	/**
@@ -163,5 +168,4 @@ public class DynamicClientWebAppRegistrationServiceComponent {
 		}
 		DynamicClientWebAppRegistrationDataHolder.getInstance().setConfigurationContextService(null);
 	}
-
 }

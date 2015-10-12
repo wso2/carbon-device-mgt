@@ -69,8 +69,8 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
         headerList.add(header);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_HEADERS, headerList);
         client.setOptions(options);
-        OAuth2TokenValidationResponseDTO tokenValidationResponse =
-                tokenValidationService.findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+        OAuth2TokenValidationResponseDTO tokenValidationResponse = tokenValidationService.
+                findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
         boolean isValid = tokenValidationResponse.getValid();
         String userName = null;
         String tenantDomain = null;

@@ -24,9 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.core.security.AuthenticatorsConfiguration;
 import org.wso2.carbon.core.services.authentication.CarbonServerAuthenticator;
+import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
 import org.wso2.carbon.utils.ServerConstants;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationRespond;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidatorFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,7 +94,7 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
         String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
         String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);
         String accessToken = headerPart[ACCESS_TOKEN_INDEX];
-        OAuthValidationRespond response = null;
+        OAuthValidationResponse response = null;
         try {
             response = tokenValidator.validateToken(accessToken);
         } catch (RemoteException e) {

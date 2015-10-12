@@ -28,7 +28,7 @@ public interface OAuth2TokenValidator {
      * containing the validity and user details if valid.
      *
      * @param accessToken which need to be validated.
-     * @return OAuthValidationRespond with the validated results.
+     * @return OAuthValidationResponse with the validated results.
      */
-    OAuthValidationRespond validateToken(String accessToken) throws RemoteException;
+    OAuthValidationResponse validateToken(String accessToken) throws RemoteException;
 }

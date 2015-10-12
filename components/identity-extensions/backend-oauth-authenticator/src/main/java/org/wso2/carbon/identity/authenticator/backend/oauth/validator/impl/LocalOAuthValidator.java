@@ -17,13 +17,13 @@
 */
 package org.wso2.carbon.identity.authenticator.backend.oauth.validator.impl;
 
+import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2ClientApplicationDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationRespond;
 
 /**
  * Handles the authentication using the inbuilt IS features.
@@ -34,9 +34,9 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
      * containing the validity and user details if valid.
      *
      * @param token which need to be validated.
-     * @return OAuthValidationRespond with the validated results.
+     * @return OAuthValidationResponse with the validated results.
      */
-    public OAuthValidationRespond validateToken(String token) {
+    public OAuthValidationResponse validateToken(String token) {
         OAuth2TokenValidationRequestDTO validationRequest = new OAuth2TokenValidationRequestDTO();
         OAuth2TokenValidationRequestDTO.OAuth2AccessToken accessToken =
                 validationRequest.new OAuth2AccessToken();
@@ -55,6 +55,6 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
             tenantDomain =
                     MultitenantUtils.getTenantDomain(respond.getAccessTokenValidationResponse().getAuthorizedUser());
         }
-       return new OAuthValidationRespond(userName,tenantDomain,isValid);
+       return new OAuthValidationResponse(userName,tenantDomain,isValid);
     }
 }

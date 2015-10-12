@@ -21,12 +21,12 @@ package org.wso2.carbon.identity.authenticator.backend.oauth.validator;
  * This class hold the validation information which can be retrieve by both remote and in house IDPs
  */
 @SuppressWarnings("unused")
-public class OAuthValidationRespond {
+public class OAuthValidationResponse {
     private String userName;
     private String tenantDomain;
     private boolean isValid;
 
-    public OAuthValidationRespond(String userName, String tenantDomain, boolean isValid) {
+    public OAuthValidationResponse(String userName, String tenantDomain, boolean isValid) {
         this.userName = userName;
         this.tenantDomain = tenantDomain;
         this.isValid = isValid;

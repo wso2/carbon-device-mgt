@@ -23,7 +23,7 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.httpclient.Header;
 import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationRespond;
+import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
 import org.wso2.carbon.identity.oauth2.stub.OAuth2TokenValidationServiceStub;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2ClientApplicationDTO;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO;
@@ -49,9 +49,9 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
      * containing the validity and user details if valid.
      *
      * @param token which need to be validated.
-     * @return OAuthValidationRespond with the validated results.
+     * @return OAuthValidationResponse with the validated results.
      */
-    public OAuthValidationRespond validateToken(String token) throws RemoteException {
+    public OAuthValidationResponse validateToken(String token) throws RemoteException {
         OAuth2TokenValidationRequestDTO validationRequest = new OAuth2TokenValidationRequestDTO();
         OAuth2TokenValidationRequestDTO_OAuth2AccessToken accessToken =
                 new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
@@ -80,6 +80,6 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
             tenantDomain =
                     MultitenantUtils.getTenantDomain(respond.getAccessTokenValidationResponse().getAuthorizedUser());
         }
-        return new OAuthValidationRespond(userName,tenantDomain,isValid);
+        return new OAuthValidationResponse(userName,tenantDomain,isValid);
     }
 }

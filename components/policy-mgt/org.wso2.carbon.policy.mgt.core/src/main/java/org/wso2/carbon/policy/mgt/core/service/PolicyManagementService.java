@@ -122,9 +122,9 @@ public class PolicyManagementService implements PolicyManagerService {
     }
 
     @Override
-    public List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+    public List<ComplianceFeature> checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
             deviceResponse) throws PolicyComplianceException {
-        return policyManagerService.CheckPolicyCompliance(deviceIdentifier, deviceResponse);
+        return policyManagerService.checkPolicyCompliance(deviceIdentifier, deviceResponse);
     }
 
     @Override

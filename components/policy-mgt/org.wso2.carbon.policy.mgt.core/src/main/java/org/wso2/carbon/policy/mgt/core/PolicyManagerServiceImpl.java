@@ -22,10 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
-import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
@@ -170,7 +167,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
-    public List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+    public List<ComplianceFeature> checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
             deviceResponse) throws PolicyComplianceException {
         return monitoringManager.checkPolicyCompliance(deviceIdentifier, deviceResponse);
     }

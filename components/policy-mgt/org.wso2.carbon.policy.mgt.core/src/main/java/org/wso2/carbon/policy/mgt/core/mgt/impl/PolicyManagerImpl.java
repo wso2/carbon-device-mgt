@@ -25,13 +25,11 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
-import org.wso2.carbon.policy.mgt.core.cache.PolicyCacheManager;
 import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
@@ -136,6 +134,9 @@ public class PolicyManagerImpl implements PolicyManager {
     public Policy updatePolicy(Policy policy) throws PolicyManagementException {
 
         try {
+            // Previous policy needs to be obtained before begining the transaction
+            Policy previousPolicy = getPolicy(policy.getId());
+
             PolicyManagementDAOFactory.beginTransaction();
             // This will keep track of the policies updated.
             policyDAO.recordUpdatedPolicy(policy);
@@ -146,16 +147,18 @@ public class PolicyManagerImpl implements PolicyManager {
                     .getProfileId());
             policyDAO.deleteAllPolicyRelatedConfigs(policy.getId());
 
+
+
             if (policy.getUsers() != null) {
-                policyDAO.addPolicyToUser(policy.getUsers(), policy);
+                policyDAO.addPolicyToUser(policy.getUsers(), previousPolicy);
             }
 
             if (policy.getRoles() != null) {
-                policyDAO.addPolicyToRole(policy.getRoles(), policy);
+                policyDAO.addPolicyToRole(policy.getRoles(), previousPolicy);
             }
 
             if (policy.getDevices() != null) {
-                policyDAO.addPolicyToDevice(policy.getDevices(), policy);
+                policyDAO.addPolicyToDevice(policy.getDevices(), previousPolicy);
             }
 
             if (policy.getPolicyCriterias() != null) {

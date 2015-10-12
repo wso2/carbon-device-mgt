@@ -22,17 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Criterion;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
-import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyDAO;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
+import org.wso2.carbon.policy.mgt.core.util.SetReferenceTransformer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -70,23 +68,43 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagerDAOException {
+    public Policy addPolicyToRole(List<String> rolesToAdd, Policy policy) throws PolicyManagerDAOException {
         Connection conn;
-        PreparedStatement stmt = null;
+        PreparedStatement insertStmt = null;
+        PreparedStatement deleteStmt = null;
+        final List<String> currentRoles = policy.getRoles();
+
+        SetReferenceTransformer<String> transformer = new SetReferenceTransformer<String>();
+
+        transformer.transform(currentRoles, rolesToAdd);
+        rolesToAdd = transformer.getObjectsToAdd();
+        List<String> rolesToDelete = transformer.getObjectsToRemove();
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_ROLE_POLICY (ROLE_NAME, POLICY_ID) VALUES (?, ?)";
-            stmt = conn.prepareStatement(query);
-            for (String role : roleNames) {
-                stmt.setString(1, role);
-                stmt.setInt(2, policy.getId());
-                stmt.addBatch();
+            if (rolesToAdd.size() > 0){
+                String query = "INSERT INTO DM_ROLE_POLICY (ROLE_NAME, POLICY_ID) VALUES (?, ?)";
+                insertStmt = conn.prepareStatement(query);
+                for (String role : rolesToAdd) {
+                    insertStmt.setString(1, role);
+                    insertStmt.setInt(2, policy.getId());
+                    insertStmt.addBatch();
+                }
+                insertStmt.executeBatch();
             }
-            stmt.executeBatch();
+            if (rolesToAdd.size() > 0){
+                String deleteQuery = "DELETE FROM DM_ROLE_POLICY WHERE ROLE_NAME=? AND POLICY_ID=?";
+                deleteStmt = conn.prepareStatement(deleteQuery);
+                for (String role : rolesToDelete) {
+                    deleteStmt.setString(1, role);
+                    deleteStmt.setInt(2, policy.getId());
+                    deleteStmt.addBatch();
+                }
+                deleteStmt.executeBatch();
+            }
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Error occurred while adding the role name with policy to database", e);
         } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+            PolicyManagementDAOUtil.cleanupResources(insertStmt, null);
         }
         return policy;
     }

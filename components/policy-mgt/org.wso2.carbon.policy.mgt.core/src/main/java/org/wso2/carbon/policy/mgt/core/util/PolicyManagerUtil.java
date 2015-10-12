@@ -41,10 +41,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 public class PolicyManagerUtil {
 

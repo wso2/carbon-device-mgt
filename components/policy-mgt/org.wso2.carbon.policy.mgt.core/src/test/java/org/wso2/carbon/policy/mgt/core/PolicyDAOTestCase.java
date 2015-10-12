@@ -27,15 +27,12 @@ import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.util.*;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -162,6 +159,8 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         roles.add("Test_ROLE_01");
         roles.add("Test_ROLE_02");
         roles.add("Test_ROLE_03");
+
+        policy = pap.getPolicy(policy.getId());
 
         pap.addPolicyToRole(roles, policy);
 
@@ -312,6 +311,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         policy = pap.addPolicy(policy);
         pap.activatePolicy(policy.getId());
         List<String> users = new ArrayList<>();
+        log.debug(policy.getRoles().size());
         users.add("Udara");
         users.add("Dileesha");
         policy.setUsers(users);

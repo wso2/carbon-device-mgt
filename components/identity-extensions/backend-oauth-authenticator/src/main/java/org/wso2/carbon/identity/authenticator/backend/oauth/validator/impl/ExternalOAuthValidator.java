@@ -58,27 +58,27 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
         accessToken.setTokenType(OauthAuthenticatorConstants.BEARER_TOKEN_TYPE);
         accessToken.setIdentifier(token);
         validationRequest.setAccessToken(accessToken);
-        OAuth2TokenValidationServiceStub validationService =
+        OAuth2TokenValidationServiceStub tokenValidationService =
                 new OAuth2TokenValidationServiceStub(hostURL);
-        ServiceClient client = validationService._getServiceClient();
+        ServiceClient client = tokenValidationService._getServiceClient();
         Options options = client.getOptions();
-        List<Header> list = new ArrayList<>();
+        List<Header> headerList = new ArrayList<>();
         Header header = new Header();
         header.setName(HTTPConstants.HEADER_AUTHORIZATION);
         header.setValue(OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BEARER+ " " + token);
-        list.add(header);
-        options.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_HEADERS, list);
+        headerList.add(header);
+        options.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_HEADERS, headerList);
         client.setOptions(options);
-        OAuth2ClientApplicationDTO respond =
-                validationService.findOAuthConsumerIfTokenIsValid(validationRequest);
-        boolean isValid = respond.getAccessTokenValidationResponse().getValid();
+        OAuth2ClientApplicationDTO clientApplicationDTO =
+                tokenValidationService.findOAuthConsumerIfTokenIsValid(validationRequest);
+        boolean isValid = clientApplicationDTO.getAccessTokenValidationResponse().getValid();
         String userName = null;
         String tenantDomain = null;
         if(isValid){
             userName = MultitenantUtils.getTenantAwareUsername(
-                    respond.getAccessTokenValidationResponse().getAuthorizedUser());
+                    clientApplicationDTO.getAccessTokenValidationResponse().getAuthorizedUser());
             tenantDomain =
-                    MultitenantUtils.getTenantDomain(respond.getAccessTokenValidationResponse().getAuthorizedUser());
+                    MultitenantUtils.getTenantDomain(clientApplicationDTO.getAccessTokenValidationResponse().getAuthorizedUser());
         }
         return new OAuthValidationResponse(userName,tenantDomain,isValid);
     }

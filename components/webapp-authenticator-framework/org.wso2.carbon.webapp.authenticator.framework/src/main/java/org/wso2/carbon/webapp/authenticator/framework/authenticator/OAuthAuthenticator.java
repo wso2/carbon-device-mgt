@@ -84,9 +84,10 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             return Status.CONTINUE;
         }
         String apiVersion = tokenizer.nextToken();
-        String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion,
-                                                                         requestUri,
-                                                                         requestMethod);
+        String authLevel = "any";
+//        String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion,
+//                                                                         requestUri,
+//                                                                         requestMethod);
         try {
             if (Constants.NO_MATCHING_AUTH_SCHEME.equals(authLevel)) {
                 AuthenticationFrameworkUtil

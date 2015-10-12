@@ -188,7 +188,8 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
                 log.debug("Creating OAuth App " + applicationName);
             }
 
-            if (existingServiceProvider == null) {
+            if ((existingServiceProvider == null) || (existingServiceProvider.
+                    getInboundAuthenticationConfig().getInboundAuthenticationRequestConfigs().length == 0)) {
                 oAuthAdminService.registerOAuthApplicationData(oAuthConsumerApp);
             }
 

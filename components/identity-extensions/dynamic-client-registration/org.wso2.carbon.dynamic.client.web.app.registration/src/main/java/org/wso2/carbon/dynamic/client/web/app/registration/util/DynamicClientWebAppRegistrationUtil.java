@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
-import org.wso2.carbon.dynamic.client.web.app.registration.OAuthApp;
-import org.wso2.carbon.dynamic.client.web.app.registration.OAuthSettings;
+import org.wso2.carbon.dynamic.client.web.app.registration.dto.OAuthAppDetails;
+import org.wso2.carbon.dynamic.client.web.app.registration.dto.JaggeryOAuthConfigurationSettings;
 import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientWebAppRegistrationDataHolder;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
@@ -72,7 +72,7 @@ public class DynamicClientWebAppRegistrationUtil {
         }
     }
 
-    public static OAuthApp getOAuthApplicationData(String appName)
+    public static OAuthAppDetails getOAuthApplicationData(String appName)
             throws DynamicClientRegistrationException {
         Resource resource;
         String resourcePath =
@@ -83,14 +83,14 @@ public class DynamicClientWebAppRegistrationUtil {
             }
             resource = DynamicClientWebAppRegistrationUtil.getRegistryResource(resourcePath);
             if (resource != null) {
-                JAXBContext context = JAXBContext.newInstance(OAuthApp.class);
+                JAXBContext context = JAXBContext.newInstance(OAuthAppDetails.class);
                 Unmarshaller unmarshaller = context.createUnmarshaller();
-                return (OAuthApp) unmarshaller.unmarshal(
+                return (OAuthAppDetails) unmarshaller.unmarshal(
                         new StringReader(new String((byte[]) resource.getContent(), Charset
                                 .forName(
                                         DynamicClientWebAppRegistrationConstants.CharSets.CHARSET_UTF8))));
             }
-            return new OAuthApp();
+            return new OAuthAppDetails();
         } catch (JAXBException e) {
             throw new DynamicClientRegistrationException(
                     "Error occurred while parsing the OAuth application data : " + appName, e);
@@ -101,7 +101,7 @@ public class DynamicClientWebAppRegistrationUtil {
         }
     }
 
-    public static boolean putOAuthApplicationData(OAuthApp oAuthApp)
+    public static boolean putOAuthApplicationData(OAuthAppDetails oAuthAppDetails)
             throws DynamicClientRegistrationException {
         boolean status;
         try {
@@ -109,9 +109,9 @@ public class DynamicClientWebAppRegistrationUtil {
                 log.debug("Persisting OAuth application data in Registry");
             }
             StringWriter writer = new StringWriter();
-            JAXBContext context = JAXBContext.newInstance(OAuthApp.class);
+            JAXBContext context = JAXBContext.newInstance(OAuthAppDetails.class);
             Marshaller marshaller = context.createMarshaller();
-            marshaller.marshal(oAuthApp, writer);
+            marshaller.marshal(oAuthAppDetails, writer);
 
             Resource resource =
                     DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
@@ -119,17 +119,17 @@ public class DynamicClientWebAppRegistrationUtil {
             resource.setMediaType(DynamicClientWebAppRegistrationConstants.ContentTypes.MEDIA_TYPE_XML);
             String resourcePath =
                     DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
-                    oAuthApp.getWebAppName();
+                    oAuthAppDetails.getWebAppName();
             status =
                     DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);
         } catch (RegistryException e) {
             throw new DynamicClientRegistrationException(
                     "Error occurred while persisting OAuth application data : " +
-                    oAuthApp.getClientName(), e);
+                    oAuthAppDetails.getClientName(), e);
         } catch (JAXBException e) {
             throw new DynamicClientRegistrationException(
                     "Error occurred while parsing the OAuth application data : " +
-                    oAuthApp.getWebAppName(), e);
+                    oAuthAppDetails.getWebAppName(), e);
         }
         return status;
     }
@@ -204,16 +204,16 @@ public class DynamicClientWebAppRegistrationUtil {
     }
 
     public static RegistrationProfile constructRegistrationProfile(
-            OAuthSettings oAuthSettings, String webAppName) {
+            JaggeryOAuthConfigurationSettings jaggeryOAuthConfigurationSettings, String webAppName) {
         RegistrationProfile registrationProfile = new RegistrationProfile();
-        if (oAuthSettings != null) {
-            registrationProfile.setGrantType(oAuthSettings.getGrantType());
-            registrationProfile.setTokenScope(oAuthSettings.getTokenScope());
+        if (jaggeryOAuthConfigurationSettings != null) {
+            registrationProfile.setGrantType(jaggeryOAuthConfigurationSettings.getGrantType());
+            registrationProfile.setTokenScope(jaggeryOAuthConfigurationSettings.getTokenScope());
             registrationProfile.setClientName(webAppName);
-            registrationProfile.setSaasApp(oAuthSettings.isSaasApp());
+            registrationProfile.setSaasApp(jaggeryOAuthConfigurationSettings.isSaasApp());
             registrationProfile.setOwner(DynamicClientWebAppRegistrationUtil.getUserName());
-            if (oAuthSettings.getCallbackURL() != null) {
-                registrationProfile.setCallbackUrl(oAuthSettings.getCallbackURL());
+            if (jaggeryOAuthConfigurationSettings.getCallbackURL() != null) {
+                registrationProfile.setCallbackUrl(jaggeryOAuthConfigurationSettings.getCallbackURL());
             } else {
                 registrationProfile.setCallbackUrl(
                         DynamicClientWebAppRegistrationUtil.getCallbackUrl(webAppName));
@@ -240,8 +240,9 @@ public class DynamicClientWebAppRegistrationUtil {
         return status;
     }
 
-    public static OAuthSettings getJaggeryAppOAuthSettings(ServletContext servletContext) {
-        OAuthSettings oAuthSettings = new OAuthSettings();
+    public static JaggeryOAuthConfigurationSettings getJaggeryAppOAuthSettings(ServletContext servletContext) {
+        JaggeryOAuthConfigurationSettings
+                jaggeryOAuthConfigurationSettings = new JaggeryOAuthConfigurationSettings();
         try {
             InputStream inputStream =
                     servletContext.getResourceAsStream(JAGGERY_APP_OAUTH_CONFIG_PATH);
@@ -253,30 +254,30 @@ public class DynamicClientWebAppRegistrationUtil {
                     String key = reader.nextName();
                     switch (key) {
                         case DynamicClientWebAppRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG:
-                            oAuthSettings.setRequireDynamicClientRegistration(reader.nextBoolean());
+                            jaggeryOAuthConfigurationSettings.setRequireDynamicClientRegistration(reader.nextBoolean());
                             break;
                         case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_GRANT_TYPE:
-                            oAuthSettings.setGrantType(reader.nextString());
+                            jaggeryOAuthConfigurationSettings.setGrantType(reader.nextString());
                             break;
                         case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_TOKEN_SCOPE:
-                            oAuthSettings.setTokenScope(reader.nextString());
+                            jaggeryOAuthConfigurationSettings.setTokenScope(reader.nextString());
                             break;
                         case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_SAAS_APP:
-                            oAuthSettings.setSaasApp(reader.nextBoolean());
+                            jaggeryOAuthConfigurationSettings.setSaasApp(reader.nextBoolean());
                             break;
                         case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_CALLBACK_URL:
-                            oAuthSettings.setCallbackURL(reader.nextString());
+                            jaggeryOAuthConfigurationSettings.setCallbackURL(reader.nextString());
                             break;
                     }
                 }
-                return oAuthSettings;
+                return jaggeryOAuthConfigurationSettings;
             }
         } catch (UnsupportedEncodingException e) {
             log.error("Error occurred while initializing OAuth settings for the Jaggery app.", e);
         } catch (IOException e) {
             log.error("Error occurred while initializing OAuth settings for the Jaggery app.", e);
         }
-        return oAuthSettings;
+        return jaggeryOAuthConfigurationSettings;
     }
 
     public static String getServerBaseUrl() {
@@ -304,18 +305,18 @@ public class DynamicClientWebAppRegistrationUtil {
         return getServerBaseUrl() + "/" + context;
     }
 
-    public static void addClientCredentialsToWebContext(OAuthApp oAuthApp,
+    public static void addClientCredentialsToWebContext(OAuthAppDetails oAuthAppDetails,
                                                         ServletContext servletContext) {
-        if(oAuthApp != null){
+        if(oAuthAppDetails != null){
             //Check for client credentials
-            if ((oAuthApp.getClientKey() != null && !oAuthApp.getClientKey().isEmpty()) &&
-                (oAuthApp.getClientSecret() != null && !oAuthApp.getClientSecret().isEmpty())) {
+            if ((oAuthAppDetails.getClientKey() != null && !oAuthAppDetails.getClientKey().isEmpty()) &&
+                (oAuthAppDetails.getClientSecret() != null && !oAuthAppDetails.getClientSecret().isEmpty())) {
                 servletContext.setAttribute(DynamicClientWebAppRegistrationConstants.OAUTH_CLIENT_KEY,
-                                            oAuthApp.getClientKey());
+                                            oAuthAppDetails.getClientKey());
                 servletContext.setAttribute(DynamicClientWebAppRegistrationConstants.OAUTH_CLIENT_SECRET,
-                                            oAuthApp.getClientSecret());
+                                            oAuthAppDetails.getClientSecret());
             } else {
-                log.warn("Client credentials not found for web app : " + oAuthApp.getWebAppName());
+                log.warn("Client credentials not found for web app : " + oAuthAppDetails.getWebAppName());
             }
         }
     }

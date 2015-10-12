@@ -38,7 +38,6 @@ import org.wso2.carbon.identity.sso.saml.admin.SAMLSSOConfigAdmin;
 import org.wso2.carbon.identity.sso.saml.dto.SAMLSSOServiceProviderDTO;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-
 import java.util.Arrays;
 
 /**
@@ -95,16 +94,16 @@ public class DynamicClientRegistrationImpl implements DynamicClientRegistrationS
             if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS)) {
                 oAuthApplicationInfo
                         .addParameter(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS,
-                                jsonObject
-                                        .get(ApplicationConstants.ClientMetadata.
-                                                OAUTH_REDIRECT_URIS));
+                                      jsonObject
+                                              .get(ApplicationConstants.ClientMetadata.
+                                                           OAUTH_REDIRECT_URIS));
             }
 
             if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT)) {
                 oAuthApplicationInfo.addParameter(ApplicationConstants.ClientMetadata.
-                        OAUTH_CLIENT_GRANT, jsonObject
-                        .get(ApplicationConstants.ClientMetadata.
-                                OAUTH_CLIENT_GRANT));
+                                                          OAUTH_CLIENT_GRANT, jsonObject
+                                                          .get(ApplicationConstants.ClientMetadata.
+                                                                       OAUTH_CLIENT_GRANT));
             }
         } catch (JSONException e) {
             throw new DynamicClientRegistrationException(

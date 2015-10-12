@@ -39,8 +39,8 @@ import java.util.StringTokenizer;
  */
 public class PermissionUtils {
 
-	public static String ADMIN_PERMISSION_REGISTRY_PATH = "/permission/admin";
-	public static String PERMISSION_PROPERTY_NAME = "name";
+	public static final String ADMIN_PERMISSION_REGISTRY_PATH = "/permission/admin";
+	public static final String PERMISSION_PROPERTY_NAME = "name";
 
 	public static Registry getGovernanceRegistry() throws PermissionManagementException {
 		try {
@@ -78,11 +78,11 @@ public class PermissionUtils {
 		try {
 			StringTokenizer tokenizer = new StringTokenizer(permission.getPath(), "/");
 			String lastToken = "", currentToken, tempPath;
-			while(tokenizer.hasMoreTokens()){
+			while(tokenizer.hasMoreTokens()) {
 				currentToken = tokenizer.nextToken();
 				tempPath = lastToken + "/" + currentToken;
-				if(!checkResourceExists(tempPath)){
-                    createRegistryCollection(tempPath, currentToken.substring(0));
+				if(!checkResourceExists(tempPath)) {
+                    createRegistryCollection(tempPath, currentToken);
 				}
 				lastToken = tempPath;
 			}

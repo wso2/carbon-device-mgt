@@ -22,7 +22,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 
 /**
- * Created by harshan on 9/8/15.
+ * Holds the utility methods used by Dynamic-Client web bundle.
  */
 public class DynamicClientUtil {
 

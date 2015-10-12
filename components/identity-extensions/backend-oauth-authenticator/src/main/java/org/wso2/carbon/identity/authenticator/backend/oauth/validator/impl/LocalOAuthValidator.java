@@ -17,13 +17,13 @@
 */
 package org.wso2.carbon.identity.authenticator.backend.oauth.validator.impl;
 
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
-import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2ClientApplicationDTO;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
+import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
+import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
+import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 /**
  * Handles the authentication using the inbuilt IS features.
@@ -44,16 +44,16 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
         accessToken.setIdentifier(token);
         validationRequest.setAccessToken(accessToken);
         OAuth2TokenValidationService validationService = new OAuth2TokenValidationService();
-        OAuth2ClientApplicationDTO clientApplicationDTO =  validationService.
-                findOAuthConsumerIfTokenIsValid(validationRequest);
-        boolean isValid = clientApplicationDTO.getAccessTokenValidationResponse().isValid();
+        OAuth2TokenValidationResponseDTO tokenValidationResponse =  validationService.
+                findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+        boolean isValid = tokenValidationResponse.isValid();
         String userName = null;
         String tenantDomain = null;
         if(isValid){
             userName = MultitenantUtils.getTenantAwareUsername(
-                    clientApplicationDTO.getAccessTokenValidationResponse().getAuthorizedUser());
+                    tokenValidationResponse.getAuthorizedUser());
             tenantDomain =
-                    MultitenantUtils.getTenantDomain(clientApplicationDTO.getAccessTokenValidationResponse().getAuthorizedUser());
+                    MultitenantUtils.getTenantDomain(tokenValidationResponse.getAuthorizedUser());
         }
        return new OAuthValidationResponse(userName,tenantDomain,isValid);
     }

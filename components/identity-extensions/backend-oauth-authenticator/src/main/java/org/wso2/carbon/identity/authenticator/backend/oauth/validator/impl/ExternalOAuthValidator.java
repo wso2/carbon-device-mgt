@@ -25,9 +25,9 @@ import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorCo
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
 import org.wso2.carbon.identity.oauth2.stub.OAuth2TokenValidationServiceStub;
-import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2ClientApplicationDTO;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_OAuth2AccessToken;
+import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.rmi.RemoteException;
@@ -69,16 +69,16 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
         headerList.add(header);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_HEADERS, headerList);
         client.setOptions(options);
-        OAuth2ClientApplicationDTO clientApplicationDTO =
-                tokenValidationService.findOAuthConsumerIfTokenIsValid(validationRequest);
-        boolean isValid = clientApplicationDTO.getAccessTokenValidationResponse().getValid();
+        OAuth2TokenValidationResponseDTO tokenValidationResponse =
+                tokenValidationService.findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+        boolean isValid = tokenValidationResponse.getValid();
         String userName = null;
         String tenantDomain = null;
         if(isValid){
             userName = MultitenantUtils.getTenantAwareUsername(
-                    clientApplicationDTO.getAccessTokenValidationResponse().getAuthorizedUser());
-            tenantDomain =
-                    MultitenantUtils.getTenantDomain(clientApplicationDTO.getAccessTokenValidationResponse().getAuthorizedUser());
+                    tokenValidationResponse.getAuthorizedUser());
+            tenantDomain = MultitenantUtils.
+                    getTenantDomain(tokenValidationResponse.getAuthorizedUser());
         }
         return new OAuthValidationResponse(userName,tenantDomain,isValid);
     }

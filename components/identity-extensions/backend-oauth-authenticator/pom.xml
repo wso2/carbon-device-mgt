@@ -101,7 +101,17 @@
                             org.wso2.carbon.identity.oauth2,
                             org.wso2.carbon.identity.oauth2.dto,
                             org.wso2.carbon.user.core.service,
-                            org.wso2.carbon.utils.multitenancy
+                            org.wso2.carbon.utils.multitenancy,
+                            org.apache.axis2.client,
+                            org.apache.axis2.context,
+                            org.apache.axis2.transport.http,
+                            org.apache.commons.httpclient,
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.wso2.carbon.core.security,
+                            org.wso2.carbon.core.services.authentication,
+                            org.wso2.carbon.identity.oauth2.stub,
+                            org.wso2.carbon.identity.oauth2.stub.dto
                         </Import-Package>
                         <Export-Package>
                             org.wso2.carbon.identity.authenticator.backend.oauth.*;

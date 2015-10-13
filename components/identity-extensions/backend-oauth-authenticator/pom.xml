@@ -111,12 +111,11 @@
                             org.wso2.carbon.core.security,
                             org.wso2.carbon.core.services.authentication,
                             org.wso2.carbon.identity.oauth2.stub,
-                            org.wso2.carbon.identity.oauth2.stub.dto
+                            org.wso2.carbon.identity.oauth2.stub.dto,
+			                org.wso2.carbon.base,
+			                org.wso2.carbon.utils
                         </Import-Package>
-                        <Export-Package>
-                            org.wso2.carbon.identity.authenticator.backend.oauth.*;
-                        </Export-Package>
-                               </instructions>
+                    </instructions>
                 </configuration>
             </plugin>
         </plugins>

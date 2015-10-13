@@ -25,16 +25,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.apimgt.core.gateway.APITokenAuthenticator;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
-import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
-import org.wso2.carbon.webapp.authenticator.framework.Constants;
-import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.*;
 
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -55,8 +51,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     @Override
     public boolean canHandle(Request request) {
         MessageBytes authorization =
-                request.getCoyoteRequest().getMimeHeaders().
-                        getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
+                request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
         String tokenValue;
         if (authorization != null) {
             authorization.toBytes();
@@ -71,35 +66,34 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     }
 
     @Override
-    public Status authenticate(Request request, Response response) {
+    public AuthenticationInfo authenticate(Request request, Response response) {
         String requestUri = request.getRequestURI();
         String requestMethod = request.getMethod();
+        AuthenticationInfo authenticationInfo = new AuthenticationInfo();
         if (requestUri == null || "".equals(requestUri)) {
-            return Status.CONTINUE;
+            authenticationInfo.setStatus(Status.CONTINUE);
+            return authenticationInfo;
         }
 
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
         String context = tokenizer.nextToken();
         if (context == null || "".equals(context)) {
-            return Status.CONTINUE;
+            authenticationInfo.setStatus(Status.CONTINUE);
         }
         String apiVersion = tokenizer.nextToken();
-        String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion,
-                                                                         requestUri,
-                                                                         requestMethod);
+        String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion, requestUri, requestMethod);
+        //String authLevel = "any";
         try {
             if (Constants.NO_MATCHING_AUTH_SCHEME.equals(authLevel)) {
-                AuthenticationFrameworkUtil
-                        .handleNoMatchAuthScheme(request, response, requestMethod,
-                                                 apiVersion, context);
-                return Status.CONTINUE;
+                AuthenticationFrameworkUtil.handleNoMatchAuthScheme(request, response, requestMethod, apiVersion,
+                                                                    context);
+                authenticationInfo.setStatus(Status.CONTINUE);
             } else {
                 String bearerToken = this.getBearerToken(request);
                 // Create a OAuth2TokenValidationRequestDTO object for validating access token
                 OAuth2TokenValidationRequestDTO dto = new OAuth2TokenValidationRequestDTO();
                 //Set the access token info
-                OAuth2TokenValidationRequestDTO.OAuth2AccessToken oAuth2AccessToken =
-                        dto.new OAuth2AccessToken();
+                OAuth2TokenValidationRequestDTO.OAuth2AccessToken oAuth2AccessToken = dto.new OAuth2AccessToken();
                 oAuth2AccessToken.setTokenType(OAuthAuthenticator.BEARER_TOKEN_TYPE);
                 oAuth2AccessToken.setIdentifier(bearerToken);
                 dto.setAccessToken(oAuth2AccessToken);
@@ -109,36 +103,32 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                 resourceContextParam.setKey(OAuthAuthenticator.RESOURCE_KEY);
                 resourceContextParam.setValue(requestUri + ":" + requestMethod);
 
-                OAuth2TokenValidationRequestDTO.TokenValidationContextParam []
+                OAuth2TokenValidationRequestDTO.TokenValidationContextParam[]
                         tokenValidationContextParams = new OAuth2TokenValidationRequestDTO.TokenValidationContextParam[1];
                 tokenValidationContextParams[0] = resourceContextParam;
                 dto.setContext(tokenValidationContextParams);
 
                 OAuth2TokenValidationResponseDTO oAuth2TokenValidationResponseDTO =
-                        DataHolder.getInstance().
-                                getoAuth2TokenValidationService().validate(dto);
+                        AuthenticatorFrameworkDataHolder.getInstance().getoAuth2TokenValidationService().validate(dto);
                 if (oAuth2TokenValidationResponseDTO.isValid()) {
                     String username = oAuth2TokenValidationResponseDTO.getAuthorizedUser();
                     try {
-                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                                IdentityUtil.getTenantIdOFUser(username));
-                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
-                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                                MultitenantUtils.getTenantDomain(username));
+                        authenticationInfo.setUsername(username);
+                        authenticationInfo.setTenantDomain(MultitenantUtils.getTenantDomain(username));
+                        authenticationInfo.setTenantId(IdentityUtil.getTenantIdOFUser(username));
                     } catch (IdentityException e) {
                         throw new AuthenticationException(
-                                "Error occurred while retrieving the tenant ID of user '" +
-                                username + "'", e);
+                                "Error occurred while retrieving the tenant ID of user '" + username + "'", e);
                     }
-                    boolean isAuthenticated = oAuth2TokenValidationResponseDTO.isValid();
-                    return (isAuthenticated) ? Status.SUCCESS : Status.FAILURE;
+                    if (oAuth2TokenValidationResponseDTO.isValid()) {
+                        authenticationInfo.setStatus(Status.CONTINUE);
+                    }
                 }
             }
         } catch (AuthenticationException e) {
             log.error("Failed to authenticate the incoming request", e);
-            return Status.FAILURE;
         }
-        return Status.FAILURE;
+        return authenticationInfo;
     }
 
     @Override

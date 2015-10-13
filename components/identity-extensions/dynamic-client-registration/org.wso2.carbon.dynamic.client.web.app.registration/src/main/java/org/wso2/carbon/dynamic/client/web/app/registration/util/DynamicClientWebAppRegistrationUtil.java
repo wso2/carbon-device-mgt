@@ -62,9 +62,8 @@ public class DynamicClientWebAppRegistrationUtil {
     public static Registry getGovernanceRegistry() throws DynamicClientRegistrationException {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            return DynamicClientWebAppRegistrationDataHolder.getInstance().getRegistryService()
-                                                      .getGovernanceSystemRegistry(
-                                                              tenantId);
+            return DynamicClientWebAppRegistrationDataHolder.getInstance().getRegistryService().
+                    getGovernanceSystemRegistry(tenantId);
         } catch (RegistryException e) {
             throw new DynamicClientRegistrationException(
                     "Error in retrieving governance registry instance: " +
@@ -75,8 +74,7 @@ public class DynamicClientWebAppRegistrationUtil {
     public static OAuthAppDetails getOAuthApplicationData(String appName)
             throws DynamicClientRegistrationException {
         Resource resource;
-        String resourcePath =
-                DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" + appName;
+        String resourcePath = DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" + appName;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Retrieving OAuth application " + appName + " data from Registry");
@@ -86,9 +84,8 @@ public class DynamicClientWebAppRegistrationUtil {
                 JAXBContext context = JAXBContext.newInstance(OAuthAppDetails.class);
                 Unmarshaller unmarshaller = context.createUnmarshaller();
                 return (OAuthAppDetails) unmarshaller.unmarshal(
-                        new StringReader(new String((byte[]) resource.getContent(), Charset
-                                .forName(
-                                        DynamicClientWebAppRegistrationConstants.CharSets.CHARSET_UTF8))));
+                        new StringReader(new String((byte[]) resource.getContent(), Charset.forName(
+                                DynamicClientWebAppRegistrationConstants.CharSets.CHARSET_UTF8))));
             }
             return new OAuthAppDetails();
         } catch (JAXBException e) {
@@ -96,13 +93,12 @@ public class DynamicClientWebAppRegistrationUtil {
                     "Error occurred while parsing the OAuth application data : " + appName, e);
         } catch (RegistryException e) {
             throw new DynamicClientRegistrationException(
-                    "Error occurred while retrieving the Registry resource of OAuth application : " +
-                    appName, e);
+                    "Error occurred while retrieving the Registry resource of OAuth application : " + appName, e);
         }
     }
 
-    public static boolean putOAuthApplicationData(OAuthAppDetails oAuthAppDetails)
-            throws DynamicClientRegistrationException {
+    public static boolean putOAuthApplicationData(OAuthAppDetails oAuthAppDetails) throws
+                                                                                   DynamicClientRegistrationException {
         boolean status;
         try {
             if (log.isDebugEnabled()) {
@@ -113,15 +109,12 @@ public class DynamicClientWebAppRegistrationUtil {
             Marshaller marshaller = context.createMarshaller();
             marshaller.marshal(oAuthAppDetails, writer);
 
-            Resource resource =
-                    DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
+            Resource resource = DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
             resource.setContent(writer.toString());
             resource.setMediaType(DynamicClientWebAppRegistrationConstants.ContentTypes.MEDIA_TYPE_XML);
-            String resourcePath =
-                    DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
+            String resourcePath = DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
                     oAuthAppDetails.getWebAppName();
-            status =
-                    DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);
+            status = DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);
         } catch (RegistryException e) {
             throw new DynamicClientRegistrationException(
                     "Error occurred while persisting OAuth application data : " +
@@ -134,53 +127,42 @@ public class DynamicClientWebAppRegistrationUtil {
         return status;
     }
 
-    public static boolean putRegistryResource(String path,
-                                              Resource resource)
-            throws DynamicClientRegistrationException {
-        boolean status;
+    public static boolean putRegistryResource(String path, Resource resource) throws DynamicClientRegistrationException {
         try {
-            Registry governanceRegistry = DynamicClientWebAppRegistrationUtil
-                    .getGovernanceRegistry();
+            Registry governanceRegistry = DynamicClientWebAppRegistrationUtil.getGovernanceRegistry();
             governanceRegistry.beginTransaction();
             governanceRegistry.put(path, resource);
             governanceRegistry.commitTransaction();
-            status = true;
+            return true;
         } catch (RegistryException e) {
-            throw new DynamicClientRegistrationException(
-                    "Error occurred while persisting registry resource : " +
-                    e.getMessage(), e);
+            throw new DynamicClientRegistrationException("Error occurred while persisting registry resource : " +
+                                                         e.getMessage(), e);
         }
-        return status;
     }
 
-    public static Resource getRegistryResource(String path)
-            throws DynamicClientRegistrationException {
+    public static Resource getRegistryResource(String path) throws DynamicClientRegistrationException {
         try {
-            Registry governanceRegistry = DynamicClientWebAppRegistrationUtil
-                    .getGovernanceRegistry();
+            Registry governanceRegistry = DynamicClientWebAppRegistrationUtil.getGovernanceRegistry();
             if (governanceRegistry.resourceExists(path)) {
                 return governanceRegistry.get(path);
             }
             return null;
         } catch (RegistryException e) {
-            throw new DynamicClientRegistrationException(
-                    "Error in retrieving registry resource : " +
-                    e.getMessage(), e);
+            throw new DynamicClientRegistrationException("Error in retrieving registry resource : " +
+                                                         e.getMessage(), e);
         }
     }
 
     public static String getUserName() {
         String username = "";
-        RealmService realmService =
-                DynamicClientWebAppRegistrationDataHolder.getInstance().getRealmService();
+        RealmService realmService = DynamicClientWebAppRegistrationDataHolder.getInstance().getRealmService();
         if (realmService != null) {
             username = realmService.getBootstrapRealmConfiguration().getAdminUserName();
         }
         return username;
     }
 
-    public static RegistrationProfile constructRegistrationProfile(ServletContext servletContext,
-                                                                   String webAppName) {
+    public static RegistrationProfile constructRegistrationProfile(ServletContext servletContext, String webAppName) {
         RegistrationProfile registrationProfile;
         registrationProfile = new RegistrationProfile();
         registrationProfile.setGrantType(servletContext.getInitParameter(
@@ -193,18 +175,16 @@ public class DynamicClientWebAppRegistrationUtil {
         if ((callbackURL != null) && !callbackURL.isEmpty()) {
             registrationProfile.setCallbackUrl(callbackURL);
         } else {
-            registrationProfile.setCallbackUrl(DynamicClientWebAppRegistrationUtil.getCallbackUrl(
-                    webAppName));
+            registrationProfile.setCallbackUrl(DynamicClientWebAppRegistrationUtil.getCallbackUrl(webAppName));
         }
         registrationProfile.setClientName(webAppName);
         registrationProfile.setSaasApp(Boolean.parseBoolean(servletContext.getInitParameter(
                 DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_SAAS_APP)));
-
         return registrationProfile;
     }
 
-    public static RegistrationProfile constructRegistrationProfile(
-            JaggeryOAuthConfigurationSettings jaggeryOAuthConfigurationSettings, String webAppName) {
+    public static RegistrationProfile constructRegistrationProfile(JaggeryOAuthConfigurationSettings
+                                                                 jaggeryOAuthConfigurationSettings, String webAppName) {
         RegistrationProfile registrationProfile = new RegistrationProfile();
         if (jaggeryOAuthConfigurationSettings != null) {
             registrationProfile.setGrantType(jaggeryOAuthConfigurationSettings.getGrantType());
@@ -215,18 +195,17 @@ public class DynamicClientWebAppRegistrationUtil {
             if (jaggeryOAuthConfigurationSettings.getCallbackURL() != null) {
                 registrationProfile.setCallbackUrl(jaggeryOAuthConfigurationSettings.getCallbackURL());
             } else {
-                registrationProfile.setCallbackUrl(
-                        DynamicClientWebAppRegistrationUtil.getCallbackUrl(webAppName));
+                registrationProfile.setCallbackUrl(DynamicClientWebAppRegistrationUtil.getCallbackUrl(webAppName));
             }
         } else {
-            log.warn(
-                    "Please configure OAuth settings properly for jaggery app : " + webAppName);
+            log.warn("Please configure OAuth settings properly for jaggery app : " + webAppName);
         }
         return registrationProfile;
     }
 
     public static boolean validateRegistrationProfile(RegistrationProfile registrationProfile) {
         boolean status = true;
+        //todo fix this
         if (registrationProfile.getGrantType() == null) {
             status = false;
             log.warn("Required parameter 'grantType' is missing for initiating Dynamic-Client " +
@@ -241,14 +220,11 @@ public class DynamicClientWebAppRegistrationUtil {
     }
 
     public static JaggeryOAuthConfigurationSettings getJaggeryAppOAuthSettings(ServletContext servletContext) {
-        JaggeryOAuthConfigurationSettings
-                jaggeryOAuthConfigurationSettings = new JaggeryOAuthConfigurationSettings();
+        JaggeryOAuthConfigurationSettings jaggeryOAuthConfigurationSettings = new JaggeryOAuthConfigurationSettings();
         try {
-            InputStream inputStream =
-                    servletContext.getResourceAsStream(JAGGERY_APP_OAUTH_CONFIG_PATH);
+            InputStream inputStream = servletContext.getResourceAsStream(JAGGERY_APP_OAUTH_CONFIG_PATH);
             if (inputStream != null) {
-                JsonReader reader =
-                        new JsonReader(new InputStreamReader(inputStream, CHARSET_UTF_8));
+                JsonReader reader = new JsonReader(new InputStreamReader(inputStream, CHARSET_UTF_8));
                 reader.beginObject();
                 while (reader.hasNext()) {
                     String key = reader.nextName();
@@ -307,7 +283,7 @@ public class DynamicClientWebAppRegistrationUtil {
 
     public static void addClientCredentialsToWebContext(OAuthAppDetails oAuthAppDetails,
                                                         ServletContext servletContext) {
-        if(oAuthAppDetails != null){
+        if (oAuthAppDetails != null) {
             //Check for client credentials
             if ((oAuthAppDetails.getClientKey() != null && !oAuthAppDetails.getClientKey().isEmpty()) &&
                 (oAuthAppDetails.getClientSecret() != null && !oAuthAppDetails.getClientSecret().isEmpty())) {

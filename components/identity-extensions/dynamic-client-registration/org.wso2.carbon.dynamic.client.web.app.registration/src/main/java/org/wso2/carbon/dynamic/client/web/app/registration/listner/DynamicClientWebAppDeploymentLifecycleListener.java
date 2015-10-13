@@ -40,8 +40,7 @@ public class DynamicClientWebAppDeploymentLifecycleListener implements Lifecycle
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
         if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
-            DynamicClientWebAppRegistrationManager.getInstance().saveServletContextToCache(
-                    context);
+            DynamicClientWebAppRegistrationManager.getInstance().saveServletContextToCache(context);
         }
     }
 }

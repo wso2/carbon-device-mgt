@@ -19,7 +19,7 @@
 package org.wso2.carbon.dynamic.client.registration;
 
 /**
- * Custom exception to be thrown inside DynamicClientRegistration related functionalities.
+ * Custom exception to be thrown inside DynamicClientRegistration related functionality.
  */
 public class DynamicClientRegistrationException extends Exception {
 

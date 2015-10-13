@@ -27,8 +27,8 @@ import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
-import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationHandler;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
@@ -77,15 +77,14 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             WebappAuthenticatorConfig.init();
             WebappAuthenticatorRepository repository = new WebappAuthenticatorRepository();
             for (AuthenticatorConfig config : WebappAuthenticatorConfig.getInstance().getAuthenticators()) {
-                WebappAuthenticator authenticator =
-                        (WebappAuthenticator) Class.forName(config.getClassName()).newInstance();
+                WebappAuthenticator authenticator = (WebappAuthenticator) Class.forName(config.getClassName()).
+                        newInstance();
                 repository.addAuthenticator(authenticator);
             }
-            DataHolder.getInstance().setWebappAuthenticatorRepository(repository);
+            AuthenticatorFrameworkDataHolder.getInstance().setWebappAuthenticatorRepository(repository);
 
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
-            valves.add(new WebappAuthenticationHandler());
-            //valves.add(new PermissionAuthorizationValve());
+            valves.add(new WebappAuthenticationValve());
             TomcatValveContainer.addValves(valves);
 
             if (log.isDebugEnabled()) {
@@ -105,18 +104,18 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("RealmService acquired");
         }
-        DataHolder.getInstance().setRealmService(realmService);
+        AuthenticatorFrameworkDataHolder.getInstance().setRealmService(realmService);
     }
 
     protected void unsetRealmService(RealmService realmService) {
-        DataHolder.getInstance().setRealmService(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setRealmService(null);
     }
 
     protected void setCertificateManagementService(CertificateManagementService certificateManagementService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting certificate management service");
         }
-        DataHolder.getInstance().setCertificateManagementService(certificateManagementService);
+        AuthenticatorFrameworkDataHolder.getInstance().setCertificateManagementService(certificateManagementService);
     }
 
     protected void unsetCertificateManagementService(CertificateManagementService certificateManagementService) {
@@ -124,14 +123,14 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             log.debug("Removing certificate management service");
         }
 
-        DataHolder.getInstance().setCertificateManagementService(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setCertificateManagementService(null);
     }
 
     protected void setSCEPManagementService(SCEPManager scepManager) {
         if (log.isDebugEnabled()) {
             log.debug("Setting SCEP management service");
         }
-        DataHolder.getInstance().setScepManager(scepManager);
+        AuthenticatorFrameworkDataHolder.getInstance().setScepManager(scepManager);
     }
 
     protected void unsetSCEPManagementService(SCEPManager scepManager) {
@@ -139,7 +138,7 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             log.debug("Removing SCEP management service");
         }
 
-        DataHolder.getInstance().setScepManager(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setScepManager(null);
     }
 
     /**
@@ -151,7 +150,7 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Setting OAuth2TokenValidationService Service");
         }
-        DataHolder.getInstance().setoAuth2TokenValidationService(tokenValidationService);
+        AuthenticatorFrameworkDataHolder.getInstance().setoAuth2TokenValidationService(tokenValidationService);
     }
 
     /**
@@ -163,6 +162,6 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting OAuth2TokenValidationService Service");
         }
-        DataHolder.getInstance().setoAuth2TokenValidationService(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setoAuth2TokenValidationService(null);
     }
 }

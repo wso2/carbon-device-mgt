@@ -19,11 +19,11 @@ package org.wso2.carbon.dynamic.client.registration.profile;
 
 /**
  *
- * DTO class to be used when registering a OAuth application.
+ * DTO class to be used when registering an OAuth application.
  *
 * */
 public class RegistrationProfile {
-
+//todo mark mandatory fields
     private String applicationType;
     private String[] redirectUris;
     private String clientName;

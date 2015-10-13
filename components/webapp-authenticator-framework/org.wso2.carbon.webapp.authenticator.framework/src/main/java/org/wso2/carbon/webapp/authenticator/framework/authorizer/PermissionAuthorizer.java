@@ -44,13 +44,11 @@ public class PermissionAuthorizer {
         String requestUri = request.getRequestURI();
         String requestMethod = request.getMethod();
 
-        if (requestUri == null || requestUri.isEmpty() ||
-                requestMethod == null || requestMethod.isEmpty()) {
+        if (requestUri == null || requestUri.isEmpty() || requestMethod == null || requestMethod.isEmpty()) {
             return WebappAuthenticator.Status.CONTINUE;
         }
 
-        PermissionManagerServiceImpl
-                registryBasedPermissionManager = PermissionManagerServiceImpl.getInstance();
+        PermissionManagerServiceImpl registryBasedPermissionManager = PermissionManagerServiceImpl.getInstance();
         Properties properties = new Properties();
         properties.put("",requestUri);
         properties.put("",requestMethod);

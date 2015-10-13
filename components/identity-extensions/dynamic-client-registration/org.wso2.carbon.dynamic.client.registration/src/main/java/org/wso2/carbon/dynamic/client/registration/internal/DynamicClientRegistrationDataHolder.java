@@ -45,7 +45,7 @@ public class DynamicClientRegistrationDataHolder {
         return applicationManagementService;
     }
 
-    public void setApplicationManagementService(ApplicationManagementService realmService) {
-        this.applicationManagementService = realmService;
+    public void setApplicationManagementService(ApplicationManagementService applicationManagementService) {
+        this.applicationManagementService = applicationManagementService;
     }
 }

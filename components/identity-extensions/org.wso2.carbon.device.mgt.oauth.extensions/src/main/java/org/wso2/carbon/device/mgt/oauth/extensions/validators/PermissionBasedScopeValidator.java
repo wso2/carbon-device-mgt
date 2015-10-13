@@ -46,6 +46,7 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
         private PermissionMethod() {
             throw new AssertionError();
         }
+
         public static final String READ = "read";
         public static final String WRITE = "write";
         public static final String DELETE = "delete";
@@ -70,12 +71,13 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                 getPermissionManagerService();
         try {
             Permission permission = permissionManagerService.getPermission(properties);
-            if((permission != null) && (accessTokenDO.getAuthzUser() != null)) {
+            if ((permission != null) && (accessTokenDO.getAuthzUser() != null)) {
                 String username = accessTokenDO.getAuthzUser().getUserName();
                 UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
-                if(userRealm != null && userRealm.getAuthorizationManager() != null){
-                    status = userRealm.getAuthorizationManager().isUserAuthorized(username, permission.getPath(),
-                                                                                  PermissionMethod.READ);
+                if (userRealm != null && userRealm.getAuthorizationManager() != null) {
+                    status = userRealm.getAuthorizationManager()
+                                      .isUserAuthorized(username, permission.getPath(),
+                                                        PermissionMethod.READ);
                 }
             }
         } catch (PermissionManagementException e) {

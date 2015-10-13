@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Represents OAuthConfiguration data.
+ * Represents OAuthConfiguration data required to create OAuth service provider for Jaggery apps.
  */
 @XmlRootElement(name = "OAuthSettings")
 public class JaggeryOAuthConfigurationSettings {

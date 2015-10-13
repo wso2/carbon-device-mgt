@@ -26,11 +26,8 @@ import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationServ
  */
 public class DynamicClientUtil {
 
-	public static DynamicClientRegistrationService getDynamicClientRegistrationService() {
-		DynamicClientRegistrationService dynamicClientRegistrationService;
-		PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-		dynamicClientRegistrationService =
-				(DynamicClientRegistrationService) ctx.getOSGiService(DynamicClientRegistrationService.class, null);
-		return dynamicClientRegistrationService;
-	}
+    public static DynamicClientRegistrationService getDynamicClientRegistrationService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        return  (DynamicClientRegistrationService) ctx.getOSGiService(DynamicClientRegistrationService.class, null);
+    }
 }

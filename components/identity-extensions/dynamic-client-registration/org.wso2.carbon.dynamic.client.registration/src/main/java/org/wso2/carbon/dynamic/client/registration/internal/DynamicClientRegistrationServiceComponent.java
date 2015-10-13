@@ -20,9 +20,10 @@ package org.wso2.carbon.dynamic.client.registration.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
-import org.wso2.carbon.dynamic.client.registration.impl.DynamicClientRegistrationImpl;
+import org.wso2.carbon.dynamic.client.registration.impl.DynamicClientRegistrationServiceImpl;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 
 /**
@@ -44,9 +45,9 @@ public class DynamicClientRegistrationServiceComponent {
             log.debug("Starting DynamicClientRegistrationServiceComponent");
         }
         DynamicClientRegistrationService dynamicClientRegistrationService =
-                new DynamicClientRegistrationImpl();
-        componentContext.getBundleContext().registerService(DynamicClientRegistrationService.class.getName(),
-                                      dynamicClientRegistrationService, null);
+                new DynamicClientRegistrationServiceImpl();
+        componentContext.getBundleContext().registerService(
+                DynamicClientRegistrationService.class.getName(), dynamicClientRegistrationService, null);
     }
 
     @SuppressWarnings("unused")

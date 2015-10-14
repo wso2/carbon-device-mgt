@@ -24,9 +24,11 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.core.config.permission.PermissionConfiguration;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionUtils;
 
 import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
@@ -34,6 +36,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * This listener class will initiate the permission addition of permissions defined in
@@ -50,6 +53,7 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 		if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
 			StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
 			ServletContext servletContext = context.getServletContext();
+			String contextPath = servletContext.getContextPath();
 			try {
 				InputStream permissionStream = servletContext.getResourceAsStream(PERMISSION_CONFIG_PATH);
 				if (permissionStream != null) {
@@ -58,10 +62,16 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 					Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
 					PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
 							unmarshaller.unmarshal(permissionStream);
-					if (permissionConfiguration != null &&
-					    permissionConfiguration.getPermissions() != null) {
-						PermissionManagerServiceImpl.getInstance().addPermissions(
-								permissionConfiguration.getPermissions());
+                    List<Permission> permissions = permissionConfiguration.getPermissions();
+                    String apiVersion = permissionConfiguration.getApiVersion();
+                    if (permissionConfiguration != null && permissions != null) {
+                        for (Permission permission : permissions) {
+                            // update the permission path to absolute permission path
+                            permission.setPath(PermissionUtils.getAbsolutePermissionPath(permission.getPath()));
+                            permission.setUrl(PermissionUtils.getAbsoluteContextPathOfAPI(contextPath, apiVersion,
+                                                                                           permission.getUrl()));
+                            PermissionManagerServiceImpl.getInstance().addPermission(permission);
+                        }
 					}
 				}
 			} catch (JAXBException e) {

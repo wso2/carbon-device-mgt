@@ -51,6 +51,7 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
         public static final String WRITE = "write";
         public static final String DELETE = "delete";
         public static final String ACTION = "action";
+        public static final String UI_EXECUTE = "ui.execute";
     }
 
     private static final Log log = LogFactory.getLog(PermissionBasedScopeValidator.class);
@@ -77,7 +78,7 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
                     status = userRealm.getAuthorizationManager()
                                       .isUserAuthorized(username, permission.getPath(),
-                                                        PermissionMethod.READ);
+                                                        PermissionMethod.UI_EXECUTE);
                 }
             }
         } catch (PermissionManagementException e) {

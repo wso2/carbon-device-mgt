@@ -44,10 +44,11 @@ public class Policy implements Comparable<Policy>, Serializable {
     private List<String> users;
     private boolean active;
     private boolean updated;
+    private String description;
 
 
     /* Compliance data*/
-    private String Compliance;
+    private String compliance;
 
     /*Dynamic policy attributes*/
 
@@ -170,6 +171,14 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.updated = updated;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @XmlElement
     public List<PolicyCriterion> getPolicyCriterias() {
         return policyCriterias;
@@ -181,11 +190,11 @@ public class Policy implements Comparable<Policy>, Serializable {
 
     @XmlElement
     public String getCompliance() {
-        return Compliance;
+        return compliance;
     }
 
     public void setCompliance(String compliance) {
-        Compliance = compliance;
+        this.compliance = compliance;
     }
 
     @XmlElement

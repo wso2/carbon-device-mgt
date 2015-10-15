@@ -629,15 +629,16 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_POLICY SET NAME = ?,  PROFILE_ID = ?, PRIORITY = ?, COMPLIANCE = ?," +
-                    " UPDATED = ? WHERE ID = ? AND TENANT_ID = ?";
+                    " UPDATED = ?, DESCRIPTION = ? WHERE ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, policy.getPolicyName());
             stmt.setInt(2, policy.getProfile().getProfileId());
             stmt.setInt(3, policy.getPriorityId());
             stmt.setString(4, policy.getCompliance());
             stmt.setInt(5, 1);
-            stmt.setInt(6, policy.getId());
-            stmt.setInt(7, tenantId);
+            stmt.setString(6, policy.getDescription());
+            stmt.setInt(7, policy.getId());
+            stmt.setInt(8, tenantId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -742,6 +743,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setPriorityId(resultSet.getInt("PRIORITY"));
                 policy.setProfileId(resultSet.getInt("PROFILE_ID"));
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
+                policy.setDescription(resultSet.getString("DESCRIPTION"));
             }
             return policy;
 
@@ -775,6 +777,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setTenantId(resultSet.getInt("TENANT_ID"));
                 policy.setPriorityId(resultSet.getInt("PRIORITY"));
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
+                policy.setDescription(resultSet.getString("DESCRIPTION"));
             }
             return policy;
         } catch (SQLException e) {
@@ -810,6 +813,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setOwnershipType(resultSet.getString("OWNERSHIP_TYPE"));
                 policy.setUpdated(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("UPDATED")));
                 policy.setActive(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("ACTIVE")));
+                policy.setDescription(resultSet.getString("DESCRIPTION"));
                 policies.add(policy);
             }
             return policies;
@@ -1185,8 +1189,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE, OWNERSHIP_TYPE," +
-                    " " +
-                    "UPDATED, ACTIVE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    "UPDATED, ACTIVE, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, policy.getPolicyName());
@@ -1197,6 +1200,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setString(6, policy.getOwnershipType());
             stmt.setInt(7, 0);
             stmt.setInt(8, 0);
+            stmt.setString(9, policy.getDescription());
 
             int affectedRows = stmt.executeUpdate();
 

@@ -471,17 +471,18 @@ public class PolicyManagerImpl implements PolicyManager {
         Policy policy;
         List<Device> deviceList;
         List<String> roleNames;
-
+        List<String> userNames;
         try {
             PolicyManagementDAOFactory.openConnection();
             policy = policyDAO.getPolicy(policyId);
 
             roleNames = policyDAO.getPolicyAppliedRoles(policyId);
+            userNames = policyDAO.getPolicyAppliedUsers(policyId);
             Profile profile = profileDAO.getProfile(policy.getProfileId());
 
             policy.setProfile(profile);
             policy.setRoles(roleNames);
-
+            policy.setUsers(userNames);
 
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting the policy related to policy ID (" +

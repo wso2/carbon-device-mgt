@@ -311,7 +311,6 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         policy = pap.addPolicy(policy);
         pap.activatePolicy(policy.getId());
         List<String> users = new ArrayList<>();
-        log.debug(policy.getRoles().size());
         users.add("Udara");
         users.add("Dileesha");
         policy.setUsers(users);

@@ -171,6 +171,7 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.updated = updated;
     }
 
+    @XmlElement
     public String getDescription() {
         return description;
     }

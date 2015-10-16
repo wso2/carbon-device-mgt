@@ -20,25 +20,27 @@ package org.wso2.carbon.identity.authenticator.backend.oauth.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osgi.service.component.ComponentContext;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.wso2.carbon.core.services.authentication.CarbonServerAuthenticator;
 import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticator;
 
 
-/**
- * @scr.component component.name="org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticator" immediate="true"
- */
-@SuppressWarnings("unused")
-public class OauthAuthenticatorServiceComponent {
 
+public class OauthAuthenticatorServiceComponent  implements BundleActivator {
+
+    private ServiceRegistration pipServiceRegRef;
     private static final Log log = LogFactory.getLog(OauthAuthenticatorServiceComponent
             .class);
 
-    protected void activate(ComponentContext ctxt) {
+    @Override
+    public void start(BundleContext bundleContext) throws Exception {
+        log.info("Initiating");
         try {
             OauthAuthenticator oauthAuthenticator = new OauthAuthenticator();
-            ctxt.getBundleContext().registerService(CarbonServerAuthenticator.class.getName(),
-                    oauthAuthenticator, null);
+            pipServiceRegRef =  bundleContext.registerService(CarbonServerAuthenticator.class.getName(),
+                                          oauthAuthenticator, null);
             if (log.isDebugEnabled()) {
                 log.debug("OAuth Authenticator bundle is activated");
             }
@@ -47,10 +49,12 @@ public class OauthAuthenticatorServiceComponent {
         }
     }
 
-    protected void deactivate(ComponentContext ctxt) {
+    @Override
+    public void stop(BundleContext bundleContext) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("OAuth Authenticator bundle is deactivated");
         }
+        pipServiceRegRef.unregister();
     }
 
 }

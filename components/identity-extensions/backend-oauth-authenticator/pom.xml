@@ -87,12 +87,14 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>
+                        <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
+                        <Bundle-Description>Identity backend Bundle</Bundle-Description>
+                        <Bundle-Activator>org.wso2.carbon.identity.authenticator.backend.oauth.internal.OauthAuthenticatorServiceComponent</Bundle-Activator>
                         <Private-Package>
-                            org.wso2.sample.authenticator.internal
+                            org.wso2.org.wso2.carbon.identity.authenticator.backend.oauth.internal
                         </Private-Package>
                         <Export-Package>
-                            !org.wso2.sample.authenticator.internal,
-                            org.wso2.sample.authenticator.*,
+                            org.wso2.carbon.identity.authenticator.backend.oauth.*
                         </Export-Package>
                         <Import-Package>
                             javax.servlet.http,
@@ -112,8 +114,8 @@
                             org.wso2.carbon.core.services.authentication,
                             org.wso2.carbon.identity.oauth2.stub,
                             org.wso2.carbon.identity.oauth2.stub.dto,
-			                org.wso2.carbon.base,
-			                org.wso2.carbon.utils
+                            org.wso2.carbon.base,
+                            org.wso2.carbon.utils
                         </Import-Package>
                     </instructions>
                 </configuration>

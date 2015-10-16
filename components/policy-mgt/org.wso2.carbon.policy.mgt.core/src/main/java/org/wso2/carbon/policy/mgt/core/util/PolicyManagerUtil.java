@@ -22,7 +22,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
+import org.wso2.carbon.device.mgt.core.config.tenant.TenantConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -46,6 +53,10 @@ import java.util.*;
 public class PolicyManagerUtil {
 
     private static final Log log = LogFactory.getLog(PolicyManagerUtil.class);
+
+    public static final String GENERAL_CONFIG_RESOURCE_PATH = "general";
+    public static final String MONITORING_FREQUENCY = "notifierFrequency";
+
 
     public static Document convertToDocument(File file) throws PolicyManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -156,13 +167,13 @@ public class PolicyManagerUtil {
 //    }
 
 
-    public static Cache<Integer, Policy> getPolicyCache(String name){
+    public static Cache<Integer, Policy> getPolicyCache(String name) {
         CacheManager manager = getCacheManager();
         return (manager != null) ? manager.<Integer, Policy>getCache(name) :
                 Caching.getCacheManager().<Integer, Policy>getCache(name);
     }
 
-    public static Cache<Integer, List<Policy>> getPolicyListCache(String name){
+    public static Cache<Integer, List<Policy>> getPolicyListCache(String name) {
         CacheManager manager = getCacheManager();
         return (manager != null) ? manager.<Integer, List<Policy>>getCache(name) :
                 Caching.getCacheManager().<Integer, List<Policy>>getCache(name);
@@ -181,5 +192,34 @@ public class PolicyManagerUtil {
             deviceHashMap.put(device.getId(), device);
         }
         return deviceHashMap;
+    }
+
+
+    public static int getMonitoringFequency() {
+
+        TenantConfigurationManagementService configMgtService = new TenantConfigurationManagementServiceImpl();
+        TenantConfiguration tenantConfiguration = null;
+        int monitoringFrequency = 0;
+        try {
+            tenantConfiguration = configMgtService.getConfiguration(GENERAL_CONFIG_RESOURCE_PATH);
+            List<ConfigurationEntry> configuration = tenantConfiguration.getConfiguration();
+
+            for (ConfigurationEntry cEntry : configuration) {
+                if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
+                    monitoringFrequency = (int) cEntry.getValue();
+                }
+            }
+
+        } catch (ConfigurationManagementException e) {
+            log.error("Error while getting the configurations from registry.", e);
+        }
+
+        if (monitoringFrequency == 0) {
+            PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().
+                    getDeviceManagementConfig().getDeviceManagementConfigRepository().getPolicyConfiguration();
+            monitoringFrequency = policyConfiguration.getMonitoringFrequency();
+        }
+
+        return monitoringFrequency;
     }
 }

@@ -35,6 +35,7 @@ import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleServiceImpl;
+import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -86,11 +87,13 @@ public class PolicyManagementServiceComponent {
             componentContext.getBundleContext().registerService(
                     PolicyManagerService.class.getName(), new PolicyManagerServiceImpl(), null);
 
+
+
             PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                     getDeviceManagementConfigRepository().getPolicyConfiguration();
             if(policyConfiguration.getMonitoringEnable()) {
                 TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
-                taskScheduleService.startTask(policyConfiguration.getMonitoringFrequency());
+                taskScheduleService.startTask(PolicyManagerUtil.getMonitoringFequency());
             }
 
         } catch (Throwable t) {

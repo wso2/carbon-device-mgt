@@ -20,6 +20,8 @@ package org.wso2.carbon.device.mgt.core.dao.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -119,5 +121,27 @@ public final class DeviceManagementDAOUtil {
 			throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
 		}
 	}
+
+    public static Device loadDevice(ResultSet rs) throws SQLException {
+        Device device = new Device();
+        device.setId(rs.getInt("DEVICE_ID"));
+        device.setName(rs.getString("DEVICE_NAME"));
+        device.setDescription(rs.getString("DESCRIPTION"));
+        device.setType(rs.getString("DEVICE_TYPE"));
+        device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+        device.setEnrolmentInfo(loadEnrolment(rs));
+        return device;
+    }
+
+    public static EnrolmentInfo loadEnrolment(ResultSet rs) throws SQLException {
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+        enrolmentInfo.setId(rs.getInt("ENROLMENT_ID"));
+        enrolmentInfo.setOwner(rs.getString("OWNER"));
+        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
+        enrolmentInfo.setDateOfEnrolment(rs.getTimestamp("DATE_OF_ENROLMENT").getTime());
+        enrolmentInfo.setDateOfLastUpdate(rs.getTimestamp("DATE_OF_LAST_UPDATE").getTime());
+        enrolmentInfo.setStatus(EnrolmentInfo.Status.valueOf(rs.getString("STATUS")));
+        return enrolmentInfo;
+    }
 
 }

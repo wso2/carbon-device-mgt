@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,16 @@ import java.util.List;
  * This class represents the key operations associated with persisting device related information.
  */
 public interface DeviceDAO {
+
+    /**
+     * This method is used to add a device.
+     *
+     * @param type device type.
+     * @param tenantId tenant id.
+     * @return returns the device count of given type.
+     * @throws DeviceManagementDAOException
+     */
+    int getDeviceCount(String type, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to add a device.
@@ -101,9 +112,32 @@ public interface DeviceDAO {
     List<Device> getDevices(int tenantId) throws DeviceManagementDAOException;
 
     /**
+     * This method is used to retrieve the devices of a given tenant as a paginated result.
+     *
+     * @param index start index of result set.
+     * @param limit number of records to be returned.
+     * @param tenantId tenant id.
+     * @return returns a PaginationResult including the requested data.
+     * @throws DeviceManagementDAOException
+     */
+    PaginationResult getDevices(int index, int limit, int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve the devices of a given tenant and type as a paginated result.
+     *
+     * @param type device type.
+     * @param index start index of result set.
+     * @param limit number of records to be returned.
+     * @param tenantId tenant id.
+     * @return returns a PaginationResult including the requested data.
+     * @throws DeviceManagementDAOException
+     */
+    PaginationResult getDevices(String type, int index, int limit, int tenantId) throws DeviceManagementDAOException;
+
+    /**
      * This method is used to retrieve all the devices of a given tenant and device type.
      *
-     * @param type     device type.
+     * @param type device type.
      * @param tenantId tenant id.
      * @return returns list of devices.
      * @throws DeviceManagementDAOException

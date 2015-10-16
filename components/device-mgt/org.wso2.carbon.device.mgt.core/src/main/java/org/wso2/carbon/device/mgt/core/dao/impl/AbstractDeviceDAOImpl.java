@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 
-public class DeviceDAOImpl implements DeviceDAO {
+public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
 
     @Override
     public int addDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException {
@@ -122,7 +122,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             stmt.setInt(4, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                device = this.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDevice(rs);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while listing devices for type " +
@@ -152,7 +152,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             stmt.setString(2, deviceIdentifier.getId());
             rs = stmt.executeQuery();
             if (rs.next()) {
-                device = this.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDevice(rs);
                 deviceHashMap.put(rs.getInt("TENANT_ID"), device);
             }
         } catch (SQLException e) {
@@ -184,7 +184,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             stmt.setInt(3, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                device = this.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDevice(rs);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving device for id " +
@@ -215,7 +215,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             devices = new ArrayList<>();
             while (rs.next()) {
-                Device device = this.loadDevice(rs);
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -248,7 +248,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             devices = new ArrayList<>();
             while (rs.next()) {
-                Device device = this.loadDevice(rs);
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -279,7 +279,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Device device = this.loadDevice(rs);
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -324,6 +324,31 @@ public class DeviceDAOImpl implements DeviceDAO {
         return deviceCount;
     }
 
+    @Override
+    public int getDeviceCount(String type, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int deviceCount = 0;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT COUNT(d.ID) AS DEVICE_COUNT FROM DM_DEVICE d, (SELECT t.ID AS TYPE_ID FROM DM_DEVICE_TYPE t " +
+                         "WHERE t.NAME = ?) d1 WHERE TYPE_ID = d.DEVICE_TYPE_ID AND d.TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, type);
+            stmt.setInt(2, tenantId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                deviceCount = rs.getInt("DEVICE_COUNT");
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while getting the device count", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return deviceCount;
+    }
+
     /**
      * Get the list of devices that matches with the given device name.
      *
@@ -352,7 +377,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Device device = this.loadDevice(rs);
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -475,7 +500,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             stmt.setInt(5, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                enrolmentInfo = this.loadEnrolment(rs);
+                enrolmentInfo = DeviceManagementDAOUtil.loadEnrolment(rs);
             }
             return enrolmentInfo;
         } catch (SQLException e) {
@@ -551,7 +576,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             stmt.setInt(index, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                enrolments.add(this.loadEnrolment(rs));
+                enrolments.add(DeviceManagementDAOUtil.loadEnrolment(rs));
             }
             return enrolments;
         } catch (SQLException e) {
@@ -560,28 +585,6 @@ public class DeviceDAOImpl implements DeviceDAO {
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
-    }
-
-    private Device loadDevice(ResultSet rs) throws SQLException {
-        Device device = new Device();
-        device.setId(rs.getInt("DEVICE_ID"));
-        device.setName(rs.getString("DEVICE_NAME"));
-        device.setDescription(rs.getString("DESCRIPTION"));
-        device.setType(rs.getString("DEVICE_TYPE"));
-        device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
-        device.setEnrolmentInfo(this.loadEnrolment(rs));
-        return device;
-    }
-
-    private EnrolmentInfo loadEnrolment(ResultSet rs) throws SQLException {
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
-        enrolmentInfo.setId(rs.getInt("ENROLMENT_ID"));
-        enrolmentInfo.setOwner(rs.getString("OWNER"));
-        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
-        enrolmentInfo.setDateOfEnrolment(rs.getTimestamp("DATE_OF_ENROLMENT").getTime());
-        enrolmentInfo.setDateOfLastUpdate(rs.getTimestamp("DATE_OF_LAST_UPDATE").getTime());
-        enrolmentInfo.setStatus(EnrolmentInfo.Status.valueOf(rs.getString("STATUS")));
-        return enrolmentInfo;
     }
 
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId)
@@ -604,7 +607,7 @@ public class DeviceDAOImpl implements DeviceDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Device device = this.loadDevice(rs);
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
                 devices.add(device);
             }
         } catch (SQLException e) {

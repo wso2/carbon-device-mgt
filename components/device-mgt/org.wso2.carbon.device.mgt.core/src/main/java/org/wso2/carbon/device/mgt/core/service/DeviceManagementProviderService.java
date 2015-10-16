@@ -36,6 +36,10 @@ public interface DeviceManagementProviderService extends OperationManager {
 
     List<Device> getAllDevices() throws DeviceManagementException;
 
+    PaginationResult getAllDevices(String deviceType, int index, int limit) throws DeviceManagementException;
+
+    PaginationResult getAllDevices(int index, int limit) throws DeviceManagementException;
+
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
     void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;

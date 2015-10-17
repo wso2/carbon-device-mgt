@@ -204,9 +204,11 @@ public class PolicyManagerUtil {
             tenantConfiguration = configMgtService.getConfiguration(GENERAL_CONFIG_RESOURCE_PATH);
             List<ConfigurationEntry> configuration = tenantConfiguration.getConfiguration();
 
-            for (ConfigurationEntry cEntry : configuration) {
-                if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
-                    monitoringFrequency = (int) cEntry.getValue();
+            if (configuration != null && !configuration.isEmpty()) {
+                for (ConfigurationEntry cEntry : configuration) {
+                    if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
+                        monitoringFrequency = (int) cEntry.getValue();
+                    }
                 }
             }
 

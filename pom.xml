@@ -312,6 +312,10 @@
                         <groupId>commons-pool.wso2</groupId>
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -385,6 +389,10 @@
                     <exclusion>
                         <groupId>org.wso2.carbon.registry</groupId>
                         <artifactId>org.wso2.carbon.registry.extensions</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -807,6 +815,10 @@
                     <exclusion>
                         <groupId>org.wso2.carbon.registry</groupId>
                         <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

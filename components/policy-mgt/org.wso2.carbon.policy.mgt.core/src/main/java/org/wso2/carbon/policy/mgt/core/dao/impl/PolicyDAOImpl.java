@@ -766,6 +766,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setProfileId(resultSet.getInt("PROFILE_ID"));
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
                 policy.setDescription(resultSet.getString("DESCRIPTION"));
+                policy.setUpdated(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("UPDATED")));
+                policy.setActive(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("ACTIVE")));
             }
             return policy;
 
@@ -800,6 +802,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setPriorityId(resultSet.getInt("PRIORITY"));
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
                 policy.setDescription(resultSet.getString("DESCRIPTION"));
+                policy.setUpdated(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("UPDATED")));
+                policy.setActive(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("ACTIVE")));
             }
             return policy;
         } catch (SQLException e) {

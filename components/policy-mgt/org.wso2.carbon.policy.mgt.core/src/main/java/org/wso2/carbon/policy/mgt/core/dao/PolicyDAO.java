@@ -41,6 +41,13 @@ public interface PolicyDAO {
      */
     Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagerDAOException;
 
+    /**
+     * This method is used to add/update the users associated with the policy.
+     * @param usernameList - List of the users that needs to be applied
+     * @param policy - policy object with the current role list
+     * @return
+     * @throws PolicyManagerDAOException
+     */
     Policy addPolicyToUser(List<String> usernameList, Policy policy) throws PolicyManagerDAOException;
 
     Policy addPolicyToDevice(List<Device> devices, Policy policy) throws PolicyManagerDAOException;

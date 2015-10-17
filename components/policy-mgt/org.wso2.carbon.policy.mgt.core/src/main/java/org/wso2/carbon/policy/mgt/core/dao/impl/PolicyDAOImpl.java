@@ -110,23 +110,45 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public Policy addPolicyToUser(List<String> usernameList, Policy policy) throws PolicyManagerDAOException {
+    public Policy addPolicyToUser(List<String> usersToAdd, Policy policy) throws PolicyManagerDAOException {
         Connection conn;
-        PreparedStatement stmt = null;
+        PreparedStatement insertStmt = null;
+        PreparedStatement deleteStmt = null;
+        final List<String> currentUsers = policy.getUsers();
+
+        SetReferenceTransformer<String> transformer = new SetReferenceTransformer<String>();
+
+        transformer.transform(currentUsers, usersToAdd);
+        usersToAdd = transformer.getObjectsToAdd();
+        List<String> usersToDelete = transformer.getObjectsToRemove();
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_USER_POLICY (POLICY_ID, USERNAME) VALUES (?, ?)";
-            stmt = conn.prepareStatement(query);
-            for (String username : usernameList) {
-                stmt.setInt(1, policy.getId());
-                stmt.setString(2, username);
-                stmt.addBatch();
+            if (usersToAdd.size() > 0){
+                String query = "INSERT INTO DM_USER_POLICY (POLICY_ID, USERNAME) VALUES (?, ?)";
+                insertStmt = conn.prepareStatement(query);
+                for (String username : usersToAdd) {
+                    insertStmt.setInt(1, policy.getId());
+                    insertStmt.setString(2, username);
+                    insertStmt.addBatch();
+                }
+                insertStmt.executeBatch();
             }
-            stmt.executeBatch();
+            if (usersToDelete.size() > 0){
+                String deleteQuery = "DELETE FROM DM_USER_POLICY WHERE USERNAME=? AND POLICY_ID=?";
+                deleteStmt = conn.prepareStatement(deleteQuery);
+                for (String username : usersToDelete) {
+                    deleteStmt.setString(1, username);
+                    deleteStmt.setInt(2, policy.getId());
+                    deleteStmt.addBatch();
+                }
+                deleteStmt.executeBatch();
+            }
+
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Error occurred while adding the user name with policy to database", e);
         } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+            PolicyManagementDAOUtil.cleanupResources(insertStmt, null);
+            PolicyManagementDAOUtil.cleanupResources(deleteStmt, null);
         }
         return policy;
     }
@@ -744,6 +766,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setProfileId(resultSet.getInt("PROFILE_ID"));
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
                 policy.setDescription(resultSet.getString("DESCRIPTION"));
+                policy.setUpdated(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("UPDATED")));
+                policy.setActive(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("ACTIVE")));
             }
             return policy;
 
@@ -778,6 +802,8 @@ public class PolicyDAOImpl implements PolicyDAO {
                 policy.setPriorityId(resultSet.getInt("PRIORITY"));
                 policy.setCompliance(resultSet.getString("COMPLIANCE"));
                 policy.setDescription(resultSet.getString("DESCRIPTION"));
+                policy.setUpdated(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("UPDATED")));
+                policy.setActive(PolicyManagerUtil.convertIntToBoolean(resultSet.getInt("ACTIVE")));
             }
             return policy;
         } catch (SQLException e) {

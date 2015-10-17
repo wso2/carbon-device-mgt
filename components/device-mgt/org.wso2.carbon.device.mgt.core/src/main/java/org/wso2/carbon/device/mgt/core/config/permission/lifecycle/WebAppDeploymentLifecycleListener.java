@@ -53,7 +53,7 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 		if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
 			StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
 			ServletContext servletContext = context.getServletContext();
-			String contextPath = servletContext.getContextPath();
+			String contextPath = context.getServletContext().getContextPath();
 			try {
 				InputStream permissionStream = servletContext.getResourceAsStream(PERMISSION_CONFIG_PATH);
 				if (permissionStream != null) {
@@ -77,7 +77,7 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 			} catch (JAXBException e) {
                 log.error(
                         "Exception occurred while parsing the permission configuration of webapp : "
-                        + servletContext.getContextPath(), e);
+                        + context.getServletContext().getContextPath(), e);
             } catch (PermissionManagementException e) {
                 log.error("Exception occurred while adding the permissions from webapp : "
                           + servletContext.getContextPath(), e);

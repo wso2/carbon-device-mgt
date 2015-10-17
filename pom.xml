@@ -404,12 +404,12 @@
             <dependency>
                 <groupId>org.eclipse.osgi</groupId>
                 <artifactId>org.eclipse.osgi.services</artifactId>
-                <version>3.3.100.v20120522-1822</version>
+                <version>${eclipse.equinox.services.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi.ut</groupId>
                 <artifactId>org.eclipse.osgi</artifactId>
-                <version>3.3.100.v20120522-1822</version>
+                <version>${eclipse.equinox.services.version}</version>
             </dependency>
             <!-- End of OSGi dependencies -->
 
@@ -1437,6 +1437,7 @@
 
         <!--Eclipse OSGi-->
         <eclipse.equinox.common.version>3.6.100.v20120522-1841</eclipse.equinox.common.version>
+        <eclipse.equinox.services.version>3.3.100.v20120522-1822</eclipse.equinox.services.version>
         <eclipse.osgi.version>3.8.1.v20120830-144521</eclipse.osgi.version>
 
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>

@@ -247,6 +247,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.identity.authenticator.backend.oauth</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
             <!-- Device Management dependencies -->
 
             <!-- Governance dependencies -->

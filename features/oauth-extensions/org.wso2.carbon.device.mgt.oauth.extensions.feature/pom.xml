@@ -45,6 +45,10 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.oauth.extensions</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.identity.authenticator.backend.oauth</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,6 +76,9 @@
                             <bundles>
                                 <bundleDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.oauth.extensions:${carbon.device.mgt.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.identity.authenticator.backend.oauth:${carbon.device.mgt.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>

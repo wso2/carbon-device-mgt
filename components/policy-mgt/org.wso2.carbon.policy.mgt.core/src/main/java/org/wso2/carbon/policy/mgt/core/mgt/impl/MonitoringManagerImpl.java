@@ -27,9 +27,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfigRepository;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -320,6 +318,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
             if (!deviceIdsToAddOperation.isEmpty()) {
 //                monitoringDAO.addComplianceDetails(firstTimeDeviceIdsWithPolicyIds);
                 monitoringDAO.addComplianceDetails(firstTimeDevices);
+                monitoringDAO.updateAttempts(new ArrayList<>(deviceIdsToAddOperation.keySet()), false);
             }
 
             if (!deviceIdsWithExistingOperation.isEmpty()) {

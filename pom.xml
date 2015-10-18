@@ -152,10 +152,6 @@
                         <groupId>org.eclipse.osgi</groupId>
                         <artifactId>org.eclipse.osgi</artifactId>
                     </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.osgi</groupId>
-                        <artifactId>org.eclipse.osgi.services</artifactId>
-                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -316,6 +312,10 @@
                         <groupId>commons-pool.wso2</groupId>
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -390,6 +390,10 @@
                         <groupId>org.wso2.carbon.registry</groupId>
                         <artifactId>org.wso2.carbon.registry.extensions</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <!-- End of Governance dependencies -->
@@ -408,6 +412,11 @@
             <dependency>
                 <groupId>org.eclipse.osgi</groupId>
                 <artifactId>org.eclipse.osgi.services</artifactId>
+                <version>3.3.100.v20120522-1822</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi.ut</groupId>
+                <artifactId>org.eclipse.osgi</artifactId>
                 <version>3.3.100.v20120522-1822</version>
             </dependency>
             <!-- End of OSGi dependencies -->
@@ -807,6 +816,10 @@
                         <groupId>org.wso2.carbon.registry</groupId>
                         <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -939,6 +952,21 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
+                <version>${carbon.identity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity</groupId>
+                <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
+                <version>${carbon.identity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth</artifactId>
+                <version>${carbon.identity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity</groupId>
+                <artifactId>org.wso2.carbon.identity.application.common</artifactId>
                 <version>${carbon.identity.version}</version>
             </dependency>
             <!-- End of Carbon Identity dependencies -->
@@ -1125,11 +1153,6 @@
                         <artifactId>org.wso2.carbon.logging</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.identity</groupId>
-                <artifactId>org.wso2.carbon.identity.oauth</artifactId>
-                <version>${carbon.identity.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>

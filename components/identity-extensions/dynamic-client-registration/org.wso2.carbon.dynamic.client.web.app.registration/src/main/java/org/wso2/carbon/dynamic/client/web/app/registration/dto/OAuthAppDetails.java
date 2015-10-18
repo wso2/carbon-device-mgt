@@ -16,16 +16,16 @@
  * under the License.
  */
 
-package org.wso2.carbon.dynamic.client.web.app.registration;
+package org.wso2.carbon.dynamic.client.web.app.registration.dto;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Represents an OAuth application with basic data.
+ * Represents an OAuth application with basic necessary data.
  */
-@XmlRootElement(name = "OAuthApp")
-public class OAuthApp {
+@XmlRootElement(name = "OAuthAppDetails")
+public class OAuthAppDetails {
 
     private String clientName;
     private String clientKey;

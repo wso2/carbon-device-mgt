@@ -21,7 +21,8 @@ package org.wso2.carbon.dynamic.client.registration;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
 
 /**
- * This class represents the interface to be implemented by DynamicClientRegistrationService.
+ * This class represents the interface to be implemented by DynamicClientRegistrationService which
+ * is used to support the Dynamic-client-authentication protocol.
  */
 public interface DynamicClientRegistrationService {
 
@@ -34,7 +35,7 @@ public interface DynamicClientRegistrationService {
      * @throws DynamicClientRegistrationException
      *
      */
-    public OAuthApplicationInfo registerOAuthApplication(
+    OAuthApplicationInfo registerOAuthApplication(
             RegistrationProfile profile) throws DynamicClientRegistrationException;
 
     /**
@@ -47,7 +48,7 @@ public interface DynamicClientRegistrationService {
      * @throws DynamicClientRegistrationException
      *
      */
-    public boolean unregisterOAuthApplication(String userName, String applicationName,
+    boolean unregisterOAuthApplication(String userName, String applicationName,
                                               String consumerKey) throws DynamicClientRegistrationException;
 
     /**
@@ -58,6 +59,6 @@ public interface DynamicClientRegistrationService {
      * @throws DynamicClientRegistrationException
      *
      */
-    public boolean isOAuthApplicationExists(String applicationName) throws DynamicClientRegistrationException;
+    boolean isOAuthApplicationAvailable(String applicationName) throws DynamicClientRegistrationException;
 
 }

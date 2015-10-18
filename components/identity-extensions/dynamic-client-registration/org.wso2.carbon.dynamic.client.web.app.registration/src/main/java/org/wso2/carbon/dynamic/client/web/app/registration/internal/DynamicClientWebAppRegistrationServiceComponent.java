@@ -21,7 +21,10 @@ package org.wso2.carbon.dynamic.client.web.app.registration.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.util.tracker.ServiceTracker;
+import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
+import org.wso2.carbon.dynamic.client.web.app.registration.WebAppRegistrationServerStartupObserver;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -55,113 +58,119 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  */
 public class DynamicClientWebAppRegistrationServiceComponent {
 
-	private static Log log = LogFactory.getLog(DynamicClientWebAppRegistrationServiceComponent.class);
+    private static Log log =
+            LogFactory.getLog(DynamicClientWebAppRegistrationServiceComponent.class);
 
-	@SuppressWarnings("unused")
-	protected void activate(ComponentContext componentContext) {
+    @SuppressWarnings("unused")
+    protected void activate(ComponentContext componentContext) {
+        componentContext.getBundleContext().registerService(ServerStartupObserver.class.getName(),
+                                                            new WebAppRegistrationServerStartupObserver(), null);
+    }
 
-	}
+    @SuppressWarnings("unused")
+    protected void deactivate(ComponentContext componentContext) {
 
-	@SuppressWarnings("unused")
-	protected void deactivate(ComponentContext componentContext) {
-		//do nothing
-	}
+    }
 
-	/**
-	 * Sets Realm Service.
-	 *
-	 * @param realmService An instance of RealmService
-	 */
-	protected void setRealmService(RealmService realmService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting Realm Service");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setRealmService(realmService);
-	}
+    /**
+     * Sets Realm Service.
+     *
+     * @param realmService An instance of RealmService
+     */
+    protected void setRealmService(RealmService realmService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Realm Service");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setRealmService(realmService);
+    }
 
-	/**
-	 * Unsets Realm Service.
-	 *
-	 * @param realmService An instance of RealmService
-	 */
-	protected void unsetRealmService(RealmService realmService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Unsetting Realm Service");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setRealmService(null);
-	}
+    /**
+     * Unsets Realm Service.
+     *
+     * @param realmService An instance of RealmService
+     */
+    protected void unsetRealmService(RealmService realmService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Realm Service");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setRealmService(null);
+    }
 
-	/**
-	 * Sets Registry Service.
-	 *
-	 * @param registryService An instance of RegistryService
-	 */
-	protected void setRegistryService(RegistryService registryService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting Registry Service");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setRegistryService(registryService);
-	}
+    /**
+     * Sets Registry Service.
+     *
+     * @param registryService An instance of RegistryService
+     */
+    protected void setRegistryService(RegistryService registryService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Registry Service");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setRegistryService(registryService);
+    }
 
-	/**
-	 * Unsets Registry Service.
-	 *
-	 * @param registryService An instance of RegistryService
-	 */
-	protected void unsetRegistryService(RegistryService registryService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Un setting Registry Service");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setRegistryService(null);
-	}
+    /**
+     * Unsets Registry Service.
+     *
+     * @param registryService An instance of RegistryService
+     */
+    protected void unsetRegistryService(RegistryService registryService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un setting Registry Service");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setRegistryService(null);
+    }
 
-	/**
-	 * Sets Dynamic Client Registration Service.
-	 *
-	 * @param dynamicClientRegistrationService An instance of DynamicClientRegistrationService
-	 */
-	protected void setDynamicClientService(DynamicClientRegistrationService dynamicClientRegistrationService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting Dynamic Client Registration Service");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(
-				dynamicClientRegistrationService);
-	}
+    /**
+     * Sets Dynamic Client Registration Service.
+     *
+     * @param dynamicClientRegistrationService An instance of DynamicClientRegistrationService
+     */
+    protected void setDynamicClientService(
+            DynamicClientRegistrationService dynamicClientRegistrationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Dynamic Client Registration Service");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(
+                dynamicClientRegistrationService);
+    }
 
-	/**
-	 * Unsets Dynamic Client Registration Service.
-	 *
-	 * @param dynamicClientRegistrationService An instance of DynamicClientRegistrationService
-	 */
-	protected void unsetDynamicClientService(DynamicClientRegistrationService dynamicClientRegistrationService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Un setting Dynamic Client Registration Service");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(null);
-	}
+    /**
+     * Unsets Dynamic Client Registration Service.
+     *
+     * @param dynamicClientRegistrationService An instance of DynamicClientRegistrationService
+     */
+    protected void unsetDynamicClientService(
+            DynamicClientRegistrationService dynamicClientRegistrationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un setting Dynamic Client Registration Service");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setDynamicClientRegistrationService(null);
+    }
 
-	/**
-	 * Sets ConfigurationContext Service.
-	 *
-	 * @param configurationContextService An instance of ConfigurationContextService
-	 */
-	protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting ConfigurationContextService");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setConfigurationContextService(configurationContextService);
-	}
+    /**
+     * Sets ConfigurationContext Service.
+     *
+     * @param configurationContextService An instance of ConfigurationContextService
+     */
+    protected void setConfigurationContextService(
+            ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting ConfigurationContextService");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setConfigurationContextService(
+                configurationContextService);
+    }
 
-	/**
-	 * Unsets ConfigurationContext Service.
-	 *
-	 * @param configurationContextService An instance of ConfigurationContextService
-	 */
-	protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Un-setting ConfigurationContextService");
-		}
-		DynamicClientWebAppRegistrationDataHolder.getInstance().setConfigurationContextService(null);
-	}
-
+    /**
+     * Unsets ConfigurationContext Service.
+     *
+     * @param configurationContextService An instance of ConfigurationContextService
+     */
+    protected void unsetConfigurationContextService(
+            ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting ConfigurationContextService");
+        }
+        DynamicClientWebAppRegistrationDataHolder.getInstance().setConfigurationContextService(null);
+    }
 }

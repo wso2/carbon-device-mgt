@@ -28,14 +28,14 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
 
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
@@ -49,26 +49,28 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	private static final Log log = LogFactory.getLog(JWTAuthenticator.class);
 	public static final String SIGNED_JWT_AUTH_USERNAME = "Username";
 	private static final String JWT_AUTHENTICATOR = "JWT";
+	private static final String JWT_ASSERTION_HEADER = "X-JWT-Assertion";
 
     @Override
     public boolean canHandle(Request request) {
-	    String authorizationHeader = request.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
-	    if(decodeAuthorizationHeader(authorizationHeader) != null){
+	    String authorizationHeader = request.getHeader(JWTAuthenticator.JWT_ASSERTION_HEADER);
+	    if((authorizationHeader != null) && !authorizationHeader.isEmpty()){
 		    return true;
 	    }
 	    return false;
     }
 
     @Override
-	public Status authenticate(Request request, Response response) {
+	public AuthenticationInfo authenticate(Request request, Response response) {
 		String requestUri = request.getRequestURI();
+	    AuthenticationInfo authenticationInfo = new AuthenticationInfo();
 		if (requestUri == null || "".equals(requestUri)) {
-			return Status.CONTINUE;
+			authenticationInfo.setStatus(Status.CONTINUE);
 		}
 		StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
 		String context = tokenizer.nextToken();
 		if (context == null || "".equals(context)) {
-			return Status.CONTINUE;
+            authenticationInfo.setStatus(Status.CONTINUE);
 		}
 
 		if (log.isDebugEnabled()) {
@@ -76,8 +78,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
 		}
 
 		//Get the filesystem keystore default primary certificate
-		KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(
-				MultitenantConstants.SUPER_TENANT_ID);
+		KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(MultitenantConstants.SUPER_TENANT_ID);
 		try {
 			keyStoreManager.getDefaultPrimaryCertificate();
 			String authorizationHeader = request.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
@@ -89,38 +90,33 @@ public class JWTAuthenticator implements WebappAuthenticator {
 				String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
 				String tenantDomain = MultitenantUtils.getTenantDomain(username);
 				username = MultitenantUtils.getTenantAwareUsername(username);
-				TenantManager tenantManager = DataHolder.getInstance().getRealmService().getTenantManager();
+				TenantManager tenantManager = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
+                        getTenantManager();
 				int tenantId = tenantManager.getTenantId(tenantDomain);
-
 				if (tenantId == -1) {
 					log.error("tenantDomain is not valid. username : " + username + ", tenantDomain " +
 					          ": " + tenantDomain);
-					return Status.FAILURE;
-				}
-
-				UserStoreManager userStore = DataHolder.getInstance().getRealmService().
-						getTenantUserRealm(tenantId).getUserStoreManager();
-				if (userStore.isExistingUser(username)) {
-					PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-					ctx.setTenantId(tenantId);
-					ctx.setUsername(username);
-					return Status.SUCCESS;
-				}
-			}
+				} else {
+                    UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
+                            getTenantUserRealm(tenantId).getUserStoreManager();
+                    if (userStore.isExistingUser(username)) {
+                        authenticationInfo.setTenantId(tenantId);
+                        authenticationInfo.setUsername(username);
+                        authenticationInfo.setTenantDomain(tenantDomain);
+                        authenticationInfo.setStatus(Status.CONTINUE);
+                    }
+                }
+    		}
 		} catch (UserStoreException e) {
 			log.error("Error occurred while obtaining the user.", e);
-			return Status.FAILURE;
 		} catch (ParseException e) {
 			log.error("Error occurred while parsing the JWT header.", e);
-			return Status.FAILURE;
 		} catch (JOSEException e) {
 			log.error("Error occurred while verifying the JWT header.", e);
-			return Status.FAILURE;
 		} catch (Exception e) {
 			log.error("Error occurred while verifying the JWT header.", e);
-			return Status.FAILURE;
 		}
-		return Status.CONTINUE;
+		return authenticationInfo;
 	}
 
 	private String decodeAuthorizationHeader(String authorizationHeader) {

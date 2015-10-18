@@ -38,6 +38,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>1.4.0</version>
                 <extensions>true</extensions>
@@ -47,13 +51,30 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Dynamic Client Registration Bundle</Bundle-Description>
-                        <Bundle-Activator>org.wso2.carbon.dynamic.client.registration.internal.DynamicClientRegistrationBundleActivator</Bundle-Activator>
                         <Private-Package>org.wso2.carbon.dynamic.client.registration.internal</Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.dynamic.client.registration.internal,
                             org.wso2.carbon.dynamic.client.registration.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>
+                            org.apache.commons.logging,
+                            org.json,
+                            org.json.simple,
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.identity.application.common,
+                            org.wso2.carbon.identity.application.common.model,
+                            org.wso2.carbon.identity.application.mgt,
+                            org.wso2.carbon.identity.base,
+                            org.wso2.carbon.identity.oauth,
+                            org.wso2.carbon.identity.oauth.dto,
+                            org.wso2.carbon.identity.sso.saml.admin,
+                            org.wso2.carbon.identity.sso.saml.dto,
+                            org.wso2.carbon.registry.api,
+                            org.wso2.carbon.registry.core,
+                            org.wso2.carbon.utils.multitenancy
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

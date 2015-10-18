@@ -46,30 +46,30 @@ public class RegistrationServiceImpl implements RegistrationService {
     @POST
     @Override
     public Response register(RegistrationProfile profile) {
+        Response response;
         try {
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                     MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().
                     setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-
             DynamicClientRegistrationService dynamicClientRegistrationService = DynamicClientUtil.
-                                                             getDynamicClientRegistrationService();
-            if(dynamicClientRegistrationService != null){
-                OAuthApplicationInfo info = dynamicClientRegistrationService.
-                                                                 registerOAuthApplication(profile);
+                                                                                  getDynamicClientRegistrationService();
+            if (dynamicClientRegistrationService != null) {
+                OAuthApplicationInfo info = dynamicClientRegistrationService.registerOAuthApplication(profile);
                 return Response.status(Response.Status.CREATED).entity(info.toString()).build();
             }
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
-                               entity("Dynamic Client Registration Service not available.").build();
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).
+                    entity("Dynamic Client Registration Service not available.").build();
         } catch (DynamicClientRegistrationException e) {
             String msg = "Error occurred while registering client '" + profile.getClientName() + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(
+            response = Response.status(Response.Status.BAD_REQUEST).entity(
                     new FaultResponse(ErrorCode.INVALID_CLIENT_METADATA, msg)).build();
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
+        return response;
     }
 
     @DELETE
@@ -77,26 +77,32 @@ public class RegistrationServiceImpl implements RegistrationService {
     public Response unregister(@QueryParam("applicationName") String applicationName,
                                @QueryParam("userId") String userId,
                                @QueryParam("consumerKey") String consumerKey) {
+        Response response;
         try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
+                    MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
             DynamicClientRegistrationService dynamicClientRegistrationService = DynamicClientUtil.
-                                                             getDynamicClientRegistrationService();
-            if(dynamicClientRegistrationService != null){
-                boolean status = dynamicClientRegistrationService.unregisterOAuthApplication(userId,
-                                                                                           applicationName,
-                                                                                           consumerKey);
-                if(status){
+                                                                                  getDynamicClientRegistrationService();
+            if (dynamicClientRegistrationService != null) {
+                boolean status = dynamicClientRegistrationService.unregisterOAuthApplication(userId, applicationName,
+                                                                                             consumerKey);
+                if (status) {
                     return Response.status(Response.Status.ACCEPTED).build();
                 }
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).
                     entity("Dynamic Client Registration Service not available.").build();
         } catch (DynamicClientRegistrationException e) {
             String msg = "Error occurred while un-registering client '" + applicationName + "'";
             log.error(msg, e);
-            return Response.serverError().
-                    entity(new FaultResponse(ErrorCode.INVALID_CLIENT_METADATA, msg)).build();
+            response = Response.serverError().entity(new FaultResponse(ErrorCode.INVALID_CLIENT_METADATA, msg)).build();
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
+        return response;
     }
 
 }

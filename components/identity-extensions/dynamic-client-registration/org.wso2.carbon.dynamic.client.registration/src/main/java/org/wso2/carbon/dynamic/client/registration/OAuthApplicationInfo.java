@@ -31,7 +31,7 @@ public class OAuthApplicationInfo {
     private String clientName;
     private String callBackURL;
     private String clientSecret;
-    private Map<String,Object> parameters = new HashMap<String, Object>();
+    private Map<String, Object> parameters = new HashMap<String, Object>();
 
     public String getClientId() {
         return clientId;
@@ -49,39 +49,39 @@ public class OAuthApplicationInfo {
         this.clientSecret = clientSecret;
     }
 
-    public void setClientName(String clientName){
+    public void setClientName(String clientName) {
         this.clientName = clientName;
     }
 
-    public void setCallBackURL(String callBackURL){
+    public void setCallBackURL(String callBackURL) {
         this.callBackURL = callBackURL;
     }
 
-    public void addParameter(String name,Object value){
-        parameters.put(name,value);
+    public void addParameter(String name, Object value) {
+        parameters.put(name, value);
     }
 
-    public Object getParameter(String name){
+    public Object getParameter(String name) {
         return parameters.get(name);
     }
 
-    public String getJsonString(){
+    public String getJsonString() {
         return JSONObject.toJSONString(parameters);
     }
 
-    public String getClientName(){
+    public String getClientName() {
         return clientName;
     }
 
-    public String getCallBackURL(){
+    public String getCallBackURL() {
         return callBackURL;
     }
 
-    public void putAll(Map<String,Object> parameters){
+    public void putAll(Map<String, Object> parameters) {
         this.parameters.putAll(parameters);
     }
 
-    public void removeParameter(String key){
+    public void removeParameter(String key) {
         this.parameters.remove(key);
     }
 
@@ -91,7 +91,6 @@ public class OAuthApplicationInfo {
         obj.put(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_NAME, this.getClientName());
         obj.put(ApplicationConstants.ClientMetadata.OAUTH_CALLBACK_URIS, this.getCallBackURL());
         obj.put(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_SECRET, this.getClientSecret());
-        obj.put("parameters", this.getJsonString());
         return obj.toString();
     }
 

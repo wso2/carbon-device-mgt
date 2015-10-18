@@ -22,6 +22,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
@@ -31,9 +32,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class WebappAuthenticationHandler extends CarbonTomcatValve {
+public class WebappAuthenticationValve extends CarbonTomcatValve {
 
-    private static final Log log = LogFactory.getLog(WebappAuthenticationHandler.class);
+    private static final Log log = LogFactory.getLog(WebappAuthenticationValve.class);
     private static final String BYPASS_URIS = "bypass-uris";
 
     @Override
@@ -44,16 +45,13 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
             return;
         }
 
-        String byPassURIs = request.getContext().findParameter(WebappAuthenticationHandler.BYPASS_URIS);
+        String byPassURIs = request.getContext().findParameter(WebappAuthenticationValve.BYPASS_URIS);
 
-        if(byPassURIs != null && !byPassURIs.isEmpty()) {
-
+        if (byPassURIs != null && !byPassURIs.isEmpty()) {
             List<String> requestURI = Arrays.asList(byPassURIs.split(","));
-
-            if(requestURI != null && requestURI.size() > 0) {
+            if (requestURI != null && requestURI.size() > 0) {
                 for (String pathURI : requestURI) {
                     pathURI = pathURI.replace("\n", "").replace("\r", "").trim();
-
                     if (request.getRequestURI().equals(pathURI)) {
                         this.getNext().invoke(request, response, compositeValve);
                         return;
@@ -68,8 +66,21 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
             AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
             return;
         }
-        WebappAuthenticator.Status status = authenticator.authenticate(request, response);
-        this.processResponse(request, response, compositeValve, status);
+        AuthenticationInfo authenticationInfo = authenticator.authenticate(request, response);
+        if (authenticationInfo.getTenantId() != -1) {
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext privilegedCarbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                privilegedCarbonContext.setTenantId(authenticationInfo.getTenantId());
+                privilegedCarbonContext.setTenantDomain(authenticationInfo.getTenantDomain());
+                privilegedCarbonContext.setUsername(authenticationInfo.getUsername());
+                this.processRequest(request, response, compositeValve, authenticationInfo.getStatus());
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+        } else {
+            this.processRequest(request, response, compositeValve, authenticationInfo.getStatus());
+        }
     }
 
     private boolean isAdminService(Request request) {
@@ -93,7 +104,7 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
                 }
                 StringTokenizer tokenizer = new StringTokenizer(request.getRequestURI(), "/");
                 if (!tokenizer.hasMoreTokens()) {
-                   return false;
+                    return false;
                 }
                 ctx = tokenizer.nextToken();
             }
@@ -101,8 +112,8 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
         return (ctx.equalsIgnoreCase("carbon") || ctx.equalsIgnoreCase("services"));
     }
 
-    private void processResponse(Request request, Response response, CompositeValve compositeValve,
-                                 WebappAuthenticator.Status status) {
+    private void processRequest(Request request, Response response, CompositeValve compositeValve,
+                                WebappAuthenticator.Status status) {
         switch (status) {
             case SUCCESS:
             case CONTINUE:
@@ -111,7 +122,9 @@ public class WebappAuthenticationHandler extends CarbonTomcatValve {
             case FAILURE:
                 String msg = "Failed to authorize incoming request";
                 log.error(msg);
-                AuthenticationFrameworkUtil.handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
+                AuthenticationFrameworkUtil
+                        .handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED,
+                                        msg);
                 break;
         }
     }

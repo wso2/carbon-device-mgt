@@ -19,11 +19,11 @@ package org.wso2.carbon.dynamic.client.registration.profile;
 
 /**
  *
- * DTO class to be used when registering a OAuth application.
+ * DTO class to be used when registering an OAuth application.
  *
 * */
 public class RegistrationProfile {
-
+//todo mark mandatory fields
     private String applicationType;
     private String[] redirectUris;
     private String clientName;
@@ -41,6 +41,34 @@ public class RegistrationProfile {
     private String tokenScope;
     private String grantType;
     private boolean saasApp;
+    private String audience;
+
+    public String getRecepientValidationURL() {
+        return recepientValidationURL;
+    }
+
+    public void setRecepientValidationURL(String recepientValidationURL) {
+        this.recepientValidationURL = recepientValidationURL;
+    }
+
+    public String getAssertionConsumerURL() {
+        return assertionConsumerURL;
+    }
+
+    public void setAssertionConsumerURL(String assertionConsumerURL) {
+        this.assertionConsumerURL = assertionConsumerURL;
+    }
+
+    private String recepientValidationURL;
+    private String assertionConsumerURL;
+
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
+    }
 
     public boolean isSaasApp() {
         return saasApp;

@@ -44,10 +44,11 @@ public class DynamicClientWebAppRegistrationDataHolder {
     }
 
     public ConfigurationContextService getConfigurationContextService() {
-        if(configurationContextService != null){
+        if (configurationContextService != null) {
             return configurationContextService;
         } else {
-            throw new IllegalStateException("ConfigurationContext service has not initialized properly");
+            throw new IllegalStateException(
+                    "ConfigurationContext service has not initialized properly");
         }
     }
 
@@ -57,10 +58,11 @@ public class DynamicClientWebAppRegistrationDataHolder {
     }
 
     public DynamicClientRegistrationService getDynamicClientRegistrationService() {
-        if(dynamicClientRegistrationService != null){
+        if (dynamicClientRegistrationService != null) {
             return dynamicClientRegistrationService;
         } else {
-            throw new IllegalStateException("DynamicClientRegistration service has not initialized properly");
+            throw new IllegalStateException(
+                    "DynamicClientRegistration service has not initialized properly");
         }
     }
 
@@ -70,7 +72,7 @@ public class DynamicClientWebAppRegistrationDataHolder {
     }
 
     public RealmService getRealmService() {
-        if(realmService != null){
+        if (realmService != null) {
             return realmService;
         } else {
             throw new IllegalStateException("RealmService has not initialized properly");
@@ -82,7 +84,7 @@ public class DynamicClientWebAppRegistrationDataHolder {
     }
 
     public RegistryService getRegistryService() {
-        if(registryService != null){
+        if (registryService != null) {
             return registryService;
         } else {
             throw new IllegalStateException("Registry Service has not initialized properly");

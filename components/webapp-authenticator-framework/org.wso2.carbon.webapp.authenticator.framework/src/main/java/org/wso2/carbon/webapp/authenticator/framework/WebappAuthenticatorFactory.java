@@ -26,12 +26,12 @@ import java.util.Map;
 public class WebappAuthenticatorFactory {
 
     public static WebappAuthenticator getAuthenticator(String authScheme) {
-        return DataHolder.getInstance().getWebappAuthenticatorRepository().getAuthenticator(authScheme);
+        return AuthenticatorFrameworkDataHolder.getInstance().getWebappAuthenticatorRepository().getAuthenticator(authScheme);
     }
 
     public static WebappAuthenticator getAuthenticator(Request request) {
         Map<String, WebappAuthenticator> authenticators =
-                DataHolder.getInstance().getWebappAuthenticatorRepository().getAuthenticators();
+                AuthenticatorFrameworkDataHolder.getInstance().getWebappAuthenticatorRepository().getAuthenticators();
         for (WebappAuthenticator authenticator : authenticators.values()) {
             if (authenticator.canHandle(request)) {
                 return authenticator;

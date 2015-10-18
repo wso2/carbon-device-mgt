@@ -26,6 +26,7 @@ public final class ApplicationConstants {
         private ClientMetadata() {
             throw new AssertionError();
         }
+        //todo refactor names
         public static final String OAUTH_CLIENT_ID = "client_id"; //this means consumer key
         public static final String OAUTH_CLIENT_SECRET = "client_secret";
         public static final String OAUTH_REDIRECT_URIS = "redirect_uris";
@@ -36,7 +37,7 @@ public final class ApplicationConstants {
         public static final String APP_CALLBACK_URL = "callback_url";
         public static final String APP_HOME_PAGE = "homepage";
         public static final String OAUTH_CLIENT_CONTACT = "contact";
-        public static final String APP_LOGOURI = "logouri";
+        public static final String APP_LOGO_URI = "logo_uri";
         public static final String OAUTH_CLIENT_SCOPE = "scope";
         public static final String OAUTH_CLIENT_GRANT = "grant_types";
         public static final String OAUTH_CLIENT_RESPONSETYPE = "response_types";

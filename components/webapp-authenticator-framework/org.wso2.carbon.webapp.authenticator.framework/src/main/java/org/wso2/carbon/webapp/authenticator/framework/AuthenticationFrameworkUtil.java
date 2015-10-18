@@ -62,8 +62,8 @@ public class AuthenticationFrameworkUtil {
             String username = apiKeyValidationDTO.getEndUserName();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
             try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                        IdentityUtil.getTenantIdOFUser(username));
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(IdentityUtil.
+                                                                                           getTenantIdOFUser(username));
             } catch (IdentityException e) {
                 throw new AuthenticationException("Error occurred while retrieving the tenant ID of user '" +
                         username + "'", e);

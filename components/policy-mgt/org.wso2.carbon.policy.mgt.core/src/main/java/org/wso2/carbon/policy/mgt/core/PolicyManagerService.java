@@ -69,7 +69,7 @@ public interface PolicyManagerService {
 
     Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
-    List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+    List<ComplianceFeature> checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
             deviceResponse) throws PolicyComplianceException;
 
     boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws PolicyComplianceException;

@@ -20,6 +20,7 @@ package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 
 public interface WebappAuthenticator {
 
@@ -29,7 +30,7 @@ public interface WebappAuthenticator {
 
     boolean canHandle(Request request);
 
-    Status authenticate(Request request, Response response);
+    AuthenticationInfo authenticate(Request request, Response response);
 
     String getName();
 

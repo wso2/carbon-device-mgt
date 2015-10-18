@@ -22,15 +22,12 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 
 /**
- * Created by harshan on 9/8/15.
+ * Holds the utility methods used by Dynamic-Client web bundle.
  */
 public class DynamicClientUtil {
 
-	public static DynamicClientRegistrationService getDynamicClientRegistrationService() {
-		DynamicClientRegistrationService dynamicClientRegistrationService;
-		PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-		dynamicClientRegistrationService =
-				(DynamicClientRegistrationService) ctx.getOSGiService(DynamicClientRegistrationService.class, null);
-		return dynamicClientRegistrationService;
-	}
+    public static DynamicClientRegistrationService getDynamicClientRegistrationService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        return  (DynamicClientRegistrationService) ctx.getOSGiService(DynamicClientRegistrationService.class, null);
+    }
 }

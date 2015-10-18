@@ -23,7 +23,7 @@ import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
-public class DataHolder {
+public class AuthenticatorFrameworkDataHolder {
 
     private WebappAuthenticatorRepository repository;
     private RealmService realmService;
@@ -31,11 +31,12 @@ public class DataHolder {
     private SCEPManager scepManager;
     private OAuth2TokenValidationService oAuth2TokenValidationService;
 
-    private static DataHolder thisInstance = new DataHolder();
+    private static AuthenticatorFrameworkDataHolder
+            thisInstance = new AuthenticatorFrameworkDataHolder();
 
-    private DataHolder() {}
+    private AuthenticatorFrameworkDataHolder() {}
 
-    public static DataHolder getInstance() {
+    public static AuthenticatorFrameworkDataHolder getInstance() {
         return thisInstance;
     }
 

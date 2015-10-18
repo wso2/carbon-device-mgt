@@ -38,14 +38,13 @@ public class PermissionAuthorizationValve extends CarbonTomcatValve {
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
 
-        String permissionStatus =
-                request.getContext().findParameter(AUTHORIZATION_ENABLED);
+        String permissionStatus = request.getContext().findParameter(AUTHORIZATION_ENABLED);
         if (permissionStatus == null || permissionStatus.isEmpty()) {
             this.processResponse(request, response, compositeValve, WebappAuthenticator.Status.CONTINUE);
             return;
         }
         // check whether the permission checking function is enabled in web.xml
-        boolean isEnabled = new Boolean(permissionStatus);
+        boolean isEnabled = Boolean.valueOf(permissionStatus);
         if (!isEnabled) {
             this.processResponse(request, response, compositeValve, WebappAuthenticator.Status.CONTINUE);
             return;

@@ -121,17 +121,16 @@ public final class DeviceManagementDAOUtil {
 			throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
 		}
 	}
-
+/*
     public static Device loadDevice(ResultSet rs) throws SQLException {
-        Device device = new Device();
-        device.setId(rs.getInt("DEVICE_ID"));
-        device.setName(rs.getString("DEVICE_NAME"));
-        device.setDescription(rs.getString("DESCRIPTION"));
-        device.setType(rs.getString("DEVICE_TYPE"));
-        device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
-        device.setEnrolmentInfo(loadEnrolment(rs));
-        return device;
-    }
+		Device device = new Device();
+		device.setId(rs.getInt("ID"));
+		device.setName(rs.getString("NAME"));
+		device.setDescription(rs.getString("DESCRIPTION"));
+		device.setType(rs.getString("DEVICE_TYPE_ID"));
+		device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+		return device;
+	}*/
 
     public static EnrolmentInfo loadEnrolment(ResultSet rs) throws SQLException {
         EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
@@ -144,4 +143,14 @@ public final class DeviceManagementDAOUtil {
         return enrolmentInfo;
     }
 
+	public static Device loadDevice(ResultSet rs) throws SQLException {
+		Device device = new Device();
+		device.setId(rs.getInt("DEVICE_ID"));
+		device.setName(rs.getString("DEVICE_NAME"));
+		device.setDescription(rs.getString("DESCRIPTION"));
+		device.setType(rs.getString("DEVICE_TYPE"));
+		device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+		device.setEnrolmentInfo(loadEnrolment(rs));
+		return device;
+	}
 }

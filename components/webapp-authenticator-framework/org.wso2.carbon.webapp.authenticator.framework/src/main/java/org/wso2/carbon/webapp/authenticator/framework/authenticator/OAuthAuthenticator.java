@@ -45,7 +45,6 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     private static final String RESOURCE_KEY = "resource";
 
     private static APITokenAuthenticator authenticator = new APITokenAuthenticator();
-
     private static final Log log = LogFactory.getLog(OAuthAuthenticator.class);
 
     @Override

@@ -52,12 +52,11 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
     private static final String BASIC_AUTHENTICATOR = "BasicAuthenticator";
     private static final String BASIC = "basic";
     private static final String LOCAL = "local";
-    private static final String ASSERTION_CONSUMER_URI = "https://localhost:9443/mdm/sso/acs";
-    private static final String AUDIENCE = "https://null:9443/oauth2/token";
     private static final Log log = LogFactory.getLog(DynamicClientRegistrationService.class);
     private static final String AUTH_TYPE_OAUTH_2 = "oauth2";
     private static final String OAUTH_CONSUMER_SECRET = "oauthConsumerSecret";
     private static final int STEP_ORDER = 1;
+    private static final String OAUTH_VERSION = "OAuth-2.0";
 
     @Override
     public OAuthApplicationInfo registerOAuthApplication(RegistrationProfile profile) throws
@@ -122,6 +121,9 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
         String grantType = profile.getGrantType();
         String callbackUrl = profile.getCallbackUrl();
         boolean isSaaSApp = profile.isSaasApp();
+        String audience = profile.getAudience();
+        String assertionConsumerURL = profile.getAssertionConsumerURL();
+        String recepientValidationURL = profile.getRecepientValidationURL();
 
         if (userId == null || userId.isEmpty()) {
             return null;
@@ -177,6 +179,7 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
             oAuthConsumerApp.setApplicationName(applicationName);
             oAuthConsumerApp.setCallbackUrl(callbackUrl);
             oAuthConsumerApp.setGrantTypes(grantType);
+            oAuthConsumerApp.setOAuthVersion(OAUTH_VERSION);
             if (log.isDebugEnabled()) {
                 log.debug("Creating OAuth App " + applicationName);
             }
@@ -216,9 +219,13 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
 
             SAMLSSOServiceProviderDTO samlssoServiceProviderDTO = new SAMLSSOServiceProviderDTO();
             samlssoServiceProviderDTO.setIssuer(MDM);
-            samlssoServiceProviderDTO.setAssertionConsumerUrl(ASSERTION_CONSUMER_URI);
+            samlssoServiceProviderDTO.setAssertionConsumerUrls(new String[] {assertionConsumerURL});
             samlssoServiceProviderDTO.setDoSignResponse(true);
-            samlssoServiceProviderDTO.setRequestedAudiences(new String[] { AUDIENCE });
+            samlssoServiceProviderDTO.setRequestedAudiences(new String[] { audience });
+            samlssoServiceProviderDTO.setDefaultAssertionConsumerUrl(assertionConsumerURL);
+            samlssoServiceProviderDTO.setRequestedRecipients(new String[] {recepientValidationURL});
+            samlssoServiceProviderDTO.setDoSignAssertions(true);
+
 
             SAMLSSOConfigAdmin configAdmin = new SAMLSSOConfigAdmin(getConfigSystemRegistry());
             configAdmin.addRelyingPartyServiceProvider(samlssoServiceProviderDTO);

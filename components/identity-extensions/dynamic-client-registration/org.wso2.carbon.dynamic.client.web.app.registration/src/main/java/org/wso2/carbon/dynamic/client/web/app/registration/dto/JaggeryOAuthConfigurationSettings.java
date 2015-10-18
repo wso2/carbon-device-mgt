@@ -32,6 +32,36 @@ public class JaggeryOAuthConfigurationSettings {
     private String callbackURL;
     private String tokenScope;
     private boolean requireDynamicClientRegistration;
+    private String audience;
+    private String assertionConsumerURL;
+    private String recepientValidationURL;
+
+    @XmlElement(name = "assertionConsumerURL", required = true)
+    public String getAssertionConsumerURL() {
+        return assertionConsumerURL;
+    }
+
+    public void setAssertionConsumerURL(String assertionConsumerURL) {
+        this.assertionConsumerURL = assertionConsumerURL;
+    }
+
+    @XmlElement(name = "recepientValidationURL", required = true)
+    public String getRecepientValidationURL() {
+        return recepientValidationURL;
+    }
+
+    public void setRecepientValidationURL(String recepientValidationURL) {
+        this.recepientValidationURL = recepientValidationURL;
+    }
+
+    @XmlElement(name = "audience", required = true)
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
+    }
 
     @XmlElement(name = "saasApp", required = true)
     public boolean isSaasApp() {

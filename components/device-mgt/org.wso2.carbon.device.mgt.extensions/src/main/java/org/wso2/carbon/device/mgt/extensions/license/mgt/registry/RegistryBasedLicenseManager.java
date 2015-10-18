@@ -107,15 +107,8 @@ public class RegistryBasedLicenseManager implements LicenseManager {
     @Override
     public void addLicense(final String deviceType, final License license) throws LicenseManagementException {
         try {
-            GenericArtifact artifact = this.getGenericArtifact(deviceType, license.getLanguage());
-            if (artifact != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Generic artifact is null for '" + deviceType + "' device type. Hence license does not " +
-                            "have content");
-                }
-                return;
-            }
-            artifact = artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com", deviceType));
+            GenericArtifact artifact =
+                    artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com", deviceType));
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.NAME, license.getName());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VERSION, license.getVersion());
             artifact.setAttribute(DeviceManagementConstants.LicenseProperties.PROVIDER, license.getProvider());

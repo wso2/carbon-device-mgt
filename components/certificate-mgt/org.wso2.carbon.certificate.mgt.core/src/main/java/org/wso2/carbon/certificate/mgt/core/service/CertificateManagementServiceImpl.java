@@ -100,4 +100,11 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
     public String extractChallengeToken(X509Certificate certificate) {
         return certificateGenerator.extractChallengeToken(certificate);
     }
+
+    public X509Certificate getSignCertificateFromCSR(String binarySecurityToken,
+                                                     X509Certificate caCert, List certParameterList)
+            throws KeystoreException {
+        return certificateGenerator.getSignCertificateFromCSR(binarySecurityToken, caCert,
+                certParameterList);
+    }
 }

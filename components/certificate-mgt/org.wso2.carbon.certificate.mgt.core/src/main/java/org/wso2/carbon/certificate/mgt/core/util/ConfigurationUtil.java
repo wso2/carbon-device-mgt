@@ -37,7 +37,7 @@ public class ConfigurationUtil {
 	public static final String KEYSTORE_RA_CERT_PRIV_PASSWORD = "RAPrivateKeyPassword";
 	public static final String CA_CERT_ALIAS = "CACertAlias";
 	public static final String RA_CERT_ALIAS = "RACertAlias";
-	public static final String SIGNATUREALGO = "SHA1withRSA";
+	public static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
 	public static final String PROVIDER = "BC";
 	public static final String KEYSTORE = "Type";
 	public static final String CERTIFICATE_KEYSTORE = "CertificateKeystoreType";
@@ -56,6 +56,7 @@ public class ConfigurationUtil {
     public static final String RSA_PRIVATE_KEY_END_TEXT = "-----END RSA PRIVATE KEY-----";
     public static final String EMPTY_TEXT = "";
 	public static final int RSA_KEY_LENGTH = 1024;
+	public static final long MILLI_SECONDS = 1000L * 60 * 60 * 24;
 
 
 	private static ConfigurationUtil configurationUtil;

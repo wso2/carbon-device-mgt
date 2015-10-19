@@ -71,11 +71,12 @@
                             org.bouncycastle.operator.jcajce,
                             org.bouncycastle.pkcs,
                             org.bouncycastle.util,
-                            org.bouncycastle.asn1.util,
                             org.jscep.message,
                             org.jscep.transaction,
                             org.w3c.dom,
-                            org.xml.sax
+                            org.xml.sax,
+                            javax.xml.bind,
+                            org.bouncycastle.pkcs.jcajce
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.certificate.mgt.core.internal.*,

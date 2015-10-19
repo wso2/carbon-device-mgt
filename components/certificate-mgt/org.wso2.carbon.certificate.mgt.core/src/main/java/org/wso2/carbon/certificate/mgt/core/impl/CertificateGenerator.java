@@ -26,8 +26,7 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.KeyUsage;
-import org.bouncycastle.asn1.x509.X509Extension;
+import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -43,6 +42,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
 import org.jscep.message.CertRep;
 import org.jscep.message.MessageDecodingException;
@@ -62,6 +62,7 @@ import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 
 import javax.security.auth.x500.X500Principal;
+import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -69,6 +70,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -96,6 +98,20 @@ import java.util.Date;
 import java.util.List;
 
 public class CertificateGenerator {
+
+    private enum PropertyIndex {
+        COMMON_NAME_INDEX(0),
+        NOT_BEFORE_DAYS_INDEX(1),
+        NOT_AFTER_DAYS_INDEX(2);
+
+        private final int itemPosition;
+        private PropertyIndex(final int itemPosition) {
+            this.itemPosition = itemPosition;
+        }
+        public int getValue() {
+            return this.itemPosition;
+        }
+    }
 
     private static final Log log = LogFactory.getLog(CertificateGenerator.class);
 
@@ -596,4 +612,80 @@ public class CertificateGenerator {
 
         return null;
     }
+
+    public X509Certificate getSignCertificateFromCSR(String binarySecurityToken,
+                                                     X509Certificate caCert, List certPropertyList)
+            throws KeystoreException {
+        byte[] byteArrayBst = DatatypeConverter.parseBase64Binary(binarySecurityToken);
+        PKCS10CertificationRequest certificationRequest = null;
+        KeyStoreReader keyStoreReader = new KeyStoreReader();
+        PrivateKey privateKeyCA = keyStoreReader.getCAPrivateKey();
+
+        try {
+            certificationRequest = new PKCS10CertificationRequest(byteArrayBst);
+        } catch (IOException e) {
+            String msg = "CSR cannot be recovered.";
+            log.error(msg, e);
+        }
+        JcaPKCS10CertificationRequest csr = new JcaPKCS10CertificationRequest(certificationRequest);
+        X509Certificate signedCertificate = signCSR(csr, privateKeyCA,  caCert, certPropertyList);
+        saveCertInKeyStore(signedCertificate);
+        return signedCertificate;
+    }
+
+    private static X509Certificate signCSR(JcaPKCS10CertificationRequest jcaRequest,
+                                          PrivateKey privateKey, X509Certificate caCert,
+                                          List certParameterList) {
+
+        String commonName =
+                (String) certParameterList.get(PropertyIndex.COMMON_NAME_INDEX.getValue());
+        int notBeforeDays =
+                (Integer) certParameterList.get(PropertyIndex.NOT_BEFORE_DAYS_INDEX.getValue());
+        int notAfterDays =
+                (Integer) certParameterList.get(PropertyIndex.NOT_AFTER_DAYS_INDEX.getValue());
+        X509v3CertificateBuilder certificateBuilder;
+        X509Certificate signedCertificate = null;
+
+        try {
+            ContentSigner signer;
+            BigInteger serialNumber = BigInteger.valueOf(new SecureRandom().
+                    nextInt(Integer.MAX_VALUE));
+            Date notBeforeDate = new Date(System.currentTimeMillis() -
+                    (ConfigurationUtil.MILLI_SECONDS * notBeforeDays));
+            Date notAfterDate = new Date(System.currentTimeMillis() +
+                    (ConfigurationUtil.MILLI_SECONDS * notAfterDays));
+            certificateBuilder =
+                    new JcaX509v3CertificateBuilder(caCert, serialNumber, notBeforeDate, notAfterDate,
+                            new X500Principal(commonName),
+                            jcaRequest.getPublicKey());
+
+            //Adding extensions to the signed certificate.
+            certificateBuilder.addExtension(Extension.keyUsage, true,
+                    new KeyUsage(KeyUsage.digitalSignature));
+            certificateBuilder.addExtension(Extension.extendedKeyUsage, false,
+                    new ExtendedKeyUsage(KeyPurposeId.id_kp_clientAuth));
+            certificateBuilder.addExtension(Extension.basicConstraints, true,
+                    new BasicConstraints(false));
+
+            signer = new JcaContentSignerBuilder(ConfigurationUtil.SIGNATURE_ALGORITHM).
+                    setProvider(ConfigurationUtil.PROVIDER).build(privateKey);
+
+            signedCertificate = new JcaX509CertificateConverter().setProvider(
+                    ConfigurationUtil.PROVIDER).getCertificate(
+                    certificateBuilder.build(signer));
+        } catch (InvalidKeyException e) {
+            //throw new CertificateGenerationException("CSR's public key is invalid", e);
+        } catch (NoSuchAlgorithmException e) {
+            //throw new CertificateGenerationException("Certificate cannot be generated", e);
+        } catch (CertIOException e) {
+            // throw new CertificateGenerationException(
+            //   "Cannot add extension(s) to signed certificate", e);
+        } catch (OperatorCreationException e) {
+            // throw new CertificateGenerationException("Content signer cannot be created", e);
+        } catch (CertificateException e) {
+            //throw new CertificateGenerationException("Signed certificate cannot be generated", e);
+        }
+        return signedCertificate;
+    }
+
 }

@@ -52,8 +52,11 @@ public class DynamicClientWebAppRegistrationUtil {
     private final static String OAUTH_PARAM_TOKEN_SCOPE = "tokenScope";
     private final static String OAUTH_PARAM_SAAS_APP = "saasApp";
     private final static String OAUTH_PARAM_CALLBACK_URL = "callbackURL";
+    private final static String AUDIENCE = "audience";
+    private final static String ASSERTION_CONSUMER_URL = "assertionConsumerURL";
+    private final static String RECEPIENT_VALIDATION_URL = "recepientValidationURL";
     private static final String JAGGERY_APP_OAUTH_CONFIG_PATH =
-            "config" + File.separator + "oauth.json";
+            "config" + File.separator + "service-provider.json";
 
     private static final Log log =
             LogFactory.getLog(DynamicClientWebAppRegistrationUtil.class);
@@ -192,6 +195,9 @@ public class DynamicClientWebAppRegistrationUtil {
             registrationProfile.setClientName(webAppName);
             registrationProfile.setSaasApp(jaggeryOAuthConfigurationSettings.isSaasApp());
             registrationProfile.setOwner(DynamicClientWebAppRegistrationUtil.getUserName());
+            registrationProfile.setAudience(jaggeryOAuthConfigurationSettings.getAudience());
+            registrationProfile.setAssertionConsumerURL(jaggeryOAuthConfigurationSettings.getAssertionConsumerURL());
+            registrationProfile.setRecepientValidationURL(jaggeryOAuthConfigurationSettings.getRecepientValidationURL());
             if (jaggeryOAuthConfigurationSettings.getCallbackURL() != null) {
                 registrationProfile.setCallbackUrl(jaggeryOAuthConfigurationSettings.getCallbackURL());
             } else {
@@ -243,6 +249,15 @@ public class DynamicClientWebAppRegistrationUtil {
                             break;
                         case DynamicClientWebAppRegistrationUtil.OAUTH_PARAM_CALLBACK_URL:
                             jaggeryOAuthConfigurationSettings.setCallbackURL(reader.nextString());
+                            break;
+                        case DynamicClientWebAppRegistrationUtil.AUDIENCE:
+                            jaggeryOAuthConfigurationSettings.setAudience(reader.nextString());
+                            break;
+                        case DynamicClientWebAppRegistrationUtil.ASSERTION_CONSUMER_URL:
+                            jaggeryOAuthConfigurationSettings.setAssertionConsumerURL(reader.nextString());
+                            break;
+                        case DynamicClientWebAppRegistrationUtil.RECEPIENT_VALIDATION_URL:
+                            jaggeryOAuthConfigurationSettings.setRecepientValidationURL(reader.nextString());
                             break;
                     }
                 }

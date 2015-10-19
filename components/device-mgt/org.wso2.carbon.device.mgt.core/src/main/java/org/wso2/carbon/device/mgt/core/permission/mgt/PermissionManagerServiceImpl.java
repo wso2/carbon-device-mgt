@@ -51,17 +51,8 @@ public class PermissionManagerServiceImpl implements PermissionManagerService {
         return registryBasedPermissionManager;
     }
 
-    public boolean addPermissions(List<Permission> permissions) throws PermissionManagementException {
-        for (Permission permission : permissions) {
-            this.addPermission(permission);
-        }
-        return true;
-    }
-
     @Override
     public boolean addPermission(Permission permission) throws PermissionManagementException {
-        // update the permission path to absolute permission path
-        permission.setPath(PermissionUtils.getAbsolutePermissionPath(permission.getPath()));
         // adding a permission to the tree
         permissionTree.addPermission(permission);
         return PermissionUtils.putPermission(permission);

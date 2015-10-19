@@ -120,10 +120,9 @@ public class DynamicClientWebAppRegistrationManager {
         String requiredDynamicClientRegistration, webAppName;
         ServletContext servletContext;
         RegistrationProfile registrationProfile;
-        OAuthAppDetails oAuthAppDetails = null;
+        OAuthAppDetails oAuthAppDetails;
         DynamicClientWebAppRegistrationManager dynamicClientWebAppRegistrationManager =
                 DynamicClientWebAppRegistrationManager.getInstance();
-        //todo move enumeration to while loop
         Enumeration enumeration = new IteratorEnumeration(DynamicClientWebAppRegistrationManager.
                 webAppContexts.keySet().iterator());
         if (log.isDebugEnabled()) {

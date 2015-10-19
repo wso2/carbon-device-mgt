@@ -314,6 +314,11 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         users.add("Udara");
         users.add("Dileesha");
         policy.setUsers(users);
+
+        Profile profile2 = ProfileCreator.getProfile3(FeatureCreator.getFeatureList4());
+
+        Profile pf = new Profile();
+
         pap.updatePolicy(policy);
         pap.activatePolicy(policy.getId());
     }

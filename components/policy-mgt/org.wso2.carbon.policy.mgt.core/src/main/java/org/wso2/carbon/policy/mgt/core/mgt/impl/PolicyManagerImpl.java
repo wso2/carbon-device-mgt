@@ -106,7 +106,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 policyDAO.addPolicyCriteriaProperties(policy.getPolicyCriterias());
             }
 
-            if(policy.isActive()){
+            if (policy.isActive()) {
                 policyDAO.activatePolicy(policy.getId());
             }
             PolicyManagementDAOFactory.commitTransaction();
@@ -135,18 +135,52 @@ public class PolicyManagerImpl implements PolicyManager {
 
         try {
             // Previous policy needs to be obtained before begining the transaction
-            Policy previousPolicy = getPolicy(policy.getId());
+            Policy previousPolicy = this.getPolicy(policy.getId());
 
             PolicyManagementDAOFactory.beginTransaction();
             // This will keep track of the policies updated.
             policyDAO.recordUpdatedPolicy(policy);
 
+
+            List<ProfileFeature> existingFeaturesList = new ArrayList<>();
+            List<ProfileFeature> newFeaturesList = new ArrayList<>();
+            List<String> temp = new ArrayList<>();
+
+            List<ProfileFeature> updatedFeatureList = policy.getProfile().getProfileFeaturesList();
+
+            List<ProfileFeature> existingProfileFeaturesList = previousPolicy.getProfile().getProfileFeaturesList();
+
+            // Checks for the existing features
+            for (ProfileFeature feature : updatedFeatureList) {
+                for (ProfileFeature fe : existingProfileFeaturesList) {
+                    if (feature.getFeatureCode().equalsIgnoreCase(fe.getFeatureCode())) {
+                        existingFeaturesList.add(feature);
+                        temp.add(feature.getFeatureCode());
+                    }
+                }
+            }
+
+            // Checks for the new features
+            for (ProfileFeature feature : updatedFeatureList) {
+                if (!temp.contains(feature.getFeatureCode())) {
+                    newFeaturesList.add(feature);
+                }
+            }
+
+            int profileId = previousPolicy.getProfile().getProfileId();
+            policy.getProfile().setProfileId(profileId);
+            policy.setProfileId(profileId);
+            Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+            policy.getProfile().setUpdatedDate(currentTimestamp);
+
             policyDAO.updatePolicy(policy);
             profileDAO.updateProfile(policy.getProfile());
-            featureDAO.updateProfileFeatures(policy.getProfile().getProfileFeaturesList(), policy.getProfile()
-                    .getProfileId());
-            policyDAO.deleteAllPolicyRelatedConfigs(policy.getId());
 
+            featureDAO.updateProfileFeatures(existingFeaturesList, profileId);
+            if (!newFeaturesList.isEmpty()) {
+                featureDAO.addProfileFeatures(newFeaturesList, profileId);
+            }
+            policyDAO.deleteAllPolicyRelatedConfigs(policy.getId());
 
 
             if (policy.getUsers() != null) {
@@ -478,20 +512,24 @@ public class PolicyManagerImpl implements PolicyManager {
 
             roleNames = policyDAO.getPolicyAppliedRoles(policyId);
             userNames = policyDAO.getPolicyAppliedUsers(policyId);
-            Profile profile = profileDAO.getProfile(policy.getProfileId());
 
-            policy.setProfile(profile);
+            //Profile profile = profileDAO.getProfile(policy.getProfileId());
+
+
             policy.setRoles(roleNames);
             policy.setUsers(userNames);
 
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting the policy related to policy ID (" +
                     policyId + ")", e);
-        } catch (ProfileManagerDAOException e) {
-            throw new PolicyManagementException("Error occurred while getting the profile related to policy ID (" +
-                    policyId + ")", e);
+//        } catch (ProfileManagerDAOException e) {
+//            throw new PolicyManagementException("Error occurred while getting the profile related to policy ID (" +
+//                    policyId + ")", e);
         } catch (SQLException e) {
             throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+//        } catch (ProfileManagementException e) {
+//            throw new PolicyManagementException("Error occurred while getting the profile related to policy ID (" +
+//                    policyId + ")", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
@@ -499,6 +537,20 @@ public class PolicyManagerImpl implements PolicyManager {
         // This is done because connection close in below method too.
         deviceList = this.getPolicyAppliedDevicesIds(policyId);
         policy.setDevices(deviceList);
+
+        try {
+         //   PolicyManagementDAOFactory.openConnection();
+            Profile profile = profileManager.getProfile(policy.getProfileId());
+            policy.setProfile(profile);
+        } catch (ProfileManagementException e) {
+            throw new PolicyManagementException("Error occurred while getting the profile related to policy ID (" +
+                    policyId + ")", e);
+//        } catch (SQLException e) {
+//            throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+//        } finally {
+//            PolicyManagementDAOFactory.closeConnection();
+        }
+
         return policy;
     }
 

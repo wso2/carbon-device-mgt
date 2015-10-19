@@ -94,7 +94,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
                          "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
                          "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? LIMIT ?,?";
-//            String sql = "SELECT * FROM DM_DEVICE d, (SELECT t.ID AS TYPE_ID FROM DM_DEVICE_TYPE t WHERE t.NAME = ?)" +
+//          String sql = "SELECT * FROM DM_DEVICE d, (SELECT t.ID AS TYPE_ID FROM DM_DEVICE_TYPE t WHERE t.NAME = ?)" +
 //                         " d1 WHERE TYPE_ID = d.DEVICE_TYPE_ID AND d.TENANT_ID = ? LIMIT ?,?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, type);

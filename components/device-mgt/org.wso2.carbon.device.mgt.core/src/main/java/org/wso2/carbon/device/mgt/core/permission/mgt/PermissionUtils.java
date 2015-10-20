@@ -59,6 +59,13 @@ public class PermissionUtils {
 		return PermissionUtils.ADMIN_PERMISSION_REGISTRY_PATH + permissionPath;
 	}
 
+    public static String getAbsoluteContextPathOfAPI(String contextPath, String version, String url) {
+        if((version != null) && !version.isEmpty()) {
+          return contextPath + "/" + version + url;
+        }
+        return contextPath + url;
+    }
+
 	public static Permission getPermission(String path) throws PermissionManagementException {
 		try {
 			Resource resource = PermissionUtils.getGovernanceRegistry().get(path);

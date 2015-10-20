@@ -31,6 +31,16 @@ import java.util.List;
 public class PermissionConfiguration {
 
     private List<Permission> permissions;
+    private String apiVersion;
+
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
+    @XmlElement (name = "APIVersion", required = true)
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
 
     public List<Permission> getPermissions() {
         return permissions;

@@ -20,11 +20,12 @@ package org.wso2.carbon.device.mgt.oauth.extensions.validators;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
+import org.wso2.carbon.device.mgt.oauth.extensions.OAuthExtUtils;
 import org.wso2.carbon.device.mgt.oauth.extensions.internal.OAuthExtensionsDataHolder;
+import org.wso2.carbon.identity.application.common.model.User;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
@@ -51,6 +52,7 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
         public static final String WRITE = "write";
         public static final String DELETE = "delete";
         public static final String ACTION = "action";
+        public static final String UI_EXECUTE = "ui.execute";
     }
 
     private static final Log log = LogFactory.getLog(PermissionBasedScopeValidator.class);
@@ -71,13 +73,15 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                 getPermissionManagerService();
         try {
             Permission permission = permissionManagerService.getPermission(properties);
-            if ((permission != null) && (accessTokenDO.getAuthzUser() != null)) {
-                String username = accessTokenDO.getAuthzUser().getUserName();
-                UserRealm userRealm = CarbonContext.getThreadLocalCarbonContext().getUserRealm();
+            User authzUser = accessTokenDO.getAuthzUser();
+            if ((permission != null) && (authzUser != null)) {
+                String username = authzUser.getUserName();
+                int tenantId = OAuthExtUtils.getTenantId(authzUser.getTenantDomain());
+                UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
                     status = userRealm.getAuthorizationManager()
                                       .isUserAuthorized(username, permission.getPath(),
-                                                        PermissionMethod.READ);
+                                                        PermissionMethod.UI_EXECUTE);
                 }
             }
         } catch (PermissionManagementException e) {

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -82,11 +83,27 @@ import java.util.List;
 public class DeviceManagementDAOFactory {
 
     private static DataSource dataSource;
+    private static String databaseEngine;
     private static final Log log = LogFactory.getLog(DeviceManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
+
     public static DeviceDAO getDeviceDAO() {
-        return new DeviceDAOImpl();
+        if(databaseEngine != null) {
+            switch (databaseEngine) {
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                    return new OracleDeviceDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+                    return new SQLServerDeviceDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                default:
+                    return new GenericDeviceDAOImpl();
+            }
+        } else {
+            return new GenericDeviceDAOImpl();
+        }
     }
 
     public static DeviceTypeDAO getDeviceTypeDAO() {
@@ -107,10 +124,20 @@ public class DeviceManagementDAOFactory {
 
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
     public static void init(DataSource dtSource) {
         dataSource = dtSource;
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
     public static void beginTransaction() throws TransactionManagementException {

@@ -107,23 +107,42 @@ public class RegistryBasedLicenseManager implements LicenseManager {
     @Override
     public void addLicense(final String deviceType, final License license) throws LicenseManagementException {
         try {
-            GenericArtifact artifact =
-                    artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com", deviceType));
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.NAME, license.getName());
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VERSION, license.getVersion());
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.PROVIDER, license.getProvider());
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LANGUAGE, license.getLanguage());
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.TEXT, license.getText());
-            artifact.setAttribute(DeviceManagementConstants.LicenseProperties.ARTIFACT_NAME, license.getName());
-            Date validTo = license.getValidTo();
-            if (validTo != null) {
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO, validTo.toString());
+            GenericArtifact artifact = this.getGenericArtifact(deviceType, license.getLanguage());
+            if(artifact != null) {
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.NAME, license.getName());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VERSION, license.getVersion());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.PROVIDER, license.getProvider());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LANGUAGE, license.getLanguage());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.TEXT, license.getText());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.ARTIFACT_NAME, license.getName());
+                Date validTo = license.getValidTo();
+                if (validTo != null) {
+                    artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO, validTo.toString());
+                }
+                Date validFrom = license.getValidFrom();
+                if (validFrom != null) {
+                    artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM, validFrom.toString());
+                }
+                artifactManager.updateGenericArtifact(artifact);
+            } else {
+                artifact =
+                        artifactManager.newGovernanceArtifact(new QName("http://www.wso2.com", deviceType));
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.NAME, license.getName());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VERSION, license.getVersion());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.PROVIDER, license.getProvider());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.LANGUAGE, license.getLanguage());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.TEXT, license.getText());
+                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.ARTIFACT_NAME, license.getName());
+                Date validTo = license.getValidTo();
+                if (validTo != null) {
+                    artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_TO, validTo.toString());
+                }
+                Date validFrom = license.getValidFrom();
+                if (validFrom != null) {
+                    artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM, validFrom.toString());
+                }
+                artifactManager.addGenericArtifact(artifact);
             }
-            Date validFrom = license.getValidFrom();
-            if (validFrom != null) {
-                artifact.setAttribute(DeviceManagementConstants.LicenseProperties.VALID_FROM, validFrom.toString());
-            }
-            artifactManager.addGenericArtifact(artifact);
         } catch (GovernanceException e) {
             throw new LicenseManagementException("Error occurred while adding license for device type " +
                     deviceType + "'", e);

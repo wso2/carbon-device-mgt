@@ -613,7 +613,7 @@ public class CertificateGenerator {
         return null;
     }
 
-    public X509Certificate getSignCertificateFromCSR(String binarySecurityToken,
+    public X509Certificate getSignedCertificateFromCSR(String binarySecurityToken,
                                                      X509Certificate caCert, List certPropertyList)
             throws KeystoreException {
         byte[] byteArrayBst = DatatypeConverter.parseBase64Binary(binarySecurityToken);
@@ -635,7 +635,7 @@ public class CertificateGenerator {
 
     private static X509Certificate signCSR(JcaPKCS10CertificationRequest jcaRequest,
                                           PrivateKey privateKey, X509Certificate caCert,
-                                          List certParameterList) {
+                                          List certParameterList) throws KeystoreException {
 
         String commonName =
                 (String) certParameterList.get(PropertyIndex.COMMON_NAME_INDEX.getValue());
@@ -644,7 +644,7 @@ public class CertificateGenerator {
         int notAfterDays =
                 (Integer) certParameterList.get(PropertyIndex.NOT_AFTER_DAYS_INDEX.getValue());
         X509v3CertificateBuilder certificateBuilder;
-        X509Certificate signedCertificate = null;
+        X509Certificate signedCertificate;
 
         try {
             ContentSigner signer;
@@ -674,16 +674,20 @@ public class CertificateGenerator {
                     ConfigurationUtil.PROVIDER).getCertificate(
                     certificateBuilder.build(signer));
         } catch (InvalidKeyException e) {
-            //throw new CertificateGenerationException("CSR's public key is invalid", e);
+            String errorMsg = "CSR's public key is invalid";
+            throw new KeystoreException(errorMsg, e);
         } catch (NoSuchAlgorithmException e) {
-            //throw new CertificateGenerationException("Certificate cannot be generated", e);
+            String errorMsg = "Certificate cannot be generated";
+            throw new KeystoreException(errorMsg, e);
         } catch (CertIOException e) {
-            // throw new CertificateGenerationException(
-            //   "Cannot add extension(s) to signed certificate", e);
+            String errorMsg = "Cannot add extension(s) to signed certificate";
+            throw new KeystoreException(errorMsg, e);
         } catch (OperatorCreationException e) {
-            // throw new CertificateGenerationException("Content signer cannot be created", e);
+            String errorMsg = "Content signer cannot be created";
+            throw new KeystoreException(errorMsg, e);
         } catch (CertificateException e) {
-            //throw new CertificateGenerationException("Signed certificate cannot be generated", e);
+            String errorMsg = "Signed certificate cannot be generated";
+            throw new KeystoreException(errorMsg, e);
         }
         return signedCertificate;
     }

@@ -65,7 +65,8 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
         int idx = resource.lastIndexOf(':');
         String url = resource.substring(0, idx);
         String method = resource.substring(++idx, resource.length());
-
+        //This is to remove the url params
+        url = url.substring(0, url.indexOf('?'));
         Properties properties = new Properties();
         properties.put(PermissionBasedScopeValidator.URL_PROPERTY, url);
         properties.put(PermissionBasedScopeValidator.HTTP_METHOD_PROPERTY, method);

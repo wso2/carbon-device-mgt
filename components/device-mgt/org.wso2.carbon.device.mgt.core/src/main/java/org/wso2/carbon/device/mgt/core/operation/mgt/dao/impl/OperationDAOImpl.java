@@ -282,7 +282,7 @@ public class OperationDAOImpl implements OperationDAO {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
-                    "OPERATION_CODE, dm.STATUS  FROM DM_OPERATION o " +
+                    "OPERATION_CODE, om.STATUS  FROM DM_OPERATION o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC";
             stmt = conn.prepareStatement(sql);

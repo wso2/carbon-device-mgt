@@ -27,9 +27,7 @@ import org.wso2.carbon.apimgt.core.authenticate.APITokenValidator;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.dto.APIKeyValidationInfoDTO;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.core.util.IdentityUtil;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
+import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
@@ -61,13 +59,12 @@ public class AuthenticationFrameworkUtil {
         if (apiKeyValidationDTO.isAuthorized()) {
             String username = apiKeyValidationDTO.getEndUserName();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
-            try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(IdentityUtil.
-                                                                                           getTenantIdOFUser(username));
-            } catch (IdentityException e) {
-                throw new AuthenticationException("Error occurred while retrieving the tenant ID of user '" +
-                        username + "'", e);
-            }
+//            try {
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(Utils.getTenantIdOFUser(username));
+//            } catch (IdentityException e) {
+//                throw new AuthenticationException("Error occurred while retrieving the tenant ID of user '" +
+//                        username + "'", e);
+//            }
             return true;
         } else {
             throw new AuthenticationException(apiKeyValidationDTO.getValidationStatus(),

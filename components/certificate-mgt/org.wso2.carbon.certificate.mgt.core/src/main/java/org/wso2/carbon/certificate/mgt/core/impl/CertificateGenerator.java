@@ -26,7 +26,8 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -44,14 +45,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
-import org.jscep.message.CertRep;
-import org.jscep.message.MessageDecodingException;
-import org.jscep.message.MessageEncodingException;
-import org.jscep.message.PkcsPkiEnvelopeDecoder;
-import org.jscep.message.PkcsPkiEnvelopeEncoder;
-import org.jscep.message.PkiMessage;
-import org.jscep.message.PkiMessageDecoder;
-import org.jscep.message.PkiMessageEncoder;
+import org.jscep.message.*;
 import org.jscep.transaction.FailInfo;
 import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
@@ -63,33 +57,10 @@ import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
+import java.io.*;
+import java.security.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -613,83 +584,24 @@ public class CertificateGenerator {
         return null;
     }
 
-    public X509Certificate getSignedCertificateFromCSR(String binarySecurityToken,
-                                                     X509Certificate caCert, List certPropertyList)
+    public X509Certificate getSignedCertificateFromCSR(String binarySecurityToken)
             throws KeystoreException {
         byte[] byteArrayBst = DatatypeConverter.parseBase64Binary(binarySecurityToken);
-        PKCS10CertificationRequest certificationRequest = null;
+        PKCS10CertificationRequest certificationRequest;
         KeyStoreReader keyStoreReader = new KeyStoreReader();
         PrivateKey privateKeyCA = keyStoreReader.getCAPrivateKey();
+        X509Certificate certCA = (X509Certificate) keyStoreReader.getCACertificate();
 
         try {
             certificationRequest = new PKCS10CertificationRequest(byteArrayBst);
         } catch (IOException e) {
             String msg = "CSR cannot be recovered.";
             log.error(msg, e);
+            throw new KeystoreException(msg, e);
         }
         JcaPKCS10CertificationRequest csr = new JcaPKCS10CertificationRequest(certificationRequest);
-        X509Certificate signedCertificate = signCSR(csr, privateKeyCA,  caCert, certPropertyList);
-        saveCertInKeyStore(signedCertificate);
+        X509Certificate signedCertificate = generateCertificateFromCSR(privateKeyCA, certificationRequest,
+                certCA.getIssuerX500Principal().getName());
         return signedCertificate;
     }
-
-    private static X509Certificate signCSR(JcaPKCS10CertificationRequest jcaRequest,
-                                          PrivateKey privateKey, X509Certificate caCert,
-                                          List certParameterList) throws KeystoreException {
-
-        String commonName =
-                (String) certParameterList.get(PropertyIndex.COMMON_NAME_INDEX.getValue());
-        int notBeforeDays =
-                (Integer) certParameterList.get(PropertyIndex.NOT_BEFORE_DAYS_INDEX.getValue());
-        int notAfterDays =
-                (Integer) certParameterList.get(PropertyIndex.NOT_AFTER_DAYS_INDEX.getValue());
-        X509v3CertificateBuilder certificateBuilder;
-        X509Certificate signedCertificate;
-
-        try {
-            ContentSigner signer;
-            BigInteger serialNumber = BigInteger.valueOf(new SecureRandom().
-                    nextInt(Integer.MAX_VALUE));
-            Date notBeforeDate = new Date(System.currentTimeMillis() -
-                    (ConfigurationUtil.MILLI_SECONDS * notBeforeDays));
-            Date notAfterDate = new Date(System.currentTimeMillis() +
-                    (ConfigurationUtil.MILLI_SECONDS * notAfterDays));
-            certificateBuilder =
-                    new JcaX509v3CertificateBuilder(caCert, serialNumber, notBeforeDate, notAfterDate,
-                            new X500Principal(commonName),
-                            jcaRequest.getPublicKey());
-
-            //Adding extensions to the signed certificate.
-            certificateBuilder.addExtension(Extension.keyUsage, true,
-                    new KeyUsage(KeyUsage.digitalSignature));
-            certificateBuilder.addExtension(Extension.extendedKeyUsage, false,
-                    new ExtendedKeyUsage(KeyPurposeId.id_kp_clientAuth));
-            certificateBuilder.addExtension(Extension.basicConstraints, true,
-                    new BasicConstraints(false));
-
-            signer = new JcaContentSignerBuilder(ConfigurationUtil.SIGNATURE_ALGORITHM).
-                    setProvider(ConfigurationUtil.PROVIDER).build(privateKey);
-
-            signedCertificate = new JcaX509CertificateConverter().setProvider(
-                    ConfigurationUtil.PROVIDER).getCertificate(
-                    certificateBuilder.build(signer));
-        } catch (InvalidKeyException e) {
-            String errorMsg = "CSR's public key is invalid";
-            throw new KeystoreException(errorMsg, e);
-        } catch (NoSuchAlgorithmException e) {
-            String errorMsg = "Certificate cannot be generated";
-            throw new KeystoreException(errorMsg, e);
-        } catch (CertIOException e) {
-            String errorMsg = "Cannot add extension(s) to signed certificate";
-            throw new KeystoreException(errorMsg, e);
-        } catch (OperatorCreationException e) {
-            String errorMsg = "Content signer cannot be created";
-            throw new KeystoreException(errorMsg, e);
-        } catch (CertificateException e) {
-            String errorMsg = "Signed certificate cannot be generated";
-            throw new KeystoreException(errorMsg, e);
-        }
-        return signedCertificate;
-    }
-
 }

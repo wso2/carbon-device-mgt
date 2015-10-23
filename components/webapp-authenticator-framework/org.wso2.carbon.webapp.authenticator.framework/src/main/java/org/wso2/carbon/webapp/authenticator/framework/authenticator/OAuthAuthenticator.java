@@ -25,12 +25,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.apimgt.core.gateway.APITokenAuthenticator;
-import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.*;
+import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -111,14 +110,14 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                         AuthenticatorFrameworkDataHolder.getInstance().getoAuth2TokenValidationService().validate(dto);
                 if (oAuth2TokenValidationResponseDTO.isValid()) {
                     String username = oAuth2TokenValidationResponseDTO.getAuthorizedUser();
-                    try {
+                   // try {
                         authenticationInfo.setUsername(username);
                         authenticationInfo.setTenantDomain(MultitenantUtils.getTenantDomain(username));
-                        authenticationInfo.setTenantId(IdentityUtil.getTenantIdOFUser(username));
-                    } catch (IdentityException e) {
-                        throw new AuthenticationException(
-                                "Error occurred while retrieving the tenant ID of user '" + username + "'", e);
-                    }
+                        authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username));
+//                    } catch (AuthenticationException e) {
+//                        throw new AuthenticationException(
+//                                "Error occurred while retrieving the tenant ID of user '" + username + "'", e);
+//                    }
                     if (oAuth2TokenValidationResponseDTO.isValid()) {
                         authenticationInfo.setStatus(Status.CONTINUE);
                     }
@@ -148,6 +147,9 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             if (matcher.find()) {
                 tokenValue = tokenValue.substring(matcher.end());
             }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug("Oauth Token : " + tokenValue);
         }
         return tokenValue;
     }

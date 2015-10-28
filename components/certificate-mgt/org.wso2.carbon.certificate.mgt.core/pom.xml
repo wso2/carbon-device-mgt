@@ -58,7 +58,7 @@
                             org.apache.commons.logging,
                             javax.security.auth.x500,
                             javax.xml.parsers,
-                            org.apache.commons.codec.binary;version="${version.commons.codec}",
+                            org.apache.commons.codec.binary,
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,
                             org.bouncycastle.asn1.x509,

@@ -164,7 +164,7 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT po.OPERATION_ID, ENABLED, OPERATION_DETAILS FROM DM_POLICY_OPERATION po " +
-                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID = ? " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING WHERE ENROLMENT_ID = ? " +
                     "AND STATUS = ?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);

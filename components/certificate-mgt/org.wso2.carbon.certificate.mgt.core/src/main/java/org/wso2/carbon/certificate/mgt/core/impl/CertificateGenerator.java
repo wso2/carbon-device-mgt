@@ -349,6 +349,8 @@ public class CertificateGenerator {
         Date validityEndDate = commonUtil.getValidityEndDate();
 
         X500Name certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+        //X500Name certSubject = request.getSubject();
+
         Attribute attributes[] = request.getAttributes();
 
 //        if (certSubject == null) {
@@ -360,7 +362,7 @@ public class CertificateGenerator {
 //                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
 //            }
 //        }
-        
+
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
                 new X500Name(issueSubject), CommonUtil.generateSerialNumber(),
                 validityBeginDate, validityEndDate, certSubject, request.getSubjectPublicKeyInfo());

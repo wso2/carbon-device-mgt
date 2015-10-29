@@ -617,7 +617,23 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return device;
     }
 
-    @Override
+	@Override
+	public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
+		List<DeviceType> deviceTypes;
+		try {
+			DeviceManagementDAOFactory.openConnection();
+			deviceTypes = deviceDAO.getDeviceTypes();
+		} catch (DeviceManagementDAOException e) {
+			throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
+		} catch (SQLException e) {
+			throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+		} finally {
+			DeviceManagementDAOFactory.closeConnection();
+		}
+		return deviceTypes;
+	}
+
+	@Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {

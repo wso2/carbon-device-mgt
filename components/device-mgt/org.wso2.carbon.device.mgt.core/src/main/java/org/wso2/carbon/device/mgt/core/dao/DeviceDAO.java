@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -162,6 +163,14 @@ public interface DeviceDAO {
      * @throws DeviceManagementDAOException
      */
     int getDeviceCount(int tenantId) throws DeviceManagementDAOException;
+
+	/**
+	 * This method is used to retrieve the available device types of a given tenant.
+	 *
+	 * @return returns list of device types.
+	 * @throws DeviceManagementDAOException
+	 */
+	List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve devices of a given device name.

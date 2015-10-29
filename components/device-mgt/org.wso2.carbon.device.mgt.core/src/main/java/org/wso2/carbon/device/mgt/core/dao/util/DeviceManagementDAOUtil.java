@@ -23,6 +23,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.tenant.TenantManager;
@@ -152,5 +153,12 @@ public final class DeviceManagementDAOUtil {
 		device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
 		device.setEnrolmentInfo(loadEnrolment(rs));
 		return device;
+	}
+
+	public static DeviceType loadDeviceType(ResultSet rs) throws SQLException {
+		DeviceType deviceType = new DeviceType();
+		deviceType.setId(rs.getInt("ID"));
+		deviceType.setName(rs.getString("NAME"));
+		return deviceType;
 	}
 }

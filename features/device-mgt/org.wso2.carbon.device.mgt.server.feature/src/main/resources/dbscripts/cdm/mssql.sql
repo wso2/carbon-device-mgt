@@ -401,7 +401,3 @@ CREATE TABLE DM_NOTIFICATION (
 );
 -- NOTIFICATION TABLE END --
 
--- TO:DO - Remove this INSERT sql statement.
-Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (1, 'android');
-Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (2, 'ios');
-

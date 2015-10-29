@@ -320,18 +320,20 @@ public class CertificateGenerator {
         Date validityBeginDate = commonUtil.getValidityStartDate();
         Date validityEndDate = commonUtil.getValidityEndDate();
 
-        X500Name certSubject = request.getSubject();
+        X500Name certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+        //X500Name certSubject = request.getSubject();
+
         Attribute attributes[] = request.getAttributes();
 
-        if (certSubject == null) {
-            certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
-        } else {
-            org.bouncycastle.asn1.x500.RDN[] rdn = certSubject.getRDNs();
-
-            if (rdn == null || rdn.length == 0) {
-                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
-            }
-        }
+//        if (certSubject == null) {
+//            certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+//        } else {
+//            org.bouncycastle.asn1.x500.RDN[] rdn = certSubject.getRDNs();
+//
+//            if (rdn == null || rdn.length == 0) {
+//                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+//            }
+//        }
 
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
                 new X500Name(issueSubject), CommonUtil.generateSerialNumber(),

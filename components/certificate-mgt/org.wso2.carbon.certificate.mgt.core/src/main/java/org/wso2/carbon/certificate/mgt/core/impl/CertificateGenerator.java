@@ -43,7 +43,6 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
 import org.jscep.message.*;
 import org.jscep.transaction.FailInfo;
@@ -69,20 +68,6 @@ import java.util.Date;
 import java.util.List;
 
 public class CertificateGenerator {
-
-    private enum PropertyIndex {
-        COMMON_NAME_INDEX(0),
-        NOT_BEFORE_DAYS_INDEX(1),
-        NOT_AFTER_DAYS_INDEX(2);
-
-        private final int itemPosition;
-        private PropertyIndex(final int itemPosition) {
-            this.itemPosition = itemPosition;
-        }
-        public int getValue() {
-            return this.itemPosition;
-        }
-    }
 
     private static final Log log = LogFactory.getLog(CertificateGenerator.class);
 
@@ -584,6 +569,13 @@ public class CertificateGenerator {
         return null;
     }
 
+    /**
+     * Get Signed certificate by parsing certificate.
+     * @param binarySecurityToken CSR that comes from the client as a String value.It is base 64 encoded request
+     *                            security token.
+     * @return Return signed certificate in X508Certificate type object.
+     * @throws KeystoreException
+     */
     public X509Certificate getSignedCertificateFromCSR(String binarySecurityToken)
             throws KeystoreException {
         byte[] byteArrayBst = DatatypeConverter.parseBase64Binary(binarySecurityToken);
@@ -599,7 +591,6 @@ public class CertificateGenerator {
             log.error(msg, e);
             throw new KeystoreException(msg, e);
         }
-        JcaPKCS10CertificationRequest csr = new JcaPKCS10CertificationRequest(certificationRequest);
         X509Certificate signedCertificate = generateCertificateFromCSR(privateKeyCA, certificationRequest,
                 certCA.getIssuerX500Principal().getName());
         return signedCertificate;

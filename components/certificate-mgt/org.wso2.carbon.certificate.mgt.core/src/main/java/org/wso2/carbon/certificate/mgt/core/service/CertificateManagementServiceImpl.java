@@ -101,7 +101,6 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         return certificateGenerator.extractChallengeToken(certificate);
     }
 
-    @Override
     public X509Certificate getSignedCertificateFromCSR(String binarySecurityToken) throws KeystoreException {
         return certificateGenerator.getSignedCertificateFromCSR(binarySecurityToken);
     }

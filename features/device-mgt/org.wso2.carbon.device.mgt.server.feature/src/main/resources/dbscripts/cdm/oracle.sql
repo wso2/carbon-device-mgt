@@ -1,5 +1,5 @@
 CREATE TABLE DM_DEVICE_TYPE (
-     ID   NUMBER(10) NOT NULL,
+     ID NUMBER(10) NOT NULL,
      NAME VARCHAR2(300) DEFAULT NULL,
      PRIMARY KEY (ID)
 );
@@ -630,3 +630,4 @@ END;
 -- TO:DO - Remove this INSERT sql statement.
 Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (1, 'android');
 Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (2, 'ios');
+

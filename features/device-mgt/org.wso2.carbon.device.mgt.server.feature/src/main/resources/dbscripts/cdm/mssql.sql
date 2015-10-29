@@ -1,5 +1,5 @@
 CREATE TABLE DM_DEVICE_TYPE (
-     ID   INT identity NOT NULL,
+     ID INT IDENTITY NOT NULL,
      NAME VARCHAR(300) DEFAULT NULL,
      PRIMARY KEY (ID)
 );
@@ -404,3 +404,4 @@ CREATE TABLE DM_NOTIFICATION (
 -- TO:DO - Remove this INSERT sql statement.
 Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (1, 'android');
 Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (2, 'ios');
+

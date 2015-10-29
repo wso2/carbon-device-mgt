@@ -117,7 +117,7 @@ public class DynamicClientWebAppRegistrationManager {
     }
 
     public void initiateDynamicClientRegistration() {
-        String requiredDynamicClientRegistration, webAppName;
+        String requiredDynamicClientRegistration, webAppName, serviceProviderName;
         ServletContext servletContext;
         RegistrationProfile registrationProfile;
         OAuthAppDetails oAuthAppDetails;
@@ -131,15 +131,15 @@ public class DynamicClientWebAppRegistrationManager {
         while (enumeration.hasMoreElements()) {
             oAuthAppDetails = new OAuthAppDetails();
             webAppName = (String) enumeration.nextElement();
+            serviceProviderName = DynamicClientWebAppRegistrationUtil.getUserName() + "_" + webAppName;
             servletContext = DynamicClientWebAppRegistrationManager.webAppContexts.get(webAppName);
             requiredDynamicClientRegistration = servletContext.getInitParameter(
                     DynamicClientWebAppRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG);
             //Java web-app section
-            if ((requiredDynamicClientRegistration != null) && (Boolean.
-                                                                               parseBoolean(
-                                                                                       requiredDynamicClientRegistration))) {
+            if ((requiredDynamicClientRegistration != null) && (Boolean.parseBoolean(
+                    requiredDynamicClientRegistration))) {
                 //Check whether this is an already registered application
-                if (!dynamicClientWebAppRegistrationManager.isRegisteredOAuthApplication(webAppName)) {
+                if (!dynamicClientWebAppRegistrationManager.isRegisteredOAuthApplication(serviceProviderName)) {
                     //Construct the RegistrationProfile
                     registrationProfile = DynamicClientWebAppRegistrationUtil.
                                                         constructRegistrationProfile(servletContext, webAppName);
@@ -155,7 +155,7 @@ public class DynamicClientWebAppRegistrationManager {
                 JaggeryOAuthConfigurationSettings jaggeryOAuthConfigurationSettings =
                         DynamicClientWebAppRegistrationUtil.getJaggeryAppOAuthSettings(servletContext);
                 if (jaggeryOAuthConfigurationSettings.isRequireDynamicClientRegistration()) {
-                    if (!dynamicClientWebAppRegistrationManager.isRegisteredOAuthApplication(webAppName)) {
+                    if (!dynamicClientWebAppRegistrationManager.isRegisteredOAuthApplication(serviceProviderName)) {
                         registrationProfile = DynamicClientWebAppRegistrationUtil.
                                                       constructRegistrationProfile(jaggeryOAuthConfigurationSettings,
                                                                                    webAppName);

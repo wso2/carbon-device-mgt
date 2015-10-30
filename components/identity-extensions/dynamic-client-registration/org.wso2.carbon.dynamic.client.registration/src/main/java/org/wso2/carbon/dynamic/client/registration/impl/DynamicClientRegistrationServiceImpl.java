@@ -123,7 +123,7 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
         boolean isSaaSApp = profile.isSaasApp();
         String audience = profile.getAudience();
         String assertionConsumerURL = profile.getAssertionConsumerURL();
-        String recepientValidationURL = profile.getRecepientValidationURL();
+        String recipientValidationURL = profile.getRecepientValidationURL();
 
         if (userId == null || userId.isEmpty()) {
             return null;
@@ -223,7 +223,7 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
             samlssoServiceProviderDTO.setDoSignResponse(true);
             samlssoServiceProviderDTO.setRequestedAudiences(new String[] { audience });
             samlssoServiceProviderDTO.setDefaultAssertionConsumerUrl(assertionConsumerURL);
-            samlssoServiceProviderDTO.setRequestedRecipients(new String[] {recepientValidationURL});
+            samlssoServiceProviderDTO.setRequestedRecipients(new String[] {recipientValidationURL});
             samlssoServiceProviderDTO.setDoSignAssertions(true);
 
 

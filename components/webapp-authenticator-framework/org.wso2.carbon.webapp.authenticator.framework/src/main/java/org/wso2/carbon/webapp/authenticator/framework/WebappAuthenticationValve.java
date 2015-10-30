@@ -74,12 +74,12 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 privilegedCarbonContext.setTenantId(authenticationInfo.getTenantId());
                 privilegedCarbonContext.setTenantDomain(authenticationInfo.getTenantDomain());
                 privilegedCarbonContext.setUsername(authenticationInfo.getUsername());
-                this.processRequest(request, response, compositeValve, authenticationInfo.getStatus());
+                this.processRequest(request, response, compositeValve, authenticationInfo);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
         } else {
-            this.processRequest(request, response, compositeValve, authenticationInfo.getStatus());
+            this.processRequest(request, response, compositeValve, authenticationInfo);
         }
     }
 
@@ -113,14 +113,18 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
     }
 
     private void processRequest(Request request, Response response, CompositeValve compositeValve,
-                                WebappAuthenticator.Status status) {
-        switch (status) {
+                                AuthenticationInfo authenticationInfo) {
+        switch (authenticationInfo.getStatus()) {
             case SUCCESS:
             case CONTINUE:
                 this.getNext().invoke(request, response, compositeValve);
                 break;
             case FAILURE:
                 String msg = "Failed to authorize incoming request";
+                if(authenticationInfo.getMessage() != null && !authenticationInfo.getMessage().isEmpty()) {
+                    msg = authenticationInfo.getMessage();
+                    response.setHeader("WWW-Authenticate", msg);
+                }
                 log.error(msg);
                 AuthenticationFrameworkUtil
                         .handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED,

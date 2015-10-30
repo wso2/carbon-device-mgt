@@ -53,4 +53,6 @@ public interface CertificateManagementService {
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException;
 
     String extractChallengeToken(X509Certificate certificate);
+
+    X509Certificate getSignedCertificateFromCSR(String binarySecurityToken) throws KeystoreException;
 }

@@ -90,6 +90,7 @@
                             org.wso2.carbon.utils,
                             org.wso2.carbon.utils.multitenancy,
                             org.xml.sax,
+                            javax.servlet,
                             javax.servlet.http,
                             javax.xml,
                             org.apache.axis2.transport.http,

@@ -180,15 +180,15 @@ public class PolicyManagerImpl implements PolicyManager {
             if (!newFeaturesList.isEmpty()) {
                 featureDAO.addProfileFeatures(newFeaturesList, profileId);
             }
-            policyDAO.deleteAllPolicyRelatedConfigs(policy.getId());
+            policyDAO.deleteCriteriaAndDeviceRelatedConfigs(policy.getId());
 
 
             if (policy.getUsers() != null) {
-                policyDAO.addPolicyToUser(policy.getUsers(), previousPolicy);
+                policyDAO.updateUserOfPolicy(policy.getUsers(), previousPolicy);
             }
 
             if (policy.getRoles() != null) {
-                policyDAO.addPolicyToRole(policy.getRoles(), previousPolicy);
+                policyDAO.updateRolesOfPolicy(policy.getRoles(), previousPolicy);
             }
 
             if (policy.getDevices() != null) {
@@ -539,7 +539,7 @@ public class PolicyManagerImpl implements PolicyManager {
         policy.setDevices(deviceList);
 
         try {
-         //   PolicyManagementDAOFactory.openConnection();
+            //   PolicyManagementDAOFactory.openConnection();
             Profile profile = profileManager.getProfile(policy.getProfileId());
             policy.setProfile(profile);
         } catch (ProfileManagementException e) {

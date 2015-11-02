@@ -71,17 +71,17 @@ public class PolicyDAOImpl implements PolicyDAO {
     public Policy addPolicyToRole(List<String> rolesToAdd, Policy policy) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement insertStmt = null;
-        PreparedStatement deleteStmt = null;
-        final List<String> currentRoles = policy.getRoles();
-
-        SetReferenceTransformer<String> transformer = new SetReferenceTransformer<String>();
-
-        transformer.transform(currentRoles, rolesToAdd);
-        rolesToAdd = transformer.getObjectsToAdd();
-        List<String> rolesToDelete = transformer.getObjectsToRemove();
+//        PreparedStatement deleteStmt = null;
+//        final List<String> currentRoles = this.getPolicy(policy.getId()).getRoles();
+//
+//        SetReferenceTransformer<String> transformer = new SetReferenceTransformer<String>();
+//
+//        transformer.transform(currentRoles, rolesToAdd);
+//        rolesToAdd = transformer.getObjectsToAdd();
+//        List<String> rolesToDelete = transformer.getObjectsToRemove();
         try {
             conn = this.getConnection();
-            if (rolesToAdd.size() > 0){
+            if (rolesToAdd.size() > 0) {
                 String query = "INSERT INTO DM_ROLE_POLICY (ROLE_NAME, POLICY_ID) VALUES (?, ?)";
                 insertStmt = conn.prepareStatement(query);
                 for (String role : rolesToAdd) {
@@ -91,16 +91,16 @@ public class PolicyDAOImpl implements PolicyDAO {
                 }
                 insertStmt.executeBatch();
             }
-            if (rolesToAdd.size() > 0){
-                String deleteQuery = "DELETE FROM DM_ROLE_POLICY WHERE ROLE_NAME=? AND POLICY_ID=?";
-                deleteStmt = conn.prepareStatement(deleteQuery);
-                for (String role : rolesToDelete) {
-                    deleteStmt.setString(1, role);
-                    deleteStmt.setInt(2, policy.getId());
-                    deleteStmt.addBatch();
-                }
-                deleteStmt.executeBatch();
-            }
+//            if (rolesToDelete.size() > 0){
+//                String deleteQuery = "DELETE FROM DM_ROLE_POLICY WHERE ROLE_NAME=? AND POLICY_ID=?";
+//                deleteStmt = conn.prepareStatement(deleteQuery);
+//                for (String role : rolesToDelete) {
+//                    deleteStmt.setString(1, role);
+//                    deleteStmt.setInt(2, policy.getId());
+//                    deleteStmt.addBatch();
+//                }
+//                deleteStmt.executeBatch();
+//            }
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Error occurred while adding the role name with policy to database", e);
         } finally {
@@ -109,8 +109,98 @@ public class PolicyDAOImpl implements PolicyDAO {
         return policy;
     }
 
+
+    @Override
+    public Policy updateRolesOfPolicy(List<String> rolesToAdd, Policy previousPolicy) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement insertStmt = null;
+        PreparedStatement deleteStmt = null;
+
+        final List<String> currentRoles = previousPolicy.getRoles();
+
+        SetReferenceTransformer<String> transformer = new SetReferenceTransformer<String>();
+
+        transformer.transform(currentRoles, rolesToAdd);
+        rolesToAdd = transformer.getObjectsToAdd();
+        List<String> rolesToDelete = transformer.getObjectsToRemove();
+        try {
+            conn = this.getConnection();
+            if (rolesToAdd.size() > 0) {
+                String query = "INSERT INTO DM_ROLE_POLICY (ROLE_NAME, POLICY_ID) VALUES (?, ?)";
+                insertStmt = conn.prepareStatement(query);
+                for (String role : rolesToAdd) {
+                    insertStmt.setString(1, role);
+                    insertStmt.setInt(2, previousPolicy.getId());
+                    insertStmt.addBatch();
+                }
+                insertStmt.executeBatch();
+            }
+            if (rolesToDelete.size() > 0) {
+                String deleteQuery = "DELETE FROM DM_ROLE_POLICY WHERE ROLE_NAME=? AND POLICY_ID=?";
+                deleteStmt = conn.prepareStatement(deleteQuery);
+                for (String role : rolesToDelete) {
+                    deleteStmt.setString(1, role);
+                    deleteStmt.setInt(2, previousPolicy.getId());
+                    deleteStmt.addBatch();
+                }
+                deleteStmt.executeBatch();
+            }
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while adding the role name with policy to database", e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(insertStmt, null);
+            PolicyManagementDAOUtil.cleanupResources(deleteStmt, null);
+        }
+        return previousPolicy;
+    }
+
     @Override
     public Policy addPolicyToUser(List<String> usersToAdd, Policy policy) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement insertStmt = null;
+//        PreparedStatement deleteStmt = null;
+//        final List<String> currentUsers = this.getPolicy(policy.getId()).getUsers();
+//
+//        SetReferenceTransformer<String> transformer = new SetReferenceTransformer<String>();
+//
+//        transformer.transform(currentUsers, usersToAdd);
+//        usersToAdd = transformer.getObjectsToAdd();
+//        List<String> usersToDelete = transformer.getObjectsToRemove();
+        try {
+            conn = this.getConnection();
+            if (usersToAdd.size() > 0) {
+                String query = "INSERT INTO DM_USER_POLICY (POLICY_ID, USERNAME) VALUES (?, ?)";
+                insertStmt = conn.prepareStatement(query);
+                for (String username : usersToAdd) {
+                    insertStmt.setInt(1, policy.getId());
+                    insertStmt.setString(2, username);
+                    insertStmt.addBatch();
+                }
+                insertStmt.executeBatch();
+            }
+//            if (usersToDelete.size() > 0){
+//                String deleteQuery = "DELETE FROM DM_USER_POLICY WHERE USERNAME=? AND POLICY_ID=?";
+//                deleteStmt = conn.prepareStatement(deleteQuery);
+//                for (String username : usersToDelete) {
+//                    deleteStmt.setString(1, username);
+//                    deleteStmt.setInt(2, policy.getId());
+//                    deleteStmt.addBatch();
+//                }
+//                deleteStmt.executeBatch();
+//            }
+
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while adding the user name with policy to database", e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(insertStmt, null);
+//            PolicyManagementDAOUtil.cleanupResources(deleteStmt, null);
+        }
+        return policy;
+    }
+
+
+    @Override
+    public Policy updateUserOfPolicy(List<String> usersToAdd, Policy policy) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement insertStmt = null;
         PreparedStatement deleteStmt = null;
@@ -123,7 +213,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         List<String> usersToDelete = transformer.getObjectsToRemove();
         try {
             conn = this.getConnection();
-            if (usersToAdd.size() > 0){
+            if (usersToAdd.size() > 0) {
                 String query = "INSERT INTO DM_USER_POLICY (POLICY_ID, USERNAME) VALUES (?, ?)";
                 insertStmt = conn.prepareStatement(query);
                 for (String username : usersToAdd) {
@@ -133,7 +223,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 }
                 insertStmt.executeBatch();
             }
-            if (usersToDelete.size() > 0){
+            if (usersToDelete.size() > 0) {
                 String deleteQuery = "DELETE FROM DM_USER_POLICY WHERE USERNAME=? AND POLICY_ID=?";
                 deleteStmt = conn.prepareStatement(deleteQuery);
                 for (String username : usersToDelete) {
@@ -152,6 +242,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         }
         return policy;
     }
+
 
     @Override
     public Policy addPolicyToDevice(List<Device> devices, Policy policy) throws PolicyManagerDAOException {
@@ -1202,6 +1293,46 @@ public class PolicyDAOImpl implements PolicyDAO {
         }
     }
 
+
+    @Override
+    public boolean deleteCriteriaAndDeviceRelatedConfigs(int policyId) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+
+//            String userPolicy = "DELETE FROM DM_USER_POLICY WHERE POLICY_ID = ?";
+//            stmt = conn.prepareStatement(userPolicy);
+//            stmt.setInt(1, policyId);
+//            stmt.executeUpdate();
+//
+//            String rolePolicy = "DELETE FROM DM_ROLE_POLICY WHERE POLICY_ID = ?";
+//            stmt = conn.prepareStatement(rolePolicy);
+//            stmt.setInt(1, policyId);
+//            stmt.executeUpdate();
+
+            String devicePolicy = "DELETE FROM DM_DEVICE_POLICY WHERE POLICY_ID = ?";
+            stmt = conn.prepareStatement(devicePolicy);
+            stmt.setInt(1, policyId);
+            stmt.executeUpdate();
+
+            String deleteCriteria = "DELETE FROM DM_POLICY_CRITERIA WHERE POLICY_ID = ?";
+            stmt = conn.prepareStatement(deleteCriteria);
+            stmt.setInt(1, policyId);
+            stmt.executeUpdate();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Policy (" + policyId + ") related configs deleted from database.");
+            }
+            return true;
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Unable to delete the policy (" + policyId +
+                    ") related configs from database", e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
     private Connection getConnection() throws PolicyManagerDAOException {
         return PolicyManagementDAOFactory.getConnection();
     }
@@ -1345,7 +1476,8 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ? AND ENROLMENT_ID = ?";
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ? AND " +
+                    "ENROLMENT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, tenantId);

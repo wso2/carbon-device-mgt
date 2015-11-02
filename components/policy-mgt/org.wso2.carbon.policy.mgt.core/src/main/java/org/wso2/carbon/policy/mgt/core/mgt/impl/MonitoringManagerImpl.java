@@ -62,6 +62,8 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
     private static final Log log = LogFactory.getLog(MonitoringManagerImpl.class);
     private static final String OPERATION_MONITOR = "MONITOR";
+	private static final String OPERATION_INFO = "DEVICE_INFO";
+	private static final String OPERATION_APP_LIST = "APPLICATION_LIST";
 
     public MonitoringManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
@@ -378,9 +380,19 @@ public class MonitoringManagerImpl implements MonitoringManager {
         monitoringOperation.setEnabled(true);
         monitoringOperation.setType(Operation.Type.COMMAND);
         monitoringOperation.setCode(OPERATION_MONITOR);
+	    CommandOperation infoOperation = new CommandOperation();
+	    infoOperation.setEnabled(true);
+	    infoOperation.setType(Operation.Type.COMMAND);
+	    infoOperation.setCode(OPERATION_INFO);
+	    CommandOperation appListOperation = new CommandOperation();
+	    appListOperation.setEnabled(true);
+	    appListOperation.setType(Operation.Type.COMMAND);
+	    appListOperation.setCode(OPERATION_APP_LIST);
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         service.addOperation(monitoringOperation, deviceIdentifiers);
+	    service.addOperation(infoOperation, deviceIdentifiers);
+	    service.addOperation(appListOperation, deviceIdentifiers);
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {

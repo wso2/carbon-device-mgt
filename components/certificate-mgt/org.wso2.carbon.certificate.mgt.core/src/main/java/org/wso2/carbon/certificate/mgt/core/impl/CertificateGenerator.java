@@ -44,14 +44,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
-import org.jscep.message.CertRep;
-import org.jscep.message.MessageDecodingException;
-import org.jscep.message.MessageEncodingException;
-import org.jscep.message.PkcsPkiEnvelopeDecoder;
-import org.jscep.message.PkcsPkiEnvelopeEncoder;
-import org.jscep.message.PkiMessage;
-import org.jscep.message.PkiMessageDecoder;
-import org.jscep.message.PkiMessageEncoder;
+import org.jscep.message.*;
 import org.jscep.transaction.FailInfo;
 import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
@@ -62,32 +55,11 @@ import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 
 import javax.security.auth.x500.X500Principal;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
+import java.security.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -348,18 +320,20 @@ public class CertificateGenerator {
         Date validityBeginDate = commonUtil.getValidityStartDate();
         Date validityEndDate = commonUtil.getValidityEndDate();
 
-        X500Name certSubject = request.getSubject();
+        X500Name certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+        //X500Name certSubject = request.getSubject();
+
         Attribute attributes[] = request.getAttributes();
 
-        if (certSubject == null) {
-            certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
-        } else {
-            org.bouncycastle.asn1.x500.RDN[] rdn = certSubject.getRDNs();
-
-            if (rdn == null || rdn.length == 0) {
-                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
-            }
-        }
+//        if (certSubject == null) {
+//            certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+//        } else {
+//            org.bouncycastle.asn1.x500.RDN[] rdn = certSubject.getRDNs();
+//
+//            if (rdn == null || rdn.length == 0) {
+//                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+//            }
+//        }
 
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
                 new X500Name(issueSubject), CommonUtil.generateSerialNumber(),
@@ -595,5 +569,32 @@ public class CertificateGenerator {
         }
 
         return null;
+    }
+
+    /**
+     * Get Signed certificate by parsing certificate.
+     * @param binarySecurityToken CSR that comes from the client as a String value.It is base 64 encoded request
+     *                            security token.
+     * @return Return signed certificate in X508Certificate type object.
+     * @throws KeystoreException
+     */
+    public X509Certificate getSignedCertificateFromCSR(String binarySecurityToken)
+            throws KeystoreException {
+        byte[] byteArrayBst = DatatypeConverter.parseBase64Binary(binarySecurityToken);
+        PKCS10CertificationRequest certificationRequest;
+        KeyStoreReader keyStoreReader = new KeyStoreReader();
+        PrivateKey privateKeyCA = keyStoreReader.getCAPrivateKey();
+        X509Certificate certCA = (X509Certificate) keyStoreReader.getCACertificate();
+
+        try {
+            certificationRequest = new PKCS10CertificationRequest(byteArrayBst);
+        } catch (IOException e) {
+            String msg = "CSR cannot be recovered.";
+            log.error(msg, e);
+            throw new KeystoreException(msg, e);
+        }
+        X509Certificate signedCertificate = generateCertificateFromCSR(privateKeyCA, certificationRequest,
+                certCA.getIssuerX500Principal().getName());
+        return signedCertificate;
     }
 }

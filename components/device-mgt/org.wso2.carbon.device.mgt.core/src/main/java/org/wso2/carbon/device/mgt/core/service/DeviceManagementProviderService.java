@@ -24,6 +24,8 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+
 import java.util.List;
 
 /**
@@ -126,6 +128,8 @@ public interface DeviceManagementProviderService extends OperationManager {
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+	List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException;
 
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 

@@ -102,7 +102,8 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                 resourceContextParam.setValue(requestUri + ":" + requestMethod);
 
                 OAuth2TokenValidationRequestDTO.TokenValidationContextParam[]
-                        tokenValidationContextParams = new OAuth2TokenValidationRequestDTO.TokenValidationContextParam[1];
+                        tokenValidationContextParams =
+                        new OAuth2TokenValidationRequestDTO.TokenValidationContextParam[1];
                 tokenValidationContextParams[0] = resourceContextParam;
                 dto.setContext(tokenValidationContextParams);
 
@@ -110,17 +111,14 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                         AuthenticatorFrameworkDataHolder.getInstance().getoAuth2TokenValidationService().validate(dto);
                 if (oAuth2TokenValidationResponseDTO.isValid()) {
                     String username = oAuth2TokenValidationResponseDTO.getAuthorizedUser();
-                   // try {
-                        authenticationInfo.setUsername(username);
-                        authenticationInfo.setTenantDomain(MultitenantUtils.getTenantDomain(username));
-                        authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username));
-//                    } catch (AuthenticationException e) {
-//                        throw new AuthenticationException(
-//                                "Error occurred while retrieving the tenant ID of user '" + username + "'", e);
-//                    }
+                    authenticationInfo.setUsername(username);
+                    authenticationInfo.setTenantDomain(MultitenantUtils.getTenantDomain(username));
+                    authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username));
                     if (oAuth2TokenValidationResponseDTO.isValid()) {
                         authenticationInfo.setStatus(Status.CONTINUE);
                     }
+                } else {
+                    authenticationInfo.setMessage(oAuth2TokenValidationResponseDTO.getErrorMsg());
                 }
             }
         } catch (AuthenticationException e) {
@@ -148,7 +146,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                 tokenValue = tokenValue.substring(matcher.end());
             }
         }
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Oauth Token : " + tokenValue);
         }
         return tokenValue;

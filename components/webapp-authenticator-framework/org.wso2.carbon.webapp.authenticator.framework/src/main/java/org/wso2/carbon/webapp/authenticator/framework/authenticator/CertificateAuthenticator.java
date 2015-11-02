@@ -51,7 +51,8 @@ public class CertificateAuthenticator implements WebappAuthenticator {
                 if (certHeader != null &&
                     AuthenticatorFrameworkDataHolder.getInstance().getCertificateManagementService().
                             verifySignature(certHeader)) {
-
+                    AuthenticatorFrameworkDataHolder.getInstance().getCertificateManagementService().
+                            extractCertificateFromSignature(certHeader);
                     X509Certificate certificate =
                             AuthenticatorFrameworkDataHolder.getInstance().getCertificateManagementService().
                                     extractCertificateFromSignature(certHeader);

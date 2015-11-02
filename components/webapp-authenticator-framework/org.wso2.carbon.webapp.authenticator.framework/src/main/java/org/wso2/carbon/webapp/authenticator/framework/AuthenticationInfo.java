@@ -26,6 +26,7 @@ import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthen
 public class AuthenticationInfo {
 
     private WebappAuthenticator.Status status = WebappAuthenticator.Status.FAILURE;
+    private String message;
     private String username;
     private String tenantDomain;
     private int tenantId = -1;
@@ -41,6 +42,14 @@ public class AuthenticationInfo {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public void setUsername(String username) {

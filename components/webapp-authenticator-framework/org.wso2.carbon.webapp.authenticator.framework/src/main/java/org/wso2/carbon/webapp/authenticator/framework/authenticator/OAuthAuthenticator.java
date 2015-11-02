@@ -117,6 +117,8 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                     if (oAuth2TokenValidationResponseDTO.isValid()) {
                         authenticationInfo.setStatus(Status.CONTINUE);
                     }
+                } else {
+                    authenticationInfo.setMessage(oAuth2TokenValidationResponseDTO.getErrorMsg());
                 }
             }
         } catch (AuthenticationException e) {

@@ -38,7 +38,9 @@ public interface DeviceManagementProviderService extends OperationManager {
 
     List<Device> getAllDevices() throws DeviceManagementException;
 
-    List<DeviceType> getDeviceTypes() throws DeviceManagementException;
+    PaginationResult getAllDevices(String deviceType, int index, int limit) throws DeviceManagementException;
+
+    PaginationResult getAllDevices(int index, int limit) throws DeviceManagementException;
 
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
@@ -143,6 +145,8 @@ public interface DeviceManagementProviderService extends OperationManager {
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+	List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException;
 
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 

@@ -67,7 +67,8 @@ public class APIPublisherUtil {
         api.setEndpointSecured(true);
         api.setStatus(APIStatus.PUBLISHED);
         api.setTransports(config.getTransports());
-
+        api.setAsDefaultVersion(true);
+        api.setAsPublishedDefaultVersion(true);
         return api;
     }
 

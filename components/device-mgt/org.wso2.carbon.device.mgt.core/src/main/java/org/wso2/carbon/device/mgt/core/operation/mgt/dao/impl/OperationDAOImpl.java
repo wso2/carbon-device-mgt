@@ -87,7 +87,7 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OPERATION_MAPPING O SET O.STATUS=? " +
+            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING O SET O.STATUS=? " +
                     "WHERE O.ENROLMENT_ID=? and O.OPERATION_ID=?");
             stmt.setString(1, status.toString());
             stmt.setInt(2, enrolmentId);
@@ -203,7 +203,7 @@ public class OperationDAOImpl implements OperationDAO {
             String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE " +
                     " FROM (SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS," +
                     "OPERATION_CODE  FROM DM_OPERATION  WHERE id = ?) o INNER JOIN (SELECT * FROM " +
-                    "DM_ENROLMENT_OPERATION_MAPPING dm where dm.OPERATION_ID = ? AND dm.ENROLMENT_ID = ?) om " +
+                    "DM_ENROLMENT_OP_MAPPING dm where dm.OPERATION_ID = ? AND dm.ENROLMENT_ID = ?) om " +
                     "ON o.ID = om.OPERATION_ID ";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, operationId);
@@ -243,7 +243,7 @@ public class OperationDAOImpl implements OperationDAO {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE " +
                     "FROM DM_OPERATION o " +
-                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING dm " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
@@ -282,8 +282,8 @@ public class OperationDAOImpl implements OperationDAO {
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
-                    "OPERATION_CODE, dm.STATUS  FROM DM_OPERATION o " +
-                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING dm " +
+                    "OPERATION_CODE, om.STATUS  FROM DM_OPERATION o " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
@@ -320,7 +320,7 @@ public class OperationDAOImpl implements OperationDAO {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
                     "OPERATION_CODE  FROM DM_OPERATION o " +
-                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING dm " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID " +
                     "ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
             stmt.setInt(1, enrolmentId);
@@ -361,7 +361,7 @@ public class OperationDAOImpl implements OperationDAO {
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE FROM " +
                     "(SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE " +
                     "FROM DM_OPERATION o WHERE o.TYPE = ?) o " +
-                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OPERATION_MAPPING dm " +
+                    "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC";
 
             stmt = conn.prepareStatement(sql);

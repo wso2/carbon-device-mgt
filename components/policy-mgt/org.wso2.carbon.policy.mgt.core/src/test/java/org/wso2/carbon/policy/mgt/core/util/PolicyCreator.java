@@ -39,6 +39,7 @@ public class PolicyCreator {
         policy.setUsers(users);
         policy.setCompliance("NOTIFY");
         policy.setOwnershipType("COPE");
+        policy.setDescription("This is the first policy.");
 
         return policy;
     }
@@ -87,6 +88,7 @@ public class PolicyCreator {
         policy.setOwnershipType("COPE");
 
         policy.setPolicyCriterias(criteria);
+        policy.setDescription("This is the second policy.");
 
 
         return policy;
@@ -126,7 +128,7 @@ public class PolicyCreator {
         criteria.add(criterion);
 
         policy.setPolicyCriterias(criteria);
-
+        policy.setDescription("This is the third policy.");
 
         return policy;
     }
@@ -174,6 +176,8 @@ public class PolicyCreator {
         criteria.add(criterion);
 
         policy.setPolicyCriterias(criteria);
+
+        policy.setDescription("This is the fourth policy.");
 
 
         return policy;

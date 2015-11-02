@@ -27,9 +27,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfigRepository;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -64,6 +62,8 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
     private static final Log log = LogFactory.getLog(MonitoringManagerImpl.class);
     private static final String OPERATION_MONITOR = "MONITOR";
+	private static final String OPERATION_INFO = "DEVICE_INFO";
+	private static final String OPERATION_APP_LIST = "APPLICATION_LIST";
 
     public MonitoringManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
@@ -320,6 +320,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
             if (!deviceIdsToAddOperation.isEmpty()) {
 //                monitoringDAO.addComplianceDetails(firstTimeDeviceIdsWithPolicyIds);
                 monitoringDAO.addComplianceDetails(firstTimeDevices);
+                monitoringDAO.updateAttempts(new ArrayList<>(deviceIdsToAddOperation.keySet()), false);
             }
 
             if (!deviceIdsWithExistingOperation.isEmpty()) {
@@ -379,9 +380,19 @@ public class MonitoringManagerImpl implements MonitoringManager {
         monitoringOperation.setEnabled(true);
         monitoringOperation.setType(Operation.Type.COMMAND);
         monitoringOperation.setCode(OPERATION_MONITOR);
+	    CommandOperation infoOperation = new CommandOperation();
+	    infoOperation.setEnabled(true);
+	    infoOperation.setType(Operation.Type.COMMAND);
+	    infoOperation.setCode(OPERATION_INFO);
+	    CommandOperation appListOperation = new CommandOperation();
+	    appListOperation.setEnabled(true);
+	    appListOperation.setType(Operation.Type.COMMAND);
+	    appListOperation.setCode(OPERATION_APP_LIST);
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         service.addOperation(monitoringOperation, deviceIdentifiers);
+	    service.addOperation(infoOperation, deviceIdentifiers);
+	    service.addOperation(appListOperation, deviceIdentifiers);
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {

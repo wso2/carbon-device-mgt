@@ -4,11 +4,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManagerImpl;
 
 /**
  * @scr.component name="org.wso2.carbon.device.mgt.core.scep" immediate="true"
+ * @scr.reference name="app.mgt.service"
+ * interface="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setApplicationManagementProviderService"
+ * unbind="unsetApplicationManagementProviderService"
  */
 public class SCEPManagerServiceComponent {
 
@@ -38,6 +45,16 @@ public class SCEPManagerServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Deactivating SCEP core bundle");
         }
+    }
+
+    protected void unsetApplicationManagementProviderService(ApplicationManagementProviderService
+                                                                     applicationManagementProviderService) {
+        //do nothing
+    }
+
+    protected void setApplicationManagementProviderService(ApplicationManagementProviderService
+                                                                   applicationManagementProviderService) {
+        //do nothing
     }
 
 }

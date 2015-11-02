@@ -114,19 +114,19 @@
     <parameter name="useGeneratedWSDLinJAXWS">${jaxwsparam}</parameter>
 
     <!-- Deployer for the dataservice. -->
-    <!--<deployer extension="dbs" directory="dataservices" class="org.wso2.dataservices.DBDeployer"/>-->
+    <!--<deployer extensions="dbs" directory="dataservices" class="org.wso2.dataservices.DBDeployer"/>-->
 
     <!-- Axis1 deployer for Axis2-->
-    <!--<deployer extension="wsdd" class="org.wso2.carbon.axis1services.Axis1Deployer" directory="axis1services"/>-->
+    <!--<deployer extensions="wsdd" class="org.wso2.carbon.axis1services.Axis1Deployer" directory="axis1services"/>-->
 
     <!-- POJO service deployer for Jar -->
-    <!--<deployer extension="jar" class="org.apache.axis2.deployment.POJODeployer" directory="pojoservices"/>-->
+    <!--<deployer extensions="jar" class="org.apache.axis2.deployment.POJODeployer" directory="pojoservices"/>-->
 
     <!-- POJO service deployer for Class  -->
-    <!--<deployer extension="class" class="org.apache.axis2.deployment.POJODeployer" directory="pojoservices"/>-->
+    <!--<deployer extensions="class" class="org.apache.axis2.deployment.POJODeployer" directory="pojoservices"/>-->
 
     <!-- JAXWS service deployer  -->
-    <!--<deployer extension=".jar" class="org.apache.axis2.jaxws.framework.JAXWSDeployer" directory="servicejars"/>-->
+    <!--<deployer extensions=".jar" class="org.apache.axis2.jaxws.framework.JAXWSDeployer" directory="servicejars"/>-->
     <!-- ================================================= -->
     <!-- Message Receivers -->
     <!-- ================================================= -->

@@ -24,10 +24,14 @@ public interface FeatureManager {
 
     boolean addFeature(Feature feature) throws DeviceManagementException;
 
+    boolean addFeatures(List<Feature> features) throws DeviceManagementException;
+
     Feature getFeature(String name) throws DeviceManagementException;
 
     List<Feature> getFeatures() throws DeviceManagementException;
 
     boolean removeFeature(String name) throws DeviceManagementException;
+
+    boolean addSupportedFeaturesToDB() throws DeviceManagementException;
 
 }

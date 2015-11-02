@@ -23,20 +23,19 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.webapp.authenticator.framework.DataHolder;
-import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationHandler;
-import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * @scr.component name="org.wso2.carbon.webapp.authenticator" immediate="true"
@@ -58,6 +57,12 @@ import java.util.List;
  * cardinality="1..n"
  * bind="setSCEPManagementService"
  * unbind="unsetSCEPManagementService"
+ * @scr.reference name="identity.oauth2.validation.service"
+ * interface="org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setOAuth2ValidationService"
+ * unbind="unsetOAuth2ValidationService"
  */
 public class WebappAuthenticatorFrameworkServiceComponent {
 
@@ -72,14 +77,14 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             WebappAuthenticatorConfig.init();
             WebappAuthenticatorRepository repository = new WebappAuthenticatorRepository();
             for (AuthenticatorConfig config : WebappAuthenticatorConfig.getInstance().getAuthenticators()) {
-                WebappAuthenticator authenticator =
-                        (WebappAuthenticator) Class.forName(config.getClassName()).newInstance();
+                WebappAuthenticator authenticator = (WebappAuthenticator) Class.forName(config.getClassName()).
+                        newInstance();
                 repository.addAuthenticator(authenticator);
             }
-            DataHolder.getInstance().setWebappAuthenticatorRepository(repository);
+            AuthenticatorFrameworkDataHolder.getInstance().setWebappAuthenticatorRepository(repository);
 
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();
-            valves.add(new WebappAuthenticationHandler());
+            valves.add(new WebappAuthenticationValve());
             TomcatValveContainer.addValves(valves);
 
             if (log.isDebugEnabled()) {
@@ -99,18 +104,18 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("RealmService acquired");
         }
-        DataHolder.getInstance().setRealmService(realmService);
+        AuthenticatorFrameworkDataHolder.getInstance().setRealmService(realmService);
     }
 
     protected void unsetRealmService(RealmService realmService) {
-        DataHolder.getInstance().setRealmService(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setRealmService(null);
     }
 
     protected void setCertificateManagementService(CertificateManagementService certificateManagementService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting certificate management service");
         }
-        DataHolder.getInstance().setCertificateManagementService(certificateManagementService);
+        AuthenticatorFrameworkDataHolder.getInstance().setCertificateManagementService(certificateManagementService);
     }
 
     protected void unsetCertificateManagementService(CertificateManagementService certificateManagementService) {
@@ -118,14 +123,14 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             log.debug("Removing certificate management service");
         }
 
-        DataHolder.getInstance().setCertificateManagementService(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setCertificateManagementService(null);
     }
 
     protected void setSCEPManagementService(SCEPManager scepManager) {
         if (log.isDebugEnabled()) {
             log.debug("Setting SCEP management service");
         }
-        DataHolder.getInstance().setScepManager(scepManager);
+        AuthenticatorFrameworkDataHolder.getInstance().setScepManager(scepManager);
     }
 
     protected void unsetSCEPManagementService(SCEPManager scepManager) {
@@ -133,6 +138,30 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             log.debug("Removing SCEP management service");
         }
 
-        DataHolder.getInstance().setScepManager(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setScepManager(null);
+    }
+
+    /**
+     * Sets OAuth2TokenValidation Service.
+     *
+     * @param tokenValidationService An instance of OAuth2TokenValidationService
+     */
+    protected void setOAuth2ValidationService(OAuth2TokenValidationService tokenValidationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting OAuth2TokenValidationService Service");
+        }
+        AuthenticatorFrameworkDataHolder.getInstance().setoAuth2TokenValidationService(tokenValidationService);
+    }
+
+    /**
+     * Unsets OAuth2TokenValidation Service.
+     *
+     * @param tokenValidationService An instance of OAuth2TokenValidationService
+     */
+    protected void unsetOAuth2ValidationService(OAuth2TokenValidationService tokenValidationService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting OAuth2TokenValidationService Service");
+        }
+        AuthenticatorFrameworkDataHolder.getInstance().setoAuth2TokenValidationService(null);
     }
 }

@@ -167,7 +167,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "Select po.OPERATION_ID, ENABLED, OPERATION_DETAILS from DM_PROFILE_OPERATION po " +
                     "INNER JOIN  " +
-                    "(Select * From DM_ENROLMENT_OPERATION_MAPPING WHERE ENROLMENT_ID=? " +
+                    "(Select * From DM_ENROLMENT_OP_MAPPING WHERE ENROLMENT_ID=? " +
                     "AND STATUS=?) dm ON dm.OPERATION_ID = po.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);

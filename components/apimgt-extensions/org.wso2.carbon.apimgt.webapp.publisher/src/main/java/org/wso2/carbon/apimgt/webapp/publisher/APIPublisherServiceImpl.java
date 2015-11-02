@@ -49,10 +49,15 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                 log.info("Successfully published API '" + api.getId().getApiName() + "' with context '" +
                         api.getContext() + "' and version '" + api.getId().getVersion() + "'");
             } else {
-                provider.updateAPI(api);
-                log.info("An API already exists with the name '" + api.getId().getApiName() + "', context '" +
-                        api.getContext() + "' and version '" + api.getId().getVersion() +
-                        "'. Thus, the API config is updated");
+                try {
+                    provider.updateAPI(api);
+                    log.info("An API already exists with the name '" + api.getId().getApiName() + "', context '" +
+                            api.getContext() + "' and version '" + api.getId().getVersion() +
+                            "'. Thus, the API config is updated");
+                } catch (FaultGatewaysException e) {
+                    throw new APIManagementException("Error occurred while updating API " + api.getId().getApiName() +
+                            "' with context '" + api.getContext() + "' and version '" + api.getId().getVersion() + "'");
+                }
             }
         } else {
             throw new APIManagementException("API provider configured for the given API configuration is null. " +

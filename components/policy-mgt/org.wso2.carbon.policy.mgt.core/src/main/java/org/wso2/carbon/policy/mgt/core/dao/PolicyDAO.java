@@ -19,11 +19,9 @@
 package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Criterion;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,9 +32,27 @@ public interface PolicyDAO {
 
     Policy addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException;
 
+    /**
+     * This method is used to add/update the roles associated with the policy.
+     * @param roleNames - List of the roles that needs to be applied
+     * @param policy - policy object with the current role list
+     * @return
+     * @throws PolicyManagerDAOException
+     */
     Policy addPolicyToRole(List<String> roleNames, Policy policy) throws PolicyManagerDAOException;
 
+     Policy updateRolesOfPolicy(List<String> rolesToAdd, Policy policy) throws PolicyManagerDAOException;
+
+    /**
+     * This method is used to add/update the users associated with the policy.
+     * @param usernameList - List of the users that needs to be applied
+     * @param policy - policy object with the current role list
+     * @return
+     * @throws PolicyManagerDAOException
+     */
     Policy addPolicyToUser(List<String> usernameList, Policy policy) throws PolicyManagerDAOException;
+
+    Policy updateUserOfPolicy(List<String> usersToAdd, Policy policy) throws PolicyManagerDAOException;
 
     Policy addPolicyToDevice(List<Device> devices, Policy policy) throws PolicyManagerDAOException;
 
@@ -101,6 +117,8 @@ public interface PolicyDAO {
     boolean deletePolicy(int policyId) throws PolicyManagerDAOException;
 
     boolean deleteAllPolicyRelatedConfigs(int policyId) throws PolicyManagerDAOException;
+
+    boolean deleteCriteriaAndDeviceRelatedConfigs(int policyId) throws PolicyManagerDAOException;
 
     List<String> getPolicyAppliedRoles(int policyId) throws PolicyManagerDAOException;
 

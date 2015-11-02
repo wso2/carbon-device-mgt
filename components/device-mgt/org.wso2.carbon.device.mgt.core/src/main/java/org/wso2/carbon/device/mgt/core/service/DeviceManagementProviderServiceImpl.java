@@ -363,6 +363,84 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public PaginationResult getAllDevices(String deviceType, int index, int limit) throws DeviceManagementException {
+        PaginationResult paginationResult;
+        List<Device> devices = new ArrayList<>();
+        List<Device> allDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            paginationResult = deviceDAO.getDevices(deviceType, index, limit, this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                                                "the current tenant", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        allDevices = (List<Device>) paginationResult.getData();
+        for (Device device : allDevices) {
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                              "Therefore, not attempting method 'isEnrolled'");
+                }
+                devices.add(device);
+                continue;
+            }
+            Device dmsDevice =
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        paginationResult.setData(devices);
+        return paginationResult;
+    }
+
+    @Override
+    public PaginationResult getAllDevices(int index, int limit) throws DeviceManagementException {
+        PaginationResult paginationResult;
+        List<Device> devices = new ArrayList<>();
+        List<Device> allDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            paginationResult = deviceDAO.getDevices(index, limit, this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                                                "the current tenant", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        allDevices = (List<Device>) paginationResult.getData();
+        for (Device device : allDevices) {
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                              "Therefore, not attempting method 'isEnrolled'");
+                }
+                devices.add(device);
+                continue;
+            }
+            Device dmsDevice =
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        paginationResult.setData(devices);
+        return paginationResult;
+    }
+
+    @Override
     public List<Device> getAllDevices(String deviceType) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
@@ -553,7 +631,23 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return device;
     }
 
-    @Override
+	@Override
+	public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
+		List<DeviceType> deviceTypes;
+		try {
+			DeviceManagementDAOFactory.openConnection();
+			deviceTypes = deviceDAO.getDeviceTypes();
+		} catch (DeviceManagementDAOException e) {
+			throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
+		} catch (SQLException e) {
+			throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+		} finally {
+			DeviceManagementDAOFactory.closeConnection();
+		}
+		return deviceTypes;
+	}
+
+	@Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {

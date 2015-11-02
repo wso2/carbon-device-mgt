@@ -25,6 +25,7 @@ import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.CharChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.webapp.authenticator.framework.Constants;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 
 public class BasicAuthAuthenticator implements WebappAuthenticator {
 
@@ -45,8 +46,8 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
     }
 
     @Override
-    public Status authenticate(Request request, Response response) {
-        return Status.CONTINUE;
+    public AuthenticationInfo authenticate(Request request, Response response) {
+        return new AuthenticationInfo();
     }
 
     @Override

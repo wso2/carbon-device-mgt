@@ -348,20 +348,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return devices;
     }
 
-    @Override public List<DeviceType> getDeviceTypes() throws DeviceManagementException {
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            return deviceTypeDAO.getDeviceTypes();
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving all device types'" +
-                    "' that are being managed within the scope of current tenant", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-    }
-
     @Override
     public PaginationResult getAllDevices(String deviceType, int index, int limit) throws DeviceManagementException {
         PaginationResult paginationResult;

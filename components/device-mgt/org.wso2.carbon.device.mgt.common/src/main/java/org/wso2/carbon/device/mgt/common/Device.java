@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 

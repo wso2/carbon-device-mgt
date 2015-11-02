@@ -97,10 +97,6 @@ public abstract class BaseGroupManagementTest {
                 System.setProperty("carbon.home", file.getAbsolutePath());
             }
         }
-
-        PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                .setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
     private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {

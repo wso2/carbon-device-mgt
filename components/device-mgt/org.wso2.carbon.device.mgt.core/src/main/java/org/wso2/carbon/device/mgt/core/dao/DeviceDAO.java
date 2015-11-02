@@ -146,6 +146,26 @@ public interface DeviceDAO {
     List<Device> getDevices(String type, int tenantId) throws DeviceManagementDAOException;
 
     /**
+     * This method is used to retrieve all un grouped devices of a given tenant and user.
+     *
+     * @param username user name of the user
+     * @param tenantId tenant id of user tenant
+     * @return list of un grouped devices
+     * @throws DeviceManagementDAOException
+     */
+    List<Device> getUnGroupedDevices(String username, int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve all the devices of a given tenant and device group.
+     *
+     * @param groupId group id of the group
+     * @param tenantId tenant id of user tenant
+     * @return list of device in group
+     * @throws DeviceManagementDAOException
+     */
+    List<Device> getDevices(int groupId, int tenantId) throws DeviceManagementDAOException;
+
+    /**
      * This method is used to retrieve devices of a given user.
      *
      * @param username user name.

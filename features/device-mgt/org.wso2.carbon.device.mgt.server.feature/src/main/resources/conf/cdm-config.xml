@@ -29,6 +29,8 @@
             <maximumThread>100</maximumThread>
             <keepAliveTime>20</keepAliveTime>
             <ThreadQueueCapacity>1000</ThreadQueueCapacity>
+            <LBHostPortPrefix>https://localhost:9443</LBHostPortPrefix>
+            <enrollmentContextPath>/mdm/enrollment</enrollmentContextPath>
         </EmailClientConfiguration>
         <IdentityConfiguration>
             <ServerUrl>https://localhost:9443</ServerUrl>

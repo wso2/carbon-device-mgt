@@ -36,7 +36,6 @@ import java.util.StringTokenizer;
 public class WebappAuthenticationValve extends CarbonTomcatValve {
 
     private static final Log log = LogFactory.getLog(WebappAuthenticationValve.class);
-    private static final String BYPASS_URIS = "bypass-uris";
     private static HashMap<String, String> nonSecuredEndpoints = new HashMap<>();
 
     @Override
@@ -45,21 +44,6 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
         if (this.isContextSkipped(request) || (!this.isAdminService(request) && this.skipAuthentication(request))) {
             this.getNext().invoke(request, response, compositeValve);
             return;
-        }
-
-        String byPassURIs = request.getContext().findParameter(WebappAuthenticationValve.BYPASS_URIS);
-
-        if (byPassURIs != null && !byPassURIs.isEmpty()) {
-            List<String> requestURI = Arrays.asList(byPassURIs.split(","));
-            if (requestURI != null && requestURI.size() > 0) {
-                for (String pathURI : requestURI) {
-                    pathURI = pathURI.replace("\n", "").replace("\r", "").trim();
-                    if (request.getRequestURI().equals(pathURI)) {
-                        this.getNext().invoke(request, response, compositeValve);
-                        return;
-                    }
-                }
-            }
         }
 
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(request);
@@ -131,6 +115,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
             StringTokenizer tokenizer = new StringTokenizer(param, ",");
             while (tokenizer.hasMoreTokens()) {
                 skippedEndPoint = ctx + tokenizer.nextToken();
+                skippedEndPoint = skippedEndPoint.replace("\n", "").replace("\r", "").trim();
                 if(!skippedEndPoint.endsWith("/")) {
                     skippedEndPoint = skippedEndPoint + "/";
                 }

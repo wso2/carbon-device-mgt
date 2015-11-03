@@ -29,13 +29,14 @@ import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthen
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class WebappAuthenticationValve extends CarbonTomcatValve {
 
     private static final Log log = LogFactory.getLog(WebappAuthenticationValve.class);
-    private static final String BYPASS_URIS = "bypass-uris";
+    private static HashMap<String, String> nonSecuredEndpoints = new HashMap<>();
 
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
@@ -43,21 +44,6 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
         if (this.isContextSkipped(request) || (!this.isAdminService(request) && this.skipAuthentication(request))) {
             this.getNext().invoke(request, response, compositeValve);
             return;
-        }
-
-        String byPassURIs = request.getContext().findParameter(WebappAuthenticationValve.BYPASS_URIS);
-
-        if (byPassURIs != null && !byPassURIs.isEmpty()) {
-            List<String> requestURI = Arrays.asList(byPassURIs.split(","));
-            if (requestURI != null && requestURI.size() > 0) {
-                for (String pathURI : requestURI) {
-                    pathURI = pathURI.replace("\n", "").replace("\r", "").trim();
-                    if (request.getRequestURI().equals(pathURI)) {
-                        this.getNext().invoke(request, response, compositeValve);
-                        return;
-                    }
-                }
-            }
         }
 
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(request);
@@ -90,7 +76,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
 
     private boolean skipAuthentication(Request request) {
         String param = request.getContext().findParameter("doAuthentication");
-        return (param == null || !Boolean.parseBoolean(param));
+        return (param == null || !Boolean.parseBoolean(param) || isNonSecuredEndPoint(request));
     }
 
     private boolean isContextSkipped(Request request) {
@@ -112,6 +98,36 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
         return (ctx.equalsIgnoreCase("carbon") || ctx.equalsIgnoreCase("services"));
     }
 
+    private boolean isNonSecuredEndPoint(Request request) {
+        String uri = request.getRequestURI();
+        if(!uri.endsWith("/")) {
+            uri = uri + "/";
+        }
+        String ctx = request.getContextPath();
+        //Check the context in nonSecuredEndpoints. If so it means current context is a skippedContext.
+        if (nonSecuredEndpoints.containsKey(uri)) {
+            return true;
+        }
+        String param = request.getContext().findParameter("nonSecuredEndPoints");
+        String skippedEndPoint;
+        if (param != null && !param.isEmpty()) {
+            //Add the nonSecured end-points to cache
+            StringTokenizer tokenizer = new StringTokenizer(param, ",");
+            while (tokenizer.hasMoreTokens()) {
+                skippedEndPoint = ctx + tokenizer.nextToken();
+                skippedEndPoint = skippedEndPoint.replace("\n", "").replace("\r", "").trim();
+                if(!skippedEndPoint.endsWith("/")) {
+                    skippedEndPoint = skippedEndPoint + "/";
+                }
+                nonSecuredEndpoints.put(skippedEndPoint, "true");
+            }
+            if (nonSecuredEndpoints.containsKey(uri)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void processRequest(Request request, Response response, CompositeValve compositeValve,
                                 AuthenticationInfo authenticationInfo) {
         switch (authenticationInfo.getStatus()) {
@@ -121,7 +137,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 break;
             case FAILURE:
                 String msg = "Failed to authorize incoming request";
-                if(authenticationInfo.getMessage() != null && !authenticationInfo.getMessage().isEmpty()) {
+                if (authenticationInfo.getMessage() != null && !authenticationInfo.getMessage().isEmpty()) {
                     msg = authenticationInfo.getMessage();
                     response.setHeader("WWW-Authenticate", msg);
                 }
@@ -132,5 +148,4 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 break;
         }
     }
-
 }

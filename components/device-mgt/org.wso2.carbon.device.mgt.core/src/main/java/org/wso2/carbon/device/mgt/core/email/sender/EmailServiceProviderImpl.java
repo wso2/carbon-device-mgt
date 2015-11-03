@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.service.EmailService;
@@ -91,8 +90,8 @@ public class EmailServiceProviderImpl implements EmailService {
             payload.setText(body);
             try {
                 ServiceClient serviceClient;
-                ConfigurationContext configContext = EmailServiceDataHolder.getInstance()
-                        .getConfigurationContextService().getClientConfigContext();
+                ConfigurationContext configContext = EmailServiceDataHolder.getInstance().
+                        getConfigurationContextService().getServerConfigContext();
                 //Set configuration service client if available, else create new service client
                 if (configContext != null) {
                     serviceClient = new ServiceClient(configContext, null);

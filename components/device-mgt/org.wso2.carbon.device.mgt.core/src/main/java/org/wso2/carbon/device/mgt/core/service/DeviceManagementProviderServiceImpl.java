@@ -145,7 +145,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     this.modifyEnrollment(device);
                     status = true;
                 } else {
-                    this.setStatus(deviceIdentifier, existingEnrolmentInfo.getOwner(), EnrolmentInfo.Status.INACTIVE);
+                    if (!EnrolmentInfo.Status.REMOVED.equals(existingEnrolmentInfo.getStatus())) {
+                        this.setStatus(deviceIdentifier, existingEnrolmentInfo.getOwner(), EnrolmentInfo.Status.INACTIVE);
+                    }
                     int enrolmentId;
                     try {
                         DeviceManagementDAOFactory.beginTransaction();

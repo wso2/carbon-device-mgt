@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -144,7 +145,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     this.modifyEnrollment(device);
                     status = true;
                 } else {
-                    this.setStatus(deviceIdentifier, existingEnrolmentInfo.getOwner(), EnrolmentInfo.Status.INACTIVE);
+                    if (!EnrolmentInfo.Status.REMOVED.equals(existingEnrolmentInfo.getStatus())) {
+                        this.setStatus(deviceIdentifier, existingEnrolmentInfo.getOwner(), EnrolmentInfo.Status.INACTIVE);
+                    }
                     int enrolmentId;
                     try {
                         DeviceManagementDAOFactory.beginTransaction();
@@ -494,6 +497,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
+
+            // Reading the download url from the cdm-config.xml file
+            EmailConfigurations emailConfig =
+                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                            getDeviceManagementConfigRepository().getEmailConfigurations();
+            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix()+ emailConfig.getEnrollmentContextPath());
+
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                     URLEncoder.encode(emailMessageProperties.getFirstName(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
@@ -549,6 +559,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
+
+            // Reading the download url from the cdm-config.xml file
+            EmailConfigurations emailConfig =
+                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                            getDeviceManagementConfigRepository().getEmailConfigurations();
+            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix()+ emailConfig.getEnrollmentContextPath());
+
+
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                     URLEncoder.encode(emailMessageProperties.getFirstName(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));

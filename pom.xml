@@ -43,6 +43,7 @@
         <module>components/certificate-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/identity-extensions</module>
+        <module>components/base-ui</module>
         <module>features/device-mgt</module>
         <module>features/base-ui-feature</module>
         <module>features/group-mgt</module>
@@ -164,6 +165,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.baseui.api</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.extensions</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
@@ -185,6 +191,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.policy.mgt.common</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.policy.mgt.api</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
@@ -697,6 +708,12 @@
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.email.verification</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.user.mgt</artifactId>
                 <version>${carbon.commons.version}</version>
             </dependency>
 
@@ -1248,6 +1265,17 @@
                 <artifactId>gson</artifactId>
                 <version>${google.gson.version}</version>
             </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-httpclient.wso2</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>${orbit.version.commons-httpclient}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1464,6 +1492,7 @@
         <automation.utils.version>4.4.1</automation.utils.version>
         <testng.version>6.8.5</testng.version>
         <test.automation.emm.ui.version>1.1.0</test.automation.emm.ui.version>
+        <junit.version>4.8.2</junit.version>
 
         <!--Eclipse OSGi-->
         <eclipse.equinox.common.version>3.6.100.v20120522-1841</eclipse.equinox.common.version>
@@ -1532,6 +1561,7 @@
         <google.gson.version>2.3.1</google.gson.version>
         <jsr311.version>1.1.1</jsr311.version>
         <commons.logging.version>1.2</commons.logging.version>
+        <orbit.version.commons-httpclient>3.1.0.wso2v2</orbit.version.commons-httpclient>
     </properties>
 
 </project>

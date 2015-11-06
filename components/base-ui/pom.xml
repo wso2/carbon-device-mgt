@@ -17,8 +17,7 @@
 ~ under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -28,14 +27,34 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>base-ui-feature</artifactId>
+    <groupId>org.wso2.carbon.devicemgt</groupId>
+    <artifactId>base-ui</artifactId>
     <version>0.9.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Device Management Base UI Feature Aggregator</name>
+    <name>WSO2 Carbon - Base UI Application Management Admin Services Aggregator</name>
     <url>http://wso2.org</url>
 
     <modules>
-        <module>org.wso2.carbon.devicemgt.ui.feature</module>
+        <module>org.wso2.carbon.device.mgt.baseui.api</module>
     </modules>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-scr-plugin</artifactId>
+                    <version>1.7.2</version>
+                    <executions>
+                        <execution>
+                            <id>generate-scr-scrdescriptor</id>
+                            <goals>
+                                <goal>scr</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

@@ -28,6 +28,8 @@ public class EmailConfigurations {
     private int maxNumOfThread;
     private int keepAliveTime;
     private int threadQueueCapacity;
+    private String lBHostPortPrefix;
+    private String enrollmentContextPath;
 
     @XmlElement(name = "minimumThread", required = true)
     public int getMinNumOfThread() {
@@ -61,5 +63,23 @@ public class EmailConfigurations {
 
     public void setThreadQueueCapacity(int threadQueueCapacity) {
         this.threadQueueCapacity = threadQueueCapacity;
+    }
+
+    @XmlElement(name = "LBHostPortPrefix", required = true)
+    public String getlBHostPortPrefix() {
+        return lBHostPortPrefix;
+    }
+
+    public void setlBHostPortPrefix(String lBHostPortPrefix) {
+        this.lBHostPortPrefix = lBHostPortPrefix;
+    }
+
+    @XmlElement(name = "enrollmentContextPath", required = true)
+    public String getEnrollmentContextPath() {
+        return enrollmentContextPath;
+    }
+
+    public void setEnrollmentContextPath(String enrollmentContextPath) {
+        this.enrollmentContextPath = enrollmentContextPath;
     }
 }

@@ -280,15 +280,14 @@ public class PolicyDAOImpl implements PolicyDAO {
 
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_POLICY SET  PRIORITY = ?, UPDATED = ?, OWNERSHIP_TYPE = ? WHERE ID = ? AND TENANT_ID = ?";
+            String query = "UPDATE DM_POLICY SET  PRIORITY = ?, UPDATED = ? WHERE ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
 
             for (Policy policy : policies) {
                 stmt.setInt(1, policy.getPriorityId());
                 stmt.setInt(2, 1);
-                stmt.setString(3, policy.getOwnershipType());
-                stmt.setInt(4, policy.getId());
-                stmt.setInt(5, tenantId);
+                stmt.setInt(3, policy.getId());
+                stmt.setInt(4, tenantId);
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -743,7 +742,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "UPDATE DM_POLICY SET NAME = ?,  PROFILE_ID = ?, PRIORITY = ?, COMPLIANCE = ?," +
-                    " UPDATED = ?, DESCRIPTION = ? WHERE ID = ? AND TENANT_ID = ?";
+                    " UPDATED = ?, DESCRIPTION = ?, OWNERSHIP_TYPE = ? WHERE ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, policy.getPolicyName());
             stmt.setInt(2, policy.getProfile().getProfileId());
@@ -751,8 +750,9 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setString(4, policy.getCompliance());
             stmt.setInt(5, 1);
             stmt.setString(6, policy.getDescription());
-            stmt.setInt(7, policy.getId());
-            stmt.setInt(8, tenantId);
+            stmt.setString(7, policy.getOwnershipType());
+            stmt.setInt(8, policy.getId());
+            stmt.setInt(9, tenantId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {

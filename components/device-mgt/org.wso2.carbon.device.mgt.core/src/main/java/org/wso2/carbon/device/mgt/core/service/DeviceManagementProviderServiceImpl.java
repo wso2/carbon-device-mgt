@@ -47,6 +47,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
@@ -667,54 +668,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException {
-        Device device;
+    public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
+        List<DeviceType> deviceTypesInDatabase;
+        List<DeviceType> deviceTypesResponse = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.openConnection();
-            device = deviceDAO.getDevice(deviceId, status, this.getTenantId());
+            deviceTypesInDatabase = deviceDAO.getDeviceTypes();
+            Map<String, DeviceManagementService> registeredTypes = pluginRepository.getAllDeviceManagementServices();
+            DeviceType deviceType;
+
+            if (registeredTypes != null && deviceTypesInDatabase != null) {
+                for (int x = 0; x < deviceTypesInDatabase.size(); x++) {
+                    if (registeredTypes.get(deviceTypesInDatabase.get(x).getName()) != null) {
+                        deviceType = new DeviceType();
+                        deviceType.setId(deviceTypesInDatabase.get(x).getId());
+                        deviceType.setName(deviceTypesInDatabase.get(x).getName());
+                        deviceTypesResponse.add(deviceType);
+                    }
+                }
+            }
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                                                "'" + deviceId.getId() + "'", e);
+            throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        if (device != null) {
-            // The changes made here to prevent unit tests getting failed. They failed because when running the unit
-            // tests there is no osgi services. So getDeviceManager() returns a null.
-            DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                              "Therefore, not attempting method 'getDevice'");
-                }
-                return device;
-            }
-            Device pluginSpecificInfo = deviceManager.getDevice(deviceId);
-            if (pluginSpecificInfo != null) {
-                device.setFeatures(pluginSpecificInfo.getFeatures());
-                device.setProperties(pluginSpecificInfo.getProperties());
-            }
-        }
-        return device;
+        return deviceTypesResponse;
     }
-
-    @Override
-	public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
-		List<DeviceType> deviceTypes;
-		try {
-			DeviceManagementDAOFactory.openConnection();
-			deviceTypes = deviceDAO.getDeviceTypes();
-		} catch (DeviceManagementDAOException e) {
-			throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
-		} catch (SQLException e) {
-			throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-		} finally {
-			DeviceManagementDAOFactory.closeConnection();
-		}
-		return deviceTypes;
-	}
 
 	@Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {

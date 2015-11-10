@@ -72,8 +72,8 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
         }
 
         Properties properties = new Properties();
-        properties.put(PermissionBasedScopeValidator.URL_PROPERTY, url);
-        properties.put(PermissionBasedScopeValidator.HTTP_METHOD_PROPERTY, method);
+        properties.put(PermissionBasedScopeValidator.URL_PROPERTY, url.toLowerCase());
+        properties.put(PermissionBasedScopeValidator.HTTP_METHOD_PROPERTY, method.toUpperCase());
         PermissionManagerService permissionManagerService = OAuthExtensionsDataHolder.getInstance().
                 getPermissionManagerService();
         try {

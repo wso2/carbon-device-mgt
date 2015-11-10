@@ -110,7 +110,7 @@ public class OperationDAOImpl implements OperationDAO {
         ObjectOutputStream oos = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("INSERT INTO DM_DEVICE_OPERATION_RESPONSE(OPERATION_ID,DEVICE_ID," +
+            stmt = connection.prepareStatement("INSERT INTO DM_DEVICE_OPERATION_RESPONSE(OPERATION_ID,ENROLMENT_ID," +
                     "OPERATION_RESPONSE) VALUES(?, ?, ?)");
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);

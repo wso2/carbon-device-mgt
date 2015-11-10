@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -41,6 +42,7 @@ public class DeviceManagementDataHolder {
     private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
     private ConfigurationContextService configurationContextService;
+    private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -143,4 +145,12 @@ public class DeviceManagementDataHolder {
         this.configurationContextService = configurationContextService;
     }
 
+    public DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
+        return deviceAccessAuthorizationService;
+    }
+
+    public void setDeviceAccessAuthorizationService(
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
+        this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
+    }
 }

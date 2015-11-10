@@ -24,6 +24,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -36,6 +37,7 @@ import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServ
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfigurationManager;
+import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -193,6 +195,12 @@ public class DeviceManagementServiceComponent {
         PermissionManagerService permissionManagerService
                 = PermissionManagerServiceImpl.getInstance();
         bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
+
+        /* Registering DeviceAccessAuthorization Service */
+        DeviceAccessAuthorizationService deviceAccessAuthorizationService = new DeviceAccessAuthorizationServiceImpl();
+        DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
+        bundleContext.registerService(DeviceAccessAuthorizationService.class.getName(),
+                                      deviceAccessAuthorizationService, null);
 
 	     /* Registering App Management service */
         try {

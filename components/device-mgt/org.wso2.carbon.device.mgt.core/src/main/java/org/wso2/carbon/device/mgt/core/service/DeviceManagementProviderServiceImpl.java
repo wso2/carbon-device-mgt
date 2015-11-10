@@ -47,6 +47,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
@@ -635,21 +636,35 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return device;
     }
 
-	@Override
-	public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
-		List<DeviceType> deviceTypes;
-		try {
-			DeviceManagementDAOFactory.openConnection();
-			deviceTypes = deviceDAO.getDeviceTypes();
-		} catch (DeviceManagementDAOException e) {
-			throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
-		} catch (SQLException e) {
-			throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-		} finally {
-			DeviceManagementDAOFactory.closeConnection();
-		}
-		return deviceTypes;
-	}
+    @Override
+    public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
+        List<DeviceType> deviceTypesInDatabase;
+        List<DeviceType> deviceTypesResponse = new ArrayList<>();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceTypesInDatabase = deviceDAO.getDeviceTypes();
+            Map<String, DeviceManagementService> registeredTypes = pluginRepository.getAllDeviceManagementServices();
+            DeviceType deviceType;
+
+            if (registeredTypes != null && deviceTypesInDatabase != null) {
+                for (int x = 0; x < deviceTypesInDatabase.size(); x++) {
+                    if (registeredTypes.get(deviceTypesInDatabase.get(x).getName()) != null) {
+                        deviceType = new DeviceType();
+                        deviceType.setId(deviceTypesInDatabase.get(x).getId());
+                        deviceType.setName(deviceTypesInDatabase.get(x).getName());
+                        deviceTypesResponse.add(deviceType);
+                    }
+                }
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceTypesResponse;
+    }
 
 	@Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {

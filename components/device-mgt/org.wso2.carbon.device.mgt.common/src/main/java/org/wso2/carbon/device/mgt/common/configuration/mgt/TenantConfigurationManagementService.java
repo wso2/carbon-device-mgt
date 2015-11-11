@@ -31,7 +31,8 @@ public interface TenantConfigurationManagementService {
 	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while adding the
 	 * configuration.
 	 */
-	public boolean saveConfiguration(TenantConfiguration tenantConfiguration, String resourcePath) throws ConfigurationManagementException;
+	 boolean saveConfiguration(TenantConfiguration tenantConfiguration, String resourcePath) throws
+	                                                                                         ConfigurationManagementException;
 
 	/**
 	 * Method to retrieve the list of general tenant configurations.
@@ -40,6 +41,6 @@ public interface TenantConfigurationManagementService {
 	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while fetching the
 	 * operation list.
 	 */
-	public TenantConfiguration getConfiguration(String resourcePath) throws ConfigurationManagementException;
+	 TenantConfiguration getConfiguration(String resourcePath) throws ConfigurationManagementException;
 
 }

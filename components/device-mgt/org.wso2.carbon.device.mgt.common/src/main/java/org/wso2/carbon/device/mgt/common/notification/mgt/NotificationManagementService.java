@@ -25,12 +25,50 @@ import java.util.List;
  */
 public interface NotificationManagementService {
 
-	public boolean addNotification(Notification notification) throws NotificationManagementException;
-	public boolean updateNotification(Notification notification) throws NotificationManagementException;
-	public boolean updateNotificationStatus(int notificationId, Notification.Status status) throws
+	/**
+	 * Method to add a notification to the database.
+     *
+	 * @param notification - Notification to be added to database.
+	 * @return boolean status of the operation.
+	 * @throws NotificationManagementException if something goes wrong while adding the Notification.
+	 */
+	boolean addNotification(Notification notification) throws NotificationManagementException;
+
+    /**
+     * Method to update a notification in the database.
+     *
+     * @param notification - Notification to be updated in the database.
+     * @return boolean status of the operation.
+     * @throws NotificationManagementException if something goes wrong while updating the Notification.
+     */
+	boolean updateNotification(Notification notification) throws NotificationManagementException;
+
+    /**
+     * Method to update the notification status of a Notification in the database.
+     *
+     * @param notificationId - Notification id of the notification to be updated.
+     * @param status - New notification status.
+     * @return boolean status of the operation.
+     * @throws NotificationManagementException if something goes wrong while updating the Notification.
+     */
+	boolean updateNotificationStatus(int notificationId, Notification.Status status) throws
 	                                                                 NotificationManagementException;
-	public List<Notification> getAllNotifications() throws NotificationManagementException;
-	public List<Notification> getNotificationsByStatus(Notification.Status status) throws
+
+    /**
+     * Method to fetch all the notifications in the database.
+     *
+     * @return List of all Notifications in the database.
+     * @throws NotificationManagementException
+     */
+	List<Notification> getAllNotifications() throws NotificationManagementException;
+
+    /**
+     *
+     * @param status - Status of the notifications to be fetched from database.
+     * @return A list of notifications matching the given status.
+     * @throws NotificationManagementException if something goes wrong while fetching the Notification.
+     */
+	List<Notification> getNotificationsByStatus(Notification.Status status) throws
 	                                                                NotificationManagementException;
 
 }

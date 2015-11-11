@@ -103,27 +103,27 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
         if(!uri.endsWith("/")) {
             uri = uri + "/";
         }
-        String ctx = request.getContextPath();
-        //Check the context in nonSecuredEndpoints. If so it means current context is a skippedContext.
+        String contextPath = request.getContextPath();
+        //Check the contextPath in nonSecuredEndpoints. If so it means cache is not populated for this web-app.
+        if (!nonSecuredEndpoints.containsKey(contextPath)) {
+            String param = request.getContext().findParameter("nonSecuredEndPoints");
+            String skippedEndPoint;
+            if (param != null && !param.isEmpty()) {
+                //Add the nonSecured end-points to cache
+                StringTokenizer tokenizer = new StringTokenizer(param, ",");
+                nonSecuredEndpoints.put(contextPath, "true");
+                while (tokenizer.hasMoreTokens()) {
+                    skippedEndPoint = contextPath + tokenizer.nextToken();
+                    skippedEndPoint = skippedEndPoint.replace("\n", "").replace("\r", "").trim();
+                    if(!skippedEndPoint.endsWith("/")) {
+                        skippedEndPoint = skippedEndPoint + "/";
+                    }
+                    nonSecuredEndpoints.put(skippedEndPoint, "true");
+                }
+            }
+        }
         if (nonSecuredEndpoints.containsKey(uri)) {
             return true;
-        }
-        String param = request.getContext().findParameter("nonSecuredEndPoints");
-        String skippedEndPoint;
-        if (param != null && !param.isEmpty()) {
-            //Add the nonSecured end-points to cache
-            StringTokenizer tokenizer = new StringTokenizer(param, ",");
-            while (tokenizer.hasMoreTokens()) {
-                skippedEndPoint = ctx + tokenizer.nextToken();
-                skippedEndPoint = skippedEndPoint.replace("\n", "").replace("\r", "").trim();
-                if(!skippedEndPoint.endsWith("/")) {
-                    skippedEndPoint = skippedEndPoint + "/";
-                }
-                nonSecuredEndpoints.put(skippedEndPoint, "true");
-            }
-            if (nonSecuredEndpoints.containsKey(uri)) {
-                return true;
-            }
         }
         return false;
     }

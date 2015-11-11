@@ -35,35 +35,37 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 public final class DeviceManagementDAOUtil {
 
-	private static final Log log = LogFactory.getLog(DeviceManagementDAOUtil.class);
+    private static final Log log = LogFactory.getLog(DeviceManagementDAOUtil.class);
 
-	public static void cleanupResources(Connection conn, PreparedStatement stmt, ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				log.warn("Error occurred while closing result set", e);
-			}
-		}
-		if (stmt != null) {
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				log.warn("Error occurred while closing prepared statement", e);
-			}
-		}
-		if (conn != null) {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				log.warn("Error occurred while closing database connection", e);
-			}
-		}
-	}
+    public static void cleanupResources(Connection conn, PreparedStatement stmt, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing result set", e);
+            }
+        }
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing prepared statement", e);
+            }
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing database connection", e);
+            }
+        }
+    }
 
     public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
         if (rs != null) {
@@ -82,46 +84,46 @@ public final class DeviceManagementDAOUtil {
         }
     }
 
-	/**
-	 * Get id of the current tenant.
-	 *
-	 * @return tenant id
-	 * @throws DeviceManagementDAOException if an error is observed when getting tenant id
-	 */
-	public static int getTenantId() throws DeviceManagementDAOException {
-		CarbonContext context = CarbonContext.getThreadLocalCarbonContext();
-		int tenantId = context.getTenantId();
-		if (tenantId != MultitenantConstants.INVALID_TENANT_ID) {
-			return tenantId;
-		}
-		String tenantDomain = context.getTenantDomain();
-		if (tenantDomain == null) {
-			String msg = "Tenant domain is not properly set and thus, is null";
-			throw new DeviceManagementDAOException(msg);
-		}
-		TenantManager tenantManager = DeviceManagementDataHolder.getInstance().getTenantManager();
-		try {
-			tenantId = tenantManager.getTenantId(tenantDomain);
-		} catch (UserStoreException e) {
-			String msg =
-					"Error occurred while retrieving id from the domain of tenant " + tenantDomain;
-			throw new DeviceManagementDAOException(msg);
-		}
-		return tenantId;
-	}
+    /**
+     * Get id of the current tenant.
+     *
+     * @return tenant id
+     * @throws DeviceManagementDAOException if an error is observed when getting tenant id
+     */
+    public static int getTenantId() throws DeviceManagementDAOException {
+        CarbonContext context = CarbonContext.getThreadLocalCarbonContext();
+        int tenantId = context.getTenantId();
+        if (tenantId != MultitenantConstants.INVALID_TENANT_ID) {
+            return tenantId;
+        }
+        String tenantDomain = context.getTenantDomain();
+        if (tenantDomain == null) {
+            String msg = "Tenant domain is not properly set and thus, is null";
+            throw new DeviceManagementDAOException(msg);
+        }
+        TenantManager tenantManager = DeviceManagementDataHolder.getInstance().getTenantManager();
+        try {
+            tenantId = tenantManager.getTenantId(tenantDomain);
+        } catch (UserStoreException e) {
+            String msg =
+                    "Error occurred while retrieving id from the domain of tenant " + tenantDomain;
+            throw new DeviceManagementDAOException(msg);
+        }
+        return tenantId;
+    }
 
-	public static DataSource lookupDataSource(String dataSourceName,
-	                                          final Hashtable<Object, Object> jndiProperties) {
-		try {
-			if (jndiProperties == null || jndiProperties.isEmpty()) {
-				return (DataSource) InitialContext.doLookup(dataSourceName);
-			}
-			final InitialContext context = new InitialContext(jndiProperties);
-			return (DataSource) context.lookup(dataSourceName);
-		} catch (Exception e) {
-			throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
-		}
-	}
+    public static DataSource lookupDataSource(String dataSourceName,
+                                              final Hashtable<Object, Object> jndiProperties) {
+        try {
+            if (jndiProperties == null || jndiProperties.isEmpty()) {
+                return (DataSource) InitialContext.doLookup(dataSourceName);
+            }
+            final InitialContext context = new InitialContext(jndiProperties);
+            return (DataSource) context.lookup(dataSourceName);
+        } catch (Exception e) {
+            throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
+        }
+    }
 /*
     public static Device loadDevice(ResultSet rs) throws SQLException {
 		Device device = new Device();
@@ -144,21 +146,58 @@ public final class DeviceManagementDAOUtil {
         return enrolmentInfo;
     }
 
-	public static Device loadDevice(ResultSet rs) throws SQLException {
-		Device device = new Device();
-		device.setId(rs.getInt("DEVICE_ID"));
-		device.setName(rs.getString("DEVICE_NAME"));
-		device.setDescription(rs.getString("DESCRIPTION"));
-		device.setType(rs.getString("DEVICE_TYPE"));
-		device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
-		device.setEnrolmentInfo(loadEnrolment(rs));
-		return device;
-	}
+    public static Device loadDevice(ResultSet rs) throws SQLException {
+        Device device = new Device();
+        device.setId(rs.getInt("DEVICE_ID"));
+        device.setName(rs.getString("DEVICE_NAME"));
+        device.setDescription(rs.getString("DESCRIPTION"));
+        device.setType(rs.getString("DEVICE_TYPE"));
+        device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+        device.setEnrolmentInfo(loadEnrolment(rs));
+        return device;
+    }
 
-	public static DeviceType loadDeviceType(ResultSet rs) throws SQLException {
-		DeviceType deviceType = new DeviceType();
-		deviceType.setId(rs.getInt("ID"));
-		deviceType.setName(rs.getString("NAME"));
-		return deviceType;
-	}
+    //This method will retrieve most appropriate device information when there are multiple device enrollments for
+    //a single device. We'll give the highest priority to active devices.
+    public static Device loadMatchingDevice(ResultSet rs) throws SQLException {
+        Map<EnrolmentInfo.Status, Device> deviceMap = new HashMap<>();
+        Device device = loadDevice(rs);
+        if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
+            return device;
+        }
+        while (rs.next()) {
+            device = loadDevice(rs);
+            if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
+                return device;
+            }
+            if (device.getEnrolmentInfo() != null) {
+                deviceMap.put(device.getEnrolmentInfo().getStatus(), device);
+            }
+        }
+        if (deviceMap.containsKey(EnrolmentInfo.Status.INACTIVE)) {
+            return deviceMap.get(EnrolmentInfo.Status.INACTIVE);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.UNREACHABLE)) {
+            return deviceMap.get(EnrolmentInfo.Status.UNREACHABLE);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED)) {
+            return deviceMap.get(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.CREATED)) {
+            return deviceMap.get(EnrolmentInfo.Status.CREATED);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.REMOVED)) {
+            return deviceMap.get(EnrolmentInfo.Status.REMOVED);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.UNCLAIMED)) {
+            return deviceMap.get(EnrolmentInfo.Status.UNCLAIMED);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.SUSPENDED)) {
+            return deviceMap.get(EnrolmentInfo.Status.SUSPENDED);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.BLOCKED)) {
+            return deviceMap.get(EnrolmentInfo.Status.BLOCKED);
+        }
+        return device;
+    }
+
+    public static DeviceType loadDeviceType(ResultSet rs) throws SQLException {
+        DeviceType deviceType = new DeviceType();
+        deviceType.setId(rs.getInt("ID"));
+        deviceType.setName(rs.getString("NAME"));
+        return deviceType;
+    }
 }

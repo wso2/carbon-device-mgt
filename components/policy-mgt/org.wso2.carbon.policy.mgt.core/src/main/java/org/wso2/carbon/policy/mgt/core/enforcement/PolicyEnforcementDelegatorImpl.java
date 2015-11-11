@@ -97,6 +97,7 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
             PolicyDelegationException {
 
         try {
+            //ToDo Need to fix this to fetch OSGi service
             OperationManager operationManager = new OperationManagerImpl();
             operationManager.addOperation(PolicyManagerUtil.transformPolicy(policy), deviceIdentifiers);
         } catch (OperationManagementException e) {

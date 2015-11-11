@@ -26,11 +26,12 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
+import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.ntask.common.TaskException;
-import org.wso2.carbon.ntask.core.service.TaskService;
-import org.wso2.carbon.ntask.core.service.impl.TaskServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
@@ -48,7 +49,6 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
     @BeforeClass
     @Override
     public void init() throws Exception {
-
         PolicyEvaluationPoint evaluationPoint = new SimplePolicyEvaluationTest();
         PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(evaluationPoint);
     }
@@ -126,8 +126,8 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
 
         log.debug("Delegation methods calls started because tasks cannot be started due to osgi constraints.....!");
 
-        DelegationTask delegationTask = new DelegationTask();
-        delegationTask.execute();
+        //DelegationTask delegationTask = new DelegationTask();
+        //delegationTask.execute();
     }
 
     public void sortPolicies(List<Policy> policyList)  {

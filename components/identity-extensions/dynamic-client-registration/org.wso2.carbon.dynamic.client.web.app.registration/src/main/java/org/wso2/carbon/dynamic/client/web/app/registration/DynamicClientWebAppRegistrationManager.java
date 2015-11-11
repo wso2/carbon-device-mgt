@@ -131,7 +131,8 @@ public class DynamicClientWebAppRegistrationManager {
         while (enumeration.hasMoreElements()) {
             oAuthAppDetails = new OAuthAppDetails();
             webAppName = (String) enumeration.nextElement();
-            serviceProviderName = DynamicClientWebAppRegistrationUtil.getUserName() + "_" + webAppName;
+            serviceProviderName = DynamicClientWebAppRegistrationUtil.replaceInvalidChars(DynamicClientWebAppRegistrationUtil.getUserName())
+                                  + "_" + webAppName;
             servletContext = DynamicClientWebAppRegistrationManager.webAppContexts.get(webAppName);
             requiredDynamicClientRegistration = servletContext.getInitParameter(
                     DynamicClientWebAppRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG);

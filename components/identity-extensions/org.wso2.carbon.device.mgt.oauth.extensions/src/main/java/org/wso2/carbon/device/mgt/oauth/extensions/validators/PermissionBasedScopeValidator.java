@@ -81,11 +81,12 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
             User authzUser = accessTokenDO.getAuthzUser();
             if ((permission != null) && (authzUser != null)) {
                 String username = authzUser.getUserName();
+                String userStore = authzUser.getUserStoreDomain();
                 int tenantId = OAuthExtUtils.getTenantId(authzUser.getTenantDomain());
                 UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
                     status = userRealm.getAuthorizationManager()
-                                      .isUserAuthorized(username, permission.getPath(),
+                                      .isUserAuthorized(userStore +"/"+ username, permission.getPath(),
                                                         PermissionMethod.UI_EXECUTE);
                 }
             }

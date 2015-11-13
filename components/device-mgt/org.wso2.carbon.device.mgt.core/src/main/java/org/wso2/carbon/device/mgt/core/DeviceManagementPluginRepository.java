@@ -41,7 +41,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getType();
+            String deviceType = provider.getType();
         synchronized (providers) {
             try {
                 if (isInited) {

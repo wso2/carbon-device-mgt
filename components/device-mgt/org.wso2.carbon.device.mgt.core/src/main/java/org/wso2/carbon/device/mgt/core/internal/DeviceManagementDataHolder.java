@@ -29,6 +29,8 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
+import java.util.HashMap;
+
 public class DeviceManagementDataHolder {
 
     private RealmService realmService;
@@ -41,6 +43,7 @@ public class DeviceManagementDataHolder {
     private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
     private ConfigurationContextService configurationContextService;
+    private HashMap<String,Boolean> isUserLevelAutherizationAllowMap;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -143,4 +146,11 @@ public class DeviceManagementDataHolder {
         this.configurationContextService = configurationContextService;
     }
 
+    public void setIsUserLevelAutherizationAllow(String pluginType, boolean isAllowUserAuthentication) {
+        isUserLevelAutherizationAllowMap.put(pluginType,isAllowUserAuthentication);
+    }
+
+    public boolean getIsUserLevelAutherizationAllow(String pluginType) {
+       return  isUserLevelAutherizationAllowMap.get(pluginType);
+    }
 }

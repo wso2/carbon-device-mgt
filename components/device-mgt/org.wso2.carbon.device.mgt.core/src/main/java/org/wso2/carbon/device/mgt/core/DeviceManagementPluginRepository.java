@@ -49,6 +49,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     /* Initializing Device Management Service Provider */
                     provider.init();
                     DeviceManagerUtil.registerDeviceType(deviceType);
+                    DeviceManagementDataHolder.getInstance().setIsUserLevelAutherizationAllow(provider.getType(),true);
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +

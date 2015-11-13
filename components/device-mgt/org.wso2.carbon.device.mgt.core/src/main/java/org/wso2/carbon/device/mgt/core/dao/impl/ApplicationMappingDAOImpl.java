@@ -49,7 +49,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, " +
                     "TENANT_ID) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, applicationId);
             stmt.setInt(3, tenantId);
@@ -78,7 +78,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, " +
                     "TENANT_ID) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             for (int applicationId : applicationIds) {
                 stmt.setInt(1, deviceId);
@@ -109,7 +109,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             conn = this.getConnection();
             String sql = "DELETE DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             for (Integer appId : appIdList) {
                 stmt.setInt(1, deviceId);

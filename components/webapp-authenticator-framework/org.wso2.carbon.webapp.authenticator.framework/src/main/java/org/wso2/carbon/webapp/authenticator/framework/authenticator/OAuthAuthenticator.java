@@ -43,7 +43,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     private static final String BEARER_TOKEN_TYPE = "bearer";
     private static final String RESOURCE_KEY = "resource";
 
-    private static APITokenAuthenticator authenticator = new APITokenAuthenticator();
+
     private static final Log log = LogFactory.getLog(OAuthAuthenticator.class);
 
     @Override
@@ -111,6 +111,10 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                         AuthenticatorFrameworkDataHolder.getInstance().getoAuth2TokenValidationService().validate(dto);
                 if (oAuth2TokenValidationResponseDTO.isValid()) {
                     String username = oAuth2TokenValidationResponseDTO.getAuthorizedUser();
+                    //Remove the userstore domain from username
+                    if (username.contains("/")) {
+                        username = username.substring(username.indexOf('/') + 1);
+                    }
                     authenticationInfo.setUsername(username);
                     authenticationInfo.setTenantDomain(MultitenantUtils.getTenantDomain(username));
                     authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username));

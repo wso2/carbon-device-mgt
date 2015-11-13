@@ -69,7 +69,8 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
                             // update the permission path to absolute permission path
                             permission.setPath(PermissionUtils.getAbsolutePermissionPath(permission.getPath()));
                             permission.setUrl(PermissionUtils.getAbsoluteContextPathOfAPI(contextPath, apiVersion,
-                                                                                           permission.getUrl()));
+                                                                                           permission.getUrl()).toLowerCase());
+                            permission.setMethod(permission.getMethod().toUpperCase());
                             PermissionManagerServiceImpl.getInstance().addPermission(permission);
                         }
 					}

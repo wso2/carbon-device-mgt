@@ -311,4 +311,8 @@ public class DynamicClientWebAppRegistrationUtil {
             }
         }
     }
+
+    public static String replaceInvalidChars(String username) {
+        return username.replaceAll("@","_AT_");
+    }
 }

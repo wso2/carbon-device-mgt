@@ -110,8 +110,8 @@ public class DeviceManagementDAOFactory {
         return new DeviceTypeDAOImpl();
     }
 
-    public static EnrolmentDAO getEnrollmentDAO() {
-        return new EnrolmentDAOImpl();
+    public static EnrollmentDAO getEnrollmentDAO() {
+        return new EnrollmentDAOImpl();
     }
 
     public static ApplicationDAO getApplicationDAO() {

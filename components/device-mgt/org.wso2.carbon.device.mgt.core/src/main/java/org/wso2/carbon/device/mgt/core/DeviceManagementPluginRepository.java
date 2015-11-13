@@ -65,6 +65,10 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         return providers.get(type);
     }
 
+    public Map<String, DeviceManagementService> getAllDeviceManagementServices() {
+        return providers;
+    }
+
     @Override
     public void notifyObserver() {
         synchronized (providers) {

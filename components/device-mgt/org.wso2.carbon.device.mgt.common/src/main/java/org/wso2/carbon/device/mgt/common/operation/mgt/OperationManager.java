@@ -34,41 +34,42 @@ public interface OperationManager {
      * @param operation Operation to be added
      * @param devices   List of DeviceIdentifiers to execute the operation
      * @throws OperationManagementException If some unusual behaviour is observed while adding the
-     * operation
+     *                                      operation
      */
-    public int addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException;
+    int addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of all operations to a device.
      *
      * @param deviceId DeviceIdentifier of the device
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
-     * operation list.
+     *                                      operation list.
      */
-    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+    List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of available operations to a device.
      *
      * @param deviceId DeviceIdentifier of the device
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
-     * operation list.
+     *                                      operation list.
      */
-    public List<? extends Operation> getPendingOperations(
+    List<? extends Operation> getPendingOperations(
             DeviceIdentifier deviceId) throws OperationManagementException;
 
-    public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
+    Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
-    public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
+    void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
-    public void deleteOperation(int operationId) throws OperationManagementException;
+    void deleteOperation(int operationId) throws OperationManagementException;
 
-    public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
+    Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
 
-    public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
-            Operation.Status status) throws OperationManagementException, DeviceManagementException;
+    List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
+                                                             Operation.Status status)
+            throws OperationManagementException, DeviceManagementException;
 
-    public Operation getOperation(int operationId) throws OperationManagementException;
+    Operation getOperation(int operationId) throws OperationManagementException;
 
 }

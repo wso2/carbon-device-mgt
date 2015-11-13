@@ -24,10 +24,10 @@ import java.util.List;
 
 public interface ApplicationManagementProviderService extends ApplicationManager {
 
-    public void updateApplicationListInstalledInDevice(DeviceIdentifier deviceIdentifier,
+    void updateApplicationListInstalledInDevice(DeviceIdentifier deviceIdentifier,
             List<Application> applications)  throws ApplicationManagementException;
 
-    public List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
+    List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
             throws ApplicationManagementException;
 
 }

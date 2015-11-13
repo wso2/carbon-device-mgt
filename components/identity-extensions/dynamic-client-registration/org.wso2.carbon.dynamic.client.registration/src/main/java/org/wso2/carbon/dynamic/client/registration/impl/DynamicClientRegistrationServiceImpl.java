@@ -142,7 +142,7 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
 
         try {
             // Append the username before Application name to make application name unique across two users.
-            applicationName = userName + "_" + applicationName;
+            applicationName = replaceInvalidChars(userName) + "_" + applicationName;
 
             // Create the Service Provider
             ServiceProvider serviceProvider = new ServiceProvider();
@@ -366,6 +366,10 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
             throw new DynamicClientRegistrationException(
                     "Error occurred while retrieving information of OAuthApp " + applicationName, e);
         }
+    }
+
+    private String replaceInvalidChars(String username) {
+        return username.replaceAll("@","_AT_");
     }
 
 }

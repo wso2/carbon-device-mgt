@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -44,6 +45,7 @@ public class DeviceManagementDataHolder {
     private OperationManager operationManager;
     private ConfigurationContextService configurationContextService;
     private HashMap<String,Boolean> isUserLevelAutherizationAllowMap;
+    private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -151,6 +153,15 @@ public class DeviceManagementDataHolder {
     }
 
     public boolean getIsUserLevelAutherizationAllow(String pluginType) {
-       return  isUserLevelAutherizationAllowMap.get(pluginType);
+        return isUserLevelAutherizationAllowMap.get(pluginType);
+    }
+
+    public DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
+        return deviceAccessAuthorizationService;
+    }
+
+    public void setDeviceAccessAuthorizationService(
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
+        this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
     }
 }

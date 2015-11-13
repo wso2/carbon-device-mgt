@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
@@ -48,6 +49,8 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     /* Initializing Device Management Service Provider */
                     provider.init();
                     DeviceManagerUtil.registerDeviceType(deviceType);
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
+                                                            provider.getDeviceManager().requireDeviceAuthorization());
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +

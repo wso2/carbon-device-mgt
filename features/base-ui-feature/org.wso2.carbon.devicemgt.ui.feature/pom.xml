@@ -49,7 +49,6 @@
                         <include>theme/public/less/custom-variables.less</include>
                         <include>theme/public/less/header-footer.less</include>
                     </includes>
-                    <concatenateTo>concatenated.less</concatenateTo>
                     <force>true</force>
                 </configuration>
                 <executions>
@@ -57,31 +56,6 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon.devicemgt</groupId>
-                                    <artifactId>org.wso2.carbon.device.mgt.baseui.api</artifactId>
-                                    <type>war</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${basedir}/src/main/resources/webapps/</outputDirectory>
-                                    <destFileName>devicemgt_admin.war</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

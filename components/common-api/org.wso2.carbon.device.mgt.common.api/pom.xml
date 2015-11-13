@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<artifactId>common-api</artifactId>
+		<groupId>org.wso2.carbon.devicemgt</groupId>
+		<version>0.9.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.wso2.carbon.device.mgt.common.api</artifactId>
+    <packaging>bundle</packaging>
+	<version>0.9.2-SNAPSHOT</version>
+	<name>WSO2 Carbon - Common Application Admin</name>
+	<url>http://wso2.org</url>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-scr-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+				<version>2.3.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>1.4.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.artifactId}</Bundle-Name>
+						<Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
+						<Bundle-Description>CDMF Common API Impl Bundle</Bundle-Description>
+						<Private-Package>org.wso2.carbon.device.mgt.common.api.internal</Private-Package>
+						<Import-Package>
+							org.jivesoftware.smack.*,
+							javax.xml.namespace;resolution:=optional,
+							javax.xml.validation;resolution:=optional,
+							org.apache.commons.codec.binary,
+							org.apache.commons.collections.map,
+							org.apache.http.*,
+							org.apache.commons.io.*,
+							org.apache.commons.logging.*,
+							org.json;version="${commons-json.version}",
+							org.wso2.carbon.base.*,
+							org.wso2.carbon.databridge.*,
+							org.wso2.carbon.user.api,
+							org.wso2.carbon.user.core.service,
+							org.osgi.framework,
+							org.osgi.service.component,
+							javax.xml.bind.*;resolution:=optional,
+							javax.naming;resolution:=optional,
+							javax.sql;resolution:=optional,
+							javax.xml.bind.annotation.*;resolution:=optional,
+							javax.xml.parsers.*;resolution:=optional,
+							javax.net;resolution:=optional,
+							javax.net.ssl;resolution:=optional,
+							org.w3c.dom;resolution:=optional,
+							org.wso2.carbon.core;version="${carbon.kernel.version.range}",
+							org.wso2.carbon.utils.*;version="${carbon.kernel.version.range}",
+							org.wso2.carbon.device.mgt.group.common.*,
+							org.wso2.carbon.device.mgt.group.core.*,
+							org.wso2.carbon.device.mgt.common.*,
+							org.wso2.carbon.device.mgt.core.*,
+							org.wso2.carbon.context.*;version="${carbon.kernel.version.range}",
+							org.wso2.carbon.ndatasource.core;version="${carbon.kernel.version.range}",
+						</Import-Package>
+						<Export-Package>
+							!org.wso2.carbon.device.mgt.common.api.internal,
+							org.wso2.carbon.device.mgt.common.api.*;version="${pom.version}",
+							org.eclipse.paho.client.mqttv3.*;version="${eclipse.paho.version}"
+						</Export-Package>
+
+					</instructions>
+				</configuration>
+			</plugin>
+			<!--<plugin>-->
+				<!--<groupId>org.apache.maven.plugins</groupId>-->
+				<!--<artifactId>maven-surefire-plugin</artifactId>-->
+				<!--<version>2.18</version>-->
+				<!--<configuration>-->
+					<!--<systemPropertyVariables>-->
+						<!--<log4j.configuration>file:src/test/resources/log4j.properties-->
+						<!--</log4j.configuration>-->
+					<!--</systemPropertyVariables>-->
+					<!--<suiteXmlFiles>-->
+						<!--<suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>-->
+					<!--</suiteXmlFiles>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>org.eclipse.osgi.services</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.device.mgt.group.common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.device.mgt.group.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.ndatasource.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.policy.mgt.common</artifactId>
+			<scope>provided</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.analytics</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>org.json.wso2</groupId>
+			<artifactId>json</artifactId>
+		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>org.testng</groupId>-->
+			<!--<artifactId>testng</artifactId>-->
+		<!--</dependency>-->
+
+		<!--<dependency>-->
+			<!--<groupId>com.h2database.wso2</groupId>-->
+			<!--<artifactId>h2-database-engine</artifactId>-->
+			<!--<scope>test</scope>-->
+		<!--</dependency>-->
+
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.commons</groupId>
+			<artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.commons</groupId>
+			<artifactId>org.wso2.carbon.databridge.commons</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>mqtt-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.utils</artifactId>
+		</dependency>
+
+		<!--Dependencies on XMPP Client Library-->
+		<dependency>
+			<groupId>org.igniterealtime.smack.wso2</groupId>
+			<artifactId>smack</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack.wso2</groupId>
+			<artifactId>smackx</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>Eclipse Paho Repo</id>
+			<url>http://repo.spring.io/plugins-release/</url>
+		</repository>
+	</repositories>
+
+</project>

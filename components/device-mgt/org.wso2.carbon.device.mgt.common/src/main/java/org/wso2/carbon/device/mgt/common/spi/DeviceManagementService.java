@@ -35,6 +35,27 @@ public interface DeviceManagementService extends ApplicationManager {
      */
     String getType();
 
+    /**
+     * This returns the tenant domain of the provider.
+     * @return
+     */
+    String getProviderTenantDomain();
+
+    /**
+     * returns true if the device type is shared between all tenants and false if its not.
+     *
+     * @return
+     */
+    boolean isSharedWithAllTenants();
+
+    /**
+     * If the tenant domain is not shared between all then it can specifically shared between set
+     * tenants.
+     *
+     * @return
+     */
+    String[] getSharedTenantsDomain();
+
     void init() throws DeviceManagementException;
 
     DeviceManager getDeviceManager();

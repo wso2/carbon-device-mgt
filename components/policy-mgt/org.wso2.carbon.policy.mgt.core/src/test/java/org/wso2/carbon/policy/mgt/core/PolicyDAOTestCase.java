@@ -60,7 +60,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         try {
             DeviceManagementDAOFactory.beginTransaction();
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-            deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
+            deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType(), -1234, true);
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementDAOException("Error occurred while adding dummy device type", e);

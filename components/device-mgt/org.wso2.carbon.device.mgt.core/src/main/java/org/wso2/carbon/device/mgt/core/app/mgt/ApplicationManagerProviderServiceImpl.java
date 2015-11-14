@@ -115,10 +115,10 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     @Override
     public void installApplication(Operation operation, List<DeviceIdentifier> deviceIds)
             throws ApplicationManagementException {
-
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         for (DeviceIdentifier deviceId : deviceIds) {
             DeviceManagementService dms =
-                    this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+                    this.getPluginRepository().getDeviceManagementService(deviceId.getType(),tenantId);
             dms.installApplication(operation, deviceIds);
         }
     }

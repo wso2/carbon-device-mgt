@@ -29,6 +29,7 @@ public class TestDataHolder {
     public static DeviceType initialTestDeviceType;
     public static String TEST_DEVICE_TYPE = "Test";
     public static Integer SUPER_TENANT_ID = -1234;
+    public static String SUPER_TENANT_DOMAIN="carbon.super";
     public static String initialDeviceIdentifier = "12345";
 
     public static Device generateDummyDeviceData(String deviceType){

@@ -140,7 +140,7 @@ public interface PolicyDAO {
 
     Policy getAppliedPolicy(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
-    HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException;
+    HashMap<Integer, Integer> getAppliedPolicyIds() throws PolicyManagerDAOException;
 
     HashMap<Integer, Integer> getAppliedPolicyIdsDeviceIds() throws PolicyManagerDAOException;
 }

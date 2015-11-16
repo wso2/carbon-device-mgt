@@ -395,7 +395,7 @@ function registerHelpers(renderingData, lookupTable) {
             }
         };
 
-        var returningHtml = null;
+        var returningHtml = "";
         // Process this unit's template.
         var processingUnitTemplateFilePath = processingUnit.templateFilePath;
         if (processingUnitTemplateFilePath) {
@@ -429,7 +429,7 @@ function registerHelpers(renderingData, lookupTable) {
                 var parentUnitCompiledTemplate = handlebarsEnvironment.compile(parentUnitContent);
                 var parentUnitHtml = parentUnitCompiledTemplate(templateContext,
                                                                 templateOptions).trim();
-                if (!returningHtml && (parentUnitHtml.length > 0)) {
+                if ((returningHtml.length == 0) && (parentUnitHtml.length > 0)) {
                     // Child unit haven't given any "returning" HTML.
                     returningHtml = parentUnitHtml;
                 }

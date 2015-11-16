@@ -29,7 +29,7 @@
         <tr class="bulk-action-row">
             <th colspan="7">
                 <div id = "operation-bar">
-                    {{unit "operation-bar"}}
+                    {{unit "cdmf.unit.operation-bar"}}
                 </div>
                 <div id="operation-guide" class="bs-callout bs-callout-info">
                     <h4>Enabling Device Operations</h4>
@@ -59,6 +59,6 @@
 </div>
 
 {{#zone "bottomJs"}}
-    <script id="device-listing" data-current-user="{{currentUser.username}}" data-image-resource="{{self.publicURL}}/images/" src="{{self.publicURL}}/templates/device-listing.hbs" type="text/x-handlebars-template" ></script>
+    <script id="device-listing" data-current-user="{{currentUser.username}}" data-image-resource="{{@unit.publicUri}}/images/" src="{{@unit.publicUri}}/templates/device-listing.hbs" type="text/x-handlebars-template" ></script>
     {{js "js/device-listing.js"}}
 {{/zone}}

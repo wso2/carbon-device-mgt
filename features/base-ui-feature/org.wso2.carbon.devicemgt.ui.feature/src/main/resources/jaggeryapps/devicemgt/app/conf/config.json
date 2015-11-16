@@ -9,7 +9,7 @@
     "dynamicClientRegistrationEndPoint" : "%https.ip%/dynamic-client-web/register/",
     "adminService":"%https.ip%",
     "idPServer":"%https.ip%",
-    "callBackUrl":"%https.ip%/mdm-admin",
+    "callBackUrl":"%https.ip%/devicemgt_admin",
     "adminUser":"admin",
     "usernameLength":30,
     "device" : {

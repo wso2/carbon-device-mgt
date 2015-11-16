@@ -46,7 +46,7 @@ public interface MonitoringDAO {
 
     void setDeviceAsCompliance(int deviceId, int enrolmentId, int policyId) throws MonitoringDAOException;
 
-    void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
+    void addNonComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
             complianceFeatures)
             throws MonitoringDAOException;
 

@@ -37,22 +37,46 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
     public int addOperation(Operation operation) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
+
         int operationId;
         try {
             operationId = super.addOperation(operation);
             operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
             operation.setId(operationId);
             operation.setEnabled(true);
-            ProfileOperation profileOp = (ProfileOperation) operation;
+            //ProfileOperation profileOp = (ProfileOperation) operation;
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_PROFILE_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
+
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(operation);
+
             stmt.setInt(1, operationId);
-            stmt.setObject(2, profileOp);
+            stmt.setBytes(2, bao.toByteArray());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding profile operation", e);
+        } catch (IOException e) {
+            throw new OperationManagementDAOException("Error occurred while serializing profile operation object", e);
         } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;

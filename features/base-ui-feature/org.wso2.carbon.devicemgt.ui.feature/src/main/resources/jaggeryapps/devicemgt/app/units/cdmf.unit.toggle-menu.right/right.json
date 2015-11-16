@@ -1,0 +1,5 @@
+{
+    "version": "1.0.0",
+    "extends": "uuf.unit.navbar.toggle-menu.right",
+    "disable": true
+}

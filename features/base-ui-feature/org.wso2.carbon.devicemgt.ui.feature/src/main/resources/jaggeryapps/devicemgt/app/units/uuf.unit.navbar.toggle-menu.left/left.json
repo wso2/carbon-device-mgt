@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "index": 110,
+    "index": 9200,
     "extends": "uuf.unit.side-pane",
     "pushedUris": [
         "/",

@@ -116,4 +116,9 @@ public class TestDeviceManager implements DeviceManager {
 
     }
 
+    @Override
+    public boolean requireDeviceAuthorization() {
+        return false;
+    }
+
 }

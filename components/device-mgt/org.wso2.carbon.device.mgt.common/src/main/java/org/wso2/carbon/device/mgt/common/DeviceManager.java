@@ -150,4 +150,11 @@ public interface DeviceManager {
 
     void addLicense(License license) throws LicenseManagementException;
 
+    /**
+     * Method to enable to device-authentication for the device-platform.
+     *
+     * @return Returns boolean status to enable or disable device-authentication.
+     */
+    boolean requireDeviceAuthorization();
+
 }

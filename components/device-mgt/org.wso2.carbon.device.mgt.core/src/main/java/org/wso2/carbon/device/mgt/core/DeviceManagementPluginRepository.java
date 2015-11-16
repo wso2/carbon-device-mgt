@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
@@ -41,13 +42,16 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getType();
+            String deviceType = provider.getType();
         synchronized (providers) {
             try {
                 if (isInited) {
                     /* Initializing Device Management Service Provider */
                     provider.init();
                     DeviceManagerUtil.registerDeviceType(deviceType);
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
+                                                            provider.getDeviceManager().requireDeviceAuthorization());
+
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +
@@ -76,6 +80,13 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 try {
                     provider.init();
                     DeviceManagerUtil.registerDeviceType(provider.getType());
+                    //TODO:
+                    //This is a temporory fix.
+                    //windows and IOS cannot resolve user info by extracting certs
+                    //until fix that, use following variable to enable and disable of checking user authorization.
+
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(provider.getType(),
+                                             provider.getDeviceManager().requireDeviceAuthorization());
                 } catch (Throwable e) {
                     /* Throwable is caught intentionally as failure of one plugin - due to invalid start up parameters,
                         etc - should not block the initialization of other device management providers */

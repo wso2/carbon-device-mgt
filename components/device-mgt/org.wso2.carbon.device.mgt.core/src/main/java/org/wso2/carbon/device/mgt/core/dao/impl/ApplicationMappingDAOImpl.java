@@ -73,7 +73,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<Integer> mappingIds = new ArrayList<>();
+
         try {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, " +

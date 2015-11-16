@@ -249,7 +249,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
             HashMap<Integer, Integer> temp = policyDAO.getAppliedPolicyIds();
             for (Integer id : deviceIDs) {
-                if (temp != null && temp.containsKey(id)) {
+                if (temp != null && !temp.isEmpty() && temp.containsKey(id)) {
                     devicePolicyIdMap.put(id, temp.get(id));
                 }
             }

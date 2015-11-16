@@ -26,46 +26,46 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - OAuth Back End Authenticator </name>
+    <name>WSO2 Carbon - OAuth Back End Authenticator</name>
     <artifactId>org.wso2.carbon.identity.authenticator.backend.oauth</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
-             </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.base</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.core</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.logging</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core.services</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.application.common</artifactId>
-                   </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
@@ -89,14 +89,15 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Identity backend Bundle</Bundle-Description>
-                        <Bundle-Activator>org.wso2.carbon.identity.authenticator.backend.oauth.internal.OauthAuthenticatorServiceComponent</Bundle-Activator>
+                        <Bundle-Activator>
+                            org.wso2.carbon.identity.authenticator.backend.oauth.internal.OauthAuthenticatorServiceComponent
+                        </Bundle-Activator>
                         <Private-Package>
                             org.wso2.org.wso2.carbon.identity.authenticator.backend.oauth.internal
                         </Private-Package>
                         <Export-Package>
                             org.wso2.carbon.identity.authenticator.backend.oauth.*
                         </Export-Package>
-
                     </instructions>
                 </configuration>
             </plugin>

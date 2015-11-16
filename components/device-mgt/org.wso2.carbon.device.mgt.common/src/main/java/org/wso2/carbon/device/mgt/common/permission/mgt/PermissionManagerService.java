@@ -33,7 +33,7 @@ public interface PermissionManagerService {
      * @throws PermissionManagementException If some unusual behaviour is observed while adding the
      * permission.
      */
-    public boolean addPermission(Permission permission) throws PermissionManagementException;
+    boolean addPermission(Permission permission) throws PermissionManagementException;
 
     /**
      *
@@ -42,6 +42,6 @@ public interface PermissionManagerService {
      * @throws PermissionManagementException If some unusual behaviour is observed while fetching the
      * permission.
      */
-    public Permission getPermission(Properties properties) throws PermissionManagementException;
+    Permission getPermission(Properties properties) throws PermissionManagementException;
 
 }

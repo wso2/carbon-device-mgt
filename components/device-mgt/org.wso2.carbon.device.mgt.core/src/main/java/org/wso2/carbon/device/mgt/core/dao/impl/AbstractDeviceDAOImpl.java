@@ -132,11 +132,45 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setInt(4, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadMatchingDevice(rs);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while listing devices for type " +
                     "'" + deviceIdentifier.getType() + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return device;
+    }
+
+    @Override
+    public Device getDevice(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status status, int tenantId) throws
+                                                                                         DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Device device = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
+                         "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
+                         "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID " +
+                         "AND TENANT_ID = ? AND e.STATUS = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceIdentifier.getType());
+            stmt.setString(2, deviceIdentifier.getId());
+            stmt.setInt(3, tenantId);
+            stmt.setInt(4, tenantId);
+            stmt.setString(5, status.toString());
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                device = DeviceManagementDAOUtil.loadDevice(rs);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while listing devices for type " +
+                                                   "'" + deviceIdentifier.getType() + "'", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

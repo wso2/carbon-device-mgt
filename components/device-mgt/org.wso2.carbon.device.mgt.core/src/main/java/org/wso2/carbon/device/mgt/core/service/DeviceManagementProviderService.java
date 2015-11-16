@@ -38,8 +38,27 @@ public interface DeviceManagementProviderService extends OperationManager {
 
     List<Device> getAllDevices() throws DeviceManagementException;
 
+    /**
+     * Method to retrieve all the devices with pagination support.
+     *
+     * @param deviceType     Device platform
+     * @param index          Starting row number
+     * @param limit          No of rows to fetch
+     * @return PaginationResult - Result including the required parameters necessary to do pagination.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * devices.
+     */
     PaginationResult getAllDevices(String deviceType, int index, int limit) throws DeviceManagementException;
 
+    /**
+     * Method to retrieve all the devices with pagination support.
+     *
+     * @param index          Starting row number
+     * @param limit          No of rows to fetch
+     * @return PaginationResult - Result including the required parameters necessary to do pagination.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * devices.
+     */
     PaginationResult getAllDevices(int index, int limit) throws DeviceManagementException;
 
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
@@ -145,6 +164,8 @@ public interface DeviceManagementProviderService extends OperationManager {
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException;
 
 	List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException;
 

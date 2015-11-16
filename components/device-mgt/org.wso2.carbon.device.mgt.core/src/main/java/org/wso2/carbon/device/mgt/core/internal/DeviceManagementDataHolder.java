@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -28,6 +29,8 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.ConfigurationContextService;
+
+import java.util.HashMap;
 
 public class DeviceManagementDataHolder {
 
@@ -41,6 +44,8 @@ public class DeviceManagementDataHolder {
     private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
     private ConfigurationContextService configurationContextService;
+    private HashMap<String,Boolean> requireDeviceAuthorization = new HashMap<>();
+    private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -143,4 +148,20 @@ public class DeviceManagementDataHolder {
         this.configurationContextService = configurationContextService;
     }
 
+    public void setRequireDeviceAuthorization(String pluginType, boolean requireAuthentication) {
+        requireDeviceAuthorization.put(pluginType,requireAuthentication);
+    }
+
+    public boolean requireDeviceAuthorization(String pluginType) {
+        return requireDeviceAuthorization.get(pluginType);
+    }
+
+    public DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
+        return deviceAccessAuthorizationService;
+    }
+
+    public void setDeviceAccessAuthorizationService(
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
+        this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
+    }
 }

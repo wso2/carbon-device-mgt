@@ -1563,7 +1563,7 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException {
+    public HashMap<Integer, Integer> getAppliedPolicyIds() throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -1571,10 +1571,9 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
-            stmt.setString(1, PolicyManagerUtil.makeString(deviceIds));
-            stmt.setInt(2, tenantId);
+            stmt.setInt(1, tenantId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {

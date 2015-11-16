@@ -1,0 +1,9 @@
+{
+    "version": "1.0.0",
+    "index": 110,
+    "extends": "uuf.unit.side-pane",
+    "pushedUris": [
+        "/",
+        "/{+any}"
+    ]
+}

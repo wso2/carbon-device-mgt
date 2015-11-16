@@ -1,0 +1,39 @@
+<div class="col-sm-7 col-md-4 center-block" style="float: none; margin-top: 10%;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{#defineZone "signIn-title" scope="protected"}}Sign In To UUF App{{/defineZone}}
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form id="signInForm" method="POST"
+                  class="{{defineZone "signInForm-class" scope="protected"}}"
+                  action="{{defineZone "signInForm-action" scope="protected"}}">
+                <div class="form-group">
+                    <input type="text" name="username" class="form-control" placeholder="User Name"
+                           required="required" autofocus="autofocus" />
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" class="form-control"
+                           placeholder="Password" required="required" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" name="signInBtn" class="btn btn-primary btn-block"
+                           value="Sign In" />
+                </div>
+                <div class="form-group">
+                    {{#if showRememberMe}}
+                        <label class="pull-left">
+                            <input type="checkbox" name="rememberMe" value="remember"> Remember me
+                        </label>
+                    {{/if}}
+                    {{#if showCreateAccount}}
+                        <a id="createAccount"
+                           href="{{#defineZone "signInCreateAccount-uri" scope="protected"}}#{{/defineZone}}"
+                           class="pull-right create-account">Create an account</a>
+                    {{/if}}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

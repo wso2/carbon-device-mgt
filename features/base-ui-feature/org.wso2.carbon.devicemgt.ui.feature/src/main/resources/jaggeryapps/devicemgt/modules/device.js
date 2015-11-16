@@ -22,7 +22,7 @@ deviceModule = function () {
 
     var utility = require('/modules/utility.js').utility;
     var constants = require('/modules/constants.js');
-    var mdmProps = require('/config/mdm-props.js').config();
+    var mdmProps = require('/app/conf/mdm-props.js').config();
     var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
 
     var ArrayList = Packages.java.util.ArrayList;

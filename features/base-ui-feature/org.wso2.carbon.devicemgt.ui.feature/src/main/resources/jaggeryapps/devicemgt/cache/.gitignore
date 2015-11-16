@@ -1,0 +1,4 @@
+# ignore all files in this directory because this is a runtime cache
+*
+# except this Git ignore file
+!.gitignore

@@ -1,0 +1,16 @@
+{{#zone "navbarHeader"}}
+    <a id="_uuf_navmenu-button" class="navbar-menu-toggle" data-toggle="collapse"
+       data-target="#_uuf_navmenu-items" aria-expanded="false" aria-controls="_uuf_navmenu-items">
+        <span class="icon fw-stack">
+            <i class="fw fw-down fw-stack-1x toggle-icon-up"></i>
+        </span>
+    </a>
+{{/zone}}
+
+{{~#zone "navbarBelow"}}
+    <div id="_uuf_navmenu-items" class="navbar-default collapse navbar-collapse dropdown tiles">
+        <ul class="nav navbar-nav">
+            {{defineZone "navMenuItems"}}
+        </ul>
+    </div>
+{{/zone}}

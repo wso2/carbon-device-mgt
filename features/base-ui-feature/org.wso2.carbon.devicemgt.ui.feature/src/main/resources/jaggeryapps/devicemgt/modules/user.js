@@ -24,7 +24,7 @@ var userModule = function () {
 
     var constants = require("/modules/constants.js");
     var utility = require("/modules/utility.js")["utility"];
-    var mdmProps = require('/config/mdm-props.js').config();
+    var mdmProps = require('/app/conf/mdm-props.js').config();
     var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
 
     /* Initializing user manager */

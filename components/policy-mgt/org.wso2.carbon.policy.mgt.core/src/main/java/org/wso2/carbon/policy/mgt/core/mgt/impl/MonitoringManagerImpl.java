@@ -229,7 +229,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         //int tenantId = PolicyManagerUtil.getTenantId();
         Map<Integer, Device> deviceIds = new HashMap<>();
         List<ComplianceData> complianceDatas = new ArrayList<>();
-        HashMap<Integer, Integer> devicePolicyIdMap = null;
+        HashMap<Integer, Integer> devicePolicyIdMap = new HashMap<>();
 
         try {
             PolicyManagementDAOFactory.openConnection();

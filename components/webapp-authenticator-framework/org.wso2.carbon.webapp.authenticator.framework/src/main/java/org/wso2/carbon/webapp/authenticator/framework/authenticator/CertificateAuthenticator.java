@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.scep.SCEPException;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.device.mgt.core.scep.TenantedDeviceWrapper;
@@ -68,6 +69,14 @@ public class CertificateAuthenticator implements WebappAuthenticator {
                         TenantedDeviceWrapper tenantedDeviceWrapper = scepManager.getValidatedDevice(deviceIdentifier);
                         authenticationInfo.setTenantDomain(tenantedDeviceWrapper.getTenantDomain());
                         authenticationInfo.setTenantId(tenantedDeviceWrapper.getTenantId());
+
+                        if(tenantedDeviceWrapper.getDevice() != null &&
+                                tenantedDeviceWrapper.getDevice().getEnrolmentInfo() != null) {
+
+                            EnrolmentInfo enrolmentInfo = tenantedDeviceWrapper.getDevice().getEnrolmentInfo();
+                            authenticationInfo.setUsername(enrolmentInfo.getOwner());
+                        }
+
                         authenticationInfo.setStatus(Status.CONTINUE);
                     }
                 }

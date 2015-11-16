@@ -75,7 +75,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(configuration.getType()).getDeviceManager();
+                this.getPluginRepository().getDeviceManagementService(configuration.getType(),this.getTenantId()).getDeviceManager();
         return dms.saveConfiguration(configuration);
     }
 
@@ -87,7 +87,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceType).getDeviceManager();
+                this.getPluginRepository().getDeviceManagementService(deviceType,this.getTenantId()).getDeviceManager();
         if (dms == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device type '" + deviceType + "' does not have an associated device management " +
@@ -175,7 +175,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             int enrolmentId = 0;
             try {
                 DeviceManagementDAOFactory.beginTransaction();
-                DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+                DeviceType type = deviceTypeDAO.getDeviceType(device.getType(),tenantId);
                 int deviceId = deviceDAO.addDevice(type.getId(), device, tenantId);
                 enrolmentId = enrolmentDAO.addEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
                 DeviceManagementDAOFactory.commitTransaction();
@@ -217,7 +217,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
 
-            DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+            DeviceType type = deviceTypeDAO.getDeviceType(device.getType(),tenantId);
             deviceDAO.updateDevice(type.getId(), device, tenantId);
             enrolmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
 
@@ -249,13 +249,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
 
             Device device = deviceDAO.getDevice(deviceId, tenantId);
+
             if (device == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device not found for id '" + deviceId.getId() + "'");
                 }
                 throw new DeviceManagementException("Device not found");
             }
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
 
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
@@ -651,7 +652,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 		return deviceTypes;
 	}
 
-	@Override
+    @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
@@ -856,9 +857,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public List<Device> getUnGroupedDevices(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
+        int tenantId;
         try {
             DeviceManagementDAOFactory.openConnection();
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getUnGroupedDevices(username, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
@@ -870,7 +872,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         for (Device device : userDevices) {
             Device dmsDevice =
                     this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
+                            device.getType(), tenantId).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
@@ -888,9 +890,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public List<Device> getDevices(int groupId) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
+        int tenantId;
         try {
             DeviceManagementDAOFactory.openConnection();
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getDevices(groupId, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
@@ -902,7 +905,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         for (Device device : userDevices) {
             Device dmsDevice =
                     this.getPluginRepository().getDeviceManagementService(
-                            device.getType()).getDeviceManager().getDevice(
+                            device.getType(), tenantId).getDeviceManager().getDevice(
                             new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
@@ -980,8 +983,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
         for (Device device : allDevices) {
-            Device dmsDevice = this.getDeviceManager(device.getType()).
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+
+            Device dmsDevice =
+                    this.getPluginRepository().getDeviceManagementService(
+                            device.getType(),this.getTenantId()).getDeviceManager().getDevice(
+                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
@@ -997,7 +1003,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             DeviceManagementDAOFactory.beginTransaction();
 
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType(), this.getTenantId());
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(status);
             deviceDAO.updateDevice(deviceType.getId(), device, this.getTenantId());
@@ -1034,6 +1040,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
     }
 
+
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
@@ -1067,7 +1074,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private DeviceManager getDeviceManager(String deviceType) {
         DeviceManagementService deviceManagementService =
-                this.getPluginRepository().getDeviceManagementService(deviceType);
+                this.getPluginRepository().getDeviceManagementService(deviceType,this.getTenantId());
         if (deviceManagementService == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device type '" + deviceType + "' does not have an associated device management " +

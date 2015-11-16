@@ -20,6 +20,7 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -182,10 +183,10 @@ public class ProfileManagerImpl implements ProfileManager {
     public List<Profile> getAllProfiles() throws ProfileManagementException {
         List<Profile> profileList;
         List<DeviceType> deviceTypes;
-
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             DeviceManagementDAOFactory.openConnection();
-            deviceTypes = deviceTypeDAO.getDeviceTypes();
+            deviceTypes = deviceTypeDAO.getDeviceTypes(tenantId);
         } catch (SQLException e) {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } catch (DeviceManagementDAOException e) {
@@ -195,10 +196,10 @@ public class ProfileManagerImpl implements ProfileManager {
         }
 
         try {
+
             PolicyManagementDAOFactory.openConnection();
             profileList = profileDAO.getAllProfiles();
             List<ProfileFeature> featureList = featureDAO.getAllProfileFeatures();
-
             for (Profile profile : profileList) {
 
                 List<ProfileFeature> list = new ArrayList<ProfileFeature>();
@@ -233,10 +234,10 @@ public class ProfileManagerImpl implements ProfileManager {
         List<Profile> profileList;
         List<ProfileFeature> featureList;
         DeviceType deviceType;
-
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             DeviceManagementDAOFactory.openConnection();
-            deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
+            deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new ProfileManagementException("Error occurred while retrieving device type information", e);
         } catch (SQLException e) {
@@ -247,7 +248,6 @@ public class ProfileManagerImpl implements ProfileManager {
 
         try {
             PolicyManagementDAOFactory.openConnection();
-
             profileList = profileDAO.getProfilesOfDeviceType(deviceType);
             featureList = featureDAO.getAllProfileFeatures();
 

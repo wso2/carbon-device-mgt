@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.analytics.AnalyticsConfigurations;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
@@ -35,6 +36,7 @@ public class DeviceManagementConfigRepository {
 	private EmailConfigurations emailConfigurations;
 	private IdentityConfigurations identityConfigurations;
 	private PolicyConfiguration policyConfiguration;
+	private AnalyticsConfigurations analyticsConfigurations;
 
 	@XmlElement(name = "DataSourceConfiguration", required = true)
 	public DataSourceConfig getDataSourceConfig() {
@@ -70,5 +72,14 @@ public class DeviceManagementConfigRepository {
 
 	public void setPolicyConfiguration(PolicyConfiguration policyConfiguration) {
 		this.policyConfiguration = policyConfiguration;
+	}
+
+	@XmlElement(name = "AnalyticsConfiguration", required = true)
+	public AnalyticsConfigurations getAnalyticsConfigurations() {
+		return analyticsConfigurations;
+	}
+
+	public void setAnalyticsConfigurations(AnalyticsConfigurations analyticsConfigurations) {
+		this.analyticsConfigurations = analyticsConfigurations;
 	}
 }

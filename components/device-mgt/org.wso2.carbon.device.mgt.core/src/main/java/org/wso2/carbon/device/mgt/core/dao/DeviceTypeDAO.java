@@ -27,16 +27,57 @@ import java.util.List;
  */
 public interface DeviceTypeDAO {
 
-	void addDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
+	int addDeviceType(DeviceType deviceType, int deviceTypeProviderTenantId,
+					  boolean sharedWithAllTenants) throws DeviceManagementDAOException;
 
-	void updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException;
+	void updateDeviceType(DeviceType deviceType, int deviceTypeProviderTenantId)
+			throws DeviceManagementDAOException;
 
-	List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
+	List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException;
 
 	DeviceType getDeviceType(int id) throws DeviceManagementDAOException;
 
-	DeviceType getDeviceType(String name) throws DeviceManagementDAOException;
+	DeviceType getDeviceType(String name,int tenantId) throws DeviceManagementDAOException;
 
-	void removeDeviceType(String type) throws DeviceManagementDAOException;
+	void removeDeviceType(String name,int tenantId) throws DeviceManagementDAOException;
+
+	/**
+	 * share a specific device type between set of tenants.
+	 *
+	 * @param id
+	 * @param tenantId
+	 * @throws DeviceManagementDAOException
+	 */
+	void shareDeviceType(int id,int tenantId[]) throws DeviceManagementDAOException;
+
+	/**
+	 * get only the shared device types of the specific tenant.
+	 *
+	 * @param tenantId
+	 * @return
+	 * @throws DeviceManagementDAOException
+	 */
+	List<DeviceType> getSharedDeviceType(int tenantId) throws DeviceManagementDAOException;
+
+	/**
+	 * remove shared tenants for the device id.
+	 *
+	 * @param id
+	 * @param tenantId
+	 * @throws DeviceManagementDAOException
+	 */
+	void removeSharedDeviceType(int id,int tenantId[]) throws DeviceManagementDAOException;
+
+	/**
+	 * This method only returns the tenantIds that are shared specifically
+	 * not supported for shared between all scenario.
+	 *
+	 * @param name
+	 * @param providerTenantId
+	 * @return
+	 * @throws DeviceManagementDAOException
+	 */
+	List<Integer> getSharedTenantId(String name,int providerTenantId) throws DeviceManagementDAOException;
+
 
 }

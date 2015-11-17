@@ -1,10 +1,13 @@
 {{#zone "navbarHeader"}}
-    <ol id="_uuf_breadcrumbs" class="breadcrumb navbar-brand">
-        <li>
-            <a href="{{#defineZone "breadcrumbHomeUri"}}{{@app.uri}}{{/defineZone}}">
-                <i class="icon fw fw-home"></i>
-            </a>
-        </li>
-        {{defineZone "breadcrumbItems"}}
-    </ol>
+    {{#if items}}
+        <ol id="_uuf_breadcrumbs" class="breadcrumb navbar-brand {{defineZone "breadcrumbs-class" scope="protected"}}" style="{{defineZone "breadcrumbs-style" scope="protected"}}">
+            {{#each items}}
+                <li id="_uuf_breadcrumbs-item-{{@index}}">
+                    <a href="{{#if uri}}{{@app.uri}}{{uri}}{{else}}#{{/if}}">
+                        {{{icon}}}{{text}}
+                    </a>
+                </li>
+            {{/each}}
+        </ol>
+    {{/if}}
 {{/zone}}

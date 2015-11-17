@@ -59,7 +59,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "UPDATE DM_COMMAND_OPERATION O SET O.ENABLED = ? WHERE O.OPERATION_ID = ?");
+                    "UPDATE DM_COMMAND_OPERATION SET ENABLED = ? WHERE OPERATION_ID = ?");
             stmt.setBoolean(1, operation.isEnabled());
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();

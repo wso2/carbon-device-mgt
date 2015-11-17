@@ -90,8 +90,8 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
         try {
             super.updateOperation(operation);
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_POLICY_OPERATION O SET O.OPERATION_DETAILS=? " +
-                    "WHERE O.OPERATION_ID=?");
+            stmt = connection.prepareStatement("UPDATE DM_POLICY_OPERATION SET OPERATION_DETAILS=? " +
+                    "WHERE OPERATION_ID=?");
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);
             oos.writeObject(operation);

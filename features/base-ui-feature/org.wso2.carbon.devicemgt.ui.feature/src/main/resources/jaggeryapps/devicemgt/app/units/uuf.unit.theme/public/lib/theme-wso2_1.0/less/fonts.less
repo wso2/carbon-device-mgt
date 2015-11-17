@@ -1,0 +1,36 @@
+.font(@font; @font-weight; @font-style; @font-name; @file-name; @fonts-path: '../lib/theme-wso2_1.0/fonts/'; @eot:'@{fonts-path}@{font}/@{file-name}.eot'; @woff:'@{fonts-path}@{font}/@{file-name}.woff'){
+    font-family: @font-name;
+    font-style: @font-style;
+    font-weight: @font-weight;
+    src: url(@eot);
+    src: local(@font-name),
+         local(@file-name),
+         url(@eot) format('embedded-opentype'),
+         url(@woff) format('woff');
+}
+
+/* Roboto Font */
+@font-face {.font( 'Roboto'; 100; 'normal'; 'Roboto Thin'; 'Roboto-Thin-webfont' )}
+@font-face {.font( 'Roboto'; 300; 'normal'; 'Roboto Light'; 'Roboto-Light-webfont' )}
+@font-face {.font( 'Roboto'; 400; 'normal'; 'Roboto Regular'; 'Roboto-Regular-webfont' )}
+@font-face {.font( 'Roboto'; 500; 'normal'; 'Roboto Medium'; 'Roboto-Medium-webfont' )}
+@font-face {.font( 'Roboto'; 700; 'normal'; 'Roboto Bold'; 'Roboto-Bold-webfont' )}
+@font-face {.font( 'Roboto'; 900; 'normal'; 'Roboto Black'; 'Roboto-Black-webfont' )}
+@font-face {.font( 'Roboto'; 100; 'italic'; 'Roboto Thin Italic'; 'Roboto-ThinItalic-webfont' )}
+@font-face {.font( 'Roboto'; 300; 'italic'; 'Roboto Light Italic'; 'Roboto-LightItalic-webfont' )}
+@font-face {.font( 'Roboto'; 400; 'italic'; 'Roboto Regular Italic'; 'Roboto-RegularItalic-webfont' )}
+@font-face {.font( 'Roboto'; 500; 'italic'; 'Roboto Medium Italic'; 'Roboto-MediumItalic-webfont' )}
+@font-face {.font( 'Roboto'; 700; 'italic'; 'Roboto Bold Italic'; 'Roboto-BoldItalic-webfont' )}
+@font-face {.font( 'Roboto'; 900; 'italic'; 'Roboto Black Italic'; 'Roboto-BlackItalic-webfont' )}
+
+/* OpenSans Font */
+@font-face {.font( 'OpenSans'; 100; 'normal'; 'OpenSans Light'; 'OpenSans-Light-webfont' )}
+@font-face {.font( 'OpenSans'; 300; 'normal'; 'OpenSans Regular'; 'OpenSans-Regular-webfont' )}
+@font-face {.font( 'OpenSans'; 400; 'normal'; 'OpenSans Semi Bold'; 'OpenSans-SemiBold-webfont' )}
+@font-face {.font( 'OpenSans'; 700; 'normal'; 'OpenSans Bold'; 'OpenSans-Bold-webfont' )}
+@font-face {.font( 'OpenSans'; 900; 'normal'; 'OpenSans Extra Bold'; 'OpenSans-ExtraBold-webfont' )}
+@font-face {.font( 'OpenSans'; 100; 'italic'; 'OpenSans Light Italic'; 'OpenSans-LightItalic-webfont' )}
+@font-face {.font( 'OpenSans'; 300; 'italic'; 'OpenSans Italic'; 'OpenSans-Italic-webfont' )}
+@font-face {.font( 'OpenSans'; 400; 'italic'; 'OpenSans Semi Bold Italic'; 'OpenSans-SemiBoldItalic-webfont' )}
+@font-face {.font( 'OpenSans'; 700; 'italic'; 'OpenSans Bold Italic'; 'OpenSans-BoldItalic-webfont' )}
+@font-face {.font( 'OpenSans'; 900; 'italic'; 'OpenSans Extra Bold Italic'; 'OpenSans-ExtraBoldItalic-webfont' )}

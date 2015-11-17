@@ -1,0 +1,16 @@
+{{#zone "navbarHeader"}}
+    <a id="_uuf-toggle-menu-left-button" class="navbar-menu-toggle" data-toggle="sidebar"
+       data-target="#_uuf-toggle-menu-left-pane" data-container=".page-content-wrapper"
+       data-container-push="true" data-push-side="left"
+       aria-controls="_uuf-toggle-menu-left-pane" aria-expanded="false">
+        {{#defineZone "toggleMenuLeft-icon"}}
+            <span class="icon fw-stack">
+                <i class="fw fw-menu fw-stack-1x toggle-icon-left-arrow"></i>
+            </span>
+        {{/defineZone}}
+    </a>
+{{/zone}}
+
+{{~#zone "sidePane-id"}}_uuf-toggle-menu-left-pane{{/zone}}
+{{~#zone "sidePane-orientation"}}left{{/zone}}
+{{~#zone "sidePane-content"}}{{defineZone "toggleMenuLeft-content"}}{{/zone}}

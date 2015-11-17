@@ -1,0 +1,10 @@
+{{#zone "navbarHeader"}}
+    <ol id="_uuf_breadcrumbs" class="breadcrumb navbar-brand">
+        <li>
+            <a href="{{#defineZone "breadcrumbHomeUri"}}{{@app.uri}}{{/defineZone}}">
+                <i class="icon fw fw-home"></i>
+            </a>
+        </li>
+        {{defineZone "breadcrumbItems"}}
+    </ol>
+{{/zone}}

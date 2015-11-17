@@ -58,65 +58,23 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     /* Initializing Device Management Service Provider */
                     provider.init();
                     DeviceManagerUtil.registerDeviceType(deviceType,tenantId,isSharedWithAllTenants,sharedTenants);
-                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType, provider.getDeviceManager().requireDeviceAuthorization());
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
+                                                                                           provider.getDeviceManager().requireDeviceAuthorization());
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +
                         deviceType + "'", e);
             }
-
-            if(isSharedWithAllTenants){
-                ProviderKey providerKey=new ProviderKey(deviceType,ProviderKey.SHARE_WITH_ALL_TENANTS);
-                providers.put(providerKey, provider);
-
-            }else{
-                ProviderKey providerKey=new ProviderKey(deviceType,tenantId);
-                providers.put(providerKey, provider);
-
-                if(sharedTenants!=null) {
-                    for (int i = 0; i < sharedTenants.length; i++) {
-                        providerKey = new ProviderKey(deviceType, DeviceManagerUtil.getTenantId(
-                                sharedTenants[i]));
-                        providers.put(providerKey,provider);
-
-                    }
-                }
-            }
-
+            providers.put(deviceType, provider);
         }
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceTypeName=provider.getType();
-        ProviderKey providerKey=new ProviderKey(deviceTypeName,ProviderKey.SHARE_WITH_ALL_TENANTS);
-        if(provider.isSharedWithAllTenants()){
-            providers.remove(providerKey);
-        }else{
-            int providerTenantId=DeviceManagerUtil.getTenantId(provider.getProviderTenantDomain());
-            try {
-                DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-                List<Integer> sharedTenants = deviceTypeDAO.getSharedTenantId(deviceTypeName,providerTenantId);
-                for(Integer tenantId : sharedTenants){
-					providerKey.setTenantId(tenantId);
-                    providers.remove(providerKey);
-                }
-
-            } catch (DeviceManagementDAOException e) {
-                throw new DeviceManagementException("Error occurred while removing tenants provider for device type '" +
-                                                            deviceTypeName + "'", e);
-            }
-        }
+        providers.remove(provider.getType());
     }
 
     public DeviceManagementService getDeviceManagementService(String type,int tenantId) {
-        ProviderKey providerKey=new ProviderKey(type,tenantId);
-        DeviceManagementService provider= providers.get(providerKey);
-        if(provider == null){
-            providerKey.setTenantId(ProviderKey.SHARE_WITH_ALL_TENANTS);
-            provider= providers.get(providerKey);
-
-        }
-        return provider;
+        return providers.get(type);
     }
 
     public Map<String, DeviceManagementService> getAllDeviceManagementServices() {

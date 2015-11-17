@@ -128,8 +128,8 @@ public class DeviceManagement {
 	public DeviceTypes[] getDeviceTypes(int tenantId)
 			throws DeviceManagementDAOException {
 
-		//TODO: concern multi tenancy
-		List<DeviceType> deviceTypes = DeviceManagementDAOFactory.getDeviceTypeDAO().getDeviceTypes();
+		List<DeviceType> deviceTypes = DeviceManagementDAOFactory.getDeviceTypeDAO()
+				.getDeviceTypes(tenantId);
 		DeviceTypes dTypes[] = new DeviceTypes[deviceTypes.size()];
 		int iter = 0;
 		for (DeviceType type : deviceTypes) {

@@ -45,7 +45,7 @@
         <!--<module>components/dynamic-client-registration</module>-->
         <module>components/device-analytics</module>
         <module>components/identity-extensions</module>
-        <!--<module>components/common-api</module>-->
+        <module>components/common-api</module>
         <module>features/device-mgt</module>
         <module>features/base-ui-feature</module>
         <module>features/group-mgt</module>
@@ -56,6 +56,7 @@
         <!--<module>features/dynamic-client-registration</module>-->
         <module>features/oauth-extensions</module>
         <module>features/device-analytics</module>
+        <module>features/common-api</module>
     </modules>
 
     <dependencyManagement>
@@ -1223,10 +1224,27 @@
                 <artifactId>json-simple</artifactId>
                 <version>${json-simple.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-web-api</artifactId>
+                <version>6.0</version>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-jaxrs</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>mqtt-client</artifactId>
+                <version>${eclipse.paho.version}</version>
             </dependency>
 
             <dependency>
@@ -1239,6 +1257,11 @@
                         <artifactId>slf4j-api</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${google.gson.version}</version>
             </dependency>
 
             <dependency>
@@ -1285,9 +1308,90 @@
                 <version>${json.wso2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${google.gson.version}</version>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-httpclient.wso2</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>${orbit.version.commons-httpclient}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>1.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.databridge.commons.thrift</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+
+            <!--Carbon Analytics Dependency-->
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.agent</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.api</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.dataservice.core</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.dataservice.commons</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+
+            <!--Dependencies on XMPP Client Library-->
+            <dependency>
+                <groupId>org.igniterealtime.smack.wso2</groupId>
+                <artifactId>smack</artifactId>
+                <version>${smack.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.igniterealtime.smack.wso2</groupId>
+                <artifactId>smackx</artifactId>
+                <version>${smackx.wso2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

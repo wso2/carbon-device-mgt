@@ -1,7 +1,5 @@
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/webapps/);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/jaggeryapps/);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.devicemgt.ui_${feature.version}/jaggeryapps/,target:${installFolder}/../../deployment/server/jaggeryapps/,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.devicemgt.ui_${feature.version}/webapps/,target:${installFolder}/../../deployment/server/webapps/,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.devicemgt.ui_${feature.version}/conf/devicecloud-config.xml,target:${installFolder}/../../conf/devicecloud-config.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.devicemgt.ui_${feature.version}/conf/devicecloud-config.xsd,target:${installFolder}/../../conf/devicecloud-config.xsd,overwrite:true);\

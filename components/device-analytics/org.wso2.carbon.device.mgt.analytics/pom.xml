@@ -96,11 +96,13 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging.*,
-                            org.wso2.carbon.user.core.*,
                             org.wso2.carbon.context;version="${carbon.kernel.version}",
                             org.wso2.carbon.utils;version="${carbon.kernel.version}",
                             org.wso2.carbon.databridge.*;version="${carbon.analytics.common.version}",
                             org.wso2.carbon.analytics.api.*;version="${carbon.analytics.version}",
+                            org.wso2.carbon.analytics.dataservice.commons.*;version="${carbon.analytics.version}",
+                            org.wso2.carbon.analytics.dataservice.core.*;version="${carbon.analytics.version}",
+                            org.wso2.carbon.analytics.datasource.commons.exception.*;version="${carbon.analytics.version}",
                             org.wso2.carbon.device.mgt.core.*
                         </Import-Package>
                     </instructions>

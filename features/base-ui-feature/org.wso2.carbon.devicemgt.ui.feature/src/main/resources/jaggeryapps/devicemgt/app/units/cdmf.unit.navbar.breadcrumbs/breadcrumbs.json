@@ -1,8 +1,4 @@
 {
     "version": "1.0.0",
-    "index": 9230,
-    "pushedUris": [
-        "/",
-        "/{+any}"
-    ]
+    "extends" : "uuf.unit.navbar.breadcrumbs"
 }

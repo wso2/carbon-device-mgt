@@ -67,7 +67,7 @@ public class FeatureDAOImpl implements FeatureDAO {
             conn = this.getConnection();
             String query = "INSERT INTO DM_PROFILE_FEATURES (PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT, " +
                     "TENANT_ID) VALUES (?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query, new String[] {"id"});
 
             for (ProfileFeature feature : features) {
                 stmt.setInt(1, profileId);
@@ -113,13 +113,9 @@ public class FeatureDAOImpl implements FeatureDAO {
             String query = "UPDATE DM_PROFILE_FEATURES SET CONTENT = ? WHERE PROFILE_ID = ? AND FEATURE_CODE = ? AND" +
                     " TENANT_ID = ?";
 
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query);
             for (ProfileFeature feature : features) {
-                if (conn.getMetaData().getDriverName().contains("H2")) {
-                    stmt.setBytes(1, PolicyManagerUtil.getBytes(feature.getContent()));
-                } else {
-                    stmt.setBytes(1, PolicyManagerUtil.getBytes(feature.getContent()));
-                }
+                stmt.setBytes(1, PolicyManagerUtil.getBytes(feature.getContent()));
                 stmt.setInt(2, profileId);
                 stmt.setString(3, feature.getFeatureCode());
                 stmt.setInt(4, tenantId);

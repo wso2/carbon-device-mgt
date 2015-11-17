@@ -49,7 +49,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     /* Initializing Device Management Service Provider */
                     provider.init();
                     DeviceManagerUtil.registerDeviceType(deviceType);
-                    DeviceManagementDataHolder.getInstance().setIsUserLevelAutherizationAllow(provider.getType(),true);
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
+                                                            provider.getDeviceManager().requireDeviceAuthorization());
+
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +
@@ -83,7 +85,8 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     //windows and IOS cannot resolve user info by extracting certs
                     //until fix that, use following variable to enable and disable of checking user authorization.
 
-                    DeviceManagementDataHolder.getInstance().setIsUserLevelAutherizationAllow(provider.getType(),true);
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(provider.getType(),
+                                             provider.getDeviceManager().requireDeviceAuthorization());
                 } catch (Throwable e) {
                     /* Throwable is caught intentionally as failure of one plugin - due to invalid start up parameters,
                         etc - should not block the initialization of other device management providers */

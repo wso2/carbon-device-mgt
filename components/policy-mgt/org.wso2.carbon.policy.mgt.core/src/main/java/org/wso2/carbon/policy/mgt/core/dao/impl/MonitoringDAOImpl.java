@@ -206,7 +206,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public void addNoneComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
+    public void addNonComplianceFeatures(int policyComplianceStatusId, int deviceId, List<ComplianceFeature>
             complianceFeatures) throws MonitoringDAOException {
         Connection conn;
         PreparedStatement stmt = null;
@@ -215,7 +215,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_COMPLIANCE_FEATURES (COMPLIANCE_STATUS_ID, FEATURE_CODE, STATUS, " +
                     "TENANT_ID) VALUES (?, ?, ?, ?) ";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query);
             for (ComplianceFeature feature : complianceFeatures) {
                 stmt.setInt(1, policyComplianceStatusId);
                 stmt.setString(2, feature.getFeatureCode());

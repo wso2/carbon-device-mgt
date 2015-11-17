@@ -44,7 +44,7 @@ public class DeviceManagementDataHolder {
     private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
     private ConfigurationContextService configurationContextService;
-    private HashMap<String,Boolean> isUserLevelAutherizationAllowMap;
+    private HashMap<String,Boolean> requireDeviceAuthorization = new HashMap<>();
     private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
@@ -148,12 +148,12 @@ public class DeviceManagementDataHolder {
         this.configurationContextService = configurationContextService;
     }
 
-    public void setIsUserLevelAutherizationAllow(String pluginType, boolean isAllowUserAuthentication) {
-        isUserLevelAutherizationAllowMap.put(pluginType,isAllowUserAuthentication);
+    public void setRequireDeviceAuthorization(String pluginType, boolean requireAuthentication) {
+        requireDeviceAuthorization.put(pluginType,requireAuthentication);
     }
 
-    public boolean getIsUserLevelAutherizationAllow(String pluginType) {
-        return isUserLevelAutherizationAllowMap.get(pluginType);
+    public boolean requireDeviceAuthorization(String pluginType) {
+        return requireDeviceAuthorization.get(pluginType);
     }
 
     public DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {

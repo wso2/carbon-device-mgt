@@ -32,7 +32,6 @@ import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,13 +72,13 @@ public class DelegationTask implements Task {
                         throw new PolicyManagementException("Error occurred while taking the devices", e);
                     }
                 }
-                HashMap<Integer, Integer> deviceIdPolicy = policyManager.getAppliedPolicyIdsDeviceIds();
+//                HashMap<Integer, Integer> deviceIdPolicy = policyManager.getAppliedPolicyIdsDeviceIds();
                 List<Device> toBeNotified = new ArrayList<>();
 
                 for (Device device : devices) {
-                    if (deviceIdPolicy.containsKey(device.getId())) {
-                        toBeNotified.add(device);
-                    }
+//                    if (deviceIdPolicy.containsKey(device.getId())) {
+                    toBeNotified.add(device);
+//                    }
                 }
                 if (!toBeNotified.isEmpty()) {
                     PolicyEnforcementDelegator enforcementDelegator = new PolicyEnforcementDelegatorImpl(toBeNotified);

@@ -39,6 +39,8 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
     public int addOperation(Operation operation) throws OperationManagementDAOException {
         int operationId;
         PreparedStatement stmt = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
         try {
             operationId = super.addOperation(operation);
             operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
@@ -48,12 +50,33 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_POLICY_OPERATION(OPERATION_ID, OPERATION_DETAILS) " +
                     "VALUES(?, ?)");
+
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(operation);
+
             stmt.setInt(1, operationId);
-            stmt.setObject(2, policyOperation);
+            stmt.setBytes(2, bao.toByteArray());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while adding policy operation", e);
+        } catch (IOException e) {
+            throw new OperationManagementDAOException("Error occurred while serializing policy operation object", e);
         } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
         return operationId;

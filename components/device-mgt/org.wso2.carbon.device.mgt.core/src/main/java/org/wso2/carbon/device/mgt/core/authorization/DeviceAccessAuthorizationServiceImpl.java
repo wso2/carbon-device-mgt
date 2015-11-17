@@ -20,11 +20,8 @@ package org.wso2.carbon.device.mgt.core.authorization;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAuthorizationResult;
@@ -34,7 +31,6 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionUtils;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +70,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         String username = this.getUserName();
         int tenantId = this.getTenantId();
         if (username == null || username.isEmpty()) {
-            return false;
+             return !DeviceManagementDataHolder.getInstance().requireDeviceAuthorization(deviceIdentifier.getType());
         }
         try {
             //Check for admin users. If the user is an admin user we authorize the access to that device.
@@ -226,16 +222,19 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     }
 
     private String getUserName() {
-        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
-        String tenantDomain = MultitenantUtils.getTenantDomain(username);
-        if (username.endsWith(tenantDomain)) {
-            return username.substring(0, username.lastIndexOf("@"));
+        String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
+        if (username != null && !username.isEmpty()) {
+            String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            if (username.endsWith(tenantDomain)) {
+                return username.substring(0, username.lastIndexOf("@"));
+            }
+            return username;
         }
-        return username;
+        return null;
     }
 
     private int getTenantId() {
-        return PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        return CarbonContext.getThreadLocalCarbonContext().getTenantId();
     }
 
     private boolean addAdminPermissionToRegistry() throws PermissionManagementException {

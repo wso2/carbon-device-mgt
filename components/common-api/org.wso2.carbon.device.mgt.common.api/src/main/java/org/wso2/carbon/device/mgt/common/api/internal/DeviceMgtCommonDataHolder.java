@@ -2,12 +2,12 @@ package org.wso2.carbon.device.mgt.common.api.internal;
 
 import org.wso2.carbon.base.ServerConfiguration;
 
-public class IoTCommonDataHolder {
+public class DeviceMgtCommonDataHolder {
 
-	private static IoTCommonDataHolder thisInstance = new IoTCommonDataHolder();
+	private static DeviceMgtCommonDataHolder thisInstance = new DeviceMgtCommonDataHolder();
 	String trustStoreLocaiton;
 	String trustStorePassword;
-	private IoTCommonDataHolder() {
+	private DeviceMgtCommonDataHolder() {
 
 	}
 
@@ -15,7 +15,7 @@ public class IoTCommonDataHolder {
 		setTrustStore();
 	}
 
-	public static IoTCommonDataHolder getInstance() {
+	public static DeviceMgtCommonDataHolder getInstance() {
 		return thisInstance;
 	}
 

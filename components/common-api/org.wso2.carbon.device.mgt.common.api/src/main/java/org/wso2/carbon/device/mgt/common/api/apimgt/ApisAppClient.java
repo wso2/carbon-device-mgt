@@ -12,7 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.device.mgt.common.api.config.devicetype.IotDeviceTypeConfigurationManager;
 import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.IotDeviceTypeConfig;
-import org.wso2.carbon.device.mgt.common.api.exception.IoTException;
+import org.wso2.carbon.device.mgt.common.api.exception.DeviceMgtCommonsException;
 import org.wso2.carbon.device.mgt.common.api.config.server.DeviceCloudConfigManager;
 import org.wso2.carbon.device.mgt.common.api.config.server.datasource.ApiManagerConfig;
 import org.wso2.carbon.device.mgt.common.api.util.IoTUtil;
@@ -129,7 +129,7 @@ public class ApisAppClient {
 				return;
 			}
 
-		} catch (IOException | JSONException | IoTException e) {
+		} catch (IOException | JSONException | DeviceMgtCommonsException e) {
 			log.warn("Trying to connect to the Api manager");
 			return;
 		}

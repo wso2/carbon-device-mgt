@@ -49,21 +49,21 @@ import java.util.List;
 *under the License.
 */
 
-public class IoTUsageStatisticsClient {
+public class DeviceMgtUsageStatisticsClient {
 
-	private static final Log log = LogFactory.getLog(IoTUsageStatisticsClient.class);
+	private static final Log log = LogFactory.getLog(DeviceMgtUsageStatisticsClient.class);
 
-	private static final String DATA_SOURCE_NAME = "jdbc/WSO2IOT_STATS_DB";
+	private static final String DATA_SOURCE_NAME = "jdbc/WSO2DM_STATS_DB";
 
 	private static volatile DataSource dataSource = null;
 
 
-	public static void initializeDataSource() throws IoTUsageStatisticsException {
+	public static void initializeDataSource() throws DeviceUsageStatisticsException {
 		try {
 			Context ctx = new InitialContext();
 			dataSource = (DataSource) ctx.lookup(DATA_SOURCE_NAME);
 		} catch (NamingException e) {
-			throw new IoTUsageStatisticsException("Error while looking up the data " +
+			throw new DeviceUsageStatisticsException("Error while looking up the data " +
 														  "source: " + DATA_SOURCE_NAME);
 		}
 	}
@@ -102,10 +102,10 @@ public class IoTUsageStatisticsClient {
 
 	public List<DeviceUsageDTO> getDeviceStats(String table, String valueColumn, String owner,
 												String deviceId, String fromDate, String toDate)
-			throws IoTUsageStatisticsException {
+			throws DeviceUsageStatisticsException {
 
 		if (dataSource == null) {
-			throw new IoTUsageStatisticsException("BAM data source hasn't been initialized. Ensure that the data source is properly configured in the APIUsageTracker configuration.");
+			throw new DeviceUsageStatisticsException("BAM data source hasn't been initialized. Ensure that the data source is properly configured in the APIUsageTracker configuration.");
 		}
 
 		Connection connection = null;

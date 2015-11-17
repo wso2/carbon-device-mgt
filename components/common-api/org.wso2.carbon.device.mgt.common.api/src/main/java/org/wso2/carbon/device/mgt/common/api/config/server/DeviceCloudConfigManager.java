@@ -45,15 +45,12 @@ public class DeviceCloudConfigManager {
     private static final Log log = LogFactory.getLog(DeviceCloudConfigManager.class);
 
     private static final String IOT_DEVICE_CONFIG_XML_NAME = "devicecloud-config.xml";
-	private static final String IOT_DC_ROOT_DIRECTORY = "iot";
 	private final String XMLCONFIGS_FILE_LOCATION =
-			CarbonUtils.getCarbonConfigDirPath() + File.separator +
-                    IOT_DC_ROOT_DIRECTORY + File.separator + IOT_DEVICE_CONFIG_XML_NAME;
+			CarbonUtils.getCarbonConfigDirPath() + File.separator + File.separator + IOT_DEVICE_CONFIG_XML_NAME;
 
     private static final String IOT_DEVICE_CONFIG_XSD_NAME = "devicecloud-config.xsd";
     private final String XSDCONFIGS_FILE_LOCATION =
-            CarbonUtils.getCarbonConfigDirPath() + File.separator +
-                    IOT_DC_ROOT_DIRECTORY + File.separator + IOT_DEVICE_CONFIG_XSD_NAME;
+            CarbonUtils.getCarbonConfigDirPath() + File.separator + IOT_DEVICE_CONFIG_XSD_NAME;
 
     private DeviceCloudConfig currentDeviceCloudConfig;
     private static DeviceCloudConfigManager

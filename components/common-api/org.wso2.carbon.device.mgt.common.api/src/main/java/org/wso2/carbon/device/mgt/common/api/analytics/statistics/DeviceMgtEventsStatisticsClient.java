@@ -31,11 +31,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IoTEventsStatisticsClient {
+public class DeviceMgtEventsStatisticsClient {
 
-	private static final Log log = LogFactory.getLog(IoTEventsStatisticsClient.class);
+	private static final Log log = LogFactory.getLog(DeviceMgtEventsStatisticsClient.class);
 
-	private static final String DATA_SOURCE_NAME = "jdbc/WSO2IOT_STATS_DB";
+	private static final String DATA_SOURCE_NAME = "jdbc/WSO2DM_STATS_DB";
 
 	private static volatile DataSource dataSource = null;
 

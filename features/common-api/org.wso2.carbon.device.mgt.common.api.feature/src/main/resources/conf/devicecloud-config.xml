@@ -4,7 +4,7 @@
         <DataStore>
             <Name>WSO2-BAM</Name>
             <Enabled>false</Enabled>
-            <PublisherClass>org.wso2.carbon.device.mgt.iot.common.datastore.impl.ThriftDataStoreConnector</PublisherClass>
+            <PublisherClass>org.wso2.carbon.device.mgt.common.api.datastore.impl.ThriftDataStoreConnector</PublisherClass>
             <ServerURL>tcp://localhost</ServerURL>
             <Port>7611</Port>
             <Username>admin</Username>
@@ -14,7 +14,7 @@
         <DataStore>
             <Name>WSO2-CEP</Name>
             <Enabled>false</Enabled>
-            <PublisherClass>org.wso2.carbon.device.mgt.iot.common.datastore.impl.ThriftDataStoreConnector</PublisherClass>
+            <PublisherClass>org.wso2.carbon.device.mgt.common.api.datastore.impl.ThriftDataStoreConnector</PublisherClass>
             <ServerURL>tcp://localhost</ServerURL>
             <Port>7611</Port>
             <Username>admin</Username>
@@ -26,7 +26,7 @@
         <ControlQueue>
             <Name>MQTT</Name>
             <Enabled>true</Enabled>
-            <ControlClass>org.wso2.carbon.device.mgt.iot.common.controlqueue.mqtt.MqttControlPublisher</ControlClass>
+            <ControlClass>org.wso2.carbon.device.mgt.common.api.controlqueue.mqtt.MqttControlPublisher</ControlClass>
             <Protocol>MQTT</Protocol>
             <ServerURL>tcp://204.232.188.214</ServerURL>
             <Port>1883</Port>
@@ -37,7 +37,7 @@
         <ControlQueue>
             <Name>XMPP</Name>
             <Enabled>true</Enabled>
-            <ControlClass>org.wso2.carbon.device.mgt.iot.common.controlqueue.xmpp.XmppServerClient</ControlClass>
+            <ControlClass>org.wso2.carbon.device.mgt.common.api.controlqueue.xmpp.XmppServerClient</ControlClass>
             <Protocol>XMPP</Protocol>
             <ServerURL>http://204.232.188.215</ServerURL>
             <Port>9090</Port>

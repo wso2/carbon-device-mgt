@@ -1,11 +1,13 @@
-{{#zone "breadcrumbItems"}}
-    <li>
-        <a href="#">API</a>
-    </li>
-    <li>
-        <a href="#">User</a>
-    </li>
-    <li>
-        <a href="#">Profiles</a>
-    </li>
+{{#zone "navbarHeader"}}
+    {{#if items}}
+        <ol id="_uuf_breadcrumbs" class="breadcrumb navbar-brand {{defineZone "breadcrumbs-class" scope="protected"}}" style="{{defineZone "breadcrumbs-style" scope="protected"}}">
+            {{#each items}}
+                <li id="_uuf_breadcrumbs-item-{{@index}}">
+                    <a href="{{#if uri}}{{@app.uri}}{{uri}}{{else}}#{{/if}}">
+                        {{{icon}}}{{text}}
+                    </a>
+                </li>
+            {{/each}}
+        </ol>
+    {{/if}}
 {{/zone}}

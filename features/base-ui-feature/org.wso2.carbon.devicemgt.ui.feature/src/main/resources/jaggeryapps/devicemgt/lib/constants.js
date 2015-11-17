@@ -21,7 +21,7 @@ var constants = {
     DIRECTORY_APP_LAYOUTS: "/app/layouts",
     DIRECTORY_APP_PAGES: "/app/pages",
     DIRECTORY_APP_UNITS: "/app/units",
-    DIRECTORY_APP_UNIT_PUBLIC: "/public",
+    DIRECTORY_APP_UNIT_PUBLIC: "public",
     DIRECTORY_CACHE: "/cache",
     DIRECTORY_DEBUG: "/debug",
     FILE_APP_CONF: "/app/conf/app-conf.json",

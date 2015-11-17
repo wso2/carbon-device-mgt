@@ -231,7 +231,8 @@ function registerHelpers(renderingData, lookupTable) {
         var script = require(scriptData.scriptFilePath);
         script.super = scriptData.super;
         script.getFile = function (relativeFilePath) {
-            Utils.getFileInUiComponent(uiComponent, uiComponentType, relativeFilePath, lookupTable);
+            return Utils.getFileInUiComponent(uiComponent, uiComponentType, relativeFilePath,
+                                              lookupTable);
         };
         var rv = script[constants.UI_COMPONENT_JS_FUNCTION_ON_REQUEST](scriptContext);
         return (rv) ? rv : {};
@@ -361,8 +362,8 @@ function registerHelpers(renderingData, lookupTable) {
         var optionsHash = options.hash;
         var optionsHashUnitParams = optionsHash[constants.HELPER_PARAM_UNIT_PARAMS];
         var unitParams = (optionsHashUnitParams) ? optionsHashUnitParams : optionsHash;
-        var unitPublicUri = renderingData.context.appData.uri + constants.DIRECTORY_APP_UNIT_PUBLIC
-                            + "/" + processingUnit.fullName;
+        var unitPublicUri = renderingData.context.appData.uri + "/"
+                            + constants.DIRECTORY_APP_UNIT_PUBLIC + "/" + processingUnit.fullName;
         var uriParams = renderingData.context.uriData.params;
 
         var processingUnitsStack = runtimeData.processingUnits;
@@ -545,7 +546,7 @@ function registerHelpers(renderingData, lookupTable) {
                 var mainZoneBuffer = [];
                 // First process resources in this main-zone.
                 if (mainZone.hasResources()) {
-                    var publicUri = renderingData.context.appData.uri
+                    var publicUri = renderingData.context.appData.uri + "/"
                                     + constants.DIRECTORY_APP_UNIT_PUBLIC + "/";
                     var resourcesBuffer = [];
                     var cssResources = mainZone.getResources("css");

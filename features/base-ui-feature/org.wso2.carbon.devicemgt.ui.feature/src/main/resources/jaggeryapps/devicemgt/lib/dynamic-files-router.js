@@ -108,10 +108,10 @@ var route;
         /** @type {LookupTable} */
         var lookupTable = Utils.getLookupTable(appConf);
 
-        // lets assume URL looks like https://my.domain.com/app/{one}/{two}/{three}/{four}
-        var uri = request.getRequestURI(); // = /app/{one}/{two}/{three}/{four}
-        var positionOfSecondSlash = uri.indexOf("/", 1);
-        var pageUri = uri.substring(positionOfSecondSlash); // /{one}/{two}/{three}/{four}
+        // lets assume URL looks like https://my.domain.com/appName/{one}/{two}/{three}/{four}
+        var requestUri = request.getRequestURI(); // = /appName/{one}/{two}/{three}/{four}
+        var positionOfSecondSlash = requestUri.indexOf("/", 1);
+        var pageUri = requestUri.substring(positionOfSecondSlash); // /{one}/{two}/{three}/{four}
 
         var pageData = getPageData(pageUri, lookupTable);
         // TODO: decide whether this page or its furthest child is rendered
@@ -124,11 +124,11 @@ var route;
         var renderingData = {
             context: {
                 appData: {
-                    name: uri.substring(1, positionOfSecondSlash),
+                    name: requestUri.substring(1, positionOfSecondSlash),
                     uri: request.getContextPath()
                 },
                 uriData: {
-                    uri: uri,
+                    uri: requestUri,
                     params: pageData.uriParams
                 }
             },

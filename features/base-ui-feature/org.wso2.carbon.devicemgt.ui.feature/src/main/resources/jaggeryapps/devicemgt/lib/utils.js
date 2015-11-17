@@ -391,7 +391,7 @@ var getFileInUiComponent;
                 throw new Error(validationData.message);
             }
             var unitDefinition = unit.definition;
-            if(unitDefinition[constants.UI_COMPONENT_DEFINITION_DISABLE]){
+            if (unitDefinition[constants.UI_COMPONENT_DEFINITION_DISABLE]) {
                 // This unit is disabled.
                 continue;
             }
@@ -431,7 +431,7 @@ var getFileInUiComponent;
                 throw new Error(validationData.message);
             }
             var pageDefinition = page.definition;
-            if(pageDefinition[constants.UI_COMPONENT_DEFINITION_DISABLE]){
+            if (pageDefinition[constants.UI_COMPONENT_DEFINITION_DISABLE]) {
                 // This page is disabled.
                 continue;
             }
@@ -458,7 +458,9 @@ var getFileInUiComponent;
     };
 
     getFileInUiComponent = function (uiComponent, uiComponentType, relativeFilePath, lookupTable) {
-        relativeFilePath = "/" + relativeFilePath;
+        if (relativeFilePath.charAt(0) != "/") {
+            relativeFilePath = "/" + relativeFilePath;
+        }
         var file = new File(uiComponent.path + relativeFilePath);
         if (file.isExists() && !file.isDirectory()) {
             // This UI components has the file.

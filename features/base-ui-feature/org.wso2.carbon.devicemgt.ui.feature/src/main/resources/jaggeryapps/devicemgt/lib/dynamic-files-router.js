@@ -98,7 +98,7 @@ var route;
             response.addHeader("Content-type", "text/html");
             print(compiledTemplate({}));
         } catch (e) {
-            log.error(e.message);
+            log.error(e.message, e);
             response.sendError(500, e.message);
         }
     }

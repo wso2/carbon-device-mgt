@@ -462,7 +462,7 @@ var getFileInUiComponent;
             relativeFilePath = "/" + relativeFilePath;
         }
         var file = new File(uiComponent.path + relativeFilePath);
-        if (file.isExists() && !file.isDirectory()) {log.info(file.getPath());
+        if (file.isExists() && !file.isDirectory()) {
             // This UI components has the file.
             return file;
         }

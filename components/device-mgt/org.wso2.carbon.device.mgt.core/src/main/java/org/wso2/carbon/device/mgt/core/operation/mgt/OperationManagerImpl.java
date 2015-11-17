@@ -82,8 +82,13 @@ public class OperationManagerImpl implements OperationManager {
             }
         }
         try {
-            List<DeviceIdentifier> authorizedDeviceList = DeviceManagementDataHolder.getInstance().
-                    getDeviceAccessAuthorizationService().isUserAuthorized(deviceIds).getAuthorizedDevices();
+            List<DeviceIdentifier> authorizedDeviceList;
+            if (operation != null && PolicyOperation.POLICY_OPERATION_CODE.equals(operation.getCode())) {
+                authorizedDeviceList = deviceIds;
+            } else {
+                authorizedDeviceList = DeviceManagementDataHolder.getInstance().
+                        getDeviceAccessAuthorizationService().isUserAuthorized(deviceIds).getAuthorizedDevices();
+            }
             if (authorizedDeviceList.size() > 0) {
                 try {
                     int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();

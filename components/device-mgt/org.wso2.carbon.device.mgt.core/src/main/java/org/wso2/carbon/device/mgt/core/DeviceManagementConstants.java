@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
+import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
+
 public final class DeviceManagementConstants {
 
     public static final class Common {
@@ -46,5 +48,14 @@ public final class DeviceManagementConstants {
 
         public static final String ENROL_NOTIFICATION_TYPE = "enrol";
         public static final String USER_REGISTRATION_NOTIFICATION_TYPE = "userRegistration";
+    }
+
+    public static final class AuthorizationSkippedOperationCodes {
+        private AuthorizationSkippedOperationCodes() {
+            throw new AssertionError();
+        }
+
+        public static final String MONITOR_OPERATION_CODE = "MONITOR";
+        public static final String POLICY_OPERATION_CODE = PolicyOperation.POLICY_OPERATION_CODE;
     }
 }

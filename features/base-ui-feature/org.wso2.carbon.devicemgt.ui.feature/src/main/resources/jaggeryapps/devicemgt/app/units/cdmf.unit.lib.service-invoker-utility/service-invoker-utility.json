@@ -1,4 +1,9 @@
 {
   "version": "1.0.0",
-  "index": 21
+  "index": 21,
+  "pushedUris": [
+    "/devices",
+    "/users",
+    "/roles"
+  ]
 }

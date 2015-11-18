@@ -82,6 +82,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
+                        <Bundle-Activator>org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherBundleActivator</Bundle-Activator>
                         <Bundle-Description>API Management Webapp Publisher</Bundle-Description>
                         <Private-Package>org.wso2.carbon.apimgt.webapp.publisher.internal</Private-Package>
                         <Export-Package>

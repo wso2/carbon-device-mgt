@@ -20,34 +20,25 @@ package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherServiceImpl;
-import org.wso2.carbon.utils.ConfigurationContextService;
 
-/**
- * @scr.component name="org.wso2.carbon.apimgt.webapp.publisher" immediate="true"
- * @scr.reference name="config.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService"
- * cardinality="0..1"
- * policy="dynamic"
- * bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
- */
-public class APIPublisherServiceComponent {
+public class APIPublisherBundleActivator implements BundleActivator{
 
-    private static Log log = LogFactory.getLog(APIPublisherServiceComponent.class);
+    private static Log log = LogFactory.getLog(APIPublisherBundleActivator.class);
 
-    protected void activate(ComponentContext componentContext) {
+    @Override
+    public void start(BundleContext bundleContext) throws Exception{
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing device management core bundle");
             }
 
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
-            this.registerServices(componentContext);
+            this.registerServices(bundleContext);
 
             if (log.isDebugEnabled()) {
                 log.debug("Device management core bundle has been successfully initialized");
@@ -57,17 +48,15 @@ public class APIPublisherServiceComponent {
         }
     }
 
-    protected void deactivate(ComponentContext componentContext) {
-        //do nothing
+    @Override
+    public void stop(BundleContext bundleContext) throws Exception{
+    //do nothing
     }
 
-    private void registerServices(ComponentContext componentContext) {
+    private void registerServices(BundleContext bundleContext) {
         if (log.isDebugEnabled()) {
             log.debug("Registering OSGi service DeviceManagementProviderServiceImpl");
         }
-        /* Registering Device Management Service */
-        BundleContext bundleContext = componentContext.getBundleContext();
-
         APIPublisherService publisher = new APIPublisherServiceImpl();
         APIPublisherDataHolder.getInstance().setApiPublisherService(publisher);
         bundleContext.registerService(APIPublisherService.class, publisher, null);
@@ -80,19 +69,4 @@ public class APIPublisherServiceComponent {
     protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService service) {
         //do nothing
     }
-
-    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting ConfigurationContextService");
-        }
-        APIPublisherDataHolder.getInstance().setConfigurationContextService(configurationContextService);
-    }
-
-    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Un-setting ConfigurationContextService");
-        }
-        APIPublisherDataHolder.getInstance().setConfigurationContextService(null);
-    }
-
 }

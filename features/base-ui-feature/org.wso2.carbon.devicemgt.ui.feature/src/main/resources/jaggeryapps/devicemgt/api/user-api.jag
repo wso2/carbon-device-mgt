@@ -30,7 +30,6 @@ var utility = require("/modules/utility.js").utility;
 var apiWrapperUtil = require("/modules/api-wrapper-util.js").apiWrapperUtil;
 
 var result;
-log.info("-----");
 
 if (uriMatcher.match("/{context}/api/user/login/")) {
     username = request.getParameter("username");

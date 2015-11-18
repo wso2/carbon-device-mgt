@@ -53,7 +53,12 @@ var backendServiceInvoker = function () {
             xmlHttpRequest.send((payload));
             if ((xmlHttpRequest.status >= 200 && xmlHttpRequest.status < 300) || xmlHttpRequest.status == 302) {
                 if (xmlHttpRequest.responseText != null) {
-                    return successCallback(parse(xmlHttpRequest.responseText));
+                    try{
+                        responseText=parse(xmlHttpRequest.responseText)
+                    }catch(e){
+                        responseText=xmlHttpRequest.responseText;
+                    }
+                    return successCallback(responseText);
                 } else {
                     return successCallback(null);
                 }
@@ -62,7 +67,12 @@ var backendServiceInvoker = function () {
                 tokenUtil.refreshToken();
                 return execute(count);
             } else {
-                return errorCallback(parse(xmlHttpRequest.responseText));
+                try{
+                    responseText=parse(xmlHttpRequest.responseText)
+                }catch(e){
+                    responseText=xmlHttpRequest.responseText;
+                }
+                return errorCallback(responseText);
             }
         };
         var accessToken = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER).accessToken.trim();

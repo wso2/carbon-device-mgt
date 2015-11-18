@@ -134,7 +134,8 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             while (rs.next()) {
                 commandOperation = new CommandOperation();
                 commandOperation.setId(rs.getInt("ID"));
-                commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
+                //commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
+                commandOperation.setEnabled(rs.getBoolean("ENABLED") != false);
                 commandOperation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
                 commandOperation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 commandOperation.setCreatedTimeStamp(rs.getString("CREATED_TIMESTAMP"));

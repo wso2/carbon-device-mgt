@@ -16,27 +16,28 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.config.server.datasource;
+package org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for DataStoresConfig complex type.
+ * <p>Java class for DeviceTypeConfigManager complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * <complexType name="DataStoresConfig">
+ * <complexType name="DeviceTypeConfigManager">
  *   <complexContent>
  *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       <sequence>
- *         <element name="DataStore" type="{}DataStore" maxOccurs="unbounded" minOccurs="0"/>
+ *         <element name="DeviceTypeConfig" type="{}DeviceTypeConfig" maxOccurs="unbounded" minOccurs="0"/>
  *       </sequence>
  *     </restriction>
  *   </complexContent>
@@ -46,41 +47,43 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataStoresConfig", propOrder = {
-    "dataStore"
+@XmlType(name = "DeviceTypeConfigManager", propOrder = {
+    "DeviceTypeConfig"
 })
-public class DataStoresConfig {
 
-    @XmlElement(name = "DataStore")
-    protected List<DataStore> dataStore;
+@XmlRootElement(name = "DeviceTypeConfigManager")
+public class DeviceTypeConfigManager {
+
+    @XmlElement(name = "DeviceTypeConfig")
+    protected List<DeviceTypeConfig> deviceTypeConfigs;
 
     /**
-     * Gets the value of the dataStore property.
+     * Gets the value of the DeviceTypeConfig property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the dataStore property.
+     * This is why there is not a <CODE>set</CODE> method for the iotDeviceTypeConfig property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getDataStore().add(newItem);
+     *    getDeviceTypeConfigs().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link DataStore }
+     * {@link DeviceTypeConfig }
      * 
      * 
      */
-    public List<DataStore> getDataStore() {
-        if (dataStore == null) {
-            dataStore = new ArrayList<DataStore>();
+    public List<DeviceTypeConfig> getDeviceTypeConfigs() {
+        if (deviceTypeConfigs == null) {
+            deviceTypeConfigs = new ArrayList<>();
         }
-        return this.dataStore;
+        return this.deviceTypeConfigs;
     }
 
 }

@@ -3,7 +3,7 @@ package org.wso2.carbon.device.mgt.common.api.util;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.api.controlqueue.mqtt.MqttConfig;
 import org.wso2.carbon.device.mgt.common.api.controlqueue.xmpp.XmppConfig;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.util.IotDeviceManagementUtil;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.util.IotDeviceManagementUtil;
 import org.wso2.carbon.device.mgt.common.api.config.server.DeviceCloudConfigManager;
 import org.wso2.carbon.utils.CarbonUtils;
 

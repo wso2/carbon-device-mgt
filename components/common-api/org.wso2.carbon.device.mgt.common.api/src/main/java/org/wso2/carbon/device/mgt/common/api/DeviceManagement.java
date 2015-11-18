@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.api.util.DeviceTypes;
 import org.wso2.carbon.device.mgt.common.api.util.ZipArchive;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.util.IotDeviceManagementUtil;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.util.IotDeviceManagementUtil;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="IoTDeviceTypeConfigManager" type="IoTDeviceTypeConfigManager"/>
-  <xs:complexType name="IoTDeviceTypeConfigManager">
+  <xs:element name="DeviceTypeConfigManager" type="DeviceTypeConfigManager"/>
+  <xs:complexType name="DeviceTypeConfigManager">
     <xs:sequence>
-      <xs:element type="IotDeviceTypeConfig" name="IotDeviceTypeConfig" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="DeviceTypeConfig" name="DeviceTypeConfig" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="IotDeviceTypeConfig">
+  <xs:complexType name="DeviceTypeConfig">
     <xs:sequence>
       <xs:element type="xs:string" name="DatasourceName"/>
       <xs:element type="xs:string" name="ApiApplicationName" minOccurs="0"/>

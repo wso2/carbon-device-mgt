@@ -22,10 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.util.IotDeviceManagementUtil;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.util.IotDeviceManagementUtil;
 import org.wso2.carbon.device.mgt.common.api.apimgt.ApisAppClient;
-import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.IoTDeviceTypeConfigManager;
-import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.IotDeviceTypeConfig;
+import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.DeviceTypeConfigManager;
+import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.DeviceTypeConfig;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.xml.XMLConstants;
@@ -44,82 +44,67 @@ import java.util.Map;
 /**
  * Class responsible for the iot device manager configuration initialization.
  */
-public class IotDeviceTypeConfigurationManager {
-	private static final Log log = LogFactory.getLog(IotDeviceTypeConfigurationManager.class);
+public class DeviceTypeConfigurationManager {
+	private static final Log log = LogFactory.getLog(DeviceTypeConfigurationManager.class);
 
-	private static final String IOT_DEVICE_CONFIG_XML_NAME = "iot-config.xml";
-	private static final String IOT_DEVICE_CONFIG_XSD_NAME = "iot-config.xsd";
-	private static final String IOT_DC_ROOT_DIRECTORY = "iot";
-	private IoTDeviceTypeConfigManager currentIoTDeviceTypeConfig;
-	private static IotDeviceTypeConfigurationManager
-			iotDeviceConfigManager = new IotDeviceTypeConfigurationManager();
+	private static final String DEVICE_TYPE_CONFIG_XML_NAME = "device-type-config.xml";
+	private static final String DEVICE_TYPE_CONFIG_XSD_NAME = "device-type-config.xsd";
+	private DeviceTypeConfigManager currentDeviceTypeConfig;
+	private static DeviceTypeConfigurationManager
+			deviceConfigManager = new DeviceTypeConfigurationManager();
 
-	private final String iotDeviceMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath()
-			+ File.separator +
-			IOT_DC_ROOT_DIRECTORY + File.separator + IOT_DEVICE_CONFIG_XML_NAME;
+	private final String deviceMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath()
+			+ File.separator + DEVICE_TYPE_CONFIG_XML_NAME;
 
-	private final String iotDeviceMgtConfigXSDPath = CarbonUtils.getCarbonConfigDirPath()
-			+ File.separator +
-			IOT_DC_ROOT_DIRECTORY + File.separator + IOT_DEVICE_CONFIG_XSD_NAME;
+	private final String deviceMgtConfigXSDPath = CarbonUtils.getCarbonConfigDirPath()
+			+ File.separator + DEVICE_TYPE_CONFIG_XSD_NAME;
 
-	HashMap<String,IotDeviceTypeConfig> iotDeviceTypeConfigMap = new HashMap<String,IotDeviceTypeConfig>();
+	private HashMap<String,DeviceTypeConfig> deviceTypeConfigMap = new HashMap<>();
 
-	public static IotDeviceTypeConfigurationManager getInstance() {
-		return iotDeviceConfigManager;
+	public static DeviceTypeConfigurationManager getInstance() {
+		return deviceConfigManager;
 	}
 
 	public synchronized void initConfig() throws DeviceManagementException {
-
-
 		try {
 			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = sf.newSchema(new File(iotDeviceMgtConfigXSDPath));
+			Schema schema = sf.newSchema(new File(deviceMgtConfigXSDPath));
 
-			File iotDeviceMgtConfig = new File(iotDeviceMgtConfigXMLPath);
+			File iotDeviceMgtConfig = new File(deviceMgtConfigXMLPath);
 			Document doc = IotDeviceManagementUtil.convertToDocument(iotDeviceMgtConfig);
-			JAXBContext iotDeviceMgmtContext = JAXBContext.newInstance(IoTDeviceTypeConfigManager.class);
+			JAXBContext iotDeviceMgmtContext = JAXBContext.newInstance(DeviceTypeConfigManager.class);
 			Unmarshaller unmarshaller = iotDeviceMgmtContext.createUnmarshaller();
 			unmarshaller.setSchema(schema);
 			unmarshaller.setEventHandler(new IotConfigValidationEventHandler());
-			this.currentIoTDeviceTypeConfig = (IoTDeviceTypeConfigManager) unmarshaller.unmarshal(doc);
+			this.currentDeviceTypeConfig = (DeviceTypeConfigManager) unmarshaller.unmarshal(doc);
 
-			List<IotDeviceTypeConfig> iotDeviceTypeConfigList=currentIoTDeviceTypeConfig.getIotDeviceTypeConfig();
-			for(IotDeviceTypeConfig iotDeviceTypeConfig:iotDeviceTypeConfigList){
+			List<DeviceTypeConfig> iotDeviceTypeConfigList= currentDeviceTypeConfig.getDeviceTypeConfigs();
+			for(DeviceTypeConfig iotDeviceTypeConfig:iotDeviceTypeConfigList){
 				String applicationName=iotDeviceTypeConfig.getApiApplicationName();
 
 				if(applicationName==null||applicationName.isEmpty()){
 					iotDeviceTypeConfig.setApiApplicationName(iotDeviceTypeConfig.getType());
 				}
-				iotDeviceTypeConfigMap.put(iotDeviceTypeConfig.getType(), iotDeviceTypeConfig);
-
-
+				deviceTypeConfigMap.put(iotDeviceTypeConfig.getType(), iotDeviceTypeConfig);
 			}
 			ApisAppClient.getInstance().setBase64EncodedConsumerKeyAndSecret(iotDeviceTypeConfigList);
-
-
 		} catch (Exception e) {
 			String error = "Error occurred while initializing device configurations";
 			log.error(error);
 		}
 	}
 
-	public IoTDeviceTypeConfigManager getIotDeviceManagementConfig() {
-		return currentIoTDeviceTypeConfig;
+	public DeviceTypeConfigManager getDeviceManagementConfig() {
+		return currentDeviceTypeConfig;
 	}
 
 
-	public Map<String,IotDeviceTypeConfig> getIotDeviceTypeConfigMap(){
-
-
-
-		return Collections.unmodifiableMap(iotDeviceTypeConfigMap);
+	public Map<String,DeviceTypeConfig> getDeviceTypeConfigMap(){
+		return Collections.unmodifiableMap(deviceTypeConfigMap);
 	}
-
 
 
 	private class IotConfigValidationEventHandler implements ValidationEventHandler {
-
-
 		@Override
 		public boolean handleEvent(ValidationEvent event) {
 			String error= "\nEVENT" +"\nSEVERITY:  " + event.getSeverity()
@@ -138,7 +123,5 @@ public class IotDeviceTypeConfigurationManager {
 			return true;
 		}
 	}
-
-
 
 }

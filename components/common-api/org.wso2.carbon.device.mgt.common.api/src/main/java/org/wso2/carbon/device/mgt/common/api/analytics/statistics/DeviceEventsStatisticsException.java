@@ -16,27 +16,21 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.exception;
+package org.wso2.carbon.device.mgt.common.api.analytics.statistics;
 
-public class DeviceMgtCommonsException extends Exception {
-	public DeviceMgtCommonsException() {
-		super();
-	}
+public class DeviceEventsStatisticsException extends Exception{
 
-	public DeviceMgtCommonsException(String message) {
-		super(message);
-	}
+	private static final long serialVersionUID = -5743346027793277063L;
 
-	public DeviceMgtCommonsException(String message, Throwable cause) {
-		super(message, cause);
-	}
+	public DeviceEventsStatisticsException(String msg) {
+        super(msg);
+    }
 
-	public DeviceMgtCommonsException(Throwable cause) {
-		super(cause);
-	}
+    public DeviceEventsStatisticsException(String msg, Throwable e) {
+        super(msg, e);
+    }
 
-	protected DeviceMgtCommonsException(String message, Throwable cause, boolean enableSuppression,
-	                                    boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+    public DeviceEventsStatisticsException(Throwable throwable) {
+        super(throwable);
+    }
 }

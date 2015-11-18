@@ -1,4 +1,22 @@
 
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource;
 
 import javax.xml.bind.JAXBElement;
@@ -24,7 +42,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _IoTDeviceTypeConfigManager_QNAME = new QName("", "IoTDeviceTypeConfigManager");
+    private final static QName _DeviceTypeConfigManager_QNAME = new QName("", "DeviceTypeConfigManager");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.wso2.carbon.device.mgt.iot.common.config.server.configs
@@ -34,28 +52,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link IoTDeviceTypeConfigManager }
+     * Create an instance of {@link DeviceTypeConfigManager }
      * 
      */
-    public IoTDeviceTypeConfigManager createIoTDeviceTypeConfigManager() {
-        return new IoTDeviceTypeConfigManager();
+    public DeviceTypeConfigManager createDeviceTypeConfigManager() {
+        return new DeviceTypeConfigManager();
     }
 
     /**
-     * Create an instance of {@link IotDeviceTypeConfig }
+     * Create an instance of {@link DeviceTypeConfig }
      * 
      */
-    public IotDeviceTypeConfig createIotDeviceTypeConfig() {
-        return new IotDeviceTypeConfig();
+    public DeviceTypeConfig createDeviceTypeConfig() {
+        return new DeviceTypeConfig();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link IoTDeviceTypeConfigManager }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link DeviceTypeConfigManager }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "", name = "IoTDeviceTypeConfigManager")
-    public JAXBElement<IoTDeviceTypeConfigManager> createIoTDeviceTypeConfigManager(IoTDeviceTypeConfigManager value) {
-        return new JAXBElement<IoTDeviceTypeConfigManager>(_IoTDeviceTypeConfigManager_QNAME, IoTDeviceTypeConfigManager.class, null, value);
+    @XmlElementDecl(namespace = "", name = "DeviceTypeConfigManager")
+    public JAXBElement<DeviceTypeConfigManager> createDeviceTypeConfigManager(
+            DeviceTypeConfigManager value) {
+        return new JAXBElement<DeviceTypeConfigManager>(_DeviceTypeConfigManager_QNAME, DeviceTypeConfigManager.class, null, value);
     }
 
 }

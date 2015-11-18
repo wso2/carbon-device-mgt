@@ -16,9 +16,9 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.dao;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dao;
 
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.dto.IotDevice;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dto.IotDevice;
 
 import java.util.List;
 

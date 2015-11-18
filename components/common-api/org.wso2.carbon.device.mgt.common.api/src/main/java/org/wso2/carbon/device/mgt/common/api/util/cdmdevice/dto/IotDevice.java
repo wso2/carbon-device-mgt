@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.dto;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dto;
 
 import java.io.Serializable;
 import java.util.Map;

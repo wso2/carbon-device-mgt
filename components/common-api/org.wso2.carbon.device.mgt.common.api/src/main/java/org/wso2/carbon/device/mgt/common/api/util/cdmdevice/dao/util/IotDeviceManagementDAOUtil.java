@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.dao.util;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dao.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.exception.IotDeviceMgtPluginException;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.util.IotDeviceManagementSchemaInitializer;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.exception.IotDeviceMgtPluginException;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.util.IotDeviceManagementSchemaInitializer;
 import javax.sql.DataSource;
 
 import java.sql.Connection;

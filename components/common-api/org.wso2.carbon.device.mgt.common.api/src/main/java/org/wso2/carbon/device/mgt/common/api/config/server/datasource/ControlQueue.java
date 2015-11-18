@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 package org.wso2.carbon.device.mgt.common.api.config.server.datasource;
 
@@ -13,22 +30,22 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ControlQueue">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="Name" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Enabled" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         &lt;element name="ControlClass" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Protocol" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="ServerURL" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Port" type="{http://www.w3.org/2001/XMLSchema}short"/>
- *         &lt;element name="Username" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Password" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * <complexType name="ControlQueue">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="Name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="Enabled" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         <element name="ControlClass" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="Protocol" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="ServerURL" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="Port" type="{http://www.w3.org/2001/XMLSchema}short"/>
+ *         <element name="Username" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="Password" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *       </sequence>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
  * </pre>
  * 
  * 

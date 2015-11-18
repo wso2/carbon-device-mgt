@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.device.mgt.common.api.controlqueue.xmpp;
 
 import org.apache.commons.codec.binary.Base64;
@@ -50,9 +68,7 @@ public class XmppServerClient implements ControlQueueConnector {
 	@Override
 	public void enqueueControls(HashMap<String, String> deviceControls)
 			throws DeviceControllerException {
-		if (xmppEnabled) {
-
-		} else {
+		if (!xmppEnabled) {
 			log.warn("XMPP <Enabled> set to false in 'devicecloud-config.xml'");
 		}
 	}
@@ -86,14 +102,14 @@ public class XmppServerClient implements ControlQueueConnector {
 					"        ]" +
 					"    }" +
 					"}";
-			StringEntity requestEntity = null;
+			StringEntity requestEntity;
 			try {
 				requestEntity = new StringEntity(jsonRequest,"application/json","UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				return false;
 			}
 
-			URL xmppUserApiUrl = null;
+			URL xmppUserApiUrl;
 			try {
 				xmppUserApiUrl = new URL(xmppUsersAPIEndpoint);
 			} catch (MalformedURLException e) {
@@ -101,7 +117,7 @@ public class XmppServerClient implements ControlQueueConnector {
 				log.error(errMsg);
 				throw new DeviceControllerException(errMsg);
 			}
-			HttpClient httpClient = null;
+			HttpClient httpClient;
 			try {
 				httpClient = IoTUtil.getHttpClient(xmppUserApiUrl.getPort(), xmppUserApiUrl.getProtocol());
 			} catch (Exception e) {
@@ -131,7 +147,7 @@ public class XmppServerClient implements ControlQueueConnector {
 				}
 			} catch (IOException | DeviceMgtCommonsException e) {
 				String errorMsg =
-						"Error occured whilst trying a 'POST' at : " + xmppUsersAPIEndpoint + " error: " + e.getMessage();
+						"Error occurred whilst trying a 'POST' at : " + xmppUsersAPIEndpoint + " error: " + e.getMessage();
 				log.error(errorMsg);
 				throw new DeviceControllerException(errorMsg, e);
 			}

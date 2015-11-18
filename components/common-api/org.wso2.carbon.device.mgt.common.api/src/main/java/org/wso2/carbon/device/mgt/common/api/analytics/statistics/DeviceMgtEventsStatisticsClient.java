@@ -1,20 +1,22 @@
-package org.wso2.carbon.device.mgt.common.api.analytics.statistics;/*
-*Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*WSO2 Inc. licenses this file to you under the Apache License,
-*Version 2.0 (the "License"); you may not use this file except
-*in compliance with the License.
-*You may obtain a copy of the License at
-*
-*http://www.apache.org/licenses/LICENSE-2.0
-*
-*Unless required by applicable law or agreed to in writing,
-*software distributed under the License is distributed on an
-*"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-*KIND, either express or implied.  See the License for the
-*specific language governing permissions and limitations
-*under the License.
-*/
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.device.mgt.common.api.analytics.statistics;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,21 +42,21 @@ public class DeviceMgtEventsStatisticsClient {
 	private static volatile DataSource dataSource = null;
 
 
-	public static void initializeDataSource() throws IoTEventsStatisticsException {
+	public static void initializeDataSource() throws DeviceEventsStatisticsException {
 		try {
 			Context ctx = new InitialContext();
 			dataSource = (DataSource) ctx.lookup(DATA_SOURCE_NAME);
 		} catch (NamingException e) {
-			throw new IoTEventsStatisticsException("Error while looking up the data " +
+			throw new DeviceEventsStatisticsException("Error while looking up the data " +
 														  "source: " + DATA_SOURCE_NAME);
 		}
 	}
 
 	public List<DeviceEventsDTO> getRecentDeviceStats(String owner, int recordLimit)
-			throws IoTEventsStatisticsException {
+			throws DeviceEventsStatisticsException {
 
 		if (dataSource == null) {
-			throw new IoTEventsStatisticsException("BAM data source hasn't been initialized. Ensure that the data source is properly configured in the APIUsageTracker configuration.");
+			throw new DeviceEventsStatisticsException("BAM data source hasn't been initialized. Ensure that the data source is properly configured in the APIUsageTracker configuration.");
 		}
 
 		Connection connection = null;
@@ -67,7 +69,7 @@ public class DeviceMgtEventsStatisticsClient {
 			String table = "DEVICE_EVENTS";
 
 			if(owner==null){
-				throw new IoTEventsStatisticsException("Owner cannot be null!");
+				throw new DeviceEventsStatisticsException("Owner cannot be null!");
 			}
 
 			String ownerString = "";
@@ -84,7 +86,7 @@ public class DeviceMgtEventsStatisticsClient {
 			log.info("query: " + query);
 
 			if (query == null) {
-				throw new IoTEventsStatisticsException("SQL query is null!");
+				throw new DeviceEventsStatisticsException("SQL query is null!");
 			}
 
 			List<DeviceEventsDTO> DeviceEventsDTOs = new ArrayList<DeviceEventsDTO>();

@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.util;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.constants.IotPluginConstants;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.constants.PluginConstants;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.dbcreator.DatabaseCreator;
 
@@ -38,7 +38,7 @@ public final class IotDeviceManagementSchemaInitializer extends DatabaseCreator 
     private static final Log log = LogFactory.getLog(IotDeviceManagementSchemaInitializer.class);
     private static final String setupSQLScriptBaseLocation =
             CarbonUtils.getCarbonHome() + File.separator + "dbscripts" + File.separator
-                    + IotPluginConstants.IOT_DB_SCRIPTS_FOLDER +
+                    + PluginConstants.DB_SCRIPTS_FOLDER +
                     File.separator + "plugins" + File.separator;
 
     public IotDeviceManagementSchemaInitializer(DataSource dataSource) {

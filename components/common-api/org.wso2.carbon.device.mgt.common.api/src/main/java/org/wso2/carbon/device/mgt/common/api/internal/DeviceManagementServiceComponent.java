@@ -4,14 +4,14 @@
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -25,17 +25,17 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.api.DeviceController;
 import org.wso2.carbon.device.mgt.common.api.analytics.statistics.DeviceMgtEventsStatisticsClient;
-import org.wso2.carbon.device.mgt.common.api.config.devicetype.IotDeviceTypeConfigurationManager;
-import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.IotDeviceTypeConfig;
+import org.wso2.carbon.device.mgt.common.api.config.devicetype.DeviceTypeConfigurationManager;
+import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.DeviceTypeConfig;
 import org.wso2.carbon.device.mgt.common.api.startup.StartupUrlPrinter;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.dao.IotDeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dao.IotDeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.common.api.UserManagement;
 import org.wso2.carbon.device.mgt.common.api.service.DeviceTypeService;
 import org.wso2.carbon.device.mgt.common.api.service.DeviceTypeServiceImpl;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.exception.IotDeviceMgtPluginException;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.exception.IotDeviceMgtPluginException;
 import org.wso2.carbon.device.mgt.common.api.config.server.DeviceCloudConfigManager;
 import org.wso2.carbon.device.mgt.common.api.analytics.statistics.DeviceMgtUsageStatisticsClient;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.dao.util.IotDeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dao.util.IotDeviceManagementDAOUtil;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -73,17 +73,13 @@ public class DeviceManagementServiceComponent {
             log.debug("Activating Iot Device Management Service Component");
         }
         try {
-
-
             BundleContext bundleContext = ctx.getBundleContext();              /* Initialize the data source configuration */
 			DeviceCloudConfigManager.getInstance().initConfig();
-			IotDeviceTypeConfigurationManager.getInstance().initConfig();
-			Map<String, IotDeviceTypeConfig> dsConfigMap =
-					IotDeviceTypeConfigurationManager.getInstance().getIotDeviceTypeConfigMap();
+			DeviceTypeConfigurationManager.getInstance().initConfig();
+			Map<String, DeviceTypeConfig> dsConfigMap =
+					DeviceTypeConfigurationManager.getInstance().getDeviceTypeConfigMap();
 
 			IotDeviceManagementDAOFactory.init(dsConfigMap);
-
-
 
 			String setupOption = System.getProperty("setup");
 			if (setupOption != null) {

@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.device.mgt.common.api.apimgt;
 
 import org.apache.commons.codec.binary.Base64;
@@ -10,8 +28,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.carbon.device.mgt.common.api.config.devicetype.IotDeviceTypeConfigurationManager;
-import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.IotDeviceTypeConfig;
+import org.wso2.carbon.device.mgt.common.api.config.devicetype.DeviceTypeConfigurationManager;
+import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.DeviceTypeConfig;
 import org.wso2.carbon.device.mgt.common.api.exception.DeviceMgtCommonsException;
 import org.wso2.carbon.device.mgt.common.api.config.server.DeviceCloudConfigManager;
 import org.wso2.carbon.device.mgt.common.api.config.server.datasource.ApiManagerConfig;
@@ -61,8 +79,8 @@ public class ApisAppClient {
 		if(!isEnabled) return null;
 		String consumerKeyAndSecret = deviceTypeToApiAppMap.get(deviceType);
 		if(consumerKeyAndSecret == null){
-			ArrayList<IotDeviceTypeConfig> iotDeviceTypeConfigs = new ArrayList<>();
-			IotDeviceTypeConfig DeviceTypeConfig = IotDeviceTypeConfigurationManager.getInstance().getIotDeviceTypeConfigMap().get(deviceType);
+			ArrayList<DeviceTypeConfig> iotDeviceTypeConfigs = new ArrayList<>();
+			DeviceTypeConfig DeviceTypeConfig = DeviceTypeConfigurationManager.getInstance().getDeviceTypeConfigMap().get(deviceType);
 			if(DeviceTypeConfig != null) {
 				iotDeviceTypeConfigs.add(DeviceTypeConfig);
 				setBase64EncodedConsumerKeyAndSecret(iotDeviceTypeConfigs);
@@ -75,7 +93,7 @@ public class ApisAppClient {
 		return  consumerKeyAndSecret;
 	}
 
-	public void setBase64EncodedConsumerKeyAndSecret(List<IotDeviceTypeConfig> iotDeviceTypeConfigList) {
+	public void setBase64EncodedConsumerKeyAndSecret(List<DeviceTypeConfig> iotDeviceTypeConfigList) {
 		if(!isEnabled) return;
 
 		URL loginURL = null;
@@ -149,7 +167,7 @@ public class ApisAppClient {
 						(prodConsumerKey + ":" + prodConsumerSecret).getBytes())));
             }
 
-            for (IotDeviceTypeConfig iotDeviceTypeConfig : iotDeviceTypeConfigList) {
+            for (DeviceTypeConfig iotDeviceTypeConfig : iotDeviceTypeConfigList) {
                 String deviceType = iotDeviceTypeConfig.getType();
                 String deviceTypeApiApplicationName = iotDeviceTypeConfig.getApiApplicationName();
                 String base64EncodedString = subscriptionMap.get(deviceTypeApiApplicationName);

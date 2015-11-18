@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.util;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.api.util.ZipArchive;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.dto.IotDevice;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dto.IotDevice;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.xml.parsers.DocumentBuilder;

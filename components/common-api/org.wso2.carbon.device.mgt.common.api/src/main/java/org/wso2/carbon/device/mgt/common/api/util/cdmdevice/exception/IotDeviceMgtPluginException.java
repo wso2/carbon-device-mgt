@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
 */
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.exception;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.exception;
 
 
 public class IotDeviceMgtPluginException extends Exception{

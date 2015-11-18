@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.dao;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dao;
 
 public interface IotDeviceManagementDAOFactoryInterface {
 

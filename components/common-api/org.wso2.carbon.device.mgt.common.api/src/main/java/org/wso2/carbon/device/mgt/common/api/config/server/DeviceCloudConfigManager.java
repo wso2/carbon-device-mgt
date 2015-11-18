@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.common.api.config.server.datasource.ControlQue
 import org.wso2.carbon.device.mgt.common.api.config.server.datasource.DataStore;
 import org.wso2.carbon.device.mgt.common.api.config.server.datasource.DeviceCloudConfig;
 import org.wso2.carbon.device.mgt.common.api.exception.DeviceControllerException;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.util.IotDeviceManagementUtil;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.util.IotDeviceManagementUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.xml.XMLConstants;
@@ -44,13 +44,13 @@ import java.util.List;
 public class DeviceCloudConfigManager {
     private static final Log log = LogFactory.getLog(DeviceCloudConfigManager.class);
 
-    private static final String IOT_DEVICE_CONFIG_XML_NAME = "devicecloud-config.xml";
+    private static final String DEVICE_CONFIG_XML_NAME = "devicecloud-config.xml";
 	private final String XMLCONFIGS_FILE_LOCATION =
-			CarbonUtils.getCarbonConfigDirPath() + File.separator + File.separator + IOT_DEVICE_CONFIG_XML_NAME;
+			CarbonUtils.getCarbonConfigDirPath() + File.separator + File.separator + DEVICE_CONFIG_XML_NAME;
 
-    private static final String IOT_DEVICE_CONFIG_XSD_NAME = "devicecloud-config.xsd";
+    private static final String DEVICE_CONFIG_XSD_NAME = "devicecloud-config.xsd";
     private final String XSDCONFIGS_FILE_LOCATION =
-            CarbonUtils.getCarbonConfigDirPath() + File.separator + IOT_DEVICE_CONFIG_XSD_NAME;
+            CarbonUtils.getCarbonConfigDirPath() + File.separator + DEVICE_CONFIG_XSD_NAME;
 
     private DeviceCloudConfig currentDeviceCloudConfig;
     private static DeviceCloudConfigManager
@@ -92,10 +92,7 @@ public class DeviceCloudConfigManager {
             for (DataStore dataStore : dataStores) {
                 if (dataStore.getName().equals(name)) {
                     return dataStore;
-
                 }
-
-
             }
         }
         return null;
@@ -107,18 +104,13 @@ public class DeviceCloudConfigManager {
             for (ControlQueue controlQueue : controlQueues) {
                 if (controlQueue.getName().equals(name)) {
                     return controlQueue;
-
                 }
             }
         }
         return null;
     }
 
-
-
     private class IotConfigValidationEventHandler implements ValidationEventHandler {
-
-
         @Override
         public boolean handleEvent(ValidationEvent event) {
             String error= "\nEVENT" +"\nSEVERITY:  " + event.getSeverity()
@@ -131,8 +123,6 @@ public class DeviceCloudConfigManager {
             +"\n    OBJECT:  " + event.getLocator().getObject()
             +"\n    NODE:  " + event.getLocator().getNode()
             +"\n    URL:  " + event.getLocator().getURL();
-
-
             log.error(error);
             return true;
         }

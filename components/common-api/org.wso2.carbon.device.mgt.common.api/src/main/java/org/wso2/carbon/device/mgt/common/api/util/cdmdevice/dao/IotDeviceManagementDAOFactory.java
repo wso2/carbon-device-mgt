@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.api.util.iotdevice.dao;
+package org.wso2.carbon.device.mgt.common.api.util.cdmdevice.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.IotDeviceTypeConfig;
-import org.wso2.carbon.device.mgt.common.api.util.iotdevice.exception.IotDeviceMgtPluginException;
+import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.DeviceTypeConfig;
+import org.wso2.carbon.device.mgt.common.api.util.cdmdevice.exception.IotDeviceMgtPluginException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -38,10 +38,10 @@ public abstract class IotDeviceManagementDAOFactory implements IotDeviceManageme
     private static Map<String, DataSource> dataSourceMap = new HashMap<String, DataSource>();
     private static boolean isInitialized;
 
-    public static void init(Map<String, IotDeviceTypeConfig> iotDataSourceConfigMap)
+    public static void init(Map<String, DeviceTypeConfig> iotDataSourceConfigMap)
             throws IotDeviceMgtPluginException {
         DataSource dataSource;
-        for (Map.Entry<String, IotDeviceTypeConfig> plugin : iotDataSourceConfigMap.entrySet()) {
+        for (Map.Entry<String, DeviceTypeConfig> plugin : iotDataSourceConfigMap.entrySet()) {
             String pluginType = plugin.getKey();
             if (dataSourceMap.get(pluginType) == null) {
                 dataSource = IotDeviceManagementDAOFactory.resolveDataSource(plugin.getValue().getDatasourceName());

@@ -28,9 +28,7 @@ import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class WebappAuthenticationValve extends CarbonTomcatValve {

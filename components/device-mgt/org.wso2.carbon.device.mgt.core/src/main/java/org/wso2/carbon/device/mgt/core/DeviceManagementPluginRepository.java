@@ -21,9 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
@@ -31,12 +28,11 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DeviceManagementPluginRepository implements DeviceManagerStartupListener {
 
-    private Map<String, DeviceManagementService> providers;
+    private final Map<String, DeviceManagementService> providers;
     private boolean isInited;
     private static final Log log = LogFactory.getLog(DeviceManagementPluginRepository.class);
 
@@ -48,16 +44,16 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
         String deviceType = provider.getType();
         String tenantDomain = provider.getProviderTenantDomain();
-        boolean isSharedWithAllTenants= provider.isSharedWithAllTenants();
-        String[] sharedTenants= provider.getSharedTenantsDomain();
-        int tenantId=DeviceManagerUtil.getTenantId(tenantDomain);
+        boolean isSharedWithAllTenants = provider.isSharedWithAllTenants();
+        String[] sharedTenants = provider.getSharedTenantsDomain();
+        int tenantId = DeviceManagerUtil.getTenantId(tenantDomain);
 
         synchronized (providers) {
             try {
                 if (isInited) {
                     /* Initializing Device Management Service Provider */
                     provider.init();
-                    DeviceManagerUtil.registerDeviceType(deviceType,tenantId,isSharedWithAllTenants,sharedTenants);
+                    DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants, sharedTenants);
                     DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
                                                                                            provider.getDeviceManager().requireDeviceAuthorization());
                 }

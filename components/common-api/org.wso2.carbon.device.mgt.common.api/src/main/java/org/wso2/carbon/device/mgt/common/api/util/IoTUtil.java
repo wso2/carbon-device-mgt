@@ -14,8 +14,8 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.wso2.carbon.device.mgt.common.api.exception.IoTException;
-import org.wso2.carbon.device.mgt.common.api.internal.IoTCommonDataHolder;
+import org.wso2.carbon.device.mgt.common.api.exception.DeviceMgtCommonsException;
+import org.wso2.carbon.device.mgt.common.api.internal.DeviceMgtCommonDataHolder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,8 +42,8 @@ public class IoTUtil {
 		SchemeRegistry registry = new SchemeRegistry();
 
 		if ("https".equals(protocol)) {
-			System.setProperty("javax.net.ssl.trustStrore", IoTCommonDataHolder.getInstance().getTrustStoreLocation());
-			System.setProperty("javax.net.ssl.trustStorePassword", IoTCommonDataHolder.getInstance().getTrustStorePassword());
+			System.setProperty("javax.net.ssl.trustStrore", DeviceMgtCommonDataHolder.getInstance().getTrustStoreLocation());
+			System.setProperty("javax.net.ssl.trustStorePassword", DeviceMgtCommonDataHolder.getInstance().getTrustStorePassword());
 
 			if (port >= 0) {
 				registry.register(new Scheme("https", port, SSLSocketFactory.getSocketFactory()));
@@ -63,7 +63,8 @@ public class IoTUtil {
 		return client;
 	}
 
-	public static String getResponseString(HttpResponse httpResponse) throws IoTException {
+	public static String getResponseString(HttpResponse httpResponse) throws
+	                                                                  DeviceMgtCommonsException {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
@@ -74,7 +75,7 @@ public class IoTUtil {
 			}
 			return response;
 		} catch (IOException e) {
-			throw new IoTException("Error while reading the response from the remote. "
+			throw new DeviceMgtCommonsException("Error while reading the response from the remote. "
 														+ e.getMessage(), e);
 		} finally {
 			EntityUtils.consumeQuietly(httpResponse.getEntity());

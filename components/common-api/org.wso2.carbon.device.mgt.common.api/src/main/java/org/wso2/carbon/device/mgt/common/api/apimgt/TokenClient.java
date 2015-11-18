@@ -32,7 +32,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.device.mgt.common.api.exception.AccessTokenException;
-import org.wso2.carbon.device.mgt.common.api.exception.IoTException;
+import org.wso2.carbon.device.mgt.common.api.exception.DeviceMgtCommonsException;
 import org.wso2.carbon.device.mgt.common.api.util.IoTUtil;
 import org.wso2.carbon.device.mgt.common.api.config.server.DeviceCloudConfigManager;
 import org.wso2.carbon.device.mgt.common.api.config.server.datasource.ApiManagerConfig;
@@ -125,7 +125,7 @@ public class TokenClient {
 			accessTokenInfo.setToken_type(jsonObject.getString("token_type"));
 			return accessTokenInfo;
 
-		} catch ( IOException | JSONException | IoTException e) {
+		} catch ( IOException | JSONException | DeviceMgtCommonsException e) {
 			log.error(e.getMessage());
 			throw new AccessTokenException("Configuration Error for Access Token Generation");
 		}

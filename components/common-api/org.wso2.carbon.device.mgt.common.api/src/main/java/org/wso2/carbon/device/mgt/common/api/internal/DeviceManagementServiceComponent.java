@@ -24,7 +24,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.device.mgt.common.api.DeviceController;
-import org.wso2.carbon.device.mgt.common.api.analytics.statistics.IoTEventsStatisticsClient;
+import org.wso2.carbon.device.mgt.common.api.analytics.statistics.DeviceMgtEventsStatisticsClient;
 import org.wso2.carbon.device.mgt.common.api.config.devicetype.IotDeviceTypeConfigurationManager;
 import org.wso2.carbon.device.mgt.common.api.config.devicetype.datasource.IotDeviceTypeConfig;
 import org.wso2.carbon.device.mgt.common.api.startup.StartupUrlPrinter;
@@ -34,7 +34,7 @@ import org.wso2.carbon.device.mgt.common.api.service.DeviceTypeService;
 import org.wso2.carbon.device.mgt.common.api.service.DeviceTypeServiceImpl;
 import org.wso2.carbon.device.mgt.common.api.util.iotdevice.exception.IotDeviceMgtPluginException;
 import org.wso2.carbon.device.mgt.common.api.config.server.DeviceCloudConfigManager;
-import org.wso2.carbon.device.mgt.common.api.analytics.statistics.IoTUsageStatisticsClient;
+import org.wso2.carbon.device.mgt.common.api.analytics.statistics.DeviceMgtUsageStatisticsClient;
 import org.wso2.carbon.device.mgt.common.api.util.iotdevice.dao.util.IotDeviceManagementDAOUtil;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -64,9 +64,9 @@ import java.util.Map;
  * bind="setConfigurationContextService"
  * unbind="unsetConfigurationContextService"
  */
-public class IotDeviceManagementServiceComponent {
+public class DeviceManagementServiceComponent {
 
-    private static final Log log = LogFactory.getLog(IotDeviceManagementServiceComponent.class);
+    private static final Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
 	public static ConfigurationContextService configurationContextService;
     protected void activate(ComponentContext ctx) {
         if (log.isDebugEnabled()) {
@@ -106,13 +106,13 @@ public class IotDeviceManagementServiceComponent {
 				}
 			}
 
-			IoTCommonDataHolder.getInstance().initialize();
+			DeviceMgtCommonDataHolder.getInstance().initialize();
 
 			//TODO: handle
 
 			DeviceController.init();
-            IoTUsageStatisticsClient.initializeDataSource();
-			IoTEventsStatisticsClient.initializeDataSource();
+            DeviceMgtUsageStatisticsClient.initializeDataSource();
+			DeviceMgtEventsStatisticsClient.initializeDataSource();
 			UserManagement.registerApiAccessRoles();
 
 
@@ -154,7 +154,7 @@ public class IotDeviceManagementServiceComponent {
 			log.debug("Setting ConfigurationContextService");
 		}
 
-		IotDeviceManagementServiceComponent.configurationContextService=configurationContextService;
+		DeviceManagementServiceComponent.configurationContextService=configurationContextService;
 
 	}
 
@@ -162,7 +162,7 @@ public class IotDeviceManagementServiceComponent {
 		if (log.isDebugEnabled()) {
 			log.debug("Un-setting ConfigurationContextService");
 		}
-		IotDeviceManagementServiceComponent.configurationContextService=null;
+		DeviceManagementServiceComponent.configurationContextService=null;
 	}
 
 	/**

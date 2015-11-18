@@ -12,7 +12,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.wso2.carbon.device.mgt.common.api.controlqueue.ControlQueueConnector;
 import org.wso2.carbon.device.mgt.common.api.exception.DeviceControllerException;
-import org.wso2.carbon.device.mgt.common.api.exception.IoTException;
+import org.wso2.carbon.device.mgt.common.api.exception.DeviceMgtCommonsException;
 import org.wso2.carbon.device.mgt.common.api.util.IoTUtil;
 
 import java.io.IOException;
@@ -129,7 +129,7 @@ public class XmppServerClient implements ControlQueueConnector {
 					EntityUtils.consume(httpResponse.getEntity());
 					return true;
 				}
-			} catch (IOException | IoTException e) {
+			} catch (IOException | DeviceMgtCommonsException e) {
 				String errorMsg =
 						"Error occured whilst trying a 'POST' at : " + xmppUsersAPIEndpoint + " error: " + e.getMessage();
 				log.error(errorMsg);

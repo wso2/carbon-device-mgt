@@ -1,5 +1,7 @@
-package org.wso2.carbon.device.mgt.common.api.analytics.statistics;/*
-*Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+package org.wso2.carbon.device.mgt.common.api.analytics.statistics;
+
+/*
+*Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *WSO2 Inc. licenses this file to you under the Apache License,
 *Version 2.0 (the "License"); you may not use this file except
@@ -16,19 +18,19 @@ package org.wso2.carbon.device.mgt.common.api.analytics.statistics;/*
 *under the License.
 */
 
-public class IoTUsageStatisticsException extends Exception{
+public class DeviceUsageStatisticsException extends Exception{
 
 	private static final long serialVersionUID = -5743346027793277063L;
 
-	public IoTUsageStatisticsException(String msg) {
+	public DeviceUsageStatisticsException(String msg) {
         super(msg);
     }
 
-    public IoTUsageStatisticsException(String msg, Throwable e) {
+    public DeviceUsageStatisticsException(String msg, Throwable e) {
         super(msg, e);
     }
 
-    public IoTUsageStatisticsException(Throwable throwable) {
+    public DeviceUsageStatisticsException(Throwable throwable) {
         super(throwable);
     }
 }

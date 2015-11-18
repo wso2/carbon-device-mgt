@@ -1,0 +1,232 @@
+html {
+	position: relative;
+	min-height: 100%;
+    margin:0;
+    padding:0;
+    height: 100%;
+}
+
+body {
+	background:#fff;
+    font-weight: 100;
+    color: #444444;
+    font-size: 14px;
+    margin:0;
+    padding:0;
+    height: 100%;
+}
+
+.container {
+    position: relative;
+    padding-bottom: 20px;
+    min-height: 100%;
+}
+
+.wr-content {
+	padding-left:33px;
+    padding-right:33px;
+}
+
+/* application top level header */
+h2.app-title {
+    font-weight:400;
+    font-size:17px;
+    margin:0;
+    padding:3px 0 0 0;
+    color:#fafafa;
+    text-transform: uppercase;
+}
+
+.wr-global-header {
+	background:#11375B;
+}
+
+.app-logo {
+	height:50px;
+	padding:12px 10px;
+}
+
+.app-logo a {
+    text-decoration: none;
+}
+
+.app-logo img {
+	float:left;
+	margin-right:10px;
+}
+
+@media (max-width: 768px) {
+    .app-logo {
+        padding: 16px 10px;
+    }
+    .app-logo img {
+        width: 50px;
+        height: auto;
+        margin-right:10px;
+    }
+    h2.app-title {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 570px) {
+    h2.app-title:after {
+        content: "EMM";
+    }
+    h2.app-title span {
+        display: none;
+    }
+}
+
+.wr-app-bar {
+	background:#526A84;
+	height:53px;    
+}
+
+header {
+	height:50px;
+}
+
+#nav.affix {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index:100000;
+}
+
+.auth-user {
+	display:none;
+}
+
+.wr-auth-container {
+	padding-right:0;
+}
+
+.auth-img {
+	float: left;
+	display:inline-block;
+	height:50px;
+	padding:8px 10px;
+    font-size: 14px;
+	color:#fff;
+	text-decoration: none;
+}
+
+.auth-img:hover {
+	background:#526A84;
+}
+
+.wr-auth.open .auth-img {
+    background: #526A84;
+}
+
+
+/* sticky footer styles */
+/*.footer {*/
+	/*height: 40px;*/
+	/*background-color: #222;*/
+	/*padding-top:5px;*/
+	/*color:#fff;*/
+	/*font-weight: 500;*/
+	/*padding-left:20px;*/
+	/*font-size:12px;*/
+	/*letter-spacing: 1px;*/
+    /*position:absolute;*/
+    /*width: 100%;*/
+    /*bottom: 0;*/
+/*}*/
+
+/*.footer p {*/
+    /*padding-top: 5px;*/
+    /*margin: 0;*/
+/*}*/
+
+/* misc */
+br.c-both {
+	clear:both;
+}
+
+.wr-input-control .helper {
+	font-weight:100;
+}
+
+.wr-input-control .cus-col-25 {
+	float:left;
+	width:25%;
+}
+
+.wr-input-control .cus-col-50 {
+	float:left;
+	width:60%;
+}
+
+.wr-input-control .cus-col-70 {
+	float:left;
+	width:70%;
+}
+
+.wr-input-control .cus-col-50 input {
+	width:100%;
+}
+
+.wr-input-control .cus-col-70 input {
+	width:95%;
+}
+
+.wr-input-control .cus-col-25 input {
+	width:65%;
+}
+
+/*.wr-input-control .cus-col-50 span, .wr-input-control .cus-col-25 span {*/
+	/*padding-left:20px;*/
+/*}*/
+
+/* wizard */
+.wr-wizard {
+
+}
+
+.itm-wiz-current .wiz-no {
+    border:1px solid #444;
+    color:#fff;
+    background:#444;
+}
+
+.itm-wiz {
+    font-weight:100;
+}
+
+.itm-wiz div {
+    display:inline-block;
+    float:left;
+}
+
+.wiz-no {
+    width:50px;
+    height:50px;
+    font-size:33px;
+    font-weight: 100;
+    border-radius: 80px;
+    border:1px solid #ccc;
+    color:#fff;
+    padding:0 12px 10px;
+    display:inline-block;
+    text-align: center;
+    background:#ccc;
+    margin-right: 10px;
+}
+
+.wiz-lbl {
+    width:190px;
+    font-size:17px;
+}
+
+.wiz-lbl > span {
+    padding-top:0;
+    display:inline-block;
+}
+
+
+
+
+

@@ -1,0 +1,7 @@
+{
+    "version": "1.0.0",
+    "extends" : "uuf.unit.lib.select2",
+    "pushedUris": [
+        "/platform-configuration"
+    ]
+}

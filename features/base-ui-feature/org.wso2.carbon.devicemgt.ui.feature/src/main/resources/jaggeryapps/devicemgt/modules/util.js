@@ -24,6 +24,7 @@ var util = function () {
     var carbon = require('carbon');
     var realmService = carbon.server.osgiService('org.wso2.carbon.user.core.service.RealmService');
     var adminUserName = realmService.getBootstrapRealmConfiguration().getAdminUserName();
+    var constants = require("/modules/constants.js");
 
     module.getDyanmicCredentials = function (owner) {
         var payload = {

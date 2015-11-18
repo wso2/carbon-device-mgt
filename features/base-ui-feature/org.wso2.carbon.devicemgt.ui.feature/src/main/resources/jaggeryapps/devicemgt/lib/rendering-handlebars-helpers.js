@@ -250,7 +250,7 @@ function registerHelpers(renderingData, lookupTable) {
 
         // Context values.
         var appName = renderingData.context.appData.name;
-        var appUri = renderingData.context.appData.uri;
+        var appContext = renderingData.context.appData.uri;
         var uriParams = renderingData.context.uriData.params;
 
         // Start processing page.
@@ -259,7 +259,7 @@ function registerHelpers(renderingData, lookupTable) {
         var templateContext = null;
         if (pageScriptData.scriptFilePath) {
             var scriptContext = {
-                app: {name: appName, uri: appUri},
+                app: {name: appName, context: appContext},
                 uriParams: uriParams,
                 handlebars: handlebarsEnvironment
             };
@@ -269,7 +269,7 @@ function registerHelpers(renderingData, lookupTable) {
         // Additional parameters to the template context.
         var templateOptions = {
             data: {
-                app: {name: appName, uri: appUri},
+                app: {name: appName, context: appContext},
                 uriParams: uriParams
             }
         };
@@ -357,7 +357,7 @@ function registerHelpers(renderingData, lookupTable) {
 
         // Context values.
         var appName = renderingData.context.appData.name;
-        var appUri = renderingData.context.appData.uri;
+        var appContext = renderingData.context.appData.uri;
         var unitCssClass = "unit-" + processingUnit.fullName;
         var optionsHash = options.hash;
         var optionsHashUnitParams = optionsHash[constants.HELPER_PARAM_UNIT_PARAMS];
@@ -380,7 +380,7 @@ function registerHelpers(renderingData, lookupTable) {
         var templateContext = null;
         if (unitScriptData.scriptFilePath) {
             var scriptContext = {
-                app: {name: appName, uri: appUri},
+                app: {name: appName, context: appContext},
                 unit: {cssClass: unitCssClass, params: unitParams, publicUri: unitPublicUri},
                 uriParams: uriParams
             };
@@ -390,7 +390,7 @@ function registerHelpers(renderingData, lookupTable) {
         // Additional parameters to the template context.
         var templateOptions = {
             data: {
-                app: {name: appName, uri: appUri},
+                app: {name: appName, context: appContext},
                 unit: {cssClass: unitCssClass, params: unitParams, publicUri: unitPublicUri},
                 uriParams: uriParams
             }

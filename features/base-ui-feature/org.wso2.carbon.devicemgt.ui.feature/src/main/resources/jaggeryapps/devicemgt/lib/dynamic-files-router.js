@@ -96,22 +96,26 @@ var route;
         try {
             var compiledTemplate = handlebarsEnvironment.compile(buffer.join(""));
             response.addHeader("Content-type", "text/html");
+            // We don't want web browsers to cache dynamic HTML pages.
+            // Adopted from http://stackoverflow.com/a/2068407/1577286
             response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             response.addHeader("Pragma", "no-cache");
             response.addHeader("Expires", "0");
             print(compiledTemplate({}));
         } catch (e) {
             if ((typeof e) == "string") {
-                //JS thrown String type Error
+                //JS "throw message" type errors
                 log.error(e);
                 response.sendError(500, e);
             } else {
                 if (e.stack) {
-                    //Java/Rhino Exception
+                    //Java/Rhino Exceptions
                     log.error(e);
                     response.sendError(500, e.message);
-                }else if(e.message){
-                    //JS thrown new Error() exception
+                } else if (e.message) {
+                    //JS "throw new Error(message)" type errors
+                    var err = new Error();
+                    log.info(err.stack);
                     log.error(e.message);
                     response.sendError(500, e.message);
                 }

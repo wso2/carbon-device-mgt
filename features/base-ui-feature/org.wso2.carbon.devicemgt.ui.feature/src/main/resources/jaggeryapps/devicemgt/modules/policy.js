@@ -43,16 +43,13 @@ policyModule = function () {
         var utility = require('/modules/utility.js')["utility"];
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/mdm-admin/policies";
+            var url = mdmProps["httpsURL"] + "/devicemgt_admin/policies";
             var isUpdated = false;
             var response = serviceInvokers.XMLHttp.get(url,function(responsePayload){
                 var response = {};
                 var policyListFromRestEndpoint = responsePayload["responseContent"];
                 if(!policyListFromRestEndpoint){
-                    //var a = undefined;a.length;
-                    //var b = Packages.java.lang.Integer;b.parseInt("sdfdsfdsf");
-                    //throw new Error("Error retrieving policy list from url:" + url);
-                    throw "Error retrieving policy list from url:" + url;
+                    throw new Error("Error retrieving policy list from url:" + url);
                 }
                 var policyListToView = [];
                 var i, policyObjectFromRestEndpoint, policyObjectToView;

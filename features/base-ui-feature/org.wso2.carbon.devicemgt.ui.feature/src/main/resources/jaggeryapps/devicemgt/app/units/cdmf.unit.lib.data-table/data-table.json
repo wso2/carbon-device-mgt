@@ -4,6 +4,7 @@
     "pushedUris": [
         "/devices",
         "/users",
-        "/roles"
+        "/roles",
+        "/policies"
     ]
 }

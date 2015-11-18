@@ -96,17 +96,25 @@ var route;
         try {
             var compiledTemplate = handlebarsEnvironment.compile(buffer.join(""));
             response.addHeader("Content-type", "text/html");
-            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-            response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-            response.setHeader("Expires", "0"); // Proxies.
+            response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.addHeader("Pragma", "no-cache");
+            response.addHeader("Expires", "0");
             print(compiledTemplate({}));
         } catch (e) {
-            if (e.message) {
-                log.error(e.message, e);
-                response.sendError(500, e.message);
-            } else {
+            if ((typeof e) == "string") {
+                //JS thrown String type Error
                 log.error(e);
                 response.sendError(500, e);
+            } else {
+                if (e.stack) {
+                    //Java/Rhino Exception
+                    log.error(e);
+                    response.sendError(500, e.message);
+                }else if(e.message){
+                    //JS thrown new Error() exception
+                    log.error(e.message);
+                    response.sendError(500, e.message);
+                }
             }
         }
     }

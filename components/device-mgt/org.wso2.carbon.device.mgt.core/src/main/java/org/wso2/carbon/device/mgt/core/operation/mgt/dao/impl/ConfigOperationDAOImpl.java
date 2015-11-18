@@ -82,8 +82,8 @@ public class ConfigOperationDAOImpl extends OperationDAOImpl {
         try {
             super.updateOperation(operation);
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_CONFIG_OPERATION O SET O.OPERATION_CONFIG = ? " +
-                    "WHERE O.OPERATION_ID = ?");
+            stmt = connection.prepareStatement("UPDATE DM_CONFIG_OPERATION SET OPERATION_CONFIG = ? " +
+                    "WHERE OPERATION_ID = ?");
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);
             oos.writeObject(operation);

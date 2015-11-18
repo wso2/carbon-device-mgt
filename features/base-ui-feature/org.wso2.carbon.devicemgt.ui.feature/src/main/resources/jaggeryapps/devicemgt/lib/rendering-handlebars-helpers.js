@@ -201,7 +201,10 @@ function registerHelpers(renderingData, lookupTable) {
             }
         }
         if (combiningResourcesPaths.length > 0) {
-            singleResourcesPaths.push(combiningResourcesPaths.join(","));
+            var firstResourceType = sortedResources[0].type;
+            var extension = (firstResourceType == "less") ? "css" : firstResourceType;
+            var crp = combiningResourcesPaths.join(constants.COMBINED_RESOURCES_SEPARATOR);
+            singleResourcesPaths.push(crp + constants.COMBINED_RESOURCES_URI_TAIL + extension);
         }
         return singleResourcesPaths;
     }

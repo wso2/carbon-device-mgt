@@ -49,7 +49,7 @@ var route;
     }
 
     function nthIndexOf(str, pat, n) {
-        // Adapted from https://stackoverflow.com/a/14482123/1577286
+        // Adopted from https://stackoverflow.com/a/14482123/1577286
         var strLength = str.length, i = -1;
         while (n-- && (i++ < strLength)) {
             i = str.indexOf(pat, i);
@@ -63,7 +63,7 @@ var route;
      * @returns {string} hash code
      */
     function hashCode(str) {
-        // Adapted from https://stackoverflow.com/a/7616484/1577286
+        // Adopted from https://stackoverflow.com/a/7616484/1577286
         var strLength = str.length;
         if (strLength == 0) {
             return "0";
@@ -95,7 +95,7 @@ var route;
      */
     function getLessCompiler() {
         var less = require(constants.LIBRARY_LESS).less;
-        // Adapted from https://github.com/less/less.js/blob/v1.7.5/lib/less/rhino.js#L89
+        // Adopted from https://github.com/less/less.js/blob/v1.7.5/lib/less/rhino.js#L89
         less.Parser.fileLoader = function (file, currentFileInfo, callback, env) {
             var href = file;
 
@@ -176,7 +176,7 @@ var route;
             return rv;
         }
 
-        // Adapted from https://github.com/less/less.js/blob/v1.7.5/lib/less/rhino.js#L149
+        // Adopted from https://github.com/less/less.js/blob/v1.7.5/lib/less/rhino.js#L149
         var options = {
             depends: false,
             compress: false,
@@ -454,8 +454,8 @@ var route;
         // URI = /{appName}/public/[{unitFullName}/{resourceType}/{+filePath},...]
         var uri = decodeURIComponent(request.getRequestURI());
         // {unitFullName}/{resourceType}/{+filePath},{unitFullName}/{resourceType}/{+filePath},...
-        var resourcesString = uri.substr(nthIndexOf(uri, "/", 3) + 1);
-        if (resourcesString.length == 0) {
+        var rawResourcesString = uri.substr(nthIndexOf(uri, "/", 3) + 1);
+        if (rawResourcesString.length == 0) {
             // An invalid URI.
             var msg = "Request URI '" + uri + "' is invalid.";
             log.warn(msg);
@@ -464,7 +464,8 @@ var route;
         }
 
         // separate resources
-        var requestedResourcesUris = resourcesString.split(",");
+        var resourcesString = rawResourcesString.split(constants.COMBINED_RESOURCES_URI_TAIL)[0];
+        var requestedResourcesUris = resourcesString.split(constants.COMBINED_RESOURCES_SEPARATOR);
         if (requestedResourcesUris.length == 0) {
             // An invalid URI.
             var msg = "Request URI '" + uri + "' is invalid.";

@@ -1,6 +1,7 @@
 /**
  * Application constants.
- * @type {{DIRECTORY_APP_ROOT: string, DIRECTORY_APP_CONF: string, DIRECTORY_APP_LAYOUTS: string,
+ * @type {{COMBINED_RESOURCES_SEPARATOR: string, COMBINED_RESOURCES_URI_TAIL: string,
+ *     DIRECTORY_APP_ROOT: string, DIRECTORY_APP_CONF: string, DIRECTORY_APP_LAYOUTS: string,
  *     DIRECTORY_APP_PAGES: string, DIRECTORY_APP_UNITS: string, DIRECTORY_APP_UNIT_PUBLIC: string,
  *     DIRECTORY_CACHE: string, DIRECTORY_DEBUG: string, FILE_APP_CONF: string, FILE_LIB_CONF:
  *     string, LIBRARY_HANDLEBARS: string, LIBRARY_LESS: string, CACHE_KEY_LOOKUP_TABLE: string,
@@ -15,6 +16,8 @@
  *     string, HELPER_PARAM_SCOPE: string}}
  */
 var constants = {
+    COMBINED_RESOURCES_SEPARATOR: ",",
+    COMBINED_RESOURCES_URI_TAIL: "_/combined.",
     // paths
     DIRECTORY_APP_ROOT: "/app",
     DIRECTORY_APP_CONF: "/app/conf",

@@ -70,8 +70,8 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_OPERATION O SET O.RECEIVED_TIMESTAMP=? " +
-                    "WHERE O.ID=?");
+            stmt = connection.prepareStatement("UPDATE DM_OPERATION SET RECEIVED_TIMESTAMP=? " +
+                    "WHERE ID=?");
             stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
@@ -87,8 +87,8 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING O SET O.STATUS=? " +
-                    "WHERE O.ENROLMENT_ID=? and O.OPERATION_ID=?");
+            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS=? " +
+                    "WHERE ENROLMENT_ID=? and OPERATION_ID=?");
             stmt.setString(1, status.toString());
             stmt.setInt(2, enrolmentId);
             stmt.setInt(3, operationId);

@@ -112,9 +112,9 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                 if (oAuth2TokenValidationResponseDTO.isValid()) {
                     String username = oAuth2TokenValidationResponseDTO.getAuthorizedUser();
                     //Remove the userstore domain from username
-                    if (username.contains("/")) {
+                    /*if (username.contains("/")) {
                         username = username.substring(username.indexOf('/') + 1);
-                    }
+                    }*/
                     authenticationInfo.setUsername(username);
                     authenticationInfo.setTenantDomain(MultitenantUtils.getTenantDomain(username));
                     authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username));

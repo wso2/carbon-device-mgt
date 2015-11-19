@@ -97,7 +97,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.wso2.mdm</groupId>
+                                    <groupId>org.wso2.carbon.devicemgt</groupId>
                                     <artifactId>dynamic-client-web</artifactId>
                                     <version>${carbon.device.mgt.version}</version>
                                     <type>war</type>

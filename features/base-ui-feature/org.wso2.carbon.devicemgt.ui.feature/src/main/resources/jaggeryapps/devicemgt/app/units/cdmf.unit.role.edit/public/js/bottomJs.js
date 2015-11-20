@@ -39,7 +39,7 @@ $(document).ready(function () {
         multiple:true,
         tags: true,
         ajax: {
-            url: "/mdm-admin/users",
+            url: "/devicemgt_admin/users",
             dataType: 'json',
             delay: 250,
             id: function(user){ return user.username; },
@@ -105,7 +105,7 @@ $(document).ready(function () {
             }
             addRoleFormData.users = users;
 
-            var addRoleAPI = "/mdm-admin/roles/" + currentRoleName;
+            var addRoleAPI = "/devicemgt_admin/roles/" + currentRoleName;
 
             invokerUtil.put(
                 addRoleAPI,

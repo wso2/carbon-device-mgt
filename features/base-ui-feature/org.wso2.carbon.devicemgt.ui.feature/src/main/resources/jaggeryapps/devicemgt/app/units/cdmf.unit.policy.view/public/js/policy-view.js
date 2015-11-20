@@ -1803,7 +1803,7 @@ var updatePolicy = function (policy, state) {
     }
 
     console.log(JSON.stringify(payload));
-    var serviceURL = "/mdm-admin/policies/" + getParameterByName("id");
+    var serviceURL = "/devicemgt_admin/policies/" + getParameterByName("id");
     invokerUtil.put(
         serviceURL,
         payload,
@@ -1812,7 +1812,7 @@ var updatePolicy = function (policy, state) {
             if (state == "save"){
                 var policyList = [];
                 policyList.push(getParameterByName("id"));
-                serviceURL = "/mdm-admin/policies/inactivate";
+                serviceURL = "/devicemgt_admin/policies/inactivate";
                 invokerUtil.put(
                     serviceURL,
                     policyList,
@@ -1829,7 +1829,7 @@ var updatePolicy = function (policy, state) {
             }else if(state == "publish"){
                 var policyList = [];
                 policyList.push(getParameterByName("id"));
-                serviceURL = "/mdm-admin/policies/activate";
+                serviceURL = "/devicemgt_admin/policies/activate";
                 invokerUtil.put(
                     serviceURL,
                     policyList,
@@ -1988,7 +1988,7 @@ $(document).ready(function () {
 
     var policyPayloadObj;
     invokerUtil.get(
-        "/mdm-admin/policies/" + getParameterByName("id"),
+        "/devicemgt_admin/policies/" + getParameterByName("id"),
         // on success
         function (data) {
             // console.log("success: " + JSON.stringify(data));

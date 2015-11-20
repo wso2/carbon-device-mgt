@@ -354,7 +354,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/users";
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users";
             return privateMethods.callBackend(url, constants.HTTP_GET);
 
         } catch (e) {
@@ -381,7 +381,7 @@ var userModule = function () {
         var carbonUser = privateMethods.getCarbonUser();
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/users/view?username=" + username;
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/view?username=" + username;
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             response["userDomain"] = carbonUser.domain;
             return response;
@@ -400,7 +400,7 @@ var userModule = function () {
         var carbonUser = privateMethods.getCarbonUser();
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/users/roles?username=" + username;
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/roles?username=" + username;
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             return response;
         } catch (e) {
@@ -422,7 +422,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/users/users-by-username";
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/users-by-username";
             return privateMethods.callBackend(url, constants.HTTP_GET)
         } catch (e) {
             throw e;
@@ -446,7 +446,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/roles";
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles";
             return privateMethods.callBackend(url, constants.HTTP_GET);
         } catch (e) {
             throw e;
@@ -467,7 +467,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/devices/types";
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/types";
             return privateMethods.callBackend(url, constants.HTTP_GET);
         } catch (e) {
             throw e;
@@ -490,7 +490,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/roles/" + roleName;
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/" + roleName;
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             return response;
         } catch (e) {

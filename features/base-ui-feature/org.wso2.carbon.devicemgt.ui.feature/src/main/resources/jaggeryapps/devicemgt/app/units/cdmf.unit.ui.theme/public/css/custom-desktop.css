@@ -129,7 +129,7 @@ a.ast-type-item:hover {
 /* device board */
 .wr-device-board {
 	background:#fafafa;
-	padding:10px 0;
+	padding:10px;
 	font-size:20px;
 	margin-bottom:10px;
 }
@@ -510,11 +510,11 @@ a.cu-btn, a.cu-btn-inner {
 }
 
 a.cu-btn:hover {
-	background-color: #132D45;
+	background-color: #132D45 !important;
 }
 
 a.cu-btn-inner {
-    color: #8f8f8f;
+    color: #8f8f8f !important;
     padding: 5px 10px;
     height: 35px;
 }

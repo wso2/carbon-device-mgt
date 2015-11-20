@@ -77,7 +77,7 @@ $(document).ready(function () {
             addUserFormData.emailAddress = emailAddress;
             addUserFormData.roles = roles;
 
-            var addUserAPI = "/mdm-admin/users";
+            var addUserAPI = "/devicemgt_admin/users";
 
             invokerUtil.post(
                 addUserAPI,

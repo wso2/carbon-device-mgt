@@ -103,7 +103,7 @@ $(document).ready(function () {
     });
 
     var getAndroidConfigAPI = "/mdm-android-agent/configuration";
-    var getGeneralConfigAPI = "/mdm-admin/configuration";
+    var getGeneralConfigAPI = "/devicemgt_admin/configuration";
     var getIosConfigAPI = "/ios/configuration";
     var getWindowsConfigAPI = "/mdm-windows-agent/services/configuration";
 
@@ -459,7 +459,7 @@ $(document).ready(function () {
 
             addConfigFormData.configuration = configList;
 
-            var addConfigAPI = "/mdm-admin/configuration";
+            var addConfigAPI = "/devicemgt_admin/configuration";
 
             invokerUtil.post(
                 addConfigAPI,

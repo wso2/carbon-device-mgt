@@ -1764,9 +1764,9 @@ var savePolicy = function (policy, state) {
 
     var serviceURL;
     if (state == "save"){
-        serviceURL = "/mdm-admin/policies/inactive-policy"
+        serviceURL = "/devicemgt_admin/policies/inactive-policy"
     }else if (state == "publish"){
-        serviceURL = "/mdm-admin/policies/active-policy"
+        serviceURL = "/devicemgt_admin/policies/active-policy"
     }
     invokerUtil.post(
         serviceURL,
@@ -1940,7 +1940,7 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = "/mdm-admin/users";
+                postData.actionUrl = "/devicemgt_admin/users";
                 postData.actionPayload = JSON.stringify({
                     q: params.term, // search term
                     page: params.page

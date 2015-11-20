@@ -109,7 +109,7 @@ $(document).ready(function () {
     }
 
     $("#appbar-btn-apply-changes").click(function () {
-        var applyPolicyChangesAPI = "/mdm-admin/policies/apply-changes";
+        var applyPolicyChangesAPI = "/devicemgt_admin/policies/apply-changes";
         $(modalPopupContent).html($('#change-policy-modal-content').html());
         showPopup();
 
@@ -155,7 +155,7 @@ $(document).ready(function () {
             newPolicyPriorityList.push(policy);
         }
 
-        var updatePolicyAPI = "/mdm-admin/policies/priorities";
+        var updatePolicyAPI = "/devicemgt_admin/policies/priorities";
         invokerUtil.put(
             updatePolicyAPI,
             newPolicyPriorityList,
@@ -181,7 +181,7 @@ $(document).ready(function () {
 
     $(".policy-unpublish-link").click(function () {
         var policyList = getSelectedPolicies();
-        var serviceURL = "/mdm-admin/policies/inactivate";;
+        var serviceURL = "/devicemgt_admin/policies/inactivate";;
         console.log(policyList);
         if (policyList == 0) {
             $(modalPopupContent).html($("#errorPolicyUnPublish").html());
@@ -220,7 +220,7 @@ $(document).ready(function () {
 
     $(".policy-publish-link").click(function () {
         var policyList = getSelectedPolicies();
-        var serviceURL = "/mdm-admin/policies/activate";;
+        var serviceURL = "/devicemgt_admin/policies/activate";;
         console.log(policyList);
         if (policyList == 0) {
             $(modalPopupContent).html($("#errorPolicyPublish").html());
@@ -258,7 +258,7 @@ $(document).ready(function () {
 
     $(".policy-remove-link").click(function () {
         var policyList = getSelectedPolicies();
-        var deletePolicyAPI = "/mdm-admin/policies/bulk-remove";
+        var deletePolicyAPI = "/devicemgt_admin/policies/bulk-remove";
         if (policyList == 0) {
             $(modalPopupContent).html($("#errorPolicy").html());
         } else {

@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
-    "uri": "/roles/edit-permission",
+    "uri": "/role/edit-permission/{+any}",
     "layout": "uuf.layout.default"
 }

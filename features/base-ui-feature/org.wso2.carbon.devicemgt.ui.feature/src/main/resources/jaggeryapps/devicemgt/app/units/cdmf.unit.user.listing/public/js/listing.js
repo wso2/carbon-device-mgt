@@ -66,7 +66,7 @@ function getSelectedUsernames() {
  */
 $("a.invite-user-link").click(function () {
     var usernameList = getSelectedUsernames();
-    var inviteUserAPI = "/mdm-admin/users/email-invitation";
+    var inviteUserAPI = "/devicemgt_admin/users/email-invitation";
 
     if (usernameList == 0) {
         $(modalPopupContent).html($("#errorUsers").html());
@@ -108,7 +108,7 @@ $("a.invite-user-link").click(function () {
 $("a.remove-user-link").click(function () {
     var username = $(this).data("username");
     var userid = $(this).data("userid");
-    var removeUserAPI = "/mdm-admin/users?username=" + username;
+    var removeUserAPI = "/devicemgt_admin/users?username=" + username;
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
 

@@ -21,26 +21,27 @@ var loadPaginatedObjects = function(objectGridId, objectGridContainer, objectGri
                 console.log(message);
             });
     });
-}
+};
 
 $(function () {
-    var serviceURL = "/mdm-admin/roles";
+    var serviceURL = "/devicemgt_admin/roles";
     var callback = function(data){
         data = JSON.parse(data);
         data = {
             "viewModel": {
-                "roles": data.responseContent
+                "roles": data.responseContent,
+                "appContext" : clientJsAppContext
             },
             "length": data.responseContent.length
-        }
+        };
         return data;
-    }
+    };
     loadPaginatedObjects("#role-grid", "#ast-container", "#role-listing", serviceURL, callback);
 
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({
         beforeStop : function () {
-            var sortedIDs = $(this).sortable('toArray');;
+            var sortedIDs = $(this).sortable('toArray');
         }
     });
     $(sortableElem).disableSelection();
@@ -84,7 +85,7 @@ function hidePopup() {
  */
 $("#role-grid").on("click", ".remove-role-link", function () {
     var role = $(this).data("role");
-    var removeRoleAPI = "/mdm-admin/roles/" + role;
+    var removeRoleAPI = "/devicemgt_admin/roles/" + role;
 
     $(modalPopupContent).html($('#remove-role-modal-content').html());
     showPopup();

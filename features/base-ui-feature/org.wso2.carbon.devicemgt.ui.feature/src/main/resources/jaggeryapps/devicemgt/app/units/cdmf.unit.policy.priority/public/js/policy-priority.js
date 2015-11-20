@@ -78,7 +78,7 @@ $(document).ready(function () {
             newPolicyPriorityList.push(policy);
         }
 
-        var updatePolicyAPI = "/mdm-admin/policies/priorities";
+        var updatePolicyAPI = "/devicemgt_admin/policies/priorities";
         invokerUtil.put(
             updatePolicyAPI,
             newPolicyPriorityList,
@@ -103,7 +103,7 @@ $(document).ready(function () {
     });
 
     $(applyChangesBtn).click(function () {
-        var applyPolicyChangesAPI = "/mdm-admin/policies/apply-changes";
+        var applyPolicyChangesAPI = "/devicemgt_admin/policies/apply-changes";
         $(modalPopupContent).html($('#change-policy-modal-content').html());
         showPopup();
 

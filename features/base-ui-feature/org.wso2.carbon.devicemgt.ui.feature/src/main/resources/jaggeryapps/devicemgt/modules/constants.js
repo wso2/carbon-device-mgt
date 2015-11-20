@@ -18,6 +18,7 @@
 
 var WEB_APP_TITLE = "WSO2 MDM";
 var WEB_APP_CONTEXT = "/devicemgt";
+var ADMIN_SERVICE_CONTEXT = "/devicemgt_admin";
 var USER_SESSION_KEY = "USER";
 var UNSPECIFIED = "Unspecified";
 

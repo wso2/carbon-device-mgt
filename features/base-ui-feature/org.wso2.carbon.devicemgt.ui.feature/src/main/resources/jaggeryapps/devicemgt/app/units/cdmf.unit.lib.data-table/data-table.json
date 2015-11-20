@@ -2,7 +2,6 @@
     "version": "1.0.0",
     "extends" : "uuf.unit.lib.data-table",
     "pushedUris": [
-        "/devices",
         "/users",
         "/roles",
         "/policies"

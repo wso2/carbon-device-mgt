@@ -143,6 +143,7 @@ var util = function () {
         if (scope) {
             url = url + "&scope=" + scope
         }
+        new Log().info(url);
         xhr.send(url);
         delete clientData;
         var tokenPair = {};

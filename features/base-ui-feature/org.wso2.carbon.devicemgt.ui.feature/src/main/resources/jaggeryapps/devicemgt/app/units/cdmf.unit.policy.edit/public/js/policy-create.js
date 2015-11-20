@@ -1773,7 +1773,7 @@ var updatePolicy = function (policy, state) {
         payload["roles"] = [];
     }
 
-    var serviceURL = "/mdm-admin/policies/" + getParameterByName("id");
+    var serviceURL = "/devicemgt_admin/policies/" + getParameterByName("id");
     invokerUtil.put(
         serviceURL,
         payload,
@@ -1782,7 +1782,7 @@ var updatePolicy = function (policy, state) {
             if (state == "save"){
                 var policyList = [];
                 policyList.push(getParameterByName("id"));
-                serviceURL = "/mdm-admin/policies/inactivate";
+                serviceURL = "/devicemgt_admin/policies/inactivate";
                 invokerUtil.put(
                     serviceURL,
                     policyList,
@@ -1799,7 +1799,7 @@ var updatePolicy = function (policy, state) {
             }else if(state == "publish"){
                 var policyList = [];
                 policyList.push(getParameterByName("id"));
-                serviceURL = "/mdm-admin/policies/activate";
+                serviceURL = "/devicemgt_admin/policies/activate";
                 invokerUtil.put(
                     serviceURL,
                     policyList,
@@ -2000,7 +2000,7 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = "/mdm-admin/users?q=ad";
+                postData.actionUrl = "/devicemgt_admin/users?q=ad";
                 postData.actionPayload = JSON.stringify({
                     q: params.term, // search term
                     page: params.page
@@ -2028,7 +2028,7 @@ $(document).ready(function () {
 
     var policyPayloadObj;
     invokerUtil.get(
-        "/mdm-admin/policies/" + getParameterByName("id"),
+        "/devicemgt_admin/policies/" + getParameterByName("id"),
         // on success
         function (data) {
             data = JSON.parse(data);

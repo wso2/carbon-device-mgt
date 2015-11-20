@@ -43,7 +43,7 @@ policyModule = function () {
         var utility = require('/modules/utility.js')["utility"];
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + "/devicemgt_admin/policies";
+            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/policies";
             var isUpdated = false;
             var response = serviceInvokers.XMLHttp.get(url,function(responsePayload){
                 var response = {};

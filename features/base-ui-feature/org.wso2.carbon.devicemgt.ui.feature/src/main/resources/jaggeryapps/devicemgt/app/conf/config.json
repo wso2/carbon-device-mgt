@@ -3,7 +3,7 @@
     "apiContext" : "api",
     "httpsURL" : "%https.ip%",
     "httpURL" : "%http.ip%",
-    "enrollmentURL": "%https.ip%/mdm/enrollment",
+    "enrollmentURL": "%https.ip%/devicemgt/enrollment",
     "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
     "iOSAPIRoot" : "%https.ip%/ios/",
     "dynamicClientRegistrationEndPoint" : "%https.ip%/dynamic-client-web/register/",
@@ -14,7 +14,7 @@
     "usernameLength":30,
     "device" : {
         "ios" : {
-            "location" : "%http.ip%/mdm/public/asset-download-agent-ios/asset/ios-agent.ipa",
+            "location" : "%http.ip%/devicemgt/public/asset-download-agent-ios/asset/ios-agent.ipa",
             "bundleID" : "org.wso2.carbon.emm.iOSMDMAgent",
             "version" : "1.0",
             "appName" : "EMM iOS Agent"

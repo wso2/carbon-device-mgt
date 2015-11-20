@@ -49,7 +49,7 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = "/mdm-admin/users";
+                postData.actionUrl = "/devicemgt_admin/users";
                 postData.actionPayload = JSON.stringify({
                     q: params.term, // search term
                     page: params.page
@@ -112,7 +112,7 @@ $(document).ready(function () {
             }
             addRoleFormData.users = users;
 
-            var addRoleAPI = "/mdm-admin/roles";
+            var addRoleAPI = "/devicemgt_admin/roles";
 
             invokerUtil.post(
                 addRoleAPI,

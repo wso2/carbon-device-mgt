@@ -37,7 +37,7 @@ $(document).ready(function () {
     $("#ast-container").on("click", ".new-notification", function(e){
         var notificationId = $(this).data("id");
         var redirectUrl = $(this).data("url");
-        var getNotificationsAPI = "/mdm-admin/notifications/"+notificationId+"/CHECKED";
+        var getNotificationsAPI = "/devicemgt_admin/notifications/"+notificationId+"/CHECKED";
         var errorMsgWrapper = "#error-msg";
         var errorMsg = "#error-msg span";
         invokerUtil.put(
@@ -71,7 +71,7 @@ function loadNotifications(){
     var deviceListingSrc = deviceListing.attr("src");
     var currentUser = deviceListing.data("currentUser");
     $.template("notification-listing", deviceListingSrc, function (template) {
-        var serviceURL = "/mdm-admin/notifications";
+        var serviceURL = "/devicemgt_admin/notifications";
         var successCallback = function (data) {
             var viewModel = {};
             data = JSON.parse(data);

@@ -81,7 +81,7 @@ $(document).ready(function () {
             }
             addUserFormData.roles = roles;
 
-            var addUserAPI = "/mdm-admin/users?username=" + username;
+            var addUserAPI = "/devicemgt_admin/users?username=" + username;
 
             invokerUtil.put(
                 addUserAPI,

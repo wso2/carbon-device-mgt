@@ -20,7 +20,7 @@ var invokerUtil = function () {
 
     var module = {};
 
-    var END_POINT = window.location.origin+"/mdm/api/invoker/execute/";
+    var END_POINT = window.location.origin+"/devicemgt/api/invoker/execute/";
 
     module.get = function (url, successCallback, errorCallback) {
         var payload = null;
@@ -44,10 +44,11 @@ var invokerUtil = function () {
             accept: "application/json",
             success: successCallback
         };
+        console.log(data);
         var paramValue = {};
         paramValue.actionMethod = methoad;
         paramValue.actionUrl = url;
-        paramValue.actionPayload = JSON.stringify(payload)
+        paramValue.actionPayload = JSON.stringify(payload);
         data.data = JSON.stringify(paramValue);
         $.ajax(data).fail(function (jqXHR) {
             if (JSON.parse(jqXHR).status == "401") {

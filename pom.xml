@@ -1542,6 +1542,9 @@
         <google.gson.version>2.3.1</google.gson.version>
         <jsr311.version>1.1.1</jsr311.version>
         <commons.logging.version>1.2</commons.logging.version>
+
+	<!-- Release plugin ID for github-->
+	<project.scm.id>github-scm</project.scm.id>
     </properties>
 
 </project>

@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common.api</artifactId>
+            <artifactId>org.wso2.carbon.device.mgt.common.impl</artifactId>
         </dependency>
 
         <dependency>
@@ -106,7 +106,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.wso2.carbon.devicemgt</groupId>
-                                    <artifactId>org.wso2.carbon.device.mgt.common.api.service
+                                    <artifactId>org.wso2.carbon.device.mgt.common.api
                                     </artifactId>
                                     <version>0.9.2-SNAPSHOT</version>
                                     <type>war</type>
@@ -144,7 +144,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common.api:${carbon.device.mgt.version}
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common.impl:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
                                     org.json.wso2:json:${commons-json.version}

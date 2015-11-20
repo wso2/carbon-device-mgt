@@ -168,7 +168,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.mgt.common.api</artifactId>
+                <artifactId>org.wso2.carbon.device.mgt.common.impl</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
@@ -259,7 +259,7 @@
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.mdm</groupId>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>dynamic-client-web</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>

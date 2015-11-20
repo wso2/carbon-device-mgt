@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionUtils;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -215,7 +216,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         UserRealm userRealm = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
         if (userRealm != null && userRealm.getAuthorizationManager() != null) {
             return userRealm.getAuthorizationManager()
-                            .isUserAuthorized(username, PermissionUtils.getAbsolutePermissionPath(EMM_ADMIN_PERMISSION),
+                            .isUserAuthorized(removeTenantDomain(username), PermissionUtils.getAbsolutePermissionPath(EMM_ADMIN_PERMISSION),
                                               PermissionMethod.UI_EXECUTE);
         }
         return false;
@@ -224,13 +225,17 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     private String getUserName() {
         String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
         if (username != null && !username.isEmpty()) {
-            String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-            if (username.endsWith(tenantDomain)) {
-                return username.substring(0, username.lastIndexOf("@"));
-            }
-            return username;
+            return removeTenantDomain(username);
         }
         return null;
+    }
+
+    private String removeTenantDomain(String username) {
+        String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        if (username.endsWith(tenantDomain)) {
+            return username.substring(0, username.lastIndexOf("@"));
+        }
+        return username;
     }
 
     private int getTenantId() {

@@ -32,13 +32,16 @@ import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
@@ -112,10 +115,16 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
 
         try {
             DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, deviceIds);
+            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().notifyOperationToDevices
+                    (operation, deviceIds);
         } catch (OperationManagementException opeEx) {
             String errorMsg = "Error in add operation at app installation:" + opeEx.getErrorMessage();
             log.error(errorMsg, opeEx);
             throw new ApplicationManagementException(errorMsg, opeEx);
+        }catch (DeviceManagementException deviceEx){
+            String errorMsg = "Error in notify operation at app installation:" + deviceEx.getErrorMessage();
+            log.error(errorMsg, deviceEx);
+            throw new ApplicationManagementException(errorMsg, deviceEx);
         }
     }
 

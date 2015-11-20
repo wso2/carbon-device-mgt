@@ -59,6 +59,12 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
+    public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
+            throws DeviceManagementException {
+
+    }
+
+    @Override
     public Application[] getApplications(String domain, int pageNumber, int size)
             throws ApplicationManagementException {
         return new Application[0];

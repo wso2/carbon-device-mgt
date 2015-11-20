@@ -106,6 +106,7 @@ public class DeviceManagementServiceComponent {
     private static List<PluginInitializationListener> listeners = new ArrayList<>();
     private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
     private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
+    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {

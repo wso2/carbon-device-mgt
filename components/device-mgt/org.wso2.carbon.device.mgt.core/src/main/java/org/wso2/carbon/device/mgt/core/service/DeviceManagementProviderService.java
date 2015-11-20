@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -161,6 +162,6 @@ public interface DeviceManagementProviderService extends OperationManager {
     boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                       EnrolmentInfo.Status status) throws DeviceManagementException;
 
-
+    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)throws DeviceManagementException;
 
 }

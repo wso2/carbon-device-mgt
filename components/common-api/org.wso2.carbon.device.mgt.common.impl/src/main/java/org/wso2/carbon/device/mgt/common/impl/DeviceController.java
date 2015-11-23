@@ -168,7 +168,7 @@ public class DeviceController {
 			return false;
 		}
 
-		dataStoreConnector.publishIoTData(deviceDataMap);
+		dataStoreConnector.publishDeviceData(deviceDataMap);
 		return true;
 	}
 

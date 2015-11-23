@@ -23,19 +23,20 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.core.ServerStartupObserver;
+import org.wso2.carbon.databridge.core.DataBridgeReceiverService;
 import org.wso2.carbon.device.mgt.common.impl.DeviceController;
+import org.wso2.carbon.device.mgt.common.impl.UserManagement;
 import org.wso2.carbon.device.mgt.common.impl.analytics.statistics.DeviceMgtEventsStatisticsClient;
+import org.wso2.carbon.device.mgt.common.impl.analytics.statistics.DeviceMgtUsageStatisticsClient;
 import org.wso2.carbon.device.mgt.common.impl.config.devicetype.DeviceTypeConfigurationManager;
 import org.wso2.carbon.device.mgt.common.impl.config.devicetype.datasource.DeviceTypeConfig;
-import org.wso2.carbon.device.mgt.common.impl.startup.StartupUrlPrinter;
-import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.dao.IotDeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.common.impl.UserManagement;
+import org.wso2.carbon.device.mgt.common.impl.config.server.DeviceCloudConfigManager;
 import org.wso2.carbon.device.mgt.common.impl.service.DeviceTypeService;
 import org.wso2.carbon.device.mgt.common.impl.service.DeviceTypeServiceImpl;
-import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.exception.IotDeviceMgtPluginException;
-import org.wso2.carbon.device.mgt.common.impl.config.server.DeviceCloudConfigManager;
-import org.wso2.carbon.device.mgt.common.impl.analytics.statistics.DeviceMgtUsageStatisticsClient;
-import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.dao.util.IotDeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.common.impl.startup.StartupUrlPrinter;
+import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.exception.DeviceMgtPluginException;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -63,77 +64,84 @@ import java.util.Map;
  * policy="dynamic"
  * bind="setConfigurationContextService"
  * unbind="unsetConfigurationContextService"
+ * @scr.reference name="databridge.component"
+ * interface="org.wso2.carbon.databridge.core.DataBridgeReceiverService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setDataBridgeReceiverService"
+ * unbind="unsetDataBridgeReceiverService"
  */
 public class DeviceManagementServiceComponent {
 
     private static final Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
-	public static ConfigurationContextService configurationContextService;
+    public static ConfigurationContextService configurationContextService;
+
     protected void activate(ComponentContext ctx) {
         if (log.isDebugEnabled()) {
             log.debug("Activating Iot Device Management Service Component");
         }
         try {
             BundleContext bundleContext = ctx.getBundleContext();              /* Initialize the data source configuration */
-			DeviceCloudConfigManager.getInstance().initConfig();
-			DeviceTypeConfigurationManager.getInstance().initConfig();
-			Map<String, DeviceTypeConfig> dsConfigMap =
-					DeviceTypeConfigurationManager.getInstance().getDeviceTypeConfigMap();
+            DeviceCloudConfigManager.getInstance().initConfig();
+            DeviceTypeConfigurationManager.getInstance().initConfig();
+            Map<String, DeviceTypeConfig> dsConfigMap =
+                    DeviceTypeConfigurationManager.getInstance().getDeviceTypeConfigMap();
 
-			IotDeviceManagementDAOFactory.init(dsConfigMap);
+            DeviceManagementDAOFactory.init(dsConfigMap);
 
-			String setupOption = System.getProperty("setup");
-			if (setupOption != null) {
-				if (log.isDebugEnabled()) {
-					log.debug(
-							"-Dsetup is enabled. Iot Device management repository schema initialization is about " +
-									"to begin");
-				}
-				try {
-					for (String pluginType : dsConfigMap.keySet()){
-						IotDeviceManagementDAOUtil
-								.setupIotDeviceManagementSchema(
-										IotDeviceManagementDAOFactory.getDataSourceMap
-												().get(pluginType));
-					}
-				} catch (IotDeviceMgtPluginException e) {
-					log.error(
-							"Exception occurred while initializing mobile device management database schem ",
-							e);
-				}
-			}
+            String setupOption = System.getProperty("setup");
+            if (setupOption != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "-Dsetup is enabled. Iot Device management repository schema initialization is about " +
+                            "to begin");
+                }
+                try {
+                    for (String pluginType : dsConfigMap.keySet()) {
+                        DeviceManagementDAOUtil
+                                .setupDeviceManagementSchema(
+                                        DeviceManagementDAOFactory.getDataSourceMap
+                                                ().get(pluginType));
+                    }
+                } catch (DeviceMgtPluginException e) {
+                    log.error(
+                            "Exception occurred while initializing device management database schema",
+                            e);
+                }
+            }
 
-			DeviceMgtCommonDataHolder.getInstance().initialize();
+            DeviceMgtCommonDataHolder.getInstance().initialize();
 
-			//TODO: handle
+            //TODO: handle
 
-			DeviceController.init();
+            DeviceController.init();
             DeviceMgtUsageStatisticsClient.initializeDataSource();
-			DeviceMgtEventsStatisticsClient.initializeDataSource();
-			UserManagement.registerApiAccessRoles();
+            DeviceMgtEventsStatisticsClient.initializeDataSource();
+            UserManagement.registerApiAccessRoles();
 
 
-			bundleContext.registerService(DeviceTypeService.class.getName(),
-										  new DeviceTypeServiceImpl(), null);
+            bundleContext.registerService(DeviceTypeService.class.getName(),
+                                          new DeviceTypeServiceImpl(), null);
 
-			if (log.isDebugEnabled()) {
-				log.debug("Iot Device Management Service Component has been successfully activated");
-			}
+            if (log.isDebugEnabled()) {
+                log.debug("Iot Device Management Service Component has been successfully activated");
+            }
 
-			bundleContext.registerService(ServerStartupObserver.class, new StartupUrlPrinter(), null);
-		} catch (Throwable e) {
-			log.error("Error occurred while activating Iot Device Management Service Component", e);
-		}
-	}
+            bundleContext.registerService(ServerStartupObserver.class, new StartupUrlPrinter(), null);
+        } catch (Throwable e) {
+            log.error("Error occurred while activating Iot Device Management Service Component", e);
+        }
+    }
 
-	protected void deactivate(ComponentContext ctx) {
-		if (log.isDebugEnabled()) {
-			log.debug("De-activating Iot Device Management Service Component");
-		}
+    protected void deactivate(ComponentContext ctx) {
+        if (log.isDebugEnabled()) {
+            log.debug("De-activating Iot Device Management Service Component");
+        }
 
-	}
+    }
 
-	protected void setDataSourceService(DataSourceService dataSourceService) {
-		/* This is to avoid iot device management component getting initialized before the
+    protected void setDataSourceService(DataSourceService dataSourceService) {
+        /* This is to avoid iot device management component getting initialized before the
 		underlying datasources
         are registered */
         if (log.isDebugEnabled()) {
@@ -145,46 +153,73 @@ public class DeviceManagementServiceComponent {
         //do nothing
     }
 
-	protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting ConfigurationContextService");
-		}
+    protected void setConfigurationContextService(
+            ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting ConfigurationContextService");
+        }
 
-		DeviceManagementServiceComponent.configurationContextService=configurationContextService;
+        DeviceManagementServiceComponent.configurationContextService = configurationContextService;
 
-	}
+    }
 
-	protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Un-setting ConfigurationContextService");
-		}
-		DeviceManagementServiceComponent.configurationContextService=null;
-	}
+    protected void unsetConfigurationContextService(
+            ConfigurationContextService configurationContextService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting ConfigurationContextService");
+        }
+        DeviceManagementServiceComponent.configurationContextService = null;
+    }
 
-	/**
-	 * Sets Realm Service
-	 * @param realmService associated realm service reference
-	 */
-	protected void setRealmService(RealmService realmService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting Realm Service");
+    /**
+     * Sets Realm Service
+     *
+     * @param realmService associated realm service reference
+     */
+    protected void setRealmService(RealmService realmService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Realm Service");
 
-		}
-		UserManagement userManagement= new UserManagement();
-		userManagement.setRealmService(realmService);
+        }
+        UserManagement.setRealmService(realmService);
 
-	}
+    }
 
-	/**
-	 * Unsets Realm Service
-	 * @param realmService associated realm service reference
-	 */
-	protected void unsetRealmService(RealmService realmService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Unsetting Realm Service");
-		}
-		UserManagement userManagement= new UserManagement();
-		userManagement.setRealmService(realmService);
-	}
+    /**
+     * Unsets Realm Service
+     *
+     * @param realmService associated realm service reference
+     */
+    protected void unsetRealmService(RealmService realmService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Realm Service");
+        }
+        UserManagement.setRealmService(realmService);
+    }
 
+    /**
+     * Sets DataBridge Receiver Service
+     *
+     * @param dataBridgeReceiverService associated DataBridge service reference
+     */
+    protected void setDataBridgeReceiverService(
+            DataBridgeReceiverService dataBridgeReceiverService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting DataBridge Receiver Service");
+        }
+        DeviceMgtCommonDataHolder.setDataBridgeReceiverService(dataBridgeReceiverService);
+    }
+
+    /**
+     * Unsets Realm Service
+     *
+     * @param dataBridgeReceiverService associated DataBridge service reference
+     */
+    protected void unsetDataBridgeReceiverService(
+            DataBridgeReceiverService dataBridgeReceiverService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting DataBridge Receiver Service");
+        }
+        DeviceMgtCommonDataHolder.setDataBridgeReceiverService(null);
+    }
 }

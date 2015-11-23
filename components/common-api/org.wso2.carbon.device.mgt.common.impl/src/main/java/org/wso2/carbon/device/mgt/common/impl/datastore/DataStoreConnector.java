@@ -50,6 +50,6 @@ public interface DataStoreConnector {
 	 * @return A status message according to the outcome of the
 	 *         method execution.
 	 */
-	void publishIoTData(HashMap<String, String> deviceData)
+	void publishDeviceData(HashMap<String, String> deviceData)
 			throws DeviceControllerException;
 }

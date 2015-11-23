@@ -18,7 +18,7 @@
 package org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.exception;
 
 
-public class IotDeviceMgtPluginException extends Exception{
+public class DeviceMgtPluginException extends Exception{
 
     private static final long serialVersionUID = -2297311387874900305L;
     private String errorMessage;
@@ -31,26 +31,26 @@ public class IotDeviceMgtPluginException extends Exception{
         this.errorMessage = errorMessage;
     }
 
-    public IotDeviceMgtPluginException(String msg, Exception nestedEx) {
+    public DeviceMgtPluginException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
         setErrorMessage(msg);
     }
 
-    public IotDeviceMgtPluginException(String message, Throwable cause) {
+    public DeviceMgtPluginException(String message, Throwable cause) {
         super(message, cause);
         setErrorMessage(message);
     }
 
-    public IotDeviceMgtPluginException(String msg) {
+    public DeviceMgtPluginException(String msg) {
         super(msg);
         setErrorMessage(msg);
     }
 
-    public IotDeviceMgtPluginException() {
+    public DeviceMgtPluginException() {
         super();
     }
 
-    public IotDeviceMgtPluginException(Throwable cause) {
+    public DeviceMgtPluginException(Throwable cause) {
         super(cause);
     }
 

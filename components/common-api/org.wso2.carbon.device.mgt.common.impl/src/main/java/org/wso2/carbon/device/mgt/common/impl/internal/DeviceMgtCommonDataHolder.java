@@ -19,12 +19,16 @@
 package org.wso2.carbon.device.mgt.common.impl.internal;
 
 import org.wso2.carbon.base.ServerConfiguration;
+import org.wso2.carbon.databridge.core.DataBridgeReceiverService;
 
 public class DeviceMgtCommonDataHolder {
 
 	private static DeviceMgtCommonDataHolder thisInstance = new DeviceMgtCommonDataHolder();
 	String trustStoreLocaiton;
 	String trustStorePassword;
+
+    private static DataBridgeReceiverService dataBridgeReceiverService;
+
 	private DeviceMgtCommonDataHolder() {
 
 	}
@@ -49,4 +53,13 @@ public class DeviceMgtCommonDataHolder {
 	public String getTrustStorePassword(){
 		return trustStorePassword;
 	}
+
+    public static DataBridgeReceiverService getDataBridgeReceiverService() {
+        return dataBridgeReceiverService;
+    }
+
+    public static void setDataBridgeReceiverService(
+            DataBridgeReceiverService dataBridgeReceiverService) {
+        DeviceMgtCommonDataHolder.dataBridgeReceiverService = dataBridgeReceiverService;
+    }
 }

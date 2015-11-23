@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.impl.config.devicetype.datasource.DeviceTypeConfig;
-import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.exception.IotDeviceMgtPluginException;
+import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.exception.DeviceMgtPluginException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -32,19 +32,19 @@ import java.util.*;
 /**
  * Factory class used to create IotDeviceManagement related DAO objects.
  */
-public abstract class IotDeviceManagementDAOFactory implements IotDeviceManagementDAOFactoryInterface {
+public abstract class DeviceManagementDAOFactory implements IotDeviceManagementDAOFactoryInterface {
 
-    private static final Log log = LogFactory.getLog(IotDeviceManagementDAOFactory.class);
+    private static final Log log = LogFactory.getLog(DeviceManagementDAOFactory.class);
     private static Map<String, DataSource> dataSourceMap = new HashMap<String, DataSource>();
     private static boolean isInitialized;
 
     public static void init(Map<String, DeviceTypeConfig> iotDataSourceConfigMap)
-            throws IotDeviceMgtPluginException {
+            throws DeviceMgtPluginException {
         DataSource dataSource;
         for (Map.Entry<String, DeviceTypeConfig> plugin : iotDataSourceConfigMap.entrySet()) {
             String pluginType = plugin.getKey();
             if (dataSourceMap.get(pluginType) == null) {
-                dataSource = IotDeviceManagementDAOFactory.resolveDataSource(plugin.getValue().getDatasourceName());
+                dataSource = DeviceManagementDAOFactory.resolveDataSource(plugin.getValue().getDatasourceName());
                 dataSourceMap.put(pluginType, dataSource);
             }
         }
@@ -57,14 +57,15 @@ public abstract class IotDeviceManagementDAOFactory implements IotDeviceManageme
      * Resolve data source from the data source definition.
      * @return data source resolved from the data source definition
      */
-    public static DataSource resolveDataSource(String dataSourceName) throws IotDeviceMgtPluginException{
+    public static DataSource resolveDataSource(String dataSourceName) throws
+                                                                      DeviceMgtPluginException {
 
         DataSource dataSource = null;
         try {
             Context ctx = new InitialContext();
             dataSource = (DataSource) ctx.lookup(dataSourceName);
         } catch (NamingException e) {
-            throw new IotDeviceMgtPluginException("Error while looking up the data " +
+            throw new DeviceMgtPluginException("Error while looking up the data " +
                                                           "source: " + dataSourceName);
         }
         return dataSource;

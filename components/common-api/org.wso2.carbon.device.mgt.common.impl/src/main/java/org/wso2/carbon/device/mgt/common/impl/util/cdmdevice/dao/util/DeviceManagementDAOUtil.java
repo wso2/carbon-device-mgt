@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.dao.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.exception.IotDeviceMgtPluginException;
+import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.exception.DeviceMgtPluginException;
 import org.wso2.carbon.device.mgt.common.impl.util.cdmdevice.util.IotDeviceManagementSchemaInitializer;
 import javax.sql.DataSource;
 
@@ -32,9 +32,9 @@ import java.sql.SQLException;
 /**
  * Utility method required by IotDeviceManagement DAO classes.
  */
-public class IotDeviceManagementDAOUtil {
+public class DeviceManagementDAOUtil {
 
-    private static final Log log = LogFactory.getLog(IotDeviceManagementDAOUtil.class);
+    private static final Log log = LogFactory.getLog(DeviceManagementDAOUtil.class);
 
     public static void cleanupResources(Connection conn, PreparedStatement stmt, ResultSet rs) {
         if (rs != null) {
@@ -69,15 +69,15 @@ public class IotDeviceManagementDAOUtil {
      *
      * @param dataSource Iot data source
      */
-    public static void setupIotDeviceManagementSchema(DataSource dataSource) throws
-                                                                             IotDeviceMgtPluginException {
+    public static void setupDeviceManagementSchema(DataSource dataSource) throws
+                                                                          DeviceMgtPluginException {
         IotDeviceManagementSchemaInitializer initializer =
                 new IotDeviceManagementSchemaInitializer(dataSource);
         log.info("Initializing iot device management repository database schema");
         try {
             initializer.createRegistryDatabase();
         } catch (Exception e) {
-            throw new IotDeviceMgtPluginException("Error occurred while initializing Iot Device " +
+            throw new DeviceMgtPluginException("Error occurred while initializing Iot Device " +
                                                 "Management database schema", e);
         }
     }

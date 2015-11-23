@@ -20,11 +20,14 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
+import org.wso2.carbon.apimgt.api.model.URITemplate;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.Set;
 
 /**
  * This bean class carries the properties used by some API that needs to be published within the underlying
@@ -48,11 +51,14 @@ public class APIConfig {
     private String name;
     private String owner;
     private String context;
+    private String contextTemplate;
+    private String apiApplication;
     private String endpoint;
     private String version;
     private String transports;
     private APIProvider provider;
     private boolean isSecured;
+    private Set<URITemplate> uriTemplates;
 
     public void init() throws APIManagementException {
         try {
@@ -60,6 +66,24 @@ public class APIConfig {
         } catch (APIManagementException e) {
             throw new APIManagementException("Error occurred while initializing API provider", e);
         }
+    }
+
+    @XmlElement(name = "ContextTemplate", required = true)
+    public String getContextTemplate() {
+        return contextTemplate;
+    }
+
+    public void setContextTemplate(String contextTemplate) {
+        this.contextTemplate = contextTemplate;
+    }
+
+    @XmlElement(name = "ApiApplication", required = true)
+    public String getApiApplication() {
+        return apiApplication;
+    }
+
+    public void setApiApplication(String apiApplication) {
+        this.apiApplication = apiApplication;
     }
 
     @XmlTransient
@@ -134,6 +158,16 @@ public class APIConfig {
     @SuppressWarnings("unused")
     public void setSecured(boolean secured) {
         isSecured = secured;
+    }
+
+    @XmlElement(name = "UriTemplates", required = false)
+    public Set<URITemplate> getUriTemplates() {
+        return uriTemplates;
+    }
+
+    @SuppressWarnings("unused")
+    public void setUriTemplates(Set<URITemplate> uriTemplates) {
+        this.uriTemplates = uriTemplates;
     }
 
 }

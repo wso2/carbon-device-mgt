@@ -20,22 +20,18 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
-import org.wso2.carbon.apimgt.api.model.API;
-import org.wso2.carbon.apimgt.api.model.APIIdentifier;
-import org.wso2.carbon.apimgt.api.model.APIStatus;
-import org.wso2.carbon.apimgt.api.model.URITemplate;
+import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class APIPublisherUtil {
+
+    private static final String DEFAULT_API_VERSION = "1.0.0";
 
     enum HTTPMethod {
         GET, POST, DELETE, PUT, OPTIONS
@@ -60,15 +56,28 @@ public class APIPublisherUtil {
         api.setApiOwner(config.getOwner());
         api.setContext(config.getContext());
         api.setUrl(config.getEndpoint());
-        api.setUriTemplates(
-                getURITemplates(config.getEndpoint(), APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN));
         api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);
         api.addAvailableTiers(provider.getTiers());
         api.setEndpointSecured(true);
         api.setStatus(APIStatus.PUBLISHED);
         api.setTransports(config.getTransports());
-        api.setAsDefaultVersion(true);
-        api.setAsPublishedDefaultVersion(true);
+        api.setContextTemplate(config.getContextTemplate());
+        api.setUriTemplates(config.getUriTemplates());
+
+        Set<Tier> tiers = new HashSet<Tier>();
+        tiers.add(new Tier(APIConstants.UNLIMITED_TIER));
+        api.addAvailableTiers(tiers);
+        api.setSubscriptionAvailability(APIConstants.SUBSCRIPTION_TO_ALL_TENANTS);
+        api.setResponseCache(APIConstants.DISABLED);
+
+        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() + "\",\"config\":null},\"endpoint_type\":\"http\"}";
+        api.setEndpointConfig(endpointConfig);
+
+        if ("".equals(id.getVersion()) || (DEFAULT_API_VERSION.equals(id.getVersion()))) {
+            api.setAsDefaultVersion(Boolean.TRUE);
+            api.setAsPublishedDefaultVersion(Boolean.TRUE);
+        }
+
         return api;
     }
 

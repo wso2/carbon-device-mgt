@@ -20,14 +20,24 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.apimgt.api.APIConsumer;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.FaultGatewaysException;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import org.wso2.carbon.apimgt.api.APIConsumer;
+import org.wso2.carbon.apimgt.api.model.Application;
+import org.wso2.carbon.apimgt.api.model.Subscriber;
+import java.util.Date;
+import org.wso2.carbon.apimgt.api.model.URITemplate;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents the concrete implementation of the APIPublisherService that corresponds to providing all
@@ -49,21 +59,100 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                 log.info("Successfully published API '" + api.getId().getApiName() + "' with context '" +
                         api.getContext() + "' and version '" + api.getId().getVersion() + "'");
             } else {
-                try {
-                    provider.updateAPI(api);
-                    log.info("An API already exists with the name '" + api.getId().getApiName() + "', context '" +
-                            api.getContext() + "' and version '" + api.getId().getVersion() +
-                            "'. Thus, the API config is updated");
-                } catch (FaultGatewaysException e) {
-                    throw new APIManagementException("Error occurred while updating API " + api.getId().getApiName() +
-                            "' with context '" + api.getContext() + "' and version '" + api.getId().getVersion() + "'");
-                }
+                provider.updateAPI(api);
+                log.info("An API already exists with the name '" + api.getId().getApiName() + "', context '" +
+                        api.getContext() + "' and version '" + api.getId().getVersion() +
+                        "'. Thus, the API config is updated");
             }
+            provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
         } else {
             throw new APIManagementException("API provider configured for the given API configuration is null. " +
                     "Thus, the API is not published");
         }
     }
+
+    private String createSwaggerDefinition(API api){
+        //{"paths":{"/controller/*":{"get":{"responses":{"200":{}}}},"/manager/*":{"get":{"responses":{"200":{}}}}},"swagger":"2.0","info":{"title":"RaspberryPi","version":"1.0.0"}}
+        JsonObject swaggerDefinition = new JsonObject();
+
+        JsonObject paths = new JsonObject();
+        for(URITemplate uriTemplate : api.getUriTemplates()){
+            JsonObject response = new JsonObject();
+            response.addProperty("200", "");
+
+            JsonObject responses = new JsonObject();
+            responses.add("responses", response);
+
+            JsonObject httpVerb = new JsonObject();
+            httpVerb.add(uriTemplate.getHTTPVerb().toLowerCase(), responses);
+
+            JsonObject path = new JsonObject();
+            path.add(uriTemplate.getUriTemplate(), httpVerb);
+
+            paths.add(uriTemplate.getUriTemplate(), httpVerb);
+        }
+        swaggerDefinition.add("paths", paths);
+        swaggerDefinition.addProperty("swagger", "2.0");
+
+        JsonObject info = new JsonObject();
+        info.addProperty("title",api.getId().getApiName());
+        info.addProperty("version",api.getId().getVersion());
+        swaggerDefinition.add("info", info);
+
+        return swaggerDefinition.toString();
+        //return "{\"paths\":{\"/controller/*\":{\"get\":{\"responses\":{\"200\":{}}}},\"/manager/*\":{\"get\":{\"responses\":{\"200\":{}}}}},\"swagger\":\"2.0\",\"info\":{\"title\":\"RaspberryPi\",\"version\":\"1.0.0\"}}";
+    }
+
+    @Override
+    public int createApplication(Application application, String apiOwner) throws APIManagementException, FaultGatewaysException {
+        if (log.isDebugEnabled()) {
+            log.debug("Publishing API '" + application.getId() + "'");
+        }
+        APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(apiOwner);
+        if (consumer != null) {
+                log.info("Successfully created application wit id : "+application.getId());
+                return consumer.addApplication(application, apiOwner);
+        } else {
+            throw new APIManagementException("API provider configured for the given API configuration is null. " +
+                    "Thus, the API is not published");
+        }
+    }
+
+    @Override
+    public void addSubscription(APIIdentifier apiId, int applicationId, String userName) throws APIManagementException, FaultGatewaysException {
+        if (log.isDebugEnabled()) {
+            log.debug("Creating subscription for API " + apiId);
+        }
+        APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(userName);
+        if (consumer != null) {
+            consumer.addSubscription(apiId, userName, applicationId);
+            log.info("Successfully created subscription for API : "+apiId +" from application : "+applicationId);
+        } else {
+            throw new APIManagementException("API provider configured for the given API configuration is null. " +
+                    "Thus, the API is not published");
+        }
+    }
+
+    @Override
+    public void adddSubscriber(String subscriberName, String groupId) throws APIManagementException, FaultGatewaysException {
+        if (log.isDebugEnabled()) {
+            log.debug("Creating subscriber with name  " + subscriberName);
+        }
+        APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(subscriberName);
+        if (consumer != null) {
+            Subscriber subscriber = new Subscriber((String) subscriberName);
+            subscriber.setSubscribedDate(new Date());
+            //TODO : need to set the proper email
+            subscriber.setEmail("");
+            subscriber.setTenantId(-1234);
+            consumer.addSubscriber(subscriber, groupId);
+            log.info("Successfully created subscriber with name : "+subscriberName +" with groupID : "+groupId);
+        } else {
+            throw new APIManagementException("API provider configured for the given API configuration is null. " +
+                    "Thus, the API is not published");
+        }
+    }
+
 
     @Override
     public void removeAPI(APIIdentifier id) throws APIManagementException {

@@ -1376,6 +1376,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.wso2.scannotation</groupId>
+                <artifactId>scannotation</artifactId>
+                <version>${scannotation.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
@@ -1706,6 +1712,9 @@
         <commons-json.version>2.0.0.wso2v1</commons-json.version>
 
         <httpclient.version>4.3.1.wso2v2</httpclient.version>
+	
+	<!--SC Annotations Dependency -->
+	<scannotation.version>1.0.3.wso2v1</scannotation.version>
 
         <!--XMPP/MQTT Version-->
         <smack.wso2.version>3.0.4.wso2v1</smack.wso2.version>

@@ -801,7 +801,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             for (DeviceIdentifier deviceId : deviceIds) {
                 DeviceManagementService dms =
-                        getPluginRepository().getDeviceManagementService(deviceId.getType());
+                        getPluginRepository().getDeviceManagementService(deviceId.getType(), getTenantId());
                 dms.notifyOperationToDevices(operation, deviceIds);
             }
         } catch (DeviceManagementException deviceMgtEx) {

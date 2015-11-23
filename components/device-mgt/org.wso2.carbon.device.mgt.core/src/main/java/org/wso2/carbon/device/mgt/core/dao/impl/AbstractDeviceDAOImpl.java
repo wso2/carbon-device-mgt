@@ -358,7 +358,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Device device = this.loadDevice(rs);
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -395,7 +395,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Device device = this.loadDevice(rs);
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
                 devices.add(device);
             }
         } catch (SQLException e) {

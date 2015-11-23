@@ -69,7 +69,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         providers.remove(provider.getType());
     }
 
-    public DeviceManagementService getDeviceManagementService(String type,int tenantId) {
+    public DeviceManagementService getDeviceManagementService(String type, int tenantId) {
         return providers.get(type);
     }
 

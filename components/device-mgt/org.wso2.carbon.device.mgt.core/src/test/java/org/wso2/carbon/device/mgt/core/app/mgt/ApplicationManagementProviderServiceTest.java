@@ -83,7 +83,7 @@ public class ApplicationManagementProviderServiceTest {
         deviceId.setType(device.getType());
 
         AppManagementConfig appManagementConfig = new AppManagementConfig();
-        appMgtProvider = new ApplicationManagerProviderServiceImpl(deviceManagementPluginRepository);
+        appMgtProvider = new ApplicationManagerProviderServiceImpl();
 
         try {
             appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);

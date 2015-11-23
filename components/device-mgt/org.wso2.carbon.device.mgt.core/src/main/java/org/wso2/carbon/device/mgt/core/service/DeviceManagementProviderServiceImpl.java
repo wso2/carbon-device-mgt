@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
@@ -790,6 +791,24 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+    }
+
+    @Override
+    public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
+            throws DeviceManagementException {
+
+        try {
+            for (DeviceIdentifier deviceId : deviceIds) {
+                DeviceManagementService dms =
+                        getPluginRepository().getDeviceManagementService(deviceId.getType());
+                dms.notifyOperationToDevices(operation, deviceIds);
+            }
+        } catch (DeviceManagementException deviceMgtEx) {
+            String errorMsg = "Error in notify operations to plugins for app installation:" + deviceMgtEx.getErrorMessage();
+            log.error(errorMsg, deviceMgtEx);
+            throw new DeviceManagementException(errorMsg, deviceMgtEx);
+        }
+
     }
 
     @Override

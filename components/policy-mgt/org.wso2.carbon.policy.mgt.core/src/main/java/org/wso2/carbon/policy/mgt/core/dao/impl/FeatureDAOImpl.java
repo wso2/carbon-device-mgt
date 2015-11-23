@@ -20,7 +20,6 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Profile;
@@ -28,14 +27,16 @@ import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 import org.wso2.carbon.policy.mgt.core.dao.FeatureDAO;
 import org.wso2.carbon.policy.mgt.core.dao.FeatureManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,6 +166,29 @@ public class FeatureDAOImpl implements FeatureDAO {
             String query = "DELETE FROM DM_PROFILE_FEATURES WHERE PROFILE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profileId);
+            stmt.setInt(2, tenantId);
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new FeatureManagerDAOException("Error occurred while deleting the feature related to a profile.", e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+
+    @Override
+    public boolean deleteProfileFeatures(int featureId) throws FeatureManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            conn = this.getConnection();
+            String query = "DELETE FROM DM_PROFILE_FEATURES WHERE ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, featureId);
             stmt.setInt(2, tenantId);
             if (stmt.executeUpdate() > 0) {
                 return true;

@@ -20,4 +20,6 @@
    <AppManagementConfig>
       <Enabled>true</Enabled>
       <AppManagerUrl>http:/www.google.com</AppManagerUrl>
+      <ConsumerKey>http:/www.google.com</ConsumerKey>
+      <ConsumerSecret>http:/www.google.com</ConsumerSecret>
    </AppManagementConfig>

@@ -101,12 +101,12 @@ import java.util.List;
 public class DeviceManagementServiceComponent {
 
     private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
-    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     private static final Object LOCK = new Object();
     private static List<PluginInitializationListener> listeners = new ArrayList<>();
     private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
     private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
+    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
@@ -208,7 +208,7 @@ public class DeviceManagementServiceComponent {
             AppManagementConfig appConfig =
                     AppManagementConfigurationManager.getInstance().getAppManagementConfig();
             bundleContext.registerService(ApplicationManagementProviderService.class.getName(),
-                    new ApplicationManagerProviderServiceImpl(appConfig, pluginRepository), null);
+                    new ApplicationManagerProviderServiceImpl(appConfig), null);
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
         }
@@ -307,10 +307,6 @@ public class DeviceManagementServiceComponent {
             log.debug("Un setting Registry Service");
         }
         DeviceManagementDataHolder.getInstance().setRegistryService(null);
-    }
-
-    private DeviceManagementPluginRepository getPluginRepository() {
-        return pluginRepository;
     }
 
     protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {

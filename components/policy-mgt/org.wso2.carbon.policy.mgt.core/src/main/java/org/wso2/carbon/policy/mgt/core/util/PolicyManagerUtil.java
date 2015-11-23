@@ -207,7 +207,7 @@ public class PolicyManagerUtil {
             if (configuration != null && !configuration.isEmpty()) {
                 for (ConfigurationEntry cEntry : configuration) {
                     if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
-                        monitoringFrequency = (int) cEntry.getValue();
+                        monitoringFrequency = Integer.parseInt((String)cEntry.getValue());
                     }
                 }
             }

@@ -59,6 +59,12 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
+    public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
+            throws DeviceManagementException {
+
+    }
+
+    @Override
     public Application[] getApplications(String domain, int pageNumber, int size)
             throws ApplicationManagementException {
         return new Application[0];
@@ -77,7 +83,19 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
-    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+    public void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+            throws ApplicationManagementException {
+
+    }
+
+    @Override
+    public void installApplicationForUsers(Operation operation, List<String> userNameList)
+            throws ApplicationManagementException {
+
+    }
+
+    @Override
+    public void installApplicationForUserRoles(Operation operation, List<String> userRoleList)
             throws ApplicationManagementException {
 
     }

@@ -45,7 +45,7 @@ public class OperationDAOImpl implements OperationDAO {
             Connection connection = OperationManagementDAOFactory.getConnection();
             String sql = "INSERT INTO DM_OPERATION(TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE)  " +
                     "VALUES (?, ?, ?, ?)";
-            stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = connection.prepareStatement(sql, new String[] {"id"});
             stmt.setString(1, operation.getType().toString());
             stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
             stmt.setTimestamp(3, null);
@@ -70,8 +70,8 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_OPERATION O SET O.RECEIVED_TIMESTAMP=? " +
-                    "WHERE O.ID=?");
+            stmt = connection.prepareStatement("UPDATE DM_OPERATION SET RECEIVED_TIMESTAMP=? " +
+                    "WHERE ID=?");
             stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
@@ -87,8 +87,8 @@ public class OperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING O SET O.STATUS=? " +
-                    "WHERE O.ENROLMENT_ID=? and O.OPERATION_ID=?");
+            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS=? " +
+                    "WHERE ENROLMENT_ID=? and OPERATION_ID=?");
             stmt.setString(1, status.toString());
             stmt.setInt(2, enrolmentId);
             stmt.setInt(3, operationId);

@@ -123,4 +123,6 @@ public interface FeatureDAO {
      */
     boolean deleteFeaturesOfProfile(int profileId) throws FeatureManagerDAOException;
 
+    boolean deleteProfileFeatures(int featureId) throws FeatureManagerDAOException;
+
 }

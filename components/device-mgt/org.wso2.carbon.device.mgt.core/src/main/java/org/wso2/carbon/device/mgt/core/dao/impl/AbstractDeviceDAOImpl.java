@@ -45,8 +45,8 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         try {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE(DESCRIPTION, NAME, DEVICE_TYPE_ID, DEVICE_IDENTIFICATION, TENANT_ID, GROUP_ID) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                         "VALUES (?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql, new String[] {"id"});
             stmt.setString(1, device.getDescription());
             stmt.setString(2, device.getName());
             stmt.setInt(3, typeId);
@@ -82,7 +82,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql = "UPDATE DM_DEVICE SET DESCRIPTION = ?, NAME = ?, GROUP_ID = ? WHERE DEVICE_IDENTIFICATION = ? AND " +
                     "DEVICE_TYPE_ID = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(sql, new String[] {"id"});
             stmt.setString(1, device.getDescription());
             stmt.setString(2, device.getName());
             if (device.getGroupId() == 0) {
@@ -515,7 +515,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_ENROLMENT(DEVICE_ID, OWNER, OWNERSHIP, STATUS,DATE_OF_ENROLMENT, " +
                     "DATE_OF_LAST_UPDATE, TENANT_ID) VALUES(?, ?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(sql, new String[] {"id"});
             stmt.setInt(1, device.getId());
             stmt.setString(2, device.getEnrolmentInfo().getOwner());
             stmt.setString(3, device.getEnrolmentInfo().getOwnership().toString());
@@ -701,28 +701,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
-    }
-
-    private Device loadDevice(ResultSet rs) throws SQLException {
-        Device device = new Device();
-        device.setId(rs.getInt("DEVICE_ID"));
-        device.setName(rs.getString("DEVICE_NAME"));
-        device.setDescription(rs.getString("DESCRIPTION"));
-        device.setType(rs.getString("DEVICE_TYPE"));
-        device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
-        device.setEnrolmentInfo(this.loadEnrolment(rs));
-        return device;
-    }
-
-    private EnrolmentInfo loadEnrolment(ResultSet rs) throws SQLException {
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
-        enrolmentInfo.setId(rs.getInt("ENROLMENT_ID"));
-        enrolmentInfo.setOwner(rs.getString("OWNER"));
-        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
-        enrolmentInfo.setDateOfEnrolment(rs.getTimestamp("DATE_OF_ENROLMENT").getTime());
-        enrolmentInfo.setDateOfLastUpdate(rs.getTimestamp("DATE_OF_LAST_UPDATE").getTime());
-        enrolmentInfo.setStatus(EnrolmentInfo.Status.valueOf(rs.getString("STATUS")));
-        return enrolmentInfo;
     }
 
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId)

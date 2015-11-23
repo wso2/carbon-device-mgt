@@ -51,7 +51,7 @@ public class ProfileDAOImpl implements ProfileDAO {
             conn = this.getConnection();
             String query = "INSERT INTO DM_PROFILE " +
                     "(PROFILE_NAME,TENANT_ID, DEVICE_TYPE_ID, CREATED_TIME, UPDATED_TIME) VALUES (?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query, new String[] {"id"});
 
             stmt.setString(1, profile.getProfileName());
             stmt.setInt(2, tenantId);

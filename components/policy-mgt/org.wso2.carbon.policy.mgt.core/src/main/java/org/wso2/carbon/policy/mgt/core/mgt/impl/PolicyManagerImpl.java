@@ -134,7 +134,7 @@ public class PolicyManagerImpl implements PolicyManager {
     public Policy updatePolicy(Policy policy) throws PolicyManagementException {
 
         try {
-            // Previous policy needs to be obtained before begining the transaction
+            // Previous policy needs to be obtained before beginning the transaction
             Policy previousPolicy = this.getPolicy(policy.getId());
 
             PolicyManagementDAOFactory.beginTransaction();
@@ -144,7 +144,9 @@ public class PolicyManagerImpl implements PolicyManager {
 
             List<ProfileFeature> existingFeaturesList = new ArrayList<>();
             List<ProfileFeature> newFeaturesList = new ArrayList<>();
+            List<ProfileFeature> feturesToDelete = new ArrayList<>();
             List<String> temp = new ArrayList<>();
+            List<String> updateDFes = new ArrayList<>();
 
             List<ProfileFeature> updatedFeatureList = policy.getProfile().getProfileFeaturesList();
 
@@ -157,6 +159,14 @@ public class PolicyManagerImpl implements PolicyManager {
                         existingFeaturesList.add(feature);
                         temp.add(feature.getFeatureCode());
                     }
+                }
+                updateDFes.add(feature.getFeatureCode());
+            }
+
+            // Check for the features to delete
+            for(ProfileFeature feature : existingProfileFeaturesList) {
+                if(!updateDFes.contains(feature.getFeatureCode())){
+                    feturesToDelete.add(feature);
                 }
             }
 
@@ -180,6 +190,12 @@ public class PolicyManagerImpl implements PolicyManager {
             if (!newFeaturesList.isEmpty()) {
                 featureDAO.addProfileFeatures(newFeaturesList, profileId);
             }
+
+            if(!feturesToDelete.isEmpty()){
+                for (ProfileFeature pf : feturesToDelete)
+                featureDAO.deleteProfileFeatures(pf.getId());
+            }
+
             policyDAO.deleteCriteriaAndDeviceRelatedConfigs(policy.getId());
 
 

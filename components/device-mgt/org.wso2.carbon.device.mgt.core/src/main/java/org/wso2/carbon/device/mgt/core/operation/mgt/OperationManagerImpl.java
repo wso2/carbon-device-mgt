@@ -28,6 +28,8 @@ import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorization
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -82,8 +84,13 @@ public class OperationManagerImpl implements OperationManager {
             }
         }
         try {
-            List<DeviceIdentifier> authorizedDeviceList = DeviceManagementDataHolder.getInstance().
-                    getDeviceAccessAuthorizationService().isUserAuthorized(deviceIds).getAuthorizedDevices();
+            List<DeviceIdentifier> authorizedDeviceList;
+            if (operation != null && isAuthenticationSkippedOperation(operation)) {
+                authorizedDeviceList = deviceIds;
+            } else {
+                authorizedDeviceList = DeviceManagementDataHolder.getInstance().
+                        getDeviceAccessAuthorizationService().isUserAuthorized(deviceIds).getAuthorizedDevices();
+            }
             if (authorizedDeviceList.size() > 0) {
                 try {
                     int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -611,6 +618,22 @@ public class OperationManagerImpl implements OperationManager {
 
     private String getUser() {
         return CarbonContext.getThreadLocalCarbonContext().getUsername();
+    }
+
+    private boolean isAuthenticationSkippedOperation(Operation operation) {
+        boolean status;
+        switch (operation.getCode()) {
+            case DeviceManagementConstants.AuthorizationSkippedOperationCodes.POLICY_OPERATION_CODE :
+                status = true;
+                break;
+            case DeviceManagementConstants.AuthorizationSkippedOperationCodes.MONITOR_OPERATION_CODE :
+                status = true;
+                break;
+            default:
+                status = false;
+        }
+
+        return status;
     }
 
 }

@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -92,7 +91,7 @@ public class MonitoringTask implements Task {
                             PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType.getName());
                     List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
                     if (monitoringService != null && !devices.isEmpty()) {
-                        monitoringManager.addMonitoringOperation(devices);
+
 
                         List<Device> notifiableDevices = new ArrayList<>();
 
@@ -120,6 +119,7 @@ public class MonitoringTask implements Task {
                                 log.debug(device.getDeviceIdentifier());
                             }
                         }
+                        monitoringManager.addMonitoringOperation(notifiableDevices);
                         monitoringService.notifyDevices(notifiableDevices);
                     }
                 }

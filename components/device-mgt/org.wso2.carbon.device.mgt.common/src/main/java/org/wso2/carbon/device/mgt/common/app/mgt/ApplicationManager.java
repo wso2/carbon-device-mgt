@@ -66,8 +66,12 @@ public interface ApplicationManager {
             throws ApplicationManagementException;
 
 
-    void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+    void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
             throws ApplicationManagementException;
 
+    void installApplicationForUsers(Operation operation, List<String> userNameList)
+            throws ApplicationManagementException;
 
+    void installApplicationForUserRoles(Operation operation, List<String> userRoleList)
+            throws ApplicationManagementException;
 }

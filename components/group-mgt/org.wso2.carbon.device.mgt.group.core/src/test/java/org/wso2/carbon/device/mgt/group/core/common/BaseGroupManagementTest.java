@@ -27,8 +27,6 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
-import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.group.core.TestUtils;
@@ -49,7 +47,8 @@ public abstract class BaseGroupManagementTest {
     private static final Log log = LogFactory.getLog(BaseGroupManagementTest.class);
     private DataSource dataSource;
 
-    @BeforeSuite public void setupDataSource() throws Exception {
+    @BeforeSuite
+    public void setupDataSource() throws Exception {
         this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
@@ -66,7 +65,8 @@ public abstract class BaseGroupManagementTest {
         }
     }
 
-    @BeforeClass public abstract void init();
+    @BeforeClass
+    public abstract void init();
 
     private DataSource getDataSource(DataSourceConfig config) {
         PoolProperties properties = new PoolProperties();
@@ -124,7 +124,8 @@ public abstract class BaseGroupManagementTest {
         }
     }
 
-    @AfterSuite public void deleteData() {
+    @AfterSuite
+    public void deleteData() {
         Connection conn = null;
         try {
             conn = getDataSource().getConnection();

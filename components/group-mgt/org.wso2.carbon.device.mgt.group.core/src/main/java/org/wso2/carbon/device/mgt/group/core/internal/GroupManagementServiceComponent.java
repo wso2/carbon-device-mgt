@@ -71,7 +71,7 @@ public class GroupManagementServiceComponent {
             GroupManagementServiceProvider groupManagementServiceProvider = new GroupManagementServiceProviderImpl();
             bundleContext
                     .registerService(GroupManagementServiceProvider.class.getName(), groupManagementServiceProvider,
-                            null);
+                                     null);
             if (log.isDebugEnabled()) {
                 log.debug("Group management core bundle has been successfully initialized");
             }
@@ -104,7 +104,8 @@ public class GroupManagementServiceComponent {
      *
      * @param deviceMgtService An instance of GroupManagementService
      */
-    protected void setDeviceManagementProviderService(DeviceManagementProviderService deviceMgtService) {
+    protected void setDeviceManagementProviderService(
+            DeviceManagementProviderService deviceMgtService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting DeviceManager Service");
         }
@@ -116,7 +117,8 @@ public class GroupManagementServiceComponent {
      *
      * @param deviceMgtService An instance of UserManager
      */
-    protected void unsetDeviceManagementProviderService(DeviceManagementProviderService deviceMgtService) {
+    protected void unsetDeviceManagementProviderService(
+            DeviceManagementProviderService deviceMgtService) {
         if (log.isDebugEnabled()) {
             log.debug("Un setting DeviceManager Service");
         }

@@ -79,7 +79,8 @@
         <!-- Following is the configuration for internal JDBC user store. This user store manager is based on JDBC. In case if application needs to manage 		     passwords externally set property <Property name="PasswordsExternallyManaged">true</Property>. In case if user core cache domain is needed to 			identify uniquely set property <Property name="UserCoreCacheIdentifier">domain</Property>. Furthermore properties, IsEmailUserName and 	     			DomainCalculation are readonly properties.
              Note: Do not comment within UserStoreManager tags. Cause, specific tag names are used as tokens when building configurations for products. -->
         <UserStoreManager class="org.wso2.carbon.user.core.jdbc.JDBCUserStoreManager">
-            <Property name="TenantManager">org.wso2.carbon.user.core.tenant.JDBCTenantManager</Property>
+            <Property name="TenantManager">org.wso2.carbon.user.core.tenant.JDBCTenantManager
+            </Property>
             <Property name="ReadOnly">false</Property>
             <Property name="MaxUserNameListLength">100</Property>
             <Property name="IsEmailUserName">false</Property>
@@ -90,12 +91,14 @@
             <Property name="WriteGroups">true</Property>
             <Property name="UserNameUniqueAcrossTenants">false</Property>
             <Property name="PasswordJavaRegEx">^[\S]{5,30}$</Property>
-            <Property name="PasswordJavaRegExViolationErrorMsg">Password length should be between 5 to 30 characters
+            <Property name="PasswordJavaRegExViolationErrorMsg">Password length should be between 5
+                to 30 characters
             </Property>
             <Property name="PasswordJavaScriptRegEx">^[\S]{5,30}$</Property>
             <Property name="UsernameJavaRegEx">[a-zA-Z0-9._-|//]{3,30}$</Property>
             <Property name="UsernameJavaScriptRegEx">^[\S]{3,30}$</Property>
-            <Property name="RolenameJavaRegEx">^[^~!#$;%^*+={}\\|\\\\&lt;&gt;,\'\"]{3,30}$</Property>
+            <Property name="RolenameJavaRegEx">^[^~!#$;%^*+={}\\|\\\\&lt;&gt;,\'\"]{3,30}$
+            </Property>
             <Property name="RolenameJavaScriptRegEx">^[\S]{3,30}$</Property>
             <Property name="UserRolesCacheEnabled">true</Property>
             <Property name="MaxRoleNameListLength">100</Property>

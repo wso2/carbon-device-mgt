@@ -20,8 +20,15 @@ package org.wso2.carbon.device.mgt.core.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
@@ -32,7 +39,11 @@ import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
-import org.wso2.carbon.device.mgt.core.dao.*;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.email.EmailConstants;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -962,17 +973,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getUnGroupedDevices(username, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
-                    "belong to the user '" + username + "'", e);
+            throw new DeviceManagementException("Error occurred while retrieving the list of " +
+                                                "devices that belong to the user '" +
+                                                username + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
 
         for (Device device : userDevices) {
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '"
+                              + device.getType() + "' is null. Therefore, skipping device.");
+                }
+                continue;
+            }
             Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType(), tenantId).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(),
+                                                                 device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
@@ -995,17 +1014,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userDevices = deviceDAO.getDevices(groupId, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
-                    "assigned to the group '" + groupId + "'", e);
+            throw new DeviceManagementException("Error occurred while retrieving the list of " +
+                                                "devices that assigned to the group '" +
+                                                groupId + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
 
         for (Device device : userDevices) {
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '"
+                              + device.getType() + "' is null. Therefore, skipping device.");
+                }
+                continue;
+            }
             Device dmsDevice =
-                    this.getPluginRepository().getDeviceManagementService(
-                            device.getType(), tenantId).getDeviceManager().getDevice(
-                            new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(),
+                                                                 device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());

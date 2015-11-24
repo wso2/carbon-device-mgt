@@ -77,8 +77,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
-                    "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
-                    "transaction is already active is a sign of improper transaction handling");
+                                                       "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
+                                                       "transaction is already active is a sign of improper transaction handling");
         }
         try {
             conn = dataSource.getConnection();
@@ -98,8 +98,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
-                    "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
-                    "transaction is already active is a sign of improper transaction handling");
+                                                       "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
+                                                       "transaction is already active is a sign of improper transaction handling");
         }
         conn = dataSource.getConnection();
         currentConnection.set(conn);
@@ -115,8 +115,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                    "This might have ideally been caused by not properly initiating the transaction via " +
-                    "'beginTransaction'/'openConnection' methods");
+                                                       "This might have ideally been caused by not properly initiating the transaction via " +
+                                                       "'beginTransaction'/'openConnection' methods");
         }
         return conn;
     }
@@ -128,8 +128,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                    "This might have ideally been caused by not properly initiating the transaction via " +
-                    "'beginTransaction'/'openConnection' methods");
+                                                       "This might have ideally been caused by not properly initiating the transaction via " +
+                                                       "'beginTransaction'/'openConnection' methods");
         }
         try {
             conn.commit();
@@ -145,8 +145,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                    "This might have ideally been caused by not properly initiating the transaction via " +
-                    "'beginTransaction'/'openConnection' methods");
+                                                       "This might have ideally been caused by not properly initiating the transaction via " +
+                                                       "'beginTransaction'/'openConnection' methods");
         }
         try {
             conn.rollback();
@@ -162,8 +162,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                    "This might have ideally been caused by not properly initiating the transaction via " +
-                    "'beginTransaction'/'openConnection' methods");
+                                                       "This might have ideally been caused by not properly initiating the transaction via " +
+                                                       "'beginTransaction'/'openConnection' methods");
         }
         try {
             conn.close();
@@ -185,13 +185,13 @@ public class GroupManagementDAOFactory {
         if (config == null) {
             throw new RuntimeException(
                     "Device Management Repository data source configuration " + "is null and " +
-                            "thus, is not initialized");
+                    "thus, is not initialized");
         }
         JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
         if (jndiConfig != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing Device Management Repository data source using the JNDI " +
-                        "Lookup Definition");
+                          "Lookup Definition");
             }
             List<JNDILookupDefinition.JNDIProperty> jndiPropertyList =
                     jndiConfig.getJndiProperties();

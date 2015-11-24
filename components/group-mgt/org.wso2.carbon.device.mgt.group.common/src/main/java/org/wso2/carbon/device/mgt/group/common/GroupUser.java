@@ -26,11 +26,13 @@ import java.util.List;
 /**
  * This class holds Device Group user name and assigned group roles of user. Exposed to external access
  */
-@XmlRootElement public class GroupUser implements Serializable {
+@XmlRootElement
+public class GroupUser implements Serializable {
     private String username;
     private List<String> groupRoles;
 
-    @XmlElement public String getUsername() {
+    @XmlElement
+    public String getUsername() {
         return username;
     }
 
@@ -38,7 +40,8 @@ import java.util.List;
         this.username = username;
     }
 
-    @XmlElement public List<String> getGroupRoles() {
+    @XmlElement
+    public List<String> getGroupRoles() {
         return groupRoles;
     }
 

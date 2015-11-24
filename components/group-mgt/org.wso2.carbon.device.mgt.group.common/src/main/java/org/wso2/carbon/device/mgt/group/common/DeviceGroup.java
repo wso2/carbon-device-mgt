@@ -28,7 +28,8 @@ import java.util.List;
 /**
  * Holds Device Group details and expose to external access
  */
-@XmlRootElement public class DeviceGroup implements Serializable {
+@XmlRootElement
+public class DeviceGroup implements Serializable {
 
     private int id;
     private String description;
@@ -40,7 +41,8 @@ import java.util.List;
     private List<Device> devices;
     private List<String> roles;
 
-    @XmlElement public int getId() {
+    @XmlElement
+    public int getId() {
         return id;
     }
 
@@ -48,7 +50,8 @@ import java.util.List;
         this.id = id;
     }
 
-    @XmlElement public String getDescription() {
+    @XmlElement
+    public String getDescription() {
         return description;
     }
 
@@ -56,7 +59,8 @@ import java.util.List;
         this.description = description;
     }
 
-    @XmlElement public String getName() {
+    @XmlElement
+    public String getName() {
         return name;
     }
 
@@ -64,7 +68,8 @@ import java.util.List;
         this.name = name;
     }
 
-    @XmlElement public Long getDateOfCreation() {
+    @XmlElement
+    public Long getDateOfCreation() {
         return dateOfCreation;
     }
 
@@ -72,7 +77,8 @@ import java.util.List;
         this.dateOfCreation = dateOfCreation;
     }
 
-    @XmlElement public Long getDateOfLastUpdate() {
+    @XmlElement
+    public Long getDateOfLastUpdate() {
         return dateOfLastUpdate;
     }
 
@@ -80,7 +86,8 @@ import java.util.List;
         this.dateOfLastUpdate = dateOfLastUpdate;
     }
 
-    @XmlElement public String getOwner() {
+    @XmlElement
+    public String getOwner() {
         return owner;
     }
 
@@ -88,7 +95,8 @@ import java.util.List;
         this.owner = owner;
     }
 
-    @XmlElement public List<GroupUser> getUsers() {
+    @XmlElement
+    public List<GroupUser> getUsers() {
         return users;
     }
 
@@ -96,7 +104,8 @@ import java.util.List;
         this.users = users;
     }
 
-    @XmlElement public List<Device> getDevices() {
+    @XmlElement
+    public List<Device> getDevices() {
         return devices;
     }
 
@@ -104,7 +113,8 @@ import java.util.List;
         this.devices = devices;
     }
 
-    @XmlElement public List<String> getRoles() {
+    @XmlElement
+    public List<String> getRoles() {
         return roles;
     }
 

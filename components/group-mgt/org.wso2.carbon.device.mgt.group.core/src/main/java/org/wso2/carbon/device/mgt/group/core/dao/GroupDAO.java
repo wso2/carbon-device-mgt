@@ -31,7 +31,7 @@ public interface GroupDAO {
      * Add new Device Group
      *
      * @param deviceGroup to be added
-     * @param tenantId of the group
+     * @param tenantId    of the group
      * @return sql execution result
      * @throws GroupManagementDAOException
      */

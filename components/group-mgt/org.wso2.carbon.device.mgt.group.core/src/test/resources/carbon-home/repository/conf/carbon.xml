@@ -311,10 +311,12 @@
           This repository location is used to crete the client side configuration
           context used by the server when calling admin services.
         -->
-        <ClientRepositoryLocation>${carbon.home}/repository/deployment/client/</ClientRepositoryLocation>
+        <ClientRepositoryLocation>${carbon.home}/repository/deployment/client/
+        </ClientRepositoryLocation>
         <!-- This axis2 xml is used in createing the configuration context by the FE server
          calling to BE server -->
-        <clientAxis2XmlLocation>${carbon.home}/repository/conf/axis2/axis2_client.xml</clientAxis2XmlLocation>
+        <clientAxis2XmlLocation>${carbon.home}/repository/conf/axis2/axis2_client.xml
+        </clientAxis2XmlLocation>
         <!-- If this parameter is set, the ?wsdl on an admin service will not give the admin service wsdl. -->
         <HideAdminServiceWSDLs>true</HideAdminServiceWSDLs>
 

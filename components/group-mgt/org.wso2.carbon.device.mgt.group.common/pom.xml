@@ -51,7 +51,8 @@
                         </Import-Package>
                         <Export-Package>
                             org.wso2.carbon.device.mgt.common; version=${carbon.device.mgt.version},
-                            org.wso2.carbon.device.mgt.group.common.*; version=${carbon.device.mgt.version}
+                            org.wso2.carbon.device.mgt.group.common.*;
+                            version=${carbon.device.mgt.version}
                         </Export-Package>
                     </instructions>
                 </configuration>

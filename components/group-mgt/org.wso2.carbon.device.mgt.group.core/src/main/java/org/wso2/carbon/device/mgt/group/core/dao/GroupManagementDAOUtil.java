@@ -39,7 +39,7 @@ public final class GroupManagementDAOUtil {
      * Cleanup resources used to transaction
      *
      * @param stmt Prepared statement used
-     * @param rs Obtained results set
+     * @param rs   Obtained results set
      */
     public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
         if (rs != null) {
@@ -65,7 +65,8 @@ public final class GroupManagementDAOUtil {
      * @param jndiProperties Hash table of JNDI Properties
      * @return datasource looked
      */
-    public static DataSource lookupDataSource(String dataSourceName, final Hashtable<Object, Object> jndiProperties) {
+    public static DataSource lookupDataSource(String dataSourceName,
+                                              final Hashtable<Object, Object> jndiProperties) {
         try {
             if (jndiProperties == null || jndiProperties.isEmpty()) {
                 return (DataSource) InitialContext.doLookup(dataSourceName);

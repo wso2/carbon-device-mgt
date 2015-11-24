@@ -108,7 +108,8 @@ public interface GroupManagementServiceProvider {
      * @return is group shared
      * @throws GroupManagementException
      */
-    boolean shareGroup(String username, int groupId, String sharingRole) throws GroupManagementException;
+    boolean shareGroup(String username, int groupId, String sharingRole)
+            throws GroupManagementException;
 
     /**
      * Un share existing group sharing with user specified by role
@@ -119,7 +120,8 @@ public interface GroupManagementServiceProvider {
      * @return is group un shared
      * @throws GroupManagementException
      */
-    boolean unShareGroup(String userName, int groupId, String sharingRole) throws GroupManagementException;
+    boolean unShareGroup(String userName, int groupId, String sharingRole)
+            throws GroupManagementException;
 
     /**
      * Add new sharing role for device group
@@ -230,5 +232,6 @@ public interface GroupManagementServiceProvider {
      * @return is user authorized for permission
      * @throws GroupManagementException
      */
-    boolean isAuthorized(String username, int groupId, String permission) throws GroupManagementException;
+    boolean isAuthorized(String username, int groupId, String permission)
+            throws GroupManagementException;
 }

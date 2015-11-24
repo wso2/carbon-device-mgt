@@ -42,23 +42,28 @@ public class DeviceGroupBroker extends DeviceGroup {
         this.setRoles(deviceGroup.getRoles());
     }
 
-    @Override public void setId(int id) {
+    @Override
+    public void setId(int id) {
         super.setId(id);
     }
 
-    @Override public void setUsers(List<GroupUser> users) {
+    @Override
+    public void setUsers(List<GroupUser> users) {
         super.setUsers(users);
     }
 
-    @Override public void setDevices(List<Device> devices) {
+    @Override
+    public void setDevices(List<Device> devices) {
         super.setDevices(devices);
     }
 
-    @Override public void setRoles(List<String> roles) {
+    @Override
+    public void setRoles(List<String> roles) {
         super.setRoles(roles);
     }
 
-    @Override public DeviceGroup getGroup() {
+    @Override
+    public DeviceGroup getGroup() {
         return super.getGroup();
     }
 }

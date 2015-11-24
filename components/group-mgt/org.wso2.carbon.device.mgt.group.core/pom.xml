@@ -51,7 +51,8 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Group Management Core Bundle</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.device.mgt.group.core.internal</Private-Package>
+                        <Private-Package>org.wso2.carbon.device.mgt.group.core.internal
+                        </Private-Package>
                         <Import-Package>
                             org.wso2.carbon.device.mgt.group.common.*,
                             org.wso2.carbon.device.mgt.common.*,
@@ -67,7 +68,8 @@
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.group.core.internal,
-                            org.wso2.carbon.device.mgt.group.core.*; version=${carbon.device.mgt.version}
+                            org.wso2.carbon.device.mgt.group.core.*;
+                            version=${carbon.device.mgt.version}
                         </Export-Package>
                     </instructions>
                 </configuration>
@@ -78,7 +80,8 @@
                 <version>2.18</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
+                        <log4j.configuration>file:src/test/resources/log4j.properties
+                        </log4j.configuration>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>

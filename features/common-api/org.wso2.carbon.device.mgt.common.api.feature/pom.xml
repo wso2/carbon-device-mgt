@@ -113,7 +113,7 @@
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${basedir}/src/main/resources/webapps/
                                     </outputDirectory>
-                                    <destFileName>common.war</destFileName>
+                                    <destFileName>device-admin.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

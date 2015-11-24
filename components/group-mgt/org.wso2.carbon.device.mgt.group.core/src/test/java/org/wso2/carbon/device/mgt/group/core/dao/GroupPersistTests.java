@@ -38,11 +38,14 @@ public class GroupPersistTests extends BaseGroupManagementTest {
     GroupDAO groupDAO = GroupManagementDAOFactory.getGroupDAO();
     int groupId = -1;
 
-    @BeforeClass @Override public void init() {
+    @BeforeClass
+    @Override
+    public void init() {
         initDataSource();
     }
 
-    @Test public void testAddGroupTest() {
+    @Test
+    public void testAddGroupTest() {
         DeviceGroup deviceGroup = TestDataHolder.generateDummyGroupData();
         try {
             GroupManagementDAOFactory.beginTransaction();
@@ -85,7 +88,8 @@ public class GroupPersistTests extends BaseGroupManagementTest {
         return null;
     }
 
-    @Test(dependsOnMethods = { "testAddGroupTest" }) public void updateGroupTest() {
+    @Test(dependsOnMethods = {"testAddGroupTest"})
+    public void updateGroupTest() {
         long time = new Date().getTime();
         String name = "Test Updated";
         String desc = "Desc updated";
@@ -119,7 +123,8 @@ public class GroupPersistTests extends BaseGroupManagementTest {
         Assert.assertEquals((long) group.getDateOfLastUpdate(), time, "Update time is not set");
     }
 
-    @Test(dependsOnMethods = { "testAddGroupTest" }) public void findGroupTest() {
+    @Test(dependsOnMethods = {"testAddGroupTest"})
+    public void findGroupTest() {
         try {
             GroupManagementDAOFactory.openConnection();
             List<DeviceGroup> groups = groupDAO.getGroups("Test", TestDataHolder.SUPER_TENANT_ID);
@@ -139,7 +144,8 @@ public class GroupPersistTests extends BaseGroupManagementTest {
         }
     }
 
-    @Test(dependsOnMethods = { "testAddGroupTest" }) public void getGroupTest() {
+    @Test(dependsOnMethods = {"testAddGroupTest"})
+    public void getGroupTest() {
         try {
             GroupManagementDAOFactory.openConnection();
             List<DeviceGroup> groups = groupDAO.getGroups(TestDataHolder.SUPER_TENANT_ID);
@@ -159,7 +165,8 @@ public class GroupPersistTests extends BaseGroupManagementTest {
         }
     }
 
-    @Test(dependsOnMethods = { "updateGroupTest" }) public void deleteGroupTest() {
+    @Test(dependsOnMethods = {"updateGroupTest"})
+    public void deleteGroupTest() {
         DeviceGroup group = getGroupById(groupId);
         int groupId = 0;
         try {

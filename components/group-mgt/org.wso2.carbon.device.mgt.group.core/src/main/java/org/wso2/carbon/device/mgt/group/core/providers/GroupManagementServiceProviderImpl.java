@@ -66,7 +66,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
+    @Override
+    public int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
             throws GroupManagementException {
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
@@ -81,7 +82,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while adding deviceGroup " +
-                    "'" + deviceGroup.getName() + "' to database", e);
+                                               "'" + deviceGroup.getName() + "' to database", e);
         } catch (TransactionManagementException e) {
             throw new GroupManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -101,7 +102,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean updateGroup(DeviceGroup deviceGroup) throws GroupManagementException {
+    @Override
+    public boolean updateGroup(DeviceGroup deviceGroup) throws GroupManagementException {
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
         }
@@ -113,7 +115,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while modifying deviceGroup " +
-                    "'" + deviceGroup.getName() + "'", e);
+                                               "'" + deviceGroup.getName() + "'", e);
         } catch (TransactionManagementException e) {
             throw new GroupManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -124,7 +126,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean deleteGroup(int groupId) throws GroupManagementException {
+    @Override
+    public boolean deleteGroup(int groupId) throws GroupManagementException {
         String roleName;
         DeviceGroup deviceGroup = getGroup(groupId);
         if (deviceGroup == null) {
@@ -157,7 +160,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while removing group " +
-                    "'" + groupId + "' data", e);
+                                               "'" + groupId + "' data", e);
         } catch (TransactionManagementException e) {
             throw new GroupManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -168,7 +171,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public DeviceGroup getGroup(int groupId) throws GroupManagementException {
+    @Override
+    public DeviceGroup getGroup(int groupId) throws GroupManagementException {
         DeviceGroup deviceGroup;
         try {
             GroupManagementDAOFactory.openConnection();
@@ -194,7 +198,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public List<DeviceGroup> findGroups(String groupName, String owner) throws GroupManagementException {
+    @Override
+    public List<DeviceGroup> findGroups(String groupName, String owner)
+            throws GroupManagementException {
         List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
@@ -221,7 +227,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
+    @Override
+    public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
         UserStoreManager userStoreManager;
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
@@ -247,14 +254,16 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public int getGroupCount(String username) throws GroupManagementException {
+    @Override
+    public int getGroupCount(String username) throws GroupManagementException {
         return this.getGroups(username).size();
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override public boolean shareGroup(String username, int groupId, String sharingRole)
+    @Override
+    public boolean shareGroup(String username, int groupId, String sharingRole)
             throws GroupManagementException {
         UserStoreManager userStoreManager;
         String[] roles = new String[1];
@@ -279,7 +288,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean unShareGroup(String username, int groupId, String sharingRole)
+    @Override
+    public boolean unShareGroup(String username, int groupId, String sharingRole)
             throws GroupManagementException {
         UserStoreManager userStoreManager;
         String[] roles = new String[1];
@@ -304,7 +314,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean addSharing(String username, int groupId, String roleName, String[] permissions)
+    @Override
+    public boolean addSharing(String username, int groupId, String roleName, String[] permissions)
             throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
@@ -335,7 +346,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean removeSharing(int groupId, String roleName) throws GroupManagementException {
+    @Override
+    public boolean removeSharing(int groupId, String roleName) throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
         try {
@@ -359,7 +371,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public List<String> getRoles(int groupId) throws GroupManagementException {
+    @Override
+    public List<String> getRoles(int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
         String[] roles;
         List<String> groupRoles;
@@ -385,7 +398,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public List<String> getRoles(String username, int groupId) throws GroupManagementException {
+    @Override
+    public List<String> getRoles(String username, int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
         List<String> groupRoleList = new ArrayList<>();
         try {
@@ -408,7 +422,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public List<GroupUser> getUsers(int groupId) throws GroupManagementException {
+    @Override
+    public List<GroupUser> getUsers(int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
         Map<String, GroupUser> groupUserHashMap = new HashMap<>();
         try {
@@ -443,7 +458,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public List<Device> getDevices(int groupId) throws GroupManagementException {
+    @Override
+    public List<Device> getDevices(int groupId) throws GroupManagementException {
         List<Device> devicesInGroup;
         try {
             devicesInGroup = GroupManagementDataHolder.getInstance().getDeviceManagementService()
@@ -457,7 +473,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean addDevice(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
+    @Override
+    public boolean addDevice(DeviceIdentifier deviceId, int groupId)
+            throws GroupManagementException {
         Device device;
         DeviceGroup deviceGroup;
         try {
@@ -477,7 +495,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean removeDevice(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
+    @Override
+    public boolean removeDevice(DeviceIdentifier deviceId, int groupId)
+            throws GroupManagementException {
         Device device;
         DeviceGroup deviceGroup;
         try {
@@ -497,7 +517,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public String[] getPermissions(String username, int groupId) throws GroupManagementException {
+    @Override
+    public String[] getPermissions(String username, int groupId) throws GroupManagementException {
         UserRealm userRealm;
         List<String> roles = getRoles(username, groupId);
         int tenantId = DeviceManagerUtil.getTenantId();
@@ -510,7 +531,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                     for (String roleName : roles) {
                         if (userRealm.getAuthorizationManager().
                                 isRoleAuthorized("Internal/group-" + groupId + "-" + roleName, resourceId,
-                                        CarbonConstants.UI_PERMISSION_ACTION)) {
+                                                 CarbonConstants.UI_PERMISSION_ACTION)) {
                             lstPermissions.add(resourceId);
                         }
                     }
@@ -526,7 +547,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public List<DeviceGroup> getGroups(String username, String permission) throws GroupManagementException {
+    @Override
+    public List<DeviceGroup> getGroups(String username, String permission)
+            throws GroupManagementException {
         UserRealm userRealm;
         int tenantId = DeviceManagerUtil.getTenantId();
         Map<Integer, DeviceGroup> groups = new HashMap<>();
@@ -552,7 +575,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     /**
      * {@inheritDoc}
      */
-    @Override public boolean isAuthorized(String username, int groupId, String permission)
+    @Override
+    public boolean isAuthorized(String username, int groupId, String permission)
             throws GroupManagementException {
         UserRealm userRealm;
         int tenantId = DeviceManagerUtil.getTenantId();
@@ -562,7 +586,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             for (String role : roles) {
                 if (userRealm.getAuthorizationManager()
                         .isRoleAuthorized("Internal/group-" + groupId + "-" + role, permission,
-                                CarbonConstants.UI_PERMISSION_ACTION)) {
+                                          CarbonConstants.UI_PERMISSION_ACTION)) {
                     return true;
                 }
             }

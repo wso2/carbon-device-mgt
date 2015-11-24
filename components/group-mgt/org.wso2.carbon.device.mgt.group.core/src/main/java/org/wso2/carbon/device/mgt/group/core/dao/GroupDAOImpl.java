@@ -38,14 +38,15 @@ public class GroupDAOImpl implements GroupDAO {
 
     private static final Log log = LogFactory.getLog(GroupDAOImpl.class);
 
-    @Override public int addGroup(DeviceGroup deviceGroup, int tenantId) throws GroupManagementDAOException {
+    @Override
+    public int addGroup(DeviceGroup deviceGroup, int tenantId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs;
         int groupId = -1;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "INSERT INTO DM_GROUP(DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, "
-                    + "OWNER, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?)";
+                         + "OWNER, TENANT_ID) VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceGroup.getDescription());
             stmt.setString(2, deviceGroup.getName());
@@ -61,7 +62,7 @@ public class GroupDAOImpl implements GroupDAO {
             return groupId;
         } catch (SQLException e) {
             String msg = "Error occurred while adding deviceGroup " +
-                    "'" + deviceGroup.getName() + "'";
+                         "'" + deviceGroup.getName() + "'";
             log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
@@ -69,13 +70,14 @@ public class GroupDAOImpl implements GroupDAO {
         }
     }
 
-    @Override public int updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException {
+    @Override
+    public int updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         int sqlReturn = -1;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "UPDATE DM_GROUP SET DESCRIPTION = ?, NAME = ?, DATE_OF_LAST_UPDATE = ?, OWNER = ? "
-                    + "WHERE ID = ?";
+                         + "WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceGroup.getDescription());
             stmt.setString(2, deviceGroup.getName());
@@ -85,7 +87,7 @@ public class GroupDAOImpl implements GroupDAO {
             sqlReturn = stmt.executeUpdate();
         } catch (SQLException e) {
             String msg = "Error occurred while updating deviceGroup " +
-                    "'" + deviceGroup.getName() + "'";
+                         "'" + deviceGroup.getName() + "'";
             log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
@@ -94,7 +96,8 @@ public class GroupDAOImpl implements GroupDAO {
         return sqlReturn;
     }
 
-    @Override public int deleteGroup(int groupId) throws GroupManagementDAOException {
+    @Override
+    public int deleteGroup(int groupId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         int sqlReturn = -1;
         try {
@@ -105,7 +108,7 @@ public class GroupDAOImpl implements GroupDAO {
             sqlReturn = stmt.executeUpdate();
         } catch (SQLException e) {
             String msg = "Error occurred while deleting group " +
-                    "'" + groupId + "'";
+                         "'" + groupId + "'";
             log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
@@ -114,13 +117,14 @@ public class GroupDAOImpl implements GroupDAO {
         return sqlReturn;
     }
 
-    @Override public DeviceGroup getGroup(int groupId) throws GroupManagementDAOException {
+    @Override
+    public DeviceGroup getGroup(int groupId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "
-                    + "FROM DM_GROUP WHERE ID = ?";
+                         + "FROM DM_GROUP WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, groupId);
             resultSet = stmt.executeQuery();
@@ -138,14 +142,15 @@ public class GroupDAOImpl implements GroupDAO {
         }
     }
 
-    @Override public List<DeviceGroup> getGroups(int tenantId) throws GroupManagementDAOException {
+    @Override
+    public List<DeviceGroup> getGroups(int tenantId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<DeviceGroup> deviceGroupList = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "
-                    + "FROM DM_GROUP WHERE TENANT_ID = ?";
+                         + "FROM DM_GROUP WHERE TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             resultSet = stmt.executeQuery();
@@ -163,14 +168,16 @@ public class GroupDAOImpl implements GroupDAO {
         return deviceGroupList;
     }
 
-    @Override public List<DeviceGroup> getGroups(String groupName, int tenantId) throws GroupManagementDAOException {
+    @Override
+    public List<DeviceGroup> getGroups(String groupName, int tenantId)
+            throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "
-                    + "FROM DM_GROUP WHERE NAME LIKE ? AND TENANT_ID = ?";
+                         + "FROM DM_GROUP WHERE NAME LIKE ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + groupName + "%");
             stmt.setInt(2, tenantId);

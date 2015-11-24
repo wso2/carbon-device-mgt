@@ -21,23 +21,26 @@ package org.wso2.carbon.device.mgt.group.core.common;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "DataSourceConfig") public class DataSourceConfig {
+@XmlRootElement(name = "DataSourceConfig")
+public class DataSourceConfig {
 
     private String url;
     private String driverClassName;
     private String user;
     private String password;
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "DataSourceConfig[" +
-                " Url ='" + url + '\'' +
-                ", DriverClassName ='" + driverClassName + '\'' +
-                ", UserName ='" + user + '\'' +
-                ", Password ='" + password + '\'' +
-                "]";
+               " Url ='" + url + '\'' +
+               ", DriverClassName ='" + driverClassName + '\'' +
+               ", UserName ='" + user + '\'' +
+               ", Password ='" + password + '\'' +
+               "]";
     }
 
-    @XmlElement(name = "Url", nillable = false) public String getUrl() {
+    @XmlElement(name = "Url", nillable = false)
+    public String getUrl() {
         return url;
     }
 
@@ -45,7 +48,8 @@ import javax.xml.bind.annotation.XmlRootElement;
         this.url = url;
     }
 
-    @XmlElement(name = "DriverClassName", nillable = false) public String getDriverClassName() {
+    @XmlElement(name = "DriverClassName", nillable = false)
+    public String getDriverClassName() {
         return driverClassName;
     }
 
@@ -53,7 +57,8 @@ import javax.xml.bind.annotation.XmlRootElement;
         this.driverClassName = driverClassName;
     }
 
-    @XmlElement(name = "User", nillable = false) public String getUser() {
+    @XmlElement(name = "User", nillable = false)
+    public String getUser() {
         return user;
     }
 
@@ -61,7 +66,8 @@ import javax.xml.bind.annotation.XmlRootElement;
         this.user = user;
     }
 
-    @XmlElement(name = "Password", nillable = false) public String getPassword() {
+    @XmlElement(name = "Password", nillable = false)
+    public String getPassword() {
         return password;
     }
 

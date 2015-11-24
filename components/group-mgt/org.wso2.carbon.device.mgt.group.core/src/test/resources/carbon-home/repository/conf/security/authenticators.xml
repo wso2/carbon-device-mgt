@@ -33,8 +33,11 @@
         <Config>
             <Parameter name="LoginPage">/carbon/admin/login.jsp</Parameter>
             <Parameter name="ServiceProviderID">carbonServer</Parameter>
-            <Parameter name="IdentityProviderSSOServiceURL">https://localhost:9443/samlsso</Parameter>
-            <Parameter name="NameIDPolicyFormat">urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</Parameter>
+            <Parameter name="IdentityProviderSSOServiceURL">https://localhost:9443/samlsso
+            </Parameter>
+            <Parameter name="NameIDPolicyFormat">
+                urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified
+            </Parameter>
 
             <!-- <Parameter name="IdPCertAlias">wso2carbon</Parameter> -->
             <!-- <Parameter name="ResponseSignatureValidationEnabled">false</Parameter> -->

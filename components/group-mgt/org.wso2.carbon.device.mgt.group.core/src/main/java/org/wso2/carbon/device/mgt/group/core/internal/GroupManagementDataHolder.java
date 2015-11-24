@@ -67,7 +67,8 @@ public class GroupManagementDataHolder {
         return deviceManagementService;
     }
 
-    public void setDeviceManagementProviderService(DeviceManagementProviderService deviceManagementService) {
+    public void setDeviceManagementProviderService(
+            DeviceManagementProviderService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
     }
 }

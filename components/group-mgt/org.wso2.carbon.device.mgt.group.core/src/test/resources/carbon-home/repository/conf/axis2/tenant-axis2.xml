@@ -171,7 +171,8 @@
             </handler>
         </phase>
         <phase name="Ghost">
-            <handler name="GhostDispatcher" class="org.wso2.carbon.core.dispatchers.GhostDispatcher"/>
+            <handler name="GhostDispatcher"
+                     class="org.wso2.carbon.core.dispatchers.GhostDispatcher"/>
         </phase>
         <phase name="Security"/>
         <phase name="PreDispatch"/>
@@ -240,7 +241,8 @@
             </handler>
         </phase>
         <phase name="Ghost">
-            <handler name="GhostDispatcher" class="org.wso2.carbon.core.dispatchers.GhostDispatcher"/>
+            <handler name="GhostDispatcher"
+                     class="org.wso2.carbon.core.dispatchers.GhostDispatcher"/>
         </phase>
         <phase name="Security"/>
         <phase name="PreDispatch"/>

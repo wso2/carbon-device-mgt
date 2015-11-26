@@ -980,39 +980,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
 
-        for (Device device : userDevices) {
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '"
-                              + device.getType() + "' is null. Therefore, skipping device.");
-                }
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(),
-                                                                 device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
-        }
-        return devices;
+        return enrichDeviceAttributes(userDevices);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Device> getDevices(int groupId) throws DeviceManagementException {
+    public List<Device> getDevices(int groupId, int limit) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
-        List<Device> userDevices;
+        PaginationResult userDevices;
+        List<Device> deviceList;
         int tenantId;
         try {
             DeviceManagementDAOFactory.openConnection();
             tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            userDevices = deviceDAO.getDevices(groupId, tenantId);
+
+            //if the limit is -1, all the devices will be returned, no pagination applied
+            if(limit != -1) {
+                userDevices = deviceDAO.getDevices(groupId, limit, tenantId);
+                if(userDevices != null) {
+                    deviceList = (List<Device>) userDevices.getData();
+                    devices = enrichDeviceAttributes(deviceList);
+                }
+            }else{
+                deviceList = deviceDAO.getDevices(groupId, tenantId);
+                devices = enrichDeviceAttributes(deviceList);
+            }
+
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of " +
                                                 "devices that assigned to the group '" +
@@ -1020,8 +1015,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+        return devices;
+    }
 
-        for (Device device : userDevices) {
+    private List<Device> enrichDeviceAttributes(List<Device> deviceList) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<Device>();
+        for (Device device : deviceList) {
             DeviceManager deviceManager = this.getDeviceManager(device.getType());
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {

@@ -181,7 +181,7 @@ public interface GroupManagementServiceProvider {
      * @return list of group devices
      * @throws GroupManagementException
      */
-    List<Device> getDevices(int groupId) throws GroupManagementException;
+    List<Device> getDevices(int groupId, int limit) throws GroupManagementException;
 
     /**
      * Add device to device group

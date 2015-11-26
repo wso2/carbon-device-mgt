@@ -103,7 +103,7 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getDevices(int groupId) throws DeviceManagementException;
+    List<Device> getDevices(int groupId, int limit) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.

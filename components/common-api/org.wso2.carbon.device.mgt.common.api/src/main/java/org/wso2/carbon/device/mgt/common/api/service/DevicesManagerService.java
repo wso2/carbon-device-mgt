@@ -285,13 +285,13 @@ import java.util.List;
         }
     }
 
-    @Path("/device/group/{groupId}/all")
+    @Path("/device/group/{groupId}/{limit}")
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public Device[] getDevices(@PathParam("groupId") int groupId){
+    public Device[] getDevices(@PathParam("groupId") int groupId, @PathParam("limit") int limit){
         try{
-            List<Device> devices = this.getServiceProvider().getDevices(groupId);
+            List<Device> devices = this.getServiceProvider().getDevices(groupId,limit);
             return this.getActiveDevices(devices);
         } catch (DeviceManagementException e) {
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());

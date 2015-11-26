@@ -402,14 +402,14 @@ public class GroupManagerService {
         return usersArray;
     }
 
-    @Path("/group/id/{groupId}/device/all")
+    @Path("/group/id/{groupId}/device/{limit}")
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public Device[] getDevices(@PathParam("groupId") int groupId) {
+    public Device[] getDevices(@PathParam("groupId") int groupId,@PathParam("limit") int limit) {
         Device[] deviceArray = null;
         try {
-            List<Device> devices = this.getServiceProvider().getDevices(groupId);
+            List<Device> devices = this.getServiceProvider().getDevices(groupId,limit);
             deviceArray = new Device[devices.size()];
             response.setStatus(Response.Status.OK.getStatusCode());
             devices.toArray(deviceArray);

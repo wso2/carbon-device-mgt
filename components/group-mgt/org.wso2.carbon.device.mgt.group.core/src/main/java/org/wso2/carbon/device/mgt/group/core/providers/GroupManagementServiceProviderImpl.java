@@ -140,7 +140,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 removeSharing(groupId, roleName);
             }
         }
-        List<Device> groupDevices = getDevices(groupId);
+        //when -1 is passed, following function returns all devices attached to a group, without pagination
+        List<Device> groupDevices = getDevices(groupId, -1);
         try {
             for (Device device : groupDevices) {
                 device.setGroupId(0);
@@ -186,7 +187,6 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         }
         if (deviceGroup != null) {
             DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
-            groupBroker.setDevices(this.getDevices(groupId));
             groupBroker.setUsers(this.getUsers(groupId));
             groupBroker.setRoles(this.getRoles(groupId));
             return groupBroker.getGroup();
@@ -216,7 +216,6 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         List<DeviceGroup> groupsWithData = new ArrayList<>();
         for (DeviceGroup deviceGroup : deviceGroups) {
             DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
-            groupBroker.setDevices(this.getDevices(deviceGroup.getId()));
             groupBroker.setUsers(this.getUsers(deviceGroup.getId()));
             groupBroker.setRoles(this.getRoles(deviceGroup.getId()));
             groupsWithData.add(groupBroker.getGroup());
@@ -459,11 +458,11 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
      * {@inheritDoc}
      */
     @Override
-    public List<Device> getDevices(int groupId) throws GroupManagementException {
+    public List<Device> getDevices(int groupId, int limit) throws GroupManagementException {
         List<Device> devicesInGroup;
         try {
             devicesInGroup = GroupManagementDataHolder.getInstance().getDeviceManagementService()
-                    .getDevices(groupId);
+                    .getDevices(groupId,limit);
             return devicesInGroup;
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while getting devices in group", e);

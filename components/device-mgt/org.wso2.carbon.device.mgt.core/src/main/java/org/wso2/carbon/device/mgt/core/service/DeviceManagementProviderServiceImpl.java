@@ -142,7 +142,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             EnrolmentInfo newEnrolmentInfo = device.getEnrolmentInfo();
             if (existingEnrolmentInfo != null && newEnrolmentInfo != null) {
                 //Get all the enrollments of current user for the same device
-                List<EnrolmentInfo> enrolmentInfos = this.getEnrollmentsOfUser(existingDevice.getId(), newEnrolmentInfo.getOwner());
+                List<EnrolmentInfo> enrolmentInfos = this.getEnrollmentsOfUser(existingDevice.getId(),
+                                                                               newEnrolmentInfo.getOwner());
                 for (EnrolmentInfo enrolmentInfo : enrolmentInfos) {
                     //If the enrollments are same then we'll update the existing enrollment.
                     if (enrolmentInfo.equals(newEnrolmentInfo)) {
@@ -163,14 +164,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             existingEnrolmentInfo.setStatus(EnrolmentInfo.Status.REMOVED);
                             updateStatus = enrollmentDAO.updateEnrollment(existingEnrolmentInfo);
                         }
-                        if ((updateStatus > 0) || EnrolmentInfo.Status.REMOVED.equals(existingEnrolmentInfo.getStatus())) {
-                            enrolmentId = enrollmentDAO.addEnrollment(existingDevice.getId(), newEnrolmentInfo, tenantId);
+                        if ((updateStatus > 0) || EnrolmentInfo.Status.REMOVED.
+                                equals(existingEnrolmentInfo.getStatus())) {
+                            enrolmentId = enrollmentDAO.
+                                    addEnrollment(existingDevice.getId(), newEnrolmentInfo, tenantId);
                             DeviceManagementDAOFactory.commitTransaction();
                             if (log.isDebugEnabled()) {
                                 log.debug("An enrolment is successfully added with the id '" + enrolmentId +
                                           "' associated with " + "the device identified by key '" +
                                           device.getDeviceIdentifier() + "', which belongs to " + "platform '" +
-                                          device.getType() + " upon the user '" + device.getEnrolmentInfo().getOwner() + "'");
+                                          device.getType() + " upon the user '" + device.getEnrolmentInfo().getOwner() +
+                                          "'");
                             }
                             status = true;
                         } else {
@@ -232,11 +236,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
-
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
             deviceDAO.updateDevice(type.getId(), device, tenantId);
             enrollmentDAO.updateEnrollment(device.getEnrolmentInfo());
-
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
@@ -257,8 +259,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.openConnection();
             enrolmentInfos = enrollmentDAO.getEnrollmentsOfUser(deviceId, user, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for id " +
-                                                "'" + deviceId + "' and user : " + user, e);
+            throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
+                                                "id '" + deviceId + "' and user : " + user, e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -514,8 +516,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         for (NotificationMessages notificationMessage : notificationMessages) {
             if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE
-                    .equals(
-                            notificationMessage.getType())) {
+                    .equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
                 messageFooter1 = notificationMessage.getFooterLine1();
@@ -535,17 +536,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             EmailConfigurations emailConfig =
                     DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                             getDeviceManagementConfigRepository().getEmailConfigurations();
-            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix()+ emailConfig.getEnrollmentContextPath());
-
+            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix() +
+                                                   emailConfig.getEnrollmentContextPath());
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                     URLEncoder.encode(emailMessageProperties.getFirstName(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBody = messageBody.trim() + System.getProperty("line.separator") +
-                    System.getProperty("line.separator") + url.replaceAll("\\{"
+            messageBody = messageBody.trim() + System.getProperty("line.separator") + url.replaceAll("\\{"
                             + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
                     .append(System.getProperty("line.separator"));
             messageBuilder.append(messageBody);
@@ -553,7 +552,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             messageBuilder.append(messageFooter1.trim())
                     .append(System.getProperty("line.separator")).append(messageFooter2.trim()).append(System
                     .getProperty("line.separator")).append(messageFooter3.trim());
-
         } catch (IOException e) {
             throw new DeviceManagementException("Error replacing tags in email template '" +
                     emailMessageProperties.getSubject() + "'", e);
@@ -576,8 +574,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         String subject = "";
 
         for (NotificationMessages notificationMessage : notificationMessages) {
-            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.USER_REGISTRATION_NOTIFICATION_TYPE.
-                    equals(notificationMessage.getType())) {
+            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.
+                    USER_REGISTRATION_NOTIFICATION_TYPE.equals(notificationMessage.getType())) {
                 messageHeader = notificationMessage.getHeader();
                 messageBody = notificationMessage.getBody();
                 messageFooter1 = notificationMessage.getFooterLine1();
@@ -588,24 +586,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 break;
             }
         }
-log.error("======================================================================");
-        log.error(messageBody);
-log.error("======================================================================");
         StringBuilder messageBuilder = new StringBuilder();
-
         try {
-
             // Reading the download url from the cdm-config.xml file
             EmailConfigurations emailConfig =
                     DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                             getDeviceManagementConfigRepository().getEmailConfigurations();
-            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix()+ emailConfig.getEnrollmentContextPath());
-
-
+            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix() +
+                                                   emailConfig.getEnrollmentContextPath());
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
                     URLEncoder.encode(emailMessageProperties.getFirstName(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-
             messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
                             .USERNAME
                             + "\\}",
@@ -615,22 +606,18 @@ log.error("=====================================================================
                             + "\\}",
                     URLEncoder.encode(emailMessageProperties.getDomainName(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
-
             messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.PASSWORD + "\\}",
                     URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
-
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
                             + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
             messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
                     messageFooter1.trim());
             messageBuilder.append(System.getProperty("line.separator")).append(messageFooter2.trim());
             messageBuilder.append(System.getProperty("line.separator")).append(messageFooter3.trim());
-            log.info(messageBuilder.toString());
 
         } catch (IOException e) {
             throw new DeviceManagementException("Error replacing tags in email template '" +
@@ -718,7 +705,6 @@ log.error("=====================================================================
             deviceTypesInDatabase = deviceDAO.getDeviceTypes();
             Map<String, DeviceManagementService> registeredTypes = pluginRepository.getAllDeviceManagementServices();
             DeviceType deviceType;
-
             if (registeredTypes != null && deviceTypesInDatabase != null) {
                 for (int x = 0; x < deviceTypesInDatabase.size(); x++) {
                     if (registeredTypes.get(deviceTypesInDatabase.get(x).getName()) != null) {
@@ -783,11 +769,9 @@ log.error("=====================================================================
                              EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
             DeviceManagementDAOFactory.beginTransaction();
-
             int tenantId = this.getTenantId();
             Device device = deviceDAO.getDevice(deviceId, tenantId);
             boolean success = enrollmentDAO.setStatus(device.getId(), currentOwner, status, tenantId);
-
             DeviceManagementDAOFactory.commitTransaction();
             return success;
         } catch (DeviceManagementDAOException e) {
@@ -811,7 +795,8 @@ log.error("=====================================================================
                 dms.notifyOperationToDevices(operation, deviceIds);
             }
         } catch (DeviceManagementException deviceMgtEx) {
-            String errorMsg = "Error in notify operations to plugins for app installation:" + deviceMgtEx.getErrorMessage();
+            String errorMsg = "Error in notify operations to plugins for app installation:" +
+                              deviceMgtEx.getErrorMessage();
             log.error(errorMsg, deviceMgtEx);
             throw new DeviceManagementException(errorMsg, deviceMgtEx);
         }
@@ -1038,12 +1023,10 @@ log.error("=====================================================================
     public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
             DeviceManagementDAOFactory.beginTransaction();
-
             DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(status);
             deviceDAO.updateDevice(deviceType.getId(), device, this.getTenantId());
-
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
@@ -1090,7 +1073,6 @@ log.error("=====================================================================
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-
         for (Device device : allDevices) {
             Device dmsDevice = this.getDeviceManager(device.getType()).
                     getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));

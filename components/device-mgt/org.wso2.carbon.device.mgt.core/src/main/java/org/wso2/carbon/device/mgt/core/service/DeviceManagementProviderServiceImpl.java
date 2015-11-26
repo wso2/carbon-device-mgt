@@ -588,7 +588,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 break;
             }
         }
-
+log.error("======================================================================");
+        log.error(messageBody);
+log.error("======================================================================");
         StringBuilder messageBuilder = new StringBuilder();
 
         try {
@@ -609,6 +611,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             + "\\}",
                     URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
+            messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.DOMAIN
+                            + "\\}",
+                    URLEncoder.encode(emailMessageProperties.getDomainName(), EmailConstants.EnrolmentEmailConstants
+                            .ENCODED_SCHEME));
 
             messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.PASSWORD + "\\}",
                     URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
@@ -624,6 +630,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     messageFooter1.trim());
             messageBuilder.append(System.getProperty("line.separator")).append(messageFooter2.trim());
             messageBuilder.append(System.getProperty("line.separator")).append(messageFooter3.trim());
+            log.info(messageBuilder.toString());
 
         } catch (IOException e) {
             throw new DeviceManagementException("Error replacing tags in email template '" +

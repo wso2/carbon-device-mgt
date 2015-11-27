@@ -73,7 +73,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public int updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
-        int sqlReturn = -1;
+        int sqlReturn;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "UPDATE DM_GROUP SET DESCRIPTION = ?, NAME = ?, DATE_OF_LAST_UPDATE = ?, OWNER = ? "
@@ -99,7 +99,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public int deleteGroup(int groupId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
-        int sqlReturn = -1;
+        int sqlReturn;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "DELETE FROM DM_GROUP WHERE ID = ?";

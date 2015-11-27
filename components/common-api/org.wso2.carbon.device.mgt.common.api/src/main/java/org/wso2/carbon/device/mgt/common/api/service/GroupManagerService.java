@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.common.impl.service;
+package org.wso2.carbon.device.mgt.common.api.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

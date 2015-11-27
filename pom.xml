@@ -46,7 +46,7 @@
         <module>components/identity-extensions</module>
         <module>components/common-api</module>
         <module>features/device-mgt</module>
-        <module>features/base-ui-feature</module>
+        <module>features/cdmf-base-ui</module>
         <module>features/group-mgt</module>
         <module>features/apimgt-extensions</module>
         <module>features/policy-mgt</module>

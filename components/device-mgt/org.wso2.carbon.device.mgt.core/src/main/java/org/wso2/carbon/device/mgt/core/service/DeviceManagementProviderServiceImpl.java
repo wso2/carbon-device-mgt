@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
-        PluginInitializationListener {
+                                                            PluginInitializationListener {
 
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
@@ -104,7 +104,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (dms == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device type '" + deviceType + "' does not have an associated device management " +
-                        "plugin registered within the framework. Therefore, not attempting getConfiguration method");
+                                  "plugin registered within the framework. Therefore, not attempting getConfiguration method");
             }
             return null;
         }
@@ -117,7 +117,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
-                        "Therefore, not attempting method 'getFeatureManager'");
+                                  "Therefore, not attempting method 'getFeatureManager'");
             }
             return null;
         }
@@ -133,7 +133,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                        "Therefore, not attempting method 'enrollDevice'");
+                                  "Therefore, not attempting method 'enrollDevice'");
             }
             return false;
         }
@@ -179,14 +179,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             DeviceManagementDAOFactory.commitTransaction();
                             if (log.isDebugEnabled()) {
                                 log.debug("An enrolment is successfully added with the id '" + enrolmentId +
-                                          "' associated with " + "the device identified by key '" +
-                                          device.getDeviceIdentifier() + "', which belongs to " + "platform '" +
-                                          device.getType() + " upon the user '" + device.getEnrolmentInfo().getOwner() + "'");
+                                                  "' associated with " + "the device identified by key '" +
+                                                  device.getDeviceIdentifier() + "', which belongs to " + "platform '" +
+                                                  device.getType() + " upon the user '" + device.getEnrolmentInfo().getOwner() + "'");
                             }
                             status = true;
                         } else {
                             log.warn("Unable to update device enrollment for device : " + device.getDeviceIdentifier() +
-                                     " belonging to user : " + device.getEnrolmentInfo().getOwner());
+                                             " belonging to user : " + device.getEnrolmentInfo().getOwner());
                         }
                     } catch (DeviceManagementDAOException e) {
                         DeviceManagementDAOFactory.rollbackTransaction();
@@ -209,7 +209,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } catch (DeviceManagementDAOException e) {
                 DeviceManagementDAOFactory.rollbackTransaction();
                 throw new DeviceManagementException("Error occurred while adding metadata of '" + device.getType() +
-                        "' device carrying the identifier '" + device.getDeviceIdentifier() + "'", e);
+                                                            "' device carrying the identifier '" + device.getDeviceIdentifier() + "'", e);
             } catch (TransactionManagementException e) {
                 throw new DeviceManagementException("Error occurred while initiating transaction", e);
             } finally {
@@ -218,9 +218,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
             if (log.isDebugEnabled()) {
                 log.debug("An enrolment is successfully created with the id '" + enrolmentId + "' associated with " +
-                        "the device identified by key '" + device.getDeviceIdentifier() + "', which belongs to " +
-                        "platform '" + device.getType() + " upon the user '" +
-                        device.getEnrolmentInfo().getOwner() + "'");
+                                  "the device identified by key '" + device.getDeviceIdentifier() + "', which belongs to " +
+                                  "platform '" + device.getType() + " upon the user '" +
+                                  device.getEnrolmentInfo().getOwner() + "'");
             }
             status = true;
         }
@@ -235,7 +235,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                        "Therefore, not attempting method 'modifyEnrolment'");
+                                  "Therefore, not attempting method 'modifyEnrolment'");
             }
             return false;
         }
@@ -252,7 +252,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("Error occurred while modifying the device " +
-                    "'" + device.getId() + "'", e);
+                                                        "'" + device.getId() + "'", e);
         } catch (TransactionManagementException e) {
             throw new DeviceManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -269,7 +269,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             enrolmentInfos = enrollmentDAO.getEnrollmentsOfUser(deviceId, user, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for id " +
-                                                "'" + deviceId + "' and user : " + user, e);
+                                                        "'" + deviceId + "' and user : " + user, e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -284,7 +284,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'dis-enrollDevice'");
+                                  "Therefore, not attempting method 'dis-enrollDevice'");
             }
             return false;
         }
@@ -311,7 +311,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("Error occurred while dis-enrolling '" + deviceId.getType() +
-                    "' device with the identifier '" + deviceId.getId() + "'", e);
+                                                        "' device with the identifier '" + deviceId.getId() + "'", e);
         } catch (TransactionManagementException e) {
             throw new DeviceManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -326,7 +326,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'isEnrolled'");
+                                  "Therefore, not attempting method 'isEnrolled'");
             }
             return false;
         }
@@ -339,7 +339,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'isActive'");
+                                  "Therefore, not attempting method 'isActive'");
             }
             return false;
         }
@@ -352,7 +352,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'setActive'");
+                                  "Therefore, not attempting method 'setActive'");
             }
             return false;
         }
@@ -368,7 +368,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevices(this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant", e);
+                                                        "the current tenant", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -380,7 +380,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
+                                      "Therefore, not attempting method 'isEnrolled'");
                 }
                 devices.add(device);
                 continue;
@@ -406,7 +406,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             paginationResult = deviceDAO.getDevices(deviceType, index, limit, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                                                "the current tenant", e);
+                                                        "the current tenant", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -418,7 +418,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                              "Therefore, not attempting method 'isEnrolled'");
+                                      "Therefore, not attempting method 'isEnrolled'");
                 }
                 devices.add(device);
                 continue;
@@ -445,7 +445,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             paginationResult = deviceDAO.getDevices(index, limit, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                                                "the current tenant", e);
+                                                        "the current tenant", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -457,7 +457,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                              "Therefore, not attempting method 'isEnrolled'");
+                                      "Therefore, not attempting method 'isEnrolled'");
                 }
                 devices.add(device);
                 continue;
@@ -483,7 +483,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevices(deviceType, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving all devices of type '" +
-                    deviceType + "' that are being managed within the scope of current tenant", e);
+                                                        deviceType + "' that are being managed within the scope of current tenant", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -495,7 +495,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
+                                      "Therefore, not attempting method 'isEnrolled'");
                 }
                 devices.add(device);
                 continue;
@@ -550,13 +550,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix()+ emailConfig.getEnrollmentContextPath());
 
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getFirstName(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                                                     URLEncoder.encode(emailMessageProperties.getFirstName(),
+                                                                       EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody.trim() + System.getProperty("line.separator") +
                     System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
-                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                                                                                  + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                                                                          URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
+                                                                                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
                     .append(System.getProperty("line.separator"));
@@ -564,11 +564,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             messageBuilder.append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
             messageBuilder.append(messageFooter1.trim())
                     .append(System.getProperty("line.separator")).append(messageFooter2.trim()).append(System
-                    .getProperty("line.separator")).append(messageFooter3.trim());
+                                                                                                               .getProperty("line.separator")).append(messageFooter3.trim());
 
         } catch (IOException e) {
             throw new DeviceManagementException("Error replacing tags in email template '" +
-                    emailMessageProperties.getSubject() + "'", e);
+                                                        emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
         emailMessageProperties.setSubject(subject);
@@ -613,23 +613,23 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
 
             messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getFirstName(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                                                     URLEncoder.encode(emailMessageProperties.getFirstName(),
+                                                                       EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
-                            .USERNAME
-                            + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
-                            .ENCODED_SCHEME));
+                                                                .USERNAME
+                                                                + "\\}",
+                                                        URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
+                                                                .ENCODED_SCHEME));
 
             messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.PASSWORD + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
-                            .ENCODED_SCHEME));
+                                                 URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
+                                                         .ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
-                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
+                                                                                                      + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                                                                                              URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
+                                                                                                                EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
             messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
@@ -639,7 +639,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         } catch (IOException e) {
             throw new DeviceManagementException("Error replacing tags in email template '" +
-                    emailMessageProperties.getSubject() + "'", e);
+                                                        emailMessageProperties.getSubject() + "'", e);
         }
         emailMessageProperties.setMessageBody(messageBuilder.toString());
         emailMessageProperties.setSubject(subject);
@@ -654,7 +654,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device = deviceDAO.getDevice(deviceId, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "'", e);
+                                                        "'" + deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -667,7 +667,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                            "Therefore, not attempting method 'getDevice'");
+                                      "Therefore, not attempting method 'getDevice'");
                 }
                 return device;
             }
@@ -688,7 +688,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device = deviceDAO.getDevice(deviceId, status, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                                                "'" + deviceId.getId() + "'", e);
+                                                        "'" + deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -701,7 +701,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                              "Therefore, not attempting method 'getDevice'");
+                                      "Therefore, not attempting method 'getDevice'");
                 }
                 return device;
             }
@@ -750,7 +750,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'updateDeviceInfo'");
+                                  "Therefore, not attempting method 'updateDeviceInfo'");
             }
             return false;
         }
@@ -763,7 +763,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'setOwnership'");
+                                  "Therefore, not attempting method 'setOwnership'");
             }
             return false;
         }
@@ -776,7 +776,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'isClaimable'");
+                                  "Therefore, not attempting method 'isClaimable'");
             }
             return false;
         }
@@ -830,7 +830,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
-                        "Therefore, not attempting method 'getLicense'");
+                                  "Therefore, not attempting method 'getLicense'");
             }
             return null;
         }
@@ -844,7 +844,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return license;
         } catch (LicenseManagementException e) {
             throw new DeviceManagementException("Error occurred while retrieving license configured for " +
-                    "device type '" + deviceType + "' and language code '" + languageCode + "'", e);
+                                                        "device type '" + deviceType + "' and language code '" + languageCode + "'", e);
         }
     }
 
@@ -854,7 +854,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
-                        "Therefore, not attempting method 'isEnrolled'");
+                                  "Therefore, not attempting method 'isEnrolled'");
             }
             return;
         }
@@ -862,7 +862,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             deviceManager.addLicense(license);
         } catch (LicenseManagementException e) {
             throw new DeviceManagementException("Error occurred while adding license for " +
-                    "device type '" + deviceType + "'", e);
+                                                        "device type '" + deviceType + "'", e);
         }
     }
 
@@ -931,7 +931,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             userDevices = deviceDAO.getDevicesOfUser(username, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
-                    "belong to the user '" + username + "'", e);
+                                                        "belong to the user '" + username + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -943,7 +943,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
+                                      "Therefore, not attempting method 'isEnrolled'");
                 }
                 devices.add(device);
                 continue;
@@ -974,8 +974,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             userDevices = deviceDAO.getUnGroupedDevices(username, tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of " +
-                                                "devices that belong to the user '" +
-                                                username + "'", e);
+                                                        "devices that belong to the user '" +
+                                                        username + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -983,6 +983,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return enrichDeviceAttributes(userDevices);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Device> getDevices(int groupId) throws DeviceManagementException {
+        return getDevices(groupId, -1);
+    }
     /**
      * {@inheritDoc}
      */
@@ -1010,8 +1017,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of " +
-                                                "devices that assigned to the group '" +
-                                                groupId + "'", e);
+                                                        "devices that assigned to the group '" +
+                                                        groupId + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1025,7 +1032,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '"
-                              + device.getType() + "' is null. Therefore, skipping device.");
+                                      + device.getType() + "' is null. Therefore, skipping device.");
                 }
                 continue;
             }
@@ -1051,7 +1058,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     .getUserStoreManager().getUserListOfRole(role);
         } catch (UserStoreException e) {
             throw new DeviceManagementException("Error occurred while obtaining the users, who are assigned " +
-                    "with the role '" + role + "'", e);
+                                                        "with the role '" + role + "'", e);
         }
 
         List<Device> userDevices;
@@ -1101,7 +1108,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevicesByName(deviceName, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
-                    + deviceName + "'", e);
+                                                        + deviceName + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -1137,7 +1144,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("Error occurred update device enrolment status : '" +
-                    device.getId() + "'", e);
+                                                        device.getId() + "'", e);
         } catch (TransactionManagementException e) {
             throw new DeviceManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -1151,7 +1158,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             pluginRepository.addDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while registering device management plugin '" +
-                    deviceManagementService.getType() + "'", e);
+                              deviceManagementService.getType() + "'", e);
         }
     }
 
@@ -1161,7 +1168,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             pluginRepository.removeDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while un-registering device management plugin '" +
-                    deviceManagementService.getType() + "'", e);
+                              deviceManagementService.getType() + "'", e);
         }
     }
 
@@ -1203,7 +1210,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManagementService == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device type '" + deviceType + "' does not have an associated device management " +
-                        "plugin registered within the framework. Therefore, returning null");
+                                  "plugin registered within the framework. Therefore, returning null");
             }
             return null;
         }

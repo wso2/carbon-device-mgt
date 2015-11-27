@@ -181,6 +181,16 @@ public interface GroupManagementServiceProvider {
      * @return list of group devices
      * @throws GroupManagementException
      */
+    List<Device> getDevices(int groupId) throws GroupManagementException;
+
+    /**
+     * Get all devices in device group
+     *
+     * @param groupId of the group
+     * @param limit the number of results to be retreived
+     * @return list of group devices
+     * @throws GroupManagementException
+     */
     List<Device> getDevices(int groupId, int limit) throws GroupManagementException;
 
     /**

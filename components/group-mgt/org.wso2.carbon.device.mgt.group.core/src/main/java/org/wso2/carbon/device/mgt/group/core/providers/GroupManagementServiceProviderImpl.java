@@ -82,7 +82,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while adding deviceGroup " +
-                                               "'" + deviceGroup.getName() + "' to database", e);
+                                                       "'" + deviceGroup.getName() + "' to database", e);
         } catch (TransactionManagementException e) {
             throw new GroupManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -115,7 +115,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while modifying deviceGroup " +
-                                               "'" + deviceGroup.getName() + "'", e);
+                                                       "'" + deviceGroup.getName() + "'", e);
         } catch (TransactionManagementException e) {
             throw new GroupManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -161,7 +161,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while removing group " +
-                                               "'" + groupId + "' data", e);
+                                                       "'" + groupId + "' data", e);
         } catch (TransactionManagementException e) {
             throw new GroupManagementException("Error occurred while initiating transaction", e);
         } finally {
@@ -452,6 +452,14 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             log.error(errorMsg, userStoreEx);
             throw new GroupManagementException(errorMsg, userStoreEx);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Device> getDevices(int groupId) throws GroupManagementException {
+        return getDevices(groupId, -1);
     }
 
     /**

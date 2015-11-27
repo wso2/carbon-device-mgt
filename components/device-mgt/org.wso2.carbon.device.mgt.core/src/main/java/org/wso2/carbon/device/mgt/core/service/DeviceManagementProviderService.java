@@ -103,6 +103,17 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
+    List<Device> getDevices(int groupId) throws DeviceManagementException;
+
+    /**
+     * Method to get the list of devices in group.
+     *
+     * @param groupId of the group
+     * @param limit the limit of the number of devices returned for the group
+     * @return List of devices allocated to a particular group
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
     List<Device> getDevices(int groupId, int limit) throws DeviceManagementException;
 
     /**

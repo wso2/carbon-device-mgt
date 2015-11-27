@@ -63,6 +63,18 @@
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.scannotation</groupId>
+            <artifactId>scannotation</artifactId>
+        </dependency>
+	<dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -93,7 +105,8 @@
                             org.osgi.service.component,
                             org.apache.commons.logging,
                             javax.servlet,
-                            javax.xml.bind.annotation,
+                            javax.xml.*,
+                            com.google.gson.*,
                             org.apache.catalina,
                             org.apache.catalina.core,
                             org.wso2.carbon.apimgt.api,
@@ -101,8 +114,13 @@
                             org.wso2.carbon.apimgt.impl,
                             org.apache.axis2.*;version="${axis2.osgi.version.range}",
                             org.wso2.carbon.core,
-                            org.wso2.carbon.utils
+                            org.apache.commons.lang,
+                            org.wso2.carbon.utils,
                         </Import-Package>
+			<Embed-Dependency>
+                            scribe;scope=compile|runtime;inline=false;
+                        </Embed-Dependency>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

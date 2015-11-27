@@ -1,6 +1,0 @@
-<%
-var DynamicRouter = require("dynamic-files-router.js");
-
-// TODO: handle error/exceptions
-DynamicRouter.route(request, response);
-%>

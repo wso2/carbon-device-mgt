@@ -522,10 +522,6 @@
                         <artifactId>commons-httpclient</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>commons-httpclient.wso2</groupId>
-                        <artifactId>commons-httpclient</artifactId>
-                    </exclusion>
-                    <exclusion>
                         <groupId>org.wso2.carbon</groupId>
                         <artifactId>org.wso2.carbon.registry.api</artifactId>
                     </exclusion>
@@ -1642,8 +1638,6 @@
 
         <eclipse.paho.version>0.4.0</eclipse.paho.version>
 
-        <!--carbon analytics dependencies-->
-        <carbon.analytics.version>1.0.3</carbon.analytics.version>
         <!--Carbon Analytics-->
         <carbon.analytics.common.version>5.0.5</carbon.analytics.common.version>
         <carbon.analytics.common.version.range>[5.0.5,6.0.0)</carbon.analytics.common.version.range>

@@ -609,7 +609,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setString(index++, status.toString());
             stmt.setInt(index, tenantId);
             rs = stmt.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 enrolments.add(DeviceManagementDAOUtil.loadEnrolment(rs));
             }
             return enrolments;

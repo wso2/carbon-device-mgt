@@ -97,7 +97,7 @@ public class OperationManagerImpl implements OperationManager {
                     List<EnrolmentInfo> enrolments;
                     try {
                         DeviceManagementDAOFactory.openConnection();
-                        enrolments = deviceDAO.getEnrolmentsByStatus(deviceIds, EnrolmentInfo.Status.ACTIVE, tenantId);
+                        enrolments = deviceDAO.getEnrolmentsByStatus(authorizedDeviceList, EnrolmentInfo.Status.ACTIVE, tenantId);
                     } catch (SQLException e) {
                         throw new OperationManagementException("Error occurred while opening a connection the data " +
                                                                "source", e);

@@ -139,7 +139,9 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                     msg = authenticationInfo.getMessage();
                     response.setHeader("WWW-Authenticate", msg);
                 }
-                log.error(msg + " , API : " + request.getRequestURI());
+                if (log.isDebugEnabled()) {
+                    log.debug(msg + " , API : " + request.getRequestURI());
+                }
                 AuthenticationFrameworkUtil
                         .handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED,
                                         msg);

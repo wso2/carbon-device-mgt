@@ -300,16 +300,15 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
-                    "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                    "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, " +
-                    "d.ID, d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                    "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
-                    "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? AND e.OWNER = ?";
+            String sql = "SELECT e1.OWNER, e1.OWNERSHIP, e1.ENROLMENT_ID, e1.DEVICE_ID, e1.STATUS, e1.DATE_OF_LAST_UPDATE," +
+                         " e1.DATE_OF_ENROLMENT, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_IDENTIFICATION, t.NAME " +
+                         "AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, e.ID AS ENROLMENT_ID, " +
+                         "e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e WHERE " +
+                         "e.TENANT_ID = ? AND e.OWNER = ?) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
+                         "AND t.ID = d.DEVICE_TYPE_ID";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setInt(2, tenantId);
-            stmt.setString(3, username);
+            stmt.setString(2, username);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

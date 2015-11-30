@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DeviceTypeConfigManager", propOrder = {
-    "DeviceTypeConfig"
+    "deviceTypeConfigs"
 })
 
 @XmlRootElement(name = "DeviceTypeConfigManager")

@@ -19,40 +19,7 @@
         <div class="container-fluid body-wrapper">
             <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
                 <div class="media">
-                    <div class="media-left media-middle asset-image col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        <div class="thumbnail icon"><i class="square-element text fw fw-mobile"></i></div>
-                    </div>
-                    <div class="media-body asset-desc add-padding-left-5x">
-                        <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">Device Overview</div>
-                        {{#defineZone "device-detail-properties"}}
-                            <table class="table table-responsive table-striped" id="members">
-                                <tbody>
-                                <tr role="row" class="even"><td class="sorting_1" style="padding:10px 15px; width: 1%;;">Device</td><td style="padding:10px 15px;">{{device.viewModel.vendor}} {{device.properties.model}}</td></tr>
-                                <tr role="row" class="odd"><td class="sorting_1" style="padding:10px 15px;">Model</td><td style="padding:10px 15px;">{{device.viewModel.model}}</td></tr>
-                                <tr role="row" class="even"><td class="sorting_1" style="padding:10px 15px;">IMEI</td><td style="padding:10px 15px;">{{device.viewModel.imei}}</td></tr>
-                                {{#if device.viewModel.udid}}
-                                    <tr role="row" class="even"><td class="sorting_1" style="padding:10px 15px;">UDID</td><td style="padding:10px 15px;">{{device.viewModel.udid}}</td></tr>
-                                {{/if}}
-                                {{#if device.viewModel.phoneNumber}}
-                                    <tr role="row" class="even"><td class="sorting_1" style="padding:10px 15px;">Phone Number</td><td style="padding:10px 15px;">{{device.viewModel.phoneNumber}}</td></tr>
-                                {{/if}}
-                                <tr role="row" class="even">
-                                    <td class="sorting_1" style="padding:10px 15px;">Status</td>
-                                    <td style="padding:10px 15px;">
-                                        {{#equal device.status "ACTIVE"}}<span><i class="fw fw-ok icon-success"></i> Active</span>{{/equal}}
-                                        {{#equal device.status "INACTIVE"}}<span><i class="fw fw-warning icon-warning"></i> Inactive</span>{{/equal}}
-                                        {{#equal device.status "BLOCKED"}}<span><i class="fw fw-remove icon-danger"></i> Blocked</span>{{/equal}}
-                                        {{#equal device.status "REMOVED"}}<span><i class="fw fw-delete icon-danger"></i> Removed</span>{{/equal}}
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        {{/defineZone}}
-                        <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">Operations</div>
-                        <div class="add-margin-top-4x">
-                            {{unit "cdmf.unit.device.operation-bar" deviceType=device.type}}
-                        </div>
-                    </div>
+                    {{unit "cdmf.unit.device.overview-section" deviceType="iot-device"}}
                 </div>
 
                 <div class="media">
@@ -68,66 +35,15 @@
                     {{#defineZone "device-detail-properties"}}
                         <div class="media-body add-padding-left-5x remove-padding-xs tab-content">
                             <div class="panel-group tab-content">
-                                <div class="panel panel-default tab-pane active" id="device_details" role="tabpanel" aria-labelledby="device_details">
+
+                                <div id="deviceDetails" class="panel panel-default tab-pane active" id="device_details" role="tabpanel" aria-labelledby="device_details">
                                     <div class="panel-heading">Device Details</div>
-                                    <div id="loading-content" class="col-centered">
-                                        <br>
-                                        <br>
-                                        <i class="fw fw-settings fw-spin fw-2x"></i>
-                                        &nbsp;&nbsp;&nbsp;
-                                        Loading Device Details . . .
-                                        <br>
-                                    </div>
-                                    <div class="panel-body hidden">
-                                        <!-- device summary -->
-                                        <div class="row">
-                                            {{#if device.viewModel.BatteryLevel}}
-                                                <div class="col-lg-4">
-                                                    <div class="wr-stats-board-tile">
-                                                        <div class="tile-name">BATTERY</div>
-                                                        <div>
-                                                            <div class="tile-icon"><i class="fw fw-battery"></i></div>
-                                                            <div class="tile-stats">{{device.viewModel.BatteryLevel}}%</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {{/if}}
-                                            {{#if device.viewModel.DeviceCapacity}}
-                                                <div class="col-lg-4" >
-                                                    <div class="wr-stats-board-tile">
-                                                        <div class="tile-name">STORAGE</div>
-                                                        <div>
-                                                            <div class="tile-icon"><i class="fw fw-hdd"></i></div>
-                                                            <div class="tile-stats">{{device.viewModel.DeviceCapacityPercentage}}%<span class="tile-stats-free">{{device.viewModel.DeviceCapacityUsed}} GB Free</span></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {{/if}}
-                                            {{#if device.viewModel.internal_memory.FreeCapacity}}
-                                                <div class="col-lg-4">
-                                                    <div class="wr-stats-board-tile">
-                                                        <div class="tile-name">LOCAL STORAGE</div>
-                                                        <div>
-                                                            <div class="tile-icon"><i class="fw fw-hdd"></i></div>
-                                                            <div class="tile-stats">{{device.viewModel.internal_memory.DeviceCapacityPercentage}}%<span class="tile-stats-free">{{device.viewModel.internal_memory.FreeCapacity}} GB Free</span></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {{/if}}
-                                            {{#if device.viewModel.external_memory.FreeCapacity}}
-                                                <div class="col-lg-4">
-                                                    <div class="wr-stats-board-tile">
-                                                        <div class="tile-name">EXTERNAL STORAGE</div>
-                                                        <div>
-                                                            <div class="tile-icon"><i class="fw fw-usb-drive"></i></div>
-                                                            <div class="tile-stats">{{device.viewModel.external_memory.DeviceCapacityPercentage}}%<span class="tile-stats-free">{{device.viewModel.external_memory.FreeCapacity}} GB Free</span></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {{/if}}
-                                        </div>
-                                    </div>
+                                    {{#equal device.type "ios"}}{{unit "cdmf.unit.device.details" deviceType=device.type}}{{/equal}}
+                                    {{#equal device.type "android"}}{{unit "iot.unit.device.stats" deviceType=device.type}}{{/equal}}
+                                    {{#equal device.type "iot-device"}}{{unit "iot.unit.device.stats" deviceType=device.type}}{{/equal}}
+                                    {{#equal device.type "windows"}}{{unit "cdmf.unit.device.details" deviceType=device.type}}{{/equal}}
                                 </div>
+
                                 <div class="panel panel-default tab-pane" id="policy_compliance" role="tabpanel" aria-labelledby="policy_compliance">
                                     <div class="panel-heading">Policy Compliance <span><a href="#" id="refresh-policy"><i class="fw fw-refresh"></i></a></span></div>
                                     <div class="panel-body">

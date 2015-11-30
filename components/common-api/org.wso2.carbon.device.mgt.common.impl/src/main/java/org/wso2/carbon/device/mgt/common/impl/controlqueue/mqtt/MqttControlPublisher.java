@@ -107,13 +107,13 @@ public class MqttControlPublisher implements ControlQueueConnector, MqttCallback
 							+ deviceId;
 			String payLoad = key + ":" + value;
 
-			log.info("Pubish-Topic: " + publishTopic);
+			log.info("Publish-Topic: " + publishTopic);
 			log.info("PayLoad: " + payLoad);
 
 			try {
 				client = new MqttClient(mqttEndpoint,clientId);
 				options = new MqttConnectOptions();
-				options.setWill("iotDevice/clienterrors", "crashed".getBytes(UTF_8), 2, true);
+				options.setWill("device/clienterrors", "crashed".getBytes(UTF_8), 2, true);
 				client.setCallback(this);
 				client.connect(options);
 
@@ -137,7 +137,7 @@ public class MqttControlPublisher implements ControlQueueConnector, MqttCallback
 				throw new DeviceControllerException(errorMsg, ex);
 			}
 		} else {
-			log.warn("MQTT <Enabled> set to false in 'devicecloud-config.xml'");
+			log.warn("MQTT <Enabled> set to false in 'device-mgt-config.xml'");
 		}
 	}
 
@@ -155,7 +155,7 @@ public class MqttControlPublisher implements ControlQueueConnector, MqttCallback
 
 	@Override
 	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
-		log.info("MQTT Message recieved: " + arg1.toString());
+		log.info("MQTT Message received: " + arg1.toString());
 	}
 
 

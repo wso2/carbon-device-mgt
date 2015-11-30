@@ -1,0 +1,101 @@
+<!-- statistics -->
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFour">
+        <h2 class="sub-title panel-title">
+            <a data-toggle="collapse"
+               href="#collapseTwo" aria-expanded="true"
+               aria-controls="collapseTwo">
+                                        <span class="fw-stack">
+                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-arrow fw-down fw-stack-1x"></i>
+                                        </span>
+                Device Statistics
+            </a>
+        </h2>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse in"
+         role="tabpanel"
+         aria-labelledby="headingTwo">
+        <div class="panel-body">
+            <div id="chartWrapper">
+                <div id="y_axis" class="custom_y_axis"></div>
+                <div class="legend_container">
+                    <div id="smoother" title="Smoothing"></div>
+                    <div id="legend"></div>
+                </div>
+                <div id="chart" class="custom_rickshaw_graph"></div>
+                <div class="custom_x_axis"></div>
+            </div>
+            <div id="map" class="map-wrapper hidden">
+
+            </div>
+            <a class="padding-left" href="{{@app.context}}/pages/analytics?deviceId={{deviceId}}&deviceType={{deviceType}}">
+                                        <span class="fw-stack">
+                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-statistics fw-stack-1x"></i>
+                                        </span> View Device Analytics</a>
+        </div>
+    </div>
+</div>
+<!-- /statistics -->
+
+<!-- events -->
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+        <h2 class="sub-title panel-title">
+            <a data-toggle="collapse"
+               href="#collapseThree" aria-expanded="true"
+               aria-controls="collapseThree">
+                                        <span class="fw-stack">
+                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-arrow fw-down fw-stack-1x"></i>
+                                        </span>
+                Device Events
+            </a>
+        </h2>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse in"
+         role="tabpanel"
+         aria-labelledby="headingThree">
+        <div class="panel-body">
+            {{#if data}}
+                <div class="container container-bg  white-bg">
+                    <div class=" margin-top-double">
+                        <div class="row row padding-top-double padding-bottom-double margin-bottom-double">
+                            <div id="event-stream-place-holder" style="padding-top: 20px;">
+                                <div style="padding: 15px;">
+                                    <table class="table table-striped table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th width="20%">Time</th>
+                                            <th>Activity</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {{#each data}}
+                                            <tr>
+                                                <td width="20%" class="formatDate">{{time}}</td>
+                                                <td>{{activity}}</td>
+                                            </tr>
+                                        {{/each}}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{else}}
+                <div class="assets-container">
+                    <div class="top-assets-empty-assert">You don't have any
+                        events logged at
+                        the moment.
+                    </div>
+                </div>
+            {{/if}}
+        </div>
+    </div>
+</div>
+{{#zone "bottomJs"}}
+    {{js "js/device-details.js"}}
+{{/zone}}

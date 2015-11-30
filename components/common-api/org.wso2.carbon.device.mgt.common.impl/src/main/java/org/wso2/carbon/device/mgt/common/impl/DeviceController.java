@@ -151,7 +151,7 @@ public class DeviceController {
 
 		ControlQueueConnector mqttControlQueue = controlQueueMap.get(MqttConfig.getMqttQueueConfigName());
 		if (mqttControlQueue == null) {
-			log.info("MQTT Queue has not been listed in 'devicecloud-config.xml'");
+			log.info("MQTT Queue has not been listed in 'device-mgt-config.xml'");
 			return false;
 		}
 

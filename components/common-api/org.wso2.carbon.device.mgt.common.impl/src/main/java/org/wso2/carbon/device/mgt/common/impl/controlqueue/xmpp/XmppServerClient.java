@@ -69,7 +69,7 @@ public class XmppServerClient implements ControlQueueConnector {
 	public void enqueueControls(HashMap<String, String> deviceControls)
 			throws DeviceControllerException {
 		if (!xmppEnabled) {
-			log.warn("XMPP <Enabled> set to false in 'devicecloud-config.xml'");
+			log.warn("XMPP <Enabled> set to false in 'device-mgt-config.xml'");
 		}
 	}
 
@@ -153,7 +153,7 @@ public class XmppServerClient implements ControlQueueConnector {
 			}
 
 		} else {
-			log.warn("XMPP <Enabled> set to false in 'devicecloud-config.xml'");
+			log.warn("XMPP <Enabled> set to false in 'device-mgt-config.xml'");
 			return false;
 		}
 	}

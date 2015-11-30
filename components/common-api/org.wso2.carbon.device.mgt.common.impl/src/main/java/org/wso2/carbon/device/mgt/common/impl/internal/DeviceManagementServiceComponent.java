@@ -44,7 +44,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import java.util.Map;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.iot.common.internal.IotDeviceManagementServiceComponent"
+ * @scr.component name="org.wso2.carbon.device.mgt.common.DeviceManagementServiceComponent"
  * immediate="true"
  * @scr.reference name="user.realmservice.default"
  * interface="org.wso2.carbon.user.core.service.RealmService"

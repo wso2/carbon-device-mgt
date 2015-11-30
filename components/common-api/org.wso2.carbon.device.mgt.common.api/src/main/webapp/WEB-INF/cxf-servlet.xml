@@ -26,7 +26,7 @@
     <jaxrs:server id="GroupManager" address="/group_manager">
         <jaxrs:serviceBeans>
             <bean id="GroupManagerService"
-                  class="org.wso2.carbon.device.mgt.common.impl.service.GroupManagerService"/>
+                  class="org.wso2.carbon.device.mgt.common.api.GroupManagerService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
@@ -36,7 +36,7 @@
     <jaxrs:server id="DevicesManager" address="/device_manager">
         <jaxrs:serviceBeans>
             <bean id="DevicesManagerService"
-                  class="org.wso2.carbon.device.mgt.common.impl.service.DevicesManagerService"/>
+                  class="org.wso2.carbon.device.mgt.common.api.DevicesManagerService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
@@ -46,7 +46,7 @@
     <jaxrs:server id="StatsManager" address="/stats_manager">
         <jaxrs:serviceBeans>
             <bean id="StatsManagerService"
-                  class="org.wso2.carbon.device.mgt.common.impl.service.StatsManagerService"/>
+                  class="org.wso2.carbon.device.mgt.common.api.StatsManagerService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
@@ -56,7 +56,7 @@
     <jaxrs:server id="PolicyManager" address="/policy_manager">
         <jaxrs:serviceBeans>
             <bean id="PolicyManagerService"
-                  class="org.wso2.carbon.device.mgt.common.impl.service.PolicyManagementService"/>
+                  class="org.wso2.carbon.device.mgt.common.api.PolicyManagementService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />

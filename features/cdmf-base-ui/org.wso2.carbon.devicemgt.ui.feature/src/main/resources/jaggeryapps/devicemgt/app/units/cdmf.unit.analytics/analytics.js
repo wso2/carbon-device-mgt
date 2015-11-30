@@ -9,8 +9,10 @@ function onRequest(context){
         var deviceModule = require("/modules/device.js").deviceModule;
         var deviceId = request.getParameter("deviceId");
         var deviceType = request.getParameter("deviceType");
+        var deviceName = request.getParameter("deviceName");
 
-        title = deviceModule.getDevice(deviceType, deviceId).name;
+        //title = deviceModule.getDevice(deviceType, deviceId).name;
+        title = deviceName;
     }
     context.title = title + " Analytics";
 

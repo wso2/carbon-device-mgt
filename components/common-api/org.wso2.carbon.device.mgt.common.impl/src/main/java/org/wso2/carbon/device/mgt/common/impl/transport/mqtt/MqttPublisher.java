@@ -31,11 +31,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * This implementation supports publishing of control signals received to an
  * MQTT end-point.
  * The configuration settings for the MQTT end-point are read from the
- * 'devicecloud-config.xml' file of the project.
+ * 'device-mgt-config.xml' file of the project.
  * This is done using the class 'DeviceCloudConfigManager.java' which loads
- * the settings from the default xml org.wso2.carbon.device.mgt.iot.common.devicecloud.org.wso2.carbon.device.mgt.iot.common.config.server.configs
+ * the settings from the default xml org.wso2.carbon.device.mgt.common
  * file -
- * /resources/conf/device-controls/devicecloud-config.xml
+ * /resources/conf/device-mgt-config.xml
  */
 public class MqttPublisher implements MqttCallback {
 
@@ -81,7 +81,7 @@ public class MqttPublisher implements MqttCallback {
 			try {
 				client = new MqttClient(mqttEndpoint,publishClientId);
 				options = new MqttConnectOptions();
-				options.setWill("iotDevice/clienterrors", "crashed".getBytes(UTF_8), 2, true);
+				options.setWill("device/clienterrors", "crashed".getBytes(UTF_8), 2, true);
 				client.setCallback(this);
 				client.connect(options);
 
@@ -103,7 +103,7 @@ public class MqttPublisher implements MqttCallback {
 				throw new DeviceControllerException(errorMsg, ex);
 			}
 		} else {
-			log.warn("MQTT <Enabled> set to false in 'devicecloud-config.xml'");
+			log.warn("MQTT <Enabled> set to false in 'device-mgt-config.xml'");
 		}
 	}
 
@@ -121,7 +121,7 @@ public class MqttPublisher implements MqttCallback {
 
 	@Override
 	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
-		log.info("MQTT Message recieved: " + arg1.toString());
+		log.info("MQTT Message received: " + arg1.toString());
 	}
 
 

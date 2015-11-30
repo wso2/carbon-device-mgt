@@ -1,8 +1,8 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../conf/);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/devicecloud-config.xml,target:${installFolder}/../../conf/devicecloud-config.xml,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/devicecloud-config.xsd,target:${installFolder}/../../conf/devicecloud-config.xsd,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/device-type-config.xml,target:${installFolder}/../../conf/device-type-config,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/device-type-config.xsd,target:${installFolder}/../../conf/device-type-config,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/device-mgt-config.xml,target:${installFolder}/../../conf/device-mgt-config.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/device-mgt-config.xsd,target:${installFolder}/../../conf/device-mgt-config.xsd,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/device-type-config.xml,target:${installFolder}/../../conf/device-type-config.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/conf/device-type-config.xsd,target:${installFolder}/../../conf/device-type-config.xsd,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/webapps/);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.common.api_${feature.version}/webapps/,target:${installFolder}/../../deployment/server/webapps/,overwrite:true);\

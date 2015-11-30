@@ -101,6 +101,16 @@ utility = function () {
         userModule.addPermissions([{key: "platform-configs/view", name: "View Configurations"}], "device-mgt/emm-admin", type);
     };
 
+    publicMethods.getIoTServerConfig = function(configName){
+        var path = "/config/iot-config.json";
+        var file = new File(path);
+        file.open("r");
+        var content = file.readAll();
+        file.close();
+        var json = parse(content);
+        return json[configName];
+    };
+
     return publicMethods;
 }();
 

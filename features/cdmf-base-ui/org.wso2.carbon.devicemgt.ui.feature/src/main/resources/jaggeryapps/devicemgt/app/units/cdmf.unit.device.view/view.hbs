@@ -19,7 +19,10 @@
         <div class="container-fluid body-wrapper">
             <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
                 <div class="media">
-                    {{unit "cdmf.unit.device.overview-section" deviceType="iot-device"}}
+                    {{#equal device.type "ios"}}{{unit "cdmf.unit.device.overview-section" deviceType=device.type}}{{/equal}}
+                    {{#equal device.type "android"}}{{unit "cdmf.unit.device.overview-section" deviceType=device.type}}{{/equal}}
+                    {{#equal device.type "virtual_firealarm"}}{{unit "iot.unit.device.firealarm-overview" deviceType=device.type}}{{/equal}}
+                    {{#equal device.type "windows"}}{{unit "cdmf.unit.device.overview-section" deviceType=device.type}}{{/equal}}
                 </div>
 
                 <div class="media">
@@ -30,6 +33,7 @@
                             <li><a class="list-group-item" href="#device_location" role="tab" data-toggle="tab" aria-controls="device_location">Device Location</a></li>
                             <li><a class="list-group-item" href="#installed_applications" role="tab" data-toggle="tab" aria-controls="installed_applications">Installed Applications</a></li>
                             <li><a class="list-group-item" href="#event_log" role="tab" data-toggle="tab" aria-controls="event_log">Operations Log</a></li>
+                            <li><a class="list-group-item" href="analytics?deviceType={{device.type}}&deviceName={{device.name}}&deviceId={{device.deviceIdentifier}}">Device Analytics</a></li>
                         </ul>
                     </div>
                     {{#defineZone "device-detail-properties"}}
@@ -39,8 +43,8 @@
                                 <div id="deviceDetails" class="panel panel-default tab-pane active" id="device_details" role="tabpanel" aria-labelledby="device_details">
                                     <div class="panel-heading">Device Details</div>
                                     {{#equal device.type "ios"}}{{unit "cdmf.unit.device.details" deviceType=device.type}}{{/equal}}
-                                    {{#equal device.type "android"}}{{unit "iot.unit.device.stats" deviceType=device.type}}{{/equal}}
-                                    {{#equal device.type "iot-device"}}{{unit "iot.unit.device.stats" deviceType=device.type}}{{/equal}}
+                                    {{#equal device.type "android"}}{{unit "cdmf.unit.device.details" deviceType=device.type}}{{/equal}}
+                                    {{#equal device.type "virtual_firealarm"}}{{unit "iot.unit.device.stats" deviceType=device.type}}{{/equal}}
                                     {{#equal device.type "windows"}}{{unit "cdmf.unit.device.details" deviceType=device.type}}{{/equal}}
                                 </div>
 

@@ -21,6 +21,7 @@
         <Header>Dear {first-name},</Header>
         <Body>
 You have been registered to WSO2 MDM with following credentials.
+Domain: {domain-name}
 Username: {user-name}
 Password: {password}
 Below is the link to enroll.

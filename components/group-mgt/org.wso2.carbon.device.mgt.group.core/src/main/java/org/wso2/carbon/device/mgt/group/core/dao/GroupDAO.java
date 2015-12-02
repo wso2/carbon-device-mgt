@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.group.core.dao;
 
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
+import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBroker;
 
 import java.util.List;
 
@@ -41,19 +42,17 @@ public interface GroupDAO {
      * Update an existing Device Group
      *
      * @param deviceGroup group to update
-     * @return sql execution result
      * @throws GroupManagementDAOException
      */
-    int updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException;
+    void updateGroup(DeviceGroup deviceGroup) throws GroupManagementDAOException;
 
     /**
      * Delete an existing Device Group
      *
      * @param groupId group Id to delete
-     * @return sql execution result
      * @throws GroupManagementDAOException
      */
-    int deleteGroup(int groupId) throws GroupManagementDAOException;
+    void deleteGroup(int groupId) throws GroupManagementDAOException;
 
     /**
      * Get device group by Id
@@ -62,7 +61,7 @@ public interface GroupDAO {
      * @return Device Group
      * @throws GroupManagementDAOException
      */
-    DeviceGroup getGroup(int groupId) throws GroupManagementDAOException;
+    DeviceGroupBroker getGroup(int groupId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Device Groups in tenant.
@@ -71,7 +70,7 @@ public interface GroupDAO {
      * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroup> getGroups(int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroupBroker> getGroups(int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Groups that matches with the given DeviceGroup name.
@@ -81,6 +80,7 @@ public interface GroupDAO {
      * @return List of DeviceGroup that matches with the given DeviceGroup name.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroup> getGroups(String groupName, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroupBroker> getGroups(String groupName, int tenantId)
+            throws GroupManagementDAOException;
 
 }

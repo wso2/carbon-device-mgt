@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.device.mgt.group.core.internal;
 
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupUser;
 
@@ -38,7 +37,6 @@ public class DeviceGroupBroker extends DeviceGroup {
         this.setDateOfLastUpdate(deviceGroup.getDateOfLastUpdate());
         this.setOwner(deviceGroup.getOwner());
         this.setUsers(deviceGroup.getUsers());
-        this.setDevices(deviceGroup.getDevices());
         this.setRoles(deviceGroup.getRoles());
     }
 
@@ -50,11 +48,6 @@ public class DeviceGroupBroker extends DeviceGroup {
     @Override
     public void setUsers(List<GroupUser> users) {
         super.setUsers(users);
-    }
-
-    @Override
-    public void setDevices(List<Device> devices) {
-        super.setDevices(devices);
     }
 
     @Override

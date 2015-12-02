@@ -1,20 +1,19 @@
 /*
- *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
- *  Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License.
- *  You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package org.wso2.carbon.device.mgt.common.api;
@@ -32,7 +31,16 @@ import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServicePro
 
 import javax.jws.WebService;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.Date;
@@ -40,11 +48,6 @@ import java.util.List;
 
 @WebService
 public class GroupManagerService {
-
-    private static Log log = LogFactory.getLog(GroupManagerService.class);
-
-    @Context  //injected response proxy supporting multiple threads
-    private HttpServletResponse response;
 
     private static final String DEFAULT_ADMIN_ROLE = "admin";
     private static final String DEFAULT_OPERATOR_ROLE = "invoke-device-operations";
@@ -59,7 +62,9 @@ public class GroupManagerService {
     private static final String[] DEFAULT_MANAGE_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/add"};
     private static final String[] DEFAULT_VIEW_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/view"};
     private static final String[] DEFAULT_VIEW_EVENTS_PERMISSIONS = {"/permission/device-mgt/user/groups/device_events"};
-
+    private static Log log = LogFactory.getLog(GroupManagerService.class);
+    @Context  //injected response proxy supporting multiple threads
+    private HttpServletResponse response;
     private PrivilegedCarbonContext ctx;
 
     private GroupManagementServiceProvider getServiceProvider() {
@@ -127,7 +132,6 @@ public class GroupManagerService {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
-        boolean isUpdated = false;
         try {
             GroupManagementServiceProvider groupManagementService = this.getServiceProvider();
             DeviceGroup group = groupManagementService.getGroup(groupId);
@@ -136,14 +140,15 @@ public class GroupManagerService {
             group.setOwner(username);
             group.setDateOfLastUpdate(new Date().getTime());
             response.setStatus(Response.Status.OK.getStatusCode());
-            isUpdated = groupManagementService.updateGroup(group);
+            groupManagementService.updateGroup(group);
+            return true;
         } catch (GroupManagementException e) {
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             log.error(e.getErrorMessage(), e);
+            return false;
         } finally {
             this.endTenantFlow();
         }
-        return isUpdated;
     }
 
     @Path("/group/id/{groupId}")

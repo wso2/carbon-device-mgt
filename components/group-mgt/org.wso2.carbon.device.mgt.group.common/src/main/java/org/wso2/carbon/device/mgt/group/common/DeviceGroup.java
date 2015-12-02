@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.device.mgt.group.common;
 
-import org.wso2.carbon.device.mgt.common.Device;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -38,7 +36,6 @@ public class DeviceGroup implements Serializable {
     private Long dateOfLastUpdate;
     private String owner;
     private List<GroupUser> users;
-    private List<Device> devices;
     private List<String> roles;
 
     @XmlElement
@@ -105,15 +102,6 @@ public class DeviceGroup implements Serializable {
     }
 
     @XmlElement
-    public List<Device> getDevices() {
-        return devices;
-    }
-
-    protected void setDevices(List<Device> devices) {
-        this.devices = devices;
-    }
-
-    @XmlElement
     public List<String> getRoles() {
         return roles;
     }
@@ -131,7 +119,6 @@ public class DeviceGroup implements Serializable {
         g.setDateOfLastUpdate(getDateOfLastUpdate());
         g.setOwner(getOwner());
         g.setUsers(getUsers());
-        g.setDevices(getDevices());
         g.setRoles(getRoles());
         return g;
     }

@@ -25,7 +25,7 @@
             <artifactId>org.wso2.carbon.apimgt.webapp.publisher</artifactId>
         </dependency>
 	 <dependency>
-            <groupId>org.wso2.scannotation</groupId>
+            <groupId>org.wso2.orbit.org.scannotation</groupId>
             <artifactId>scannotation</artifactId>
         </dependency>
     </dependencies>
@@ -82,7 +82,7 @@
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.apimgt.webapp.publisher:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    org.wso2.scannotation:scannotation:1.0.3.wso2v1
+                                    org.wso2.orbit.org.scannotation:scannotation:1.0.3.wso2v1
                                 </bundleDef>
                             </bundles>
                             <importFeatures>

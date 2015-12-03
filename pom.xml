@@ -1372,7 +1372,7 @@
             </dependency>
 
             <dependency>
-                <groupId>org.wso2.scannotation</groupId>
+                <groupId>org.wso2.orbit.org.scannotation</groupId>
                 <artifactId>scannotation</artifactId>
                 <version>${scannotation.version}</version>
             </dependency>

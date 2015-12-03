@@ -37,6 +37,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
             stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_CERTIFICATE (SERIAL_NUMBER, CERTIFICATE) VALUES (?,?)");
             stmt.setString(1, serialNumber);
             stmt.setObject(2, byteArrayInputStream);
+            stmt.execute();
         } catch (SQLException e) {
             throw new CertificateManagementDAOException("Error occurred while saving certificate with serial " +
                                                         serialNumber, e);

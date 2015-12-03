@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.certificate.mgt.core.config;
 
 import org.wso2.carbon.certificate.mgt.core.config.datasource.DataSourceConfig;

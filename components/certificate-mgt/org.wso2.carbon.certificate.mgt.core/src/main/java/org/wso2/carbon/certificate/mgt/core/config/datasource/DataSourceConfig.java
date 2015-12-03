@@ -38,9 +38,3 @@ public class DataSourceConfig {
         this.jndiLookupDefinition = jndiLookupDefinition;
     }
 }
-//    CREATE TABLE IF NOT EXISTS DM_DEVICE_CERTIFICATE (
-//            ID                    INTEGER auto_increment NOT NULL,
-//            SERIAL_NUMBER            VARCHAR(500) DEFAULT NULL,
-//    	      CERTIFICATE                  BLOB DEFAULT NULL,
-//    	      PRIMARY KEY (ID)
-//    );

@@ -44,7 +44,7 @@ public interface CertificateManagementService {
     byte[] getPKIMessageSCEP(InputStream inputStream) throws KeystoreException;
 
     X509Certificate generateCertificateFromCSR(PrivateKey privateKey, PKCS10CertificationRequest request,
-                                                              String issueSubject) throws KeystoreException;
+                                               String issueSubject) throws KeystoreException;
 
     Certificate getCertificateByAlias(String alias) throws KeystoreException;
 

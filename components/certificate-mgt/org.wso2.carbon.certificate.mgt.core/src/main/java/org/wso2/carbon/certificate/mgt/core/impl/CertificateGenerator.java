@@ -48,11 +48,17 @@ import org.jscep.message.*;
 import org.jscep.transaction.FailInfo;
 import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateDAO;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.dto.CAStatus;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
+import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
+import org.wso2.carbon.certificate.mgt.core.util.Serializer;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
@@ -517,22 +523,38 @@ public class CertificateGenerator {
         }
     }
 
-    private void saveCertInKeyStore(X509Certificate certificate) throws KeystoreException {
+    private void saveCertInKeyStore(X509Certificate certificate)
+            throws KeystoreException {
 
         if (certificate == null) {
             return;
         }
 
         try {
-            KeyStoreReader keyStoreReader = new KeyStoreReader();
-            KeyStore keyStore = keyStoreReader.loadCertificateKeyStore();
-            keyStore.setCertificateEntry(certificate.getSerialNumber().toString(), certificate);
-
-            keyStoreReader.saveCertificateKeyStore(keyStore);
-        } catch (KeyStoreException e) {
-            String errorMsg = "KeySKeyStoreException occurred when saving the generated certificate";
+            String serialNumber = certificate.getSerialNumber().toString();
+            byte[] bytes = Serializer.serialize(certificate);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
+            CertificateManagementDAOFactory.beginTransaction();
+            certificateDAO.addCertificate(byteArrayInputStream, serialNumber);
+            CertificateManagementDAOFactory.commitTransaction();
+        } catch (IOException e) {
+            String errorMsg = "IOException occurred when saving the generated certificate";
             log.error(errorMsg, e);
+            CertificateManagementDAOFactory.rollbackTransaction();
             throw new KeystoreException(errorMsg, e);
+        } catch (CertificateManagementDAOException e) {
+            String errorMsg = "Error occurred when saving the generated certificate";
+            log.error(errorMsg, e);
+            CertificateManagementDAOFactory.rollbackTransaction();
+            throw new KeystoreException(errorMsg, e);
+        } catch (TransactionManagementException e) {
+            String errorMsg = "Error occurred when saving the generated certificate";
+            log.error(errorMsg, e);
+            CertificateManagementDAOFactory.rollbackTransaction();
+            throw new KeystoreException(errorMsg, e);
+        }finally {
+            CertificateManagementDAOFactory.closeConnection();
         }
     }
 

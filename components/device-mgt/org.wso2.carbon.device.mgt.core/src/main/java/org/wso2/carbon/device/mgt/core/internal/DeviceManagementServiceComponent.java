@@ -116,8 +116,7 @@ public class DeviceManagementServiceComponent {
             }
             /* Initializing Device Management Configuration */
             DeviceConfigurationManager.getInstance().initConfig();
-            DeviceManagementConfig config =
-                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+            DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
 
             DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
             DeviceManagementDAOFactory.init(dsConfig);
@@ -128,8 +127,7 @@ public class DeviceManagementServiceComponent {
 
             OperationManagementDAOFactory.init(dsConfig);
             /* If -Dsetup option enabled then create device management database schema */
-            String setupOption =
-                    System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
+            String setupOption = System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
             if (setupOption != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("-Dsetup is enabled. Device management repository schema initialization is about to " +
@@ -235,8 +233,7 @@ public class DeviceManagementServiceComponent {
      */
     protected void setDeviceManagementService(DeviceManagementService deviceManagementService) {
         if (log.isDebugEnabled()) {
-            log.debug("Setting Device Management Service Provider: '" +
-                    deviceManagementService.getType() + "'");
+            log.debug("Setting Device Management Service Provider: '" + deviceManagementService.getType() + "'");
         }
         synchronized (LOCK) {
             deviceManagers.add(deviceManagementService);

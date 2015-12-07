@@ -47,8 +47,8 @@ import java.util.Map;
 public class DeviceTypeConfigurationManager {
 	private static final Log log = LogFactory.getLog(DeviceTypeConfigurationManager.class);
 
-	private static final String DEVICE_TYPE_CONFIG_XML_NAME = "device-type-config.xml";
-	private static final String DEVICE_TYPE_CONFIG_XSD_NAME = "device-type-config.xsd";
+	private static final String DEVICE_TYPE_CONFIG_XML_NAME = "devicetype-config.xml";
+	private static final String DEVICE_TYPE_CONFIG_XSD_NAME = "devicetype-config.xsd";
 	private DeviceTypeConfigManager currentDeviceTypeConfig;
 	private static DeviceTypeConfigurationManager
 			deviceConfigManager = new DeviceTypeConfigurationManager();

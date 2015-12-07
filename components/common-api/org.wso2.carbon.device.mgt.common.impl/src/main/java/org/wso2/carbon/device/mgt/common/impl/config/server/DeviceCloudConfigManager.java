@@ -44,11 +44,11 @@ import java.util.List;
 public class DeviceCloudConfigManager {
     private static final Log log = LogFactory.getLog(DeviceCloudConfigManager.class);
 
-    private static final String DEVICE_CONFIG_XML_NAME = "device-mgt-config.xml";
+    private static final String DEVICE_CONFIG_XML_NAME = "devicemgt-config.xml";
 	private final String XMLCONFIGS_FILE_LOCATION =
 			CarbonUtils.getCarbonConfigDirPath() + File.separator + DEVICE_CONFIG_XML_NAME;
 
-    private static final String DEVICE_CONFIG_XSD_NAME = "device-mgt-config.xsd";
+    private static final String DEVICE_CONFIG_XSD_NAME = "devicemgt-config.xsd";
     private final String XSDCONFIGS_FILE_LOCATION =
             CarbonUtils.getCarbonConfigDirPath() + File.separator + DEVICE_CONFIG_XSD_NAME;
 

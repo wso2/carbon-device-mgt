@@ -25,10 +25,12 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.apimgt.api.APIConsumer;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.api.model.Application;
 import org.wso2.carbon.apimgt.api.model.Subscriber;
+import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
@@ -104,15 +106,39 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                             throw new IllegalStateException("API Publisher service is not initialized properly");
                         }
                         apiPublisherService.publishAPI(api);
-                        apiPublisherService.adddSubscriber(apiConfig.getOwner(), "");
-                        Subscriber subscriber = new Subscriber(apiConfig.getOwner());
-                        Application application = new Application(apiConfig.getApiApplication(), subscriber);
-                        application.setTier("Unlimited");
-                        application.setGroupId("");
-                        int applicationId = apiPublisherService.createApplication(application, apiConfig.getOwner());
-                        APIIdentifier subId = api.getId();
-                        subId.setTier("Unlimited");
-                        apiPublisherService.addSubscription(subId,applicationId, apiConfig.getOwner());
+
+                        String apiOwner = apiConfig.getOwner();
+                        String applicationName = apiConfig.getApiApplication();
+                        APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(apiOwner);
+
+                        if (apiConsumer != null) {
+
+                            if (apiConsumer.getSubscriber(apiOwner) == null) {
+                                apiPublisherService.adddSubscriber(apiOwner, "");
+                            } else {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Subscriber [" + apiOwner + "] already subscribed to API [" + api.getContext() + "]");
+                                }
+                            }
+
+                            if (apiConsumer.getApplicationsByName(apiOwner, applicationName, "") == null) {
+                                Subscriber subscriber = new Subscriber(apiOwner);
+                                Application application = new Application(applicationName, subscriber);
+                                application.setTier("Unlimited");
+                                application.setGroupId("");
+                                int applicationId = apiPublisherService.createApplication(application, apiOwner);
+
+                                APIIdentifier subId = api.getId();
+                                subId.setTier("Unlimited");
+                                apiPublisherService.addSubscription(subId, applicationId, apiOwner);
+                            } else {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Application [" + applicationName + "] already exists for Subscriber [" + apiOwner + "]");
+                                }
+                            }
+                        }
+
+
                     } catch (Throwable e) {
                         /* Throwable is caught as none of the RuntimeExceptions that can potentially occur at this point
                         does not seem to be logged anywhere else within the framework */
@@ -291,7 +317,6 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         Annotation rootContectAnno = clazz.getAnnotation(pathClazz);
         List<APIResource> resourceList = null;
 
-        log.info("======================== API INFO ======================= ");
         if (context != null) {
             log.info("Application Context root = " + context.getContextPath());
         }
@@ -308,14 +333,12 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
                 resourceList = new ArrayList<APIResource>();
 
-                log.info("#### API Root  Context = " + root);
                 List<String> contextList = new ArrayList<String>();
                 for (Method method : clazz.getDeclaredMethods()) {
                     Annotation methodContextAnno = method.getAnnotation(pathClazz);
                     if (methodContextAnno != null) {
                         InvocationHandler methodHandler = Proxy.getInvocationHandler(methodContextAnno);
                         String subCtx = (String) methodHandler.invoke(methodContextAnno, methods[0], null);
-                        log.info("************** Sub Context : "+subCtx);
                         APIResource resource = new APIResource();
                         resource.setUriTemplate(subCtx);
                         resource.setUri("http://localhost:9763"+root+"/"+subCtx);
@@ -325,23 +348,18 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                         for(int i=0; i<annotations.length; i++){
 
                             if(annotations[i].annotationType().getName().equals(GET.class.getName())){
-                                log.info("This has a GET Method!");
                                 resource.setHttpVerb("GET");
                             }
                             if(annotations[i].annotationType().getName().equals(POST.class.getName())){
-                                log.info("This has a POST Method!");
                                 resource.setHttpVerb("POST");
                             }
                             if(annotations[i].annotationType().getName().equals(OPTIONS.class.getName())){
-                                log.info("This has a OPTIONS Method!");
                                 resource.setHttpVerb("OPTIONS");
                             }
                             if(annotations[i].annotationType().getName().equals(DELETE.class.getName())){
-                                log.info("This has a DELETE Method!");
                                 resource.setHttpVerb("DELETE");
                             }
                             if(annotations[i].annotationType().getName().equals(PUT.class.getName())){
-                                log.info("This has a PUT Method!");
                                 resource.setHttpVerb("PUT");
                             }
                             if(annotations[i].annotationType().getName().equals(Consumes.class.getName())){
@@ -350,7 +368,6 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                                 Annotation consumesAnno = method.getAnnotation(consumesClass);
                                 InvocationHandler consumesHandler = Proxy.getInvocationHandler(consumesAnno);
                                 String contentType = ((String[]) consumesHandler.invoke(consumesAnno, consumesClassMethods[0], null))[0];
-                                log.info("Consumes : "+contentType);
                             }
                             if(annotations[i].annotationType().getName().equals(Produces.class.getName())){
                                 Class<Produces> producesClass = (Class<Produces>) cl.loadClass(Produces.class.getName());
@@ -358,7 +375,6 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                                 Annotation producesAnno = method.getAnnotation(producesClass);
                                 InvocationHandler producesHandler = Proxy.getInvocationHandler(producesAnno);
                                 String producesType = ((String[]) producesHandler.invoke(producesAnno, producesClassMethods[0], null))[0];
-                                log.info("Produces : "+producesType);
                             }
                         }
                         contextList.add(methods[0]+" "+subCtx);
@@ -369,7 +385,6 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                 throwable.printStackTrace();
             }
 
-            log.info("===================================================== ");
             //todo log.info summery of the api context info resulting from the scan
         }
         return resourceList;

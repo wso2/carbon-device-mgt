@@ -62,6 +62,7 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
     public OAuthApplicationInfo registerOAuthApplication(RegistrationProfile profile) throws
                                                                                     DynamicClientRegistrationException {
         OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
+
         String applicationName = profile.getClientName();
 
         if (log.isDebugEnabled()) {

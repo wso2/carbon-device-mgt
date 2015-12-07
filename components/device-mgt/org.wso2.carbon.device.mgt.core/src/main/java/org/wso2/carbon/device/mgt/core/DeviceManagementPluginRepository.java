@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class DeviceManagementPluginRepository implements DeviceManagerStartupListener {
 
-    private Map<String, DeviceManagementService> providers;
+    private final Map<String, DeviceManagementService> providers;
     private boolean isInited;
     private static final Log log = LogFactory.getLog(DeviceManagementPluginRepository.class);
 
@@ -42,16 +42,20 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-            String deviceType = provider.getType();
+        String deviceType = provider.getType();
+        String tenantDomain = provider.getProviderTenantDomain();
+        boolean isSharedWithAllTenants = provider.isSharedWithAllTenants();
+        String[] sharedTenants = provider.getSharedTenantsDomain();
+        int tenantId = DeviceManagerUtil.getTenantId(tenantDomain);
+
         synchronized (providers) {
             try {
                 if (isInited) {
                     /* Initializing Device Management Service Provider */
                     provider.init();
-                    DeviceManagerUtil.registerDeviceType(deviceType);
+                    DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants, sharedTenants);
                     DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
-                                                            provider.getDeviceManager().requireDeviceAuthorization());
-
+                                                                                           provider.getDeviceManager().requireDeviceAuthorization());
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +
@@ -65,7 +69,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         providers.remove(provider.getType());
     }
 
-    public DeviceManagementService getDeviceManagementService(String type) {
+    public DeviceManagementService getDeviceManagementService(String type, int tenantId) {
         return providers.get(type);
     }
 
@@ -79,14 +83,13 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
             for (DeviceManagementService provider : providers.values()) {
                 try {
                     provider.init();
-                    DeviceManagerUtil.registerDeviceType(provider.getType());
-                    //TODO:
-                    //This is a temporory fix.
-                    //windows and IOS cannot resolve user info by extracting certs
-                    //until fix that, use following variable to enable and disable of checking user authorization.
-
+                    int tenantId=DeviceManagerUtil.getTenantId(provider.getProviderTenantDomain());
+                    boolean isSharedwithAllTenants= provider.isSharedWithAllTenants();
+                    String[] sharedTenants= provider.getSharedTenantsDomain();
+                    DeviceManagerUtil.registerDeviceType(provider.getType(), tenantId,
+                                                         isSharedwithAllTenants, sharedTenants);
                     DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(provider.getType(),
-                                             provider.getDeviceManager().requireDeviceAuthorization());
+                                                                                           provider.getDeviceManager().requireDeviceAuthorization());
                 } catch (Throwable e) {
                     /* Throwable is caught intentionally as failure of one plugin - due to invalid start up parameters,
                         etc - should not block the initialization of other device management providers */

@@ -59,7 +59,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement(
-                    "UPDATE DM_COMMAND_OPERATION O SET O.ENABLED = ? WHERE O.OPERATION_ID = ?");
+                    "UPDATE DM_COMMAND_OPERATION SET ENABLED = ? WHERE OPERATION_ID = ?");
             stmt.setBoolean(1, operation.isEnabled());
             stmt.setInt(2, operation.getId());
             stmt.executeUpdate();
@@ -134,7 +134,8 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
             while (rs.next()) {
                 commandOperation = new CommandOperation();
                 commandOperation.setId(rs.getInt("ID"));
-                commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
+                //commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
+                commandOperation.setEnabled(rs.getBoolean("ENABLED") != false);
                 commandOperation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
                 commandOperation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 commandOperation.setCreatedTimeStamp(rs.getString("CREATED_TIMESTAMP"));

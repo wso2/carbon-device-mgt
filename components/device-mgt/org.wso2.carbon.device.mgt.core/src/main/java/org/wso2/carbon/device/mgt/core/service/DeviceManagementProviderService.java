@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -86,6 +87,34 @@ public interface DeviceManagementProviderService extends OperationManager {
      * device list
      */
     List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
+
+    /**
+     * @param username of the user
+     * @return List of un grouped devices owned by a particular user
+     * @throws DeviceManagementException
+     */
+    List<Device> getUnGroupedDevices(String username) throws DeviceManagementException;
+
+    /**
+     * Method to get the list of devices in group.
+     *
+     * @param groupId of the group
+     * @return List of devices allocated to a particular group
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    List<Device> getDevices(int groupId) throws DeviceManagementException;
+
+    /**
+     * Method to get the list of devices in group.
+     *
+     * @param groupId of the group
+     * @param limit the limit of the number of devices returned for the group
+     * @return List of devices allocated to a particular group
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    List<Device> getDevices(int groupId, int limit) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.
@@ -161,6 +190,6 @@ public interface DeviceManagementProviderService extends OperationManager {
     boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                       EnrolmentInfo.Status status) throws DeviceManagementException;
 
-
+    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)throws DeviceManagementException;
 
 }

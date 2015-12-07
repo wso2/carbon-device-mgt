@@ -24,14 +24,8 @@ import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 
 public class ApplicationManagerFactory {
 
-    private static DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
-
-    public DeviceManagementPluginRepository getPluginRepository() {
-        return pluginRepository;
-    }
-
     public static ApplicationManager getConnector(AppManagementConfig config) {
-        return new ApplicationManagerProviderServiceImpl(config, pluginRepository);
+        return new ApplicationManagerProviderServiceImpl(config);
     }
 
 }

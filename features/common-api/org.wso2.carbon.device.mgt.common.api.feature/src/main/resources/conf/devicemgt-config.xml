@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DeviceCloudConfiguration>
+    <DataStores>
+        <DataStore>
+            <Name>WSO2-BAM</Name>
+            <Enabled>false</Enabled>
+            <PublisherClass>org.wso2.carbon.device.mgt.common.impl.datastore.impl.ThriftDataStoreConnector</PublisherClass>
+            <ServerURL>tcp://localhost</ServerURL>
+            <Port>7611</Port>
+            <Username>admin</Username>
+            <Password>admin</Password>
+        </DataStore>
+
+        <DataStore>
+            <Name>WSO2-CEP</Name>
+            <Enabled>false</Enabled>
+            <PublisherClass>org.wso2.carbon.device.mgt.common.impl.datastore.impl.ThriftDataStoreConnector</PublisherClass>
+            <ServerURL>tcp://localhost</ServerURL>
+            <Port>7611</Port>
+            <Username>admin</Username>
+            <Password>admin</Password>
+        </DataStore>
+    </DataStores>
+
+    <ControlQueues>
+        <ControlQueue>
+            <Name>MQTT</Name>
+            <Enabled>true</Enabled>
+            <ControlClass>org.wso2.carbon.device.mgt.common.impl.controlqueue.mqtt.MqttControlPublisher</ControlClass>
+            <Protocol>MQTT</Protocol>
+            <ServerURL>tcp://204.232.188.214</ServerURL>
+            <Port>1883</Port>
+            <Username>.</Username>
+            <Password>.</Password>
+        </ControlQueue>
+
+        <ControlQueue>
+            <Name>XMPP</Name>
+            <Enabled>true</Enabled>
+            <ControlClass>org.wso2.carbon.device.mgt.common.impl.controlqueue.xmpp.XmppServerClient</ControlClass>
+            <Protocol>XMPP</Protocol>
+            <ServerURL>http://204.232.188.215</ServerURL>
+            <Port>9090</Port>
+            <Username>admin</Username>
+            <Password>wso2iot123</Password>
+        </ControlQueue>
+    </ControlQueues>
+
+    <Security>
+        <ClientTrustStore>client-truststore.jks</ClientTrustStore>
+        <Password>wso2carbon</Password>
+    </Security>
+
+    <ApiManager>
+        <Enabled>true</Enabled>
+        <AccessTokenURL>https://localhost:9443/oauth2/token</AccessTokenURL>
+        <ServerURL>http://localhost</ServerURL>
+        <ServerPort>9763</ServerPort>
+        <GatewayPort>8280</GatewayPort>
+        <LoginURL>/api-store/site/blocks/user/login/ajax/login.jag</LoginURL>
+        <SubscriptionListURL>/api-store/site/blocks/subscription/subscription-list/ajax/subscription-list.jag</SubscriptionListURL>
+        <Username>admin</Username>
+        <Password>admin</Password>
+        <DeviceGrantType>devicecloud</DeviceGrantType>
+        <DeviceScopes>PRODUCTION DEVICE</DeviceScopes>
+    </ApiManager>
+
+    <DeviceUserValidator>
+        <CacheSize>1000</CacheSize>
+        <TTL>600</TTL>
+    </DeviceUserValidator>
+
+</DeviceCloudConfiguration>

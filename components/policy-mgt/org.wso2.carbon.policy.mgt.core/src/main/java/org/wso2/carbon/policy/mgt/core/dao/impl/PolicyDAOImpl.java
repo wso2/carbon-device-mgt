@@ -442,7 +442,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_CRITERIA (TENANT_ID, NAME) VALUES (?, ?)";
-            stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query, new String[] {"id"});
             stmt.setInt(1, tenantId);
             stmt.setString(2, criteria.getName());
             stmt.executeUpdate();
@@ -622,7 +622,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_CRITERIA (CRITERIA_ID, POLICY_ID) VALUES (?, ?)";
-            stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query, new String[] {"id"});
 
             List<PolicyCriterion> criteria = policy.getPolicyCriterias();
             for (PolicyCriterion criterion : criteria) {
@@ -1348,7 +1348,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE, OWNERSHIP_TYPE," +
                     "UPDATED, ACTIVE, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query, new String[] {"id"});
 
             stmt.setString(1, policy.getPolicyName());
             stmt.setInt(2, policy.getProfile().getProfileId());
@@ -1563,7 +1563,7 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
-    public HashMap<Integer, Integer> getAppliedPolicyIds(List<Integer> deviceIds) throws PolicyManagerDAOException {
+    public HashMap<Integer, Integer> getAppliedPolicyIds() throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -1571,10 +1571,9 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ?";
+            String query = "SELECT * FROM DM_DEVICE_POLICY_APPLIED WHERE TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
-            stmt.setString(1, PolicyManagerUtil.makeString(deviceIds));
-            stmt.setInt(2, tenantId);
+            stmt.setInt(1, tenantId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {

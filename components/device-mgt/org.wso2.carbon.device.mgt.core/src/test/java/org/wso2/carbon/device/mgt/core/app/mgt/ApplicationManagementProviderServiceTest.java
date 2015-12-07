@@ -42,8 +42,8 @@ public class ApplicationManagementProviderServiceTest {
     @BeforeClass
     public void init() {
         deviceManagementPluginRepository = new DeviceManagementPluginRepository();
-        TestDeviceManagementService testDeviceManagementService =
-                new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE);
+        TestDeviceManagementService testDeviceManagementService = new TestDeviceManagementService(
+                TestDataHolder.TEST_DEVICE_TYPE, TestDataHolder.SUPER_TENANT_DOMAIN);
         try {
             deviceManagementPluginRepository.addDeviceManagementProvider(testDeviceManagementService);
         } catch (DeviceManagementException e) {
@@ -83,7 +83,7 @@ public class ApplicationManagementProviderServiceTest {
         deviceId.setType(device.getType());
 
         AppManagementConfig appManagementConfig = new AppManagementConfig();
-        appMgtProvider = new ApplicationManagerProviderServiceImpl(deviceManagementPluginRepository);
+        appMgtProvider = new ApplicationManagerProviderServiceImpl();
 
         try {
             appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);

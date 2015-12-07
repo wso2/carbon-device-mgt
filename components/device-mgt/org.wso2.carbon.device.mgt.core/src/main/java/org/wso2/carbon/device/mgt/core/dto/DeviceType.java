@@ -18,9 +18,11 @@
 
 package org.wso2.carbon.device.mgt.core.dto;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
-public class DeviceType implements Serializable {
+@XmlRootElement public class DeviceType implements Serializable {
 
     private static final long serialVersionUID = 7927802716452548282L;
     private int id;
@@ -33,7 +35,7 @@ public class DeviceType implements Serializable {
         this.name = name;
     }
 
-    public int getId() {
+    @XmlElement public int getId() {
         return id;
     }
 
@@ -41,7 +43,7 @@ public class DeviceType implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
+    @XmlElement public String getName() {
         return name;
     }
 

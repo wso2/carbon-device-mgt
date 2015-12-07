@@ -1,0 +1,39 @@
+{{unit "cdmf.unit.ui.title" pageTitle="UUF"}}
+
+{{#zone "content"}}
+    <div class="jumbotron">
+        <h1>Welcome to WSO2 Unified UI Demo!</h1>
+    </div>
+
+    <!--Alert Examples-->
+    <div class="page-header" id="Message">
+        <h1>Custom Messages</h1>
+
+        <p class="lead">Alert Examples</p>
+    </div>
+    {{unit "uuf.unit.alert" type="success" title="Success!"
+    message="You successfully read this important notification." dismissable=true }}
+    {{unit "uuf.unit.alert" id="aa" type="info" title="Info!"
+    message="This notification needs your attention, but it's not super important."}}
+    {{unit "uuf.unit.alert" type="warning" title="Warning!"
+    message="Better check yourself, you're not looking too good." dismissable=true }}
+    {{unit "uuf.unit.alert" type="danger" title="Danger!"
+    message="Change a few things up and try submitting again."}}
+
+    <!--Message Examples-->
+    <br class="spacer">
+    <div class="page-header">
+        <p class="lead">Message Examples</p>
+    </div>
+    {{unit "uuf.unit.message" type="success" title="Success Message"
+    message="You successfully read this important notification."}}
+
+    {{unit "uuf.unit.message" type="info" title="Minor Information Message"
+    message="This notification needs your attention, but it's not super important."}}
+
+    {{unit "uuf.unit.message" type="warning" title="Major Information Message"
+    message="Better check yourself, you're not looking too good."}}
+
+    {{unit "uuf.unit.message" type="danger" title="Critical Information Message"
+    message="Change a few things up and try submitting again."}}
+{{/zone}}

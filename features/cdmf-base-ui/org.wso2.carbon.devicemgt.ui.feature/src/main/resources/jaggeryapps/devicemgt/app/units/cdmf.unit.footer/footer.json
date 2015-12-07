@@ -1,0 +1,9 @@
+{
+    "version": "1.0.0",
+    "index": 130,
+    "extends" : "uuf.unit.footer",
+    "pushedUris": [
+        "/",
+        "/{+any}"
+    ]
+}

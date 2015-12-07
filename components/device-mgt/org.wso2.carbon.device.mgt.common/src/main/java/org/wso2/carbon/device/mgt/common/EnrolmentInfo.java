@@ -20,7 +20,11 @@ package org.wso2.carbon.device.mgt.common;
 
 import java.io.Serializable;
 
-public class EnrolmentInfo implements Serializable {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+public class EnrolmentInfo implements Serializable{
 
     private static final long serialVersionUID = 1998101712L;
 
@@ -50,6 +54,7 @@ public class EnrolmentInfo implements Serializable {
         this.status = status;
     }
 
+    @XmlElement
     public int getId() {
         return id;
     }
@@ -58,6 +63,7 @@ public class EnrolmentInfo implements Serializable {
         this.id = id;
     }
 
+    @XmlElement
     public Long getDateOfEnrolment() {
         return dateOfEnrolment;
     }
@@ -66,6 +72,7 @@ public class EnrolmentInfo implements Serializable {
         this.dateOfEnrolment = dateOfEnrolment;
     }
 
+    @XmlElement
     public Long getDateOfLastUpdate() {
         return dateOfLastUpdate;
     }
@@ -74,6 +81,7 @@ public class EnrolmentInfo implements Serializable {
         this.dateOfLastUpdate = dateOfLastUpdate;
     }
 
+    @XmlElement
     public OwnerShip getOwnership() {
         return ownership;
     }
@@ -82,6 +90,7 @@ public class EnrolmentInfo implements Serializable {
         this.ownership = ownership;
     }
 
+    @XmlElement
     public Status getStatus() {
         return status;
     }
@@ -90,6 +99,7 @@ public class EnrolmentInfo implements Serializable {
         this.status = status;
     }
 
+    @XmlElement
     public String getOwner() {
         return owner;
     }
@@ -98,6 +108,7 @@ public class EnrolmentInfo implements Serializable {
         this.owner = owner;
     }
 
+    @XmlElement
     public Device getDevice() {
         return device;
     }

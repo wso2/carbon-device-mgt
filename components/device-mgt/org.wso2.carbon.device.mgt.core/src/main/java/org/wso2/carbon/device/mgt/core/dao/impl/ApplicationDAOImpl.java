@@ -86,7 +86,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
                     "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES,APP_IDENTIFIER) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)", new String[] {"id"});
 
 
             for (Application application : applications) {
@@ -126,7 +126,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             conn = this.getConnection();
             conn.setAutoCommit(false);
             stmt = conn.prepareStatement("DELETE DM_APPLICATION WHERE APP_IDENTIFIER = ? AND TENANT_ID = ?",
-                    Statement.RETURN_GENERATED_KEYS);
+                    new String[] {"id"});
 
             for (Application app : apps) {
                 stmt.setString(1, app.getApplicationIdentifier());

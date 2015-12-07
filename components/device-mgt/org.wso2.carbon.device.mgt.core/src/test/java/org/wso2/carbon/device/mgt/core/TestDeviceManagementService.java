@@ -34,13 +34,28 @@ import java.util.List;
 public class TestDeviceManagementService implements DeviceManagementService {
 
     private String providerType;
+    private String tenantDomain;
 
-    public TestDeviceManagementService(String deviceType){
+    public TestDeviceManagementService(String deviceType,String tenantDomain){
         providerType = deviceType;
+        this.tenantDomain = tenantDomain;
     }
     @Override
     public String getType() {
         return providerType;
+    }
+
+    @Override
+    public String getProviderTenantDomain() { return tenantDomain;}
+
+    @Override
+    public boolean isSharedWithAllTenants() {
+        return true;
+    }
+
+    @Override
+    public String[] getSharedTenantsDomain() {
+        return null;
     }
 
     @Override
@@ -56,6 +71,12 @@ public class TestDeviceManagementService implements DeviceManagementService {
     @Override
     public ApplicationManager getApplicationManager() {
         return null;
+    }
+
+    @Override
+    public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
+            throws DeviceManagementException {
+
     }
 
     @Override
@@ -77,7 +98,19 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
-    public void installApplication(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+    public void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
+            throws ApplicationManagementException {
+
+    }
+
+    @Override
+    public void installApplicationForUsers(Operation operation, List<String> userNameList)
+            throws ApplicationManagementException {
+
+    }
+
+    @Override
+    public void installApplicationForUserRoles(Operation operation, List<String> userRoleList)
             throws ApplicationManagementException {
 
     }

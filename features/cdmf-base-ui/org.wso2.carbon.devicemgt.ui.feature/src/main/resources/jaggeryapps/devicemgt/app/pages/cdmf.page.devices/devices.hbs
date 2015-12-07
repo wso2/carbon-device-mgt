@@ -1,0 +1,17 @@
+{{authenticated}}
+{{unit "cdmf.unit.ui.title" pageTitle="Device Management"}}
+{{unit "cdmf.unit.ui.content.title" pageHeader="Devices"}}
+
+{{unit "cdmf.unit.lib.data-table"}}
+
+{{#zone "content"}}
+    <div class="wr-device-list row">
+        <div class="wr-hidden-operations wr-advance-operations"></div>
+        <div class="col-md-12 wr-page-content">
+            <div>
+                {{unit "cdmf.unit.device.operation-mod"}}
+                {{unit "cdmf.unit.device.listing"}}
+            </div>
+        </div>
+    </div>
+{{/zone}}

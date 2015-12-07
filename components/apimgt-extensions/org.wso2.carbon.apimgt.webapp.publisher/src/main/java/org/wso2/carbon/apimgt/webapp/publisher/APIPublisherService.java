@@ -19,8 +19,10 @@
 package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.wso2.carbon.apimgt.api.APIManagementException;
+import org.wso2.carbon.apimgt.api.FaultGatewaysException;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
+import org.wso2.carbon.apimgt.api.model.Application;
 
 import java.util.List;
 
@@ -39,7 +41,7 @@ public interface APIPublisherService {
      * @param api An instance of the bean that passes metadata related to the API being published
      * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the API
      */
-    void publishAPI(API api) throws APIManagementException;
+    void publishAPI(API api) throws APIManagementException, FaultGatewaysException;
 
     /**
      * This method removes an API that's already published within the underlying API-Management infrastructure.
@@ -55,6 +57,31 @@ public interface APIPublisherService {
      * @param apis A list of the beans that passes metadata related to the APIs being published
      * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the APIs
      */
-    void publishAPIs(List<API> apis) throws APIManagementException;
+    void publishAPIs(List<API> apis) throws APIManagementException, FaultGatewaysException;
 
+    /**
+     * This method registers a collection of APIs within the underlying API-Management infrastructure.
+     *
+     * @param application A list of the beans that passes metadata related to the APIs being published
+     * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the APIs
+     */
+    int createApplication(Application application, String userName) throws APIManagementException, FaultGatewaysException;
+
+
+    /**
+     * This method registers a collection of APIs within the underlying API-Management infrastructure.
+     *
+     * @param apiId A list of the beans that passes metadata related to the APIs being published
+     * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the APIs
+     */
+    void addSubscription(APIIdentifier apiId, int applicationId, String userName) throws APIManagementException, FaultGatewaysException;
+
+
+    /**
+     * This method registers a collection of APIs within the underlying API-Management infrastructure.
+     *
+     * @param subscriberName A list of the beans that passes metadata related to the APIs being published
+     * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the APIs
+     */
+    void adddSubscriber(String subscriberName, String groupId) throws APIManagementException, FaultGatewaysException;
 }

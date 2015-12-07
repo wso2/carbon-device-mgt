@@ -45,6 +45,23 @@
             <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>
             <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
         </PolicyConfiguration>
+        <AnalyticsConfiguration>
+            <!--
+                Server URL of the remote DAS/BAM/CEP server used to collect statistics. Must
+                be specified in protocol://hostname:port/ format.
+
+                An event can also be published to multiple Receiver Groups each having 1 or more receivers. Receiver
+                Groups are delimited by curly braces whereas receivers are delimited by commas.
+                Ex - Multiple Receivers within a single group
+                tcp://localhost:7612/,tcp://localhost:7613/,tcp://localhost:7614/
+                Ex - Multiple Receiver Groups with two receivers each
+                         {tcp://localhost:7612/,tcp://localhost:7613},{tcp://localhost:7712/,tcp://localhost:7713/}
+            -->
+            <Enabled>true</Enabled>
+            <ReceiverServerUrl>tcp://localhost:7611</ReceiverServerUrl>
+            <AdminUsername>admin</AdminUsername>
+            <AdminPassword>admin</AdminPassword>
+        </AnalyticsConfiguration>
     </ManagementRepository>
 </DeviceMgtConfiguration>
 

@@ -32,7 +32,7 @@ public class AppManagementConfigurationManager {
 	private AppManagementConfig appManagementConfig;
 	private static AppManagementConfigurationManager appManagementConfigManager;
 
-	private static final String APP_MANAGER_CONFIG_FILE = "app-management-config.xml";
+	private static final String APP_MANAGER_CONFIG_FILE = "remote-appmanager-config.xml";
 	private static final String APP_MANAGER_CONFIG_PATH =
 			CarbonUtils.getEtcCarbonConfigDirPath() + File.separator + APP_MANAGER_CONFIG_FILE;
 

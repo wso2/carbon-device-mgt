@@ -18,9 +18,13 @@
  */
 package org.wso2.carbon.device.mgt.common.spi;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+
+import java.util.List;
 
 /**
  * Composite interface that acts as the SPI exposing all device management as well as application management
@@ -35,10 +39,33 @@ public interface DeviceManagementService extends ApplicationManager {
      */
     String getType();
 
+    /**
+     * This returns the tenant domain of the provider.
+     * @return
+     */
+    String getProviderTenantDomain();
+
+    /**
+     * returns true if the device type is shared between all tenants and false if its not.
+     *
+     * @return
+     */
+    boolean isSharedWithAllTenants();
+
+    /**
+     * If the tenant domain is not shared between all then it can specifically shared between set
+     * tenants.
+     *
+     * @return
+     */
+    String[] getSharedTenantsDomain();
+
     void init() throws DeviceManagementException;
 
     DeviceManager getDeviceManager();
 
     ApplicationManager getApplicationManager();
+
+    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
 
 }

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="DeviceCloudConfiguration" type="DeviceCloudConfig" />
+
+  <xs:complexType name="DeviceCloudConfig" >
+    <xs:sequence>
+      <xs:element type="DataStoresConfig" name="DataStores"/>
+      <xs:element type="ControlQueuesConfig" name="ControlQueues"/>
+      <xs:element type="SecurityConfig" name="Security"/>
+      <xs:element type="ApiManagerConfig" name="ApiManager"/>
+      <xs:element type="DeviceUserValidatorConfig" name="DeviceUserValidator"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DeviceUserValidatorConfig">
+    <xs:sequence>
+      <xs:element type="xs:int" name="CacheSize"/>
+      <xs:element type="xs:int" name="TTL"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="DataStoresConfig">
+    <xs:sequence>
+      <xs:element type="DataStore" name="DataStore" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="DataStore">
+    <xs:sequence>
+      <xs:element type="xs:string" name="Name"/>
+      <xs:element type="xs:boolean" name="Enabled"/>
+      <xs:element type="xs:string" name="PublisherClass"/>
+      <xs:element type="xs:string" name="ServerURL"/>
+      <xs:element type="xs:short" name="Port"/>
+      <xs:element type="xs:string" name="Username"/>
+      <xs:element type="xs:string" name="Password"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ControlQueuesConfig">
+    <xs:sequence>
+      <xs:element type="ControlQueue" name="ControlQueue"  maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ControlQueue">
+    <xs:sequence>
+      <xs:element type="xs:string" name="Name"/>
+      <xs:element type="xs:boolean" name="Enabled"/>
+      <xs:element type="xs:string" name="ControlClass"/>
+      <xs:element type="xs:string" name="Protocol"/>
+      <xs:element type="xs:string" name="ServerURL"/>
+      <xs:element type="xs:short" name="Port"/>
+      <xs:element type="xs:string" name="Username"/>
+      <xs:element type="xs:string" name="Password"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SecurityConfig">
+    <xs:sequence>
+      <xs:element type="xs:string" name="ClientTrustStore"/>
+      <xs:element type="xs:string" name="Password"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ApiManagerConfig">
+    <xs:sequence>
+      <xs:element type="xs:boolean" name="Enabled"/>
+      <xs:element type="xs:string" name="AccessTokenURL"/>
+      <xs:element type="xs:string" name="ServerURL"/>
+      <xs:element type="xs:string" name="ServerPort"/>
+      <xs:element type="xs:string" name="GatewayPort"/>
+      <xs:element type="xs:string" name="LoginURL"/>
+      <xs:element type="xs:string" name="SubscriptionListURL"/>
+      <xs:element type="xs:string" name="Username"/>
+      <xs:element type="xs:string" name="Password"/>
+      <xs:element type="xs:string" name="DeviceGrantType"/>
+      <xs:element type="xs:string" name="DeviceScopes"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+</xs:schema>

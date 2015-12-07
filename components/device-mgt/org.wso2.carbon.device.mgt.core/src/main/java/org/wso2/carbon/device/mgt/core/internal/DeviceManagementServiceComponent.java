@@ -101,12 +101,12 @@ import java.util.List;
 public class DeviceManagementServiceComponent {
 
     private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
-    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     private static final Object LOCK = new Object();
     private static List<PluginInitializationListener> listeners = new ArrayList<>();
     private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
     private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
+    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
@@ -116,8 +116,7 @@ public class DeviceManagementServiceComponent {
             }
             /* Initializing Device Management Configuration */
             DeviceConfigurationManager.getInstance().initConfig();
-            DeviceManagementConfig config =
-                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+            DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
 
             DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
             DeviceManagementDAOFactory.init(dsConfig);
@@ -128,8 +127,7 @@ public class DeviceManagementServiceComponent {
 
             OperationManagementDAOFactory.init(dsConfig);
             /* If -Dsetup option enabled then create device management database schema */
-            String setupOption =
-                    System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
+            String setupOption = System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
             if (setupOption != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("-Dsetup is enabled. Device management repository schema initialization is about to " +
@@ -208,7 +206,7 @@ public class DeviceManagementServiceComponent {
             AppManagementConfig appConfig =
                     AppManagementConfigurationManager.getInstance().getAppManagementConfig();
             bundleContext.registerService(ApplicationManagementProviderService.class.getName(),
-                    new ApplicationManagerProviderServiceImpl(appConfig, pluginRepository), null);
+                    new ApplicationManagerProviderServiceImpl(appConfig), null);
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
         }
@@ -235,8 +233,7 @@ public class DeviceManagementServiceComponent {
      */
     protected void setDeviceManagementService(DeviceManagementService deviceManagementService) {
         if (log.isDebugEnabled()) {
-            log.debug("Setting Device Management Service Provider: '" +
-                    deviceManagementService.getType() + "'");
+            log.debug("Setting Device Management Service Provider: '" + deviceManagementService.getType() + "'");
         }
         synchronized (LOCK) {
             deviceManagers.add(deviceManagementService);
@@ -307,10 +304,6 @@ public class DeviceManagementServiceComponent {
             log.debug("Un setting Registry Service");
         }
         DeviceManagementDataHolder.getInstance().setRegistryService(null);
-    }
-
-    private DeviceManagementPluginRepository getPluginRepository() {
-        return pluginRepository;
     }
 
     protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {

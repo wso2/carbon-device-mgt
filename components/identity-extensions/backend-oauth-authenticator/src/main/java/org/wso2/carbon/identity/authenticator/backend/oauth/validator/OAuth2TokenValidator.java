@@ -20,9 +20,10 @@ package org.wso2.carbon.identity.authenticator.backend.oauth.validator;
 import java.rmi.RemoteException;
 
 /**
- * Interface for the OAuth@TokenValidators
+ * Declares the contract for OAuth2TokenValidator implementations.
  */
 public interface OAuth2TokenValidator {
+
     /**
      * This method gets a string accessToken and validates it and generate the OAuth2ClientApplicationDTO
      * containing the validity and user details if valid.

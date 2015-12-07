@@ -20,6 +20,7 @@ package org.wso2.carbon.identity.authenticator.backend.oauth.validator.impl;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Header;
 import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
@@ -35,14 +36,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles the Authentication form external IDP servers.
- * Currently only supports WSO@ IS
+ * Handles the Authentication form external IDP servers. Currently supports WSO2 IS only.
  */
 public class ExternalOAuthValidator implements OAuth2TokenValidator{
-    protected String hostURL ;
 
-    public ExternalOAuthValidator(String hostURL) {
+    private String hostURL;
+    private String adminUserName;
+    private String adminPassword;
+
+    public ExternalOAuthValidator(String hostURL, String adminUserName, String adminPassword) {
         this.hostURL = hostURL;
+        this.adminUserName = adminUserName;
+        this.adminPassword = adminPassword;
     }
     /**
      * This method gets a string accessToken and validates it and generate the OAuth2ClientApplicationDTO
@@ -65,7 +70,7 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
         List<Header> headerList = new ArrayList<>();
         Header header = new Header();
         header.setName(HTTPConstants.HEADER_AUTHORIZATION);
-        header.setValue(OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BEARER+ " " + token);
+        header.setValue(OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BASIC + " " + getBasicAuthCredentials());
         headerList.add(header);
         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_HEADERS, headerList);
         client.setOptions(options);
@@ -81,5 +86,10 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
                     getTenantDomain(tokenValidationResponse.getAuthorizedUser());
         }
         return new OAuthValidationResponse(userName,tenantDomain,isValid);
+    }
+
+    private String getBasicAuthCredentials() {
+        byte[] bytesEncoded = Base64.encodeBase64((adminUserName + ":" + adminPassword).getBytes());
+        return new String(bytesEncoded);
     }
 }

@@ -88,16 +88,29 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Identity backend Bundle</Bundle-Description>
-                        <Bundle-Activator>
-                            org.wso2.carbon.identity.authenticator.backend.oauth.internal.OauthAuthenticatorServiceComponent
-                        </Bundle-Activator>
+                        <Bundle-Description>OAuth Authenticator Bundle</Bundle-Description>
                         <Private-Package>
-                            org.wso2.org.wso2.carbon.identity.authenticator.backend.oauth.internal
+                            org.wso2.carbon.identity.authenticator.backend.oauth.internal
                         </Private-Package>
                         <Export-Package>
+                            !org.wso2.carbon.identity.authenticator.backend.oauth.internal,
                             org.wso2.carbon.identity.authenticator.backend.oauth.*
                         </Export-Package>
+                        <Import-Package>
+                            org.wso2.carbon.identity.oauth2.*,
+                            javax.servlet.http,
+                            org.apache.axis2.client,
+                            org.apache.axis2.context,
+                            org.apache.axis2.transport.http,
+                            org.apache.commons.httpclient,
+                            org.apache.commons.logging,
+                            org.apache.commons.codec.binary,
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.wso2.carbon.core.security,
+                            org.wso2.carbon.core.services.authentication,
+                            org.wso2.carbon.utils.multitenancy
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -109,7 +109,9 @@
                             org.osgi.service.component,
                             org.wso2.carbon.core.security,
                             org.wso2.carbon.core.services.authentication,
-                            org.wso2.carbon.utils.multitenancy
+                            org.wso2.carbon.utils.multitenancy,
+                            org.wso2.carbon.base,
+                            org.wso2.carbon.utils
                         </Import-Package>
                     </instructions>
                 </configuration>

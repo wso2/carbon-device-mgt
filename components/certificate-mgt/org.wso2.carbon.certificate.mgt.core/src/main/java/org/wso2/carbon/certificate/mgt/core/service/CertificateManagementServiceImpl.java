@@ -39,7 +39,8 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
     private static KeyStoreReader keyStoreReader;
     private static CertificateGenerator certificateGenerator;
 
-    private CertificateManagementServiceImpl() {}
+    private CertificateManagementServiceImpl() {
+    }
 
     public static CertificateManagementServiceImpl getInstance() {
 
@@ -80,8 +81,8 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
     }
 
     public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
-                                                              PKCS10CertificationRequest request,
-                                                              String issueSubject) throws KeystoreException {
+                                                      PKCS10CertificationRequest request,
+                                                      String issueSubject) throws KeystoreException {
         return certificateGenerator.generateCertificateFromCSR(privateKey, request, issueSubject);
     }
 

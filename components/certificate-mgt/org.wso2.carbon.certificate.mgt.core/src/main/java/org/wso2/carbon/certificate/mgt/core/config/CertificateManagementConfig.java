@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.certificate.mgt.core.config;
 
 import javax.xml.bind.annotation.XmlElement;

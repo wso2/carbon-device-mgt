@@ -29,8 +29,9 @@ public interface CertificateDAO {
     /**
      * This can be used to store a certificate in the database, where it will be stored against the serial number
      * of the certificate.
-     * @param byteArrayInputStream  Holds the certificate.
-     * @param serialNumber          Serial number of the certificate.
+     *
+     * @param byteArrayInputStream Holds the certificate.
+     * @param serialNumber         Serial number of the certificate.
      * @throws CertificateManagementDAOException
      */
     void addCertificate(ByteArrayInputStream byteArrayInputStream, String serialNumber
@@ -38,8 +39,9 @@ public interface CertificateDAO {
 
     /**
      * Usage is to obtain a certificate stored in the database by providing the serial number.
-     * @param serialNumber  Serial number of the certificate.
-     * @return              representation of the certificate.
+     *
+     * @param serialNumber Serial number of the certificate.
+     * @return representation of the certificate.
      * @throws CertificateManagementDAOException
      */
     byte[] retrieveCertificate(String serialNumber

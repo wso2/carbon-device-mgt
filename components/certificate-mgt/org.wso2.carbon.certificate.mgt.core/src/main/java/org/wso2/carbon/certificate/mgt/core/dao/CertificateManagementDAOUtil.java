@@ -16,7 +16,6 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.certificate.mgt.core.dao;
 
 import org.apache.commons.logging.Log;

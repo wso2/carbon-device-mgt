@@ -1282,11 +1282,11 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
 
-            String deleteComplianceStatus ="DELETE FROM DM_POLICY_COMPLIANCE_STATUS WHERE POLICY_ID =?";
+          /*  String deleteComplianceStatus ="DELETE FROM DM_POLICY_COMPLIANCE_STATUS WHERE POLICY_ID =?";
             stmt = conn.prepareStatement(deleteComplianceStatus);
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
-
+           */
             if (log.isDebugEnabled()) {
                 log.debug("Policy (" + policyId + ") related configs deleted from database.");
             }

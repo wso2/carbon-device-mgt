@@ -81,14 +81,14 @@ public class AuthenticatorFrameworkDataHolder {
         this.scepManager = scepManager;
     }
 
-    public OAuth2TokenValidationService getoAuth2TokenValidationService() {
+    public OAuth2TokenValidationService getOAuth2TokenValidationService() {
         if (oAuth2TokenValidationService == null) {
             throw new IllegalStateException("OAuth2TokenValidation service is not initialized properly");
         }
         return oAuth2TokenValidationService;
     }
 
-    public void setoAuth2TokenValidationService(
+    public void setOAuth2TokenValidationService(
             OAuth2TokenValidationService oAuth2TokenValidationService) {
         this.oAuth2TokenValidationService = oAuth2TokenValidationService;
     }

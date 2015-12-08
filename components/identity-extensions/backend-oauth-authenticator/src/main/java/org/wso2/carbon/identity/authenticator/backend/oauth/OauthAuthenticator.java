@@ -44,19 +44,8 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
     private OAuth2TokenValidator tokenValidator;
 
     public OauthAuthenticator() {
-        AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
-        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
-                getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
-        boolean isRemote;
-        String hostUrl;
-        if (authenticatorConfig != null) {
-            isRemote = Boolean.parseBoolean(authenticatorConfig.getParameters().get("isRemote"));
-            hostUrl = authenticatorConfig.getParameters().get("hostURL");
-        }else{
-            throw new IllegalArgumentException("Configuration parameters need to be defined in Authenticators.xml");
-        }
         try {
-            tokenValidator = OAuthValidatorFactory.getValidator(isRemote, hostUrl);
+            tokenValidator = OAuthValidatorFactory.getValidator();
         } catch (IllegalArgumentException e) {
             log.error("Failed to initialise Authenticator",e);
         }

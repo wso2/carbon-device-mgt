@@ -19,9 +19,10 @@ package org.wso2.carbon.identity.authenticator.backend.oauth;
 
 public class OauthAuthenticatorConstants {
     public static final String AUTHORIZATION_HEADER_PREFIX_BEARER = "Bearer";
+    public static final String AUTHORIZATION_HEADER_PREFIX_BASIC = "Basic";
     public static final String BEARER_TOKEN_TYPE = "bearer";
     public static final String BEARER_TOKEN_IDENTIFIER = "token";
-    public static final String AUTHENTICATOR_NAME = "BackEndOAuthAuthenticator";
+    public static final String AUTHENTICATOR_NAME = "OAuthAuthenticator";
     public static final String SPLITING_CHARACTOR = " ";
     public static String OAUTH_ENDPOINT_POSTFIX =
             "/services/OAuth2TokenValidationService.OAuth2TokenValidationServiceHttpsSoap12Endpoint/";

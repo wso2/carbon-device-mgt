@@ -150,7 +150,7 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Setting OAuth2TokenValidationService Service");
         }
-        AuthenticatorFrameworkDataHolder.getInstance().setoAuth2TokenValidationService(tokenValidationService);
+        AuthenticatorFrameworkDataHolder.getInstance().setOAuth2TokenValidationService(tokenValidationService);
     }
 
     /**
@@ -162,6 +162,6 @@ public class WebappAuthenticatorFrameworkServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting OAuth2TokenValidationService Service");
         }
-        AuthenticatorFrameworkDataHolder.getInstance().setoAuth2TokenValidationService(null);
+        AuthenticatorFrameworkDataHolder.getInstance().setOAuth2TokenValidationService(null);
     }
 }

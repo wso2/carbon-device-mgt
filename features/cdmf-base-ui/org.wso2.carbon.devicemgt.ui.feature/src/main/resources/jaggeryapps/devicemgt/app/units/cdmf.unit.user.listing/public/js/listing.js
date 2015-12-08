@@ -1,6 +1,24 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 /**
  * Sorting function of users
- * listed on User Management page in WSO2 MDM Console.
+ * listed on User Management page in WSO2 Devicemgt Console.
  */
 $(function () {
     var sortableElem = '.wr-sortable';
@@ -62,7 +80,7 @@ function getSelectedUsernames() {
 /**
  * Following click function would execute
  * when a user clicks on "Invite" link
- * on User Management page in WSO2 MDM Console.
+ * on User Management page in WSO2 Devicemgt Console.
  */
 $("a.invite-user-link").click(function () {
     var usernameList = getSelectedUsernames();
@@ -103,7 +121,7 @@ $("a.invite-user-link").click(function () {
 /**
  * Following click function would execute
  * when a user clicks on "Remove" link
- * on User Listing page in WSO2 MDM Console.
+ * on User Listing page in WSO2 Devicemgt Console.
  */
 $("a.remove-user-link").click(function () {
     var username = $(this).data("username");

@@ -6,12 +6,12 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -20,7 +20,7 @@ var util = function () {
     var module = {};
     var Base64 = Packages.org.apache.commons.codec.binary.Base64;
     var String = Packages.java.lang.String;
-    var mdmProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var carbon = require('carbon');
     var realmService = carbon.server.osgiService('org.wso2.carbon.user.core.service.RealmService');
     var adminUserName = realmService.getBootstrapRealmConfiguration().getAdminUserName();
@@ -28,7 +28,7 @@ var util = function () {
 
     module.getDyanmicCredentials = function (owner) {
         var payload = {
-            "callbackUrl": mdmProps.callBackUrl,
+            "callbackUrl": devicemgtProps.callBackUrl,
             "clientName": "mdm",
             "tokenScope": "admin",
             "owner": adminUserName,
@@ -36,7 +36,7 @@ var util = function () {
             "saasApp" :true
         };
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = mdmProps.dynamicClientRegistrationEndPoint;
+        var tokenEndpoint = devicemgtProps.dynamicClientRegistrationEndPoint;
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(payload);
@@ -77,7 +77,7 @@ var util = function () {
      */
     module.getTokenWithPasswordGrantType = function (username, password, encodedClientKeys, scope) {
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = mdmProps.idPServer + "/oauth2/token";
+        var tokenEndpoint = devicemgtProps.idPServer + "/oauth2/token";
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + encodedClientKeys);
@@ -115,7 +115,7 @@ var util = function () {
         encodedExtractedAssertion = this.encode(extractedAssertion);
 
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = mdmProps.idPServer + "/oauth2/token";
+        var tokenEndpoint = devicemgtProps.idPServer + "/oauth2/token";
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + clientKeys);
@@ -135,7 +135,7 @@ var util = function () {
     };
     module.refreshToken = function (tokenPair, clientData, scope) {
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = mdmProps.idPServer + "/oauth2/token";
+        var tokenEndpoint = devicemgtProps.idPServer + "/oauth2/token";
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + clientData);

@@ -25,14 +25,25 @@ import java.util.List;
 @XmlRootElement(name = "ResourceConfiguration")
 public class APIResourceConfiguration {
 
+	private String context;
+
 	private List<APIResource> resources;
 
 	public List<APIResource> getResources() {
 		return resources;
 	}
 
-	@XmlElement(name = "Resource", required = true)
+	@XmlElement(name = "Resources", required = true)
 	public void setResources(List<APIResource> resources) {
 		this.resources = resources;
+	}
+
+	public String getContext() {
+		return context;
+	}
+
+	@XmlElement(name = "Context", required = true)
+	public void setContext(String context) {
+		this.context = context;
 	}
 }

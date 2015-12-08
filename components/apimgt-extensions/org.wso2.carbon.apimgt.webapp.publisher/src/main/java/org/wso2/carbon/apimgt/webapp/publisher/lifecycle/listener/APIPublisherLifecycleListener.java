@@ -25,26 +25,19 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scannotation.AnnotationDB;
+import org.scannotation.WarUrlFinder;
 import org.wso2.carbon.apimgt.api.APIConsumer;
-import org.wso2.carbon.apimgt.api.model.API;
-import org.wso2.carbon.apimgt.api.model.APIIdentifier;
-import org.wso2.carbon.apimgt.api.model.Application;
-import org.wso2.carbon.apimgt.api.model.Subscriber;
+import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
+import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceManagementException;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceManager;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
-import org.wso2.carbon.apimgt.api.model.URITemplate;
-import org.scannotation.AnnotationDB;
-import org.scannotation.WarUrlFinder;
-import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.apimgt.api.model.APIIdentifier;
-import org.wso2.carbon.apimgt.api.model.Application;
-import org.wso2.carbon.apimgt.api.model.Subscriber;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -56,7 +49,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -65,6 +59,9 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class APIPublisherLifecycleListener implements LifecycleListener {
 
+    private static final String PACKAGE_ORG_APACHE = "org.apache";
+    private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
+    private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
     private static final String API_CONFIG_DEFAULT_VERSION = "1.0.0";
 
     private static final String PARAM_MANAGED_API_ENABLED = "managed-api-enabled";
@@ -77,11 +74,18 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
     private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
     private static final String PARAM_MANAGED_API_APPLICATION = "managed-api-application";
     private static final String PARAM_MANAGED_API_CONTEXT_TEMPLATE = "managed-api-context-template";
+    private static final String AUTH_TYPE = "Any";
+    private static final String PROTOCOL_HTTP = "http";
+    private static final String SERVER_HOST = "server.host";
+    private static final String HTTP_PORT = "httpPort";
+    private static final String DIR_WEB_INF_CLASSES = "/WEB-INF/classes";
+    public static final String DIR_WEB_INF_LIB = "/WEB-INF/lib";
 
     private static final String RESOURCE_CONFIG_PATH = "META-INF" + File.separator + "resources.xml";
 
 
     private static final Log log = LogFactory.getLog(APIPublisherLifecycleListener.class);
+    private static final String UNLIMITED = "Unlimited";
 
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
@@ -95,8 +99,9 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
             if (isManagedApi) {
                 try {
-                    List<APIResource> resources = scanStandardContext(context);
-                    APIConfig apiConfig = this.buildApiConfig(servletContext, resources);
+                    APIResourceConfiguration apideFinition = scanStandardContext(context);
+                    APIConfig apiConfig = this.buildApiConfig(servletContext, apideFinition.getResources(),
+                            apideFinition.getContext());
                     try {
                         apiConfig.init();
                         API api = APIPublisherUtil.getAPI(apiConfig);
@@ -117,33 +122,34 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                                 apiPublisherService.adddSubscriber(apiOwner, "");
                             } else {
                                 if (log.isDebugEnabled()) {
-                                    log.debug("Subscriber [" + apiOwner + "] already subscribed to API [" + api.getContext() + "]");
+                                    log.debug("Subscriber [" + apiOwner + "] already subscribed to API [" +
+                                            api.getContext() + "]");
                                 }
                             }
 
                             if (apiConsumer.getApplicationsByName(apiOwner, applicationName, "") == null) {
                                 Subscriber subscriber = new Subscriber(apiOwner);
                                 Application application = new Application(applicationName, subscriber);
-                                application.setTier("Unlimited");
+                                application.setTier(UNLIMITED);
                                 application.setGroupId("");
                                 int applicationId = apiPublisherService.createApplication(application, apiOwner);
 
                                 APIIdentifier subId = api.getId();
-                                subId.setTier("Unlimited");
+                                subId.setTier(UNLIMITED);
                                 apiPublisherService.addSubscription(subId, applicationId, apiOwner);
                             } else {
                                 if (log.isDebugEnabled()) {
-                                    log.debug("Application [" + applicationName + "] already exists for Subscriber [" + apiOwner + "]");
+                                    log.debug("Application [" + applicationName +
+                                            "] already exists for Subscriber [" + apiOwner + "]");
                                 }
                             }
                         }
 
 
                     } catch (Throwable e) {
-                        /* Throwable is caught as none of the RuntimeExceptions that can potentially occur at this point
-                        does not seem to be logged anywhere else within the framework */
-                        log.error("Error occurred while publishing API '" + apiConfig.getName() + "' with the context '" +
-                                apiConfig.getContext() + "' and version '" + apiConfig.getVersion() + "'", e);
+                        log.error("Error occurred while publishing API '" + apiConfig.getName() +
+                                "' with the context '" + apiConfig.getContext() +
+                                "' and version '" + apiConfig.getVersion() + "'", e);
                     }
                 } catch (IOException e) {
                     //todo: Hacky code.. needs to be refactored!
@@ -152,7 +158,14 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
     }
 
-    private APIConfig buildApiConfig(ServletContext servletContext, List<APIResource> resourceList) {
+    /**
+     * Build the API Configuration to be passed to APIM, from a given list of URL templates
+     * @param servletContext
+     * @param resourceList
+     * @param context
+     * @return
+     */
+    private APIConfig buildApiConfig(ServletContext servletContext, List<APIResource> resourceList, String context) {
         APIConfig apiConfig = new APIConfig();
 
         String name = servletContext.getInitParameter(PARAM_MANAGED_API_NAME);
@@ -175,14 +188,6 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
         apiConfig.setVersion(version);
 
-        String context = servletContext.getInitParameter(PARAM_MANAGED_API_CONTEXT);
-        if (context == null || context.isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug("'managed-api-context' attribute is not configured. Therefore, using the default, " +
-                        "which is the original context assigned to the web application");
-            }
-            context = servletContext.getContextPath();
-        }
         apiConfig.setContext(context);
 
         String contextTemplate = servletContext.getInitParameter(PARAM_MANAGED_API_CONTEXT_TEMPLATE);
@@ -267,20 +272,20 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         return apiConfig;
     }
 
-
-    public List<APIResource> scanStandardContext(StandardContext context) throws IOException {
-        // Set<String> entityClasses = getAnnotatedClassesStandardContext(context, Path.class);
-        //todo pack the annotation db with feature
+    /**
+     * Scan the context for classes with annotations
+     * @param context
+     * @return
+     * @throws IOException
+     */
+    public APIResourceConfiguration scanStandardContext(final StandardContext context) throws IOException {
         Set<String> entityClasses = null;
-        List<APIResource> resources = null;
+        APIResourceConfiguration resource = null;
 
         AnnotationDB db = new AnnotationDB();
-        db.addIgnoredPackages("org.apache");
-        db.addIgnoredPackages("org.codehaus");
-        db.addIgnoredPackages("org.springframework");
-
-        final String path = context.getRealPath("/WEB-INF/classes");
-        //TODO follow the above line for "WEB-INF/lib" as well
+        db.addIgnoredPackages(PACKAGE_ORG_APACHE);
+        db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
+        db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
 
         URL[] libPath = WarUrlFinder.findWebInfLibClasspaths(context.getServletContext());
         URL classPath = WarUrlFinder.findWebInfClassesPath(context.getServletContext());
@@ -290,34 +295,49 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         entityClasses = db.getAnnotationIndex().get(Path.class.getName());
 
         if (entityClasses != null && !entityClasses.isEmpty()) {
-            for (String className : entityClasses) {
-                try {
+            for (final String className : entityClasses) {
 
-                    List<URL> fileUrls = convertToFileUrl(libPath, classPath, context.getServletContext());
+                    final List<URL> fileUrls = convertToFileUrl(libPath, classPath, context.getServletContext());
 
-                    URLClassLoader cl = new URLClassLoader(fileUrls.toArray(new URL[fileUrls.size()]), this.getClass().getClassLoader());
-
-                    ClassLoader cl2 = context.getServletContext().getClassLoader();
-                    Class<?> clazz = cl2.loadClass(className);
-
-                    Class<Path> pathClazz = (Class<Path>) cl2.loadClass(Path.class.getName());
-                    resources = extractAPIInfo(context.getServletContext(), clazz, pathClazz);
-
-                } catch (ClassNotFoundException e) {
-                    //log the error and continue the loop
-                    log.error(e.getMessage(), e);
-                }
+                    resource = AccessController.doPrivileged(new PrivilegedAction<APIResourceConfiguration>() {
+                        public APIResourceConfiguration run() {
+                            APIResourceConfiguration apiResource = null;
+                            ClassLoader cl2 = context.getServletContext().getClassLoader();
+                            Class<?> clazz = null;
+                            try {
+                                clazz = cl2.loadClass(className);
+                                Class<Path> pathClazz = (Class<Path>) cl2.loadClass(Path.class.getName());
+                                apiResource = extractAPIInfo(context.getServletContext(), clazz, pathClazz);
+                            } catch (ClassNotFoundException e) {
+                                log.error("Error while loading classes to scan for annotations", e);
+                            }
+                            return apiResource;
+                        }
+                    });
             }
         }
-        return resources;
+        return resource;
     }
 
-    private static List<APIResource> extractAPIInfo(ServletContext context, Class<?> clazz, Class<Path> pathClazz) {
+    /**
+     * Method identifies the URL templates and context by reading the annotations of a class
+     * @param context
+     * @param clazz
+     * @param pathClazz
+     * @return
+     */
+    private static APIResourceConfiguration extractAPIInfo(ServletContext context, Class<?> clazz,
+                                                           Class<Path> pathClazz) {
 
         Annotation rootContectAnno = clazz.getAnnotation(pathClazz);
         List<APIResource> resourceList = null;
+        APIResourceConfiguration apiResourceConfig = new APIResourceConfiguration();
 
         if (rootContectAnno != null) {
+            apiResourceConfig.setContext(context.getContextPath());
+            if(log.isDebugEnabled()) {
+                log.debug("Application Context root = " + context.getContextPath());
+            }
             InvocationHandler handler = Proxy.getInvocationHandler(rootContectAnno);
             Method[] methods = pathClazz.getMethods();
             String root;
@@ -329,7 +349,9 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
                 resourceList = new ArrayList<APIResource>();
 
-                List<String> contextList = new ArrayList<String>();
+                if(log.isDebugEnabled()) {
+                    log.debug("API Root  Context = " + root);
+                }
                 for (Method method : clazz.getDeclaredMethods()) {
                     Annotation methodContextAnno = method.getAnnotation(pathClazz);
                     if (methodContextAnno != null) {
@@ -337,80 +359,85 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                         String subCtx = (String) methodHandler.invoke(methodContextAnno, methods[0], null);
                         APIResource resource = new APIResource();
                         resource.setUriTemplate(subCtx);
-                        resource.setUri("http://localhost:9763"+root+"/"+subCtx);
-                        resource.setAuthType("Any");
+
+                        String iotServerIP = System.getProperty(SERVER_HOST);
+                        String httpServerPort = System.getProperty(HTTP_PORT);
+
+                        resource.setUri(PROTOCOL_HTTP + "://"+ iotServerIP +":"+httpServerPort +root+"/"+subCtx);
+                        resource.setAuthType(AUTH_TYPE);
 
                         Annotation[] annotations = method.getDeclaredAnnotations();
                         for(int i=0; i<annotations.length; i++){
 
                             if(annotations[i].annotationType().getName().equals(GET.class.getName())){
-                                resource.setHttpVerb("GET");
+                                resource.setHttpVerb(HttpMethod.GET);
                             }
                             if(annotations[i].annotationType().getName().equals(POST.class.getName())){
-                                resource.setHttpVerb("POST");
+                                resource.setHttpVerb(HttpMethod.POST);
                             }
                             if(annotations[i].annotationType().getName().equals(OPTIONS.class.getName())){
-                                resource.setHttpVerb("OPTIONS");
+                                resource.setHttpVerb(HttpMethod.OPTIONS);
                             }
                             if(annotations[i].annotationType().getName().equals(DELETE.class.getName())){
-                                resource.setHttpVerb("DELETE");
+                                resource.setHttpVerb(HttpMethod.DELETE);
                             }
                             if(annotations[i].annotationType().getName().equals(PUT.class.getName())){
-                                resource.setHttpVerb("PUT");
+                                resource.setHttpVerb(HttpMethod.PUT);
                             }
                             if(annotations[i].annotationType().getName().equals(Consumes.class.getName())){
                                 Class<Consumes> consumesClass = (Class<Consumes>) cl.loadClass(Consumes.class.getName());
                                 Method[] consumesClassMethods = consumesClass.getMethods();
                                 Annotation consumesAnno = method.getAnnotation(consumesClass);
                                 InvocationHandler consumesHandler = Proxy.getInvocationHandler(consumesAnno);
-                                String contentType = ((String[]) consumesHandler.invoke(consumesAnno, consumesClassMethods[0], null))[0];
+                                String contentType = ((String[]) consumesHandler.invoke(consumesAnno,
+                                        consumesClassMethods[0], null))[0];
                             }
                             if(annotations[i].annotationType().getName().equals(Produces.class.getName())){
                                 Class<Produces> producesClass = (Class<Produces>) cl.loadClass(Produces.class.getName());
                                 Method[] producesClassMethods = producesClass.getMethods();
                                 Annotation producesAnno = method.getAnnotation(producesClass);
                                 InvocationHandler producesHandler = Proxy.getInvocationHandler(producesAnno);
-                                String producesType = ((String[]) producesHandler.invoke(producesAnno, producesClassMethods[0], null))[0];
+                                String producesType = ((String[]) producesHandler.invoke(producesAnno,
+                                        producesClassMethods[0], null))[0];
                             }
                         }
-                        contextList.add(methods[0]+" "+subCtx);
                         resourceList.add(resource);
                     }
                 }
+                apiResourceConfig.setResources(resourceList);
             } catch (Throwable throwable) {
-                throwable.printStackTrace();
+                log.error("Error encotered while scanning for annotations", throwable);
             }
-
-            //todo log.info summery of the api context info resulting from the scan
         }
-        return resourceList;
+        return apiResourceConfig;
     }
 
 
+    /**
+     * Method returns a list of URLs for a list of lib/class paths passed
+     * @param libPath
+     * @param classPath
+     * @param context
+     * @return
+     */
     private List<URL> convertToFileUrl(URL[] libPath, URL classPath, ServletContext context) {
 
-        if ((libPath != null || libPath.length == 0) && classPath == null) {
+        if ((libPath == null || libPath.length == 0) || classPath == null) {
             return null;
         }
 
         List<URL> list = new ArrayList<URL>();
-        if (classPath != null) {
-            list.add(classPath);
-        }
+        list.add(classPath);
 
-        if (libPath.length != 0) {
-            final String libBasePath = context.getRealPath("/WEB-INF/lib");
-            for (URL lib : libPath) {
-                String path = lib.getPath();
-                if (path != null) {
-                    String fileName = path.substring(path.lastIndexOf(File.separator));
-                    try {
-                        list.add(new URL("jar:file://" + libBasePath + File.separator + fileName + "!/"));
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
+        final String libBasePath = context.getRealPath(DIR_WEB_INF_LIB);
+        for (URL lib : libPath) {
+            String path = lib.getPath();
+                String fileName = path.substring(path.lastIndexOf(File.separator));
+                try {
+                    list.add(new URL("jar:file://" + libBasePath + File.separator + fileName + "!/"));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
-            }
         }
         return list;
     }

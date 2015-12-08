@@ -317,10 +317,6 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         Annotation rootContectAnno = clazz.getAnnotation(pathClazz);
         List<APIResource> resourceList = null;
 
-        if (context != null) {
-            log.info("Application Context root = " + context.getContextPath());
-        }
-
         if (rootContectAnno != null) {
             InvocationHandler handler = Proxy.getInvocationHandler(rootContectAnno);
             Method[] methods = pathClazz.getMethods();

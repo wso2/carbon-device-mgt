@@ -23,18 +23,18 @@ var uriMatcher = new URIMatcher(String(uri));
 var log = new Log("api/invoker-api.jag");
 
 var constants = require("/modules/constants.js");
-var mdmProps = require('/app/conf/devicemgt-props.js').config();
+var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
 
 var result;
 
 if (uriMatcher.match("/{context}/api/invoker/execute/")) {
     var method = request.getContent().actionMethod;
-    var targetURL = mdmProps.httpsURL + request.getContent().actionUrl;
+    var targetURL = devicemgtProps.httpsURL + request.getContent().actionUrl;
     var payload = request.getContent().actionPayload;
     if(method == undefined && payload == undefined){
         method = parse(request.getContent()).actionMethod;
-        targetURL = mdmProps.httpsURL + parse(request.getContent()).actionUrl;
+        targetURL = devicemgtProps.httpsURL + parse(request.getContent()).actionUrl;
         payload = parse(request.getContent()).actionPayload;
     }
     try {

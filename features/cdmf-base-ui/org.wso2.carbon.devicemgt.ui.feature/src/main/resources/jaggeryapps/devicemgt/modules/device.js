@@ -6,12 +6,12 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -22,7 +22,7 @@ deviceModule = function () {
 
     var utility = require('/modules/utility.js').utility;
     var constants = require('/modules/constants.js');
-    var mdmProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
 
     var ArrayList = Packages.java.util.ArrayList;
@@ -271,7 +271,7 @@ deviceModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
 
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/view?type=" + deviceType + "&id=" + deviceId;
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/view?type=" + deviceType + "&id=" + deviceId;
             var dataNew = serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     var device = responsePayload.responseContent;
@@ -320,9 +320,9 @@ deviceModule = function () {
         var url;
         var license;
         if(deviceType != null && deviceType != undefined && deviceType == "windows"){
-            url = mdmProps["httpURL"] + "/mdm-windows-agent/services/device/license";
+            url = devicemgtProps["httpURL"] + "/mdm-windows-agent/services/device/license";
         } else{
-            url = mdmProps["httpsURL"] + "/ios-enrollment/license/";
+            url = devicemgtProps["httpsURL"] + "/ios-enrollment/license/";
         }
         serviceInvokers.XMLHttp.get(url, function (responsePayload) {
             license = responsePayload.text;

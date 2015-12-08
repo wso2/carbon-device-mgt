@@ -6,12 +6,12 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -24,7 +24,7 @@ var userModule = function () {
 
     var constants = require("/modules/constants.js");
     var utility = require("/modules/utility.js")["utility"];
-    var mdmProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
 
     /* Initializing user manager */
@@ -97,13 +97,13 @@ var userModule = function () {
                 log.error("programing error");
                 break;
         }
-    }
+    };
 
     /*
      @Deprecated
      */
     /**
-     * Add user to mdm-user-store.
+     * Add user to devicemgt-user-store.
      *
      * @param username Username of the user
      * @param firstname First name of the user
@@ -155,7 +155,7 @@ var userModule = function () {
      @Deprecated
      */
     /**
-     * Remove an existing user from mdm-user-store.
+     * Remove an existing user from devicemgt-user-store.
      *
      * @param username Username of the user
      * @returns {number} HTTP Status code 200 if succeeded, 409 if the user does not exist
@@ -253,14 +253,14 @@ var userModule = function () {
      */
     /**
      * Send an initial invitation email to a user with username/password attached
-     * for the very-first enrollment with WSO2 MDM.
+     * for the very-first enrollment with WSO2 CDM.
      *
      * @param username Username of the user
      * @param password Password of the user
      */
     privateMethods.inviteUserToEnroll = function (username, password) {
         var carbon = require('carbon');
-        var enrollmentURL = mdmProps.httpsURL + mdmProps.appContext + "download-agent";
+        var enrollmentURL = devicemgtProps.httpsURL + devicemgtProps.appContext + "download-agent";
         var carbonUser = session.get(constants.USER_SESSION_KEY);
         var utility = require('/modules/utility.js').utility;
         if (!carbonUser) {
@@ -320,7 +320,7 @@ var userModule = function () {
             log.error("User object was not found in the session");
             throw constants.ERRORS.USER_NOT_FOUND;
         }
-        var enrollmentURL = mdmProps.httpsURL + mdmProps.appContext + "download-agent";
+        var enrollmentURL = devicemgtProps.httpsURL + devicemgtProps.appContext + "download-agent";
 
         try {
             utility.startTenantFlow(carbonUser);
@@ -354,7 +354,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users";
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users";
             return privateMethods.callBackend(url, constants.HTTP_GET);
 
         } catch (e) {
@@ -381,7 +381,7 @@ var userModule = function () {
         var carbonUser = privateMethods.getCarbonUser();
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/view?username=" + username;
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/view?username=" + username;
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             response["userDomain"] = carbonUser.domain;
             return response;
@@ -400,7 +400,7 @@ var userModule = function () {
         var carbonUser = privateMethods.getCarbonUser();
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/roles?username=" + username;
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/roles?username=" + username;
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             return response;
         } catch (e) {
@@ -422,7 +422,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/users-by-username";
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/users-by-username";
             return privateMethods.callBackend(url, constants.HTTP_GET)
         } catch (e) {
             throw e;
@@ -446,7 +446,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles";
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles";
             return privateMethods.callBackend(url, constants.HTTP_GET);
         } catch (e) {
             throw e;
@@ -467,7 +467,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/types";
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/types";
             return privateMethods.callBackend(url, constants.HTTP_GET);
         } catch (e) {
             throw e;
@@ -490,7 +490,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = mdmProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/" + roleName;
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/" + roleName;
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             return response;
         } catch (e) {
@@ -501,7 +501,7 @@ var userModule = function () {
     };
 
     /**
-     * Authenticate a user when he or she attempts to login to MDM.
+     * Authenticate a user when he or she attempts to login to Devicemgt.
      *
      * @param username Username of the user
      * @param password Password of the user
@@ -661,7 +661,7 @@ var userModule = function () {
      */
     publicMethods.getSecondaryUserStores = function () {
         var returnVal = [];
-        var endpoint = mdmProps.adminService + constants.USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT;
+        var endpoint = devicemgtProps.adminService + constants.USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT;
         var wsPayload = "<xsd:getSecondaryRealmConfigurations  xmlns:xsd='http://org.apache.axis2/xsd'/>";
         serviceInvokers.WS.soapRequest(
             "urn:getSecondaryRealmConfigurations", endpoint, wsPayload, function (wsResponse) {

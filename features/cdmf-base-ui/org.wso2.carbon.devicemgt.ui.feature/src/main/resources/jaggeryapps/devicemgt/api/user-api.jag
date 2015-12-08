@@ -23,7 +23,7 @@ var uriMatcher = new URIMatcher(String(uri));
 var log = new Log("api/user-api.jag");
 
 var constants = require("/modules/constants.js");
-var mdmProps = require('/app/conf/devicemgt-props.js').config();
+var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 var userModule = require("/modules/user.js").userModule;
 var deviceModule = require("/modules/device.js").deviceModule;
 var utility = require("/modules/utility.js").utility;
@@ -48,15 +48,15 @@ if (uriMatcher.match("/{context}/api/user/login/")) {
                 response.sendRedirect(constants.WEB_APP_CONTEXT + "/device-mgt");
             }
         }, function () {
-            response.sendRedirect(mdmProps.appContext + "login?#auth-failed");
+            response.sendRedirect(devicemgtProps.appContext + "login?#auth-failed");
         });
     } catch (e) {
         log.error("Exception occurred while a user tried to login to MDM", e);
-        response.sendRedirect(mdmProps.appContext + "login?#error");
+        response.sendRedirect(devicemgtProps.appContext + "login?#error");
     }
 } else if (uriMatcher.match("/{context}/api/user/logout/")) {
     userModule.logout(function () {
-        response.sendRedirect(mdmProps.appContext + "login");
+        response.sendRedirect(devicemgtProps.appContext + "login");
     });
 } else if (uriMatcher.match("/{context}/api/user/devices/")) {
     /*
@@ -95,9 +95,9 @@ if (uriMatcher.match("/{context}/api/user/login/")) {
         } else {
             userRoles = String(addUserFormData.userRoles).split(",");
         }
-        if (username.length < mdmProps.usernameLength) {
-            log.error("Username Must be between 1 and " + mdmPops.usernameLength + " characters long");
-            result = "Username Must be between 1 and " + mdmPops.usernameLength + " characters long";
+        if (username.length < devicemgtProps.usernameLength) {
+            log.error("Username Must be between 1 and " + devicemgtProps.usernameLength + " characters long");
+            result = "Username Must be between 1 and " + devicemgtProps.usernameLength + " characters long";
         } else {
             try {
                 result = userModule.addUser(username, firstname, lastname, emailAddress, userRoles);

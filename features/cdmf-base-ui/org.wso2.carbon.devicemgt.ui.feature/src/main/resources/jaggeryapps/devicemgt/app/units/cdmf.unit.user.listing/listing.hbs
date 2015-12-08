@@ -63,7 +63,8 @@
                         <span class="hidden-xs hidden-on-grid-view">View</span>
                     </a>
 
-                    <a href="/mdm/users/edit-user?username={{username}}" data-username="{{username}}"
+                    <a href="{{@app.context}}/users/edit-user?username={{username}}"
+                       data-username="{{username}}"
                        data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link">
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>

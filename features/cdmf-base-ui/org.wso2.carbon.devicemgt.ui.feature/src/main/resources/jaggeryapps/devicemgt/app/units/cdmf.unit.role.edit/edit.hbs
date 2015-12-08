@@ -47,8 +47,11 @@
                     <br>Please click <b>"View Updated Role"</b>, if you wish to view the updated role or click
                     <b>"View Role List"</b> to complete the process and go back to the role list.
                     <hr />
-                    <button class="wr-btn" onclick="window.location.href='/mdm/roles'">View Role List</button>
-                    <a href="/mdm/roles/edit-role/{{role.roleName}}" class="cu-btn-inner">
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
+                        View Role List
+                    </button>
+                    <a href="{{@app.context}}/roles/edit-role/{{role.roleName}}"
+                       class="cu-btn-inner">
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>
                             <i class="fw fw-add fw-stack-1x"></i>

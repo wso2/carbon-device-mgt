@@ -36,5 +36,9 @@
             data-image-resource="{{@app.context}}/public/cdmf.unit.device.type."
             src="{{@unit.publicUri}}/templates/listing.hbs"
             type="text/x-handlebars-template"></script>
+    <script type="text/javascript">
+        {{! WARN: DO NOT BLINDLY PASS WHOLE CONTEXT HERE}}
+        var clientJsAppContext = "{{{@app.context}}}";
+    </script>
     {{js "js/listing.js"}}
 {{/zone}}

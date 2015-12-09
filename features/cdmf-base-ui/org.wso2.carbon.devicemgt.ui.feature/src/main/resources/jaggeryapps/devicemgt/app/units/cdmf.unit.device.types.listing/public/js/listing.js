@@ -140,10 +140,10 @@ function loadDevices(searchType, searchParam){
         var serviceURL="/common/device_manager/device/type/all";
         var successCallback = function (data) {
             data = JSON.parse(data);
-            console.log(data);
             var viewModel = {};
             viewModel.deviceTypes = data;
             viewModel.imageLocation = imageResource;
+            viewModel.appContext = clientJsAppContext;
             if(data.length > 0){
                 var content = template(viewModel);
                 $("#ast-container").html(content);

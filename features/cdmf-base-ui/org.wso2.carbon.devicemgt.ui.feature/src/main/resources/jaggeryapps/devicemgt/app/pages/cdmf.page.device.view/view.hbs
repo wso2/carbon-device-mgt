@@ -5,5 +5,11 @@
 {{#zone "content"}}
     {{unit "cdmf.unit.lib.data-table"}}
     {{unit "cdmf.unit.device.operation-mod"}}
-    {{unit "cdmf.unit.device.view"}}
+    <div class="page-content-wrapper">
+        <!-- content/body -->
+        <div class="container-fluid body-wrapper">
+            {{! dynamically resolves device-view unit according to deviceType URI param }}
+            {{unit deviceViewUnitName}}
+        </div>
+    </div>
 {{/zone}}

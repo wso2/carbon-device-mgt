@@ -180,6 +180,15 @@ var userModule = function () {
             } else {
                 var defaultUserClaims = privateMethods.buildDefaultUserClaims(firstname, lastname, emailAddress);
 
+                for (var role in userRoles){
+                    if (userRoles[role] == "deviceUser" && !userManager.roleExists("deviceUser")){
+                        var permissions = {
+                            '/permission/admin/device-mgt/user/': ['ui.execute']
+                        };
+                        userManager.addRole("deviceUser", ["admin"], permissions);
+                    }
+                }
+
                 userManager.addUser(username, password, userRoles, defaultUserClaims, "default");
                 if (log.isDebugEnabled()) {
                     log.debug("A new user with name '" + username + "' was created.");
@@ -629,7 +638,6 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/platform-configs/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
         }
-
         return permissions;
     };
 

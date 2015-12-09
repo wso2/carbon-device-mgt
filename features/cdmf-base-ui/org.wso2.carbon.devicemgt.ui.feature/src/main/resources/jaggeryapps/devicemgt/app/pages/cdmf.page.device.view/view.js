@@ -8,4 +8,6 @@ function onRequest(context){
             return options.fn(this);
         }
     });
+
+    return {"deviceViewUnitName" : "cdmf.unit.device.type." + context.uriParams.deviceType + ".device-view"};
 }

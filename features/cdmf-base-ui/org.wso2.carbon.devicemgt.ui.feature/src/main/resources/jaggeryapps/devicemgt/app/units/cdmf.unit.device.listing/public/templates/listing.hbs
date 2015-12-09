@@ -30,7 +30,7 @@
             data-grid-label="Ownership">{{enrolmentInfo.ownership}}</td>
         <td class="text-right content-fill text-left-on-grid-view no-wrap">
             {{#unequal enrolmentInfo.status "REMOVED"}}
-                <a href="device?type={{type}}&id={{deviceIdentifier}}"
+                <a href="device/{{type}}?id={{deviceIdentifier}}"
                    data-click-event="remove-form" class="btn padding-reduce-on-grid-view">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>

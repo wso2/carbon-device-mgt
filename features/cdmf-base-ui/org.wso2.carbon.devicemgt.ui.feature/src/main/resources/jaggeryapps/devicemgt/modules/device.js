@@ -35,6 +35,8 @@ deviceModule = function () {
 
     var deviceManagementService = utility.getDeviceManagementService();
 
+    var devicemgtService;
+
     var publicMethods = {};
     var privateMethods = {};
 
@@ -330,6 +332,76 @@ deviceModule = function () {
             return null;
         });
         return license;
+    };
+
+    publicMethods.getOwnDevices = function () {
+        devicemgtService = devicemgtProps["httpsURL"] + "/common/device_manager";
+        listAllDevicesEndPoint = devicemgtService + "/device/user/" + user.username + "/all";
+        var result = get(listAllDevicesEndPoint, {}, "json");
+        var devices = result.data;
+        var device;
+        for (var d in devices){
+            device = devices[d];
+            device.assetId = publicMethods.getAssetId(device.deviceType);
+        }
+        return result;
+    };
+
+    publicMethods.getOwnDevicesCount = function () {
+        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        devicemgtService = devicemgtProps["httpsURL"] + "/common/device_manager";
+        listAllDevicesEndPoint = devicemgtService + "/device/user/" + carbonUser.username + "/all/count";
+        return get(listAllDevicesEndPoint, {}, "json").data;
+    };
+
+    publicMethods.getUnGroupedDevices = function () {
+        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        devicemgtService = devicemgtProps["httpsURL"] + "/common/device_manager";
+        listAllDevicesEndPoint = devicemgtService + "/device/user/" + carbonUser.username + "/ungrouped";
+        return get(listAllDevicesEndPoint, {}, "json").data;
+    };
+
+    publicMethods.getUnGroupedDevicesCount = function () {
+        var result = publicMethods.getUnGroupedDevices();
+        var devices = result.data;
+        var count = 0;
+        if (devices) {
+            count = devices.length;
+        }
+        result.data = count;
+        return result;
+    };
+
+    publicMethods.getAllPermittedDevices = function () {
+        var groupModule = require("../modules/group.js").groupModule;
+
+        var result = publicMethods.getUnGroupedDevices();
+        var unGroupedDevices = result.data;
+        var user_groups = groupModule.getGroups().data;
+        var allDevices = [];
+        var deviceCount = unGroupedDevices.length;
+        for (var g in user_groups) {
+            var deviceInGroup = user_groups[g].devices;
+            deviceCount += deviceInGroup.length;
+            if (deviceInGroup && deviceInGroup.length == 0) {
+                delete user_groups[g]["devices"];
+            }
+            var device;
+            for (var d in deviceInGroup){
+                device = deviceInGroup[d];
+                device.assetId = publicMethods.getAssetId(device.type);
+            }
+            allDevices.push(user_groups[g]);
+        }
+        allDevices.push({id: 0, devices: unGroupedDevices});
+        result.data = allDevices;
+        result.device_count = deviceCount;
+        return result;
+    };
+
+    publicMethods.getDeviceTypes = function () {
+        var deviceTypesEndPoint = devicemgtProps["httpsURL"] + "/common/device_manager/device/type/all";
+        return get(deviceTypesEndPoint, {}, "json");
     };
 
     return publicMethods;

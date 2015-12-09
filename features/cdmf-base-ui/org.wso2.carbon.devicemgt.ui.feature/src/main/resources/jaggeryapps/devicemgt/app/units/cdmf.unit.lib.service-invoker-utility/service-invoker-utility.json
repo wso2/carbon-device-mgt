@@ -3,10 +3,6 @@
   "index": 21,
   "pushedUris": [
     "/",
-    "/devices",
-    "/users",
-    "/roles",
-    "/policies",
-    "/platform-configuration"
+    "/{+any}"
   ]
 }

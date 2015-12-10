@@ -3,8 +3,12 @@
     <tr data-type="selectable" data-deviceid="{{id}}" data-devicetype="{{name}}">
         <td class="remove-padding icon-only content-fill">
             <div class="thumbnail icon">
-                <!--<i class="square-element text fw fw-mobile"></i>-->
-                <img class="square-element text fw " src="{{../imageLocation}}{{name}}.type-view/images/thumb.png" />
+                {{#isMobile name}}
+                    <i class="square-element text fw fw-mobile"></i>
+                {{/isMobile}}
+                {{#isNotMobile name}}
+                    <img class="square-element text fw " src="{{../../imageLocation}}{{name}}.type-view/images/thumb.png" />
+                {{/isNotMobile}}
             </div>
         </td>
         <td class="fade-edge remove-padding-top" data-search="{{name}}" data-display="{{name}}"

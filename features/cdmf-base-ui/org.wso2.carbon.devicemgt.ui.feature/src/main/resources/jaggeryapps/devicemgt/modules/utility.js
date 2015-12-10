@@ -6,12 +6,12 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -56,7 +56,6 @@ utility = function () {
     };
 
     publicMethods.insertAppPermissions = function (userModule, type) {
-        userModule.addPermissions([{key: "device-mgt", name: "Device Management"}], "", type);
         // Below are the 2 types of users:- Normal users and Admins
         userModule.addPermissions([{key: "emm-admin", name: "Device Management Admin"}], "device-mgt", type);
         userModule.addPermissions([{key: "user", name: "Device Management User"}], "device-mgt", type);
@@ -68,7 +67,7 @@ utility = function () {
         userModule.addPermissions([{key: "devices", name: "Devices"}], "device-mgt/emm-admin", type);
         userModule.addPermissions([{key: "devices/list", name: "List All Devices"}], "device-mgt/emm-admin", type);
         userModule.addPermissions([{key: "devices/operation", name: "Perform Operation on Any Device"}],
-                                         "device-mgt/emm-admin", type);
+                "device-mgt/emm-admin", type);
 
         userModule.addPermissions([{key: "users", name: "Users"}], "device-mgt/emm-admin", type);
         userModule.addPermissions([{key: "users/add", name: "Add New Users"}], "device-mgt/emm-admin", type);
@@ -95,9 +94,9 @@ utility = function () {
         userModule.addPermissions([{key: "devices", name: "Devices"}], "device-mgt/user", type);
         userModule.addPermissions([{key: "devices/list", name: "List Individual Devices"}], "device-mgt/user", type);
         userModule.addPermissions([{key: "devices/operation", name: "Perform Operation on an Individual Device"}],
-                                         "device-mgt/user", type);
+                "device-mgt/user", type);
 
-        userModule.addPermissions([{key: "platform-configs", name: "Platform Configurations"}], "device-mgt/admin", type);
+        userModule.addPermissions([{key: "platform-configs", name: "Platform Configurations"}], "device-mgt/emm-admin", type);
         userModule.addPermissions([{key: "platform-configs/view", name: "View Configurations"}], "device-mgt/emm-admin", type);
     };
 

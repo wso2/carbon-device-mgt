@@ -17,19 +17,11 @@
  */
 
 function onRequest(context) {
-
     var userModule = require("/modules/user.js").userModule;
     var constants = require("/modules/constants.js");
-    var permissions = userModule.getUIPermissions();
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-    context.permissions = permissions;
-    context["enrollmentURL"] = devicemgtProps.enrollmentURL;
-    var deviceModule = require("/modules/device.js").deviceModule;
-    var policyModule = require("../modules/policy.js").policyModule;
-
-    context.device_count = deviceModule.getOwnDevicesCount();
-    context.user_count = userModule.getUsers()["content"].length;
-    context.policy_count = policyModule.getAllPolicies()["content"].length;
-
+    var carbonUser = session.get(constants.USER_SESSION_KEY);
+    if (carbonUser){
+        context.permissions = userModule.getUIPermissions();
+    }
     return context;
 }

@@ -76,7 +76,7 @@
 {{/if}}
 {{#zone "bottomJs"}}
     <script id="device-listing" data-current-user="{{currentUser.username}}"
-            data-image-resource="{{@unit.publicUri}}/images/"
+            data-image-resource="{{@app.context}}/public/cdmf.unit.device.type."
             src="{{@unit.publicUri}}/templates/listing.hbs"
             type="text/x-handlebars-template"></script>
     {{js "js/listing.js"}}

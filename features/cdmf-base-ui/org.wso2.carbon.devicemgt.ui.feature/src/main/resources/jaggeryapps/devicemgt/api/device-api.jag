@@ -90,7 +90,7 @@ if (!user) {
             deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
 
             sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
-            response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user + "&deviceName=" + deviceName);
+            response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName);
             exit();//stop execution
 
         }
@@ -111,7 +111,7 @@ if (!user) {
             deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
 
             sketchGenerateLinkEndPoint = deviceManagerService + "/device/" + sketchType + "/generate_link";
-            var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user + "&deviceName=" + deviceName, null, "text");
+            var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName, null, "text");
             result = "curl -k " + devicemgtProps["httpsURL"] + constants.WEB_APP_CONTEXT + "/api/devices/sketch/download/" + fileId.data;
         }
 

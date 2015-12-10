@@ -22,14 +22,14 @@ var uriMatcher = new URIMatcher(String(uri));
 
 var log = new Log("apis/group-api.jag");
 
+var constants = require("/modules/constants.js");
+
 var utility = require("../modules/utility.js").utility;
+var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
-var hostname = utility.getIoTServerConfig("IoTMgtHost");
-var carbonHttpsServletTransport = "https://" + hostname + ":9443";
-var deviceCloudService = carbonHttpsServletTransport + "/common/group_manager";
+var deviceCloudService = devicemgtProps["httpsURL"] + "/common/group_manager";
 
-var server = require('store').server;
-var user = server.current(session);
+var user = session.get(constants.USER_SESSION_KEY);
 
 var groupModule = require("../modules/group.js").groupModule;
 
@@ -38,7 +38,6 @@ var result, endPoint, data, groupId, group, role;
 if (!user) {
 	response = responseProcessor.buildErrorResponse(response, 401, "Unauthorized");
 } else {
-	user = user.um;
 	if (uriMatcher.match("/{context}/api/group/add")) {
 		group = request.getContent();
 		result = groupModule.addGroup(group);

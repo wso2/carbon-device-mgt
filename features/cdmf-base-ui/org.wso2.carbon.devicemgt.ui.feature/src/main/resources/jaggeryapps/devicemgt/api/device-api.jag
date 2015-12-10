@@ -25,15 +25,13 @@ var constants = require("/modules/constants.js");
 
 var deviceModule = require("/modules/device.js").deviceModule;
 var utility = require("/modules/utility.js").utility;
+var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
 var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
-var hostname = utility.getIoTServerConfig("IoTMgtHost");
-var carbonHttpsServletTransport = "https://" + hostname + ":9443";
 
 var responseProcessor = require('utils').response;
 response.contentType = 'application/json';
 
-var server = require('store').server;
 var user = session.get(constants.USER_SESSION_KEY);
 
 var result;
@@ -89,10 +87,10 @@ if (!user) {
             result = 400;
         } else {
             //URL: https://localhost:9443/{deviceType}/download?owner={username}
-            deviceManagerService = carbonHttpsServletTransport + "/" + deviceType + "/manager";
+            deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
 
             sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
-            response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName);
+            response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user + "&deviceName=" + deviceName);
             exit();//stop execution
 
         }
@@ -110,11 +108,11 @@ if (!user) {
             result = 400;
         } else {
             //URL: https://localhost:9443/{deviceType}/download?owner={username}
-            deviceManagerService = carbonHttpsServletTransport + "/" + deviceType + "/manager";
+            deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
 
             sketchGenerateLinkEndPoint = deviceManagerService + "/device/" + sketchType + "/generate_link";
-            var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName, null, "text");
-            result = "curl -k " + carbonHttpsServletTransport + constants.WEB_APP_CONTEXT + "/api/devices/sketch/download/" + fileId.data;
+            var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user + "&deviceName=" + deviceName, null, "text");
+            result = "curl -k " + devicemgtProps["httpsURL"] + constants.WEB_APP_CONTEXT + "/api/devices/sketch/download/" + fileId.data;
         }
 
     } else if (uriMatcher.match("/{context}/api/devices/all")) {

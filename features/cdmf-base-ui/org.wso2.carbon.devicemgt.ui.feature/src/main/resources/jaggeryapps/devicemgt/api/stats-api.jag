@@ -25,14 +25,13 @@ var log = new Log("api/stats-api.jag");
 var from = request.getParameter("from");
 var to = request.getParameter("to");
 
+var constants = require("/modules/constants.js");
 var utility = require("../modules/utility.js").utility;
+var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
-var hostname = utility.getIoTServerConfig("IoTMgtHost");
-var carbonHttpsServletTransport = "https://" + hostname + ":9443";
-
-var deviceCloudGroupService = carbonHttpsServletTransport + "/common/group_manager";
-var deviceCloudDeviceService = carbonHttpsServletTransport + "/common/device_manager";
-var deviceCloudStatsService = carbonHttpsServletTransport + "/common/stats_manager";
+var deviceCloudGroupService = devicemgtProps["httpsURL"] + "/common/group_manager";
+var deviceCloudDeviceService = devicemgtProps["httpsURL"] + "/common/device_manager";
+var deviceCloudStatsService = devicemgtProps["httpsURL"] + "/common/stats_manager";
 
 var stats = {};
 var deviceId;
@@ -41,12 +40,11 @@ var deviceType;
 var responseProcessor = require('utils').response;
 response.contentType = 'application/json';
 
-var server = require('store').server;
-var user = server.current(session);
+var user = session.get(constants.USER_SESSION_KEY);
+
 if (!user) {
     response = responseProcessor.buildErrorResponse(response, 401, "Unauthorized");
 } else {
-    user = user.um;
     if (uriMatcher.match("/{context}/api/stats")) {
         deviceId = request.getParameter("deviceId");
         deviceType = request.getParameter("deviceType");
@@ -58,7 +56,7 @@ if (!user) {
 
         //URL: GET https://localhost:9443/devicecloud/group_manager/group/id/{groupId}/device/all
         var endPoint = deviceCloudGroupService + "/group/id/" + groupId + "/device/all";
-        var data = {"username": user.username};
+        var data = {"username": user};
         var devices = get(endPoint, data, "json").data;
 
         for (var device in devices) {
@@ -67,7 +65,7 @@ if (!user) {
             getDeviceData(deviceType, deviceId);
         }
     }
-
+    log.info(stats);
     // returning the result.
     if (stats) {
         print(stats);
@@ -77,8 +75,9 @@ if (!user) {
 function getDeviceData(deviceType, deviceId) {
     //URL: GET https://localhost:9443/devicecloud/device_manager/device/type/{type}/identifier/{identifier}
     var endPoint = deviceCloudDeviceService + "/device/type/" + deviceType + "/identifier/" + deviceId;
-    var data = {"username": user.username};
+    var data = {"username": user};
     var device = get(endPoint, data, "json").data;
+    log.info(device);
     if (!device) {
         return;
     }
@@ -301,8 +300,8 @@ function getAllDeviceData(user, device, from, to) {
         stats['cpuTemperatureData'] = [];
     }
 
-    //Unomment to disable data emulation
-    /*
+    //Uncomment to disable data emulation
+
      var timeInterval = 30;
      var rnd, chartData = [];
      var i = parseInt(from);
@@ -366,9 +365,10 @@ function getAllDeviceData(user, device, from, to) {
      i += timeInterval;
      }
      stats['cpuTemperatureData'].push({"device": device.name, "stats": chartData});
-     */
 
-    //Comment to disable data emulation
+
+    //Comment to enable data emulation
+    /*
     stats['ramData'].push({
         "device": device.name,
         "stats": getSensorData("RAM_USAGE_SUMMARY", "motion", user, device.type, device.deviceIdentifier, from, to)
@@ -397,6 +397,7 @@ function getAllDeviceData(user, device, from, to) {
         "device": device.name,
         "stats": getSensorData("DEVICE_CPU_TEMPERATURE_SUMMARY", "TEMPERATURE", user, device.type, device.deviceIdentifier, from, to)
     });
+    */
 }
 
 

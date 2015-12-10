@@ -119,7 +119,7 @@ if (uriMatcher.match("/{context}/api/user/login/")) {
     lastname = addUserFormData.lastname;
     emailAddress = addUserFormData.emailAddress;
     password = addUserFormData.password;
-    userRoles = ["deviceUser"];
+    userRoles = ["device-admin"];
 
     try {
         result = userModule.registerUser(username, firstname, lastname, emailAddress, password,

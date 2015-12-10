@@ -1394,6 +1394,16 @@
                 <artifactId>smackx</artifactId>
                 <version>${smackx.wso2.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.neethi.wso2</groupId>
+                <artifactId>neethi</artifactId>
+                <version>${neethi.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.neethi</groupId>
+                <artifactId>neethi</artifactId>
+                <version>${neethi.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1648,7 +1658,7 @@
         <carbon.deployment.version>4.6.0</carbon.deployment.version>
 
         <!-- Carbon Identity -->
-        <carbon.identity.version>5.0.2</carbon.identity.version>
+        <carbon.identity.version>5.0.3</carbon.identity.version>
 
         <!-- Carbon Multi-tenancy -->
         <carbon.multitenancy.version>4.5.0</carbon.multitenancy.version>
@@ -1717,6 +1727,9 @@
 
 	<!-- Release plugin ID for github-->
 	<project.scm.id>github-scm</project.scm.id>
+
+        <neethi.version>2.0.4</neethi.version>
+        <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
     </properties>
 
 </project>

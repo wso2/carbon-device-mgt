@@ -19,7 +19,7 @@
 var uri = request.getRequestURI();
 var uriMatcher = new URIMatcher(String(uri));
 
-var log = new Log("apis/device-api.jag");
+var log = new Log("api/device-api.jag");
 
 var constants = require("/modules/constants.js");
 
@@ -114,7 +114,7 @@ if (!user) {
 
             sketchGenerateLinkEndPoint = deviceManagerService + "/device/" + sketchType + "/generate_link";
             var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName, null, "text");
-            result = "curl -k " + carbonHttpsServletTransport + constants.WEB_APP_CONTEXT + "/apis/devices/sketch/download/" + fileId.data;
+            result = "curl -k " + carbonHttpsServletTransport + constants.WEB_APP_CONTEXT + "/api/devices/sketch/download/" + fileId.data;
         }
 
     } else if (uriMatcher.match("/{context}/api/devices/all")) {

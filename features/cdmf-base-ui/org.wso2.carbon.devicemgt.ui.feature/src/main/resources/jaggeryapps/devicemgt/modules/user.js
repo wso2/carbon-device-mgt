@@ -183,7 +183,10 @@ var userModule = function () {
                 for (var role in userRoles){
                     if (userRoles[role] == "device-admin" && !userManager.roleExists("device-admin")){
                         var permissions = {
+                            '/permission/admin/device-mgt/devices': ['ui.execute'],
+                            '/permission/admin/device-mgt/policies': ['ui.execute'],
                             '/permission/admin/device-mgt/user': ['ui.execute'],
+                            '/permission/admin/device-mgt/users': ['ui.execute'],
                             '/permission/admin/device-mgt/emm-admin/devices': ['ui.execute'],
                             '/permission/admin/device-mgt/emm-admin/policies': ['ui.execute']
                         };

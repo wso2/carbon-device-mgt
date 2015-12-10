@@ -15,8 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.dynamic.client.registration;
+package org.wso2.carbon.dynamic.client.registration.util;
 
+/**
+ * This class holds the util methods used by DCR component.
+ */
 public class DynamicClientRegistrationUtil {
 
     public static void validateUsername(String username) {
@@ -36,5 +39,4 @@ public class DynamicClientRegistrationUtil {
             throw new IllegalArgumentException("Consumer Key cannot be null or empty");
         }
     }
-
 }

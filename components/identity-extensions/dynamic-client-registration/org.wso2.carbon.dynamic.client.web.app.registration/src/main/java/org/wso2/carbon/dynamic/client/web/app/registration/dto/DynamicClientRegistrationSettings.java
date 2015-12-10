@@ -15,19 +15,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.dynamic.client.web;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+package org.wso2.carbon.dynamic.client.web.app.registration.dto;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Path("/connect")
-public interface ConfigurationService {
+/**
+ * Represents Configuration setting related to OAuth in authenticators.xml.
+ */
+public class DynamicClientRegistrationSettings {
 
-    @GET
-    @Path("/register")
-    Response getProfile(@PathParam("client_id") String clientId);
+    private boolean isRemote;
+    private String host;
 
+    public boolean isRemote() {
+        return isRemote;
+    }
+
+    public void setIsRemote(boolean isRemote) {
+        this.isRemote = isRemote;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 }

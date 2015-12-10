@@ -52,8 +52,7 @@ public class DynamicClientWebAppRegistrationManager {
         if (dynamicClientWebAppRegistrationManager == null) {
             synchronized (DynamicClientWebAppRegistrationManager.class) {
                 if (dynamicClientWebAppRegistrationManager == null) {
-                    dynamicClientWebAppRegistrationManager =
-                            new DynamicClientWebAppRegistrationManager();
+                    dynamicClientWebAppRegistrationManager = new DynamicClientWebAppRegistrationManager();
                 }
             }
         }
@@ -65,11 +64,9 @@ public class DynamicClientWebAppRegistrationManager {
             log.debug("Registering OAuth application for web app : " + registrationProfile.getClientName());
         }
         if (DynamicClientWebAppRegistrationUtil.validateRegistrationProfile(registrationProfile)) {
-            DynamicClientRegistrationService dynamicClientRegistrationService =
-                    DynamicClientWebAppRegistrationDataHolder.getInstance().getDynamicClientRegistrationService();
             try {
                 OAuthApplicationInfo oAuthApplicationInfo =
-                        dynamicClientRegistrationService.registerOAuthApplication(registrationProfile);
+                        DynamicClientWebAppRegistrationUtil.registerOAuthApplication(registrationProfile);
                 OAuthAppDetails oAuthAppDetails = new OAuthAppDetails();
                 oAuthAppDetails.setWebAppName(registrationProfile.getClientName());
                 oAuthAppDetails.setClientName(oAuthApplicationInfo.getClientName());
@@ -79,7 +76,7 @@ public class DynamicClientWebAppRegistrationManager {
                 if (DynamicClientWebAppRegistrationUtil.putOAuthApplicationData(oAuthAppDetails)) {
                     return oAuthAppDetails;
                 } else {
-                    dynamicClientRegistrationService.unregisterOAuthApplication(registrationProfile.getOwner(),
+                    DynamicClientWebAppRegistrationUtil.unregisterOAuthApplication(registrationProfile.getOwner(),
                                                         oAuthApplicationInfo.getClientName(),
                                                         oAuthApplicationInfo.getClientId());
                     log.warn("Error occurred while persisting the OAuth application data in registry.");

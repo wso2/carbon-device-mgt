@@ -89,7 +89,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 boolean status = dynamicClientRegistrationService.unregisterOAuthApplication(userId, applicationName,
                                                                                              consumerKey);
                 if (status) {
-                    return Response.status(Response.Status.ACCEPTED).build();
+                    return Response.status(Response.Status.OK).build();
                 }
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }

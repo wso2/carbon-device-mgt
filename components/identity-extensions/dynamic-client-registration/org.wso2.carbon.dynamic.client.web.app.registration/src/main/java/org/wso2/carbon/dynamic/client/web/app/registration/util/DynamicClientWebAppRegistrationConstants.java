@@ -46,4 +46,23 @@ public class DynamicClientWebAppRegistrationConstants {
 
         public static final String CHARSET_UTF8 = "UTF8";
     }
+
+    public static class ConfigurationProperties {
+        private ConfigurationProperties() {
+            throw new AssertionError();
+        }
+
+        public static final String AUTHENTICATOR_NAME = "OAuthAuthenticator";
+        public static final String AUTHENTICATOR_CONFIG_IS_REMOTE = "isRemote";
+        public static final String AUTHENTICATOR_CONFIG_HOST_URL = "hostURL";
+    }
+
+    public static class RemoteServiceProperties {
+        private RemoteServiceProperties() {
+            throw new AssertionError();
+        }
+
+        public static final String DYNAMIC_CLIENT_SERVICE_ENDPOINT = "/dynamic-client-web/register";
+        public static final String DYNAMIC_CLIENT_SERVICE_PROTOCOL = "https";
+    }
 }

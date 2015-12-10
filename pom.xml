@@ -1252,6 +1252,17 @@
                 <artifactId>httpclient</artifactId>
                 <version>${apache.http.version}</version>
             </dependency>
+            <!-- Removing neethi configs from webapp-->
+            <dependency>
+                <groupId>org.apache.neethi.wso2</groupId>
+                <artifactId>neethi</artifactId>
+                <version>${neethi.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.neethi</groupId>
+                <artifactId>neethi</artifactId>
+                <version>${neethi.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1548,6 +1559,10 @@
         <jsr311.version>1.1.1</jsr311.version>
         <commons.logging.version>1.2</commons.logging.version>
         <apache.http.version>4.5.1</apache.http.version>
+
+        <!-- Neethi version-->
+        <neethi.version>2.0.4</neethi.version>
+        <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
 
 	<!-- Release plugin ID for github-->
 	<project.scm.id>github-scm</project.scm.id>

@@ -181,11 +181,13 @@ var userModule = function () {
                 var defaultUserClaims = privateMethods.buildDefaultUserClaims(firstname, lastname, emailAddress);
 
                 for (var role in userRoles){
-                    if (userRoles[role] == "deviceUser" && !userManager.roleExists("deviceUser")){
+                    if (userRoles[role] == "device-admin" && !userManager.roleExists("device-admin")){
                         var permissions = {
-                            '/permission/admin/device-mgt/user/': ['ui.execute']
+                            '/permission/admin/device-mgt/user': ['ui.execute'],
+                            '/permission/admin/device-mgt/emm-admin/devices': ['ui.execute'],
+                            '/permission/admin/device-mgt/emm-admin/policies': ['ui.execute']
                         };
-                        userManager.addRole("deviceUser", ["admin"], permissions);
+                        userManager.addRole("device-admin", ["admin"], permissions);
                     }
                 }
 

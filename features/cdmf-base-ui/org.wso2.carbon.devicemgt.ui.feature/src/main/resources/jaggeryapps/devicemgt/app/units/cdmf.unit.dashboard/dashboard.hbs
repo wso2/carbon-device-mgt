@@ -7,7 +7,7 @@
                     <div>
                         <div class="tile-icon"><i class="fw fw-mobile"></i></div>
                         <div class="tile-stats">
-                            <span id="device-count">Loading...</span>
+                            <span id="device-count">{{device_count}}</span>
                         <span class="tile-stats-free">
                             <a href="#">
                                 <span class="fw-stack">
@@ -44,7 +44,7 @@
                     <div>
                         <div class="tile-icon"><i class="fw fw-user"></i></div>
                         <div class="tile-stats">
-                            <span id="user-count">Loading...</span>
+                            <span id="user-count">{{user_count}}</span>
                         <span class="tile-stats-free">
                             <a href="#">
                                 <span class="fw-stack">
@@ -81,7 +81,7 @@
                     <div>
                         <div class="tile-icon"><i class="fw fw-policy"></i></div>
                         <div class="tile-stats">
-                            <span id="policy-count">Loading...</span>
+                            <span id="policy-count">{{policy_count}}</span>
                         <span class="tile-stats-free">
                             <a href="#">
                                 <span class="fw-stack">
@@ -137,7 +137,3 @@
         </div>
     </div>
 </div>
-{{#zone "bottomJs"}}
-    {{js "js/dashboard.js"}}
-    {{js "/js/jquery.qrcode.min.js"}}
-{{/zone}}

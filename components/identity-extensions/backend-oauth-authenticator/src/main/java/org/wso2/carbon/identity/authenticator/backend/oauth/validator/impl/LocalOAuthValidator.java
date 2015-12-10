@@ -18,6 +18,7 @@
 package org.wso2.carbon.identity.authenticator.backend.oauth.validator.impl;
 
 import org.wso2.carbon.identity.authenticator.backend.oauth.OauthAuthenticatorConstants;
+import org.wso2.carbon.identity.authenticator.backend.oauth.internal.OAuthAuthenticatorDataHolder;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
 import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
@@ -43,9 +44,8 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
         accessToken.setTokenType(OauthAuthenticatorConstants.BEARER_TOKEN_TYPE);
         accessToken.setIdentifier(token);
         validationRequest.setAccessToken(accessToken);
-        OAuth2TokenValidationService validationService = new OAuth2TokenValidationService();
-        OAuth2TokenValidationResponseDTO tokenValidationResponse =  validationService.
-                findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+        OAuth2TokenValidationResponseDTO tokenValidationResponse =  OAuthAuthenticatorDataHolder.getInstance().
+                getOAuth2TokenValidationService().findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
         boolean isValid = tokenValidationResponse.isValid();
         String userName = null;
         String tenantDomain = null;

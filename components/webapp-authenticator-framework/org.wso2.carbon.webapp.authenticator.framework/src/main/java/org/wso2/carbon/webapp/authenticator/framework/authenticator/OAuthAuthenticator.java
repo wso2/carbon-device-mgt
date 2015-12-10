@@ -24,12 +24,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
-import org.wso2.carbon.apimgt.core.gateway.APITokenAuthenticator;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.*;
 import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthTokenValidationException;
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidationResponse;
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidatorFactory;
 
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -88,45 +91,32 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                 authenticationInfo.setStatus(Status.CONTINUE);
             } else {
                 String bearerToken = this.getBearerToken(request);
-                // Create a OAuth2TokenValidationRequestDTO object for validating access token
-                OAuth2TokenValidationRequestDTO dto = new OAuth2TokenValidationRequestDTO();
-                //Set the access token info
-                OAuth2TokenValidationRequestDTO.OAuth2AccessToken oAuth2AccessToken = dto.new OAuth2AccessToken();
-                oAuth2AccessToken.setTokenType(OAuthAuthenticator.BEARER_TOKEN_TYPE);
-                oAuth2AccessToken.setIdentifier(bearerToken);
-                dto.setAccessToken(oAuth2AccessToken);
                 //Set the resource context param. This will be used in scope validation.
-                OAuth2TokenValidationRequestDTO.TokenValidationContextParam
-                        resourceContextParam = dto.new TokenValidationContextParam();
-                resourceContextParam.setKey(OAuthAuthenticator.RESOURCE_KEY);
-                resourceContextParam.setValue(requestUri + ":" + requestMethod);
+                String resource = requestUri + ":" + requestMethod;
+                //Get the appropriate OAuth validator from OAuthValidatorFactory.
+                OAuth2TokenValidator oAuth2TokenValidator = OAuthValidatorFactory.getValidator();
+                OAuthValidationResponse oAuthValidationResponse = oAuth2TokenValidator.validateToken(bearerToken, resource);
 
-                OAuth2TokenValidationRequestDTO.TokenValidationContextParam[]
-                        tokenValidationContextParams =
-                        new OAuth2TokenValidationRequestDTO.TokenValidationContextParam[1];
-                tokenValidationContextParams[0] = resourceContextParam;
-                dto.setContext(tokenValidationContextParams);
-
-                OAuth2TokenValidationResponseDTO oAuth2TokenValidationResponseDTO =
-                        AuthenticatorFrameworkDataHolder.getInstance().getoAuth2TokenValidationService().validate(dto);
-                if (oAuth2TokenValidationResponseDTO.isValid()) {
-                    String username = oAuth2TokenValidationResponseDTO.getAuthorizedUser();
+                if (oAuthValidationResponse.isValid()) {
+                    String username = oAuthValidationResponse.getUserName();
                     //Remove the userstore domain from username
                     /*if (username.contains("/")) {
                         username = username.substring(username.indexOf('/') + 1);
                     }*/
                     authenticationInfo.setUsername(username);
-                    authenticationInfo.setTenantDomain(MultitenantUtils.getTenantDomain(username));
+                    authenticationInfo.setTenantDomain(oAuthValidationResponse.getTenantDomain());
                     authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username));
-                    if (oAuth2TokenValidationResponseDTO.isValid()) {
+                    if (oAuthValidationResponse.isValid()) {
                         authenticationInfo.setStatus(Status.CONTINUE);
                     }
                 } else {
-                    authenticationInfo.setMessage(oAuth2TokenValidationResponseDTO.getErrorMsg());
+                    authenticationInfo.setMessage(oAuthValidationResponse.getErrorMsg());
                 }
             }
         } catch (AuthenticationException e) {
             log.error("Failed to authenticate the incoming request", e);
+        } catch (OAuthTokenValidationException e) {
+            log.error("Failed to authenticate the incoming request due to oauth token validation error.", e);
         }
         return authenticationInfo;
     }

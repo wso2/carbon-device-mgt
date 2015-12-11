@@ -16,19 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.dynamic.client.web.app.registration.util;
+package org.wso2.carbon.dynamic.client.web.proxy.util;
 
 /**
- * Holds the constants to be used in Dynamic client web app registration component.
+ * Created by harshan on 12/10/15.
  */
-public class DynamicClientWebAppRegistrationConstants {
-
-    public final static String OAUTH_APP_DATA_REGISTRY_PATH = "/OAuth";
-    public final static String OAUTH_APP_NAME = "appName";
-    public final static String OAUTH_CLIENT_KEY = "clientKey";
-    public final static String OAUTH_CLIENT_SECRET = "clientSecret";
-    public final static String DYNAMIC_CLIENT_REQUIRED_FLAG =
-            "requireDynamicClientRegistration";
+public class Constants {
 
     public static final class ContentTypes {
         private ContentTypes() {

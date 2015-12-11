@@ -16,15 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.dynamic.client.web.app.registration.util;
+package org.wso2.carbon.dynamic.client.web.proxy.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -35,11 +34,8 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.util.EntityUtils;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
-import org.wso2.carbon.dynamic.client.registration.OAuthApplicationInfo;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
-import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientWebAppRegistrationDataHolder;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
@@ -56,12 +52,14 @@ import java.net.URISyntaxException;
  */
 public class RemoteDCRClient {
 
-    private static final Log log = LogFactory.getLog(RemoteDCRClient.class);
+    private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+    private static final String CHARSET_UTF_8 = "UTF-8";
 
-    public static OAuthApplicationInfo createOAuthApplication(RegistrationProfile registrationProfile, String host)
+    public static CloseableHttpResponse createOAuthApplication(RegistrationProfile registrationProfile)
             throws DynamicClientRegistrationException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         String clientName = registrationProfile.getClientName();
+        String host = DCRProxyUtils.getKeyManagerHost();
         try {
             // Setup the HTTPS settings to accept any certificate.
             HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
@@ -69,7 +67,7 @@ public class RemoteDCRClient {
             SchemeRegistry registry = new SchemeRegistry();
             SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
             socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
-            registry.register(new Scheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
+            registry.register(new Scheme(Constants.RemoteServiceProperties.
                                                  DYNAMIC_CLIENT_SERVICE_PROTOCOL, socketFactory, getServerHTTPSPort()));
             SingleClientConnManager mgr = new SingleClientConnManager(httpClient.getParams(), registry);
             httpClient = new DefaultHttpClient(mgr, httpClient.getParams());
@@ -77,25 +75,15 @@ public class RemoteDCRClient {
             // Set verifier
             HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
-            URI uri = new URIBuilder().setScheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
+            URI uri = new URIBuilder().setScheme(Constants.RemoteServiceProperties.
                                                          DYNAMIC_CLIENT_SERVICE_PROTOCOL).setHost(host).setPath(
-                    DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT).build();
+                    Constants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT).build();
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(registrationProfile),
-                                                   DynamicClientWebAppRegistrationConstants.ContentTypes.CONTENT_TYPE_APPLICATION_JSON,
-                                                   DynamicClientWebAppRegistrationConstants.CharSets.CHARSET_UTF8);
+            StringEntity entity = new StringEntity(gson.toJson(registrationProfile), CONTENT_TYPE_APPLICATION_JSON,
+                                                   CHARSET_UTF_8);
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setEntity(entity);
-            HttpResponse response = httpClient.execute(httpPost);
-            int status = response.getStatusLine().getStatusCode();
-                        HttpEntity responseData = response.getEntity();
-            String responseString = EntityUtils.toString(responseData, DynamicClientWebAppRegistrationConstants.
-                    CharSets.CHARSET_UTF8);
-            if (status != 201) {
-                throw new DynamicClientRegistrationException("Backend server error occurred while invoking DCR endpoint for " +
-                        "registering service-provider for web-app : " + clientName);
-            }
-            return getOAuthApplicationInfo(gson.fromJson(responseString, JsonElement.class));
+            return httpClient.execute(httpPost);
         } catch (URISyntaxException e) {
             throw new DynamicClientRegistrationException("Exception occurred while constructing the URI for invoking " +
                                                          "DCR endpoint for registering service-provider for web-app : "
@@ -110,9 +98,10 @@ public class RemoteDCRClient {
         }
     }
 
-    public static boolean deleteOAuthApplication(String user, String appName, String clientid, String host)
+    public static CloseableHttpResponse deleteOAuthApplication(String user, String appName, String clientid)
             throws DynamicClientRegistrationException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
+        String host = DCRProxyUtils.getKeyManagerHost();
         try {
             // Setup the HTTPS settings to accept any certificate.
             HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
@@ -120,7 +109,7 @@ public class RemoteDCRClient {
             SchemeRegistry registry = new SchemeRegistry();
             SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
             socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
-            registry.register(new Scheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
+            registry.register(new Scheme(Constants.RemoteServiceProperties.
                                                  DYNAMIC_CLIENT_SERVICE_PROTOCOL, socketFactory, getServerHTTPSPort()));
             SingleClientConnManager mgr = new SingleClientConnManager(httpClient.getParams(), registry);
             httpClient = new DefaultHttpClient(mgr, httpClient.getParams());
@@ -128,18 +117,14 @@ public class RemoteDCRClient {
             // Set verifier
             HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
-            URI uri = new URIBuilder().setScheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
+            URI uri = new URIBuilder().setScheme(Constants.RemoteServiceProperties.
                             DYNAMIC_CLIENT_SERVICE_PROTOCOL).setHost(host).setPath(
-                            DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT)
+                    Constants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT)
                                                            .setParameter("applicationName", appName)
                                                            .setParameter("userId", user)
                                                            .setParameter("consumerKey", clientid).build();
             HttpDelete httpDelete = new HttpDelete(uri);
-            HttpResponse response = httpClient.execute(httpDelete);
-            int status = response.getStatusLine().getStatusCode();
-            if (status == 200) {
-                return true;
-            }
+            return httpClient.execute(httpDelete);
         } catch (IOException e) {
             throw new DynamicClientRegistrationException("Connection error occurred while constructing the payload for " +
                                                 "invoking DCR endpoint for unregistering the web-app : " + appName, e);
@@ -147,14 +132,12 @@ public class RemoteDCRClient {
             throw new DynamicClientRegistrationException("Exception occurred while constructing the URI for invoking " +
                                                          "DCR endpoint for unregistering the web-app : " + appName, e);
         }
-        return false;
     }
 
     private static int getServerHTTPSPort() {
         // HTTPS port
         String mgtConsoleTransport = CarbonUtils.getManagementTransport();
-        ConfigurationContextService configContextService =
-                DynamicClientWebAppRegistrationDataHolder.getInstance().getConfigurationContextService();
+        ConfigurationContextService configContextService = DCRProxyUtils.getConfigurationContextService();
         int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
         int httpsProxyPort =
                 CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
@@ -163,23 +146,5 @@ public class RemoteDCRClient {
             port = httpsProxyPort;
         }
         return  port;
-    }
-
-    private static OAuthApplicationInfo getOAuthApplicationInfo(JsonElement jsonData) {
-        JsonObject jsonObject = jsonData.getAsJsonObject();
-        OAuthApplicationInfo oAuthApplicationInfo = new OAuthApplicationInfo();
-        JsonElement property = jsonObject.get("client_id");
-        if (property != null) {
-            oAuthApplicationInfo.setClientId(property.getAsString());
-        }
-        property = jsonObject.get("client_name");
-        if (property != null) {
-            oAuthApplicationInfo.setClientName(property.getAsString());
-        }
-        property = jsonObject.get("client_secret");
-        if (property != null) {
-            oAuthApplicationInfo.setClientSecret(property.getAsString());
-        }
-        return oAuthApplicationInfo;
     }
 }

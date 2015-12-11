@@ -29,9 +29,36 @@ var deviceModule = require("/modules/device.js").deviceModule;
 var utility = require("/modules/utility.js").utility;
 var apiWrapperUtil = require("/modules/api-wrapper-util.js").apiWrapperUtil;
 
+var responseProcessor = require('utils').response;
+
 var result;
 
-if (uriMatcher.match("/{context}/api/user/login/")) {
+if (uriMatcher.match("/{context}/api/user/authenticate")) {
+    var username = request.getParameter("username");
+    var password = request.getParameter("password");
+    //Check if a username and password is provided
+    if ((!username) || (!password)) {
+        response = responseProcessor.buildErrorResponse(response,400,'Username and Password must be provided');
+    } else {
+        try {
+            userModule.login(username, password, function (user) {
+                if (log.isDebugEnabled()) {
+                    log.debug("User Logged In : " + user);
+                }
+                utility.insertAppPermissions(userModule, "login");
+                apiWrapperUtil.setupAccessTokenPair("password", {
+                    "username": username,
+                    "password": password
+                });
+            }, function () {
+                response = responseProcessor.buildSuccessResponse(response,200,{'sessionId':session.getId()});
+            });
+        } catch (e) {
+            log.error("Exception occurred while a user tried to login to MDM", e);
+            response = responseProcessor.buildErrorResponse(response,401,'username/password is incorrect');
+        }
+    }
+} else if (uriMatcher.match("/{context}/api/user/login/")) {
     username = request.getParameter("username");
     password = request.getParameter("password");
     try {

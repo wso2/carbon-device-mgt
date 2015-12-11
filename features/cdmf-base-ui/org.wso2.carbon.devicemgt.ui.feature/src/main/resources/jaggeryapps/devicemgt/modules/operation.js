@@ -55,13 +55,13 @@ var operationModule = function () {
 
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, value) {
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation + "/" + ((value == 1) ? "ON" : "OFF");
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
+        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
         return post(endPoint, {}, JSON.parse(header), "json");
     };
 
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
+        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
         var result = get(endPoint, {}, JSON.parse(header), "json");
         if (result.data) {
             var values = result.data.sensorValue.split(',');

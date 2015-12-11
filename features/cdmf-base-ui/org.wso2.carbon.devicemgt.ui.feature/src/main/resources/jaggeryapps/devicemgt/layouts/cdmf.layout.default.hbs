@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{#defineZone "title"}}WSO2 Template{{/defineZone}}</title>
+    {{defineZone "favicon"}}
+    {{defineZone "topCss"}}
+    {{defineZone "topJs"}}
+</head>
+<body>
+
+<!--modal-->
+<div class="wr-modalpopup">
+    <div class="modalpopup-container">
+        <div class="modalpopup-close-btn" onclick="hidePopup();">
+            <span class="fw-stack">
+                <i class="fw fw-ring fw-stack-2x"></i>
+                <i class="fw fw-left-arrow fw-stack-1x"></i>
+            </span>
+            GO BACK
+        </div>
+        <div class="modalpopup-content"><!-- dynamic content --></div>
+    </div>
+    <div class="modalpopup-bg"></div>
+</div>
+<!--modal-->
+
+<!-- header -->
+{{defineZone "header"}}
+<!-- /header -->
+
+<!-- navbars -->
+<div class="navbar-wrapper">
+    {{defineZone "navbars"}}
+</div>
+<!-- /navbars -->
+
+<!-- sidepanes -->
+{{defineZone "sidePanes"}}
+<!-- /sidepanes -->
+
+<!-- page-content-wrapper -->
+<div class="page-content-wrapper">
+    {{defineZone "contentTitle"}}
+    <div class="container-fluid body-wrapper">
+        {{defineZone "content"}}
+    </div>
+</div>
+<!-- /page-content-wrapper -->
+
+<!-- footer -->
+<footer class="footer">
+    <div class="container-fluid">
+        {{defineZone "footer"}}
+    </div>
+</footer>
+<!-- /footer -->
+
+{{defineZone "bottomJs"}}
+</body>
+</html>

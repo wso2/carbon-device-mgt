@@ -21,21 +21,14 @@ var operationModule = function () {
 
     var constants = require("constants.js");
     var utility = require("utility.js").utility;
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
-    log.info("Kelawenawenda yanneee ######################");
-    var hostname = utility.getIoTServerConfig("IoTMgtHost");
-    var carbonHttpsServletTransport = "https://" + hostname + ":9443";
-
-    log.info("Kelawenawoooo");
-
-    var server = require('store').server;
-    var user = server.current(session);
+    var user = session.get(constants.USER_SESSION_KEY);
 
     var publicMethods = {};
     var privateMethods = {};
 
     publicMethods.getControlOperations = function (deviceType) {
-        log.info("Culprit 1 ###################### 1");
         switch (deviceType) {
             case "virtual_firealarm":
                 return [{name: "Alarm Status", description: "0:off 1:on", operation: "bulb"}];
@@ -45,7 +38,6 @@ var operationModule = function () {
     };
 
     publicMethods.getMonitorOperations = function (deviceType) {
-        log.info("Culprit 1 ###################### 2");
         switch (deviceType) {
             case "virtual_firealarm":
                 return [{name: "Temperature", operation: "readtemperature"}];
@@ -62,14 +54,14 @@ var operationModule = function () {
     };
 
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, value) {
-        var endPoint = carbonHttpsServletTransport + '/' + deviceType + "/controller/" + operation + "/" + ((value == 1) ? "ON" : "OFF");
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
+        var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation + "/" + ((value == 1) ? "ON" : "OFF");
+        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
         return post(endPoint, {}, JSON.parse(header), "json");
     };
 
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {
-        var endPoint = carbonHttpsServletTransport + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
+        var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
+        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
         var result = get(endPoint, {}, JSON.parse(header), "json");
         if (result.data) {
             var values = result.data.sensorValue.split(',');

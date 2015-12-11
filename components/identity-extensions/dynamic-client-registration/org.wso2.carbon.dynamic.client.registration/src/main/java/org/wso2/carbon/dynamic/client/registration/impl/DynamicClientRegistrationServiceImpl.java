@@ -27,6 +27,8 @@ import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.dynamic.client.registration.*;
 import org.wso2.carbon.dynamic.client.registration.internal.DynamicClientRegistrationDataHolder;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
+import org.wso2.carbon.dynamic.client.registration.util.DCRConstants;
+import org.wso2.carbon.dynamic.client.registration.util.DynamicClientRegistrationUtil;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.*;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
@@ -94,15 +96,15 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
 
         try {
             JSONObject jsonObject = new JSONObject(info.getJsonString());
-            if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS)) {
-                oAuthApplicationInfo.addParameter(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS,
+            if (jsonObject.has(DCRConstants.ClientMetadata.OAUTH_REDIRECT_URIS)) {
+                oAuthApplicationInfo.addParameter(DCRConstants.ClientMetadata.OAUTH_REDIRECT_URIS,
                                                   jsonObject
-                                                          .get(ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS));
+                                                          .get(DCRConstants.ClientMetadata.OAUTH_REDIRECT_URIS));
             }
 
-            if (jsonObject.has(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT)) {
-                oAuthApplicationInfo.addParameter(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT, jsonObject
-                                                          .get(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT));
+            if (jsonObject.has(DCRConstants.ClientMetadata.OAUTH_CLIENT_GRANT)) {
+                oAuthApplicationInfo.addParameter(DCRConstants.ClientMetadata.OAUTH_CLIENT_GRANT, jsonObject
+                                                          .get(DCRConstants.ClientMetadata.OAUTH_CLIENT_GRANT));
             }
         } catch (JSONException e) {
             throw new DynamicClientRegistrationException(
@@ -160,7 +162,6 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
             }
 
             ServiceProvider existingServiceProvider = appMgtService.getServiceProvider(applicationName, tenantDomain);
-
             if (existingServiceProvider == null) {
                 appMgtService.createApplication(serviceProvider, tenantDomain, userName);
             }
@@ -267,9 +268,9 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
             oAuthApplicationInfo.setClientName(createdApp.getApplicationName());
 
             oAuthApplicationInfo.addParameter(
-                    ApplicationConstants.ClientMetadata.OAUTH_REDIRECT_URIS, createdApp.getCallbackUrl());
+                    DCRConstants.ClientMetadata.OAUTH_REDIRECT_URIS, createdApp.getCallbackUrl());
             oAuthApplicationInfo.addParameter(
-                    ApplicationConstants.ClientMetadata.OAUTH_CLIENT_GRANT, createdApp.getGrantTypes());
+                    DCRConstants.ClientMetadata.OAUTH_CLIENT_GRANT, createdApp.getGrantTypes());
 
             return oAuthApplicationInfo;
         } catch (IdentityApplicationManagementException e) {

@@ -1247,9 +1247,12 @@
                 <artifactId>gson</artifactId>
                 <version>${google.gson.version}</version>
             </dependency>
-
-            <!-- Removing neethi configs-->
-
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${apache.http.version}</version>
+            </dependency>
+            <!-- Removing neethi configs from webapp-->
             <dependency>
                 <groupId>org.apache.neethi.wso2</groupId>
                 <artifactId>neethi</artifactId>
@@ -1448,16 +1451,6 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-        <repository>
-            <id>wso2-staging</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/repositories/orgwso2carbonidentity-165/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
     </repositories>
 
 
@@ -1555,6 +1548,7 @@
         <google.gson.version>2.3.1</google.gson.version>
         <jsr311.version>1.1.1</jsr311.version>
         <commons.logging.version>1.2</commons.logging.version>
+        <apache.http.version>4.5.1</apache.http.version>
 
         <!-- Neethi version-->
         <neethi.version>2.0.4</neethi.version>

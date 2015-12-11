@@ -15,19 +15,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.dynamic.client.web;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+package org.wso2.carbon.dynamic.client.web.proxy;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Path("/connect")
-public interface ConfigurationService {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-    @GET
-    @Path("/register")
-    Response getProfile(@PathParam("client_id") String clientId);
+import javax.ws.rs.POST;
 
+/**
+ * Created by harshan on 12/10/15.
+ */
+public class OAuthEndpointProxy {
+
+    private static final Log log = LogFactory.getLog(OAuthEndpointProxy.class);
+
+    @POST
+    public String getAccessToken() {
+        return "";
+    }
 }

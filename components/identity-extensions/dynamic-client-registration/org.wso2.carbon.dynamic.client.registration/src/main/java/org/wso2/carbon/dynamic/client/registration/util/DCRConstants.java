@@ -15,18 +15,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.dynamic.client.registration;
+package org.wso2.carbon.dynamic.client.registration.util;
 
 /**
  * This class holds the constants used by DynamicClientRegistration component.
  */
-public final class ApplicationConstants {
+public final class DCRConstants {
 
     public static class ClientMetadata {
         private ClientMetadata() {
             throw new AssertionError();
         }
-        //todo refactor names
+
         public static final String OAUTH_CLIENT_ID = "client_id"; //this means consumer key
         public static final String OAUTH_CLIENT_SECRET = "client_secret";
         public static final String OAUTH_REDIRECT_URIS = "redirect_uris";

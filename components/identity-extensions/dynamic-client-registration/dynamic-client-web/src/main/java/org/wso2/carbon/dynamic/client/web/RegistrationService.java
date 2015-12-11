@@ -63,7 +63,7 @@ public interface RegistrationService {
      * @return Status 200 if success.
      */
     @DELETE
-    public Response unregister(@QueryParam("applicationName") String applicationName,
+    Response unregister(@QueryParam("applicationName") String applicationName,
                                @QueryParam("userId") String userId,
                                @QueryParam("consumerKey") String consumerKey);
 

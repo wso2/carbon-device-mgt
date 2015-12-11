@@ -66,6 +66,7 @@
                             org.wso2.carbon.identity.application.common,
                             org.wso2.carbon.identity.application.common.model,
                             org.wso2.carbon.identity.application.mgt,
+                            org.wso2.carbon.identity.application.mgt.stub,
                             org.wso2.carbon.identity.base,
                             org.wso2.carbon.identity.oauth,
                             org.wso2.carbon.identity.oauth.dto,

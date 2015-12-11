@@ -22,8 +22,11 @@ import com.google.gson.stream.JsonReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.core.security.AuthenticatorsConfiguration;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
+import org.wso2.carbon.dynamic.client.registration.OAuthApplicationInfo;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
+import org.wso2.carbon.dynamic.client.web.app.registration.dto.DynamicClientRegistrationSettings;
 import org.wso2.carbon.dynamic.client.web.app.registration.dto.OAuthAppDetails;
 import org.wso2.carbon.dynamic.client.web.app.registration.dto.JaggeryOAuthConfigurationSettings;
 import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientWebAppRegistrationDataHolder;
@@ -114,7 +117,7 @@ public class DynamicClientWebAppRegistrationUtil {
 
             Resource resource = DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
             resource.setContent(writer.toString());
-            resource.setMediaType(DynamicClientWebAppRegistrationConstants.ContentTypes.MEDIA_TYPE_XML);
+            resource.setMediaType(DynamicClientWebAppRegistrationConstants.ContentTypes.CONTENT_TYPE_XML);
             String resourcePath = DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
                     oAuthAppDetails.getClientName();
             status = DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);
@@ -315,4 +318,65 @@ public class DynamicClientWebAppRegistrationUtil {
     public static String replaceInvalidChars(String username) {
         return username.replaceAll("@","_AT_");
     }
+
+    private static DynamicClientRegistrationSettings getDynamicClientRegistrationSettings()
+            throws IllegalArgumentException {
+        AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
+        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
+                                                   getAuthenticatorConfig(DynamicClientWebAppRegistrationConstants.
+                                                                            ConfigurationProperties.AUTHENTICATOR_NAME);
+        DynamicClientRegistrationSettings dynamicClientRegistrationSettings = new DynamicClientRegistrationSettings();
+        if (authenticatorConfig != null && authenticatorConfig.getParameters() != null) {
+            dynamicClientRegistrationSettings.setIsRemote(Boolean.parseBoolean(
+                    authenticatorConfig.getParameters().get(
+                            DynamicClientWebAppRegistrationConstants.ConfigurationProperties.
+                                                                    AUTHENTICATOR_CONFIG_IS_REMOTE)));
+            dynamicClientRegistrationSettings.setHost(authenticatorConfig.getParameters().
+                    get(DynamicClientWebAppRegistrationConstants.ConfigurationProperties.AUTHENTICATOR_CONFIG_HOST_URL));
+
+        }else{
+            throw new IllegalArgumentException("Configuration parameters need to be defined in Authenticators.xml.");
+        }
+        return dynamicClientRegistrationSettings;
+    }
+
+    //This method will choose the best DynamicClientRegistrationService based on server configurations and
+    //registers OAuth client.
+    public static OAuthApplicationInfo registerOAuthApplication(RegistrationProfile registrationProfile)
+            throws DynamicClientRegistrationException {
+        DynamicClientRegistrationSettings dynamicClientRegistrationSettings = getDynamicClientRegistrationSettings();
+        if (dynamicClientRegistrationSettings.isRemote()) {
+            return RemoteDCRClient.createOAuthApplication(registrationProfile,
+                                                          getHostName(dynamicClientRegistrationSettings.getHost()));
+        } else {
+            return DynamicClientWebAppRegistrationDataHolder.getInstance().
+                    getDynamicClientRegistrationService().registerOAuthApplication(registrationProfile);
+        }
+    }
+
+    //This method will choose the best DynamicClientRegistrationService based on server configurations and
+    //unregisters OAuth client.
+    public static boolean unregisterOAuthApplication(String owner, String clientName, String clientId)
+            throws DynamicClientRegistrationException {
+        DynamicClientRegistrationSettings dynamicClientRegistrationSettings = getDynamicClientRegistrationSettings();
+        if (dynamicClientRegistrationSettings.isRemote()) {
+            return RemoteDCRClient.deleteOAuthApplication(owner, clientName, clientId,
+                                                          getHostName(dynamicClientRegistrationSettings.getHost()));
+        } else {
+            return DynamicClientWebAppRegistrationDataHolder.getInstance().
+                    getDynamicClientRegistrationService().unregisterOAuthApplication(owner, clientName, clientId);
+        }
+    }
+
+    private static String getHostName(String host) {
+        if (host != null && !host.isEmpty()) {
+            if (host.contains("https://")) {
+                return host.replace("https://","");
+            }
+        } else {
+            throw new IllegalArgumentException("Remote Host parameter must defined in Authenticators.xml.");
+        }
+        return null;
+    }
+
 }

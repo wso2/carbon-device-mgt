@@ -15,18 +15,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.dynamic.client.web.impl;
 
-import org.wso2.carbon.dynamic.client.web.ConfigurationService;
+package org.wso2.carbon.dynamic.client.web.app.registration.dto;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
+/**
+ * Represents Configuration setting related to OAuth in authenticators.xml.
+ */
+public class DynamicClientRegistrationSettings {
 
-public class ConfigurationServiceImpl implements ConfigurationService {
+    private boolean isRemote;
+    private String host;
 
-    @Override
-    public Response getProfile(@PathParam("client_id") String clientId) {
-        return null;
+    public boolean isRemote() {
+        return isRemote;
     }
 
+    public void setIsRemote(boolean isRemote) {
+        this.isRemote = isRemote;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 }

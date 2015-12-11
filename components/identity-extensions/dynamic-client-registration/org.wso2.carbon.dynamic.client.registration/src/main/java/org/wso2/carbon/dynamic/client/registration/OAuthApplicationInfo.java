@@ -18,6 +18,7 @@
 package org.wso2.carbon.dynamic.client.registration;
 
 import org.json.simple.JSONObject;
+import org.wso2.carbon.dynamic.client.registration.util.DCRConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,10 +88,10 @@ public class OAuthApplicationInfo {
 
     public String toString() {
         JSONObject obj = new JSONObject();
-        obj.put(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_ID, this.getClientId());
-        obj.put(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_NAME, this.getClientName());
-        obj.put(ApplicationConstants.ClientMetadata.OAUTH_CALLBACK_URIS, this.getCallBackURL());
-        obj.put(ApplicationConstants.ClientMetadata.OAUTH_CLIENT_SECRET, this.getClientSecret());
+        obj.put(DCRConstants.ClientMetadata.OAUTH_CLIENT_ID, this.getClientId());
+        obj.put(DCRConstants.ClientMetadata.OAUTH_CLIENT_NAME, this.getClientName());
+        obj.put(DCRConstants.ClientMetadata.OAUTH_CALLBACK_URIS, this.getCallBackURL());
+        obj.put(DCRConstants.ClientMetadata.OAUTH_CLIENT_SECRET, this.getClientSecret());
         return obj.toString();
     }
 

@@ -27,8 +27,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface RegistrationService {
 
     enum ErrorCode {
@@ -52,6 +50,8 @@ public interface RegistrationService {
      * @return Status 200 if success including consumerKey and consumerSecret.
      */
     @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     Response register(RegistrationProfile profile);
 
     /**
@@ -63,6 +63,8 @@ public interface RegistrationService {
      * @return Status 200 if success.
      */
     @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     Response unregister(@QueryParam("applicationName") String applicationName,
                                @QueryParam("userId") String userId,
                                @QueryParam("consumerKey") String consumerKey);

@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
     "uri": "/login",
-    "extends": "cdmf.page.sign-in"
+    "extends": "uuf.page.sign-in"
 }

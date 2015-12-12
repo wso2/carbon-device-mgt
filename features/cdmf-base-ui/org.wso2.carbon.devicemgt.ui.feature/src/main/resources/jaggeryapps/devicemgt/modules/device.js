@@ -302,6 +302,7 @@ deviceModule = function () {
                 }
                 ,
                 function (responsePayload) {
+                    log.error(responsePayload);
                     var response = {};
                     response["status"] = "error";
                     return response;

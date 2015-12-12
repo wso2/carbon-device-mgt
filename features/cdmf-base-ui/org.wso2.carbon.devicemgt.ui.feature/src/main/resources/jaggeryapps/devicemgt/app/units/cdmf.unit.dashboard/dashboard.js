@@ -18,14 +18,14 @@
 
 function onRequest(context) {
 
-    var userModule = require("/modules/user.js").userModule;
-    var constants = require("/modules/constants.js");
+    var userModule = require("/app/modules/user.js").userModule;
+    var constants = require("/app/modules/constants.js");
     var permissions = userModule.getUIPermissions();
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     context.permissions = permissions;
     context["enrollmentURL"] = devicemgtProps.enrollmentURL;
-    var deviceModule = require("/modules/device.js").deviceModule;
-    var policyModule = require("../modules/policy.js").policyModule;
+    var deviceModule = require("/app/modules/device.js").deviceModule;
+    var policyModule = require("/app/modules/policy.js").policyModule;
 
     context.device_count = deviceModule.getOwnDevicesCount();
     context.user_count = userModule.getUsers()["content"].length;

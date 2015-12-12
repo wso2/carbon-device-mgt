@@ -1,6 +1,6 @@
 function onRequest (context) {
     // var log = new Log("operation-bar.js");
-    var operationModule = require("../modules/operation.js").operationModule;
+    var operationModule = require("/app/modules/operation.js").operationModule;
     var control_operations = operationModule.getControlOperations("virtual_firealarm");
     var monitor_operations = JSON.stringify(operationModule.getMonitorOperations("virtual_firealarm"));
 

@@ -24,7 +24,7 @@
                                 </span>
                                 View
                             </a>
-                            <a href="{{@app.context}}/enroll">
+                            <a href="{{@app.context}}/device/enroll">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
                                     <i class="fw fw-add fw-stack-1x"></i>
@@ -111,9 +111,9 @@
                 </div>
             </div>
         </div>
-        {{else}}
+    {{else}}
         Permission denied
-        {{/if}}
+    {{/if}}
 
 </div>
 <div id="qr-code-modal" data-enrollment-url="{{enrollmentURL}}" class="hidden">

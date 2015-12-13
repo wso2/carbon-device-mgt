@@ -44,6 +44,12 @@ var operationModule = function () {
                 return [
                     {name: "Battery", operation: "readbattery"},
                     {name: "gps", operation: "readgps"},
+                    {name: "Gyroscope", operation: "readgyroscope"},
+                    {name: "Accelerometer", operation: "readaccelerometer"},
+                    {name: "Gravity", operation: "readgravity"},
+                    {name: "Rotation", operation: "readrotation"},
+                    {name: "Pressure", operation: "readpressure"},
+                    {name: "Proximity", operation: "readproximity"},
                     {name: "Light", operation: "readlight"},
                     {name: "Magnetic", operation: "readmagnetic"}
                 ];

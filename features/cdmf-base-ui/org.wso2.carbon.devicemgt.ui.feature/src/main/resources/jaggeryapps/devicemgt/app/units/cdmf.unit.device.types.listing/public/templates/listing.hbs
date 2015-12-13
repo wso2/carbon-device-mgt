@@ -1,27 +1,20 @@
-{{#each deviceTypes}}
-    {{deviceMap this}}
-    <tr data-type="selectable" data-deviceid="{{id}}" data-devicetype="{{name}}">
-        <td class="remove-padding icon-only content-fill">
-            <div class="thumbnail icon">
-                {{#isMobile name}}
-                    <i class="square-element text fw fw-mobile"></i>
-                {{/isMobile}}
-                {{#isNotMobile name}}
-                    <img class="square-element text fw " src="{{../../imageLocation}}{{name}}.type-view/images/thumb.png" />
-                {{/isNotMobile}}
-            </div>
-        </td>
-        <td class="fade-edge remove-padding-top" data-search="{{name}}" data-display="{{name}}"
-            data-grid-label="Type">{{name}}</td>
-        <td class="text-right content-fill text-left-on-grid-view no-wrap">
-            <a href="{{../appContext}}/device/{{name}}/enroll"
-               data-click-event="remove-form" class="btn padding-reduce-on-grid-view">
-                                <span class="fw-stack">
-                                    <i class="fw fw-ring fw-stack-2x"></i>
-                                    <i class="fw fw-view fw-stack-1x"></i>
-                                </span>
-                <span class="hidden-xs hidden-on-grid-view">View</span>
-            </a>
-        </td>
-    </tr>
-{{/each}}
+<tr data-type="selectable" data-deviceid="{{deviceTypeId}}" data-devicetype="{{deviceTypeName}}">
+    <td class="remove-padding icon-only content-fill">
+        <div class="thumbnail icon">
+                <!--<i class="square-element text fw fw-mobile"></i>-->
+                <img class="square-element text fw " src="{{imageLocation}}{{deviceTypeName}}.type-view/images/thumb.png" />
+        </div>
+    </td>
+    <td class="fade-edge remove-padding-top" data-search="{{deviceTypeLabel}}" data-display="{{deviceTypeLabel}}"
+        data-grid-label="Type">{{deviceTypeLabel}}</td>
+    <td class="text-right content-fill text-left-on-grid-view no-wrap">
+        <a href="{{appContext}}/device/{{deviceTypeName}}/enroll"
+           data-click-event="remove-form" class="btn padding-reduce-on-grid-view">
+                            <span class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-view fw-stack-1x"></i>
+                            </span>
+            <span class="hidden-xs hidden-on-grid-view">View</span>
+        </a>
+    </td>
+</tr>

@@ -22,31 +22,6 @@
     var validateAndReturn = function (value) {
         return (value == undefined || value == null) ? "Unspecified" : value;
     };
-    Handlebars.registerHelper("deviceMap", function (device) {
-        device.owner = validateAndReturn(device.owner);
-        device.ownership = validateAndReturn(device.ownership);
-        var arr = device.properties;
-        if (arr){
-            device.properties = arr.reduce(function (total, current) {
-                total[current.name] = validateAndReturn(current.value);
-                return total;
-            }, {});
-        }
-    });
-    Handlebars.registerHelper('isMobile', function (lvalue, options) {
-        if( lvalue=='android' || lvalue=='windows' || lvalue=='ios' ) {
-            return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
-    });
-    Handlebars.registerHelper('isNotMobile', function (lvalue, options) {
-        if( lvalue=='android' || lvalue=='windows' || lvalue=='ios' ) {
-            return options.inverse(this);
-        } else {
-            return options.fn(this);
-        }
-    });
 })();
 
 /*
@@ -150,37 +125,47 @@ function loadDevices(searchType, searchParam){
     var deviceListingSrc = deviceListing.attr("src");
     var imageResource = deviceListing.data("image-resource");
     var currentUser = deviceListing.data("currentUser");
-    $.template("device-listing", deviceListingSrc, function (template) {
-        var serviceURL="/common/device_manager/device/type/all";
-        var successCallback = function (data) {
-            data = JSON.parse(data);
+
+    $('#ast-container').html("");
+
+    if(deviceTypesList.length > 0){
+        for (var i = 0; i < deviceTypesList.length; i++) {
             var viewModel = {};
-            viewModel.deviceTypes = data;
             viewModel.imageLocation = imageResource;
             viewModel.appContext = clientJsAppContext;
-            if(data.length > 0){
-                var content = template(viewModel);
-                $("#ast-container").html(content);
-                /*
-                 * On device checkbox select add parent selected style class
-                 */
-                $(deviceCheckbox).click(function () {
-                    addDeviceSelectedClass(this);
-                });
-            } else {
-                $('#device-grid').addClass('hidden');
-                $('#device-listing-status-msg').text('No device is available to be displayed.');
-
+            viewModel.deviceTypeName = deviceTypesList[i].deviceTypeName;
+            viewModel.deviceTypeId = deviceTypesList[i].deviceTypeId;
+            viewModel.deviceTypeLabel = deviceTypesList[i].deviceTypeLabel;
+            var isLast = (i == deviceTypesList.length - 1)? true: false;
+            if(deviceTypesList[i].hasCustTemplate){
+                var templateSrc = clientJsAppContext + "/public/cdmf.unit.device.type." + deviceTypesList[i].deviceTypeName + ".type-view/templates/listing.hbs";
+                compileTemplate(viewModel, templateSrc, isLast);
+            }else{
+                compileTemplate(viewModel, deviceListingSrc, isLast);
             }
+        }
+    } else {
+        $('#device-grid').addClass('hidden');
+        $('#device-listing-status-msg').text('No device is available to be displayed.');
+    }
+
+    $(".icon .text").res_text(0.2);
+
+    /*
+     * On device checkbox select add parent selected style class
+     */
+    $(deviceCheckbox).click(function () {
+        addDeviceSelectedClass(this);
+    });
+
+}
+
+function compileTemplate(viewModel, templateSrc, isLast){
+    $.template("device-listing", templateSrc, function (template) {
+        $("#ast-container").html($("#ast-container").html() + template(viewModel));
+        if(isLast){
             $('#device-grid').datatables_extended();
-            $(".icon .text").res_text(0.2);
-
-
-        };
-        invokerUtil.get(serviceURL,
-            successCallback, function(message){
-                console.log(message);
-            });
+        }
     });
 }
 

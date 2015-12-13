@@ -164,7 +164,7 @@ function compileTemplate(viewModel, templateSrc, isLast){
     $.template("device-listing", templateSrc, function (template) {
         $("#ast-container").html($("#ast-container").html() + template(viewModel));
         if(isLast){
-            $('#device-grid').datatables_extended();
+            $('#device-grid').datatables_extended({"bFilter": false});
         }
     });
 }

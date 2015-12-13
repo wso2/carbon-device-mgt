@@ -19,8 +19,8 @@
 var operationModule = function () {
     var log = new Log("modules/operation.js");
 
-    var constants = require("constants.js");
-    var utility = require("utility.js").utility;
+    var constants = require("modules/constants.js");
+    var utility = require("modules/utility.js").utility;
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
     var user = session.get(constants.USER_SESSION_KEY);
@@ -46,6 +46,12 @@ var operationModule = function () {
                     {name: "Battery", operation: "readbattery"},
                     {name: "gps", operation: "readgps"},
                     {name: "Light", operation: "readlight"},
+                    {name: "Rotation", operation: "readrotation"},
+                    {name: "Gyroscope", operation: "readgyroscope"},
+                    {name: "Gravity", operation: "readgravity"},
+                    {name: "Pressure", operation: "readpressure"},
+                    {name: "Proximity", operation: "readproximity"},
+                    {name: "Accelerometer", operation: "readaccelerometer"},
                     {name: "Magnetic", operation: "readmagnetic"}
                 ];
             default:

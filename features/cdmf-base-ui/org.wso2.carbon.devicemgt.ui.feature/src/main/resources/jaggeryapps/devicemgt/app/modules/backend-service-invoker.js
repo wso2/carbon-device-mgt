@@ -27,8 +27,8 @@ var backendServiceInvoker = function () {
     var TOKEN_EXPIRED = "Access token has expired";
     var TOKEN_INVALID = "Invalid input. Access token validation failed";
 
-    var constants = require("/modules/constants.js");
-    var tokenUtil = require("/modules/api-wrapper-util.js").apiWrapperUtil;
+    var constants = require("/app/modules/constants.js");
+    var tokenUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
     var log = new Log("modules/backend-service-invoker.js");
 
     /**
@@ -41,6 +41,7 @@ var backendServiceInvoker = function () {
      */
     function initiateXMLHTTPRequest(method, url, payload, successCallback, errorCallback) {
         var execute = function (count) {
+            log.info("----url" + url);
             var xmlHttpRequest = new XMLHttpRequest();
             xmlHttpRequest.open(method, url);
             xmlHttpRequest.setRequestHeader(constants.CONTENT_TYPE_IDENTIFIER, constants.APPLICATION_JSON);

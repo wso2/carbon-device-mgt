@@ -17,8 +17,8 @@
  */
 
 function onRequest(context){
-    var userModule = require("/modules/user.js").userModule;
-    var constants = require("/modules/constants.js");
+    var userModule = require("/app/modules/user.js").userModule;
+    var constants = require("/app/modules/constants.js");
     var permissions = [];
     var currentUser = session.get(constants.USER_SESSION_KEY);
     if (currentUser){
@@ -31,7 +31,7 @@ function onRequest(context){
         }
         context.permissions = stringify(permissions);
         context.currentUser = currentUser;
-        var deviceModule = require("/modules/device.js").deviceModule;
+        var deviceModule = require("/app/modules/device.js").deviceModule;
         var deviceCount = deviceModule.getOwnDevicesCount();
         if (deviceCount > 0){
             context.deviceCount = deviceCount;

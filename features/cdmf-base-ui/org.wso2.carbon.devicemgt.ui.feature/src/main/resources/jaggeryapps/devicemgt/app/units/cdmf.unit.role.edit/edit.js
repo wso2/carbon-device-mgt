@@ -5,7 +5,7 @@
  * @returns {*} A context object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
-    var userModule = require("/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/user.js")["userModule"];
 
     var uri = request.getRequestURI();
     var uriMatcher = new URIMatcher(String(uri));

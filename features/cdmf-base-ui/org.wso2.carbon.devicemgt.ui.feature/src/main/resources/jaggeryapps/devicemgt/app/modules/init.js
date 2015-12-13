@@ -16,12 +16,14 @@
  * under the License.
  */
 
-function onRequest(context) {
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var carbonUser = session.get(constants.USER_SESSION_KEY);
-    if (carbonUser){
-        context.permissions = userModule.getUIPermissions();
-    }
-    return context;
-}
+var carbonModule = require("carbon");
+var devicemgtProps = require("/app/conf/devicemgt-props.js").config();
+var carbonServer = new carbonModule.server.Server({
+    tenanted: true,
+    url: devicemgtProps["httpsURL"] + "/admin"
+});
+application.put("carbonServer", carbonServer);
+
+var userModule = require("/app/modules/user.js")["userModule"];
+var utility = require("/app/modules/utility.js")["utility"];
+utility.insertAppPermissions(userModule, "init");

@@ -19,7 +19,7 @@
 var config = function () {
     var conf = application.get("PINCH_CONFIG");
     if (!conf) {
-        var pinch = require('/modules/pinch.min.js').pinch;
+        var pinch = require('/app/modules/pinch.min.js').pinch;
         var server = require('carbon').server;
         var config = require('/app/conf/config.json');
         pinch(config, /^/, function (path, key, value) {

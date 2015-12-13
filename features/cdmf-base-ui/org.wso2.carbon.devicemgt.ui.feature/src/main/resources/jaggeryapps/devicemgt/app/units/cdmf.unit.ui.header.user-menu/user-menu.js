@@ -17,7 +17,7 @@
  */
 
 function onRequest(context) {
-    var constants = require("/modules/constants.js");
+    var constants = require("/app/modules/constants.js");
     var user = session.get(constants.USER_SESSION_KEY);
     if (user) {
         var devicemgtProps = require('/app/conf/devicemgt-props.js').config();

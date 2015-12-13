@@ -23,7 +23,7 @@
  * @returns {*} A context object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
-    var userModule = require("/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/user.js")["userModule"];
     var response = userModule.getRoles();
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     context["charLimit"] = devicemgtProps.usernameLength;

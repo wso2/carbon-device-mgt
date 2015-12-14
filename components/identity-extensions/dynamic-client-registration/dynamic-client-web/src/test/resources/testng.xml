@@ -18,11 +18,6 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="MDM-windows-initializer">
+<suite name="DCR-Tests">
     <parameter name="useDefaultListeners" value="false"/>
-
-    <test name="Windows Unit Tests" preserve-order="true">
-        <classes>
-        </classes>
-    </test>
 </suite>

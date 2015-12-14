@@ -56,7 +56,27 @@
                             !org.wso2.carbon.dynamic.client.web.app.registration.internal,
                             org.wso2.carbon.dynamic.client.web.app.registration.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>
+                            javax.xml.bind.*,
+                            com.google.*,
+                            javax.net.ssl,
+                            javax.servlet,
+                            org.apache.axis2.context,
+                            org.apache.catalina,
+                            org.apache.catalina.core,
+                            org.apache.commons.*,
+                            org.apache.http,
+                            org.apache.http.*,
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.core,
+                            org.wso2.carbon.core.security,
+                            org.wso2.carbon.dynamic.client.*,
+                            org.wso2.carbon.registry.*,
+                            org.wso2.carbon.user.*,
+                            org.wso2.carbon.utils
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -114,6 +134,14 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 </project>

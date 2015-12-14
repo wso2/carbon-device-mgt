@@ -19,26 +19,16 @@
 package org.wso2.carbon.dynamic.client.web.proxy.util;
 
 /**
- * Created by harshan on 12/10/15.
+ * Holds the constants used by DCR proxy app.
  */
 public class Constants {
-
-    public static final class ContentTypes {
-        private ContentTypes() {
-            throw new AssertionError();
-        }
-
-        public static final String CONTENT_TYPE_ANY = "*/*";
-        public static final String CONTENT_TYPE_XML = "application/xml";
-        public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
-    }
 
     public static final class CharSets {
         private CharSets() {
             throw new AssertionError();
         }
 
-        public static final String CHARSET_UTF8 = "UTF8";
+        public static final String CHARSET_UTF_8 = "UTF-8";
     }
 
     public static class ConfigurationProperties {
@@ -47,7 +37,6 @@ public class Constants {
         }
 
         public static final String AUTHENTICATOR_NAME = "OAuthAuthenticator";
-        public static final String AUTHENTICATOR_CONFIG_IS_REMOTE = "isRemote";
         public static final String AUTHENTICATOR_CONFIG_HOST_URL = "hostURL";
     }
 
@@ -57,6 +46,7 @@ public class Constants {
         }
 
         public static final String DYNAMIC_CLIENT_SERVICE_ENDPOINT = "/dynamic-client-web/register";
+        public static final String OAUTH2_TOKEN_ENDPOINT = "/oauth2/token";
         public static final String DYNAMIC_CLIENT_SERVICE_PROTOCOL = "https";
     }
 }

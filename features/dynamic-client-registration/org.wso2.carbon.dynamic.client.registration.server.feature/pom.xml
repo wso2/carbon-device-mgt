@@ -105,15 +105,6 @@
                                     <outputDirectory>${basedir}/src/main/resources/</outputDirectory>
                                     <destFileName>dynamic-client-web.war</destFileName>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.mdm</groupId>
-                                    <artifactId>dynamic-client-web-proxy</artifactId>
-                                    <version>${carbon.device.mgt.version}</version>
-                                    <type>war</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${basedir}/src/main/resources/</outputDirectory>
-                                    <destFileName>dynamic-client-web-proxy.war</destFileName>
-                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>

@@ -37,7 +37,7 @@
     </jaxrs:server>
 
     <!-- OAuth Service Proxy Endpoint -->
-    <jaxrs:server id="OAuthService" address="/oauth">
+    <jaxrs:server id="OAuthService" address="/token">
         <jaxrs:serviceBeans>
             <ref bean="OAuthServiceBean"/>
         </jaxrs:serviceBeans>

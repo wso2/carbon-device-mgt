@@ -1,3 +1,2 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.dynamic.client.registration.server_${feature.version}/dynamic-client-web.war,target:${installFolder}/../../deployment/server/webapps/dynamic-client-web.war,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.dynamic.client.registration.server_${feature.version}/dynamic-client-web-proxy.war,target:${installFolder}/../../deployment/server/webapps/dynamic-client-web-proxy.war,overwrite:true);\

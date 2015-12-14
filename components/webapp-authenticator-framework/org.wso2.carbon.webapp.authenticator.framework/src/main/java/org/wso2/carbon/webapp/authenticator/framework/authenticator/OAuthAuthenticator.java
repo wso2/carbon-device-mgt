@@ -99,13 +99,14 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
                 if (oAuthValidationResponse.isValid()) {
                     String username = oAuthValidationResponse.getUserName();
+                    String tenantDomain = oAuthValidationResponse.getTenantDomain();
                     //Remove the userstore domain from username
                     /*if (username.contains("/")) {
                         username = username.substring(username.indexOf('/') + 1);
                     }*/
                     authenticationInfo.setUsername(username);
-                    authenticationInfo.setTenantDomain(oAuthValidationResponse.getTenantDomain());
-                    authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username));
+                    authenticationInfo.setTenantDomain(tenantDomain);
+                    authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username + "@" + tenantDomain));
                     if (oAuthValidationResponse.isValid()) {
                         authenticationInfo.setStatus(Status.CONTINUE);
                     }

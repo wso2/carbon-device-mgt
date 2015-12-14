@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
     "uri": "/users/add-user",
-    "layout": "uuf.layout.default"
+    "layout": "cdmf.layout.default"
 }

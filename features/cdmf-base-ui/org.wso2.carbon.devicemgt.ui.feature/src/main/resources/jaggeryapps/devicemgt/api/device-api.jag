@@ -88,8 +88,26 @@ if (!user) {
         } else {
             //URL: https://localhost:9443/{deviceType}/download?owner={username}
             deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
-
             sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
+
+            //check if config exists
+            var deviceTypeConfigFile = new File("../app/units/cdmf.unit.device.type."+deviceType+".type-view/private/conf/device-type.json");
+            if(deviceTypeConfigFile.isExists()){
+                deviceTypeConfigFile.open("r");
+                try {
+                    var deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
+                    //replace download endpoint
+                    var downloadAgentUri = deviceTypeConfig.deviceType.downloadAgentUri;
+                    if(downloadAgentUri){
+                        sketchDownloadEndPoint = downloadAgentUri;
+                    }
+                }catch(err){
+                    log.error("Error while reading device config file for `" + deviceType + "`: " + err);
+                }finally{
+                    deviceTypeConfigFile.close();
+                }
+            }
+
             response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName);
             exit();//stop execution
 
@@ -109,8 +127,26 @@ if (!user) {
         } else {
             //URL: https://localhost:9443/{deviceType}/download?owner={username}
             deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
-
             sketchGenerateLinkEndPoint = deviceManagerService + "/device/" + sketchType + "/generate_link";
+
+            //check if config exists
+            var deviceTypeConfigFile = new File("../app/units/cdmf.unit.device.type."+deviceType+".type-view/private/conf/device-type.json");
+            if(deviceTypeConfigFile.isExists()){
+                deviceTypeConfigFile.open("r");
+                try {
+                    var deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
+                    //replace download endpoint
+                    var downloadAgentLinkGenUri = deviceTypeConfig.deviceType.downloadAgentLinkGenUri;
+                    if(downloadAgentUri){
+                        sketchGenerateLinkEndPoint = downloadAgentLinkGenUri;
+                    }
+                }catch(err){
+                    log.error("Error while reading device config file for `" + deviceType + "`: " + err);
+                }finally{
+                    deviceTypeConfigFile.close();
+                }
+            }
+
             var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName, null, "text");
             result = "curl -k " + devicemgtProps["httpsURL"] + constants.WEB_APP_CONTEXT + "/api/devices/sketch/download/" + fileId.data;
         }

@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
     "uri": "/welcome",
-    "layout": "uuf.layout.default"
+    "layout": "cdmf.layout.default"
 }

@@ -21,7 +21,7 @@
  */
 var policyModule;
 policyModule = function () {
-    var log = new Log("modules/user.js");
+    var log = new Log("modules/policy.js");
 
     var constants = require("/modules/constants.js");
     var utility = require("/modules/utility.js")["utility"];

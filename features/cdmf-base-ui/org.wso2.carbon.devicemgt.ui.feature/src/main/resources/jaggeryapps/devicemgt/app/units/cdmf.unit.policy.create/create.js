@@ -1,5 +1,5 @@
 function onRequest(context) {
-    var userModule = require("/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/user.js")["userModule"];
     var response = userModule.getRoles();
     if (response["status"] == "success") {
         context["roles"] = response["content"];

@@ -1,6 +1,6 @@
 function onRequest(context){
-    var userModule = require("/modules/user.js").userModule;
-    var constants = require("/modules/constants.js");
+    var userModule = require("/app/modules/user.js").userModule;
+    var constants = require("/app/modules/constants.js");
     var permissions = [];
     if(userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/notifications/list")){
         permissions.push("LIST_NOTIFICATIONS");

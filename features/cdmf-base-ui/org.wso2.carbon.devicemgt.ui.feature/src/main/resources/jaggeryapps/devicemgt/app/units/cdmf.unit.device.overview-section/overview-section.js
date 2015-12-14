@@ -5,7 +5,7 @@ function onRequest (context) {
     log.info("###### loading overview section!");
 
     if (deviceType != null && deviceType != undefined && deviceId != null && deviceId != undefined) {
-        var deviceModule = require("/modules/device.js").deviceModule;
+        var deviceModule = require("/app/modules/device.js").deviceModule;
         var device = deviceModule.viewDevice(deviceType, deviceId);
 
         if (device) {

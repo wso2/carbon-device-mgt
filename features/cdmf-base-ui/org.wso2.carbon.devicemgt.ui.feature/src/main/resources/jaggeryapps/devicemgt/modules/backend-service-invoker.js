@@ -41,7 +41,6 @@ var backendServiceInvoker = function () {
      */
     function initiateXMLHTTPRequest(method, url, payload, successCallback, errorCallback) {
         var execute = function (count) {
-            log.info("----url" + url);
             var xmlHttpRequest = new XMLHttpRequest();
             xmlHttpRequest.open(method, url);
             xmlHttpRequest.setRequestHeader(constants.CONTENT_TYPE_IDENTIFIER, constants.APPLICATION_JSON);

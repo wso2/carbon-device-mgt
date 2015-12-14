@@ -32,7 +32,7 @@ function onRequest(context){
                 deviceTypesList.push({"hasCustTemplate" : false, "deviceTypeLabel" : deviceTypeLabel, "deviceTypeName" : deviceTypes[i].name, "deviceTypeId" : deviceTypes[i].id});
             }
         }
-        viewModel.deviceTypesList = deviceTypesList;
+        viewModel.deviceTypesList = stringify(deviceTypesList);
     } else {
         log.error("Unable to fetch device types data");
         throw new Error("Unable to fetch device types!");

@@ -1,41 +1,41 @@
 .wr-content {
-	padding-left:33px;
-    padding-right:33px;
+    padding-left: 33px;
+    padding-right: 33px;
 }
 
 .wr-input-control .helper {
-	font-weight:100;
+    font-weight: 100;
 }
 
 .wr-input-control .cus-col-25 {
-	float:left;
-	width:25%;
+    float: left;
+    width: 25%;
 }
 
 .wr-input-control .cus-col-50 {
-	float:left;
-	width:60%;
+    float: left;
+    width: 60%;
 }
 
 .wr-input-control .cus-col-70 {
-	float:left;
-	width:70%;
+    float: left;
+    width: 70%;
 }
 
 .wr-input-control .cus-col-50 input {
-	width:100%;
+    width: 100%;
 }
 
 .wr-input-control .cus-col-70 input {
-	width:95%;
+    width: 95%;
 }
 
 .wr-input-control .cus-col-25 input {
-	width:65%;
+    width: 65%;
 }
 
 /*.wr-input-control .cus-col-50 span, .wr-input-control .cus-col-25 span {*/
-	/*padding-left:20px;*/
+/*padding-left:20px;*/
 /*}*/
 
 /* wizard */
@@ -44,46 +44,53 @@
 }
 
 .itm-wiz-current .wiz-no {
-    border:1px solid #444;
-    color:#fff;
-    background:#444;
+    border: 1px solid #444;
+    color: #fff;
+    background: #444;
 }
 
 .itm-wiz {
-    font-weight:100;
+    font-weight: 100;
 }
 
 .itm-wiz div {
-    display:inline-block;
-    float:left;
+    display: inline-block;
+    float: left;
 }
 
 .wiz-no {
-    width:50px;
-    height:50px;
-    font-size:33px;
+    width: 50px;
+    height: 50px;
+    font-size: 33px;
     font-weight: 100;
     border-radius: 80px;
-    border:1px solid #ccc;
-    color:#fff;
-    padding:0 12px 10px;
-    display:inline-block;
+    border: 1px solid #ccc;
+    color: #fff;
+    padding: 0 12px 10px;
+    display: inline-block;
     text-align: center;
-    background:#ccc;
+    background: #ccc;
     margin-right: 10px;
 }
 
 .wiz-lbl {
-    width:190px;
-    font-size:17px;
+    width: 190px;
+    font-size: 17px;
 }
 
 .wiz-lbl > span {
-    padding-top:0;
-    display:inline-block;
+    padding-top: 0;
+    display: inline-block;
 }
 
+@media only screen and (min-width: 768px) {
+    body > .page-content-wrapper > .container,
+    body > .page-content-wrapper > .container-fluid {
+        margin: 1% 1% 1%;
+        padding: 0;
+    }
+}
 
-
-
-
+header .brand h1 {
+    text-transform: none !important;
+}

@@ -1,0 +1,32 @@
+{
+    "appName": "CDMF",
+    "cachingEnabled": true,
+    "debuggingEnabled": false,
+    "permissionRoot": "/",
+    "loginUri": "${app.context}/login",
+    "adminServicesUrl": "https://${server.ip}:${server.https_port}/admin/services/",
+    "authModule": {
+        "enabled": true,
+        "login": {
+            "onSuccess": {
+                "script": "/app/modules/login.js",
+                "page": "cdmf.page.dashboard"
+            },
+            "onFail": {
+                "script": "/app/modules/login.js",
+                "page": "cdmf.page.sign-in"
+            }
+        },
+        "logout": {
+            "onSuccess": {
+                "page": "cdmf.page.sign-in"
+            },
+            "onFail": {
+                "page": "cdmf.page.dashboard"
+            }
+        },
+        "sso": {
+            "enabled": false
+        }
+    }
+}

@@ -6,21 +6,20 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
 
 var operationModule = function () {
-    var log = new Log("modules/operation.js");
-
-    var constants = require("constants.js");
-    var utility = require("utility.js").utility;
+    var log = new Log("/modules/operation.js");
+    var utility = require('/modules/utility.js').utility;
+    var constants = require('/modules/constants.js');
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
     var user = session.get(constants.USER_SESSION_KEY);

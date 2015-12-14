@@ -21,6 +21,21 @@
             "uri": "/devices"
         }
     ],
+    "/device/enroll": [
+        {
+            "text": "",
+            "icon": "<i class=\"icon fw fw-home\"></i>",
+            "uri": "/"
+        },
+        {
+            "text": "Devices",
+            "uri": "/devices"
+        },
+        {
+            "text": "Enroll Device",
+            "uri": "/enroll"
+        }
+    ],
     "/users": [
         {
             "text": "",

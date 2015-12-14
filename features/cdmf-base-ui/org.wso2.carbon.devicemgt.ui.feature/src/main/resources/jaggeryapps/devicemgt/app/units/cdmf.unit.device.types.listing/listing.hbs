@@ -39,6 +39,10 @@
     <script type="text/javascript">
         {{! WARN: DO NOT BLINDLY PASS WHOLE CONTEXT HERE}}
         var clientJsAppContext = "{{{@app.context}}}";
+        var deviceTypesList = [ {{#each deviceTypesList}}
+            { "deviceTypeLabel" : "{{deviceTypeLabel}}", "deviceTypeId" : "{{deviceTypeId}}", "deviceTypeName" : "{{deviceTypeName}}", "hasCustTemplate" : {{hasCustTemplate}} },
+        {{/each}}
+        ];
     </script>
     {{js "js/listing.js"}}
 {{/zone}}

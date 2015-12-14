@@ -1,5 +1,5 @@
 function onRequest(context) {
-    var userModule = require("/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/user.js")["userModule"];
     var response = userModule.getUsers();
     var users = {};
     context["permissions"] = userModule.getUIPermissions();

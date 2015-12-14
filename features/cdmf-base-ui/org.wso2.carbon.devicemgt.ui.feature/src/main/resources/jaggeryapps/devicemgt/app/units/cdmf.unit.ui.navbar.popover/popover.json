@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
     "extends": "uuf.unit.navbar.popover",
-    "disable": true
+    "disabled": true
 }

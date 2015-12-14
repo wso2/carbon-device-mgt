@@ -22,9 +22,9 @@ var uriMatcher = new URIMatcher(String(uri));
 
 var log = new Log("api/invoker-api.jag");
 
-var constants = require("/modules/constants.js");
+var constants = require("/app/modules/constants.js");
 var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
+var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 
 var result;
 

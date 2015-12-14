@@ -25,8 +25,8 @@ var log = new Log("api/stats-api.jag");
 var from = request.getParameter("from");
 var to = request.getParameter("to");
 
-var constants = require("/modules/constants.js");
-var utility = require("../modules/utility.js").utility;
+var constants = require("/app/modules/constants.js");
+var utility = require("/app/modules/utility.js").utility;
 var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
 var deviceCloudGroupService = devicemgtProps["httpsURL"] + "/common/group_manager";

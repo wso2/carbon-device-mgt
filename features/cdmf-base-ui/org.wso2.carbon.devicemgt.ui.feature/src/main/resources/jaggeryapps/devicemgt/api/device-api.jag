@@ -21,10 +21,10 @@ var uriMatcher = new URIMatcher(String(uri));
 
 var log = new Log("api/device-api.jag");
 
-var constants = require("/modules/constants.js");
+var constants = require("/app/modules/constants.js");
 
-var deviceModule = require("/modules/device.js").deviceModule;
-var utility = require("/modules/utility.js").utility;
+var deviceModule = require("/app/modules/device.js").deviceModule;
+var utility = require("/app/modules/utility.js").utility;
 var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
 var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;

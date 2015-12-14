@@ -6,7 +6,7 @@ function onRequest(context){
         title = request.getParameter("name");
     }else{
         context.groupId = 0;
-        var deviceModule = require("/modules/device.js").deviceModule;
+        var deviceModule = require("/app/modules/device.js").deviceModule;
         var deviceId = request.getParameter("deviceId");
         var deviceType = request.getParameter("deviceType");
         var deviceName = request.getParameter("deviceName");

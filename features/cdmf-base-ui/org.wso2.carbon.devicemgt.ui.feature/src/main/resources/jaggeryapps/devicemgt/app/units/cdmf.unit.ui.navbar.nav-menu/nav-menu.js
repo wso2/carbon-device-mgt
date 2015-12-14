@@ -17,8 +17,8 @@
  */
 
 function onRequest(context) {
-    var userModule = require("/modules/user.js").userModule;
-    var constants = require("/modules/constants.js");
+    var userModule = require("/app/modules/user.js").userModule;
+    var constants = require("/app/modules/constants.js");
     var carbonUser = session.get(constants.USER_SESSION_KEY);
     if (carbonUser){
         context.permissions = userModule.getUIPermissions();

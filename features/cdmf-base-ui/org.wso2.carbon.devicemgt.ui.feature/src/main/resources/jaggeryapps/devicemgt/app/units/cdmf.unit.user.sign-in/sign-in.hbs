@@ -1,39 +1,34 @@
 <div class="container col-md-12 col-lg-3 col-centered wr-content wr-login col-centered">
 
     <p class="page-sub-title">Login</p>
-    <hr/>
-    <!-- validation -->
-        <span class="wr-validation-summary hidden">
-                <p>Login failed. Check your credentials and try again.</p>
-        </span>
+    <hr />
+    {{#if message}}
+        <div class="alert alert-danger" style="padding-right: 15px;">
+            <i class="icon fw fw-warning"></i> {{message}}!
+        </div>
+    {{/if}}
+
     <div class="panel-body">
-        <form id="signInForm" method="POST"
-              class="{{defineZone "signInForm-class" scope="protected"}}"
-              action="{{@app.context}}/api/user/login">
+        <form id="signInForm" method="POST" action="{{@app.context}}/uuf/login">
             <div class="wr-input-control">
                 <label class="wr-input-label">Username *</label>
                 <input type="text" name="username" class="form-control" placeholder="User Name"
-                       id="username" autofocus="autofocus" />
+                       autofocus="autofocus" required="required" />
             </div>
             <div class="wr-input-control">
                 <label class="wr-input-label">Password *</label>
-                <input type="password" name="password" class="form-control"
-                       id="password" placeholder="Password" />
+                <input type="password" name="password" class="form-control" placeholder="Password"
+                       required="required" />
             </div>
+            {{#if referer}}
+                <input type="hidden" name="referer" value="{{referer}}" />
+            {{/if}}
             <div class="wr-input-control wr-btn-grp">
-                <button class="wr-btn btn-download-agent" id="signIn">&nbsp;&nbsp;&nbsp;&nbsp;Login&nbsp;&nbsp;&nbsp;&nbsp;</button>
-            </div>
-            <div class="form-group">
-                {{#if showRememberMe}}
-                    <span class="pull-left">
-                            <input type="checkbox" name="rememberMe" value="remember"> Remember me
-                        </span>
-                {{/if}}
+                <button class="wr-btn btn-download-agent">
+                    &nbsp;&nbsp;&nbsp;&nbsp;Login&nbsp;&nbsp;&nbsp;&nbsp;
+                </button>
+                {{defineZone "signInForm-below" scope="protected"}}
             </div>
         </form>
     </div>
 </div>
-</div>
-{{#zone "bottomLoginJs"}}
-    {{js "js/login.js" }}
-{{/zone}}

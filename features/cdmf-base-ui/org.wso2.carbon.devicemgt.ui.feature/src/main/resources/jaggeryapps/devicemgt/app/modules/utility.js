@@ -26,6 +26,8 @@ utility = function () {
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(JavaClass.forName(className));
     };
 
+    var deviceTypeConfigMap = {};
+
     var publicMethods = {};
 
     publicMethods.startTenantFlow = function (userInfo) {
@@ -108,6 +110,28 @@ utility = function () {
         file.close();
         var json = parse(content);
         return json[configName];
+    };
+
+    publicMethods.getDeviceTypeConfig = function (deviceType) {
+
+        if (deviceType in deviceTypeConfigMap){
+            return deviceTypeConfigMap[deviceType];
+        }
+        var deviceTypeConfig;
+        var deviceTypeConfigFile = new File("../app/units/cdmf.unit.device.type."
+                                            + deviceType + ".type-view/private/conf/device-type.json");
+        if (deviceTypeConfigFile.isExists()) {
+            deviceTypeConfigFile.open("r");
+            try {
+                deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
+            } catch (err) {
+                log.error("Error while reading device config file for `" + deviceType + "`: " + err);
+            } finally {
+                deviceTypeConfigFile.close();
+            }
+        }
+        deviceTypeConfigMap[deviceType] = deviceTypeConfig;
+        return deviceTypeConfig;
     };
 
     return publicMethods;

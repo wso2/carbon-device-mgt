@@ -17,9 +17,9 @@
  */
 
 var operationModule = function () {
-    var log = new Log("/modules/operation.js");
-    var utility = require('/modules/utility.js').utility;
-    var constants = require('/modules/constants.js');
+    var log = new Log("/app/modules/operation.js");
+    var utility = require('/app/modules/utility.js').utility;
+    var constants = require('/app/modules/constants.js');
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
     var user = session.get(constants.USER_SESSION_KEY);

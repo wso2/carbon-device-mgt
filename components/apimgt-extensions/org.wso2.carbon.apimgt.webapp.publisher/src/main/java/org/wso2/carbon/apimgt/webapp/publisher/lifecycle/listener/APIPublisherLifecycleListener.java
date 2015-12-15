@@ -76,7 +76,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
     private static final String PARAM_MANAGED_API_CONTEXT_TEMPLATE = "managed-api-context-template";
     private static final String AUTH_TYPE = "Any";
     private static final String PROTOCOL_HTTP = "http";
-    private static final String SERVER_HOST = "server.host";
+    private static final String SERVER_HOST = "carbon.local.ip";
     private static final String HTTP_PORT = "httpPort";
     private static final String DIR_WEB_INF_CLASSES = "/WEB-INF/classes";
     public static final String DIR_WEB_INF_LIB = "/WEB-INF/lib";

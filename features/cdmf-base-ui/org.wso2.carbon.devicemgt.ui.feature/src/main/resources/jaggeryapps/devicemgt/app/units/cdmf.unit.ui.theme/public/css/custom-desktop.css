@@ -228,7 +228,7 @@ a.ast-type-item:hover {
 }
 
 .wr-btn-grp .wr-btn {
-    /*padding: 8px 8px 6px;*/
+    width: 20%;
     text-transform: uppercase;
 }
 

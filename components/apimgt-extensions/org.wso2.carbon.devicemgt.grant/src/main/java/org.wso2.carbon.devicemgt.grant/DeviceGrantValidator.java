@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.devicemgt.grant;
 
 import org.apache.oltu.oauth2.common.validators.AbstractValidator;

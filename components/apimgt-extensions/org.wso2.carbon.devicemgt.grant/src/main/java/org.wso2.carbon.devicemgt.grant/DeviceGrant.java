@@ -65,7 +65,7 @@ public class DeviceGrant extends AbstractAuthorizationGrantHandler {
         for(RequestParameter parameter : parameters){
             if(OauthGrantConstants.DEVICE_ID.equals(parameter.getKey())){
                 if(parameter.getValue() != null && parameter.getValue().length > 0) {
-                    if (parameter.getValue()[0] == "0") {
+                    if (parameter.getValue()[0].equals("0")) {
                         deviceId = null;
                     } else {
                         deviceId = parameter.getValue()[0];
@@ -73,7 +73,7 @@ public class DeviceGrant extends AbstractAuthorizationGrantHandler {
                 }
             }else if(OauthGrantConstants.USER_NAME.equals(parameter.getKey())){
                 if(parameter.getValue() != null && parameter.getValue().length > 0){
-                    if(parameter.getValue()[0] == "0"){
+                    if(parameter.getValue()[0].equals("0")){
                         username = null;
                     }else{
                         username = parameter.getValue()[0];
@@ -82,7 +82,7 @@ public class DeviceGrant extends AbstractAuthorizationGrantHandler {
                 }
             }else if(OauthGrantConstants.SCOPE.equals(parameter.getKey())){
                 if(parameter.getValue() != null && parameter.getValue().length > 0){
-                    if(parameter.getValue()[0] == "0"){
+                    if(parameter.getValue()[0].equals("0")){
                         scopeValues = null;
                     }else{
                         scopeValues = parameter.getValue()[0];
@@ -91,7 +91,7 @@ public class DeviceGrant extends AbstractAuthorizationGrantHandler {
                 }
             }else if(OauthGrantConstants.DEVICE_TYPE.equals(parameter.getKey())){
                     if(parameter.getValue() != null && parameter.getValue().length > 0){
-                        if(parameter.getValue()[0] == "0"){
+                        if(parameter.getValue()[0].equals("0")){
                             deviceType = null;
                         }else{
                             deviceType = parameter.getValue()[0];

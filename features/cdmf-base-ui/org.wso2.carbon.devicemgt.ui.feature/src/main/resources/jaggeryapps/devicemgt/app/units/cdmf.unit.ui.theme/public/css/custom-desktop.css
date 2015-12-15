@@ -1394,6 +1394,9 @@ a.wr-side-panel-toggle-btn.selected {
     font-weight: 400;
     text-align: right;
 }
+.tile-stats a:hover{
+    text-decoration:none;
+}
 
 .tile-stats-sm {
     font-size:17px;
@@ -3278,7 +3281,7 @@ body.inverse .fade-edge:after {
 .table.list-table.grid-view > tfoot > tr > th {
     display: block;
     white-space: nowrap;
-    padding: 10px 0;
+    padding: 10px 4px;
 }
 .table.list-table > tbody > tr > td[data-grid-label]:before,
 .table.list-table > tbody > tr > th[data-grid-label]:before {
@@ -3300,7 +3303,7 @@ body.inverse .fade-edge:after {
     display: none;
 }
 .table.list-table.grid-view .padding-reduce-on-grid-view {
-    padding: 2px;
+    padding: 0px;
 }
 .table.list-table.grid-view .text-left-on-grid-view {
     text-align: left;
@@ -3436,6 +3439,10 @@ table.dataTable tr td.dataTables_empty {
 .dataTables_toolbar,
 .dataTables_paginate {
     float: right;
+}
+.dataTables_toolbar ul.sort-list li:nth-child(2) a:before,
+.dataTables_toolbar ul.sort-list li:last-child a:before{
+    content: " ";
 }
 .dataTablesTop,
 .dataTablesBottom {
@@ -3910,4 +3917,7 @@ ul.tiles .icon {
 .tree-view .radio input[type=radio],
 .tree-view .radio-inline input[type=radio] {
     margin-top: 6px;
+}
+.navbar-menu-toggle{
+    height: 53px;
 }

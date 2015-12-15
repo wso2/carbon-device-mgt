@@ -2067,10 +2067,13 @@ a.wr-side-panel-toggle-btn.selected {
     margin-left: 5px;
     margin-top: 5px;
     margin-right: 5px;
-    /*border: 1px solid #e8e8e8;*/
-    padding: 20px;
+    padding: 20px 20px 0px;
     background: #ffffff;
     color: #555;
+}
+
+.panel-title hr{
+    margin-top: 0px;
 }
 
 .wr-hidden-operations-content .panel-title-description {

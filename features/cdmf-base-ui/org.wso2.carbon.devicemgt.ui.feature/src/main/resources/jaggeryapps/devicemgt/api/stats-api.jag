@@ -223,33 +223,68 @@ function getArduinoData(user, device, from, to) {
 }
 
 function getAndroidSenseData(user, device, from, to) {
-    if (stats['ramData'] == null) {
-        stats['ramData'] = [];
+    if (stats['lightData'] == null){
+        stats['lightData'] = [];
     }
-    if (stats['cpuData'] == null) {
-        stats['cpuData'] = [];
+    if (stats['pressureData'] == null){
+        stats['pressureData'] = [];
     }
-    if (stats['temperatureData'] == null) {
-        stats['temperatureData'] = [];
+    if (stats['proximityData'] == null){
+        stats['proximityData'] = [];
     }
-    if (stats['motionData'] == null) {
-        stats['motionData'] = [];
+    if (stats['accelerometerData'] == null){
+        stats['accelerometerData'] = [];
     }
-    stats['ramData'].push({
-        "device": device.name,
-        "stats": getSensorData("RAM_USAGE_SUMMARY", "motion", user, device.type, device.deviceIdentifier, from, to)
+    if (stats['gravityData'] == null){
+        stats['gravityData'] = [];
+    }
+    if (stats['gyroscopeData'] == null){
+        stats['gyroscopeData'] = [];
+    }
+    if (stats['rotationData'] == null){
+        stats['rotationData'] = [];
+    }
+    if (stats['batteryData'] == null){
+        stats['batteryData'] = [];
+    }
+    if (stats['magneticData'] == null){
+        stats['magneticData'] = [];
+    }
+    stats['batteryData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_BATTERY_SUMMARY", "battery", user, device.type, device.deviceIdentifier, from, to)
     });
-    stats['cpuData'].push({
-        "device": device.name,
-        "stats": getSensorData("CPU_LOAD_SUMMARY", "light", user, device.type, device.deviceIdentifier, from, to)
+    stats['accelerometerData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_ACCELEROMETER_SUMMARY", "accelerometer", user, device.type, device.deviceIdentifier, from, to)
     });
-    stats['temperatureData'].push({
-        "device": device.name,
-        "stats": getSensorData("DEVICE_TEMPERATURE_SUMMARY", "TEMPERATURE", user, device.type, device.deviceIdentifier, from, to)
+    stats['proximityData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_PROXIMITY_SUMMARY", "proximity", user, device.type, device.deviceIdentifier, from, to)
     });
-    stats['motionData'].push({
-        "device": device.name,
-        "stats": getSensorData("PIR_MOTION_SENSOR_SUMMARY", "motion", user, device.type, device.deviceIdentifier, from, to)
+    stats['pressureData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_PRESSURE_SUMMARY", "pressure", user, device.type, device.deviceIdentifier, from, to)
+    });
+    stats['lightData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_LIGHT_SUMMARY", "light", user, device.type, device.deviceIdentifier, from, to)
+    });
+    stats['gyroscopeData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_GYROSCOPE_SUMMARY", "gyroscope", user, device.type, device.deviceIdentifier, from, to)
+    });
+    stats['rotationData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_ROTATION_SUMMARY", "rotation", user, device.type, device.deviceIdentifier, from, to)
+    });
+    stats['magneticData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_MAGNETIC_SUMMARY", "magnetic", user, device.type, device.deviceIdentifier, from, to)
+    });
+    stats['gravityData'].push({
+       "device": device.name,
+       "stats": getSensorData("DEVICE_GRAVITY_SUMMARY", "gravity", user, device.type, device.deviceIdentifier, from, to)
     });
 }
 

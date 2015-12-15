@@ -3281,7 +3281,7 @@ body.inverse .fade-edge:after {
 .table.list-table.grid-view > tfoot > tr > th {
     display: block;
     white-space: nowrap;
-    padding: 10px 0;
+    padding: 10px 4px;
 }
 .table.list-table > tbody > tr > td[data-grid-label]:before,
 .table.list-table > tbody > tr > th[data-grid-label]:before {
@@ -3303,7 +3303,7 @@ body.inverse .fade-edge:after {
     display: none;
 }
 .table.list-table.grid-view .padding-reduce-on-grid-view {
-    padding: 2px;
+    padding: 0px;
 }
 .table.list-table.grid-view .text-left-on-grid-view {
     text-align: left;

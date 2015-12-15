@@ -3440,6 +3440,10 @@ table.dataTable tr td.dataTables_empty {
 .dataTables_paginate {
     float: right;
 }
+.dataTables_toolbar ul.sort-list li:nth-child(2) a:before,
+.dataTables_toolbar ul.sort-list li:last-child a:before{
+    content: " ";
+}
 .dataTablesTop,
 .dataTablesBottom {
     margin: 20px 0;

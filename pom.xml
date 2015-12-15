@@ -228,6 +228,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.devicemgt.grant</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
                 <version>${carbon.device.mgt.version}</version>
                 <exclusions>
@@ -1592,16 +1597,16 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-        <!--<repository>-->
-            <!--<id>wso2-staging</id>-->
-            <!--<name>WSO2 internal Repository</name>-->
-            <!--<url>http://maven.wso2.org/nexus/content/repositories/orgwso2carbonapimgt-125/</url>-->
-            <!--<releases>-->
-                <!--<enabled>true</enabled>-->
-                <!--<updatePolicy>daily</updatePolicy>-->
-                <!--<checksumPolicy>ignore</checksumPolicy>-->
-            <!--</releases>-->
-        <!--</repository>-->
+        <repository>
+            <id>wso2-staging</id>
+            <name>WSO2 internal Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/orgwso2carbonapimgt-174/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
     </repositories>
 
 

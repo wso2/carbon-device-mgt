@@ -470,6 +470,38 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     }
 
     /**
+     * This method is used to retrieve the device count of a given group.
+     *
+     * @param groupId  tenant id.
+     * @param tenantId tenant id.
+     * @return returns the device count.
+     * @throws DeviceManagementDAOException
+     */
+    @Override
+    public int getDeviceCount(int groupId, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int deviceCount = 0;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT COUNT(ID) AS DEVICE_COUNT FROM DM_DEVICE WHERE GROUP_ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, groupId);
+            stmt.setInt(2, tenantId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                deviceCount = rs.getInt("DEVICE_COUNT");
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while getting the device count", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return deviceCount;
+    }
+
+    /**
      * Get the list of devices that matches with the given device name.
      *
      * @param deviceName Name of the device.

@@ -24,6 +24,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
 import org.wso2.carbon.device.mgt.group.common.GroupUser;
@@ -407,14 +408,14 @@ public class GroupManagerService {
         return usersArray;
     }
 
-    @Path("/group/id/{groupId}/device/{limit}")
+    @Path("/group/id/{groupId}/device/all")
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public Device[] getDevices(@PathParam("groupId") int groupId,@PathParam("limit") int limit) {
+    public Device[] getDevices(@PathParam("groupId") int groupId) {
         Device[] deviceArray = null;
         try {
-            List<Device> devices = this.getServiceProvider().getDevices(groupId,limit);
+            List<Device> devices = this.getServiceProvider().getDevices(groupId);
             deviceArray = new Device[devices.size()];
             response.setStatus(Response.Status.OK.getStatusCode());
             devices.toArray(deviceArray);
@@ -425,6 +426,40 @@ public class GroupManagerService {
             this.endTenantFlow();
         }
         return deviceArray;
+    }
+
+    @Path("/group/id/{groupId}/device/count")
+    @GET
+    @Consumes("application/json")
+    @Produces("application/json")
+    public int getDeviceCount(@PathParam("groupId") int groupId) {
+        try {
+            return this.getServiceProvider().getDeviceCount(groupId);
+        } catch (GroupManagementException e) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            log.error(e.getErrorMessage(), e);
+            return -1;
+        } finally {
+            this.endTenantFlow();
+        }
+    }
+
+    @Path("/group/id/{groupId}/device")
+    @GET
+    @Consumes("application/json")
+    @Produces("application/json")
+    public PaginationResult getDevices(@PathParam("groupId") int groupId,
+                                       @QueryParam("index") int index,
+                                       @QueryParam("limit") int limit) {
+        try {
+            return this.getServiceProvider().getDevices(groupId, index, limit);
+        } catch (GroupManagementException e) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            log.error(e.getErrorMessage(), e);
+            return null;
+        } finally {
+            this.endTenantFlow();
+        }
     }
 
     @Path("/group/id/{groupId}/device/assign")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -965,7 +965,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     @Override
     public List<Device> getUnGroupedDevices(String username) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
         int tenantId;
         try {
@@ -988,41 +987,40 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     @Override
     public List<Device> getDevices(int groupId) throws DeviceManagementException {
-        return getDevices(groupId, -1);
-    }
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Device> getDevices(int groupId, int limit) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
-        PaginationResult userDevices;
         List<Device> deviceList;
         int tenantId;
         try {
             DeviceManagementDAOFactory.openConnection();
             tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-
-            //if the limit is -1, all the devices will be returned, no pagination applied
-            if(limit != -1) {
-                userDevices = deviceDAO.getDevices(groupId, limit, tenantId);
-                if(userDevices != null) {
-                    deviceList = (List<Device>) userDevices.getData();
-                    devices = enrichDeviceAttributes(deviceList);
-                }
-            }else{
-                deviceList = deviceDAO.getDevices(groupId, tenantId);
-                devices = enrichDeviceAttributes(deviceList);
-            }
-
+            deviceList = deviceDAO.getDevices(groupId, tenantId);
+            return enrichDeviceAttributes(deviceList);
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of " +
-                                                        "devices that assigned to the group '" +
-                                                        groupId + "'", e);
+                                                "devices that assigned to the group '" +
+                                                groupId + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        return devices;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PaginationResult getDevices(int groupId, int index, int limit) throws DeviceManagementException {
+        int tenantId;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+            return deviceDAO.getDevices(groupId, index, limit, tenantId);
+        } catch (DeviceManagementDAOException | SQLException e) {
+            throw new DeviceManagementException("Error occurred while retrieving the list of " +
+                                                "devices that assigned to the group '" +
+                                                groupId + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 
     private List<Device> enrichDeviceAttributes(List<Device> deviceList) throws DeviceManagementException {
@@ -1090,6 +1088,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             DeviceManagementDAOFactory.openConnection();
             return deviceDAO.getDeviceCount(this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving the device count", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
+
+    @Override
+    public int getDeviceCount(int groupId) throws DeviceManagementException {
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceDAO.getDeviceCount(groupId, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving the device count", e);
         } catch (SQLException e) {

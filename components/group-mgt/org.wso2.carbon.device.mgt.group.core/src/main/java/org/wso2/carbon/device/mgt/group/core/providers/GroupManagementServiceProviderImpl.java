@@ -24,6 +24,7 @@ import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
@@ -138,8 +139,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 removeSharing(groupId, roleName);
             }
         }
-        //when -1 is passed, following function returns all devices attached to a group, without pagination
-        List<Device> groupDevices = getDevices(groupId, -1);
+        List<Device> groupDevices = getDevices(groupId);
         try {
             for (Device device : groupDevices) {
                 device.setGroupId(0);
@@ -455,19 +455,33 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
      */
     @Override
     public List<Device> getDevices(int groupId) throws GroupManagementException {
-        return getDevices(groupId, -1);
+        try {
+            return GroupManagementDataHolder.getInstance().getDeviceManagementService().getDevices(groupId);
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while getting devices in group", e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Device> getDevices(int groupId, int limit) throws GroupManagementException {
-        List<Device> devicesInGroup;
+    public PaginationResult getDevices(int groupId, int index, int limit) throws GroupManagementException {
         try {
-            devicesInGroup = GroupManagementDataHolder.getInstance().getDeviceManagementService()
-                    .getDevices(groupId,limit);
-            return devicesInGroup;
+            return GroupManagementDataHolder.getInstance().getDeviceManagementService()
+                    .getDevices(groupId, index, limit);
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while getting devices in group", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeviceCount(int groupId) throws GroupManagementException {
+        try {
+            return GroupManagementDataHolder.getInstance().getDeviceManagementService().getDeviceCount(groupId);
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while getting devices in group", e);
         }

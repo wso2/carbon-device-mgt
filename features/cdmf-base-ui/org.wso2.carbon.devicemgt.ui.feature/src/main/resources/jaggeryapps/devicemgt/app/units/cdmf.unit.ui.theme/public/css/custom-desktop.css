@@ -1394,6 +1394,9 @@ a.wr-side-panel-toggle-btn.selected {
     font-weight: 400;
     text-align: right;
 }
+.tile-stats a:hover{
+    text-decoration:none;
+}
 
 .tile-stats-sm {
     font-size:17px;

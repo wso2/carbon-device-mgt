@@ -31,6 +31,20 @@ var operationModule = function () {
         switch (deviceType) {
             case "virtual_firealarm":
                 return [{name: "Alarm Status", description: "0:off 1:on", operation: "bulb"}];
+            case "digital_display":
+                return [
+                    {name: "Restart Browser", description: "0:faild 1:sucess", operation: "bulb"},
+                    {name: "Close Browser", description: "0:faild 1:sucess"},
+                    {name: "Terminate Display", description: "0:faild 1:sucess"},
+                    {name: "Restart Display", description: "0:faild 1:sucess"},
+                    {name: "Edit Content", description: "0:faild 1:sucess"},
+                    {name: "Add New Resource", description: "0:faild 1:sucess"},
+                    {name: "Remove Resource", description: "0:faild 1:sucess"},
+                    {name: "Remove Directory", description: "0:faild 1:sucess"},
+                    {name: "Remove Content", description: "0:faild 1:sucess"},
+                    {name: "Shutdown Display", description: "0:faild 1:sucess"}
+                 ];
+
             default:
                 return [];
         }

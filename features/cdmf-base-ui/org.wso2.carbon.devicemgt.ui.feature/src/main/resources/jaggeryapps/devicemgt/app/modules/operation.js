@@ -33,7 +33,7 @@ var operationModule = function () {
                 return [{name: "Alarm Status", description: "0:off 1:on", operation: "bulb"}];
             case "digital_display":
                 return [
-                    {name: "Restart Browser", description: "0:faild 1:sucess", operation: "bulb"},
+                    {name: "Restart Browser", description: "0:faild 1:sucess", operation: "bulb"}},
                     {name: "Close Browser", description: "0:faild 1:sucess"},
                     {name: "Terminate Display", description: "0:faild 1:sucess"},
                     {name: "Restart Display", description: "0:faild 1:sucess"},

@@ -3068,10 +3068,7 @@ body.inverse .fade-edge:after {
 /* ========================================================================
  * table styles
  * ======================================================================== */
-.table thead th {
-    font-weight: 500;
-    text-transform: uppercase;
-}
+
 .table .form-control {
     min-width: 100%;
 }
@@ -3923,4 +3920,10 @@ ul.tiles .icon {
 }
 .navbar-menu-toggle{
     height: 53px;
+}
+.navbar-default .navbar-nav > li > a{
+    line-height: 53px;
+}
+.list-unstyled li{
+    margin-bottom: 5px;
 }

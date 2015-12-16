@@ -1,5 +1,4 @@
 {
     "version": "1.0.0",
-    "index": 30,
     "extends": "uuf.unit.header.logo"
 }

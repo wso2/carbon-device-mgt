@@ -3924,3 +3924,6 @@ ul.tiles .icon {
 .navbar-menu-toggle{
     height: 53px;
 }
+.navbar-default .navbar-nav > li > a{
+    line-height: 53px;
+}

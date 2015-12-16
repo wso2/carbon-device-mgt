@@ -3068,10 +3068,7 @@ body.inverse .fade-edge:after {
 /* ========================================================================
  * table styles
  * ======================================================================== */
-.table thead th {
-    font-weight: 500;
-    text-transform: uppercase;
-}
+
 .table .form-control {
     min-width: 100%;
 }

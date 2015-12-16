@@ -17,9 +17,10 @@
  */
 
 function onRequest(context) {
+    var constants = require("/app/modules/constants.js");
+    var user = session.get(constants.USER_SESSION_KEY);
 
     var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
     var permissions = userModule.getUIPermissions();
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     context.permissions = permissions;

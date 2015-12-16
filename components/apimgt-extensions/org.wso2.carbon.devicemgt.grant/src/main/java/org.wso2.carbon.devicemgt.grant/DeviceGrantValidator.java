@@ -16,48 +16,22 @@
  * under the License.
  */
 
-#rangeSliderWrapper {
-    margin-top: 25px;
-}
+package org.wso2.carbon.devicemgt.grant;
 
-#chart {
-    display: inline-block;
-}
+import org.apache.oltu.oauth2.common.validators.AbstractValidator;
+import javax.servlet.http.HttpServletRequest;
 
-#legend {
-    display: inline-block;
-    position: relative;
-    left: 8px;
-}
+/**
+ * Validator class for Device Grant Type.
+ * Picks out the device id and the user name from the request and adds
+ * same to request parameter array.
+ */
+public class DeviceGrantValidator extends AbstractValidator<HttpServletRequest> {
 
-#legend_container {
-    position: absolute;
-    right: 0;
-    bottom: 26px;
-    width: 0;
-}
-
-#chart_container {
-    float: left;
-    position: relative;
-}
-
-.ast-container {
-    padding-bottom: 30px;
-}
-
-.container {
-    width: auto;
-}
-
-.shrink {
-    margin-right: 20px;
-    margin-left: 20px;
-}
-.date-range{
-    border: 1px solid #ccc;
-}
-
-#dateRangePickerContainer button.active{
-    background-color: #e6e6e6 !important;
+    public DeviceGrantValidator(){
+        requiredParams.add(OauthGrantConstants.DEVICE_ID);
+        requiredParams.add(OauthGrantConstants.DEVICE_TYPE);
+        requiredParams.add(OauthGrantConstants.USER_NAME);
+        requiredParams.add(OauthGrantConstants.SCOPE);
+    }
 }

@@ -22,7 +22,6 @@ function onRequest(context) {
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
     var DTYPE_UNIT_NAME_PREFIX = "cdmf.unit.device.type.";
     var DTYPE_UNIT_NAME_SUFFIX = ".type-view";
-    var DTYPE_UNIT_CONFIG_PATH = "/private/conf/device-type.json";
     var DTYPE_UNIT_LISTING_TEMPLATE_PATH = "/public/templates/listing.hbs";
 
     var viewModel = {};
@@ -38,7 +37,7 @@ function onRequest(context) {
             var deviceTypeLabel = deviceTypes[i].name;
             var configs = utility.getDeviceTypeConfig(deviceTypeLabel);
 
-            if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
+            if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
                 deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
             }
 

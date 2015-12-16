@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -178,6 +178,18 @@ public interface DeviceDAO {
     List<Device> getDevices(int groupId, int tenantId) throws DeviceManagementDAOException;
 
     /**
+     * This method is used to retrieve all the devices of a given tenant and device group.
+     *
+     * @param groupId group id of the group
+     * @param tenantId tenant id of user tenant
+     * @param index start index of result set.
+     * @param limit number of records to be returned.
+     * @return list of device in group
+     * @throws DeviceManagementDAOException
+     */
+    PaginationResult getDevices(int groupId, int index, int limit, int tenantId) throws DeviceManagementDAOException;
+
+    /**
      * This method is used to retrieve devices of a given user.
      *
      * @param username user name.
@@ -195,6 +207,16 @@ public interface DeviceDAO {
      * @throws DeviceManagementDAOException
      */
     int getDeviceCount(int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve the device count of a given group.
+     *
+     * @param groupId tenant id.
+     * @param tenantId tenant id.
+     * @return returns the device count.
+     * @throws DeviceManagementDAOException
+     */
+    int getDeviceCount(int groupId, int tenantId) throws DeviceManagementDAOException;
 
 	/**
 	 * This method is used to retrieve the available device types of a given tenant.

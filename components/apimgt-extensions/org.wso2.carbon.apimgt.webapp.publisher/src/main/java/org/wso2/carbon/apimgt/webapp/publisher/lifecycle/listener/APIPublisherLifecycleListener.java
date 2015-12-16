@@ -99,9 +99,9 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
             if (isManagedApi) {
                 try {
-                    APIResourceConfiguration apideFinition = scanStandardContext(context);
-                    APIConfig apiConfig = this.buildApiConfig(servletContext, apideFinition.getResources(),
-                            apideFinition.getContext());
+                    APIResourceConfiguration apiDefinition = scanStandardContext(context);
+                    APIConfig apiConfig = this.buildApiConfig(servletContext, apiDefinition.getResources(),
+                            apiDefinition.getContext());
                     try {
                         apiConfig.init();
                         API api = APIPublisherUtil.getAPI(apiConfig);
@@ -360,10 +360,10 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                         APIResource resource = new APIResource();
                         resource.setUriTemplate(subCtx);
 
-                        String iotServerIP = System.getProperty(SERVER_HOST);
+                        String serverIP = System.getProperty(SERVER_HOST);
                         String httpServerPort = System.getProperty(HTTP_PORT);
 
-                        resource.setUri(PROTOCOL_HTTP + "://"+ iotServerIP +":"+httpServerPort +root+"/"+subCtx);
+                        resource.setUri(PROTOCOL_HTTP + "://"+ serverIP +":"+httpServerPort +root+"/"+subCtx);
                         resource.setAuthType(AUTH_TYPE);
 
                         Annotation[] annotations = method.getDeclaredAnnotations();

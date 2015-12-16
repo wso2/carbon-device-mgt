@@ -228,7 +228,7 @@ a.ast-type-item:hover {
 }
 
 .wr-btn-grp .wr-btn {
-    /*padding: 8px 8px 6px;*/
+    width: 20%;
     text-transform: uppercase;
 }
 
@@ -2067,10 +2067,13 @@ a.wr-side-panel-toggle-btn.selected {
     margin-left: 5px;
     margin-top: 5px;
     margin-right: 5px;
-    /*border: 1px solid #e8e8e8;*/
-    padding: 20px;
+    padding: 20px 20px 0px;
     background: #ffffff;
     color: #555;
+}
+
+.panel-title hr{
+    margin-top: 0px;
 }
 
 .wr-hidden-operations-content .panel-title-description {
@@ -3065,10 +3068,7 @@ body.inverse .fade-edge:after {
 /* ========================================================================
  * table styles
  * ======================================================================== */
-.table thead th {
-    font-weight: 500;
-    text-transform: uppercase;
-}
+
 .table .form-control {
     min-width: 100%;
 }
@@ -3920,4 +3920,10 @@ ul.tiles .icon {
 }
 .navbar-menu-toggle{
     height: 53px;
+}
+.navbar-default .navbar-nav > li > a{
+    line-height: 53px;
+}
+.list-unstyled li{
+    margin-bottom: 5px;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -109,12 +109,13 @@ public interface DeviceManagementProviderService extends OperationManager {
      * Method to get the list of devices in group.
      *
      * @param groupId of the group
+     * @param index Starting row number
      * @param limit the limit of the number of devices returned for the group
-     * @return List of devices allocated to a particular group
+     * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    List<Device> getDevices(int groupId, int limit) throws DeviceManagementException;
+    PaginationResult getDevices(int groupId, int index, int limit) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.
@@ -133,6 +134,15 @@ public interface DeviceManagementProviderService extends OperationManager {
      * the devices
      */
     int getDeviceCount() throws DeviceManagementException;
+
+    /**
+     * Method to get the count of devices in group.
+     * @param groupId of the group
+     * @return device count
+     * @throws DeviceManagementException If some unusual behaviour is observed while counting
+     * the devices
+     */
+    int getDeviceCount(int groupId) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices that matches with the given device name.

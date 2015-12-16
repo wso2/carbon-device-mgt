@@ -16,8 +16,11 @@
  * under the License.
  */
 
-function onRequest (context) {
-    var log = new Log("overview-section.js");
-    var device = context.unit.params.device;
-    return {"device" : device};
+package org.wso2.carbon.devicemgt.grant;
+
+public class OauthGrantConstants {
+    public static final String DEVICE_ID = "device_id";
+    public static final String DEVICE_TYPE = "device_type";
+    public static final String USER_NAME = "username";
+    public static final String SCOPE = "scope";
 }

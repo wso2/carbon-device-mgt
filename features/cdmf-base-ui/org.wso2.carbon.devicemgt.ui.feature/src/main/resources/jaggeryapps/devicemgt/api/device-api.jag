@@ -86,32 +86,27 @@ if (!user) {
             // http status code 400 refers to - Bad request.
             result = 400;
         } else {
-            //URL: https://localhost:9443/{deviceType}/download?owner={username}
+            /**
+                URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
+                        {serverURL} - devicemgt/app/conf/config.json
+                        {deviceType} - from the request
+                        {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
+                        {username} - from request
+                        {deviceName} - from request
+            **/
+
             deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
             sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
+            var deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
 
-            //check if config exists
-            var deviceTypeConfigFile = new File("../app/units/cdmf.unit.device.type."+deviceType+".type-view/private/conf/device-type.json");
-            if(deviceTypeConfigFile.isExists()){
-                deviceTypeConfigFile.open("r");
-                try {
-                    var deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
-                    //replace download endpoint
-                    var downloadAgentUri = deviceTypeConfig.deviceType.downloadAgentUri;
-                    if(downloadAgentUri){
-                        sketchDownloadEndPoint = downloadAgentUri;
-                    }
-                }catch(err){
-                    log.error("Error while reading device config file for `" + deviceType + "`: " + err);
-                }finally{
-                    deviceTypeConfigFile.close();
-                }
+            if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
+                sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
             }
-
-            response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName);
-            exit();//stop execution
-
         }
+
+        response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName);
+        exit();//stop execution
+
     } else if (uriMatcher.match("/{context}/api/devices/sketch/generate_link")) {
 
         var contents = request.getContent();
@@ -125,26 +120,22 @@ if (!user) {
             // http status code 400 refers to - Bad request.
             result = 400;
         } else {
-            //URL: https://localhost:9443/{deviceType}/download?owner={username}
+
+            /**
+             URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
+             {serverURL} - devicemgt/app/conf/config.json
+             {deviceType} - from the request
+             {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
+             {username} - from request
+             {deviceName} - from request
+             **/
+
             deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
             sketchGenerateLinkEndPoint = deviceManagerService + "/device/" + sketchType + "/generate_link";
-
-            //check if config exists
-            var deviceTypeConfigFile = new File("../app/units/cdmf.unit.device.type."+deviceType+".type-view/private/conf/device-type.json");
-            if(deviceTypeConfigFile.isExists()){
-                deviceTypeConfigFile.open("r");
-                try {
-                    var deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
-                    //replace download endpoint
-                    var downloadAgentLinkGenUri = deviceTypeConfig.deviceType.downloadAgentLinkGenUri;
-                    if(downloadAgentUri){
-                        sketchGenerateLinkEndPoint = downloadAgentLinkGenUri;
-                    }
-                }catch(err){
-                    log.error("Error while reading device config file for `" + deviceType + "`: " + err);
-                }finally{
-                    deviceTypeConfigFile.close();
-                }
+            var deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
+            //replace download endpoint
+            if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentLinkGenUri) {
+                sketchGenerateLinkEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "/" + deviceTypeConfig.deviceType.downloadAgentLinkGenUri;
             }
 
             var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName, null, "text");

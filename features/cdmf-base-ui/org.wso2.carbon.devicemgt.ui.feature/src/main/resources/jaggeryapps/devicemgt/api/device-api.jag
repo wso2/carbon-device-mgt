@@ -86,13 +86,20 @@ if (!user) {
             // http status code 400 refers to - Bad request.
             result = 400;
         } else {
-            //URL: https://localhost:9443/{deviceType}/download?owner={username}
-            deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
-            sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
+            /**
+                URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
+                        {serverURL} - devicemgt/app/conf/config.json
+                        {deviceType} - from the request
+                        {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
+                        {username} - from request
+                        {deviceName} - from request
+            **/
+
+            serverUrl = devicemgtProps["httpsURL"];
             var deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
-            //replace download endpoint
+
             if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
-                sketchDownloadEndPoint = deviceTypeConfig.deviceType.downloadAgentUri;
+                sketchDownloadEndPoint = serverUrl + "/" + deviceType + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
             }
         }
 
@@ -112,14 +119,23 @@ if (!user) {
             // http status code 400 refers to - Bad request.
             result = 400;
         } else {
-            //URL: https://localhost:9443/{deviceType}/download?owner={username}
-            deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "/manager";
-            sketchGenerateLinkEndPoint = deviceManagerService + "/device/" + sketchType + "/generate_link";
+
+            /**
+             URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
+             {serverURL} - devicemgt/app/conf/config.json
+             {deviceType} - from the request
+             {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
+             {username} - from request
+             {deviceName} - from request
+             **/
+
+            serverUrl = devicemgtProps["httpsURL"];
             var deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
-            //replace download endpoint
-            if(deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentLinkGenUri) {
-                sketchGenerateLinkEndPoint = deviceTypeConfig.deviceType.downloadAgentLinkGenUri;
+
+            if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
+                sketchGenerateLinkEndPoint = serverUrl + "/" + deviceType + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
             }
+
             var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName, null, "text");
             result = "curl -k " + devicemgtProps["httpsURL"] + constants.WEB_APP_CONTEXT + "/api/devices/sketch/download/" + fileId.data;
         }

@@ -123,6 +123,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
                         if (log.isDebugEnabled()) {
                             log.debug("Compliance status primary key " + complianceData.getId());
                         }
+                        monitoringDAO.deleteNoneComplianceData(complianceData.getId());
                         monitoringDAO.addNonComplianceFeatures(complianceData.getId(), device.getId(),
                                 complianceFeatures);
 

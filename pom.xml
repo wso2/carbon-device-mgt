@@ -226,6 +226,11 @@
                 <artifactId>org.wso2.carbon.apimgt.webapp.publisher</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.devicemgt.grant</artifactId>

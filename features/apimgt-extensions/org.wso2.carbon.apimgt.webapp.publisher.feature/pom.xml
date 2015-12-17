@@ -46,6 +46,10 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.devicemgt.grant</artifactId>
         </dependency>
+	<dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
+        </dependency>
 	 <dependency>
             <groupId>org.wso2.orbit.org.scannotation</groupId>
             <artifactId>scannotation</artifactId>
@@ -105,6 +109,9 @@
                                 </bundleDef>
                                 <bundleDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.devicemgt.grant:${carbon.device.mgt.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.apimgt.annotations:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
                                     org.wso2.orbit.org.scannotation:scannotation:1.0.3.wso2v1

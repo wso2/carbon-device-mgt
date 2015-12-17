@@ -24,12 +24,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Resource")
 public class APIResource{
 
-	private String name;
-	private String path;
 	private String AuthType;
 	private String HttpVerb;
 	private String Uri;
 	private String UriTemplate;
+	private String consumes;
+	private String produces;
 
 	public String getAuthType() {
 		return AuthType;
@@ -66,5 +66,22 @@ public class APIResource{
 	public void setUriTemplate(String uriTemplate) {
 		UriTemplate = uriTemplate;
 	}
-	
+
+	public String getConsumes() {
+		return consumes;
+	}
+
+	@XmlElement(name = "Consumes", required = true)
+	public void setConsumes(String consumes) {
+		this.consumes = consumes;
+	}
+
+	public String getProduces() {
+		return produces;
+	}
+
+	@XmlElement(name = "Produces", required = true)
+	public void setProduces(String produces) {
+		this.produces = produces;
+	}
 }

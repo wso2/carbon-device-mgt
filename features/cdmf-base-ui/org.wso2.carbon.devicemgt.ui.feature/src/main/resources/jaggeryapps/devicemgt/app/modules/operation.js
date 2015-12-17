@@ -33,30 +33,31 @@ var operationModule = function () {
                 return [{name: "Alarm Status", description: "0:off 1:on", operation: "bulb"}];
             case "digital_display":
                 return [
-                    {name: "Restart Browser", description: "0:faild 1:sucess", operation: "restart-browser",
+                    {name: "Restart Browser",operation: "restart-browser",
                                 params : ["deviceId","owner","sessionId"]},
-                    {name: "Close Browser", description: "0:faild 1:sucess", operation: "close-browser",
+                    {name: "Close Browser", operation: "close-browser",
                                 params : ["deviceId","owner","sessionId"]},
-                    {name: "Terminate Display", description: "0:faild 1:sucess", operation: "terminate-display",
+                    {name: "Terminate Display", operation: "terminate-display",
                                 params : ["deviceId","owner","sessionId"]},
-                    {name: "Restart Display", description: "0:faild 1:sucess", operation: "restart-display",
+                    {name: "Restart Display", operation: "restart-display",
                                 params : ["deviceId","owner","sessionId"]},
-                    {name: "Edit Content", description: "0:faild 1:sucess", operation: "edit-content",
-                                params : ["deviceId","owner","sessionId","path","attribute","new-value"]},
-                    {name: "Add New Resource", description: "0:faild 1:sucess", operation: "add-resource",
-                                params : ["deviceId","owner","sessionId","owner","type","time","path"]},
-                    {name: "Add New Resource Before", description: "0:faild 1:sucess", operation: "add-resource",
-                                params : ["deviceId","owner","sessionId","owner","type","time","path","next-page"]},
-                    {name: "Add New Resource After", description: "0:faild 1:sucess", operation: "add-resource",
-                                params : ["deviceId","owner","sessionId","owner","type","time","path","before-page"]},
-                    {name: "Remove Resource", description: "0:faild 1:sucess", operation: "remove-resource",
-                                params : ["deviceId","owner","sessionId","path"]},
-                    {name: "Remove Directory", description: "0:faild 1:sucess", operation: "remove-directory",
-                                params : ["deviceId","owner","sessionId","directory-name"]},
-                    {name: "Remove Content", description: "0:faild 1:sucess", operation: "remove-content",
-                                params : ["deviceId","owner","sessionId","directory-name","content"]},
-                    {name: "Shutdown Display", description: "0:faild 1:sucess", operation: "shutdown-display",
-                                params : ["deviceId","owner","sessionId"]}
+                    {name: "Shutdown Display", operation: "shutdown-display",
+                                params : ["deviceId","owner","sessionId"]},
+                    {name: "Edit Content", operation: "edit-content",
+                                params : ["deviceId","owner","sessionId","path","attribute","new-value"], editcontent : "true"},
+                    {name: "Add New Resource", operation: "add-resource",
+                                params : ["deviceId","owner","sessionId","type","time","path"], add : "true"},
+                    {name: "Add New Resource Before", operation: "add-resource-before",
+                                params : ["deviceId","owner","sessionId","type","time","path","next-page"], add : "true" , before : "true"},
+                    {name: "Add New Resource After", operation: "add-resource-next",
+                                params : ["deviceId","owner","sessionId","type","time","path","before-page"], add : "true" , after : "true"},
+                    {name: "Remove Resource", operation: "remove-resource",
+                                params : ["deviceId","owner","sessionId","path"], removeresource : "true"},
+                    {name: "Remove Directory", operation: "remove-directory",
+                                params : ["deviceId","owner","sessionId","directory-name"], remove : "true"},
+                    {name: "Remove Content", operation: "remove-content",
+                                params : ["deviceId","owner","sessionId","directory-name","content"], remove : "true" , content : "true"},
+
                  ];
 
             default:
@@ -86,10 +87,10 @@ var operationModule = function () {
         }
     };
 
-    publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, value) {
-        var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation + "/" + ((value == 1) ? "ON" : "OFF");
+    publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, params) {
+        var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
         var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
-        return post(endPoint, {}, JSON.parse(header), "json");
+        return post(endPoint, params, JSON.parse(header), "json");
     };
 
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {

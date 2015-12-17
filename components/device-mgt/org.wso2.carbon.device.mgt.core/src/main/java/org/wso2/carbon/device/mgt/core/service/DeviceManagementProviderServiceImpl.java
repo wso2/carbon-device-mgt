@@ -862,6 +862,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public PaginationResult getOperations(DeviceIdentifier deviceId, int index, int limit)
+            throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperations(deviceId, index, limit);
+    }
+
+    @Override
     public List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId)
             throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getPendingOperations(deviceId);

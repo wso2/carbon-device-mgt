@@ -35,7 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigOperationDAOImpl extends OperationDAOImpl {
+public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
 
     private static final Log log = LogFactory.getLog(ConfigOperationDAOImpl.class);
 

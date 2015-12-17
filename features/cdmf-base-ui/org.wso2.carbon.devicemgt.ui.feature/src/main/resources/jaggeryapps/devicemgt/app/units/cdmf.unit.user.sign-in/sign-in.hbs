@@ -12,12 +12,12 @@
         <form id="signInForm" method="POST" action="{{@app.context}}/uuf/login">
             <div class="wr-input-control">
                 <label class="wr-input-label">Username *</label>
-                <input type="text" name="username" class="form-control" placeholder="User Name"
+                <input type="text" name="username" class="form-control" placeholder="Enter your username"
                        autofocus="autofocus" required="required" />
             </div>
             <div class="wr-input-control">
                 <label class="wr-input-label">Password *</label>
-                <input type="password" name="password" class="form-control" placeholder="Password"
+                <input type="password" name="password" class="form-control" placeholder="Enter your password"
                        required="required" />
             </div>
             {{#if referer}}
@@ -25,10 +25,13 @@
             {{/if}}
             <div class="wr-input-control wr-btn-grp">
                 <button class="wr-btn btn-download-agent">
-                    &nbsp;&nbsp;&nbsp;&nbsp;Login&nbsp;&nbsp;&nbsp;&nbsp;
+                    Login
                 </button>
                 {{defineZone "signInForm-below" scope="protected"}}
             </div>
         </form>
     </div>
 </div>
+{{~#zone "bottomLoginJs"}}
+    {{~js "js/login.js"}}
+{{/zone}}

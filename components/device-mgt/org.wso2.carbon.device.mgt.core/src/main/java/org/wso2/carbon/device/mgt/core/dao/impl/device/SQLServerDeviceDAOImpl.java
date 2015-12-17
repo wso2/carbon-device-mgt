@@ -16,12 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.dao.impl;
+package org.wso2.carbon.device.mgt.core.dao.impl.device;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.impl.AbstractDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -35,7 +36,7 @@ import java.util.List;
 /**
  * This class holds the generic implementation of DeviceDAO which can be used to support ANSI db syntax.
  */
-public class PostgreSQLDeviceDAOImpl extends AbstractDeviceDAOImpl {
+public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
 
     @Override
     public PaginationResult getDevices(int index, int limit, int tenantId)
@@ -52,7 +53,7 @@ public class PostgreSQLDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID AS DEVICE_ID, " +
                          "d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
                          "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
-                         "WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? LIMIT ?";
+                         "WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, tenantId);
@@ -92,7 +93,7 @@ public class PostgreSQLDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
                          "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
                          "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
-                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? LIMIT ?";
+                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, type);
             stmt.setInt(2, tenantId);
@@ -116,30 +117,6 @@ public class PostgreSQLDeviceDAOImpl extends AbstractDeviceDAOImpl {
         result.setRecordsTotal(count);
         return result;
     }
-
-	@Override public List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException {
-		Connection conn;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		List<DeviceType> deviceTypes;
-		try {
-			conn = this.getConnection();
-			String sql = "SELECT t.ID, t.NAME " +
-			             "FROM DM_DEVICE_TYPE t";
-			stmt = conn.prepareStatement(sql);
-			rs = stmt.executeQuery();
-			deviceTypes = new ArrayList<>();
-			while (rs.next()) {
-				DeviceType deviceType = DeviceManagementDAOUtil.loadDeviceType(rs);
-				deviceTypes.add(deviceType);
-			}
-		} catch (SQLException e) {
-			throw new DeviceManagementDAOException("Error occurred while listing device types.", e);
-		} finally {
-			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-		}
-		return deviceTypes;
-	}
 
 	private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();

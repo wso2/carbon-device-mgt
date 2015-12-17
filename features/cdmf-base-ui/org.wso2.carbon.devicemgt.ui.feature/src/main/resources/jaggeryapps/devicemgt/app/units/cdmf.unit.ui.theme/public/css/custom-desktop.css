@@ -2281,6 +2281,7 @@ a.show-operations-btn .btn-text:before {
 
 .tile-buttons li a:hover {
     background: #526A84;
+    text-decoration: none;
 }
 
 .tile-buttons li a i {

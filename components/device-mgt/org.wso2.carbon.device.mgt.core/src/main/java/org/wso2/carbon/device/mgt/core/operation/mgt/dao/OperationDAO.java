@@ -37,7 +37,14 @@ public interface OperationDAO {
     List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, Operation.Status status)
             throws OperationManagementDAOException;
 
+    List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, int index, int limit, Operation.Status status)
+            throws OperationManagementDAOException;
+
     List<? extends Operation> getOperationsForDevice(int enrolmentId) throws OperationManagementDAOException;
+
+    int getOperationCountForDevice(int enrolmentId) throws OperationManagementDAOException;
+
+    List<? extends Operation> getOperationsForDevice(int enrolmentId, int index, int limit) throws OperationManagementDAOException;
 
     Operation getNextOperation(int enrolmentId) throws OperationManagementDAOException;
 

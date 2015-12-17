@@ -300,49 +300,49 @@ function updateGraphs() {
     var batteryData = stats['batteryData'];
     if (typeof batteryData != 'undefined') {
         $('#div-batteryData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Battery</h2><hr><div id='canvas-wrapper11'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, batteryData);
+        drawLineGraph(11, batteryData);
     } else {
         $('#div-batteryData').html("");
     }
     var accelerometerData = stats['accelerometerData'];
     if (typeof accelerometerData != 'undefined') {
         $('#div-accelerometerData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Accelerometer</h2><hr><div id='canvas-wrapper12'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, accelerometerData);
+        drawLineGraph(12, accelerometerData);
     } else {
         $('#div-humidityData').html("");
     }
     var pressureData = stats['pressureData'];
     if (typeof pressureData != 'undefined') {
         $('#div-pressureData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Pressure</h2><hr><div id='canvas-wrapper13'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, pressureData);
+        drawLineGraph(13, pressureData);
     } else {
         $('#div-pressureData').html("");
     }
     var proximityData = stats['proximityData'];
     if (typeof proximityData != 'undefined') {
         $('#div-proximityData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Proximity</h2><hr><div id='canvas-wrapper14'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, proximityData);
+        drawLineGraph(14, proximityData);
     } else {
         $('#div-proximityData').html("");
     }
     var gyroscopeData = stats['gyroscopeData'];
     if (typeof gyroscopeData != 'undefined') {
         $('#div-gyroscopeData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Gyroscope</h2><hr><div id='canvas-wrapper15'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, gyroscopeData);
+        drawLineGraph(15, gyroscopeData);
     } else {
         $('#div-gyroscopeData').html("");
     }
     var gravityData = stats['gravityData'];
     if (typeof gravityData != 'undefined') {
         $('#div-gravityData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Gravity</h2><hr><div id='canvas-wrapper16'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, gravityData);
+        drawLineGraph(16, gravityData);
     } else {
         $('#div-gravityData').html("");
     }
     var rotationData = stats['rotationData'];
     if (typeof rotationData != 'undefined') {
         $('#div-rotationData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Rotation</h2><hr><div id='canvas-wrapper17'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, rotationData);
+        drawLineGraph(17, rotationData);
     } else {
         $('#div-rotationData').html("");
     }

@@ -49,7 +49,7 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
                          "OPERATION_CODE, om.STATUS  FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
-                         "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC " +
+                         "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC " +
                          "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
@@ -94,7 +94,7 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
                          "FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                          "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY " +
-                         "o.CREATED_TIMESTAMP ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                         "o.CREATED_TIMESTAMP DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());

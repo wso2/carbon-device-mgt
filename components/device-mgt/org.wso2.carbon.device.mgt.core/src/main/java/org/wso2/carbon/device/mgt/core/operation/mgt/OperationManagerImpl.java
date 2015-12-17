@@ -224,7 +224,7 @@ public class OperationManagerImpl implements OperationManager {
                     int count = operationDAO.getOperationCountForDevice(enrolmentId);
                     paginationResult.setData(operations);
                     paginationResult.setRecordsTotal(count);
-                    paginationResult.setRecordsFiltered(operations.size());
+                    paginationResult.setRecordsFiltered(count);
                 } catch (OperationManagementDAOException e) {
                     throw new OperationManagementException("Error occurred while retrieving the list of " +
                                                            "operations assigned for '" + deviceId.getType() +

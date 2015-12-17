@@ -48,9 +48,10 @@ if (!user) {
     } else if (uriMatcher.match("/{context}/api/operations/{deviceType}/{operation}")) {
         var deviceType = uriMatcher.elements().deviceType;
         var operation = uriMatcher.elements().operation;
-        var deviceId = request.getParameter("deviceId");
-        var value = request.getParameter("value");
-        result = operationModule.handlePOSTOperation(deviceType, operation, deviceId, value);
+        var deviceId = request.getParameter("deviceId");	
+        var params = request.getAllParameters();
+        params["sessionId"]=session.getId();
+        result = operationModule.handlePOSTOperation(deviceType, operation, deviceId, params);
     }
 }
 

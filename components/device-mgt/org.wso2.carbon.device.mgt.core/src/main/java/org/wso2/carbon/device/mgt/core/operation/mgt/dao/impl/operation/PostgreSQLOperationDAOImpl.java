@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation;
 
-import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -49,7 +48,7 @@ public class PostgreSQLOperationDAOImpl extends GenericOperationDAOImpl {
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
                          "OPERATION_CODE, om.STATUS  FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
-                         "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC LIMIT ? OFFSET ?";
+                         "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC LIMIT ? OFFSET ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setInt(2, limit);
@@ -93,7 +92,7 @@ public class PostgreSQLOperationDAOImpl extends GenericOperationDAOImpl {
                          "FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                          "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY " +
-                         "o.CREATED_TIMESTAMP ASC LIMIT ? OFFSET ?";
+                         "o.CREATED_TIMESTAMP DESC LIMIT ? OFFSET ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());

@@ -27,7 +27,42 @@ var operationModule = function () {
     var publicMethods = {};
     var privateMethods = {};
 
+    privateMethods.getOperationsFromFeatures = function (deviceType) {
+        var GenericFeatureManager = Packages.org.wso2.carbon.apimgt.webapp.publisher.feature.management.GenericFeatureManager;
+        try {
+            var featureManager = GenericFeatureManager.getInstance();
+            var features = featureManager.getFeatures(deviceType);
+            var featureList = [];
+            var feature;
+            for (var i = 0; i < features.size(); i++) {
+                feature = {};
+                feature["id"] = features.get(i).getId();
+                feature["code"] = features.get(i).getCode();
+                feature["name"] = features.get(i).getName();
+                feature["description"] = features.get(i).getDescription();
+                feature["deviceType"] = features.get(i).getDeviceType();
+                feature["metadataEntries"] = [];
+                var metaData = features.get(i).getMetadataEntries();
+                if (metaData && metaData != null) {
+                    var metaDataEntry;
+                    for (var j = 0; j < metaData.size(); j++) {
+                        metaDataEntry = {};
+                        metaDataEntry["id"] = metaData.get(j).getId();
+                        metaDataEntry["value"] = metaData.get(j).getValue();
+                        ["metadataEntries"].push(metaDataEntry);
+                    }
+                }
+                featureList.push(feature);
+            }
+            log.info(featureList);
+        } catch (e) {
+            log.error(e);
+            throw e;
+        }
+    };
+
     publicMethods.getControlOperations = function (deviceType) {
+        privateMethods.getOperationsFromFeatures(deviceType);
         switch (deviceType) {
             case "virtual_firealarm":
                 return [{name: "Alarm Status", description: "0:off 1:on", operation: "bulb"}];

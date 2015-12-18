@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.common.operation.mgt;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.util.List;
@@ -52,13 +53,12 @@ public interface OperationManager {
      * Method to retrieve all the operations applied to a device with pagination support.
      *
      * @param deviceId       DeviceIdentifier of the device
-     * @param index          Starting row number
-     * @param limit          No of rows to fetch
+     * @param request        PaginationRequest object holding the data for pagination
      * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
-    PaginationResult getOperations(DeviceIdentifier deviceId, int index, int limit) throws OperationManagementException;
+    PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of available operations to a device.

@@ -21,10 +21,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -190,7 +187,7 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public PaginationResult getOperations(DeviceIdentifier deviceId, int index, int limit)
+    public PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request)
             throws OperationManagementException {
         PaginationResult paginationResult = null;
         int enrolmentId;
@@ -215,7 +212,7 @@ public class OperationManagerImpl implements OperationManager {
                                                                deviceId.getType());
                     }
                     List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList =
-                            operationDAO.getOperationsForDevice(enrolmentId, index, limit);
+                            operationDAO.getOperationsForDevice(enrolmentId, request);
                     for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : operationList) {
                         Operation operation = OperationDAOUtil.convertOperation(dtoOperation);
                         operations.add(operation);

@@ -63,7 +63,7 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
                             scanStandardContext(org.wso2.carbon.apimgt.annotations.device.DeviceType.class.getName());
                     Map<String,List<Feature>> features = annotationUtil.extractFeatures(annotatedAPIClasses);
 
-                    if(features!=null) {
+                    if(features!=null && !features.isEmpty()) {
                         GenericFeatureManager.getInstance().addFeatures(features);
                     }
 

@@ -141,6 +141,11 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
         }
     }
 
+    private List<APIResourceConfiguration> mergeAPIDefinitions(List<APIResourceConfiguration> inputList){
+        //TODO : Need to implemented, to merge API Definitions in cases where implementation of an API Lies in two classes
+        return null;
+    }
+
     /**
      * Build the API Configuration to be passed to APIM, from a given list of URL templates
      * @param servletContext

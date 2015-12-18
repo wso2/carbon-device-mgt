@@ -90,6 +90,7 @@
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.service,
                             org.wso2.carbon.identity.application.common.model,
+			    org.wso2.carbon.identity.application.authentication.framework.model,
                             org.wso2.carbon.user.core.tenant
                         </Import-Package>
                     </instructions>

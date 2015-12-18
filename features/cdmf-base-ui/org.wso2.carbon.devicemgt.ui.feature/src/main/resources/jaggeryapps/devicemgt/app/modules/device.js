@@ -18,7 +18,7 @@
 
 var deviceModule;
 deviceModule = function () {
-    var log = new Log("modules/device.js");
+    var log = new Log("/app/modules/device.js");
 
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');

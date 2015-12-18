@@ -47,7 +47,7 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
         try {
             tokenValidator = OAuthValidatorFactory.getValidator();
         } catch (IllegalArgumentException e) {
-            log.error("Failed to initialise Authenticator",e);
+            log.error("Failed to initialise Authenticator", e);
         }
     }
 
@@ -59,7 +59,7 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
      */
     public boolean isHandle(MessageContext messageContext) {
         HttpServletRequest httpServletRequest = getHttpRequest(messageContext);
-        if(httpServletRequest != null) {
+        if (httpServletRequest != null) {
             String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
             if (headerValue != null && !headerValue.trim().isEmpty()) {
                 String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);

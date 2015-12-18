@@ -141,9 +141,6 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                 tokenValue = tokenValue.substring(matcher.end());
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Oauth Token : " + tokenValue);
-        }
         return tokenValue;
     }
 

@@ -25,53 +25,52 @@ import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class GenericFeatureManager implements FeatureManager {
+public class GenericFeatureManager {
 
     private static final Log log = LogFactory.getLog(GenericFeatureManager.class);
-    private static List<Feature> featureSet = null;
+    private Map<String,List<Feature>> featureSet = null;
 
-    public GenericFeatureManager(List<Feature> features) {
+    private static GenericFeatureManager instance = null;
+
+    protected GenericFeatureManager() {
         synchronized (this) {
-            featureSet = features;
+            featureSet = new HashMap<String,List<Feature>>();
         }
     }
 
-    @Override
+    public static GenericFeatureManager getInstance(){
+        if(instance==null){
+            instance = new GenericFeatureManager();
+        }
+        return instance;
+    }
+
     public boolean addFeature(Feature feature) throws DeviceManagementException {
-        throw new DeviceManagementException("Adding of features is not supported");
+        throw new DeviceManagementException("Adding of individual features is not supported");
     }
 
-    @Override
-    public boolean addFeatures(List<Feature> features) throws DeviceManagementException {
-        throw new DeviceManagementException("Features added at the time of instantiation");
+    public boolean addFeatures(Map<String,List<Feature>> freshFeatures) throws DeviceManagementException {
+        featureSet.putAll(freshFeatures);
+        return true;
     }
 
-    @Override
-    public Feature getFeature(String name) throws DeviceManagementException {
+    public Feature getFeature(String deviceType, String featureCode) throws DeviceManagementException {
         Feature extractedFeature = null;
-        for(Feature feature : featureSet){
-            if(feature.getCode().equalsIgnoreCase(name)){
+        List<Feature> deviceFeatureList = featureSet.get(deviceType);
+        for(Feature feature : deviceFeatureList){
+            if(feature.getCode().equalsIgnoreCase(featureCode)){
                 extractedFeature = feature;
             }
         }
         return extractedFeature;
     }
 
-    @Override
-    public List<Feature> getFeatures() throws DeviceManagementException {
-        return featureSet;
-    }
-
-    @Override
-    public boolean removeFeature(String code) throws DeviceManagementException {
-        throw new DeviceManagementException("Removing of features is not supported");
-    }
-
-    @Override
-    public boolean addSupportedFeaturesToDB() throws DeviceManagementException {
-        throw new DeviceManagementException("Features added at the time of instantiation");
+    public List<Feature> getFeatures(String deviceType) throws DeviceManagementException {
+        return featureSet.get(deviceType);
     }
 
 }

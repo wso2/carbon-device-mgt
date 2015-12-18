@@ -39,9 +39,7 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AnnotationUtil {
 
@@ -168,39 +166,57 @@ public class AnnotationUtil {
         return apiResourceConfigs;
     }
 
+
+
+
     /**
      * Method identifies the URL templates and context by reading the annotations of a class
      * @param entityClasses
      * @return
      */
-    public List<Feature> extractFeatures(Set<String> entityClasses)
+    public Map<String,List<Feature>> extractFeatures(Set<String> entityClasses)
             throws ClassNotFoundException {
 
-        List<Feature> features = new ArrayList<Feature>();
+        Map<String,List<Feature>> features = null;
 
         if (entityClasses != null && !entityClasses.isEmpty()) {
+            features = new HashMap<String,List<Feature>>();
             for (final String className : entityClasses) {
 
-                List<Feature> featureList =
-                        AccessController.doPrivileged(new PrivilegedAction<List<Feature>>() {
-                            public List<Feature> run() {
+                final Map<String,List<Feature>> featureMap =
+                        AccessController.doPrivileged(new PrivilegedAction<Map<String,List<Feature>>>() {
+                            public Map<String,List<Feature>> run() {
                                 Class<?> clazz = null;
-                                List<Feature> featureList = null;
+                                Map<String,List<Feature>> featureMap = new HashMap<String, List<Feature>>();
                                 try {
                                     clazz = classLoader.loadClass(className);
-                                    featureClazz = (Class<org.wso2.carbon.apimgt.annotations.device.feature.Feature>)
-                                            classLoader.loadClass(org.wso2.carbon.apimgt.annotations.device.feature.Feature.class.getName());
 
-                                    featureList = getFeatures(clazz.getDeclaredMethods());
+                                    Class<org.wso2.carbon.apimgt.annotations.device.DeviceType> deviceTypeClazz =
+                                            (Class<org.wso2.carbon.apimgt.annotations.device.DeviceType>)
+                                            classLoader.loadClass(org.wso2.carbon.apimgt.annotations.device.DeviceType.class.getName());
+                                    Annotation deviceTypeAnno = clazz.getAnnotation(deviceTypeClazz);
+
+                                    if(deviceTypeAnno!=null){
+                                        Method[] deviceTypeMethod = deviceTypeClazz.getMethods();
+                                        String deviceType = invokeMethod(deviceTypeMethod[0], deviceTypeAnno, "string");
+
+
+                                        featureClazz = (Class<org.wso2.carbon.apimgt.annotations.device.feature.Feature>)
+                                                classLoader.loadClass(org.wso2.carbon.apimgt.annotations.device.feature.Feature.class.getName());
+
+                                        List<Feature> featureList = getFeatures(clazz.getDeclaredMethods());
+
+                                        featureMap.put(deviceType,featureList);
+                                    }
 
                                 } catch (Throwable throwable) {
                                     throwable.printStackTrace();
                                 }
-                                return featureList;
+                                return featureMap;
                             }
                         });
 
-                features.addAll(featureList);
+                features.putAll(featureMap);
             }
         }
         return features;

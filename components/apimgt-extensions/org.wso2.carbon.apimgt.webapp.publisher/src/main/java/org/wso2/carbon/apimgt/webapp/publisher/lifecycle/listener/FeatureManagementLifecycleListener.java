@@ -26,11 +26,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.webapp.publisher.feature.management.GenericFeatureManager;
 import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationUtil;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.Feature;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -58,15 +60,20 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
                     AnnotationUtil annotationUtil = new AnnotationUtil(context);
 
                     Set<String> annotatedAPIClasses = annotationUtil.
-                            scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
-                    List<Feature> features = annotationUtil.extractFeatures(annotatedAPIClasses);
+                            scanStandardContext(org.wso2.carbon.apimgt.annotations.device.DeviceType.class.getName());
+                    Map<String,List<Feature>> features = annotationUtil.extractFeatures(annotatedAPIClasses);
 
-                    GenericFeatureManager featureManager = new GenericFeatureManager(features);
+                    if(features!=null) {
+                        GenericFeatureManager.getInstance().addFeatures(features);
+                    }
+
 
                 } catch (IOException e) {
-                    log.error("Error enconterd while discovering annotated classes", e);
+                    log.error("Error enconterd while discovering annotated classes.", e);
                 } catch (ClassNotFoundException e) {
-                    log.error("Error while scanning class for annotations", e);
+                    log.error("Error while scanning class for annotations.", e);
+                } catch (DeviceManagementException e) {
+                    log.error("Error encountered while persisting device features.", e);
                 }
             }
         }

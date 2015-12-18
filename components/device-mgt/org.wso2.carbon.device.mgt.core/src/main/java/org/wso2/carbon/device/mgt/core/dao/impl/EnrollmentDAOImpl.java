@@ -71,7 +71,6 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int status = -1;
-        int rows;
         try {
             conn = this.getConnection();
             String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, " +
@@ -86,12 +85,12 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             stmt.setString(6, enrolmentInfo.getOwner());
             stmt.setInt(7, tenantId);
             stmt.setInt(8, enrolmentInfo.getId());
-            rows = stmt.executeUpdate();
+            stmt.executeUpdate();
 
-            if (rows > 0) {
+            rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
                 status = 1;
             }
-
             return status;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while updating enrolment configuration", e);

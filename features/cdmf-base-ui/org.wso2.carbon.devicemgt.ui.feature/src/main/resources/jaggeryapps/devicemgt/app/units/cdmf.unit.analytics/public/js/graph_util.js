@@ -378,7 +378,7 @@ function drawLineGraph(graphId, chartDataRaw) {
         unstack: true,
         stack: false,
         xScale: d3.time.scale(),
-        padding: {top: 0.2, left: 0.02, right: 0.02, bottom: 0},
+        padding: {top: 0.2, left: 0.02, right: 0.02, bottom: 0.2},
         series: []
     };
 
@@ -504,7 +504,7 @@ function drawBarGraph(graphId, chartDataRaw) {
         renderer: 'binary_bar',
         offset: 'zero',
         xScale: d3.time.scale(),
-        padding: {top: 0.2, left: 0.02, right: 0.02, bottom: 0},
+        padding: {top: 0.2, left: 0.0, right: 0.0, bottom: 0.2},
         series: []
     };
 

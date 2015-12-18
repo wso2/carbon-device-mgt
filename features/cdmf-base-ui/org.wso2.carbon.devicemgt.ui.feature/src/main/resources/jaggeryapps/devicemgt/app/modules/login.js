@@ -1,5 +1,4 @@
-/**
- * @licence
+/*
  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
@@ -24,9 +23,9 @@ var onFail;
     var log = new Log("api/user-api.jag");
 
     onSuccess = function (context) {
-        var utility = require("/modules/utility.js").utility;
-        var apiWrapperUtil = require("/modules/api-wrapper-util.js").apiWrapperUtil;
-        var userModule = require("/modules/user.js").userModule;
+        var utility = require("/app/modules/utility.js").utility;
+        var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
+        var userModule = require("/app/modules/user.js").userModule;
 
         utility.insertAppPermissions(userModule, "login");
         var properties = {username: context.input.username, password: context.input.password};

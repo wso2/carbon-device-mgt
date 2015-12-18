@@ -18,16 +18,16 @@
 
 var groupModule = {};
 (function (groupModule) {
-    var log = new Log("modules/group.js");
+    var log = new Log("/app/modules/group.js");
 
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-    var utility = require("utility.js").utility;
+    var utility = require("/app/modules/utility.js").utility;
 
     var deviceCloudService = devicemgtProps["httpsURL"] + "/common/group_manager";
 
     var user = session.get(constants.USER_SESSION_KEY);
-    var deviceModule = require("device.js").deviceModule;
+    var deviceModule = require("/app/modules/device.js").deviceModule;
 
     var endPoint;
     var data;

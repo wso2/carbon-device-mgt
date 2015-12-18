@@ -161,32 +161,6 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
         return result;
     }
 
-    @Override
-	public List<DeviceType> getDeviceTypes()
-			throws DeviceManagementDAOException {
-		Connection conn;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		List<DeviceType> deviceTypes;
-		try {
-			conn = this.getConnection();
-			String sql = "SELECT t.ID, t.NAME " +
-			             "FROM DM_DEVICE_TYPE t";
-			stmt = conn.prepareStatement(sql);
-			rs = stmt.executeQuery();
-			deviceTypes = new ArrayList<>();
-			while (rs.next()) {
-				DeviceType deviceType = DeviceManagementDAOUtil.loadDeviceType(rs);
-				deviceTypes.add(deviceType);
-			}
-		} catch (SQLException e) {
-			throw new DeviceManagementDAOException("Error occurred while listing device types.", e);
-		} finally {
-			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-		}
-		return deviceTypes;
-	}
-
 	private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }

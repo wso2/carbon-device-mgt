@@ -218,14 +218,6 @@ public interface DeviceDAO {
      */
     int getDeviceCount(int groupId, int tenantId) throws DeviceManagementDAOException;
 
-	/**
-	 * This method is used to retrieve the available device types of a given tenant.
-	 *
-	 * @return returns list of device types.
-	 * @throws DeviceManagementDAOException
-	 */
-	List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
-
     /**
      * This method is used to retrieve devices of a given device name.
      *

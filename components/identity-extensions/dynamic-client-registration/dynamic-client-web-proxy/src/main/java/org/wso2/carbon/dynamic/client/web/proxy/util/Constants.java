@@ -16,36 +16,19 @@
  * under the License.
  */
 
-package org.wso2.carbon.dynamic.client.web.app.registration.util;
+package org.wso2.carbon.dynamic.client.web.proxy.util;
 
 /**
- * Holds the constants to be used in Dynamic client web app registration component.
+ * Holds the constants used by DCR proxy app.
  */
-public class DynamicClientWebAppRegistrationConstants {
-
-    public final static String OAUTH_APP_DATA_REGISTRY_PATH = "/OAuth";
-    public final static String OAUTH_APP_NAME = "appName";
-    public final static String OAUTH_CLIENT_KEY = "clientKey";
-    public final static String OAUTH_CLIENT_SECRET = "clientSecret";
-    public final static String DYNAMIC_CLIENT_REQUIRED_FLAG =
-            "requireDynamicClientRegistration";
-
-    public static final class ContentTypes {
-        private ContentTypes() {
-            throw new AssertionError();
-        }
-
-        public static final String CONTENT_TYPE_ANY = "*/*";
-        public static final String CONTENT_TYPE_XML = "application/xml";
-        public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
-    }
+public class Constants {
 
     public static final class CharSets {
         private CharSets() {
             throw new AssertionError();
         }
 
-        public static final String CHARSET_UTF8 = "UTF8";
+        public static final String CHARSET_UTF_8 = "UTF-8";
     }
 
     public static class ConfigurationProperties {
@@ -54,7 +37,6 @@ public class DynamicClientWebAppRegistrationConstants {
         }
 
         public static final String AUTHENTICATOR_NAME = "OAuthAuthenticator";
-        public static final String AUTHENTICATOR_CONFIG_IS_REMOTE = "isRemote";
         public static final String AUTHENTICATOR_CONFIG_HOST_URL = "hostURL";
     }
 
@@ -64,6 +46,7 @@ public class DynamicClientWebAppRegistrationConstants {
         }
 
         public static final String DYNAMIC_CLIENT_SERVICE_ENDPOINT = "/dynamic-client-web/register";
+        public static final String OAUTH2_TOKEN_ENDPOINT = "/oauth2/token";
         public static final String DYNAMIC_CLIENT_SERVICE_PROTOCOL = "https";
     }
 }

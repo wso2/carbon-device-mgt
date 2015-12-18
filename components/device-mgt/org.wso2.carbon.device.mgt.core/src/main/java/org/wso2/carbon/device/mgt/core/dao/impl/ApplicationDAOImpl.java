@@ -26,9 +26,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +41,8 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
         int applicationId = -1;
         try {
             conn = this.getConnection();
@@ -58,7 +58,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             stmt.setString(6, application.getLocationUrl());
             stmt.setString(7, application.getImageUrl());
             stmt.setInt(8, tenantId);
-            stmt.setObject(9, application.getAppProperties());
+
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(application.getAppProperties());
+            stmt.setBytes(9, bao.toByteArray());
+
             stmt.setString(10, application.getApplicationIdentifier());
             stmt.execute();
 
@@ -70,7 +75,23 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding application '" +
                     application.getName() + "'", e);
+        } catch (IOException e) {
+            throw new DeviceManagementDAOException("Error occurred while serializing application properties object", e);
         } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
     }
@@ -81,6 +102,8 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
         List<Integer> applicationIds = new ArrayList<>();
         try {
             conn = this.getConnection();
@@ -99,7 +122,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 stmt.setString(6, application.getLocationUrl());
                 stmt.setString(7, application.getImageUrl());
                 stmt.setInt(8, tenantId);
-                stmt.setObject(9, application.getAppProperties());
+
+                bao = new ByteArrayOutputStream();
+                oos = new ObjectOutputStream(bao);
+                oos.writeObject(application.getAppProperties());
+                stmt.setBytes(9, bao.toByteArray());
+
                 stmt.setString(10, application.getApplicationIdentifier());
                 stmt.executeUpdate();
 
@@ -111,7 +139,23 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             return applicationIds;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding bulk application list", e);
+        } catch (IOException e) {
+            throw new DeviceManagementDAOException("Error occurred while serializing application properties object", e);
         } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }

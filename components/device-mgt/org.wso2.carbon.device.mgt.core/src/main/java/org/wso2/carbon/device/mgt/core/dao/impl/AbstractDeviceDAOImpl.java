@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -650,6 +651,31 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
         return devices;
+    }
+
+    @Override
+    public List<DeviceType> getDeviceTypes()
+            throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<DeviceType> deviceTypes;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT t.ID, t.NAME FROM DM_DEVICE_TYPE t";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            deviceTypes = new ArrayList<>();
+            while (rs.next()) {
+                DeviceType deviceType = DeviceManagementDAOUtil.loadDeviceType(rs);
+                deviceTypes.add(deviceType);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while listing device types.", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return deviceTypes;
     }
 
 }

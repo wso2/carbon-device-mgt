@@ -19,9 +19,9 @@
   ~  */
   -->
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-    <display-name>Admin-Webapp</display-name>
+    <display-name>dynamic-client-registration-Webapp</display-name>
     <servlet>
-        <description>JAX-WS/JAX-RS Device Registration Agent Endpoint</description>
+        <description>Dynamic-client-registration Agent Endpoint</description>
         <display-name>JAX-WS/JAX-RS Servlet</display-name>
         <servlet-name>CXFServlet</servlet-name>
         <servlet-class>

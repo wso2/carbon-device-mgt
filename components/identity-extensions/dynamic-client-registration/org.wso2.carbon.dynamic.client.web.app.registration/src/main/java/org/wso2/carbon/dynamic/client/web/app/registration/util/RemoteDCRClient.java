@@ -21,6 +21,8 @@ package org.wso2.carbon.dynamic.client.web.app.registration.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -54,42 +56,35 @@ import java.net.URISyntaxException;
  */
 public class RemoteDCRClient {
 
-    private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
-    private static final String CHARSET_UTF_8 = "UTF-8";
+    private static final Log log = LogFactory.getLog(RemoteDCRClient.class);
 
     public static OAuthApplicationInfo createOAuthApplication(RegistrationProfile registrationProfile, String host)
             throws DynamicClientRegistrationException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking DCR service to create OAuth application for web app : " + registrationProfile.
+                                                                                                      getClientName());
+        }
+        DefaultHttpClient httpClient = getHTTPSClient();
         String clientName = registrationProfile.getClientName();
         try {
-            // Setup the HTTPS settings to accept any certificate.
-            HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-
-            SchemeRegistry registry = new SchemeRegistry();
-            SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
-            socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
-            registry.register(new Scheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
-                                                 DYNAMIC_CLIENT_SERVICE_PROTOCOL, socketFactory, getServerHTTPSPort()));
-            SingleClientConnManager mgr = new SingleClientConnManager(httpClient.getParams(), registry);
-            httpClient = new DefaultHttpClient(mgr, httpClient.getParams());
-
-            // Set verifier
-            HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
-
             URI uri = new URIBuilder().setScheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
                                                          DYNAMIC_CLIENT_SERVICE_PROTOCOL).setHost(host).setPath(
-                    DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT).build();
+                    DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT)
+                                      .build();
             Gson gson = new Gson();
-            StringEntity entity = new StringEntity(gson.toJson(registrationProfile), CONTENT_TYPE_APPLICATION_JSON,
-                                                   CHARSET_UTF_8);
+            StringEntity entity = new StringEntity(gson.toJson(registrationProfile),
+                                                   DynamicClientWebAppRegistrationConstants.ContentTypes.CONTENT_TYPE_APPLICATION_JSON,
+                                                   DynamicClientWebAppRegistrationConstants.CharSets.CHARSET_UTF8);
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setEntity(entity);
             HttpResponse response = httpClient.execute(httpPost);
             int status = response.getStatusLine().getStatusCode();
-                        HttpEntity responseData = response.getEntity();
-            String responseString = EntityUtils.toString(responseData, CHARSET_UTF_8);
+            HttpEntity responseData = response.getEntity();
+            String responseString = EntityUtils.toString(responseData, DynamicClientWebAppRegistrationConstants.
+                    CharSets.CHARSET_UTF8);
             if (status != 201) {
-                throw new DynamicClientRegistrationException("Backend server error occurred while invoking DCR endpoint for " +
+                throw new DynamicClientRegistrationException(
+                        "Backend server error occurred while invoking DCR endpoint for " +
                         "registering service-provider for web-app : " + clientName);
             }
             return getOAuthApplicationInfo(gson.fromJson(responseString, JsonElement.class));
@@ -98,39 +93,32 @@ public class RemoteDCRClient {
                                                          "DCR endpoint for registering service-provider for web-app : "
                                                          + clientName, e);
         } catch (UnsupportedEncodingException e) {
-            throw new DynamicClientRegistrationException("Exception occurred while constructing the payload for invoking " +
-                                                         "DCR endpoint for registering service-provider for web-app : "
-                                                         + clientName, e);
+            throw new DynamicClientRegistrationException(
+                    "Exception occurred while constructing the payload for invoking " +
+                    "DCR endpoint for registering service-provider for web-app : "
+                    + clientName, e);
         } catch (IOException e) {
             throw new DynamicClientRegistrationException("Connection error occurred while invoking DCR endpoint for" +
-                                                         " registering service-provider for web-app : " + clientName, e);
+                                                         " registering service-provider for web-app : " + clientName,
+                                                         e);
+        } finally {
+            httpClient.close();
         }
     }
 
     public static boolean deleteOAuthApplication(String user, String appName, String clientid, String host)
             throws DynamicClientRegistrationException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking DCR service to remove OAuth application created for web app : " + appName);
+        }
+        DefaultHttpClient httpClient = getHTTPSClient();
         try {
-            // Setup the HTTPS settings to accept any certificate.
-            HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-
-            SchemeRegistry registry = new SchemeRegistry();
-            SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
-            socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
-            registry.register(new Scheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
-                                                 DYNAMIC_CLIENT_SERVICE_PROTOCOL, socketFactory, getServerHTTPSPort()));
-            SingleClientConnManager mgr = new SingleClientConnManager(httpClient.getParams(), registry);
-            httpClient = new DefaultHttpClient(mgr, httpClient.getParams());
-
-            // Set verifier
-            HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
-
-            URI uri = new URIBuilder().setScheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
-                            DYNAMIC_CLIENT_SERVICE_PROTOCOL).setHost(host).setPath(
-                            DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT)
-                                                           .setParameter("applicationName", appName)
-                                                           .setParameter("userId", user)
-                                                           .setParameter("consumerKey", clientid).build();
+             URI uri = new URIBuilder().setScheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
+                                                         DYNAMIC_CLIENT_SERVICE_PROTOCOL).setHost(host).setPath(
+                    DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.DYNAMIC_CLIENT_SERVICE_ENDPOINT)
+                                      .setParameter("applicationName", appName)
+                                      .setParameter("userId", user)
+                                      .setParameter("consumerKey", clientid).build();
             HttpDelete httpDelete = new HttpDelete(uri);
             HttpResponse response = httpClient.execute(httpDelete);
             int status = response.getStatusLine().getStatusCode();
@@ -138,11 +126,14 @@ public class RemoteDCRClient {
                 return true;
             }
         } catch (IOException e) {
-            throw new DynamicClientRegistrationException("Connection error occurred while constructing the payload for " +
-                                                "invoking DCR endpoint for unregistering the web-app : " + appName, e);
+            throw new DynamicClientRegistrationException(
+                    "Connection error occurred while constructing the payload for " +
+                    "invoking DCR endpoint for unregistering the web-app : " + appName, e);
         } catch (URISyntaxException e) {
             throw new DynamicClientRegistrationException("Exception occurred while constructing the URI for invoking " +
                                                          "DCR endpoint for unregistering the web-app : " + appName, e);
+        } finally {
+            httpClient.close();
         }
         return false;
     }
@@ -159,7 +150,7 @@ public class RemoteDCRClient {
         if (httpsProxyPort > 0) {
             port = httpsProxyPort;
         }
-        return  port;
+        return port;
     }
 
     private static OAuthApplicationInfo getOAuthApplicationInfo(JsonElement jsonData) {
@@ -178,5 +169,23 @@ public class RemoteDCRClient {
             oAuthApplicationInfo.setClientSecret(property.getAsString());
         }
         return oAuthApplicationInfo;
+    }
+
+    private static DefaultHttpClient getHTTPSClient() {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        // Setup the HTTPS settings to accept any certificate.
+        HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+
+        SchemeRegistry registry = new SchemeRegistry();
+        SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
+        socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
+        registry.register(new Scheme(DynamicClientWebAppRegistrationConstants.RemoteServiceProperties.
+                                             DYNAMIC_CLIENT_SERVICE_PROTOCOL, socketFactory, getServerHTTPSPort()));
+        SingleClientConnManager mgr = new SingleClientConnManager(httpClient.getParams(), registry);
+        httpClient = new DefaultHttpClient(mgr, httpClient.getParams());
+
+        // Set verifier
+        HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
+        return httpClient;
     }
 }

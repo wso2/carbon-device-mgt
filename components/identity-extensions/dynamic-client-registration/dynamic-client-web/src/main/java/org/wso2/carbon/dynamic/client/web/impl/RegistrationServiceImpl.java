@@ -37,8 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.QueryParam;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationServiceImpl implements RegistrationService {
 
     private static final Log log = LogFactory.getLog(RegistrationServiceImpl.class);

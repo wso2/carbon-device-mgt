@@ -117,7 +117,7 @@ public class DynamicClientWebAppRegistrationUtil {
 
             Resource resource = DynamicClientWebAppRegistrationUtil.getGovernanceRegistry().newResource();
             resource.setContent(writer.toString());
-            resource.setMediaType(DynamicClientWebAppRegistrationConstants.ContentTypes.MEDIA_TYPE_XML);
+            resource.setMediaType(DynamicClientWebAppRegistrationConstants.ContentTypes.CONTENT_TYPE_XML);
             String resourcePath = DynamicClientWebAppRegistrationConstants.OAUTH_APP_DATA_REGISTRY_PATH + "/" +
                     oAuthAppDetails.getClientName();
             status = DynamicClientWebAppRegistrationUtil.putRegistryResource(resourcePath, resource);

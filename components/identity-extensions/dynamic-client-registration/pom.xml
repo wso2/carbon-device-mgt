@@ -36,6 +36,7 @@
 
     <modules>
         <module>dynamic-client-web</module>
+        <module>dynamic-client-web-proxy</module>
         <module>org.wso2.carbon.dynamic.client.registration</module>
         <module>org.wso2.carbon.dynamic.client.web.app.registration</module>
     </modules>

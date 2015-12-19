@@ -34,6 +34,11 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
     private static final String BASIC_AUTH_AUTHENTICATOR = "BasicAuth";
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public boolean canHandle(Request request) {
         MessageBytes authorization =
                 request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);

@@ -53,6 +53,11 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	private static final String JWT_ASSERTION_HEADER = "X-JWT-Assertion";
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public boolean canHandle(Request request) {
 	    String authorizationHeader = request.getHeader(JWTAuthenticator.JWT_ASSERTION_HEADER);
 	    if((authorizationHeader != null) && !authorizationHeader.isEmpty()){

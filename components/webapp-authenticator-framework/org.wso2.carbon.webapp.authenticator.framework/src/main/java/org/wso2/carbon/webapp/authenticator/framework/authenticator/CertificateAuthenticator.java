@@ -27,6 +27,11 @@ public class CertificateAuthenticator implements WebappAuthenticator {
     private static final String CERTIFICATE_VERIFICATION_HEADER = "certificate-verification-header";
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public boolean canHandle(Request request) {
         String certVerificationHeader = request.getContext().findParameter(CERTIFICATE_VERIFICATION_HEADER);
         if (certVerificationHeader != null && !certVerificationHeader.isEmpty()) {

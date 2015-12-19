@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
-    "uri": "/enroll",
+    "uri": "/device/enroll",
     "layout": "cdmf.layout.default"
 }

@@ -1,9 +1,26 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Device Details"}}
-{{unit "cdmf.unit.ui.content.title" pageHeader="Device"}}
 {{unit "cdmf.unit.lib.service-invoker-utility"}}
 {{unit "cdmf.unit.lib.handlebars"}}
 
 {{unit deviceViewUnitName}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/devices">
+            Devices
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            Device Details
+        </a>
+    </li>
+{{/zone}}
 
 {{#zone "content"}}
     {{unit "cdmf.unit.lib.data-table"}}

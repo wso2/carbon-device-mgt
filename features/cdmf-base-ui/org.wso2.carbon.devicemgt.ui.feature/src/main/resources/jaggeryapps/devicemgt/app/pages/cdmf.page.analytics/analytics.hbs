@@ -1,6 +1,24 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Device Analytics"}}
 {{unit "cdmf.unit.ui.content.title" pageHeader="Analytics"}}
 
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/devices">
+            Devices
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            Analytics
+        </a>
+    </li>
+{{/zone}}
+
 {{#zone "content"}}
     {{unit "cdmf.unit.analytics"}}
 {{/zone}}

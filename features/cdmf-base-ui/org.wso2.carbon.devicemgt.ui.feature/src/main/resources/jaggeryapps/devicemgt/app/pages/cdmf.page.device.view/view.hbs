@@ -4,6 +4,24 @@
 
 {{unit deviceViewUnitName}}
 
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/devices">
+            Devices
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            Device Details
+        </a>
+    </li>
+{{/zone}}
+
 {{#zone "content"}}
     {{unit "cdmf.unit.lib.data-table"}}
     {{unit "cdmf.unit.device.operation-mod"}}

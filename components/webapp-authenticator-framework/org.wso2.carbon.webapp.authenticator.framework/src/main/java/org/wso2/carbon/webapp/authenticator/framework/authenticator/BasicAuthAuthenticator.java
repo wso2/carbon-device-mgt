@@ -27,8 +27,6 @@ import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.webapp.authenticator.framework.Constants;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 
-import java.util.Properties;
-
 public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     private static final String BASIC_AUTH_AUTHENTICATOR = "BasicAuth";
@@ -55,21 +53,6 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
     @Override
     public String getName() {
         return BasicAuthAuthenticator.BASIC_AUTH_AUTHENTICATOR;
-    }
-
-    @Override
-    public String getProperty(String name) {
-        return null;
-    }
-
-    @Override
-    public Properties getProperties() {
-        return null;
-    }
-
-    @Override
-    public void setProperties(Properties properties) {
-
     }
 
     private Credentials getCredentials(Request request) {

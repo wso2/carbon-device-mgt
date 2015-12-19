@@ -105,15 +105,9 @@
                             org.apache.axis2.client,
                             org.apache.commons.codec.binary,
                             org.apache.commons.httpclient,
-                            org.wso2.carbon.core.security,
-                            org.apache.axis2.context,
-                            org.apache.commons.httpclient.params,
-                            org.apache.commons.pool,
-                            org.apache.commons.pool.impl,
-                            org.apache.http.client,
-                            org.apache.http.conn,
-                            org.apache.http.impl.client
+                            org.wso2.carbon.core.security
                         </Import-Package>
+                        <!--<Fragment-Host>tomcat</Fragment-Host>-->
                     </instructions>
                 </configuration>
             </plugin>

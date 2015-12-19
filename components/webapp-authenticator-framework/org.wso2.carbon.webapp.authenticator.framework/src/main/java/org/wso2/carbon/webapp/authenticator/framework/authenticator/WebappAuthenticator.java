@@ -22,8 +22,6 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 
-import java.util.Properties;
-
 public interface WebappAuthenticator {
 
     enum Status {
@@ -35,11 +33,5 @@ public interface WebappAuthenticator {
     AuthenticationInfo authenticate(Request request, Response response);
 
     String getName();
-
-    String getProperty(String name);
-
-    Properties getProperties();
-
-    void setProperties(Properties properties);
 
 }

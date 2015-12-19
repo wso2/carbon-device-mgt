@@ -23,17 +23,12 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.wso2.carbon.identity.oauth2.stub.OAuth2TokenValidationServiceStub;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_OAuth2AccessToken;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_TokenValidationContextParam;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-import org.wso2.carbon.webapp.authenticator.framework.Utils.OAuthTokenValidationStubFactory;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthConstants;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthTokenValidationException;
@@ -42,25 +37,30 @@ import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthV
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Handles the OAuth2 token validation from remote IS servers using remote OAuthValidation service-stub.
  */
 public class RemoteOAuthValidator implements OAuth2TokenValidator {
 
-    private GenericObjectPool stubs;
+    private String hostURL;
+    private String adminUserName;
+    private String adminPassword;
 
-    private static final Log log = LogFactory.getLog(RemoteOAuthValidator.class);
+    public RemoteOAuthValidator(String hostURL, String adminUserName, String adminPassword) {
+        this.hostURL = hostURL;
+        this.adminUserName = adminUserName;
+        this.adminPassword = adminPassword;
+    }
 
-    public RemoteOAuthValidator(String hostURL, String adminUserName, String adminPassword, Properties properties) {
-        this.stubs = new GenericObjectPool(
-                new OAuthTokenValidationStubFactory(hostURL, adminUserName, adminPassword, properties));
+    private String getBasicAuthCredentials() {
+        byte[] bytesEncoded = Base64.encodeBase64((adminUserName + ":" + adminPassword).getBytes());
+        return new String(bytesEncoded);
     }
 
     @Override
     public OAuthValidationResponse validateToken(String accessToken, String resource) throws
-            OAuthTokenValidationException {
+                                                                                      OAuthTokenValidationException {
         OAuth2TokenValidationRequestDTO validationRequest = new OAuth2TokenValidationRequestDTO();
         OAuth2TokenValidationRequestDTO_OAuth2AccessToken oauthToken =
                 new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
@@ -79,25 +79,29 @@ public class RemoteOAuthValidator implements OAuth2TokenValidator {
         tokenValidationContextParams[0] = resourceContextParam;
         validationRequest.setContext(tokenValidationContextParams);
 
-        OAuth2TokenValidationResponseDTO tokenValidationResponse;
-        OAuth2TokenValidationServiceStub stub = null;
+        OAuth2TokenValidationServiceStub tokenValidationService;
         try {
-            stub = (OAuth2TokenValidationServiceStub) stubs.borrowObject();
-            tokenValidationResponse = stub.
-                    findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+            tokenValidationService = new OAuth2TokenValidationServiceStub(hostURL);
+        } catch (AxisFault axisFault) {
+            throw new OAuthTokenValidationException("Exception occurred while obtaining the " +
+                                                    "OAuth2TokenValidationServiceStub.", axisFault);
+        }
+        ServiceClient client = tokenValidationService._getServiceClient();
+        Options options = client.getOptions();
+        List<Header> headerList = new ArrayList<>();
+        Header header = new Header();
+        header.setName(HTTPConstants.HEADER_AUTHORIZATION);
+        header.setValue(OAuthConstants.AUTHORIZATION_HEADER_PREFIX_BASIC + " " + getBasicAuthCredentials());
+        headerList.add(header);
+        options.setProperty(HTTPConstants.HTTP_HEADERS, headerList);
+        client.setOptions(options);
+        OAuth2TokenValidationResponseDTO tokenValidationResponse;
+        try {
+            tokenValidationResponse = tokenValidationService.
+                                      findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
         } catch (RemoteException e) {
-            throw new OAuthTokenValidationException("Remote Exception occurred while invoking the Remote " +
-                    "IS server for OAuth2 token validation.", e);
-        } catch (Exception e) {
-            throw new OAuthTokenValidationException("Error occurred while borrowing an oauth token validation " +
-                    "service stub from the pool", e);
-        } finally {
-            try {
-                stubs.returnObject(stub);
-            } catch (Exception e) {
-                log.warn("Error occurred while returning the object back to the oauth token validation service " +
-                        "   stub pool", e);
-            }
+            throw new OAuthTokenValidationException("Remote Exception occurred while invoking the Remote IS server for " +
+                                                    "OAuth2 token validation.", e);
         }
         boolean isValid = tokenValidationResponse.getValid();
         String userName;
@@ -111,7 +115,6 @@ public class RemoteOAuthValidator implements OAuth2TokenValidator {
             oAuthValidationResponse.setErrorMsg(tokenValidationResponse.getErrorMsg());
             return oAuthValidationResponse;
         }
-        return new OAuthValidationResponse(userName, tenantDomain, isValid);
+        return new OAuthValidationResponse(userName,tenantDomain,isValid);
     }
-
 }

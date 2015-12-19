@@ -39,6 +39,7 @@ import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkData
 
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 /**
@@ -141,4 +142,20 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	public String getName() {
 		return JWTAuthenticator.JWT_AUTHENTICATOR;
 	}
+
+    @Override
+    public String getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public Properties getProperties() {
+        return null;
+    }
+
+    @Override
+    public void setProperties(Properties properties) {
+
+    }
+
 }

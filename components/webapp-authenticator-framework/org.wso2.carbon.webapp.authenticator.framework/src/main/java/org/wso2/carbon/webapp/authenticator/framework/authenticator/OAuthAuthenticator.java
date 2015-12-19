@@ -24,16 +24,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-import org.wso2.carbon.webapp.authenticator.framework.*;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
+import org.wso2.carbon.webapp.authenticator.framework.Constants;
 import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthTokenValidationException;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidationResponse;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidatorFactory;
 
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,8 +47,22 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     private static final String BEARER_TOKEN_TYPE = "bearer";
     private static final String RESOURCE_KEY = "resource";
 
+    private Properties properties;
+    private OAuth2TokenValidator tokenValidator;
 
     private static final Log log = LogFactory.getLog(OAuthAuthenticator.class);
+
+    public OAuthAuthenticator() {
+        String url = properties.getProperty("TokenValidationEndpointUrl");
+        String adminUsername = properties.getProperty("Username");
+        String adminPassword = properties.getProperty("Password");
+        boolean isRemote = Boolean.parseBoolean(properties.getProperty("IsRemote"));
+
+        Properties validatorProperties = new Properties();
+        validatorProperties.setProperty("MaxTotalConnections", properties.getProperty("MaxTotalConnections"));
+        validatorProperties.setProperty("MaxConnectionsPerHost", properties.getProperty("MaxTotalConnectionsPerHost"));
+        this.tokenValidator = OAuthValidatorFactory.getNewValidator(url, adminUsername, adminPassword, isRemote, validatorProperties);
+    }
 
     @Override
     public boolean canHandle(Request request) {
@@ -93,9 +108,8 @@ public class OAuthAuthenticator implements WebappAuthenticator {
                 String bearerToken = this.getBearerToken(request);
                 //Set the resource context param. This will be used in scope validation.
                 String resource = requestUri + ":" + requestMethod;
-                //Get the appropriate OAuth validator from OAuthValidatorFactory.
-                OAuth2TokenValidator oAuth2TokenValidator = OAuthValidatorFactory.getValidator();
-                OAuthValidationResponse oAuthValidationResponse = oAuth2TokenValidator.validateToken(bearerToken, resource);
+
+                OAuthValidationResponse oAuthValidationResponse = tokenValidator.validateToken(bearerToken, resource);
 
                 if (oAuthValidationResponse.isValid()) {
                     String username = oAuthValidationResponse.getUserName();
@@ -125,6 +139,24 @@ public class OAuthAuthenticator implements WebappAuthenticator {
     @Override
     public String getName() {
         return OAuthAuthenticator.OAUTH_AUTHENTICATOR;
+    }
+
+    @Override
+    public String getProperty(String name) {
+        if (properties == null) {
+            return null;
+        }
+        return properties.getProperty(name);
+    }
+
+    @Override
+    public Properties getProperties() {
+        return properties;
+    }
+
+    @Override
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 
     private String getBearerToken(Request request) {

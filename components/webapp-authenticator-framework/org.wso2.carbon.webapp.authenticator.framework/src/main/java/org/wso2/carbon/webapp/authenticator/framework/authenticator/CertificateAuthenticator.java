@@ -15,6 +15,7 @@ import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkData
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 
 import java.security.cert.X509Certificate;
+import java.util.Properties;
 
 /**
  * This authenticator authenticates HTTP requests using certificates.
@@ -93,4 +94,20 @@ public class CertificateAuthenticator implements WebappAuthenticator {
     public String getName() {
         return CERTIFICATE_AUTHENTICATOR;
     }
+
+    @Override
+    public String getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public Properties getProperties() {
+        return null;
+    }
+
+    @Override
+    public void setProperties(Properties properties) {
+
+    }
+
 }

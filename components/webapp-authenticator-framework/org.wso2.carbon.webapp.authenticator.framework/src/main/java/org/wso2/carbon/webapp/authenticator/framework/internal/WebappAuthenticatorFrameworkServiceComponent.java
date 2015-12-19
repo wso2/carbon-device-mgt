@@ -36,6 +36,7 @@ import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticator
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @scr.component name="org.wso2.carbon.webapp.authenticator" immediate="true"
@@ -79,6 +80,13 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             for (AuthenticatorConfig config : WebappAuthenticatorConfig.getInstance().getAuthenticators()) {
                 WebappAuthenticator authenticator = (WebappAuthenticator) Class.forName(config.getClassName()).
                         newInstance();
+                if (config.getParams() != null || !config.getParams().isEmpty()) {
+                    Properties properties = new Properties();
+                    for (AuthenticatorConfig.Parameter param : config.getParams()) {
+                        properties.setProperty(param.getName(), param.getValue());
+                    }
+                    authenticator.setProperties(properties);
+                }
                 repository.addAuthenticator(authenticator);
             }
             AuthenticatorFrameworkDataHolder.getInstance().setWebappAuthenticatorRepository(repository);

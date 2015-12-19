@@ -1263,6 +1263,12 @@
                 <artifactId>neethi</artifactId>
                 <version>${neethi.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>commons-pool.wso2</groupId>
+                <artifactId>commons-pool</artifactId>
+                <version>${commons.pool.wso2.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1554,8 +1560,10 @@
         <neethi.version>2.0.4</neethi.version>
         <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
 
-	<!-- Release plugin ID for github-->
-	<project.scm.id>github-scm</project.scm.id>
+        <!-- Release plugin ID for github-->
+        <project.scm.id>github-scm</project.scm.id>
+
+        <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
     </properties>
 
 </project>

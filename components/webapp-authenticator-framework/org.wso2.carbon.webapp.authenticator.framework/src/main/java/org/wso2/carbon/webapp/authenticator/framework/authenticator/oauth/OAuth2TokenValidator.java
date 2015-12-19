@@ -31,4 +31,5 @@ public interface OAuth2TokenValidator {
      * @return OAuthValidationResponse with the validated results.
      */
     OAuthValidationResponse validateToken(String accessToken, String resource) throws OAuthTokenValidationException;
+
 }

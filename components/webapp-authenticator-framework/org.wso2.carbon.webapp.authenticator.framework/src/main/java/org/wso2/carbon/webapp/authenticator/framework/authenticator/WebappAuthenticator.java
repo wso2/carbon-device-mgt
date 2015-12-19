@@ -30,8 +30,6 @@ public interface WebappAuthenticator {
         SUCCESS, FAILURE, CONTINUE
     }
 
-    void init();
-
     boolean canHandle(Request request);
 
     AuthenticationInfo authenticate(Request request, Response response);

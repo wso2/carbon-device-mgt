@@ -31,9 +31,6 @@ import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.wso2.carbon.identity.oauth2.stub.OAuth2TokenValidationServiceStub;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthConstants;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthTokenValidationException;
@@ -55,10 +52,12 @@ public class OAuthTokenValidationStubFactory implements PoolableObjectFactory {
         this.url = url;
         this.basicAuthHeader = new String(Base64.encodeBase64((adminUsername + ":" + adminPassword).getBytes()));
 
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setDefaultMaxPerRoute(Integer.parseInt(properties.getProperty("MaxConnectionsPerHost")));
-        connectionManager.setMaxTotal(Integer.parseInt(properties.getProperty("MaxTotalConnections")));
-        this.httpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
+        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        connectionManager.getParams().setDefaultMaxConnectionsPerHost(
+                Integer.parseInt(properties.getProperty("MaxConnectionsPerHost")));
+        connectionManager.getParams().setMaxTotalConnections(
+                Integer.parseInt(properties.getProperty("MaxTotalConnections")));
+        this.httpClient = new DefaultHttpClient((ClientConnectionManager) connectionManager);
     }
 
     @Override

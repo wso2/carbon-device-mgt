@@ -80,14 +80,13 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             for (AuthenticatorConfig config : WebappAuthenticatorConfig.getInstance().getAuthenticators()) {
                 WebappAuthenticator authenticator = (WebappAuthenticator) Class.forName(config.getClassName()).
                         newInstance();
-                if (config.getParams() != null && !config.getParams().isEmpty()) {
+                if (config.getParams() != null || !config.getParams().isEmpty()) {
                     Properties properties = new Properties();
                     for (AuthenticatorConfig.Parameter param : config.getParams()) {
                         properties.setProperty(param.getName(), param.getValue());
                     }
                     authenticator.setProperties(properties);
                 }
-                authenticator.init();
                 repository.addAuthenticator(authenticator);
             }
             AuthenticatorFrameworkDataHolder.getInstance().setWebappAuthenticatorRepository(repository);
@@ -100,7 +99,7 @@ public class WebappAuthenticatorFrameworkServiceComponent {
                 log.debug("Web Application Authenticator Framework Bundle has been started successfully");
             }
         } catch (Throwable e) {
-                log.error("Error occurred while initializing the bundle", e);
+            log.error("Error occurred while initializing the bundle", e);
         }
     }
 

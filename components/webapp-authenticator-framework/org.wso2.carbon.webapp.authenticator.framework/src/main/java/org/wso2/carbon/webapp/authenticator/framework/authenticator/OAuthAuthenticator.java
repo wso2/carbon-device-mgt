@@ -52,33 +52,16 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
     private static final Log log = LogFactory.getLog(OAuthAuthenticator.class);
 
-    @Override
-    public void init() {
-        if (properties == null) {
-            throw new IllegalArgumentException("Required properties needed to initialize OAuthAuthenticator are " +
-                    "not provided");
-        }
+    public OAuthAuthenticator() {
         String url = properties.getProperty("TokenValidationEndpointUrl");
-        if (url == null || url.isEmpty()) {
-            throw new IllegalArgumentException("OAuth token validation endpoint url is not provided");
-        }
         String adminUsername = properties.getProperty("Username");
-        if (adminUsername == null) {
-            throw new IllegalArgumentException("Username to connect to the OAuth token validation endpoint is " +
-                    "not provided");
-        }
         String adminPassword = properties.getProperty("Password");
-        if (adminPassword == null) {
-            throw new IllegalArgumentException("Password to connect to the OAuth token validation endpoint is " +
-                    "not provided");
-        }
         boolean isRemote = Boolean.parseBoolean(properties.getProperty("IsRemote"));
 
         Properties validatorProperties = new Properties();
         validatorProperties.setProperty("MaxTotalConnections", properties.getProperty("MaxTotalConnections"));
-        validatorProperties.setProperty("MaxConnectionsPerHost", properties.getProperty("MaxConnectionsPerHost"));
-        this.tokenValidator =
-                OAuthValidatorFactory.getNewValidator(url, adminUsername, adminPassword, isRemote, validatorProperties);
+        validatorProperties.setProperty("MaxConnectionsPerHost", properties.getProperty("MaxTotalConnectionsPerHost"));
+        this.tokenValidator = OAuthValidatorFactory.getNewValidator(url, adminUsername, adminPassword, isRemote, validatorProperties);
     }
 
     @Override

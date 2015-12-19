@@ -112,8 +112,7 @@
                             org.apache.commons.pool.impl,
                             org.apache.http.client,
                             org.apache.http.conn,
-                            org.apache.http.impl.client,
-                            org.apache.http.impl.conn
+                            org.apache.http.impl.client
                         </Import-Package>
                     </instructions>
                 </configuration>

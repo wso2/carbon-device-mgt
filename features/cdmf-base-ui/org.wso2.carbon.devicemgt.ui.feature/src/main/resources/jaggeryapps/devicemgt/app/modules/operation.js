@@ -65,35 +65,67 @@ var operationModule = function () {
         privateMethods.getOperationsFromFeatures(deviceType);
         switch (deviceType) {
             case "virtual_firealarm":
-                return [{name: "Alarm Status", description: "0:off 1:on", operation: "bulb"}];
+                return [{
+                    name: "Alarm Status", operation: "bulb",
+                    params: ["state"]
+                }];
             case "digital_display":
                 return [
-                    {name: "Restart Browser",operation: "restart-browser",
-                                params : ["deviceId","owner","sessionId"]},
-                    {name: "Close Browser", operation: "close-browser",
-                                params : ["deviceId","owner","sessionId"]},
-                    {name: "Terminate Display", operation: "terminate-display",
-                                params : ["deviceId","owner","sessionId"]},
-                    {name: "Restart Display", operation: "restart-display",
-                                params : ["deviceId","owner","sessionId"]},
-                    {name: "Shutdown Display", operation: "shutdown-display",
-                                params : ["deviceId","owner","sessionId"]},
-                    {name: "Edit Content", operation: "edit-content",
-                                params : ["deviceId","owner","sessionId","path","attribute","new-value"], editcontent : "true"},
-                    {name: "Add New Resource", operation: "add-resource",
-                                params : ["deviceId","owner","sessionId","type","time","path"], add : "true"},
-                    {name: "Add New Resource Before", operation: "add-resource-before",
-                                params : ["deviceId","owner","sessionId","type","time","path","next-page"], add : "true" , before : "true"},
-                    {name: "Add New Resource After", operation: "add-resource-next",
-                                params : ["deviceId","owner","sessionId","type","time","path","before-page"], add : "true" , after : "true"},
-                    {name: "Remove Resource", operation: "remove-resource",
-                                params : ["deviceId","owner","sessionId","path"], removeresource : "true"},
-                    {name: "Remove Directory", operation: "remove-directory",
-                                params : ["deviceId","owner","sessionId","directory-name"], remove : "true"},
-                    {name: "Remove Content", operation: "remove-content",
-                                params : ["deviceId","owner","sessionId","directory-name","content"], remove : "true" , content : "true"},
+                    {
+                        name: "Restart Browser", operation: "restart-browser",
+                        params: []
+                    },
+                    {
+                        name: "Close Browser", operation: "close-browser",
+                        params: []
+                    },
+                    {
+                        name: "Terminate Display", operation: "terminate-display",
+                        params: []
+                    },
+                    {
+                        name: "Restart Display", operation: "restart-display",
+                        params: []
+                    },
+                    {
+                        name: "Shutdown Display", operation: "shutdown-display",
+                        params: []
+                    },
+                    {
+                        name: "Edit Content",
+                        operation: "edit-content",
+                        params: ["path", "attribute", "new-value"]
+                    },
+                    {
+                        name: "Add New Resource",
+                        operation: "add-resource",
+                        params: ["type", "time", "path"]
+                    },
+                    {
+                        name: "Add New Resource Before",
+                        operation: "add-resource-before",
+                        params: ["type", "time", "path", "next-page"]
+                    },
+                    {
+                        name: "Add New Resource After",
+                        operation: "add-resource-next",
+                        params: ["type", "time", "path", "before-page"]
+                    },
+                    {
+                        name: "Remove Resource", operation: "remove-resource",
+                        params: ["path"], removeresource: "true"
+                    },
+                    {
+                        name: "Remove Directory", operation: "remove-directory",
+                        params: ["directory-name"], remove: "true"
+                    },
+                    {
+                        name: "Remove Content",
+                        operation: "remove-content",
+                        params: ["directory-name", "content"]
+                    }
 
-                 ];
+                ];
 
             default:
                 return [];
@@ -124,7 +156,8 @@ var operationModule = function () {
 
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, params) {
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
+        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '"}';
+        log.info(params);
         return post(endPoint, params, JSON.parse(header), "json");
     };
 

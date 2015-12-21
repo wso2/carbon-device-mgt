@@ -568,3 +568,8 @@ select.select2 {
 .qr-code canvas{
 	border: 2px solid white;
 }
+
+#userEditBtn {
+	background-color: #7fa030;
+	width: 16.65%;
+}

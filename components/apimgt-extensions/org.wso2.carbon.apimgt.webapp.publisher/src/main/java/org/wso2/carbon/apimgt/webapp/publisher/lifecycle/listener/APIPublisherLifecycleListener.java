@@ -27,9 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIConsumer;
 import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
-import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
-import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
-import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
+import org.wso2.carbon.apimgt.webapp.publisher.*;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
@@ -116,11 +114,24 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                                     APIIdentifier subId = api.getId();
                                     subId.setTier(UNLIMITED);
                                     apiPublisherService.addSubscription(subId, applicationId, apiOwner);
+
+                                    String[] allowedDomains = {"ALL"};
+
+                                    KeyMgtInfo keyMgtInfo = new KeyMgtInfo(apiOwner, applicationName,
+                                            "PRODUCTION", "null", allowedDomains, "3600", "null", "", "{\"username\":\"admin\"}");
+
+                                    KeyMgtInfoUtil.getInstance().addKeyMgtInfo(keyMgtInfo);
+
                                 } else {
                                     if (log.isDebugEnabled()) {
                                         log.debug("Application [" + applicationName +
                                                 "] already exists for Subscriber [" + apiOwner + "]");
                                     }
+                                    String[] allowedDomains = {"ALL"};
+                                    KeyMgtInfo keyMgtInfo = new KeyMgtInfo(apiOwner, applicationName,
+                                            "PRODUCTION", "null", allowedDomains, "3600", "null", "",
+                                            "{\"username\":\"" +apiOwner +"\"}");
+                                    KeyMgtInfoUtil.getInstance().addKeyMgtInfo(keyMgtInfo);
                                 }
                             }
 

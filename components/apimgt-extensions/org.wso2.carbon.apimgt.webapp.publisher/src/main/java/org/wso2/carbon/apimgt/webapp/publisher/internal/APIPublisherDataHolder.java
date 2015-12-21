@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
+import org.wso2.carbon.apimgt.keymgt.service.APIKeyMgtSubscriberService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
@@ -25,6 +26,7 @@ public class APIPublisherDataHolder {
 
     private APIPublisherService apiPublisherService;
     private ConfigurationContextService configurationContextService;
+    private APIKeyMgtSubscriberService apiKeyMgtSubscriberService;
 
     private static APIPublisherDataHolder thisInstance = new APIPublisherDataHolder();
 
@@ -55,6 +57,10 @@ public class APIPublisherDataHolder {
             throw new IllegalStateException("ConfigurationContext service is not initialized properly");
         }
         return configurationContextService;
+    }
+
+    public void setApiKeyMgtSubscriberService(APIKeyMgtSubscriberService apiKeyMgtSubscriberService) {
+        this.apiKeyMgtSubscriberService = apiKeyMgtSubscriberService;
     }
 
 }

@@ -10,13 +10,13 @@
 
     <div class="panel-body">
         <form id="signInForm" method="POST" action="{{@app.context}}/uuf/login">
-            <div class="wr-input-control">
-                <label class="wr-input-label">Username *</label>
+            <div class="form-group">
+                <label for="username">Username *</label>
                 <input type="text" name="username" class="form-control" placeholder="Enter your username"
                        autofocus="autofocus" required="required" />
             </div>
-            <div class="wr-input-control">
-                <label class="wr-input-label">Password *</label>
+            <div class="form-group">
+                <label for="password">Password *</label>
                 <input type="password" name="password" class="form-control" placeholder="Enter your password"
                        required="required" />
             </div>

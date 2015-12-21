@@ -40,23 +40,13 @@ function onRequest(context) {
             if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
                 deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
             }
+            deviceTypesList.push({
+                "hasCustTemplate": false,
+                "deviceTypeLabel": deviceTypeLabel,
+                "deviceTypeName": deviceTypes[i].name,
+                "deviceTypeId": deviceTypes[i].id
+            });
 
-            var deviceTypeListingTemplateFile = getFile("../" + DTYPE_UNIT_NAME_PREFIX + deviceTypes[i].name + DTYPE_UNIT_NAME_SUFFIX + DTYPE_UNIT_LISTING_TEMPLATE_PATH);
-            if (deviceTypeListingTemplateFile) {
-                deviceTypesList.push({
-                    "hasCustTemplate": true,
-                    "deviceTypeLabel": deviceTypeLabel,
-                    "deviceTypeName": deviceTypes[i].name,
-                    "deviceTypeId": deviceTypes[i].id
-                });
-            } else {
-                deviceTypesList.push({
-                    "hasCustTemplate": false,
-                    "deviceTypeLabel": deviceTypeLabel,
-                    "deviceTypeName": deviceTypes[i].name,
-                    "deviceTypeId": deviceTypes[i].id
-                });
-            }
         }
 
         viewModel.deviceTypesList = stringify(deviceTypesList);

@@ -268,7 +268,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                 log.debug("num of apps installed:" + installedAppList.size());
             }
             List<Application> appsToAdd = new ArrayList<>();
-            List<Integer> appIdsToRemove = new ArrayList<>();
+            List<Integer> appIdsToRemove = new ArrayList<>(installedAppList.size());
 
             for (Application installedApp : installedAppList) {
                 if (!applications.contains(installedApp)) {

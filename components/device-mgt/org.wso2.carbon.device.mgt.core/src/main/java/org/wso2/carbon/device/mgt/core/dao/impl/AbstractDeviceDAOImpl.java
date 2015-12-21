@@ -368,7 +368,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String deviceType = request.getType();
+        String deviceType = request.getDeviceType();
         boolean isDeviceTypeProvided = false;
         String deviceName = request.getDeviceName();
         boolean isDeviceNameProvided = false;
@@ -415,7 +415,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setInt(1, tenantId);
             int paramIdx = 2;
             if (isDeviceTypeProvided) {
-                stmt.setString(paramIdx++, request.getType());
+                stmt.setString(paramIdx++, request.getDeviceType());
             }
             if (isDeviceNameProvided) {
                 stmt.setString(paramIdx++, request.getDeviceName() + "%");
@@ -444,7 +444,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public int getDeviceCount(String type, int tenantId) throws DeviceManagementDAOException {
+    public int getDeviceCountByType(String type, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -478,11 +478,11 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         try {
             conn = this.getConnection();
             String sql = "SELECT COUNT(e1.DEVICE_ID) AS DEVICE_COUNT FROM DM_DEVICE d, (SELECT e.DEVICE_ID " +
-                         "FROM DM_ENROLMENT e WHERE e.TENANT_ID = ? AND e.OWNER LIKE ?) " +
+                         "FROM DM_ENROLMENT e WHERE e.TENANT_ID = ? AND e.OWNER = ?) " +
                          "e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID AND t.ID = d.DEVICE_TYPE_ID";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setString(2, username + "%");
+            stmt.setString(2, username);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -526,7 +526,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public int getDeviceCountByOwnership(EnrolmentInfo.OwnerShip ownerShip, int tenantId) throws DeviceManagementDAOException {
+    public int getDeviceCountByOwnership(String ownerShip, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         int deviceCount = 0;
@@ -537,7 +537,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                          "DM_DEVICE_TYPE t WHERE d.ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setString(2, ownerShip.toString());
+            stmt.setString(2, ownerShip);
             stmt.setInt(3, tenantId);
             ResultSet rs = stmt.executeQuery();
 
@@ -554,7 +554,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
-    public int getDeviceCount(Status status, int tenantId) throws DeviceManagementDAOException {
+    public int getDeviceCountByStatus(String status, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         int deviceCount = 0;
@@ -565,7 +565,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                          "DM_DEVICE_TYPE t WHERE d.ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setString(2, status.toString());
+            stmt.setString(2, status);
             stmt.setInt(3, tenantId);
             ResultSet rs = stmt.executeQuery();
 

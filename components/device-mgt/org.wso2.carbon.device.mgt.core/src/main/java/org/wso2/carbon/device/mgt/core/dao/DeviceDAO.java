@@ -38,7 +38,7 @@ public interface DeviceDAO {
      * @return returns the device count of given type.
      * @throws DeviceManagementDAOException
      */
-    int getDeviceCount(String type, int tenantId) throws DeviceManagementDAOException;
+    int getDeviceCountByType(String type, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to get the device count by user.
@@ -68,7 +68,7 @@ public interface DeviceDAO {
      * @return returns the device count of given status.
      * @throws DeviceManagementDAOException
      */
-    int getDeviceCount(EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException;
+    int getDeviceCountByStatus(String status, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to get the device count by ownership.
@@ -78,7 +78,7 @@ public interface DeviceDAO {
      * @return returns the device count of given ownership.
      * @throws DeviceManagementDAOException
      */
-    int getDeviceCountByOwnership(EnrolmentInfo.OwnerShip ownerShip, int tenantId) throws DeviceManagementDAOException;
+    int getDeviceCountByOwnership(String ownerShip, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to add a device.
@@ -174,13 +174,12 @@ public interface DeviceDAO {
     /**
      * This method is used to retrieve the devices of a given tenant and type as a paginated result.
      *
-     * @param type device type.
-     * @param request  PaginationRequest object holding the data for pagination
+     * @param request  PaginationRequest object holding the data for pagination and search.
      * @param tenantId tenant id.
      * @return returns paginated list of devices of provided type.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevices(String type, PaginationRequest request, int tenantId) throws DeviceManagementDAOException;
+    List<Device> getDevicesByType(PaginationRequest request, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve all the devices of a given tenant and device type.
@@ -203,15 +202,14 @@ public interface DeviceDAO {
     List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve devices of a given user.
+     * This method is used to retrieve devices of a given user as a paginated result.
      *
-     * @param username user name.
-     * @param request  PaginationRequest object holding the data for pagination
+     * @param request  PaginationRequest object holding the data for pagination and search data.
      * @param tenantId tenant id.
      * @return returns paginated list of devices in which owner matches (search) with given username.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevicesOfUser(String username, PaginationRequest request, int tenantId) throws DeviceManagementDAOException;
+    List<Device> getDevicesOfUser(PaginationRequest request, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve the device count of a given tenant.
@@ -251,15 +249,14 @@ public interface DeviceDAO {
     List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve devices of a given device name.
+     * This method is used to retrieve devices of a given device name as a paginated result.
      *
-     * @param deviceName device name.
-     * @param request  PaginationRequest object holding the data for pagination
+     * @param request  PaginationRequest object holding the data for pagination and device search info.
      * @param tenantId   tenant id.
      * @return returns paginated list of devices which name matches (search) given device-name.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevicesByName(String deviceName, PaginationRequest request, int tenantId)
+    List<Device> getDevicesByName(PaginationRequest request, int tenantId)
             throws DeviceManagementDAOException;
 
     /**
@@ -320,27 +317,25 @@ public interface DeviceDAO {
     List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve devices of a given ownership.
+     * This method is used to retrieve devices of a given ownership as a paginated result.
      *
-     * @param ownerShip   Ownership of devices.
-     * @param request  PaginationRequest object holding the data for pagination
+     * @param request  PaginationRequest object holding the data for pagination and device search.
      * @param tenantId tenant id.
      * @return returns list of devices of given ownership.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevicesByOwnership(EnrolmentInfo.OwnerShip ownerShip, PaginationRequest request, int tenantId)
+    List<Device> getDevicesByOwnership(PaginationRequest request, int tenantId)
             throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve devices of a given enrollment status.
+     * This method is used to retrieve devices of a given enrollment status as a paginated result
      *
-     * @param status   enrollment status.
      * @param request  PaginationRequest object holding the data for pagination
      * @param tenantId tenant id.
      * @return returns paginated list of devices of given status.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevicesByStatus(EnrolmentInfo.Status status, PaginationRequest request, int tenantId)
+    List<Device> getDevicesByStatus(PaginationRequest request, int tenantId)
             throws DeviceManagementDAOException;
 
     /**

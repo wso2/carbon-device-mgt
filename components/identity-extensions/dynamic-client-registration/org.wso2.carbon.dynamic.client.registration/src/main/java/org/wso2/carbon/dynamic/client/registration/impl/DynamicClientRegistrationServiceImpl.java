@@ -123,9 +123,6 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
         String grantType = profile.getGrantType();
         String callbackUrl = profile.getCallbackUrl();
         boolean isSaaSApp = profile.isSaasApp();
-        String audience = profile.getAudience();
-        String assertionConsumerURL = profile.getAssertionConsumerURL();
-        String recipientValidationURL = profile.getRecepientValidationURL();
 
         if (userId == null || userId.isEmpty()) {
             return null;
@@ -220,13 +217,6 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
 
             SAMLSSOServiceProviderDTO samlssoServiceProviderDTO = new SAMLSSOServiceProviderDTO();
             samlssoServiceProviderDTO.setIssuer(MDM);
-            samlssoServiceProviderDTO.setAssertionConsumerUrls(new String[] {assertionConsumerURL});
-            samlssoServiceProviderDTO.setDoSignResponse(true);
-            samlssoServiceProviderDTO.setRequestedAudiences(new String[] { audience });
-            samlssoServiceProviderDTO.setDefaultAssertionConsumerUrl(assertionConsumerURL);
-            samlssoServiceProviderDTO.setRequestedRecipients(new String[] {recipientValidationURL});
-            samlssoServiceProviderDTO.setDoSignAssertions(true);
-
 
             SAMLSSOConfigAdmin configAdmin = new SAMLSSOConfigAdmin(getConfigSystemRegistry());
             configAdmin.addRelyingPartyServiceProvider(samlssoServiceProviderDTO);

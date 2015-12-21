@@ -1263,6 +1263,23 @@
                 <artifactId>neethi</artifactId>
                 <version>${neethi.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>commons-pool.wso2</groupId>
+                <artifactId>commons-pool</artifactId>
+                <version>${commons.pool.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.wso2</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpcomponents.httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-httpclient.wso2</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>${commons.httpclient.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -1373,6 +1390,11 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.8</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -1554,8 +1576,13 @@
         <neethi.version>2.0.4</neethi.version>
         <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
 
-	<!-- Release plugin ID for github-->
-	<project.scm.id>github-scm</project.scm.id>
+        <!-- Release plugin ID for github-->
+        <project.scm.id>github-scm</project.scm.id>
+
+        <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
+        <httpcomponents.httpclient.version>4.2.3.wso2v1</httpcomponents.httpclient.version>
+        <commons.httpclient.version>3.1.0.wso2v2</commons.httpclient.version>
+
     </properties>
 
 </project>

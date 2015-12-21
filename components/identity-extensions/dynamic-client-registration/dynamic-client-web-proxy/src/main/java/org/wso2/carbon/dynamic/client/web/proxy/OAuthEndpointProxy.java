@@ -60,15 +60,7 @@ public class OAuthEndpointProxy {
             int status = serverResponse.getStatusLine().getStatusCode();
             String resp = EntityUtils.toString(responseData, Constants.CharSets.CHARSET_UTF_8);
             response = Response.status(DCRProxyUtils.getResponseStatus(status)).entity(resp).build();
-        } catch (URISyntaxException e) {
-            String msg = "Service invoke error occurred while registering client";
-            log.error(msg, e);
-            response = Response.status(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        } catch (UnsupportedEncodingException e) {
-            String msg = "Service invoke error occurred while registering client";
-            log.error(msg, e);
-            response = Response.status(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
             String msg = "Service invoke error occurred while registering client";
             log.error(msg, e);
             response = Response.status(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();

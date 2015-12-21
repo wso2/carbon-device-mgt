@@ -78,7 +78,8 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             WebappAuthenticatorConfig.init();
             WebappAuthenticatorRepository repository = new WebappAuthenticatorRepository();
             for (AuthenticatorConfig config : WebappAuthenticatorConfig.getInstance().getAuthenticators()) {
-                WebappAuthenticator authenticator = (WebappAuthenticator)Class.forName(config.getClassName()).newInstance();
+                WebappAuthenticator authenticator =
+                        (WebappAuthenticator) Class.forName(config.getClassName()).newInstance();
 
                 if ((config.getParams() != null) && (!config.getParams().isEmpty())) {
                     Properties properties = new Properties();

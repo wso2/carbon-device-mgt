@@ -118,7 +118,8 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                                     String[] allowedDomains = {"ALL"};
 
                                     KeyMgtInfo keyMgtInfo = new KeyMgtInfo(apiOwner, applicationName,
-                                            "PRODUCTION", "null", allowedDomains, "3600", "null", "", "{\"username\":\"admin\"}");
+                                            "PRODUCTION", "null", allowedDomains, "3600", "null", "",
+                                            "{\"username\":\""+apiOwner+"\"}");
 
                                     KeyMgtInfoUtil.getInstance().addKeyMgtInfo(keyMgtInfo);
 

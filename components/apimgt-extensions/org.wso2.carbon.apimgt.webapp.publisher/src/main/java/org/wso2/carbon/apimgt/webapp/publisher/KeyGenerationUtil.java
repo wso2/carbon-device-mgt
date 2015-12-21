@@ -50,7 +50,9 @@ public class KeyGenerationUtil {
 			}
 
 		} catch (APIManagementException e) {
-			e.printStackTrace();
+			/*The exception here is not exposed as there is no method in APIM to check
+			if a given applicaion has a consumer key/secrete already.*/
+			log.info("Consumer key/secret already exists for application : "+deviceType);
 		}
 
 	}

@@ -43,27 +43,33 @@ public class RemoteOAuthValidator implements OAuth2TokenValidator {
     private static final Log log = LogFactory.getLog(RemoteOAuthValidator.class);
 
     public RemoteOAuthValidator(String hostURL, String adminUserName, String adminPassword, Properties properties) {
-        this.stubs = new GenericObjectPool(new OAuthTokenValidationStubFactory(hostURL, adminUserName, adminPassword, properties));
+        this.stubs =
+                new GenericObjectPool(new OAuthTokenValidationStubFactory(
+                        hostURL, adminUserName, adminPassword, properties));
     }
 
-    public OAuthValidationResponse validateToken(String accessToken, String resource) throws OAuthTokenValidationException {
+    public OAuthValidationResponse validateToken(String accessToken,
+                                                 String resource) throws OAuthTokenValidationException {
         OAuth2TokenValidationServiceStub stub = null;
         OAuth2TokenValidationResponseDTO validationResponse;
         try {
             OAuth2TokenValidationRequestDTO validationRequest = createValidationRequest(accessToken, resource);
             stub = (OAuth2TokenValidationServiceStub) this.stubs.borrowObject();
-            validationResponse = stub.findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+            validationResponse =
+                    stub.findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
         } catch (RemoteException e) {
-            throw new OAuthTokenValidationException("Remote Exception occurred while invoking the Remote IS server for OAuth2 token validation.", e);
+            throw new OAuthTokenValidationException("Remote Exception occurred while invoking the Remote " +
+                    "IS server for OAuth2 token validation.", e);
         } catch (Exception e) {
-            throw new OAuthTokenValidationException("Error occurred while borrowing an oauth token validation service stub from the pool", e);
+            throw new OAuthTokenValidationException("Error occurred while borrowing an oauth token validation " +
+                    "service stub from the pool", e);
         } finally {
             try {
                 this.stubs.returnObject(stub);
             } catch (Exception e) {
-                log.warn("Error occurred while returning the object back to the oauth token validation service    stub pool", e);
+                log.warn("Error occurred while returning the object back to the oauth token validation service " +
+                        "stub pool", e);
             }
-
         }
 
         if (validationResponse == null) {
@@ -89,18 +95,21 @@ public class RemoteOAuthValidator implements OAuth2TokenValidator {
 
     private OAuth2TokenValidationRequestDTO createValidationRequest(String accessToken, String resource) {
         OAuth2TokenValidationRequestDTO validationRequest = new OAuth2TokenValidationRequestDTO();
-        OAuth2TokenValidationRequestDTO_OAuth2AccessToken oauthToken = new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
+        OAuth2TokenValidationRequestDTO_OAuth2AccessToken oauthToken =
+                new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
 
         oauthToken.setTokenType("bearer");
         oauthToken.setIdentifier(accessToken);
         validationRequest.setAccessToken(oauthToken);
 
-        OAuth2TokenValidationRequestDTO_TokenValidationContextParam resourceContextParam = new OAuth2TokenValidationRequestDTO_TokenValidationContextParam();
+        OAuth2TokenValidationRequestDTO_TokenValidationContextParam resourceContextParam =
+                new OAuth2TokenValidationRequestDTO_TokenValidationContextParam();
 
         resourceContextParam.setKey("resource");
         resourceContextParam.setValue(resource);
 
-        OAuth2TokenValidationRequestDTO_TokenValidationContextParam[] tokenValidationContextParams = new OAuth2TokenValidationRequestDTO_TokenValidationContextParam[1];
+        OAuth2TokenValidationRequestDTO_TokenValidationContextParam[] tokenValidationContextParams =
+                new OAuth2TokenValidationRequestDTO_TokenValidationContextParam[1];
 
         tokenValidationContextParams[0] = resourceContextParam;
         validationRequest.setContext(tokenValidationContextParams);

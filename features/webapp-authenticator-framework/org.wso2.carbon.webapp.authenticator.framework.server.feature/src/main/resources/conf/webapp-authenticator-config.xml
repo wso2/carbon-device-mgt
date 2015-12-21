@@ -3,6 +3,14 @@
 		<Authenticator>
 			<Name>OAuth</Name>
 			<ClassName>org.wso2.carbon.webapp.authenticator.framework.authenticator.OAuthAuthenticator</ClassName>
+            <Parameters>
+                <Parameter name="IsRemote">true</Parameter>
+                <Parameter name="TokenValidationEndpointUrl">https://localhost:9443</Parameter>
+                <Parameter name="Username">admin</Parameter>
+                <Parameter name="Password">admin</Parameter>
+                <Parameter name="MaxTotalConnections">100</Parameter>
+                <Parameter name="MaxConnectionsPerHost">100</Parameter>
+            </Parameters>
 		</Authenticator>
         <Authenticator>
             <Name>BasicAuth</Name>

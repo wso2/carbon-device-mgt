@@ -86,10 +86,6 @@ public class PermissionAuthorizer {
             return WebappAuthenticator.Status.FAILURE;
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Is user authorized: " + isUserAuthorized);
-        }
-
         if (isUserAuthorized) {
             return WebappAuthenticator.Status.SUCCESS;
         } else {

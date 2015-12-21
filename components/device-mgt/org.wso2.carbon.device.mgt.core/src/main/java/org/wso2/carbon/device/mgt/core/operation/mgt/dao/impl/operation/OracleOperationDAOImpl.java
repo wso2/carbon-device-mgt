@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation;
 
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -38,7 +38,7 @@ import java.util.List;
 public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
 
     @Override
-    public List<? extends Operation> getOperationsForDevice(int enrolmentId, int index, int limit)
+    public List<? extends Operation> getOperationsForDevice(int enrolmentId, PaginationRequest request)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -49,12 +49,12 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
             String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
                          "OPERATION_CODE, om.STATUS  FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
-                         "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC " +
+                         "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC " +
                          "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
-            stmt.setInt(2, index);
-            stmt.setInt(3, limit);
+            stmt.setInt(2, request.getStartIndex());
+            stmt.setInt(3, request.getRowCount());
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -81,7 +81,7 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
     }
 
     @Override
-    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, int index, int limit,
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, PaginationRequest request,
                                                                     Operation.Status status)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
@@ -94,12 +94,12 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
                          "FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                          "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY " +
-                         "o.CREATED_TIMESTAMP ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                         "o.CREATED_TIMESTAMP DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());
-            stmt.setInt(3, index);
-            stmt.setInt(4, limit);
+            stmt.setInt(3, request.getStartIndex());
+            stmt.setInt(4, request.getRowCount());
             rs = stmt.executeQuery();
 
             while (rs.next()) {

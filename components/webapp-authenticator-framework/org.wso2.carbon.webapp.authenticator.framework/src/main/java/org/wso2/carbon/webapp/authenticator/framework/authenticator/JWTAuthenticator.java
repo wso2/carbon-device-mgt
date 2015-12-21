@@ -73,10 +73,6 @@ public class JWTAuthenticator implements WebappAuthenticator {
             authenticationInfo.setStatus(Status.CONTINUE);
 		}
 
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating using JWT header.");
-		}
-
 		//Get the filesystem keystore default primary certificate
 		KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(MultitenantConstants.SUPER_TENANT_ID);
 		try {

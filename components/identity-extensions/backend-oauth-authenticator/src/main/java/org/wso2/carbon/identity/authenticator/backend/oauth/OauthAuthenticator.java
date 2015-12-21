@@ -47,7 +47,7 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
         try {
             tokenValidator = OAuthValidatorFactory.getValidator();
         } catch (IllegalArgumentException e) {
-            log.error("Failed to initialise Authenticator",e);
+            log.error("Failed to initialise Authenticator", e);
         }
     }
 
@@ -59,14 +59,16 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
      */
     public boolean isHandle(MessageContext messageContext) {
         HttpServletRequest httpServletRequest = getHttpRequest(messageContext);
-        String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
-        if (headerValue != null && !headerValue.trim().isEmpty()) {
-            String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);
-            if (OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BEARER.equals(headerPart[0])) {
+        if (httpServletRequest != null) {
+            String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
+            if (headerValue != null && !headerValue.trim().isEmpty()) {
+                String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);
+                if (OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BEARER.equals(headerPart[0])) {
+                    return true;
+                }
+            } else if (httpServletRequest.getParameter(OauthAuthenticatorConstants.BEARER_TOKEN_IDENTIFIER) != null) {
                 return true;
             }
-        } else if (httpServletRequest.getParameter(OauthAuthenticatorConstants.BEARER_TOKEN_IDENTIFIER) != null) {
-            return true;
         }
         return false;
     }
@@ -134,7 +136,10 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
      * @return boolean true for enable or otherwise for disable status.
      */
     public boolean isDisabled() {
-        return false;
+        AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
+        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
+                getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
+        return authenticatorConfig.isDisabled();
     }
 
     /**

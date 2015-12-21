@@ -1,5 +1,22 @@
 {{unit "cdmf.unit.ui.title" pageTitle="User Management"}}
-{{unit "cdmf.unit.ui.content.title" pageHeader="Users"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/users">
+            Users
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            {{user.username}}
+        </a>
+    </li>
+{{/zone}}
 
 {{#zone "content"}}
     {{unit "cdmf.unit.user.view"}}

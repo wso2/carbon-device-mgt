@@ -16,6 +16,18 @@
     </li>
 {{/zone}}
 
+{{#zone "navbarActions"}}
+    <li>
+        <a href="{{@app.context}}/users/add-user" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-add fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+            Add User
+        </a>
+    </li>
+{{/zone}}
+
 {{#zone "content"}}
     {{unit "cdmf.unit.user.listing"}}
 {{/zone}}

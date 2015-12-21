@@ -1,5 +1,23 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Policy Management"}}
 
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/policies">
+            Policies
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            Add
+        </a>
+    </li>
+{{/zone}}
+
 {{#zone "content"}}
     {{unit "cdmf.unit.policy.create"}}
 {{/zone}}

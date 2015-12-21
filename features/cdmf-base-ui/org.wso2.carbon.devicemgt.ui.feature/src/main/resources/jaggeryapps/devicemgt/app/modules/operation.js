@@ -63,14 +63,16 @@ var operationModule = function () {
 
     publicMethods.getControlOperations = function (deviceType) {
         privateMethods.getOperationsFromFeatures(deviceType);
+        var operations = [];
         switch (deviceType) {
             case "virtual_firealarm":
-                return [{
+                operations = [{
                     name: "Alarm Status", operation: "bulb",
                     params: ["state"]
                 }];
+                break;
             case "digital_display":
-                return [
+                operations = [
                     {
                         name: "Restart Browser", operation: "restart-browser",
                         params: []
@@ -126,10 +128,17 @@ var operationModule = function () {
                     }
 
                 ];
-
+                break;
             default:
-                return [];
+                operations = [];
         }
+        for (var op in operations){
+            var iconPath = utility.getOperationIcon(deviceType, operations[op].operation);
+            if (iconPath){
+                operations[op]["icon"] = iconPath;
+            }
+        }
+        return operations;
     };
 
     publicMethods.getMonitorOperations = function (deviceType) {

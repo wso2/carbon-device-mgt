@@ -441,6 +441,11 @@ b, strong {
     font-weight: 500;
 }
 
+form .form-group label{
+	font-weight: 100;
+	font-size: 14px;
+	color: #555;
+}
 .form-horizontal .control-label {
 	font-weight: 500;
 }

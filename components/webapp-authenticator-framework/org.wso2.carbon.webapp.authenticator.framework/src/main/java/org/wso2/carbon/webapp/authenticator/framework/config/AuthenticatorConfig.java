@@ -18,14 +18,15 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework.config;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
+import java.util.List;
 
 @XmlRootElement(name = "Authenticator")
 public class AuthenticatorConfig {
 
     private String name;
     private String className;
+    private List<Parameter> params;
 
     @XmlElement(name = "Name", required = true)
     public String getName() {
@@ -43,6 +44,40 @@ public class AuthenticatorConfig {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    @XmlElementWrapper(name = "Parameters", nillable = true)
+    @XmlElement(name = "Parameter", nillable = false)
+    public List<Parameter> getParams() {
+        return this.params;
+    }
+
+    public void setParams(List<Parameter> params) {
+        this.params = params;
+    }
+
+    @XmlRootElement(name = "Parameter")
+    public static class Parameter {
+        private String name;
+        private String value;
+
+        @XmlAttribute(name = "Name")
+        public String getName() {
+            return this.name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @XmlValue
+        public String getValue() {
+            return this.value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 
 }

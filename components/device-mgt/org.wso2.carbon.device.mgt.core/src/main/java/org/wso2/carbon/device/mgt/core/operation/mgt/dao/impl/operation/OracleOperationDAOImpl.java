@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation;
 
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
@@ -37,7 +38,7 @@ import java.util.List;
 public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
 
     @Override
-    public List<? extends Operation> getOperationsForDevice(int enrolmentId, int index, int limit)
+    public List<? extends Operation> getOperationsForDevice(int enrolmentId, PaginationRequest request)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -52,8 +53,8 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
                          "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
-            stmt.setInt(2, index);
-            stmt.setInt(3, limit);
+            stmt.setInt(2, request.getStartIndex());
+            stmt.setInt(3, request.getRowCount());
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -80,7 +81,7 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
     }
 
     @Override
-    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, int index, int limit,
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, PaginationRequest request,
                                                                     Operation.Status status)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
@@ -97,8 +98,8 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, status.toString());
-            stmt.setInt(3, index);
-            stmt.setInt(4, limit);
+            stmt.setInt(3, request.getStartIndex());
+            stmt.setInt(4, request.getRowCount());
             rs = stmt.executeQuery();
 
             while (rs.next()) {

@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
 import java.util.List;
@@ -37,14 +38,14 @@ public interface OperationDAO {
     List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, Operation.Status status)
             throws OperationManagementDAOException;
 
-    List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, int index, int limit, Operation.Status status)
+    List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId, PaginationRequest request, Operation.Status status)
             throws OperationManagementDAOException;
 
     List<? extends Operation> getOperationsForDevice(int enrolmentId) throws OperationManagementDAOException;
 
     int getOperationCountForDevice(int enrolmentId) throws OperationManagementDAOException;
 
-    List<? extends Operation> getOperationsForDevice(int enrolmentId, int index, int limit) throws OperationManagementDAOException;
+    List<? extends Operation> getOperationsForDevice(int enrolmentId, PaginationRequest request) throws OperationManagementDAOException;
 
     Operation getNextOperation(int enrolmentId) throws OperationManagementDAOException;
 

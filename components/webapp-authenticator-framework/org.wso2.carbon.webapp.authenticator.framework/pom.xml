@@ -111,7 +111,14 @@
                             org.apache.commons.pool,
                             org.apache.commons.pool.impl,
                             org.apache.http.conn,
-                            org.apache.http.impl.conn
+                            org.apache.http.impl.conn,
+                            javax.xml.soap,
+                            javax.xml.stream,
+                            org.apache.axiom.soap,
+                            org.apache.axiom.soap.impl.builder,
+                            org.apache.axiom.om,
+                            org.apache.axiom.om.impl.builder,
+                            org.apache.axiom.om.util
                         </Import-Package>
                     </instructions>
                 </configuration>

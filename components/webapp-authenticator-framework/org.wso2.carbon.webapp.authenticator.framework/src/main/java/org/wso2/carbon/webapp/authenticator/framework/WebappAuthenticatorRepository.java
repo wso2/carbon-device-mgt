@@ -33,6 +33,13 @@ public class WebappAuthenticatorRepository {
     }
 
     public void addAuthenticator(WebappAuthenticator authenticator) {
+        if (authenticator == null) {
+            throw new IllegalStateException("Authenticator implementation to be added to the webapp " +
+                    "authenticator repository cannot be null or empty");
+        }
+        if (authenticator.getName() == null || authenticator.getName().isEmpty()) {
+            throw new IllegalStateException("Authenticator name cannot be null or empty");
+        }
         authenticators.put(authenticator.getName(), authenticator);
     }
 

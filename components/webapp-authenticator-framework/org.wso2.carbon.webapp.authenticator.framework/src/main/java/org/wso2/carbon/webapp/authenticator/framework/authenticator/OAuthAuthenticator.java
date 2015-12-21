@@ -18,22 +18,21 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
-import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
-import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-import org.wso2.carbon.webapp.authenticator.framework.*;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthTokenValidationException;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidationResponse;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidatorFactory;
 
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,22 +41,51 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
     private static final String OAUTH_AUTHENTICATOR = "OAuth";
     private static final String REGEX_BEARER_PATTERN = "[B|b]earer\\s";
-    private static final Pattern PATTERN = Pattern.compile(REGEX_BEARER_PATTERN);
+    private static final Pattern PATTERN = Pattern.compile("[B|b]earer\\s");
     private static final String BEARER_TOKEN_TYPE = "bearer";
     private static final String RESOURCE_KEY = "resource";
-
-
+    private Properties properties;
+    private OAuth2TokenValidator tokenValidator;
     private static final Log log = LogFactory.getLog(OAuthAuthenticator.class);
 
-    @Override
-    public boolean canHandle(Request request) {
-        MessageBytes authorization =
-                request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
-        String tokenValue;
+    public void init() {
+        if (this.properties == null) {
+            throw new IllegalArgumentException("Required properties needed to initialize OAuthAuthenticator " +
+                    "are not provided");
+        }
+
+        String url = this.properties.getProperty("TokenValidationEndpointUrl");
+        if ((url == null) || (url.isEmpty())) {
+            throw new IllegalArgumentException("OAuth token validation endpoint url is not provided");
+        }
+        String adminUsername = this.properties.getProperty("Username");
+        if (adminUsername == null) {
+            throw new IllegalArgumentException("Username to connect to the OAuth token validation endpoint " +
+                    "is not provided");
+        }
+
+        String adminPassword = this.properties.getProperty("Password");
+        if (adminPassword == null) {
+            throw new IllegalArgumentException("Password to connect to the OAuth token validation endpoint " +
+                    "is not provided");
+        }
+
+        boolean isRemote = Boolean.parseBoolean(this.properties.getProperty("IsRemote"));
+
+        Properties validatorProperties = new Properties();
+        validatorProperties.setProperty("MaxTotalConnections", this.properties.getProperty("MaxTotalConnections"));
+        validatorProperties.setProperty("MaxConnectionsPerHost", this.properties.getProperty("MaxConnectionsPerHost"));
+        this.tokenValidator =
+                OAuthValidatorFactory.getValidator(url, adminUsername, adminPassword, isRemote, validatorProperties);
+    }
+
+    public boolean canHandle(org.apache.catalina.connector.Request request) {
+        MessageBytes authorization = request.getCoyoteRequest().getMimeHeaders().getValue("Authorization");
+
         if (authorization != null) {
             authorization.toBytes();
             ByteChunk authBC = authorization.getByteChunk();
-            tokenValue = authBC.toString();
+            String tokenValue = authBC.toString();
             Matcher matcher = PATTERN.matcher(tokenValue);
             if (matcher.find()) {
                 return true;
@@ -66,50 +94,46 @@ public class OAuthAuthenticator implements WebappAuthenticator {
         return false;
     }
 
-    @Override
-    public AuthenticationInfo authenticate(Request request, Response response) {
+    public AuthenticationInfo authenticate(org.apache.catalina.connector.Request request, Response response) {
         String requestUri = request.getRequestURI();
         String requestMethod = request.getMethod();
         AuthenticationInfo authenticationInfo = new AuthenticationInfo();
-        if (requestUri == null || "".equals(requestUri)) {
-            authenticationInfo.setStatus(Status.CONTINUE);
+        if ((requestUri == null) || ("".equals(requestUri))) {
+            authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
             return authenticationInfo;
         }
 
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
         String context = tokenizer.nextToken();
-        if (context == null || "".equals(context)) {
-            authenticationInfo.setStatus(Status.CONTINUE);
+        if ((context == null) || ("".equals(context))) {
+            authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
         }
         String apiVersion = tokenizer.nextToken();
-        //String authLevel = authenticator.getResourceAuthenticationScheme(context, apiVersion, requestUri, requestMethod);
+
         String authLevel = "any";
         try {
-            if (Constants.NO_MATCHING_AUTH_SCHEME.equals(authLevel)) {
-                AuthenticationFrameworkUtil.handleNoMatchAuthScheme(request, response, requestMethod, apiVersion,
-                                                                    context);
-                authenticationInfo.setStatus(Status.CONTINUE);
+            if ("noMatchedAuthScheme".equals(authLevel)) {
+                AuthenticationFrameworkUtil.handleNoMatchAuthScheme(
+                        request, response, requestMethod, apiVersion, context);
+
+                authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
             } else {
-                String bearerToken = this.getBearerToken(request);
-                //Set the resource context param. This will be used in scope validation.
+                String bearerToken = getBearerToken(request);
+
                 String resource = requestUri + ":" + requestMethod;
-                //Get the appropriate OAuth validator from OAuthValidatorFactory.
-                OAuth2TokenValidator oAuth2TokenValidator = OAuthValidatorFactory.getValidator();
-                OAuthValidationResponse oAuthValidationResponse = oAuth2TokenValidator.validateToken(bearerToken, resource);
+
+                OAuthValidationResponse oAuthValidationResponse =
+                        this.tokenValidator.validateToken(bearerToken, resource);
 
                 if (oAuthValidationResponse.isValid()) {
                     String username = oAuthValidationResponse.getUserName();
                     String tenantDomain = oAuthValidationResponse.getTenantDomain();
-                    //Remove the userstore domain from username
-                    /*if (username.contains("/")) {
-                        username = username.substring(username.indexOf('/') + 1);
-                    }*/
+
                     authenticationInfo.setUsername(username);
                     authenticationInfo.setTenantDomain(tenantDomain);
                     authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username + "@" + tenantDomain));
-                    if (oAuthValidationResponse.isValid()) {
-                        authenticationInfo.setStatus(Status.CONTINUE);
-                    }
+                    if (oAuthValidationResponse.isValid())
+                        authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
                 } else {
                     authenticationInfo.setMessage(oAuthValidationResponse.getErrorMsg());
                 }
@@ -122,15 +146,28 @@ public class OAuthAuthenticator implements WebappAuthenticator {
         return authenticationInfo;
     }
 
-    @Override
     public String getName() {
-        return OAuthAuthenticator.OAUTH_AUTHENTICATOR;
+        return "OAuth";
     }
 
-    private String getBearerToken(Request request) {
-        MessageBytes authorization =
-                request.getCoyoteRequest().getMimeHeaders().
-                        getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
+    public String getProperty(String name) {
+        if (this.properties == null) {
+            return null;
+        }
+        return this.properties.getProperty(name);
+    }
+
+    public Properties getProperties() {
+        return this.properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    private String getBearerToken(org.apache.catalina.connector.Request request) {
+        MessageBytes authorization = request.getCoyoteRequest().getMimeHeaders().getValue("Authorization");
+
         String tokenValue = null;
         if (authorization != null) {
             authorization.toBytes();

@@ -130,7 +130,7 @@ public class BSTAuthenticator implements WebappAuthenticator {
 
                 authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
             } else {
-                String bearerToken = request.getContext().findParameter("BST");
+                String bearerToken = request.getAttribute("BST").toString();
 
                 String resource = requestUri + ":" + requestMethod;
 
@@ -196,7 +196,7 @@ public class BSTAuthenticator implements WebappAuthenticator {
         if (bstHeader == null || bstHeader.isEmpty()) {
             return false;
         }
-        request.getContext().addParameter("BST", bstHeader);
+        request.setAttribute("BST", bstHeader);
         return true;
     }
 

@@ -139,7 +139,6 @@ function loadDevices(searchType, searchParam){
             viewModel.deviceTypeName = deviceTypesList[i].deviceTypeName;
             viewModel.deviceTypeId = deviceTypesList[i].deviceTypeId;
             viewModel.deviceTypeLabel = deviceTypesList[i].deviceTypeLabel;
-            var isLast = (i == deviceTypesList.length - 1)? true: false;
             compileTemplate(viewModel, deviceListingSrc, deviceTypeCount);
 
         }

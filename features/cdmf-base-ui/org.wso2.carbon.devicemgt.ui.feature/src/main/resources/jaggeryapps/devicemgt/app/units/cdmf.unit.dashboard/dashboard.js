@@ -28,6 +28,11 @@ function onRequest(context) {
     var deviceModule = require("/app/modules/device.js").deviceModule;
     var policyModule = require("/app/modules/policy.js").policyModule;
 
+    var permissions = userModule.getUIPermissions();
+    if (!permissions.VIEW_DASHBOARD) {
+        response.sendRedirect(constants.WEB_APP_CONTEXT + "/devices");
+    }
+
     context.device_count = deviceModule.getOwnDevicesCount();
     context.user_count = userModule.getUsers()["content"].length;
     context.policy_count = policyModule.getAllPolicies()["content"].length;

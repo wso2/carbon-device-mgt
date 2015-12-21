@@ -181,7 +181,7 @@ var userModule = function () {
                 var defaultUserClaims = privateMethods.buildDefaultUserClaims(firstname, lastname, emailAddress);
 
                 for (var role in userRoles){
-                    if (userRoles[role] == "device-admin" && !userManager.roleExists("device-admin")){
+                    if (userRoles[role] == "iot-admin" && !userManager.roleExists("iot-admin")){
                         var permissions = {
                             '/permission/admin/device-mgt/devices': ['ui.execute'],
                             '/permission/admin/device-mgt/policies': ['ui.execute'],
@@ -190,7 +190,7 @@ var userModule = function () {
                             '/permission/admin/device-mgt/emm-admin/devices': ['ui.execute'],
                             '/permission/admin/device-mgt/emm-admin/policies': ['ui.execute']
                         };
-                        userManager.addRole("device-admin", ["admin"], permissions);
+                        userManager.addRole("iot-admin", ["admin"], permissions);
                     }
                 }
 

@@ -127,11 +127,12 @@ function loadDevices(searchType, searchParam){
     var deviceListingSrc = deviceListing.attr("src");
     var imageResource = deviceListing.data("image-resource");
     var currentUser = deviceListing.data("currentUser");
+    deviceTypeCount = deviceTypesList.length;
 
     $('#ast-container').html("");
 
-    if(deviceTypesList.length > 0){
-        for (var i = 0; i < deviceTypesList.length; i++) {
+    if(deviceTypeCount > 0){
+        for (var i = 0; i < deviceTypeCount; i++) {
             var viewModel = {};
             viewModel.imageLocation = imageResource;
             viewModel.appContext = clientJsAppContext;
@@ -139,7 +140,7 @@ function loadDevices(searchType, searchParam){
             viewModel.deviceTypeId = deviceTypesList[i].deviceTypeId;
             viewModel.deviceTypeLabel = deviceTypesList[i].deviceTypeLabel;
             var isLast = (i == deviceTypesList.length - 1)? true: false;
-            compileTemplate(viewModel, deviceListingSrc, isLast);
+            compileTemplate(viewModel, deviceListingSrc, deviceTypeCount);
 
         }
     } else {
@@ -158,7 +159,7 @@ function loadDevices(searchType, searchParam){
 
 }
 
-function compileTemplate(viewModel, templateSrc, isLast){
+function compileTemplate(viewModel, templateSrc, deviceTypeCount){
     $.template("device-listing", templateSrc, function (template) {
         $("#ast-container").html($("#ast-container").html() + template(viewModel));
         compiledDeviceTypesCount++;

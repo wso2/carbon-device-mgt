@@ -46,8 +46,8 @@ public class AuthenticatorConfig {
         this.className = className;
     }
 
-    @XmlElementWrapper(name="Parameters", nillable=true)
-    @XmlElement(name="Parameter", nillable=false)
+    @XmlElementWrapper(name = "Parameters", nillable = true)
+    @XmlElement(name = "Parameter", nillable = false)
     public List<Parameter> getParams() {
         return this.params;
     }
@@ -55,12 +55,13 @@ public class AuthenticatorConfig {
     public void setParams(List<Parameter> params) {
         this.params = params;
     }
-    @XmlRootElement(name="Parameter")
+
+    @XmlRootElement(name = "Parameter")
     public static class Parameter {
         private String name;
         private String value;
 
-        @XmlAttribute(name="Name")
+        @XmlAttribute(name = "Name")
         public String getName() {
             return this.name;
         }

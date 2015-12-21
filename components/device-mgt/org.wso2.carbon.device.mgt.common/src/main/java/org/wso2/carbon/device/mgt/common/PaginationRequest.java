@@ -27,9 +27,14 @@ public class PaginationRequest {
     private int rowCount;
     private String owner;
     private String status;
-    private String type;
+    private String deviceType;
     private String deviceName;
     private String ownership;
+
+    public PaginationRequest(int start, int rowCount) {
+        this.startIndex = start;
+        this.rowCount = rowCount;
+    }
 
     public int getStartIndex() {
         return startIndex;
@@ -63,12 +68,12 @@ public class PaginationRequest {
         this.status = status;
     }
 
-    public String getType() {
-        return type;
+    public String getDeviceType() {
+        return deviceType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 
     public String getDeviceName() {

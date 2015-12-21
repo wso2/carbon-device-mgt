@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
@@ -394,19 +393,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public PaginationResult getAllDevices(String deviceType, PaginationRequest request) throws DeviceManagementException {
+    public PaginationResult getDevicesByType(PaginationRequest request) throws DeviceManagementException {
         PaginationResult paginationResult = new PaginationResult();
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices = new ArrayList<>();
         int count = 0;
         int tenantId = this.getTenantId();
+        String deviceType = request.getDeviceType();
         try {
             DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevices(deviceType, request, tenantId);
-            count = deviceDAO.getDeviceCount(deviceType, tenantId);
+            allDevices = deviceDAO.getDevices(request, tenantId);
+            count = deviceDAO.getDeviceCountByType(deviceType, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                                                "the current tenant", e);
+                                                "the current tenant of type " + deviceType, e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -962,16 +962,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public PaginationResult getDevicesOfUser(String username, PaginationRequest request)
+    public PaginationResult getDevicesOfUser(PaginationRequest request)
             throws DeviceManagementException {
         PaginationResult result = new PaginationResult();
         int deviceCount = 0;
         int tenantId = this.getTenantId();
+        String username = request.getOwner();
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.openConnection();
-            userDevices = deviceDAO.getDevicesOfUser(username, request, tenantId);
+            userDevices = deviceDAO.getDevicesOfUser(request, tenantId);
             deviceCount = deviceDAO.getDeviceCountByUser(username, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
@@ -1007,17 +1008,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public PaginationResult getDevicesByOwnership(EnrolmentInfo.OwnerShip ownerShip,
-                                                            PaginationRequest request)
+    public PaginationResult getDevicesByOwnership(PaginationRequest request)
             throws DeviceManagementException {
         PaginationResult result = new PaginationResult();
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
         int deviceCount = 0;
         int tenantId = this.getTenantId();
+        String ownerShip = request.getOwnership();
         try {
             DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevicesByOwnership(ownerShip, request, tenantId);
+            allDevices = deviceDAO.getDevicesByOwnership(request, tenantId);
             deviceCount = deviceDAO.getDeviceCountByOwnership(ownerShip, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException(
@@ -1121,15 +1122,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public PaginationResult getDevicesByName(String deviceName, PaginationRequest request)
+    public PaginationResult getDevicesByName(PaginationRequest request)
             throws DeviceManagementException {
         PaginationResult result = new PaginationResult();
         int tenantId = this.getTenantId();
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices = new ArrayList<>();
+        String deviceName = request.getDeviceName();
         try {
             DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevicesByName(deviceName, request, tenantId);
+            allDevices = deviceDAO.getDevicesByName(request, tenantId);
             int deviceCount = deviceDAO.getDeviceCountByName(deviceName, tenantId);
             result.setRecordsTotal(deviceCount);
             result.setRecordsFiltered(deviceCount);
@@ -1221,16 +1223,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public PaginationResult getDevicesByStatus(EnrolmentInfo.Status status, PaginationRequest request)
+    public PaginationResult getDevicesByStatus(PaginationRequest request)
             throws DeviceManagementException {
         PaginationResult result = new PaginationResult();
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices = new ArrayList<>();
         int tenantId = this.getTenantId();
+        String status = request.getStatus();
         try {
             DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevicesByStatus(status, request, tenantId);
-            int deviceCount = deviceDAO.getDeviceCount(status, tenantId);
+            allDevices = deviceDAO.getDevicesByStatus(request, tenantId);
+            int deviceCount = deviceDAO.getDeviceCountByStatus(status, tenantId);
             result.setRecordsTotal(deviceCount);
             result.setRecordsFiltered(deviceCount);
         } catch (DeviceManagementDAOException e) {

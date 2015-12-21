@@ -4,7 +4,7 @@
 			<Name>OAuth</Name>
 			<ClassName>org.wso2.carbon.webapp.authenticator.framework.authenticator.OAuthAuthenticator</ClassName>
             <Parameters>
-                <Parameter Name="IsRemote">true</Parameter>
+                <Parameter Name="IsRemote">false</Parameter>
                 <Parameter Name="TokenValidationEndpointUrl">https://localhost:9443</Parameter>
                 <Parameter Name="Username">admin</Parameter>
                 <Parameter Name="Password">admin</Parameter>

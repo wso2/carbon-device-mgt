@@ -27,6 +27,7 @@ import org.apache.axiom.soap.SOAPHeaderBlock;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.InputBuffer;
@@ -130,7 +131,8 @@ public class BSTAuthenticator implements WebappAuthenticator {
 
                 authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
             } else {
-                String bearerToken = request.getContext().findParameter("BST");
+                String bearerToken = new String(
+                        Base64.decodeBase64(request.getContext().findParameter("BST").getBytes()));
 
                 String resource = requestUri + ":" + requestMethod;
 

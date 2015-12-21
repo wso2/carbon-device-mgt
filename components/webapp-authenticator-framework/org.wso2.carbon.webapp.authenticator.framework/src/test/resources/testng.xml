@@ -34,4 +34,10 @@
         </classes>
     </test>
 
+    <test name="WebappAuthenticatorGeneralTests" preserve-order="true">
+        <classes>
+            <class name="org.wso2.carbon.webapp.authenticator.framework.test.WebappAuthenticatorRepositoryTest"/>
+        </classes>
+    </test>
+
 </suite>

@@ -367,12 +367,28 @@ public class CertificateGenerator {
 //            }request.getSubject().getRDNs()
 //        }
 
-        ASN1Encodable uniqueIdentifierRDN = request.getSubject().getRDNs(BCStyle.UNIQUE_IDENTIFIER)[0].getFirst().getValue();
-        int certUniqueIdentifier = uniqueIdentifierRDN.toString().hashCode();
+        RDN[] certUniqueIdRDN;
+        BigInteger certUniqueIdentifier;
+
+        // IMPORTANT: "Serial-Number" of the certificate used when creating it, is set as its "Alias" to save to keystore.
+        if (request.getSubject().getRDNs(BCStyle.UNIQUE_IDENTIFIER).length != 0) {
+            // if certificate attribute "UNIQUE_IDENTIFIER" exists use its hash as the "Serial-Number" for the certificate.
+            certUniqueIdRDN = request.getSubject().getRDNs(BCStyle.UNIQUE_IDENTIFIER);
+            certUniqueIdentifier = BigInteger.valueOf(certUniqueIdRDN[0].getFirst().getValue().toString().hashCode());
+
+        } else if (request.getSubject().getRDNs(BCStyle.SERIALNUMBER).length != 0) {
+            // else if certificate attribute "SERIAL_NUMBER" exists use its hash as the "Serial-Number" for the certificate.
+            certUniqueIdRDN = request.getSubject().getRDNs(BCStyle.SERIALNUMBER);
+            certUniqueIdentifier = BigInteger.valueOf(certUniqueIdRDN[0].getFirst().getValue().toString().hashCode());
+
+        } else {
+            // else get the BigInteger Value of the integer that is the current system-time in millis as the "Serial-Number".
+            certUniqueIdentifier = CommonUtil.generateSerialNumber();
+        }
 
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
-                new X500Name(issueSubject), BigInteger.valueOf(certUniqueIdentifier),
-                validityBeginDate, validityEndDate, certSubject, request.getSubjectPublicKeyInfo());
+                new X500Name(issueSubject), certUniqueIdentifier, validityBeginDate, validityEndDate,
+                certSubject, request.getSubjectPublicKeyInfo());
 
         ContentSigner sigGen;
         X509Certificate issuedCert;
@@ -561,6 +577,7 @@ public class CertificateGenerator {
         try {
             KeyStoreReader keyStoreReader = new KeyStoreReader();
             KeyStore keyStore = keyStoreReader.loadCertificateKeyStore();
+            // the serial number of the certificate used for its creation is set as its alias.
             keyStore.setCertificateEntry(certificate.getSerialNumber().toString(), certificate);
 
             keyStoreReader.saveCertificateKeyStore(keyStore);

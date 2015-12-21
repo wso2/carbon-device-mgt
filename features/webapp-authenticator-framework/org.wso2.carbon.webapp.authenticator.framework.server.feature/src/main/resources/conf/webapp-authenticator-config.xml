@@ -25,7 +25,7 @@
             <ClassName>org.wso2.carbon.webapp.authenticator.framework.authenticator.CertificateAuthenticator</ClassName>
         </Authenticator>
         <Authenticator>
-            <Name>OAuth</Name>
+            <Name>BST</Name>
             <ClassName>org.wso2.carbon.webapp.authenticator.framework.authenticator.BSTAuthenticator</ClassName>
             <Parameters>
                 <Parameter Name="IsRemote">false</Parameter>

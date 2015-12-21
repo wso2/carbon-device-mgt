@@ -38,10 +38,10 @@ public interface WebappAuthenticator {
 
     String getName();
 
-    String getProperty(String name);
+    void setProperties(Properties properties);
 
     Properties getProperties();
 
-    void setProperties(Properties properties);
+    String getProperty(String name);
 
 }

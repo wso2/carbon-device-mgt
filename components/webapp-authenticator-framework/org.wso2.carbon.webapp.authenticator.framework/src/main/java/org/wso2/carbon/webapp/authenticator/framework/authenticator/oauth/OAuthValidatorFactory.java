@@ -29,61 +29,18 @@ import java.util.Properties;
  */
 public class OAuthValidatorFactory {
 
-    private static final String AUTHENTICATOR_CONFIG_IS_REMOTE = "isRemote";
-    private static final String AUTHENTICATOR_CONFIG_HOST_URL = "hostURL";
-    private static final String AUTHENTICATOR_CONFIG_ADMIN_USERNAME = "adminUsername";
-    private static final String AUTHENTICATOR_CONFIG_ADMIN_PASSWORD = "adminPassword";
-    private static final String AUTHENTICATOR_CONFIG_OAUTH_AUTHENTICATOR_NAME = "OAuthAuthenticator";
-    private static final String OAUTH_ENDPOINT_POSTFIX =
-            "/services/OAuth2TokenValidationService.OAuth2TokenValidationServiceHttpsSoap12Endpoint/";
-
-    /**
-     * This factory method checks the authenticators.xml configuration file and provides an appropriate implementation
-     * of OAuth2TokenValidator.
-     *
-     * @return OAuth2TokenValidator
-     */
-    public static OAuth2TokenValidator getValidator() throws IllegalArgumentException {
-        AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
-        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
-                getAuthenticatorConfig(AUTHENTICATOR_CONFIG_OAUTH_AUTHENTICATOR_NAME);
-        boolean isRemote;
-        String hostUrl;
-        String adminUserName;
-        String adminPassword;
-        if (authenticatorConfig != null && authenticatorConfig.getParameters() != null) {
-            isRemote = Boolean.parseBoolean(authenticatorConfig.getParameters().get(
-                    AUTHENTICATOR_CONFIG_IS_REMOTE));
-            hostUrl = authenticatorConfig.getParameters().get(AUTHENTICATOR_CONFIG_HOST_URL);
-            adminUserName = authenticatorConfig.getParameters().get(AUTHENTICATOR_CONFIG_ADMIN_USERNAME);
-            adminPassword = authenticatorConfig.getParameters().get(AUTHENTICATOR_CONFIG_ADMIN_PASSWORD);
-        } else {
-            throw new IllegalArgumentException("OAuth Authenticator configuration parameters need to be defined in " +
-                    "Authenticators.xml.");
-        }
+    public static OAuth2TokenValidator getValidator(String url, String adminUsername, String adminPassword,
+                                                    boolean isRemote, Properties properties)
+            throws IllegalArgumentException
+    {
         if (isRemote) {
-            if (!(hostUrl == null || hostUrl.trim().isEmpty())) {
-                hostUrl = hostUrl + OAUTH_ENDPOINT_POSTFIX;
-                return new RemoteOAuthValidator(hostUrl, adminUserName, adminPassword, null);
-            } else {
-                throw new IllegalArgumentException("Remote server host can't be empty in authenticators.xml.");
-            }
-        }
-        return new LocalOAuthValidator();
-    }
-
-    public static OAuth2TokenValidator getNewValidator(
-            String url, String adminUsername, String adminPassword, boolean isRemote,
-            Properties properties) throws IllegalArgumentException {
-        if (isRemote) {
-            if (!(url == null || url.trim().isEmpty())) {
-                url = url + OAUTH_ENDPOINT_POSTFIX;
+            if ((url != null) && (!url.trim().isEmpty())) {
+                url = url + "/services/OAuth2TokenValidationService.OAuth2TokenValidationServiceHttpsSoap12Endpoint/";
                 return new RemoteOAuthValidator(url, adminUsername, adminPassword, properties);
-            } else {
-                throw new IllegalArgumentException("Remote server host can't be empty in OAuthAuthenticator " +
-                        "configuration.");
             }
+            throw new IllegalArgumentException("Remote server host can't be empty in OAuthAuthenticator configuration.");
         }
+
         return new LocalOAuthValidator();
     }
 

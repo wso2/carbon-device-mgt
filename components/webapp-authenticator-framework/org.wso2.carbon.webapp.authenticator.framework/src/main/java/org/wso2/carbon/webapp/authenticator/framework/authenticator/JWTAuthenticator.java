@@ -145,8 +145,8 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	}
 
     @Override
-    public String getProperty(String name) {
-        return null;
+    public void setProperties(Properties properties) {
+
     }
 
     @Override
@@ -155,8 +155,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
     }
 
     @Override
-    public void setProperties(Properties properties) {
-
+    public String getProperty(String name) {
+        return null;
     }
-
 }

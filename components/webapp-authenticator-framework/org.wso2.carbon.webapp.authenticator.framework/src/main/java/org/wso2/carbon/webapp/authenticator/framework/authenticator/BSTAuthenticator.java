@@ -94,8 +94,9 @@ public class BSTAuthenticator implements WebappAuthenticator {
     @Override
     public boolean canHandle(Request request) {
         String contentType = request.getContentType();
-        if (contentType.contains("application/xml") || contentType.contains("application/soap+xml") ||
-                contentType.contains("application/text")) {
+        if (contentType != null && (contentType.contains("application/xml") || contentType.contains
+                ("application/soap+xml") ||
+                contentType.contains("application/text"))) {
             try {
                 return isBSTHeaderExists(request);
             } catch (IOException | XMLStreamException e) {

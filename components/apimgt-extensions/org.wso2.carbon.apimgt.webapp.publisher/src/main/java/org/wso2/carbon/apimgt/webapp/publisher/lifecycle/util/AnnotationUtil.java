@@ -279,7 +279,7 @@ public class AnnotationUtil {
             if (methodContextAnno != null) {
                 String subCtx = invokeMethod(pathClazzMethods[0], methodContextAnno, STRING);
                 APIResource resource = new APIResource();
-                resource.setUriTemplate(subCtx);
+                resource.setUriTemplate(makeContextURLReady(subCtx));
 
                 String serverIP = System.getProperty(SERVER_HOST);
                 String httpServerPort = System.getProperty(HTTP_PORT);

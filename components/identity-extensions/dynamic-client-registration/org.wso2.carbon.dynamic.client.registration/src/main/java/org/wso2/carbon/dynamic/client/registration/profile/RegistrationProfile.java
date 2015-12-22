@@ -23,7 +23,7 @@ package org.wso2.carbon.dynamic.client.registration.profile;
  *
 * */
 public class RegistrationProfile {
-//todo mark mandatory fields
+
     private String applicationType;
     private String[] redirectUris;
     private String clientName;
@@ -42,6 +42,8 @@ public class RegistrationProfile {
     private String grantType;
     private boolean saasApp;
     private String audience;
+    private String recepientValidationURL;
+    private String assertionConsumerURL;
 
     public String getRecepientValidationURL() {
         return recepientValidationURL;
@@ -58,9 +60,6 @@ public class RegistrationProfile {
     public void setAssertionConsumerURL(String assertionConsumerURL) {
         this.assertionConsumerURL = assertionConsumerURL;
     }
-
-    private String recepientValidationURL;
-    private String assertionConsumerURL;
 
     public String getAudience() {
         return audience;

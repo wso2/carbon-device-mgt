@@ -325,8 +325,8 @@ public class AnnotationUtil {
     }
 
     private String makeContextURLReady(String context){
-        if(context != null && context.equalsIgnoreCase("")){
-            if(context.indexOf("/")==0){
+        if(context != null && !context.equalsIgnoreCase("")){
+            if(context.startsWith("/")){
                 return context;
             }else{
                 return "/"+context;

@@ -20,6 +20,7 @@ package org.wso2.carbon.webapp.authenticator.framework.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
@@ -29,10 +30,12 @@ import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticationValve;
-import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
+import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
 import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfig;
+import org.wso2.carbon.webapp.authenticator.framework.config.AuthenticatorConfigService;
 import org.wso2.carbon.webapp.authenticator.framework.config.WebappAuthenticatorConfig;
+import org.wso2.carbon.webapp.authenticator.framework.config.impl.AuthenticatorConfigServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +94,12 @@ public class WebappAuthenticatorFrameworkServiceComponent {
                 authenticator.init();
                 repository.addAuthenticator(authenticator);
             }
+
+            //Register AuthenticatorConfigService to expose webapp-authenticator configs.
+            BundleContext bundleContext = componentContext.getBundleContext();
+            AuthenticatorConfigService authenticatorConfigService = new AuthenticatorConfigServiceImpl();
+            bundleContext.registerService(AuthenticatorConfigService.class.getName(), authenticatorConfigService, null);
+
             AuthenticatorFrameworkDataHolder.getInstance().setWebappAuthenticatorRepository(repository);
 
             List<CarbonTomcatValve> valves = new ArrayList<CarbonTomcatValve>();

@@ -73,6 +73,7 @@
                             org.apache.tomcat.util.buf,
                             org.apache.tomcat.util.http,
                             org.osgi.service.component,
+                            org.osgi.framework,
                             org.w3c.dom,
                             org.wso2.carbon.apimgt.api,
                             org.wso2.carbon.apimgt.core.authenticate,

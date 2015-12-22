@@ -162,7 +162,7 @@ function compileTemplate(viewModel, templateSrc){
         $("#ast-container").html($("#ast-container").html() + template(viewModel));
         compiledDeviceTypesCount++;
         if(deviceTypeCount == compiledDeviceTypesCount){
-            $('#device-grid').datatables_extended({"bFilter": true});
+            $('#device-grid').datatables_extended({"bFilter": true, "order": [[ 1, "asc" ]]});
         }
     });
 }

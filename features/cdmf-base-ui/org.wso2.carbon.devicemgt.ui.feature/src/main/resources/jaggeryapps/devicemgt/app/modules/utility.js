@@ -228,7 +228,7 @@ utility = function () {
                        + deviceType + ".type-view/public/images/thumb.png";
         var icon = new File(iconPath);
         if (icon.isExists()) {
-            return "public/cdmf.unit.device.type." + deviceType + ".type-view/images/thumb.png";
+            return "/devicemgt/public/cdmf.unit.device.type." + deviceType + ".type-view/images/thumb.png";
         } else {
             return null;
         }

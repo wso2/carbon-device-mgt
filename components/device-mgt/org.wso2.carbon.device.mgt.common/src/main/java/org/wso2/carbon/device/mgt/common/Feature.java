@@ -30,7 +30,27 @@ public class Feature implements Serializable {
     private String name;
     private String description;
     private String deviceType;
+    private String method;
+    private String type;
     private List<MetadataEntry> metadataEntries;
+
+    @XmlElement
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @XmlElement
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
     @XmlElement
     public int getId() {

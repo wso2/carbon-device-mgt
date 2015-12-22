@@ -246,9 +246,27 @@ public class AnnotationUtil {
                         feature.setCode(invokeMethod(featureAnnoMethods[2], featureAnno, STRING));
                         feature.setName(invokeMethod(featureAnnoMethods[1], featureAnno, STRING));
                         feature.setDescription(invokeMethod(featureAnnoMethods[0], featureAnno, STRING));
+                        feature.setType(invokeMethod(featureAnnoMethods[3], featureAnno, STRING));
 
+                        //Extracting method with which feature is exposed
+                        if(annotations[i].annotationType().getName().equals(GET.class.getName())){
+                            feature.setMethod(HttpMethod.GET);
+                        }
+                        if(annotations[i].annotationType().getName().equals(POST.class.getName())){
+                            feature.setMethod(HttpMethod.POST);
+                        }
+                        if(annotations[i].annotationType().getName().equals(OPTIONS.class.getName())){
+                            feature.setMethod(HttpMethod.OPTIONS);
+                        }
+                        if(annotations[i].annotationType().getName().equals(DELETE.class.getName())){
+                            feature.setMethod(HttpMethod.DELETE);
+                        }
+                        if(annotations[i].annotationType().getName().equals(PUT.class.getName())){
+                            feature.setMethod(HttpMethod.PUT);
+                        }
+
+                        //Extract method parameter information and store same as feature meta info
                         List<Feature.MetadataEntry> metaInfoList = new ArrayList<Feature.MetadataEntry>();
-
                         Annotation[][] paramAnnotations = method.getParameterAnnotations();
 
                         for(int j = 0; j < paramAnnotations.length; j++){

@@ -27,7 +27,7 @@ var operationModule = function () {
     var publicMethods = {};
     var privateMethods = {};
 
-    privateMethods.getOperationsFromFeatures = function (deviceType) {
+    privateMethods.getOperationsFromFeatures = function (deviceType, type) {
         var GenericFeatureManager = Packages.org.wso2.carbon.apimgt.webapp.publisher.feature.management.GenericFeatureManager;
         try {
             var featureManager = GenericFeatureManager.getInstance();
@@ -35,26 +35,24 @@ var operationModule = function () {
             var featureList = [];
             var feature;
             for (var i = 0; i < features.size(); i++) {
+                if (features.get(i).getType() != type){
+                    continue;
+                }
                 feature = {};
-                feature["id"] = features.get(i).getId();
-                feature["code"] = features.get(i).getCode();
-                feature["name"] = features.get(i).getName();
-                feature["description"] = features.get(i).getDescription();
-                feature["deviceType"] = features.get(i).getDeviceType();
-                feature["metadataEntries"] = [];
+                feature["operation"] = new String(features.get(i).getCode());
+                feature["name"] = new String(features.get(i).getName());
+                feature["description"] = new String(features.get(i).getDescription());
+                feature["deviceType"] = new String(features.get(i).getDeviceType());
+                feature["params"] = [];
                 var metaData = features.get(i).getMetadataEntries();
                 if (metaData && metaData != null) {
-                    var metaDataEntry;
                     for (var j = 0; j < metaData.size(); j++) {
-                        metaDataEntry = {};
-                        metaDataEntry["id"] = metaData.get(j).getId();
-                        metaDataEntry["value"] = metaData.get(j).getValue();
-                        ["metadataEntries"].push(metaDataEntry);
+                        feature["params"].push(new String(metaData.get(j).getValue()));
                     }
                 }
                 featureList.push(feature);
             }
-            log.info(featureList);
+            return featureList;
         } catch (e) {
             log.error(e);
             throw e;
@@ -62,76 +60,7 @@ var operationModule = function () {
     };
 
     publicMethods.getControlOperations = function (deviceType) {
-        privateMethods.getOperationsFromFeatures(deviceType);
-        var operations = [];
-        switch (deviceType) {
-            case "virtual_firealarm":
-                operations = [{
-                    name: "Alarm Status", operation: "bulb",
-                    params: ["state"]
-                }];
-                break;
-            case "digital_display":
-                operations = [
-                    {
-                        name: "Restart Browser", operation: "restart-browser",
-                        params: []
-                    },
-                    {
-                        name: "Close Browser", operation: "close-browser",
-                        params: []
-                    },
-                    {
-                        name: "Terminate Display", operation: "terminate-display",
-                        params: []
-                    },
-                    {
-                        name: "Restart Display", operation: "restart-display",
-                        params: []
-                    },
-                    {
-                        name: "Shutdown Display", operation: "shutdown-display",
-                        params: []
-                    },
-                    {
-                        name: "Edit Content",
-                        operation: "edit-content",
-                        params: ["path", "attribute", "new-value"]
-                    },
-                    {
-                        name: "Add New Resource",
-                        operation: "add-resource",
-                        params: ["type", "time", "path"]
-                    },
-                    {
-                        name: "Add New Resource Before",
-                        operation: "add-resource-before",
-                        params: ["type", "time", "path", "next-page"]
-                    },
-                    {
-                        name: "Add New Resource After",
-                        operation: "add-resource-next",
-                        params: ["type", "time", "path", "before-page"]
-                    },
-                    {
-                        name: "Remove Resource", operation: "remove-resource",
-                        params: ["path"], removeresource: "true"
-                    },
-                    {
-                        name: "Remove Directory", operation: "remove-directory",
-                        params: ["directory-name"], remove: "true"
-                    },
-                    {
-                        name: "Remove Content",
-                        operation: "remove-content",
-                        params: ["directory-name", "content"]
-                    }
-
-                ];
-                break;
-            default:
-                operations = [];
-        }
+        var operations = privateMethods.getOperationsFromFeatures(deviceType, "operation");
         for (var op in operations){
             var iconPath = utility.getOperationIcon(deviceType, operations[op].operation);
             if (iconPath){
@@ -142,37 +71,19 @@ var operationModule = function () {
     };
 
     publicMethods.getMonitorOperations = function (deviceType) {
-        switch (deviceType) {
-            case "virtual_firealarm":
-                return [{name: "Temperature", operation: "readtemperature"}];
-            case "android_sense":
-                return [
-                    {name: "Battery", operation: "readbattery"},
-                    {name: "gps", operation: "readgps"},
-                    {name: "Gyroscope", operation: "readgyroscope"},
-                    {name: "Accelerometer", operation: "readaccelerometer"},
-                    {name: "Gravity", operation: "readgravity"},
-                    {name: "Rotation", operation: "readrotation"},
-                    {name: "Pressure", operation: "readpressure"},
-                    {name: "Proximity", operation: "readproximity"},
-                    {name: "Light", operation: "readlight"},
-                    {name: "Magnetic", operation: "readmagnetic"}
-                ];
-            default:
-                return [];
-        }
+        return privateMethods.getOperationsFromFeatures(deviceType, "monitor");
     };
 
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, params) {
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '"}';
         log.info(params);
         return post(endPoint, params, JSON.parse(header), "json");
     };
 
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
         var result = get(endPoint, {}, JSON.parse(header), "json");
         if (result.data) {
             var values = result.data.sensorValue.split(',');

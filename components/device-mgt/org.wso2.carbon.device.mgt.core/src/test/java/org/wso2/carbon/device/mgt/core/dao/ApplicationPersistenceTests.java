@@ -77,7 +77,7 @@ public class ApplicationPersistenceTests extends BaseDeviceManagementTest {
     @BeforeClass
     @Override
     public void init() throws Exception {
-        this.initDatSource();
+        this.initDataSource();
     }
 
 }

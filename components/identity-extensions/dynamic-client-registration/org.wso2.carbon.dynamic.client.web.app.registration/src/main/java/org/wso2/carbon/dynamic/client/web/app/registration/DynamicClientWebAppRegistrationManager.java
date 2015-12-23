@@ -23,17 +23,17 @@ import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
-import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 import org.wso2.carbon.dynamic.client.registration.OAuthApplicationInfo;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
-import org.wso2.carbon.dynamic.client.web.app.registration.dto.OAuthAppDetails;
 import org.wso2.carbon.dynamic.client.web.app.registration.dto.JaggeryOAuthConfigurationSettings;
-import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientWebAppRegistrationDataHolder;
+import org.wso2.carbon.dynamic.client.web.app.registration.dto.OAuthAppDetails;
 import org.wso2.carbon.dynamic.client.web.app.registration.util.DynamicClientWebAppRegistrationConstants;
 import org.wso2.carbon.dynamic.client.web.app.registration.util.DynamicClientWebAppRegistrationUtil;
 
 import javax.servlet.ServletContext;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class contains the logic to handle the OAuth application creation process.

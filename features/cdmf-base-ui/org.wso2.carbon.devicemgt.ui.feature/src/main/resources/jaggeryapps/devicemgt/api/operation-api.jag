@@ -40,6 +40,7 @@ if (!user) {
         var deviceId = request.getParameter("deviceId");
         var monitor_operations = operationModule.getMonitorOperations(deviceType);
         var stats = [];
+        result = {};
         for (var op in monitor_operations) {
             result = operationModule.handleGETOperation(deviceType, monitor_operations[op].operation, monitor_operations[op].name, deviceId);
             stats.push(result.data);

@@ -25,7 +25,18 @@ var operationModule = function () {
     var publicMethods = {};
     var privateMethods = {};
 
-    privateMethods.getOperationsFromFeatures = function (deviceType, type) {
+    /**
+     * This method reads the token from the Token client and return the access token.
+     * If the token pair s not set in the session this will send a redirect to the login page.
+     */
+    function getAccessToken(deviceType, owner, deviceId) {
+        var TokenClient = Package.org.wso2.carbon.device.mgt.iot.apimgt.TokenClient;
+        var accessTokenClient = new TokenClient(deviceType);
+        var accessTokenInfo = accessTokenClient.getAccessToken(owner, deviceId);
+        return accessTokenInfo.getAccess_token();
+    }
+
+    privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
         var GenericFeatureManager = Packages.org.wso2.carbon.apimgt.webapp.publisher.feature.management.GenericFeatureManager;
         try {
             var featureManager = GenericFeatureManager.getInstance();
@@ -33,7 +44,7 @@ var operationModule = function () {
             var featureList = [];
             var feature;
             for (var i = 0; i < features.size(); i++) {
-                if (features.get(i).getType() != type){
+                if (features.get(i).getType() != operationType) {
                     continue;
                 }
                 feature = {};
@@ -59,9 +70,9 @@ var operationModule = function () {
 
     publicMethods.getControlOperations = function (deviceType) {
         var operations = privateMethods.getOperationsFromFeatures(deviceType, "operation");
-        for (var op in operations){
+        for (var op in operations) {
             var iconPath = utility.getOperationIcon(deviceType, operations[op].operation);
-            if (iconPath){
+            if (iconPath) {
                 operations[op]["icon"] = iconPath;
             }
         }
@@ -75,15 +86,15 @@ var operationModule = function () {
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, params) {
         var user = session.get(constants.USER_SESSION_KEY);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '", "' + constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) + '"}';
+        log.warn("header: " + header);
         return post(endPoint, params, JSON.parse(header), "json");
     };
 
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {
         var user = session.get(constants.USER_SESSION_KEY);
-        log.info("user: " + user);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "' + constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) + '"}';
         var result = get(endPoint, {}, JSON.parse(header), "json");
         if (result.data) {
             var values = result.data.sensorValue.split(',');

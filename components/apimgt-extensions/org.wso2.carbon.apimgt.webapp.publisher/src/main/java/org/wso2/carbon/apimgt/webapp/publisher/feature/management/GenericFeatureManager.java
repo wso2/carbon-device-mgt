@@ -32,11 +32,11 @@ import java.util.Map;
 public class GenericFeatureManager {
 
     private static final Log log = LogFactory.getLog(GenericFeatureManager.class);
-    private Map<String,List<Feature>> featureSet = null;
+    private static Map<String,List<Feature>> featureSet = null;
 
     private static GenericFeatureManager instance = null;
 
-    protected GenericFeatureManager() {
+    private GenericFeatureManager() {
         synchronized (this) {
             featureSet = new HashMap<String,List<Feature>>();
         }
@@ -54,7 +54,7 @@ public class GenericFeatureManager {
     }
 
     public boolean addFeatures(Map<String,List<Feature>> freshFeatures) throws DeviceManagementException {
-        featureSet.putAll(freshFeatures);
+        this.featureSet.putAll(freshFeatures);
         return true;
     }
 

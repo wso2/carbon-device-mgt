@@ -1,30 +1,28 @@
 function onRequest(context) {
-    // var log = new Log("policy-listing.js");
+    var log = new Log("policy-listing.js");
     var policyModule = require("/app/modules/policy.js")["policyModule"];
     var response = policyModule.getAllPolicies();
+    var pageData = {};
     if (response["status"] == "success") {
         var policyListToView = response["content"];
-        context["policyListToView"] = policyListToView;
+        pageData["policyListToView"] = policyListToView;
         var policyCount = policyListToView.length;
         if (policyCount == 0) {
-            context["policyListingStatusMsg"] = "No policy is available to be displayed.";
-            context["saveNewPrioritiesButtonEnabled"] = false;
-            context["noPolicy"] = true;
+            pageData["saveNewPrioritiesButtonEnabled"] = false;
+            pageData["noPolicy"] = true;
         } else if (policyCount == 1) {
-            context["saveNewPrioritiesButtonEnabled"] = false;
-            context["noPolicy"] = false;
-            context["isUpdated"] = response["updated"] ;
+            pageData["saveNewPrioritiesButtonEnabled"] = false;
+            pageData["isUpdated"] = response["updated"];
         } else {
-            context["saveNewPrioritiesButtonEnabled"] = true;
-            context["noPolicy"] = false;
-            context["isUpdated"] = response["updated"] ;
+            pageData["saveNewPrioritiesButtonEnabled"] = true;
+            pageData["isUpdated"] = response["updated"];
         }
     } else {
         // here, response["status"] == "error"
-        context["policyListToView"] = [];
-        context["policyListingStatusMsg"] = "An unexpected error occured @ backend. Please try again later.";
-        context["saveNewPrioritiesButtonEnabled"] = false;
-        context["noPolicy"] = true;
+        pageData["policyListToView"] = [];
+        pageData["saveNewPrioritiesButtonEnabled"] = false;
+        pageData["noPolicy"] = true;
     }
-    return context;
+    log.info(pageData);
+    return pageData;
 }

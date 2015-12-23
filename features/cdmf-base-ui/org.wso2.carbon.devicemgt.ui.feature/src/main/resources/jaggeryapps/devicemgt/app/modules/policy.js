@@ -23,13 +23,37 @@ var policyModule;
 policyModule = function () {
     var log = new Log("/app/modules/policy.js");
 
-    var constants = require("/app/modules/constants.js");
+    var constants = require('/app/modules/constants.js');
     var utility = require("/app/modules/utility.js")["utility"];
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 
     var publicMethods = {};
     var privateMethods = {};
+
+    publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription) {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        if (policyName && deviceType) {
+            var queName = "wso2/iot/" + carbonUser.username + "/" + deviceType;
+            log.info("Queue : " + queName);
+
+            var mqttsenderClass = Packages.org.wso2.device.mgt.mqtt.policy.push.MqttPush;
+            var mqttsender = new mqttsenderClass();
+
+            var policyPretext = "POLICY:";
+            var policyPayload = policyPretext + policyDefinition;
+
+            var result = mqttsender.pushToMQTT(queName, policyPayload, "tcp://192.168.67.21:1883", "Raspberry-Policy-sender");
+            log.info(result);
+            mqttsender = null;
+            return true;
+        }
+        return false;
+    };
 
     /*
      @Updated
@@ -80,6 +104,7 @@ policyModule = function () {
                     } else if(policyObjectFromRestEndpoint["active"] == false &&  policyObjectFromRestEndpoint["updated"] == false) {
                         policyObjectToView["status"] = "Inactive";
                     }
+                    policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
                     // push view-objects to list
                     policyListToView.push(policyObjectToView);
                 }

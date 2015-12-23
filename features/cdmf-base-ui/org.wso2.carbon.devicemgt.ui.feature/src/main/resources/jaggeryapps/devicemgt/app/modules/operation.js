@@ -22,8 +22,6 @@ var operationModule = function () {
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
-    var user = session.get(constants.USER_SESSION_KEY);
-
     var publicMethods = {};
     var privateMethods = {};
 
@@ -75,13 +73,15 @@ var operationModule = function () {
     };
 
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, params) {
+        var user = session.get(constants.USER_SESSION_KEY);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
         var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '"}';
-        log.info(params);
         return post(endPoint, params, JSON.parse(header), "json");
     };
 
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {
+        var user = session.get(constants.USER_SESSION_KEY);
+        log.info("user: " + user);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
         var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt"}';
         var result = get(endPoint, {}, JSON.parse(header), "json");
@@ -102,7 +102,6 @@ var operationModule = function () {
             }
             delete result.data['sensorValue'];
         }
-        log.info(result);
         return result;
     };
 

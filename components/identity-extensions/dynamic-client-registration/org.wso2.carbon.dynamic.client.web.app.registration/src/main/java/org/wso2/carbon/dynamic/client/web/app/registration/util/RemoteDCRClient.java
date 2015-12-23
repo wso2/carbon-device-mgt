@@ -83,9 +83,10 @@ public class RemoteDCRClient {
             String responseString = EntityUtils.toString(responseData, DynamicClientWebAppRegistrationConstants.
                     CharSets.CHARSET_UTF8);
             if (status != 201) {
-                throw new DynamicClientRegistrationException(
-                        "Backend server error occurred while invoking DCR endpoint for " +
-                        "registering service-provider for web-app : " + clientName);
+                String msg = "Backend server error occurred while invoking DCR endpoint for " +
+                        "registering service-provider upon web-app : '" + clientName + "'; Server returned response '" +
+                        responseString + "' with HTTP status code '" + status + "'";
+                throw new DynamicClientRegistrationException(msg);
             }
             return getOAuthApplicationInfo(gson.fromJson(responseString, JsonElement.class));
         } catch (URISyntaxException e) {
@@ -102,7 +103,9 @@ public class RemoteDCRClient {
                                                          " registering service-provider for web-app : " + clientName,
                                                          e);
         } finally {
-            httpClient.close();
+            if (httpClient != null) {
+                httpClient.close();
+            }
         }
     }
 
@@ -133,7 +136,9 @@ public class RemoteDCRClient {
             throw new DynamicClientRegistrationException("Exception occurred while constructing the URI for invoking " +
                                                          "DCR endpoint for unregistering the web-app : " + appName, e);
         } finally {
-            httpClient.close();
+            if (httpClient != null) {
+                httpClient.close();
+            }
         }
         return false;
     }

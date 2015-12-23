@@ -128,9 +128,17 @@ public class AnnotationUtil {
                                         }
 
                                         try {
-                                            apiResourceConfig.setName(invokeMethod(apiClazzMethods[0], apiAnno, STRING));
-                                            apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[2], apiAnno, STRING));
-                                            apiResourceConfig.setContext(invokeMethod(apiClazzMethods[1], apiAnno, STRING));
+
+                                            for(int k=0;k<apiClazzMethods.length;k++){
+                                                switch (apiClazzMethods[k].getName()){
+                                                    case "name" :
+                                                        apiResourceConfig.setName(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                    case "version" :
+                                                        apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                    case "context" :
+                                                        apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                }
+                                            }
 
                                             String rootContext = "";
 
@@ -236,16 +244,24 @@ public class AnnotationUtil {
             if (methodAnnotation != null) {
 
                 Annotation[] annotations = method.getDeclaredAnnotations();
-                for(int i=0; i<annotations.length; i++){
-                    if(annotations[i].annotationType().getName().equals(org.wso2.carbon.apimgt.annotations.device.feature.Feature.class.getName())){
+                for (int i = 0; i < annotations.length; i++){
+                    if(annotations[i].annotationType().getName().equals(org.wso2.carbon.apimgt.annotations.device.feature.Feature.class.getName())) {
                         Feature feature = new Feature();
                         Method[] featureAnnoMethods = featureClazz.getMethods();
                         Annotation featureAnno = method.getAnnotation(featureClazz);
 
-                        feature.setCode(invokeMethod(featureAnnoMethods[1], featureAnno, STRING));
-                        feature.setName(invokeMethod(featureAnnoMethods[2], featureAnno, STRING));
-                        feature.setDescription(invokeMethod(featureAnnoMethods[0], featureAnno, STRING));
-                        feature.setType(invokeMethod(featureAnnoMethods[3], featureAnno, STRING));
+                        for(int k=0;k<featureAnnoMethods.length;k++){
+                            switch (featureAnnoMethods[k].getName()){
+                                case "name" :
+                                    feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                                case "code" :
+                                    feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                                case "description" :
+                                    feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                                case "type" :
+                                    feature.setType(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                            }
+                        }
 
                         //Extracting method with which feature is exposed
                         if(annotations[i].annotationType().getName().equals(GET.class.getName())){

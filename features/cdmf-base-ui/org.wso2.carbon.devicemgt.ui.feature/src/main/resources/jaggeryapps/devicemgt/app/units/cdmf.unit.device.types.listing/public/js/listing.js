@@ -137,6 +137,7 @@ function loadDevices(searchType, searchParam){
             viewModel.appContext = clientJsAppContext;
             viewModel.deviceTypeName = deviceTypesList[i].deviceTypeName;
             viewModel.deviceTypeId = deviceTypesList[i].deviceTypeId;
+            viewModel.deviceCategory = deviceTypesList[i].deviceCategory;
             viewModel.deviceTypeLabel = deviceTypesList[i].deviceTypeLabel;
             compileTemplate(viewModel, deviceListingSrc);
         }
@@ -161,7 +162,7 @@ function compileTemplate(viewModel, templateSrc){
         $("#ast-container").html($("#ast-container").html() + template(viewModel));
         compiledDeviceTypesCount++;
         if(deviceTypeCount == compiledDeviceTypesCount){
-            $('#device-grid').datatables_extended({"bFilter": false});
+            $('#device-grid').datatables_extended({"bFilter": true, "order": [[ 1, "asc" ]]});
         }
     });
 }

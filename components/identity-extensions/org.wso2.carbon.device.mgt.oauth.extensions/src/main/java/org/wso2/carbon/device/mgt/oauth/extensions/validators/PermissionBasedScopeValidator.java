@@ -89,6 +89,13 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                                       .isUserAuthorized(userStore +"/"+ username, permission.getPath(),
                                                         PermissionMethod.UI_EXECUTE);
                 }
+            }else {
+                String[] scopes = accessTokenDO.getScope();
+                for(int i=0; i < scopes.length; i++){
+                    if(scopes[i].equalsIgnoreCase("device_scope")){
+                        return true;
+                    }
+                }
             }
         } catch (PermissionManagementException e) {
             log.error("Error occurred while validating the resource scope for : " + resource +

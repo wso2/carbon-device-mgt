@@ -19,6 +19,7 @@
 function onRequest(context) {
     var log = new Log("listing.js");
     var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
+    var DTYPE_CONF_DEVICE_CATEGORY = "category";
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
     var DTYPE_UNIT_NAME_PREFIX = "cdmf.unit.device.type.";
     var DTYPE_UNIT_NAME_SUFFIX = ".type-view";
@@ -44,6 +45,7 @@ function onRequest(context) {
                 "hasCustTemplate": false,
                 "deviceTypeLabel": deviceTypeLabel,
                 "deviceTypeName": deviceTypes[i].name,
+                "deviceCategory": configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY],
                 "deviceTypeId": deviceTypes[i].id
             });
 

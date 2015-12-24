@@ -174,18 +174,18 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     @Override
     public void markDeviceAsNoneCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
 
-        try {
-            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
-            Device device = service.getDevice(deviceIdentifier);
-            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.BLOCKED);
-
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while marking device as none compliance " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
-        }
+//        try {
+//            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+//            Device device = service.getDevice(deviceIdentifier);
+//            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+//                    EnrolmentInfo.Status.BLOCKED);
+//
+//        } catch (DeviceManagementException e) {
+//            String msg = "Error occurred while marking device as none compliance " + deviceIdentifier.getId() + " - " +
+//                    deviceIdentifier.getType();
+//            log.error(msg, e);
+//            throw new PolicyComplianceException(msg, e);
+//        }
     }
 
     @Override

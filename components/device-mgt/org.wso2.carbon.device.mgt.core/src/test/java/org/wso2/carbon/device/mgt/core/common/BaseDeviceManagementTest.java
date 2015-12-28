@@ -50,12 +50,12 @@ public abstract class BaseDeviceManagementTest {
 
     @BeforeSuite
     public void setupDataSource() throws Exception {
-        this.initDatSource();
+        this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
     }
 
-    public void initDatSource() throws Exception {
+    public void initDataSource() throws Exception {
         this.dataSource = this.getDataSource(this.readDataSourceConfig());
         DeviceManagementDAOFactory.init(dataSource);
     }

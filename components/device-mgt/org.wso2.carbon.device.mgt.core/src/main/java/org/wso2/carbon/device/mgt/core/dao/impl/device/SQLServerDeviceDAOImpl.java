@@ -91,7 +91,7 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                 isStatusProvided = true;
             }
 
-            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            sql = sql + " ORDER BY ENROLMENT_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

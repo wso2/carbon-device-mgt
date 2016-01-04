@@ -30,7 +30,7 @@ var operationModule = function () {
      * If the token pair s not set in the session this will send a redirect to the login page.
      */
     function getAccessToken(deviceType, owner, deviceId) {
-        var TokenClient = Packages.org.wso2.carbon.device.mgt.common.impl.apimgt.TokenClient;
+        var TokenClient = Packages.org.wso2.carbon.device.mgt.iot.apimgt.TokenClient;
         var accessTokenClient = new TokenClient(deviceType);
         var accessTokenInfo = accessTokenClient.getAccessToken(owner, deviceId);
         return accessTokenInfo.getAccess_token();

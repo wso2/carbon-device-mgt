@@ -133,10 +133,13 @@ public class AnnotationUtil {
                                                 switch (apiClazzMethods[k].getName()){
                                                     case "name" :
                                                         apiResourceConfig.setName(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                        break;
                                                     case "version" :
                                                         apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                        break;
                                                     case "context" :
                                                         apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                        break;
                                                 }
                                             }
 

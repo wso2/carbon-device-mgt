@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,7 +18,7 @@
 
 var utility;
 utility = function () {
-    //var log = new Log("/app/modules/utility.js");
+    var log = new Log("/app/modules/utility.js");
     var JavaClass = Packages.java.lang.Class;
     var PrivilegedCarbonContext = Packages.org.wso2.carbon.context.PrivilegedCarbonContext;
 
@@ -191,13 +191,18 @@ utility = function () {
     };
 
     publicMethods.getDeviceTypeConfig = function (deviceType) {
+        var JFile = Packages.java.io.File;
+        var sep = JFile.separator;
+
+        var systemProcess = require('process');
+        var parent = 'file:///' + (systemProcess.getProperty('jaggery.home') || systemProcess.getProperty('carbon.home')).replace(/[\\]/g, '/').replace(/^[\/]/g, '');
 
         if (deviceType in deviceTypeConfigMap) {
             return deviceTypeConfigMap[deviceType];
         }
         var deviceTypeConfig;
-        var deviceTypeConfigFile = new File("../app/units/cdmf.unit.device.type."
-                                            + deviceType + ".type-view/private/conf/device-type.json");
+        var deviceTypeConfigFile = new File(parent + sep + "repository" + sep + "conf" + sep
+                                            + "device-types" + sep + deviceType + ".json");
         if (deviceTypeConfigFile.isExists()) {
             deviceTypeConfigFile.open("r");
             try {
@@ -236,5 +241,3 @@ utility = function () {
 
     return publicMethods;
 }();
-
-

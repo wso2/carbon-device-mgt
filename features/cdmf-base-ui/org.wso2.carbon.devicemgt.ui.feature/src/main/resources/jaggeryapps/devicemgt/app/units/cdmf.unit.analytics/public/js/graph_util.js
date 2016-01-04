@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -217,137 +217,19 @@ $(window).on('resize', function(){
 
 function updateGraphs() {
     console.log(stats);
-
-    var temperatureData = stats['temperatureData'];
-    if (typeof temperatureData != 'undefined') {
-        $('#div-temperatureData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Temperature</h2><hr><div id='canvas-wrapper1'></div></div><hr class='spaced'></div>");
-        drawLineGraph(1, temperatureData);
-    } else {
-        $('#div-temperatureData').html("");
+    var graphId = 1;
+    $('#div-chart').html("");
+    for (var stats_data in stats){
+        $('#div-chart').append("<div class='row margin-double shrink'><div><h2 class='grey'>" + stats[stats_data][0]["stream"]["name"] + "</h2><hr><div id='canvas-wrapper" + graphId + "'></div></div><hr class='spaced'></div>");
+        switch (stats[stats_data][0]["stream"]["ui_unit"]["name"]){
+            case "cdmf.unit.analytics.line-chart":
+                drawLineGraph(graphId++, stats[stats_data]);
+                break;
+            case "cdmf.unit.analytics.bar-chart":
+                drawBarGraph(graphId++, stats[stats_data]);
+                break;
+        }
     }
-
-    var lightData = stats['lightData'];
-    if (typeof lightData != 'undefined') {
-        $('#div-lightData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Light</h2><hr><div id='canvas-wrapper2'></div></div><hr class='spaced'></div>");
-        drawBarGraph(2, lightData);
-    } else {
-        $('#div-lightData').html("");
-    }
-
-    var motionData = stats['motionData'];
-    if (typeof motionData != 'undefined') {
-        $('#div-motionData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Motion</h2><hr><div id='canvas-wrapper3'></div></div><hr class='spaced'></div>");
-        drawBarGraph(3, motionData);
-    } else {
-        $('#div-motionData').html("");
-    }
-
-    var sonarData = stats['sonarData'];
-    if (typeof sonarData != 'undefined') {
-        $('#div-sonarData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Sonar</h2><hr><div id='canvas-wrapper4'></div></div><hr class='spaced'></div>");
-        drawLineGraph(4, sonarData);
-    } else {
-        $('#div-sonarData').html("");
-    }
-
-    var fanData = stats['fanData'];
-    if (typeof fanData != 'undefined') {
-        $('#div-fanData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Fan Status</h2><hr><div id='canvas-wrapper5'></div></div><hr class='spaced'></div>");
-        drawBarGraph(5, fanData);
-    } else {
-        $('#div-fanData').html("");
-    }
-
-    var bulbData = stats['bulbData'];
-    if (typeof bulbData != 'undefined') {
-        $('#div-bulbData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Bulb Status</h2><hr><div id='canvas-wrapper6'></div></div><hr class='spaced'></div>");
-        drawBarGraph(6, bulbData);
-    } else {
-        $('#div-bulbData').html("");
-    }
-
-    var cpuData = stats['cpuData'];
-    if (typeof cpuData != 'undefined') {
-        $('#div-CPUData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>CPU Load</h2><hr><div id='canvas-wrapper7'></div></div><hr class='spaced'></div>");
-        drawLineGraph(7, cpuData);
-    } else {
-        $('#div-CPUData').html("");
-    }
-
-    var ramData = stats['ramData'];
-    if (typeof ramData != 'undefined') {
-        $('#div-RAMData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>RAM Usage</h2><hr><div id='canvas-wrapper8'></div></div><hr class='spaced'></div>");
-        drawLineGraph(8, ramData);
-    } else {
-        $('#div-RAMData').html("");
-    }
-
-    var cpuTemperatureData = stats['cpuTemperatureData'];
-    if (typeof cpuTemperatureData != 'undefined') {
-        $('#div-cpuTemperatureData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>CPU Temperature</h2><hr><div id='canvas-wrapper9'></div></div><hr class='spaced'></div>");
-        drawLineGraph(9, cpuTemperatureData);
-    } else {
-        $('#div-cpuTemperatureData').html("");
-    }
-
-    var humidityData = stats['humidityData'];
-    if (typeof humidityData != 'undefined') {
-        $('#div-humidityData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Humidity</h2><hr><div id='canvas-wrapper10'></div></div><hr class='spaced'></div>");
-        drawLineGraph(10, humidityData);
-    } else {
-        $('#div-humidityData').html("");
-    }
-    var batteryData = stats['batteryData'];
-    if (typeof batteryData != 'undefined') {
-        $('#div-batteryData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Battery</h2><hr><div id='canvas-wrapper11'></div></div><hr class='spaced'></div>");
-        drawLineGraph(11, batteryData);
-    } else {
-        $('#div-batteryData').html("");
-    }
-    var accelerometerData = stats['accelerometerData'];
-    if (typeof accelerometerData != 'undefined') {
-        $('#div-accelerometerData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Accelerometer</h2><hr><div id='canvas-wrapper12'></div></div><hr class='spaced'></div>");
-        drawLineGraph(12, accelerometerData);
-    } else {
-        $('#div-humidityData').html("");
-    }
-    var pressureData = stats['pressureData'];
-    if (typeof pressureData != 'undefined') {
-        $('#div-pressureData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Pressure</h2><hr><div id='canvas-wrapper13'></div></div><hr class='spaced'></div>");
-        drawLineGraph(13, pressureData);
-    } else {
-        $('#div-pressureData').html("");
-    }
-    var proximityData = stats['proximityData'];
-    if (typeof proximityData != 'undefined') {
-        $('#div-proximityData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Proximity</h2><hr><div id='canvas-wrapper14'></div></div><hr class='spaced'></div>");
-        drawLineGraph(14, proximityData);
-    } else {
-        $('#div-proximityData').html("");
-    }
-    var gyroscopeData = stats['gyroscopeData'];
-    if (typeof gyroscopeData != 'undefined') {
-        $('#div-gyroscopeData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Gyroscope</h2><hr><div id='canvas-wrapper15'></div></div><hr class='spaced'></div>");
-        drawLineGraph(15, gyroscopeData);
-    } else {
-        $('#div-gyroscopeData').html("");
-    }
-    var gravityData = stats['gravityData'];
-    if (typeof gravityData != 'undefined') {
-        $('#div-gravityData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Gravity</h2><hr><div id='canvas-wrapper16'></div></div><hr class='spaced'></div>");
-        drawLineGraph(16, gravityData);
-    } else {
-        $('#div-gravityData').html("");
-    }
-    var rotationData = stats['rotationData'];
-    if (typeof rotationData != 'undefined') {
-        $('#div-rotationData').html("").html("<div class='row margin-double shrink'><div><h2 class='grey'>Rotation</h2><hr><div id='canvas-wrapper17'></div></div><hr class='spaced'></div>");
-        drawLineGraph(17, rotationData);
-    } else {
-        $('#div-rotationData').html("");
-    }
-
-
     scaleGraphs();
 }
 
@@ -515,7 +397,7 @@ function drawBarGraph(graphId, chartDataRaw) {
             for (var j = 0; j < chartDataRaw[i].stats.length; j++) {
                 chartData.push({
                     x: parseInt(chartDataRaw[i].stats[j].time),
-                    y: parseInt(chartDataRaw[i].stats[j].value)
+                    y: parseInt(chartDataRaw[i].stats[j].value > 0 ? 1 : 0)
                 });
             }
             graphConfig['series'].push({

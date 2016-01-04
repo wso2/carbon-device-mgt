@@ -257,12 +257,16 @@ public class AnnotationUtil {
                             switch (featureAnnoMethods[k].getName()){
                                 case "name" :
                                     feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                                    break;
                                 case "code" :
                                     feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                                    break;
                                 case "description" :
                                     feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                                    break;
                                 case "type" :
                                     feature.setType(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                                    break;
                             }
                         }
 

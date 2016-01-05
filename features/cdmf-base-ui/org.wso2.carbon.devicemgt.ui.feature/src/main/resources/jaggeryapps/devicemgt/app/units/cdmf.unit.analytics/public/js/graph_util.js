@@ -205,7 +205,7 @@ function getStats(from, to) {
     });
 
     getStatsRequest.fail(function (jqXHR, textStatus) {
-        alert("Request failed: " + jqXHR.statusText);
+        console.log("Request failed: " + jqXHR.statusText);
     });
 }
 

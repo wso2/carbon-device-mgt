@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -74,13 +74,13 @@ $(document).ready(function () {
     var listPartialSrc = $("#list-partial").attr("src");
     var treeTemplateSrc = $("#tree-template").attr("src");
     var roleName = $("#permissionList").data("currentrole");
-    var serviceUrl = "/devicemgt_admin/roles/" + roleName;
+    var serviceUrl = "/mdm-admin/roles/permissions?rolename=" + roleName;
     $.registerPartial("list", listPartialSrc, function(){
         $.template("treeTemplate", treeTemplateSrc, function (template) {
             invokerUtil.get(serviceUrl,
                 function(data){
                     data = JSON.parse(data);
-                    var treeData = data.responseContent.permissionList;
+                    var treeData = data.responseContent;
                     if(treeData.nodeList.length > 0){
                         treeData = { nodeList: treeData.nodeList };
                         var content = template(treeData);
@@ -102,16 +102,16 @@ $(document).ready(function () {
     /**
      * Following click function would execute
      * when a user clicks on "Add Role" button
-     * on Add Role page in WSO2 Devicemgt Console.
+     * on Add Role page in WSO2 MDM Console.
      */
     $("button#update-permissions-btn").click(function() {
         var roleName = $("#permissionList").data("currentrole");
-        var updateRolePermissionAPI = "/devicemgt_admin/roles/" + roleName;
+        var updateRolePermissionAPI = "/mdm-admin/roles?rolename=" + roleName;
         var updateRolePermissionData = {};
         var perms = [];
         $("#permissionList li input:checked").each(function(){
             perms.push($(this).data("resourcepath"));
-        })
+        });
         updateRolePermissionData.permissions = perms;
         invokerUtil.put(
             updateRolePermissionAPI,

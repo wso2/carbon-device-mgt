@@ -21,13 +21,13 @@
     <parent>
         <artifactId>dynamic-client-registration</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>1.0.3</version>
+        <version>1.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Dynamic client registration service</name>
     <description>WSO2 Carbon - Dynamic Client Registration Service</description>

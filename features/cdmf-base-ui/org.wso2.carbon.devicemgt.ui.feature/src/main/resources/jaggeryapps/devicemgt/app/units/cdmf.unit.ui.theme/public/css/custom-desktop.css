@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -2379,19 +2379,6 @@ a.show-operations-btn .btn-text:before {
     z-index: 10;
     background-color: #fff;
     opacity: 0.8;
-}
-
-.loading:after {
-    content: "Background operation is running ...";
-    z-index: 11;
-    background: #fe8;
-    color: #333;
-    width: 250px;
-    opacity: 0.8;
-    bottom: 25px;
-    display: block;
-    padding: 5px 10px;
-    position: absolute;
 }
 
 a.cu-btn-inner.inverse {

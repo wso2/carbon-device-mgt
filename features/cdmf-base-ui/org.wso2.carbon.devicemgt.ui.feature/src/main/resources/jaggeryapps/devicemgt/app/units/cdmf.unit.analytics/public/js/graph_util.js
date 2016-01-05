@@ -171,6 +171,7 @@ function getDateTime(from, to) {
 }
 
 function getStats(from, to) {
+    $('#div-chart').html('<div style="height:200px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
     var requestData = {};
     var getStatsRequest;
     if (from) {

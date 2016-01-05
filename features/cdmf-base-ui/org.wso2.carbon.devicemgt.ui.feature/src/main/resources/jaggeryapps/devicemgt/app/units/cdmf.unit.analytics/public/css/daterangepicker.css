@@ -345,6 +345,4 @@ input.hour-range, input.minute-range {
 
 #dateRangePickerContainer {
     float: right;
-    margin-left: -66px;
-    margin-top: -135px;
 }

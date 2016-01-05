@@ -6,40 +6,34 @@
 <span id="request-group-id" data-groupid="{{groupId}}"></span>
 <div class="container container-bg  white-bg">
     <div class=" margin-top-double">
-        <div class="row row padding-top-double padding-bottom-double margin-bottom-double  ">
-            <div class="col-lg-12  margin-top-double">
+        <div class="row padding-top-double padding-bottom-double margin-bottom-double">
+            <div class="col-lg-3  margin-top-double">
                 <h1 class="grey ">{{title}}</h1>
-                <hr>
             </div>
-        </div>
-        <div id="rangeSliderWrapper" class="pull-right" style="width: 620px;">
-            <div class="row-fluid">
-                <div class="span12">
-                    <div id="dateRangePickerContainer">
-                        <div class="btn-group" role="group">
-                            <button id="hour-btn" type="button"
-                                    class="btn btn-default date-range">Hour
-                            </button>
-                            <button id="h12-btn" type="button"
-                                    class="btn btn-default date-range">12 Hours
-                            </button>
-                            <button id="h24-btn" type="button"
-                                    class="btn btn-default date-range">24 Hours
-                            </button>
-                            <button id="h48-btn" type="button"
-                                    class="btn btn-default date-range">48 Hours
-                            </button>
-                            <button id="date-range" type="button"
-                                    class="btn btn-default date-range last-child"
-                                    data-toggle="popup"
-                                    title="Click to set custom date range"></button>
-                        </div>
-                            <span class="add-on-cal"><i style="margin-right:0px;"
-                                                        class="icon-calendar"></i></span>
+            <div id="rangeSliderWrapper" class="pull-right col-lg-9">
+                <div id="dateRangePickerContainer">
+                    <div class="btn-group" role="group">
+                        <button id="hour-btn" type="button"
+                                class="btn btn-default date-range">Hour
+                        </button>
+                        <button id="h12-btn" type="button"
+                                class="btn btn-default date-range">12 Hours
+                        </button>
+                        <button id="h24-btn" type="button"
+                                class="btn btn-default date-range">24 Hours
+                        </button>
+                        <button id="h48-btn" type="button"
+                                class="btn btn-default date-range">48 Hours
+                        </button>
+                        <button id="date-range" type="button"
+                                class="btn btn-default date-range last-child"
+                                data-toggle="popup"
+                                title="Click to set custom date range"></button>
                     </div>
                 </div>
             </div>
         </div>
+        <hr>
         <div class="clear"></div>
         <div id="div-chart">
         </div>

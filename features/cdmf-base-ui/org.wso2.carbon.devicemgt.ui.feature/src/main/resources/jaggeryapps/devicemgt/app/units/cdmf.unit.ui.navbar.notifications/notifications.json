@@ -1,8 +1,5 @@
 {
     "version": "1.0.0",
-    "index": 10,
-    "pushedUris": [
-        "/",
-        "/{+any}"
-    ]
+    "extends": "uuf.unit.navbar.notifications",
+    "disabled": true
 }

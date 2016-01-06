@@ -1,9 +1,9 @@
 {
     "appName": "CDMF",
-    "cachingEnabled": true,
+    "cachingEnabled": false,
     "debuggingEnabled": false,
     "permissionRoot": "/",
-    "loginUri": "${app.context}/login",
+    "loginPage": "cdmf.page.sign-in",
     "adminServicesUrl": "https://${server.ip}:${server.https_port}/admin/services/",
     "authModule": {
         "enabled": true,
@@ -28,5 +28,8 @@
         "sso": {
             "enabled": false
         }
+    },
+    "errorPages": {
+        "default": "uuf.page.error"
     }
 }

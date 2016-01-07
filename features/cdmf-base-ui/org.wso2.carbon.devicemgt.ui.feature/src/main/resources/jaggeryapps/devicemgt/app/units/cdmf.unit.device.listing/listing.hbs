@@ -57,6 +57,73 @@
         </div>
     </div>
 {{/if}}
+
+<div id="remove-device-modal-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>Do you really want to remove this device from your Devices List?</h3>
+
+                <div class="buttons">
+                    <a href="#" id="remove-device-yes-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                    &nbsp;&nbsp;
+                    <a href="#" id="remove-device-cancel-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="remove-device-200-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>Device was successfully removed.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="edit-device-modal-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>Please enter new name for the device?</h3>
+                <br/>
+
+                <div>
+                    <input id="edit-device-name" style="color:#3f3f3f;padding:5px" type="text"
+                           value=""
+                           placeholder="Type here" size="60">
+                </div>
+                <div class="buttons">
+                    <a href="#" id="edit-device-yes-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Rename&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                    &nbsp;&nbsp;
+                    <a href="#" id="edit-device-cancel-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="edit-device-200-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>Device was successfully updated.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{#zone "bottomJs"}}
     <script id="device-listing" data-current-user="{{currentUser.username}}"
             data-image-resource="{{@app.context}}/public/cdmf.unit.device.type."

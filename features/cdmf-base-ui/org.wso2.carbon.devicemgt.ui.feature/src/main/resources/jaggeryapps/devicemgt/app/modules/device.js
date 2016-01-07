@@ -33,12 +33,10 @@ deviceModule = function () {
     var ConfigOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
     var CommandOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 
-    var deviceManagementService = utility.getDeviceManagementService();
-
-    var devicemgtService;
-
     var publicMethods = {};
     var privateMethods = {};
+
+    var deviceCloudService = devicemgtProps["httpsURL"] + "/common/device_manager";
 
     privateMethods.validateAndReturn = function (value) {
         return (value == undefined || value == null) ? constants.UNSPECIFIED : value;
@@ -335,8 +333,7 @@ deviceModule = function () {
     };
 
     publicMethods.getOwnDevices = function () {
-        devicemgtService = devicemgtProps["httpsURL"] + "/common/device_manager";
-        listAllDevicesEndPoint = devicemgtService + "/device/user/" + user.username + "/all";
+        var listAllDevicesEndPoint = deviceCloudService + "/device/user/" + user.username + "/all";
         var result = get(listAllDevicesEndPoint, {}, "json");
         var devices = result.data;
         var device;
@@ -349,15 +346,13 @@ deviceModule = function () {
 
     publicMethods.getOwnDevicesCount = function () {
         var carbonUser = session.get(constants.USER_SESSION_KEY);
-        devicemgtService = devicemgtProps["httpsURL"] + "/common/device_manager";
-        listAllDevicesEndPoint = devicemgtService + "/device/user/" + carbonUser.username + "/all/count";
+        var listAllDevicesEndPoint = deviceCloudService + "/device/user/" + carbonUser.username + "/all/count";
         return get(listAllDevicesEndPoint, {}, "json").data;
     };
 
     publicMethods.getUnGroupedDevices = function () {
         var carbonUser = session.get(constants.USER_SESSION_KEY);
-        devicemgtService = devicemgtProps["httpsURL"] + "/common/device_manager";
-        listAllDevicesEndPoint = devicemgtService + "/device/user/" + carbonUser.username + "/ungrouped";
+        var listAllDevicesEndPoint = deviceCloudService + "/device/user/" + carbonUser.username + "/ungrouped";
         return get(listAllDevicesEndPoint, {}, "json").data;
     };
 
@@ -400,8 +395,50 @@ deviceModule = function () {
     };
 
     publicMethods.getDeviceTypes = function () {
-        var deviceTypesEndPoint = devicemgtProps["httpsURL"] + "/common/device_manager/device/type/all";
+        var deviceTypesEndPoint = deviceCloudService + "/device/type/all";
         return get(deviceTypesEndPoint, {}, "json");
+    };
+
+    publicMethods.removeDevice = function (deviceType, deviceId) {
+        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants.ERRORS.USER_NOT_FOUND;
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var deviceManagementService = utility.getDeviceManagementService();
+            var deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setType(deviceType);
+            deviceIdentifier.setId(deviceId);
+            return deviceManagementService.disenrollDevice(deviceIdentifier);
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
+    publicMethods.updateDevice = function (deviceType, deviceId, deviceName) {
+        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants.ERRORS.USER_NOT_FOUND;
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var deviceManagementService = utility.getDeviceManagementService();
+            var deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setType(deviceType);
+            deviceIdentifier.setId(deviceId);
+            var device = deviceManagementService.getDevice(deviceIdentifier);
+            device.setName(deviceName);
+            return deviceManagementService.modifyEnrollment(device);
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
     };
 
     return publicMethods;

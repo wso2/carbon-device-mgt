@@ -17,26 +17,10 @@
  */
 
 function onRequest(context) {
-    context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
-        if (arguments.length < 3)
-            throw new Error("Handlebars Helper equal needs 2 parameters");
-        if( lvalue!=rvalue ) {
-            return options.inverse(this);
-        } else {
-            return options.fn(this);
-        }
-    });
-
     var userModule = require("/app/modules/user.js").userModule;
     var username = request.getParameter("username");
     var user = userModule.getUser(username)["content"];
     if (user) {
-        var title;
-        if (user.firstname || user.lastname) {
-            title = user.firstname + " " + user.lastname;
-        } else {
-            title = user.username;
-        }
-        return {"user": user, "title": title};
+        return {"username": user.username};
     }
 }

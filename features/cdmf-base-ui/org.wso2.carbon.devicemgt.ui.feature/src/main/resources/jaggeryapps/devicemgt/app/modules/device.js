@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -112,7 +112,7 @@ deviceModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var deviceManagementService = utility.getDeviceManagementService();
-            var devices = deviceManagementService.getDeviceListOfUser(username);
+            var devices = deviceManagementService.getDevicesOfUser(username);
             var deviceList = [];
             var i, device, propertiesList, deviceObject;
             for (i = 0; i < devices.size(); i++) {

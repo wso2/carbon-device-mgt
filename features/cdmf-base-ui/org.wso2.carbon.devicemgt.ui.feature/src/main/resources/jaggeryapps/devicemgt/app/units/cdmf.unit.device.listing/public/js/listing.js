@@ -26,7 +26,7 @@
         device.owner = validateAndReturn(device.owner);
         device.ownership = validateAndReturn(device.ownership);
         var arr = device.properties;
-        if (arr){
+        if (arr) {
             device.properties = arr.reduce(function (total, current) {
                 total[current.name] = validateAndReturn(current.value);
                 return total;
@@ -51,58 +51,20 @@ var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='chec
 var assetContainer = "#ast-container";
 
 /*
- * DOM ready functions.
- */
-$(document).ready(function () {
-    /* Adding selected class for selected devices */
-    $(deviceCheckbox).each(function () {
-        addDeviceSelectedClass(this);
-    });
-
-    var i;
-    var permissionList = $("#permission").data("permission");
-    for (i = 0; i < permissionList.length; i++) {
-        $.setPermission(permissionList[i]);
-    }
-
-    /* for device list sorting drop down */
-    $(".ctrl-filter-type-switcher").popover({
-        html : true,
-        content : function () {
-            return $("#content-filter-types").html();
-        }
-    });
-
-    $(".ast-container").on("click", ".claim-btn", function(e){
-        e.stopPropagation();
-        var deviceId = $(this).data("deviceid");
-        var deviceListing = $("#device-listing");
-        var currentUser = deviceListing.data("current-user");
-        var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
-        var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
-        invokerUtil.put(serviceURL, deviceIdentifier, function(message){
-            console.log(message);
-        }, function(message){
-                console.log(message);
-            });
-    });
-});
-
-/*
  * On Select All Device button click function.
  *
  * @param button: Select All Device button
  */
 function selectAllDevices(button) {
-    if(!$(button).data('select')){
-        $(deviceCheckbox).each(function(index){
+    if (!$(button).data('select')) {
+        $(deviceCheckbox).each(function (index) {
             $(this).prop('checked', true);
             addDeviceSelectedClass(this);
         });
         $(button).data('select', true);
         $(button).html('Deselect All Devices');
-    }else{
-        $(deviceCheckbox).each(function(index){
+    } else {
+        $(deviceCheckbox).each(function (index) {
             $(this).prop('checked', false);
             addDeviceSelectedClass(this);
         });
@@ -118,7 +80,7 @@ function selectAllDevices(button) {
  * @param selection: Selection button
  */
 function changeDeviceView(view, selection) {
-    $(".view-toggle").each(function() {
+    $(".view-toggle").each(function () {
         $(this).removeClass("selected");
     });
     $(selection).addClass("selected");
@@ -143,31 +105,33 @@ function addDeviceSelectedClass(checkbox) {
 }
 
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    return str.replace(/\w\S*/g, function (txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
 }
 
-function loadDevices(searchType, searchParam){
+function loadDevices(searchType, searchParam) {
     var deviceListing = $("#device-listing");
     var deviceListingSrc = deviceListing.attr("src");
     var imageResource = deviceListing.data("image-resource");
     var currentUser = deviceListing.data("currentUser");
     $.template("device-listing", deviceListingSrc, function (template) {
         var serviceURL;
-        if ($.hasPermission("LIST_DEVICES")) {
-            serviceURL = "/devicemgt_admin/devices";
-        } else if ($.hasPermission("LIST_OWN_DEVICES")) {
+        if ($.hasPermission("LIST_OWN_DEVICES") || $.hasPermission("LIST_DEVICES")) {
             //Get authenticated users devices
-            serviceURL = "/devicemgt_admin/user/"+currentUser+"/carbon.super";
+            serviceURL = "/mdm-admin/users/devices?username=" + currentUser;
         } else {
-            $("#ast-container").html("Permission denied");
+            $("#loading-content").remove();
+            $('#device-table').addClass('hidden');
+            $('#device-listing-status-msg').text('Permission denied.');
             return;
         }
-        if (searchParam){
-            if(searchType == "users"){
+        if (searchParam) {
+            if (searchType == "users") {
                 serviceURL = serviceURL + "?user=" + searchParam;
-            }else if(searchType == "user-roles"){
+            } else if (searchType == "user-roles") {
                 serviceURL = serviceURL + "?role=" + searchParam;
-            }else{
+            } else {
                 serviceURL = serviceURL + "?type=" + searchParam;
             }
         }
@@ -176,7 +140,8 @@ function loadDevices(searchType, searchParam){
             var viewModel = {};
             viewModel.devices = data;
             viewModel.imageLocation = imageResource;
-            if(data.length > 0){
+            if (data.length > 0) {
+                $('#device-grid').removeClass('hidden');
                 var content = template(viewModel);
                 $("#ast-container").html(content);
                 /*
@@ -186,19 +151,17 @@ function loadDevices(searchType, searchParam){
                     addDeviceSelectedClass(this);
                 });
             } else {
-                $('#device-grid').addClass('hidden');
+                $('#device-table').addClass('hidden');
                 $('#device-listing-status-msg').text('No device is available to be displayed.');
-
             }
+            $("#loading-content").remove();
             $('#device-grid').datatables_extended();
             $(".icon .text").res_text(0.2);
-
-
         };
         invokerUtil.get(serviceURL,
-            successCallback, function(message){
-                console.log(message);
-            });
+                        successCallback, function (message) {
+                    console.log(message.content);
+                });
     });
 }
 
@@ -208,16 +171,14 @@ function loadDevices(searchType, searchParam){
 var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
 var assetContainer = "#ast-container";
 
-function openCollapsedNav(){
+function openCollapsedNav() {
     $('.wr-hidden-nav-toggle-btn').addClass('active');
-    $('#hiddenNav').slideToggle('slideDown', function(){
-        if($(this).css('display') == 'none'){
+    $('#hiddenNav').slideToggle('slideDown', function () {
+        if ($(this).css('display') == 'none') {
             $('.wr-hidden-nav-toggle-btn').removeClass('active');
         }
     });
 }
-
-
 
 /*
  * DOM ready functions.
@@ -239,24 +200,10 @@ $(document).ready(function () {
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
-        html : true,
-        content : function () {
+        html: true,
+        content: function () {
             return $("#content-filter-types").html();
         }
-    });
-
-    $(".ast-container").on("click", ".claim-btn", function(e){
-        e.stopPropagation();
-        var deviceId = $(this).data("deviceid");
-        var deviceListing = $("#device-listing");
-        var currentUser = deviceListing.data("current-user");
-        var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
-        var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
-        invokerUtil.put(serviceURL, deviceIdentifier, function(message){
-            console.log(message);
-        }, function(message){
-                console.log(message);
-            });
     });
 
     /* for data tables*/
@@ -265,8 +212,8 @@ $(document).ready(function () {
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-filter-type-switcher").popover({
-        html : true,
-        content: function() {
+        html: true,
+        content: function () {
             return $('#content-filter-types').html();
         }
     });

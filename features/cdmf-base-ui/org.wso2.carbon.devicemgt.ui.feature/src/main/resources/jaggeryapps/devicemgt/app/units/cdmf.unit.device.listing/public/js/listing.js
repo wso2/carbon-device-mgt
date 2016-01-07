@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -31,20 +31,6 @@
                 total[current.name] = validateAndReturn(current.value);
                 return total;
             }, {});
-        }
-    });
-    Handlebars.registerHelper('isMobile', function (lvalue, options) {
-        if( lvalue=='android' || lvalue=='windows' || lvalue=='ios' ) {
-            return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
-    });
-    Handlebars.registerHelper('isNotMobile', function (lvalue, options) {
-        if( lvalue=='android' || lvalue=='windows' || lvalue=='ios' ) {
-            return options.inverse(this);
-        } else {
-            return options.fn(this);
         }
     });
 

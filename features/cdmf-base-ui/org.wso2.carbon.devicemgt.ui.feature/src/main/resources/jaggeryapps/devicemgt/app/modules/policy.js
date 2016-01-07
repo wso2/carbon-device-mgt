@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -41,7 +41,7 @@ policyModule = function () {
             var queName = "wso2/iot/" + carbonUser.username + "/" + deviceType;
             log.info("Queue : " + queName);
 
-            var mqttsenderClass = Packages.org.wso2.device.mgt.mqtt.policy.push.MqttPush;
+            var mqttsenderClass = Packages.org.wso2.carbon.device.mgt.iot.mqtt.PolicyPush;
             var mqttsender = new mqttsenderClass();
 
             var policyPretext = "POLICY:";
@@ -88,9 +88,9 @@ policyModule = function () {
                     policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"]["name"];
                     policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
                     policyObjectToView["roles"] = privateMethods.
-                        getElementsInAString(policyObjectFromRestEndpoint["roles"]);
+                            getElementsInAString(policyObjectFromRestEndpoint["roles"]);
                     policyObjectToView["users"] = privateMethods.
-                        getElementsInAString(policyObjectFromRestEndpoint["users"]);
+                            getElementsInAString(policyObjectFromRestEndpoint["users"]);
                     policyObjectToView["compliance"] = policyObjectFromRestEndpoint["compliance"];
 
                     if(policyObjectFromRestEndpoint["active"] == true &&  policyObjectFromRestEndpoint["updated"] == true) {

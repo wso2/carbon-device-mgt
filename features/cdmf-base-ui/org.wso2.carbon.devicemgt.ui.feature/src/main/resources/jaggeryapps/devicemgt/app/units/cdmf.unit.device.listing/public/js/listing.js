@@ -150,6 +150,7 @@ function loadDevices(searchType, searchParam) {
                 $(deviceCheckbox).click(function () {
                     addDeviceSelectedClass(this);
                 });
+                attachDeviceEvents();
             } else {
                 $('#device-table').addClass('hidden');
                 $('#device-listing-status-msg').text('No device is available to be displayed.');
@@ -225,3 +226,134 @@ $(document).ready(function () {
     });
 
 });
+
+var modalPopup = ".wr-modalpopup";
+var modalPopupContainer = modalPopup + " .modalpopup-container";
+var modalPopupContent = modalPopup + " .modalpopup-content";
+var body = "body";
+
+/*
+ * set popup maximum height function.
+ */
+function setPopupMaxHeight() {
+    $(modalPopupContent).css('max-height', ($(body).height() - ($(body).height() / 100 * 30)));
+    $(modalPopupContainer).css('margin-top', (-($(modalPopupContainer).height() / 2)));
+}
+
+/*
+ * show popup function.
+ */
+function showPopup() {
+    $(modalPopup).show();
+    setPopupMaxHeight();
+}
+
+/*
+ * hide popup function.
+ */
+function hidePopup() {
+    $(modalPopupContent).html('');
+    $(modalPopup).hide();
+}
+
+/**
+ * Following functions should be triggered after AJAX request is made.
+ */
+function attachDeviceEvents() {
+    /**
+     * Following click function would execute
+     * when a user clicks on "Remove" link
+     * on Device Management page in WSO2 MDM Console.
+     */
+    $("a.remove-device-link").click(function () {
+        var deviceId = $(this).data("deviceid");
+        var deviceType = $(this).data("devicetype");
+        var removeDeviceAPI = "/devicemgt/api/devices/" + deviceType + "/" + deviceId + "/remove";
+
+        $(modalPopupContent).html($('#remove-device-modal-content').html());
+        showPopup();
+
+        $("a#remove-device-yes-link").click(function () {
+            var postOperationRequest = $.ajax({
+                url: removeDeviceAPI,
+                method: "post"
+            });
+            postOperationRequest.done(function (data) {
+                $(modalPopupContent).html($('#remove-device-200-content').html());
+                window.location.reload(false);
+            });
+            postOperationRequest.fail(function (jqXHR, textStatus) {
+                displayDeviceErrors(jqXHR);
+            });
+        });
+
+        $("a#remove-device-cancel-link").click(function () {
+            hidePopup();
+        });
+
+    });
+
+    /**
+     * Following click function would execute
+     * when a user clicks on "Edit" link
+     * on Device Management page in WSO2 MDM Console.
+     */
+    $("a.edit-device-link").click(function () {
+        var deviceId = $(this).data("deviceid");
+        var deviceType = $(this).data("devicetype");
+        var deviceName = $(this).data("devicename");
+        var editDeviceAPI = "/devicemgt/api/devices/" + deviceType + "/" + deviceId + "/update?name=";
+
+        $(modalPopupContent).html($('#edit-device-modal-content').html());
+        $('#edit-device-name').val(deviceName);
+        showPopup();
+
+        $("a#edit-device-yes-link").click(function () {
+            var newDeviceName = $('#edit-device-name').val();
+            var postOperationRequest = $.ajax({
+                url: editDeviceAPI + newDeviceName,
+                method: "post"
+            });
+            postOperationRequest.done(function (data) {
+                $(modalPopupContent).html($('#edit-device-200-content').html());
+                $("h4[data-deviceid='" + deviceId + "']").html(newDeviceName);
+                setTimeout(function () {
+                    hidePopup();
+                }, 2000);
+            });
+            postOperationRequest.fail(function (jqXHR, textStatus) {
+                displayDeviceErrors(jqXHR);
+            });
+        });
+
+        $("a#edit-device-cancel-link").click(function () {
+            hidePopup();
+        });
+    });
+}
+
+function displayDeviceErrors(jqXHR) {
+    showPopup();
+    if (jqXHR.status == 400) {
+        $(modalPopupContent).html($('#group-400-content').html());
+        $("a#group-400-link").click(function () {
+            hidePopup();
+        });
+    } else if (jqXHR.status == 403) {
+        $(modalPopupContent).html($('#group-403-content').html());
+        $("a#group-403-link").click(function () {
+            hidePopup();
+        });
+    } else if (jqXHR.status == 409) {
+        $(modalPopupContent).html($('#group-409-content').html());
+        $("a#group-409-link").click(function () {
+            hidePopup();
+        });
+    } else {
+        $(modalPopupContent).html($('#group-unexpected-error-content').html());
+        $("a#group-unexpected-error-link").click(function () {
+            hidePopup();
+        });
+        console.log("Error code: " + jqXHR.status);
+    }
+}

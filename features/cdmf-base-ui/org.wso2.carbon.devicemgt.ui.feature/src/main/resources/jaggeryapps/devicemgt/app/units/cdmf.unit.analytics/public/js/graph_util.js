@@ -221,12 +221,13 @@ function updateGraphs() {
     var graphId = 1;
     $('#div-chart').html("");
     for (var stats_data in stats){
-        $('#div-chart').append("<div class='row margin-double shrink'><div><h2 class='grey'>" + stats[stats_data][0]["stream"]["name"] + "</h2><hr><div id='canvas-wrapper" + graphId + "'></div></div><hr class='spaced'></div>");
         switch (stats[stats_data][0]["stream"]["ui_unit"]["name"]){
             case "cdmf.unit.analytics.line-chart":
+                $('#div-chart').append("<div class='row margin-double shrink'><div><h2 class='grey'>" + stats[stats_data][0]["stream"]["name"] + "</h2><hr><div id='canvas-wrapper" + graphId + "'></div></div><hr class='spaced'></div>");
                 drawLineGraph(graphId++, stats[stats_data]);
                 break;
             case "cdmf.unit.analytics.bar-chart":
+                $('#div-chart').append("<div class='row margin-double shrink'><div><h2 class='grey'>" + stats[stats_data][0]["stream"]["name"] + "</h2><hr><div id='canvas-wrapper" + graphId + "'></div></div><hr class='spaced'></div>");
                 drawBarGraph(graphId++, stats[stats_data]);
                 break;
         }

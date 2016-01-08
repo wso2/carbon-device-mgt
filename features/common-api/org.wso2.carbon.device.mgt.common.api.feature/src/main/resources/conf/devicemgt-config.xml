@@ -28,7 +28,7 @@
             <Enabled>true</Enabled>
             <ControlClass>org.wso2.carbon.device.mgt.common.impl.controlqueue.mqtt.MqttControlPublisher</ControlClass>
             <Protocol>MQTT</Protocol>
-            <ServerURL>tcp://204.232.188.214</ServerURL>
+            <ServerURL>tcp://localhost</ServerURL>
             <Port>1883</Port>
             <Username>.</Username>
             <Password>.</Password>
@@ -39,7 +39,7 @@
             <Enabled>true</Enabled>
             <ControlClass>org.wso2.carbon.device.mgt.common.impl.controlqueue.xmpp.XmppServerClient</ControlClass>
             <Protocol>XMPP</Protocol>
-            <ServerURL>http://204.232.188.215</ServerURL>
+            <ServerURL>http://localhost</ServerURL>
             <Port>9090</Port>
             <Username>admin</Username>
             <Password>wso2iot123</Password>

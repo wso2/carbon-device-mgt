@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,9 +21,6 @@ function onRequest(context) {
     var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
     var DTYPE_CONF_DEVICE_CATEGORY = "category";
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
-    var DTYPE_UNIT_NAME_PREFIX = "cdmf.unit.device.type.";
-    var DTYPE_UNIT_NAME_SUFFIX = ".type-view";
-    var DTYPE_UNIT_LISTING_TEMPLATE_PATH = "/public/templates/listing.hbs";
 
     var viewModel = {};
     var deviceModule = require("/app/modules/device.js").deviceModule;
@@ -32,30 +29,52 @@ function onRequest(context) {
 
     if (data.data) {
         var deviceTypes = data.data;
-        var deviceTypesList = [];
+        var deviceTypesList = [], virtualDeviceTypesList = [];
         for (var i = 0; i < deviceTypes.length; i++) {
 
             var deviceTypeLabel = deviceTypes[i].name;
             var configs = utility.getDeviceTypeConfig(deviceTypeLabel);
-
-            if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
-                deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
+            var deviceCategory = "device";
+            if (configs) {
+                if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY]) {
+                    deviceCategory = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY];
+                }
+                if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
+                    deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
+                }
             }
             deviceTypesList.push({
                 "hasCustTemplate": false,
                 "deviceTypeLabel": deviceTypeLabel,
                 "deviceTypeName": deviceTypes[i].name,
-                "deviceCategory": configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY],
+                "deviceCategory": deviceCategory,
                 "deviceTypeId": deviceTypes[i].id
             });
-
+            //if (deviceCategory == 'virtual'){
+            //    virtualDeviceTypesList.push({
+            //        "hasCustTemplate": false,
+            //        "deviceTypeLabel": deviceTypeLabel,
+            //        "deviceTypeName": deviceTypes[i].name,
+            //        "deviceCategory": deviceCategory,
+            //        "deviceTypeId": deviceTypes[i].id
+            //    });
+            //}else{
+            //    deviceTypesList.push({
+            //        "hasCustTemplate": false,
+            //        "deviceTypeLabel": deviceTypeLabel,
+            //        "deviceTypeName": deviceTypes[i].name,
+            //        "deviceCategory": deviceCategory,
+            //        "deviceTypeId": deviceTypes[i].id
+            //    });
+            //}
         }
-
+        if (virtualDeviceTypesList.length > 0) {
+            viewModel.virtualDeviceTypesList = virtualDeviceTypesList;
+        }
         viewModel.deviceTypesList = stringify(deviceTypesList);
     } else {
         log.error("Unable to fetch device types data");
         throw new Error("Unable to fetch device types!");
     }
-
     return viewModel;
 }

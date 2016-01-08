@@ -20,7 +20,6 @@
         <br class="c-both"/>
         </tbody>
     </table>
-
 </div>
 <br class="c-both"/>
 <div id="content-filter-types" style="display: none">
@@ -29,8 +28,56 @@
         <a href="#">By Device Type<span class="ico-sort-asc"></span></a>
     </div>
 </div>
+
+{{#if virtualDeviceTypesList}}
+    <div class="row wr-device-board">
+        <div class="col-lg-12 wr-secondary-bar">
+            <span class="page-sub-title">Virtual Devices</span>
+        </div>
+    </div>
+    {{#each virtualDeviceTypesList}}
+        <div class="try-device-container">
+            <div class="message message-info try-device-message">
+                <p class="try-device-text">Don't have a device?
+                    <button
+                            href="{{appContext}}/device/{{deviceTypeName}}/enroll"
+                            class="btn btn-default btn-primary">Try
+                    </button>
+                                           our {{deviceTypeLabel}} device
+                </p>
+                <img class="try-device-image"
+                     src="{{@app.context}}/public/cdmf.unit.device.type.{{deviceTypeName}}.type-view/images/thumb.png">
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
+
 {{#zone "topCss"}}
     {{css "css/listing-grid.css"}}
+    <style>
+        .try-device-container {
+            position: relative;
+        }
+
+        .try-device-image {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            width: 192px;
+            background: #11375b;
+        }
+
+        .try-device-text {
+            font-size: 22px;
+            margin: 80px 190px;
+            font-weight: 300;
+        }
+
+        .try-device-message {
+            border-color: transparent;
+            margin: 20px 10px;
+        }
+    </style>
 {{/zone}}
 {{#zone "bottomJs"}}
     <script id="device-listing" data-current-user="{{currentUser.username}}"

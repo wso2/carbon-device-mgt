@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIConsumer;
 import org.wso2.carbon.apimgt.api.APIManagementException;
+import org.wso2.carbon.apimgt.api.model.Application;
+import org.wso2.carbon.apimgt.api.model.Subscriber;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.apimgt.webapp.publisher.KeyMgtInfo;
 import org.wso2.carbon.apimgt.webapp.publisher.KeyMgtInfoUtil;
@@ -41,7 +43,22 @@ public class KeyGenerationUtil {
 			List<KeyMgtInfo> allKeyInfo = KeyMgtInfoUtil.getInstance().getAllKeyInfo();
 
 			for(KeyMgtInfo keyMgtInfo : allKeyInfo){
-				if(keyMgtInfo.getApplicationName().contains(deviceType)) {
+
+				Subscriber sub = new Subscriber("admin");
+				Application[] apps = apiConsumer.getApplications(sub, "");
+				boolean applicationExists = false;
+
+				//if an application of the same name exists, we are not going to create another app
+				if(apps!=null && apps.length!=0){
+					for(int i=0; i < apps.length; i++){
+						if(apps[i].getName().equalsIgnoreCase(keyMgtInfo.getApplicationName()) && apps[i].getKeys().size()!=0){
+							applicationExists = true;
+							break;
+						}
+					}
+				}
+
+				if(!applicationExists && keyMgtInfo.getApplicationName().contains(deviceType)) {
 					apiConsumer.requestApprovalForApplicationRegistration(keyMgtInfo.getUserId(),
 							keyMgtInfo.getApplicationName(), keyMgtInfo.getTokenType(), keyMgtInfo.getCallbackUrl(),
 							keyMgtInfo.getAllowedDomains(), keyMgtInfo.getValidityTime(), keyMgtInfo.getTokenScope(),

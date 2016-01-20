@@ -95,22 +95,22 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
     } else {
         response.sendError(403);
     }
-} else if (uriMatcher.match("/{context}/api/users/{username}/invite")) {
+} else if (uriMatcher.match("/{context}/api/user/{username}/invite")) {
     /*
      @Deprecated
      */
-    if (userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/users/invite")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/admin/user/invite")) {
         elements = uriMatcher.elements();
         username = elements.username;
         userModule.inviteUser(username);
     } else {
         response.sendError(403);
     }
-} else if (uriMatcher.match("/{context}/api/users/add")) {
+} else if (uriMatcher.match("/{context}/api/user/add")) {
     /*
      @Deprecated
      */
-    if (userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/users/add")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/admin/user/add")) {
         addUserFormData = request.getContent();
         username = addUserFormData.username;
         firstname = addUserFormData.firstname;
@@ -157,11 +157,11 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
         result = 400;
     }
 
-} else if (uriMatcher.match("/{context}/api/users/{username}/remove")) {
+} else if (uriMatcher.match("/{context}/api/user/{username}/remove")) {
     /*
      @Deprecated
      */
-    if (userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/users/remove")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/admin/user/remove")) {
         elements = uriMatcher.elements();
         username = elements.username;
         try {
@@ -175,6 +175,8 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
         // http status code 403 refers to - forbidden.
         result = 403;
     }
+} else if (uriMatcher.match("/{context}/api/user/all")) {
+    result = userModule.getUsers();
 }
 
 // returning the result.

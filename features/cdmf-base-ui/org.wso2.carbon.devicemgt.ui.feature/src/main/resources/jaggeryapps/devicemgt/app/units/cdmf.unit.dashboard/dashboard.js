@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -23,19 +23,21 @@ function onRequest(context) {
     var userModule = require("/app/modules/user.js").userModule;
     var permissions = userModule.getUIPermissions();
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-    context.permissions = permissions;
-    context["enrollmentURL"] = devicemgtProps.enrollmentURL;
+    var page_data = {};
+    page_data.permissions = permissions;
+    page_data.enrollmentURL = devicemgtProps.enrollmentURL;
     var deviceModule = require("/app/modules/device.js").deviceModule;
+    var groupModule = require("/app/modules/group.js").groupModule;
     var policyModule = require("/app/modules/policy.js").policyModule;
 
-    var permissions = userModule.getUIPermissions();
     if (!permissions.VIEW_DASHBOARD) {
         response.sendRedirect(constants.WEB_APP_CONTEXT + "/devices");
     }
 
-    context.device_count = deviceModule.getOwnDevicesCount();
-    context.user_count = userModule.getUsers()["content"].length;
-    context.policy_count = policyModule.getAllPolicies()["content"].length;
+    page_data.device_count = deviceModule.getOwnDevicesCount();
+    page_data.group_count = groupModule.getGroupCount();
+    page_data.user_count = userModule.getUsers()["content"].length;
+    page_data.policy_count = policyModule.getAllPolicies()["content"].length;
 
-    return context;
+    return page_data;
 }

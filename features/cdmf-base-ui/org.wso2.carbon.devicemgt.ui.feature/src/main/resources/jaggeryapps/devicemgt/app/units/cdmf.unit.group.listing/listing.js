@@ -17,12 +17,15 @@
  */
 
 function onRequest(context) {
+    var groupModule = require("/app/modules/group.js").groupModule;
     var userModule = require("/app/modules/user.js").userModule;
     var constants = require("/app/modules/constants.js");
-    var carbonUser = session.get(constants.USER_SESSION_KEY);
+    var currentUser = session.get(constants.USER_SESSION_KEY);
     var page_data = {};
-    if (carbonUser){
+    if (currentUser) {
         page_data.permissions = userModule.getUIPermissions();
+        page_data.currentUser = currentUser;
+        page_data.groupCount = groupModule.getGroupCount();
     }
     return page_data;
 }

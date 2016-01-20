@@ -177,12 +177,6 @@ var groupModule = {};
             endPoint = deviceCloudService + "/group/id/" + groupId + "/device/all";
             data = {"username": user.username};
             result = get(endPoint, data, "json");
-            var devices = result.data;
-            for (var d in devices){
-                devices[d].assetId = deviceModule.getAssetId( devices[d].type);
-            }
-            group.devices = devices;
-            result.data = {group: group};
         }
         return result;
     };

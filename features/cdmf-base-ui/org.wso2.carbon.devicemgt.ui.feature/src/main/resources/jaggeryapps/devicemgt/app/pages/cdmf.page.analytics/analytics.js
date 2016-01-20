@@ -17,18 +17,13 @@
  */
 
 function onRequest(context) {
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page_data = {};
-    if (currentUser) {
-        page_data.permissions = userModule.getUIPermissions();
-        page_data.currentUser = currentUser;
-        var groupCount = groupModule.getGroupCount();
-        if (groupCount > 0) {
-            page_data.groupCount = groupCount;
-        }
+    var groupName = request.getParameter("groupName");
+    var groupId = request.getParameter("groupId");
+    var title = "Analytics";
+    if (groupName) {
+        title = "Group " + title;
+    } else {
+        title = "Device " + title;
     }
-    return page_data;
+    return {"title": title, "groupName": groupName, "groupId": groupId};
 }

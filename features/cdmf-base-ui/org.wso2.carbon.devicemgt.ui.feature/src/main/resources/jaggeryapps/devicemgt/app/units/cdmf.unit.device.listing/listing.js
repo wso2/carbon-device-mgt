@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,6 +17,8 @@
  */
 
 function onRequest(context){
+    var page_data = {};
+    var groupId = request.getParameter("groupId");
     var userModule = require("/app/modules/user.js").userModule;
     var constants = require("/app/modules/constants.js");
     var permissions = [];
@@ -29,13 +31,20 @@ function onRequest(context){
         }else if(userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/policies/list")){
             permissions.push("LIST_POLICIES");
         }
-        context.permissions = stringify(permissions);
-        context.currentUser = currentUser;
-        var deviceModule = require("/app/modules/device.js").deviceModule;
-        var deviceCount = deviceModule.getOwnDevicesCount();
+        page_data.permissions = stringify(permissions);
+        page_data.currentUser = currentUser;
+        var deviceCount;
+        if (groupId) {
+            var groupModule = require("/app/modules/group.js").groupModule;
+            deviceCount = groupModule.getDevices(groupId).data.length;
+            page_data.groupId = groupId;
+        } else {
+            var deviceModule = require("/app/modules/device.js").deviceModule;
+            deviceCount = deviceModule.getOwnDevicesCount();
+        }
         if (deviceCount > 0){
-            context.deviceCount = deviceCount;
+            page_data.deviceCount = deviceCount;
         }
     }
-    return context;
+    return page_data;
 }

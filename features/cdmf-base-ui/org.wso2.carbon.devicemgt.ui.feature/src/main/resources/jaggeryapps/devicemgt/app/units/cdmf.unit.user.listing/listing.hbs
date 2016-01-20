@@ -54,7 +54,8 @@
                     </a>
                 </td>
                 <td class="text-right content-fill text-left-on-grid-view no-wrap">
-                    <a href="{{@app.context}}/users/view?username={{username}}" data-username="{{username}}"
+                    <a href="{{@app.context}}/user/view?username={{username}}"
+                       data-username="{{username}}"
                        data-click-event="edit-form" class="btn padding-reduce-on-grid-view view-user-link">
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>
@@ -63,7 +64,7 @@
                         <span class="hidden-xs hidden-on-grid-view">View</span>
                     </a>
 
-                    <a href="{{@app.context}}/users/edit-user?username={{username}}"
+                    <a href="{{@app.context}}/user/edit?username={{username}}"
                        data-username="{{username}}"
                        data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link">
                         <span class="fw-stack">

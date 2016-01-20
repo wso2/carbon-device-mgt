@@ -32,6 +32,35 @@
         <div class="row wr-stats-board">
             <div class="col-md-4">
                 <div class="wr-stats-board-tile">
+                    <div class="tile-name">Groups</div>
+                    <div>
+                        <div class="tile-icon"><i class="fw fw-grouping"></i></div>
+                        <div class="tile-stats">
+                            <span id="group-count">{{group_count}}</span>
+                        <span class="tile-stats-free">
+                            <a href="{{@app.context}}/groups">
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-view fw-stack-1x"></i>
+                                </span>
+                                View
+                            </a>
+                            <a href="{{@app.context}}/group/add">
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Add
+                            </a>
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row wr-stats-board">
+            <div class="col-md-4">
+                <div class="wr-stats-board-tile">
                     <div class="tile-name">Users</div>
                     <div>
                         <div class="tile-icon"><i class="fw fw-user"></i></div>
@@ -45,7 +74,7 @@
                                 </span>
                                 View
                             </a>
-                            <a href="{{@app.context}}/users/add-user">
+                            <a href="{{@app.context}}/user/add">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
                                     <i class="fw fw-add fw-stack-1x"></i>
@@ -74,7 +103,7 @@
                                 </span>
                                 View
                             </a>
-                            <a href="{{@app.context}}/policies/add-policy">
+                            <a href="{{@app.context}}/policy/add">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
                                     <i class="fw fw-add fw-stack-1x"></i>

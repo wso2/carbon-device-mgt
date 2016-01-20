@@ -1,0 +1,23 @@
+{{unit "cdmf.unit.ui.title" pageTitle="Group Management"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/groups">
+            Groups
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/group/add">
+            Add
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    {{unit "cdmf.unit.group.create"}}
+{{/zone}}

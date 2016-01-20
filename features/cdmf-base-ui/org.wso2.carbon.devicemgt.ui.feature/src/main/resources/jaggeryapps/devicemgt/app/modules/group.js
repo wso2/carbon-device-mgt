@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -29,8 +29,7 @@ var groupModule = {};
     var user = session.get(constants.USER_SESSION_KEY);
     var deviceModule = require("/app/modules/device.js").deviceModule;
 
-    var endPoint;
-    var data;
+    var endPoint, data, response;
 
     groupModule.addGroup = function (group) {
         var name = group["name"];
@@ -81,7 +80,12 @@ var groupModule = {};
         //URL: GET https://localhost:9443/devicecloud/group_manager/group/all/count
         endPoint = deviceCloudService + "/group/user/" + user.username + "/all/count";
         data = {"username": user.username};
-        return get(endPoint, data, "json");
+        response = get(endPoint, data, "json");
+        if (response && response.data) {
+            return response.data;
+        } else {
+            return -1;
+        }
     };
 
     groupModule.shareGroup = function (groupId, shareUser, role) {

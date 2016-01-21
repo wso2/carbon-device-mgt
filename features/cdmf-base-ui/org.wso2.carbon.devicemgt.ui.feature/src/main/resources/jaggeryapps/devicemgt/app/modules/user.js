@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -187,8 +187,9 @@ var userModule = function () {
                             '/permission/admin/device-mgt/policies': ['ui.execute'],
                             '/permission/admin/device-mgt/user': ['ui.execute'],
                             '/permission/admin/device-mgt/users': ['ui.execute'],
-                            '/permission/admin/device-mgt/emm-admin/devices': ['ui.execute'],
-                            '/permission/admin/device-mgt/emm-admin/policies': ['ui.execute']
+                            '/permission/admin/device-mgt/admin/devices': ['ui.execute'],
+                            '/permission/admin/device-mgt/admin/groups': ['ui.execute'],
+                            '/permission/admin/device-mgt/admin/policies': ['ui.execute']
                         };
                         userManager.addRole("iot-admin", ["admin"], permissions);
                     }
@@ -612,35 +613,41 @@ var userModule = function () {
 
     publicMethods.getUIPermissions = function () {
         var permissions = {};
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/devices/list") ||
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/devices/list") ||
             publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
             permissions["LIST_DEVICES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/users/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/list")) {
+            permissions["LIST_GROUPS"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/list")) {
             permissions["LIST_USERS"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/roles/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/roles/list")) {
             permissions["LIST_ROLES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/policies/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/list")) {
             permissions["LIST_POLICIES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/users/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/add")) {
+            permissions["ADD_GROUP"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/add")) {
             permissions["ADD_USER"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/roles/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/roles/add")) {
             permissions["ADD_ROLE"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/policies/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/add")) {
             permissions["ADD_POLICY"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/policies/priority")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/priority")) {
             permissions["CHANGE_POLICY_PRIORITY"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/dashboard/view")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/dashboard/view")) {
             permissions["VIEW_DASHBOARD"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/emm-admin/platform-configs/view")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/platform-configs/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
         }
         return permissions;

@@ -17,12 +17,10 @@
  */
 
 function onRequest(context) {
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var carbonUser = session.get(constants.USER_SESSION_KEY);
-    var page_data = {};
-    if (carbonUser){
-        page_data.permissions = userModule.getUIPermissions();
+    var groupName = request.getParameter("groupName");
+    var title = "Devices";
+    if (groupName) {
+        title = groupName + " " + title;
     }
-    return page_data;
+    return {"title": title, "groupName": groupName};
 }

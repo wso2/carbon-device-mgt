@@ -13,6 +13,11 @@
             <a href="{{@app.context}}/devices"><i class="fw fw-mobile"></i>Device Management</a>
         </li>
     {{/if}}
+    {{#if permissions.LIST_GROUPS}}
+        <li>
+            <a href="{{@app.context}}/groups"><i class="fw fw-grouping"></i>Group Management</a>
+        </li>
+    {{/if}}
     {{#if permissions.ADD_USER}}
         <li>
             <a href="{{@app.context}}/users"><i class="fw fw-user"></i>User Management</a>

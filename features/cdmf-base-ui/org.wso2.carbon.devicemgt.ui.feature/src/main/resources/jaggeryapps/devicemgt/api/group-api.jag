@@ -26,6 +26,7 @@ var constants = require("/app/modules/constants.js");
 
 var utility = require("/app/modules/utility.js").utility;
 var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+var responseProcessor = require('utils').response;
 
 var deviceCloudService = devicemgtProps["httpsURL"] + "/common/group_manager";
 
@@ -109,7 +110,6 @@ if (!user) {
 }
 // returning the result.
 if (result) {
-	response.status = result.xhr.status;
-	print(result.data);
+    print(result);
 }
 %>

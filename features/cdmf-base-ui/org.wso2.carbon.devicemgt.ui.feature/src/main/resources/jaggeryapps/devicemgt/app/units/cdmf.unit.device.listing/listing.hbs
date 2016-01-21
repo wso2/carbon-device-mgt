@@ -42,21 +42,77 @@
 {{else}}
     <div id="ast-container" class="ast-container list-view">
         <div class="ctrl-info-panel col-centered text-center wr-login">
-            <h2>You don't have any device registered at the moment.</h2>
+            <h2>You don't have any device
+                {{#if groupId}}
+                assigned to this group
+                {{else}}
+                registered
+                {{/if}}
+                at the moment.</h2>
             <br/>
 
             <p class="text-center">
-                <a href="{{@app.context}}/device/enroll" class="wr-btn">
+                {{#if groupId}}
+                    <a href="{{@app.context}}/devices" class="wr-btn">
                     <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-add fw-stack-1x"></i>
                     </span>
-                    Enroll New Device
-                </a>
+                        Assign from My Devices
+                    </a>
+                {{else}}
+                    <a href="{{@app.context}}/device/enroll" class="wr-btn">
+                    <span class="fw-stack">
+                        <i class="fw fw-ring fw-stack-2x"></i>
+                        <i class="fw fw-add fw-stack-1x"></i>
+                    </span>
+                        Enroll New Device
+                    </a>
+                {{/if}}
             </p>
         </div>
     </div>
 {{/if}}
+
+<div id="group-device-modal-content" class="hide">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col-md-3 col-centered">
+                <h3>Please select group</h3>
+                <div id="user-groups">Loading...</div>
+                <div class="buttons">
+                    <a href="#" id="group-device-yes-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Assign&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                    &nbsp;&nbsp;
+                    <a href="#" id="group-device-cancel-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="group-associate-device-200-content" class="hide">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col-md-3 col-centered">
+                <h3>Device was successfully associated with group.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="group-deassociate-device-200-content" class="hide">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col-md-3 col-centered">
+                <h3>Device was successfully removed from group.</h3>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="remove-device-modal-content" class="hide">
     <div class="content">
@@ -119,6 +175,54 @@
         <div class="row">
             <div class="col-lg-5 col-md-6 col-centered">
                 <h3>Device was successfully updated.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="device-400-content" class="hide">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col-md-7 col-centered center-container">
+                <h3>Exception at backend. Try Later.</h3>
+                <br/>
+                <div class="buttons">
+                    <a href="#" id="device-400-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="device-403-content" class="hide">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col-md-7 col-centered center-container">
+                <h3>Operation not permitted.</h3>
+                <br/>
+                <div class="buttons">
+                    <a href="#" id="device-403-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="device-409-content" class="hide">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col-md-7 col-centered center-container">
+                <h3>Device does not exist.</h3>
+                <br/>
+                <div class="buttons">
+                    <a href="#" id="remove-device-409-link" class="btn-operations">
+                        &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                </div>
             </div>
         </div>
     </div>

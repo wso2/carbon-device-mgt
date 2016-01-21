@@ -1,9 +1,4 @@
 {
     "version": "1.0.0",
-    "extends" : "uuf.unit.lib.data-table",
-    "pushedUris": [
-        "/users",
-        "/roles",
-        "/policies"
-    ]
+  "extends": "uuf.unit.lib.data-table"
 }

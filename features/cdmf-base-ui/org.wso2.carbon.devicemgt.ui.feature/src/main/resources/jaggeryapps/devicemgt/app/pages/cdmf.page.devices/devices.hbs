@@ -1,5 +1,5 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Device Management"}}
-{{unit "cdmf.unit.ui.content.title" pageHeader="Devices"}}
+{{unit "cdmf.unit.ui.content.title" pageHeader=title}}
 
 {{unit "cdmf.unit.lib.data-table"}}
 
@@ -9,23 +9,48 @@
             <i class="icon fw fw-home"></i>
         </a>
     </li>
-    <li>
-        <a href="{{@app.context}}/devices">
-            Devices
-        </a>
-    </li>
+    {{#if groupName}}
+        <li>
+            <a href="{{@app.context}}/groups">
+                Groups
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                {{title}}
+            </a>
+        </li>
+    {{else}}
+        <li>
+            <a href="{{@app.context}}/devices">
+                Devices
+            </a>
+        </li>
+    {{/if}}
 {{/zone}}
 
 {{#zone "navbarActions"}}
-    <li>
-        <a href="{{@app.context}}/device/enroll" class="cu-btn">
+    {{#if groupName}}
+        <li>
+            <a href="{{@app.context}}/devices" class="cu-btn">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
                 <i class="fw fw-ring fw-stack-2x"></i>
             </span>
-            Enroll Device
-        </a>
-    </li>
+                Assign from My Devices
+            </a>
+        </li>
+    {{else}}
+        <li>
+            <a href="{{@app.context}}/device/enroll" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-add fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+                Enroll Device
+            </a>
+        </li>
+    {{/if}}
 {{/zone}}
 
 {{#zone "content"}}

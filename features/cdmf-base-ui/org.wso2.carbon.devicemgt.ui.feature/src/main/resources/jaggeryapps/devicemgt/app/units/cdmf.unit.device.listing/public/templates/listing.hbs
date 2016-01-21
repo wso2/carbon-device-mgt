@@ -3,7 +3,8 @@
     <tr data-type="selectable" data-deviceid="{{deviceIdentifier}}" data-devicetype="{{type}}">
         <td class="remove-padding icon-only content-fill">
             <div class="thumbnail icon">
-                <img class="square-element text fw " src="{{../imageLocation}}{{type}}.type-view/images/thumb.png" />
+                <img class="square-element text fw "
+                     src="{{../imageLocation}}{{type}}.type-view/images/thumb.png"/>
             </div>
         </td>
         <td class="fade-edge" data-search="{{properties.DEVICE_MODEL}},{{properties.VENDOR}}"
@@ -49,6 +50,18 @@
                                 </span>
                     <span class="hidden-xs hidden-on-grid-view">Analytics</span>
                 </a>
+                {{#unless ../../isGroupView}}
+                    <a href="#" data-click-event="remove-form"
+                       class="btn padding-reduce-on-grid-view group-device-link"
+                       data-deviceid="{{deviceIdentifier}}" data-devicetype="{{type}}"
+                       data-devicename="{{name}}">
+                    <span class="fw-stack">
+					    <i class="fw fw-ring fw-stack-2x"></i>
+					    <i class="fw fw-grid fw-stack-1x"></i>
+					</span>
+                        <span class="hidden-xs hidden-on-grid-view">Group</span>
+                    </a>
+                {{/unless}}
                 <a href="#" data-click-event="remove-form"
                    class="btn padding-reduce-on-grid-view edit-device-link"
                    data-deviceid="{{deviceIdentifier}}" data-devicetype="{{type}}"

@@ -1,5 +1,5 @@
-{{unit "cdmf.unit.ui.title" pageTitle="Device Analytics"}}
-{{unit "cdmf.unit.ui.content.title" pageHeader="Analytics"}}
+{{unit "cdmf.unit.ui.title" pageTitle="Analytics"}}
+{{unit "cdmf.unit.ui.content.title" pageHeader=title}}
 
 {{#zone "breadcrumbs"}}
     <li>
@@ -7,11 +7,24 @@
             <i class="icon fw fw-home"></i>
         </a>
     </li>
-    <li>
-        <a href="{{@app.context}}/devices">
-            Devices
-        </a>
-    </li>
+    {{#if groupName}}
+        <li>
+            <a href="{{@app.context}}/groups">
+                Groups
+            </a>
+        </li>
+        <li>
+            <a href="{{@app.context}}/devices?groupId={{groupId}}&groupName={{groupName}}">
+                {{groupName}}
+            </a>
+        </li>
+    {{else}}
+        <li>
+            <a href="{{@app.context}}/devices">
+                Devices
+            </a>
+        </li>
+    {{/if}}
     <li>
         <a href="#">
             Analytics

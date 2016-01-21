@@ -110,7 +110,7 @@ function toTitleCase(str) {
     });
 }
 
-function loadDevices(searchType, searchParam) {
+function loadDevices() {
     var deviceListing = $("#device-listing");
     var deviceListingSrc = deviceListing.attr("src");
     var imageResource = deviceListing.data("image-resource");
@@ -126,15 +126,7 @@ function loadDevices(searchType, searchParam) {
             $('#device-listing-status-msg').text('Permission denied.');
             return;
         }
-        if (searchParam) {
-            if (searchType == "users") {
-                serviceURL = serviceURL + "?user=" + searchParam;
-            } else if (searchType == "user-roles") {
-                serviceURL = serviceURL + "?role=" + searchParam;
-            } else {
-                serviceURL = serviceURL + "?type=" + searchParam;
-            }
-        }
+
         var successCallback = function (data) {
             data = JSON.parse(data);
             var viewModel = {};
@@ -181,11 +173,63 @@ function openCollapsedNav() {
     });
 }
 
+function loadGroupedDevices(groupId) {
+    var serviceURL = "api/group/id/" + groupId + "/device/all";
+    var deviceListing = $("#device-listing");
+    var deviceListingSrc = deviceListing.attr("src");
+    var imageResource = deviceListing.data("image-resource");
+    var currentUser = deviceListing.data("currentUser");
+    $.template("device-listing", deviceListingSrc, function (template) {
+
+        var loadGroupRequest = $.ajax({
+                                          url: serviceURL,
+                                          method: "GET",
+                                          contentType: "application/json",
+                                          accept: "application/json"
+                                      });
+
+        loadGroupRequest.done(function (data) {
+            data = JSON.parse(data);
+            var viewModel = {};
+            viewModel.devices = data.data;
+            viewModel.imageLocation = imageResource;
+            viewModel.isGroupView = "true";
+            if (viewModel.devices.length > 0) {
+                $('#device-grid').removeClass('hidden');
+                var content = template(viewModel);
+                $("#ast-container").html(content);
+                /*
+                 * On device checkbox select add parent selected style class
+                 */
+                $(deviceCheckbox).click(function () {
+                    addDeviceSelectedClass(this);
+                });
+                attachDeviceEvents();
+            } else {
+                $('#device-table').addClass('hidden');
+                $('#device-listing-status-msg').text('No device is available to be displayed.');
+            }
+            $("#loading-content").remove();
+            $('#device-grid').datatables_extended();
+            $(".icon .text").res_text(0.2);
+        });
+    });
+
+}
+
 /*
  * DOM ready functions.
  */
 $(document).ready(function () {
-    loadDevices();
+
+    var groupId = getParameterByName('groupId');
+
+    if (groupId) {
+        loadGroupedDevices(groupId);
+    } else {
+        loadDevices();
+    }
+
     //$('#device-grid').datatables_extended();
 
     /* Adding selected class for selected devices */
@@ -201,11 +245,11 @@ $(document).ready(function () {
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
-        html: true,
-        content: function () {
-            return $("#content-filter-types").html();
-        }
-    });
+                                                html: true,
+                                                content: function () {
+                                                    return $("#content-filter-types").html();
+                                                }
+                                            });
 
     /* for data tables*/
     $('[data-toggle="tooltip"]').tooltip();
@@ -213,17 +257,17 @@ $(document).ready(function () {
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-filter-type-switcher").popover({
-        html: true,
-        content: function () {
-            return $('#content-filter-types').html();
-        }
-    });
+                                                html: true,
+                                                content: function () {
+                                                    return $('#content-filter-types').html();
+                                                }
+                                            });
 
     $('#nav').affix({
-        offset: {
-            top: $('header').height()
-        }
-    });
+                        offset: {
+                            top: $('header').height()
+                        }
+                    });
 
 });
 
@@ -260,6 +304,89 @@ function hidePopup() {
  * Following functions should be triggered after AJAX request is made.
  */
 function attachDeviceEvents() {
+
+    /**
+     * Following click function would execute
+     * when a user clicks on "Group" link
+     * on Device Management page in WSO2 DeviceMgt Console.
+     */
+    if ($("a.group-device-link").length > 0) {
+        $("a.group-device-link").click(function () {
+            var deviceId = $(this).data("deviceid");
+            var deviceType = $(this).data("devicetype");
+            var endPoint = "api/group/all";
+
+            $(modalPopupContent).html($('#group-device-modal-content').html());
+            $('#user-groups').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
+            $("a#group-device-yes-link").hide();
+            showPopup();
+
+            var getGroupsRequest = $.ajax({
+                                              url: endPoint,
+                                              method: "GET",
+                                              contentType: "application/json",
+                                              accept: "application/json"
+                                          });
+
+            getGroupsRequest.done(function (data, txtStatus, jqxhr) {
+                                      var groups = JSON.parse(data);
+                                      var status = jqxhr.status;
+                                      if (status == 200) {
+                                          groups = groups.data;
+                                          if (groups.length <= 0) {
+                                              $('#user-groups').html("There is no any groups available");
+                                              return;
+                                          }
+                                          var str = '<br /><select id="assign-group-selector" style="color:#3f3f3f;padding:5px;width:250px;">';
+                                          for (var group in groups) {
+                                              str += '<option value="' + groups[group].id + '">' + groups[group].name + '</option>';
+                                          }
+                                          str += '</select>';
+                                          $('#user-groups').html(str);
+                                          $("a#group-device-yes-link").show();
+                                          $("a#group-device-yes-link").click(function () {
+                                              var selectedGroupId = $('#assign-group-selector').val();
+                                              endPoint = "api/group/id/" + selectedGroupId + "/assign";
+                                              var device = {"deviceId": deviceId, "deviceType": deviceType};
+
+                                              var assignRequest = $.ajax({
+                                                                             url: endPoint,
+                                                                             method: "POST",
+                                                                             contentType: "application/json",
+                                                                             accept: "application/json",
+                                                                             data: JSON.stringify(device)
+                                                                         });
+
+                                              assignRequest.done(function (data, txtStatus, jqxhr) {
+                                                                     var status = jqxhr.status;
+                                                                     if (status == 200) {
+                                                                         $(modalPopupContent).html($('#group-associate-device-200-content').html());
+                                                                         setTimeout(function () {
+                                                                             hidePopup();
+                                                                             location.reload(false);
+                                                                         }, 2000);
+                                                                     } else {
+                                                                         displayDeviceErrors(jqXHR);
+                                                                     }
+                                                                 }
+                                              );
+                                              assignRequest.fail(function (jqXHR) {
+                                                  displayDeviceErrors(jqXHR);
+                                              });
+                                          });
+                                      }
+                                  }
+            );
+            getGroupsRequest.fail(function (jqXHR) {
+                displayDeviceErrors(jqXHR);
+            });
+            $("a#group-device-cancel-link").click(function () {
+                hidePopup();
+            });
+        });
+
+    }
+
     /**
      * Following click function would execute
      * when a user clicks on "Remove" link
@@ -275,9 +402,9 @@ function attachDeviceEvents() {
 
         $("a#remove-device-yes-link").click(function () {
             var postOperationRequest = $.ajax({
-                url: removeDeviceAPI,
-                method: "post"
-            });
+                                                  url: removeDeviceAPI,
+                                                  method: "post"
+                                              });
             postOperationRequest.done(function (data) {
                 $(modalPopupContent).html($('#remove-device-200-content').html());
                 window.location.reload(false);
@@ -311,9 +438,9 @@ function attachDeviceEvents() {
         $("a#edit-device-yes-link").click(function () {
             var newDeviceName = $('#edit-device-name').val();
             var postOperationRequest = $.ajax({
-                url: editDeviceAPI + newDeviceName,
-                method: "post"
-            });
+                                                  url: editDeviceAPI + newDeviceName,
+                                                  method: "post"
+                                              });
             postOperationRequest.done(function (data) {
                 $(modalPopupContent).html($('#edit-device-200-content').html());
                 $("h4[data-deviceid='" + deviceId + "']").html(newDeviceName);
@@ -356,4 +483,11 @@ function displayDeviceErrors(jqXHR) {
         });
         console.log("Error code: " + jqXHR.status);
     }
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }

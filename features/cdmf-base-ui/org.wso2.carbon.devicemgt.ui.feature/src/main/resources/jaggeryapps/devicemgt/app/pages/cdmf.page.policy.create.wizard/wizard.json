@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
-    "uri": "/policies/add-policy/{deviceType}",
+  "uri": "/policy/add/{deviceType}",
     "layout": "cdmf.layout.default"
 }

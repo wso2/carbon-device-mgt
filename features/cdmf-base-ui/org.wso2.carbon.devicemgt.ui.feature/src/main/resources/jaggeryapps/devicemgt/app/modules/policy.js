@@ -38,31 +38,45 @@ policyModule = function () {
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         if (policyName && deviceType) {
-            var queName = "wso2/iot/" + carbonUser.username + "/" + deviceType;
+            var queName = "WSO2IoTServer/" + carbonUser.username + "/" + deviceType;
 
             if (deviceId){
                 queName += "/" + deviceId;
+                privateMethods.publish(queName, policyName, deviceType, policyDefinition);
+            } else {
+                var deviceManagementService = utility.getDeviceManagementService();
+                var devices = deviceManagementService.getDevicesOfUser(carbonUser.username);
+                var device;
+                for (var i = 0; i < devices.size(); i++) {
+                    device = devices.get(i);
+                    deviceId = device.getDeviceIdentifier();
+                    queName += "/" + deviceId;
+                    privateMethods.publish(queName, policyName, deviceType, policyDefinition);
+                }
             }
 
-            log.info("Queue : " + queName);
-
-            var mqttsenderClass = Packages.org.wso2.carbon.device.mgt.iot.mqtt.PolicyPush;
-            var mqttEndPointDeviceConfigClass = Packages.org.wso2.carbon.device.mgt.iot.config.server
-                .DeviceManagementConfigurationManager;
-            var mqttEndPointDeviceConfig = new mqttEndPointDeviceConfigClass.getInstance()
-                .getControlQueue(MQTT_QUEUE_CONFIG_NAME);
-            var mqttBrokerURL = mqttEndPointDeviceConfig.getServerURL();
-            var mqttBrokerPort = mqttEndPointDeviceConfig.getPort();
-            var mqttQueueEndpoint = mqttBrokerURL + ":" + mqttBrokerPort;
-            var mqttsender = new mqttsenderClass();
-            var policyPretext = "POLICY:";
-            var policyPayload = policyPretext + policyDefinition;
-            var result = mqttsender.pushToMQTT(queName, policyPayload, mqttQueueEndpoint, "MQTT_Agent");
-            log.info(result);
-            mqttsender = null;
             return true;
         }
         return false;
+    };
+
+
+    privateMethods.publish = function (queName, policyName, deviceType, policyDefinition) {
+        log.warn("Queue : " + queName);
+
+        var configurationService = utility.getConfigurationService();
+        var mqttEndPointDeviceConfig = configurationService.getControlQueue(constants.MQTT_QUEUE_CONFIG_NAME);
+        var mqttBrokerURL = mqttEndPointDeviceConfig.getServerURL();
+        var mqttBrokerPort = mqttEndPointDeviceConfig.getPort();
+        var mqttQueueEndpoint = mqttBrokerURL + ":" + mqttBrokerPort;
+
+        var mqttsenderClass = Packages.org.wso2.carbon.device.mgt.iot.mqtt.PolicyPush;
+        var mqttsender = new mqttsenderClass();
+
+        var policyPayload = "POLICY:" + policyDefinition;
+        var result = mqttsender.pushToMQTT(queName, policyPayload, mqttQueueEndpoint, "MQTT_Agent");
+        log.warn(result);
+        mqttsender = null;
     };
 
     /*
@@ -98,9 +112,9 @@ policyModule = function () {
                     policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"]["name"];
                     policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
                     policyObjectToView["roles"] = privateMethods.
-                            getElementsInAString(policyObjectFromRestEndpoint["roles"]);
+                    getElementsInAString(policyObjectFromRestEndpoint["roles"]);
                     policyObjectToView["users"] = privateMethods.
-                            getElementsInAString(policyObjectFromRestEndpoint["users"]);
+                    getElementsInAString(policyObjectFromRestEndpoint["users"]);
                     policyObjectToView["compliance"] = policyObjectFromRestEndpoint["compliance"];
 
                     if(policyObjectFromRestEndpoint["active"] == true &&  policyObjectFromRestEndpoint["updated"] == true) {

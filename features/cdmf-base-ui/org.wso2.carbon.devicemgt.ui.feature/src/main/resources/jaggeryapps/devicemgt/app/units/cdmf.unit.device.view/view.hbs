@@ -52,6 +52,10 @@
                                           aria-controls="device_details">Device
                                                                          Details</a>
                     </li>
+                    <li><a class="list-group-item" href="#policies"
+                           role="tab"
+                           data-toggle="tab" aria-controls="policies">Policies</a>
+                    </li>
                     <li><a class="list-group-item" href="#policy_compliance"
                            role="tab"
                            data-toggle="tab" aria-controls="policy_compliance">Policy
@@ -74,6 +78,33 @@
                          id="device_details" role="tabpanel"
                          aria-labelledby="device_details">
                         {{unit "cdmf.unit.device.details" device=device}}
+                    </div>
+                    <div class="panel panel-default tab-pane" id="policies" role="tabpanel"
+                         aria-labelledby="policies">
+                        <div class="panel-heading">Policies</div>
+                        <div class="panel-body">
+                            <div id="policy-spinner" class="wr-advance-operations-init hidden">
+                                <br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <i class="fw fw-settings fw-spin fw-2x"></i>
+                                &nbsp;&nbsp;&nbsp;
+                                Loading Policies . . .
+                                <br>
+                                <br>
+                            </div>
+                            <div id="policy-list-container">
+                                <div class="panel-body">
+                                    No policies found
+                                </div>
+                                <br class="c-both"/>
+                            </div>
+                        </div>
+                        <a class="padding-left"
+                           href="{{@app.context}}/policy/add/{{device.type}}?deviceId={{device.deviceIdentifier}}">
+                                        <span class="fw-stack">
+                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-policy fw-stack-1x"></i>
+                                        </span> Add device specific policy</a>
                     </div>
 
                     <div class="panel panel-default tab-pane" id="policy_compliance"
@@ -146,7 +177,11 @@
 </div>
 
 {{#zone "bottomJs"}}
+    {{js "js/device-view.js"}}
     <script id="policy-view" src="{{@unit.publicUri}}/templates/policy-compliance.hbs"
+            data-device-id="{{device.deviceIdentifier}}" data-device-type="{{device.type}}"
+            type="text/x-handlebars-template"></script>
+    <script id="policy-list" src="{{@unit.publicUri}}/templates/policy-list.hbs"
             data-device-id="{{device.deviceIdentifier}}" data-device-type="{{device.type}}"
             type="text/x-handlebars-template"></script>
     <script id="applications-list" src="{{@unit.publicUri}}/templates/applications-list.hbs"

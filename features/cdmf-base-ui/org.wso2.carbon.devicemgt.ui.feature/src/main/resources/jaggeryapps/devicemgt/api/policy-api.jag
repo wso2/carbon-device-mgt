@@ -25,7 +25,7 @@ var log = new Log("api/policy-api.jag");
 var constants = require("/app/modules/constants.js");
 var policyModule = require("/app/modules/policy.js").policyModule;
 
-var result, deviceType;
+var result, deviceType, deviceId;
 
 var user = session.get(constants.USER_SESSION_KEY);
 
@@ -37,16 +37,15 @@ if (!user) {
 } else {
     if (uriMatcher.match("/{context}/api/policies/add")) {
         var content = request.getContent();
-
         log.info("@@@@@ Policy Declaration : " + stringify(content));
 
         var policyName = content.policyName;
         var policyDefinition = content.profile.policyDefinition;
         var policyDescription = content.profile.policyDescription;
         deviceType = content.profile.deviceType.name;
-
+        deviceId = content.profile.deviceId;
         try {
-            result = policyModule.addPolicy(policyName, deviceType, policyDefinition, policyDescription);
+            result = policyModule.addPolicy(policyName, deviceType, policyDefinition, policyDescription, deviceId);
         } catch (e) {
             log.error("Exception occurred while trying to add new policy under name:" + policyName, e);
             // http status code 500 refers to - Internal Server Error.

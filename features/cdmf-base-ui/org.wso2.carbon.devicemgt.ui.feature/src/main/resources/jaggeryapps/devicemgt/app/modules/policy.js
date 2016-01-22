@@ -31,7 +31,7 @@ policyModule = function () {
     var publicMethods = {};
     var privateMethods = {};
 
-    publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription) {
+    publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription, deviceId) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
@@ -39,15 +39,25 @@ policyModule = function () {
         }
         if (policyName && deviceType) {
             var queName = "wso2/iot/" + carbonUser.username + "/" + deviceType;
+
+            if (deviceId){
+                queName += "/" + deviceId;
+            }
+
             log.info("Queue : " + queName);
 
             var mqttsenderClass = Packages.org.wso2.carbon.device.mgt.iot.mqtt.PolicyPush;
+            var mqttEndPointDeviceConfigClass = Packages.org.wso2.carbon.device.mgt.iot.config.server
+                .DeviceManagementConfigurationManager;
+            var mqttEndPointDeviceConfig = new mqttEndPointDeviceConfigClass.getInstance()
+                .getControlQueue(MQTT_QUEUE_CONFIG_NAME);
+            var mqttBrokerURL = mqttEndPointDeviceConfig.getServerURL();
+            var mqttBrokerPort = mqttEndPointDeviceConfig.getPort();
+            var mqttQueueEndpoint = mqttBrokerURL + ":" + mqttBrokerPort;
             var mqttsender = new mqttsenderClass();
-
             var policyPretext = "POLICY:";
             var policyPayload = policyPretext + policyDefinition;
-
-            var result = mqttsender.pushToMQTT(queName, policyPayload, "tcp://192.168.67.21:1883", "Raspberry-Policy-sender");
+            var result = mqttsender.pushToMQTT(queName, policyPayload, mqttQueueEndpoint, "MQTT_Agent");
             log.info(result);
             mqttsender = null;
             return true;

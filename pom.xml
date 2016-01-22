@@ -1254,7 +1254,7 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.paho</groupId>
-                <artifactId>mqtt-client</artifactId>
+                <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
                 <version>${eclipse.paho.version}</version>
             </dependency>
 
@@ -1662,7 +1662,7 @@
         <orbit.version.tomcat.servlet.api>7.0.59.wso2v1</orbit.version.tomcat.servlet.api>
         <tomcat.jdbc.pooling.version>7.0.34.wso2v2</tomcat.jdbc.pooling.version>
 
-        <eclipse.paho.version>0.4.0</eclipse.paho.version>
+        <eclipse.paho.version>1.0.2</eclipse.paho.version>
 
         <!--Carbon Analytics-->
         <carbon.analytics.common.version>5.0.5</carbon.analytics.common.version>

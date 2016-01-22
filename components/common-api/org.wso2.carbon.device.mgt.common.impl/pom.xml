@@ -75,11 +75,11 @@
 							org.wso2.carbon.device.mgt.core.*,
 							org.wso2.carbon.context.*;version="${carbon.kernel.version.range}",
 							org.wso2.carbon.ndatasource.core;version="${carbon.kernel.version.range}",
+							org.eclipse.paho.client.mqttv3.*;version="${eclipse.paho.version}"
 						</Import-Package>
 						<Export-Package>
 							!org.wso2.carbon.device.mgt.common.impl.internal,
-							org.wso2.carbon.device.mgt.common.impl.*;version="${pom.version}",
-							org.eclipse.paho.client.mqttv3.*;version="${eclipse.paho.version}"
+							org.wso2.carbon.device.mgt.common.impl.*;version="${pom.version}"
 						</Export-Package>
 
 					</instructions>
@@ -198,7 +198,7 @@
 
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>
-			<artifactId>mqtt-client</artifactId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 		</dependency>
 
 		<dependency>
@@ -215,14 +215,6 @@
 			<groupId>org.igniterealtime.smack.wso2</groupId>
 			<artifactId>smackx</artifactId>
 		</dependency>
-
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>Eclipse Paho Repo</id>
-			<url>http://repo.spring.io/plugins-release/</url>
-		</repository>
-	</repositories>
 
 </project>

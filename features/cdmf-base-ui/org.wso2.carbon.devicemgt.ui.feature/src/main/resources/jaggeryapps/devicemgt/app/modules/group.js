@@ -81,7 +81,7 @@ var groupModule = {};
         endPoint = deviceCloudService + "/group/user/" + user.username + "/all/count";
         data = {"username": user.username};
         response = get(endPoint, data, "json");
-        if (response && response.data) {
+        if (response) {
             return response.data;
         } else {
             return -1;

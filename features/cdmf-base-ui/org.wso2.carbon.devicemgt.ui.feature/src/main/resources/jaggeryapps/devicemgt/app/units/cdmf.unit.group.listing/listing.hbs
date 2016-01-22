@@ -234,5 +234,7 @@
     <script id="group-listing" data-current-user="{{currentUser.username}}"
             src="{{@unit.publicUri}}/templates/listing.hbs"
             type="text/x-handlebars-template"></script>
-    {{js "js/listing.js"}}
+    {{#if groupCount}}
+        {{js "js/listing.js"}}
+    {{/if}}
 {{/zone}}

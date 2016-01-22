@@ -19,11 +19,21 @@
 function onRequest(context) {
     var groupName = request.getParameter("groupName");
     var groupId = request.getParameter("groupId");
+    var deviceName = request.getParameter("deviceName");
+    var deviceId = request.getParameter("deviceId");
+    var deviceType = request.getParameter("deviceType");
     var title = "Analytics";
     if (groupName) {
         title = "Group " + title;
     } else {
         title = "Device " + title;
     }
-    return {"title": title, "groupName": groupName, "groupId": groupId};
+    return {
+        "title": title,
+        "groupName": groupName,
+        "groupId": groupId,
+        "deviceName": deviceName,
+        "deviceId": deviceId,
+        "deviceType": deviceType
+    };
 }

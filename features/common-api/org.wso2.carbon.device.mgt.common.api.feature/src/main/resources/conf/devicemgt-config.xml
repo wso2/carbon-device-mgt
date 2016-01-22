@@ -30,8 +30,8 @@
             <Protocol>MQTT</Protocol>
             <ServerURL>tcp://localhost</ServerURL>
             <Port>1883</Port>
-            <Username>.</Username>
-            <Password>.</Password>
+            <Username>admin</Username>
+            <Password>admin</Password>
         </ControlQueue>
 
         <ControlQueue>

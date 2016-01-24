@@ -150,6 +150,9 @@
                                     org.json.wso2:json:${commons-json.version}
                                 </bundleDef>
                                 <bundleDef>
+                                    org.eclipse.paho:org.eclipse.paho.client.mqttv3:${eclipse.paho.version}
+                                </bundleDef>
+                                <bundleDef>
                                     org.igniterealtime.smack.wso2:smack:${smack.wso2.version}
                                 </bundleDef>
                                 <bundleDef>

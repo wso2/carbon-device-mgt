@@ -3,15 +3,7 @@
     <div class="row">
         <div class="col-lg-3 clearfix">
             <span class="wr-list-icon">
-                {{#equal deviceType "android"}}
-                    <i class=" fw fw-android"></i>
-                {{/equal}}
-                {{#equal deviceType "ios"}}
-                    <i class=" fw fw-apple"></i>
-                {{/equal}}
-                {{#equal deviceType "windows"}}
-                    <i class=" fw fw-windows"></i>
-                {{/equal}}
+                <i class="fw fw-policy"></i>
             </span>
             <span class="wr-list-desc">
                 <h3 class="wr-list-name">{{policy.policyName}}</h3>
@@ -45,7 +37,7 @@
         </div>
         <div class="col-lg-3">
             <span class="list-group-item-actions">
-                <a href="{{@app.context}}/policies/view?id={{policy.id}}"
+                <a href="/policy/view?id={{policy.id}}"
                    class="cu-btn-inner policy-view-link" data-id="{{id}}">
                     <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>

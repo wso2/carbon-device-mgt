@@ -17,7 +17,7 @@
                 <br/>
 
                 <p class="text-center">
-                    <a href="{{@app.context}}/policies/add-policy" class="wr-btn">
+                    <a href="{{@app.context}}/policy/add" class="wr-btn">
                     <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-add fw-stack-1x"></i>
@@ -135,7 +135,8 @@
                         data-search="{{status}}" data-display="{{status}}">
                     </td>
                     <td class="text-right content-fill text-left-on-grid-view no-wrap">
-                        <a href="{{@app.context}}/policies/view?id={{id}}&type={{platform}}" data-id="{{id}}"
+                        <a href="{{@app.context}}/policy/view?id={{id}}&type={{platform}}"
+                           data-id="{{id}}"
                            data-click-event="remove-form"
                            class="btn padding-reduce-on-grid-view policy-view-link">
                             <span class="fw-stack">
@@ -144,7 +145,7 @@
                             </span>
                             <span class="hidden-xs hidden-on-grid-view">View</span>
                         </a>
-                        <a href="{{@app.context}}/policies/edit?id={{id}}&type={{platform}}"
+                        <a href="{{@app.context}}/policy/edit?id={{id}}&type={{platform}}"
                            data-id="{{id}}" data-click-event="remove-form"
                            class="btn padding-reduce-on-grid-view policy-update-link">
                             <span class="fw-stack">

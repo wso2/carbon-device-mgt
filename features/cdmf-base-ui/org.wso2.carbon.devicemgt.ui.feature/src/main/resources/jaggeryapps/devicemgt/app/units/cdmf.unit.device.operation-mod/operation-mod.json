@@ -1,7 +1,7 @@
 {
-    "version": "1.0.0",
-    "pushedUris": [
-        "/policies",
-        "/policies/{+any}"
-    ]
+  "version": "1.0.0",
+  "pushedUris": [
+    "/policies",
+    "/policy/{+any}"
+  ]
 }

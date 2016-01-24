@@ -56,9 +56,9 @@ var serverAddress = function () {
         }
     };
     publicMethods.getWSAddress = function () {
-        var port = process.getProperty('mgt.transport.https.proxyPort');
+        var port = process.getProperty('mgt.transport.http.proxyPort');
         if (!port) {
-            port = process.getProperty('mgt.transport.https.port');
+            port = process.getProperty('mgt.transport.http.port');
         }
         if (host === "localhost") {
             return "ws://" + ip + ":" + port;

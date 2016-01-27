@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -40,15 +40,15 @@ function emailIsValid(email) {
 
 $(document).ready(function () {
     $("select.select2[multiple=multiple]").select2({
-        tags : true
-    });
+                                                       tags: true
+                                                   });
 
     /**
      * Following click function would execute
      * when a user clicks on "Add User" button
      * on Add User page in WSO2 Devicemgt Console.
      */
-    $("button#add-user-btn").click(function() {
+    $("button#add-user-btn").click(function () {
         var username = $("input#username").val();
         var firstname = $("input#firstname").val();
         var lastname = $("input#lastname").val();
@@ -59,9 +59,6 @@ $(document).ready(function () {
         var errorMsg = "#user-create-error-msg span";
         if (!username) {
             $(errorMsg).text("Username is a required field. It cannot be empty.");
-            $(errorMsgWrapper).removeClass("hidden");
-        } else if (!password) {
-            $(errorMsg).text("Password is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");
         } else if (password != "" && !inputIsValid(/^[\S]{5,30}$/, password)) {
             $(errorMsg).text("Provided password doesn't conform to the password policy. Please check.");
@@ -94,7 +91,7 @@ $(document).ready(function () {
             // Base64 encode the password
             //TODO: use CryptoJS for this
             addUserFormData.password = window.btoa(password);
-            if (roles == null){
+            if (roles == null) {
                 roles = [];
             }
             addUserFormData.roles = roles;
@@ -102,32 +99,32 @@ $(document).ready(function () {
             var addUserAPI = "/devicemgt_admin/users?username=" + username;
 
             invokerUtil.put(
-                addUserAPI,
-                addUserFormData,
-                function (data) {
-                    data = JSON.parse(data);
-                    if (data["statusCode"] == 201) {
-                        // Clearing user input fields.
-                        $("input#username").val("");
-                        $("input#firstname").val("");
-                        $("input#lastname").val("");
-                        $("input#email").val("");
-                        $("input#password").val("");
-                        $("select#roles").select2("val", "");
-                        // Refreshing with success message
-                        $("#user-create-form").addClass("hidden");
-                        $("#user-created-msg").removeClass("hidden");
+                    addUserAPI,
+                    addUserFormData,
+                    function (data) {
+                        data = JSON.parse(data);
+                        if (data["statusCode"] == 201) {
+                            // Clearing user input fields.
+                            $("input#username").val("");
+                            $("input#firstname").val("");
+                            $("input#lastname").val("");
+                            $("input#email").val("");
+                            $("input#password").val("");
+                            $("select#roles").select2("val", "");
+                            // Refreshing with success message
+                            $("#user-create-form").addClass("hidden");
+                            $("#user-created-msg").removeClass("hidden");
+                        }
+                    }, function (data) {
+                        if (data["statusCode"] == 409) {
+                            $(errorMsg).text("User : " + username + " doesn't exists. You cannot proceed.");
+                        } else if (data["statusCode"] == 500) {
+                            $(errorMsg).text("An unexpected error occurred @ backend server. Please try again later.");
+                        } else {
+                            $(errorMsg).text("An unexpected error occurred. Please try again later.");
+                        }
+                        $(errorMsgWrapper).removeClass("hidden");
                     }
-                }, function (data) {
-                    if (data["statusCode"] == 409) {
-                        $(errorMsg).text("User : " + username + " doesn't exists. You cannot proceed.");
-                    } else if (data["statusCode"] == 500) {
-                        $(errorMsg).text("An unexpected error occurred @ backend server. Please try again later.");
-                    } else {
-                        $(errorMsg).text("An unexpected error occurred. Please try again later.");
-                    }
-                    $(errorMsgWrapper).removeClass("hidden");
-                }
             );
         }
     });

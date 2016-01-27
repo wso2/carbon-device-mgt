@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -992,6 +993,46 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return deviceTypes;
+    }
+
+    @Override
+    public PaginationResult getDevices(int groupId, int index, int limit, int tenantId)
+            throws DeviceManagementDAOException {
+        PaginationResult result = new PaginationResult();
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Device> devices = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, d1.GROUP_ID, " +
+                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
+                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE, d.GROUP_ID FROM DM_DEVICE d, " +
+                         "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND d.GROUP_ID = ? " +
+                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? LIMIT ?,?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, groupId);
+            stmt.setInt(2, tenantId);
+            stmt.setInt(3, tenantId);
+            stmt.setInt(4, index);
+            stmt.setInt(5, limit);
+            rs = stmt.executeQuery();
+            devices = new ArrayList<>();
+            while (rs.next()) {
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while listing devices for group '" + groupId + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        int count = this.getDeviceCount(groupId, tenantId);
+        result.setData(devices);
+        result.setRecordsFiltered(count);
+        result.setRecordsTotal(count);
+        return result;
     }
 
 }

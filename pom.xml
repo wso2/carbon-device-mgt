@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
   ~ WSO2 Inc. licenses this file to you under the Apache License,
   ~ Version 2.0 (the "License"); you may not use this file except
@@ -24,7 +24,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -1429,17 +1429,6 @@
                 <artifactId>httpclient</artifactId>
                 <version>${apache.http.version}</version>
             </dependency>
-            <!-- Removing neethi configs from webapp-->
-            <dependency>
-                <groupId>org.apache.neethi.wso2</groupId>
-                <artifactId>neethi</artifactId>
-                <version>${neethi.wso2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.neethi</groupId>
-                <artifactId>neethi</artifactId>
-                <version>${neethi.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>commons-pool.wso2</groupId>
@@ -1450,11 +1439,6 @@
                 <groupId>org.apache.httpcomponents.wso2</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpcomponents.httpclient.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-httpclient.wso2</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>${commons.httpclient.version}</version>
             </dependency>
 
         </dependencies>
@@ -1736,7 +1720,7 @@
         <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>1.0.4-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>1.1.0-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>

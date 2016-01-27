@@ -28,4 +28,6 @@ public interface TaskScheduleService {
     void stopTask() throws PolicyMonitoringTaskException;
 
     void updateTask(int monitoringFrequency) throws PolicyMonitoringTaskException;
+
+    boolean isTaskScheduled() throws PolicyMonitoringTaskException;
 }

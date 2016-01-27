@@ -122,10 +122,9 @@ public class DeviceManagementServiceComponent {
             DeviceManagementDAOFactory.init(dsConfig);
             NotificationManagementDAOFactory.init(dsConfig);
 
+            OperationManagementDAOFactory.init(dsConfig);
             /*Initialize Operation Manager*/
             this.initOperationsManager();
-
-            OperationManagementDAOFactory.init(dsConfig);
             /* If -Dsetup option enabled then create device management database schema */
             String setupOption = System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
             if (setupOption != null) {

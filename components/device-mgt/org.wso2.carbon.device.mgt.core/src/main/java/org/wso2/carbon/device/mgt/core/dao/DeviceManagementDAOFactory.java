@@ -23,9 +23,14 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.impl.*;
+import org.wso2.carbon.device.mgt.core.dao.impl.device.GenericDeviceDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.device.OracleDeviceDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.device.PostgreSQLDeviceDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.device.SQLServerDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
 import javax.sql.DataSource;
@@ -87,7 +92,6 @@ public class DeviceManagementDAOFactory {
     private static final Log log = LogFactory.getLog(DeviceManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
-
     public static DeviceDAO getDeviceDAO() {
         if(databaseEngine != null) {
             switch (databaseEngine) {
@@ -96,14 +100,15 @@ public class DeviceManagementDAOFactory {
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
                     return new SQLServerDeviceDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                    return new PostgreSQLDeviceDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
-                default:
                     return new GenericDeviceDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
-        } else {
-            return new GenericDeviceDAOImpl();
         }
+        throw new RuntimeException("Database engine has not initialized properly.");
     }
 
     public static DeviceTypeDAO getDeviceTypeDAO() {

@@ -85,7 +85,7 @@ public final class DeviceManagementConstants {
         }
         public static final String DB_TYPE_MYSQL = "MySQL";
         public static final String DB_TYPE_ORACLE = "Oracle";
-        public static final String DB_TYPE_MSSQL = "MSSQL";
+        public static final String DB_TYPE_MSSQL = "Microsoft SQL Server";
         public static final String DB_TYPE_DB2 = "DB2";
         public static final String DB_TYPE_H2 = "H2";
         public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";

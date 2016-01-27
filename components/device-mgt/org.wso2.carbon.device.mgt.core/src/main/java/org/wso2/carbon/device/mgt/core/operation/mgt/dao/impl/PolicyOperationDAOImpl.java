@@ -31,7 +31,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolicyOperationDAOImpl extends OperationDAOImpl {
+public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
 
     private static final Log log = LogFactory.getLog(PolicyOperationDAOImpl.class);
 

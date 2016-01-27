@@ -36,7 +36,8 @@ public class DynamicClientWebAppRegistrationConstants {
         }
 
         public static final String CONTENT_TYPE_ANY = "*/*";
-        public static final String MEDIA_TYPE_XML = "application/xml";
+        public static final String CONTENT_TYPE_XML = "application/xml";
+        public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
     }
 
     public static final class CharSets {
@@ -45,5 +46,24 @@ public class DynamicClientWebAppRegistrationConstants {
         }
 
         public static final String CHARSET_UTF8 = "UTF8";
+    }
+
+    public static class ConfigurationProperties {
+        private ConfigurationProperties() {
+            throw new AssertionError();
+        }
+
+        public static final String AUTHENTICATOR_NAME = "OAuthAuthenticator";
+        public static final String AUTHENTICATOR_CONFIG_IS_REMOTE = "isRemote";
+        public static final String AUTHENTICATOR_CONFIG_HOST_URL = "hostURL";
+    }
+
+    public static class RemoteServiceProperties {
+        private RemoteServiceProperties() {
+            throw new AssertionError();
+        }
+
+        public static final String DYNAMIC_CLIENT_SERVICE_ENDPOINT = "/dynamic-client-web/register";
+        public static final String DYNAMIC_CLIENT_SERVICE_PROTOCOL = "https";
     }
 }

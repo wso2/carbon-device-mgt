@@ -26,7 +26,8 @@ import java.util.Map;
 public class WebappAuthenticatorFactory {
 
     public static WebappAuthenticator getAuthenticator(String authScheme) {
-        return AuthenticatorFrameworkDataHolder.getInstance().getWebappAuthenticatorRepository().getAuthenticator(authScheme);
+        return AuthenticatorFrameworkDataHolder.getInstance().getWebappAuthenticatorRepository().
+                getAuthenticator(authScheme);
     }
 
     public static WebappAuthenticator getAuthenticator(Request request) {

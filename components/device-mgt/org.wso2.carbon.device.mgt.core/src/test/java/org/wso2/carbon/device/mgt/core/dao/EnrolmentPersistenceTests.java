@@ -83,7 +83,7 @@ public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
     @BeforeClass
     @Override
     public void init() throws Exception {
-        this.initDatSource();
+        this.initDataSource();
     }
 
 }

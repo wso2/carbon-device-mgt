@@ -20,12 +20,17 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.*;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.OracleOperationDAOImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.PostgreSQLOperationDAOImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.SQLServerOperationDAOImpl;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,6 +42,7 @@ public class OperationManagementDAOFactory {
 
     private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
     private static DataSource dataSource;
+    private static String databaseEngine;
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static OperationDAO getCommandOperationDAO() {
@@ -60,15 +66,40 @@ public class OperationManagementDAOFactory {
     }
 
     public static OperationDAO getOperationDAO() {
-        return new OperationDAOImpl();
+        if(databaseEngine != null) {
+            switch (databaseEngine) {
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                    return new OracleOperationDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+                    return new SQLServerOperationDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                    return new PostgreSQLOperationDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new GenericOperationDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new RuntimeException("Database engine has not initialized properly.");
     }
 
     public static void init(DataSource dtSource) {
         dataSource = dtSource;
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
     public static void beginTransaction() throws TransactionManagementException {

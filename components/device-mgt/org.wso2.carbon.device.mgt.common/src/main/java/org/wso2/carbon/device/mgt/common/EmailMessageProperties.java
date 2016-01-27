@@ -31,6 +31,7 @@ public class EmailMessageProperties {
     private String title;
     private String password;
     private String userName;
+    private String domainName;
 
     public String getUserName() {
         return userName;
@@ -38,6 +39,14 @@ public class EmailMessageProperties {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getDomainName() {
+        return domainName;
+    }
+
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
     }
 
     public String getMessageBody() {

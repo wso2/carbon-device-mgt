@@ -31,7 +31,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileOperationDAOImpl extends OperationDAOImpl {
+public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
 
     private static final Log log = LogFactory.getLog(ProfileOperationDAOImpl.class);
 

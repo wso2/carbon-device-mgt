@@ -78,6 +78,8 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, " +
                     "TENANT_ID) VALUES (?, ?, ?)";
+
+            conn.setAutoCommit(false);
             stmt = conn.prepareStatement(sql);
 
             for (int applicationId : applicationIds) {
@@ -87,12 +89,6 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
-//            rs = stmt.getGeneratedKeys();
-//            while (rs.next()) {
-//                mappingIds.add(rs.getInt(1));
-//            }
-//            return mappingIds;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mappings", e);
         } finally {
@@ -106,18 +102,17 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         Connection conn;
         PreparedStatement stmt = null;
         try {
-            conn = this.getConnection();
             String sql = "DELETE DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
 
-            for (Integer appId : appIdList) {
+            conn = this.getConnection();
+            for (int appId : appIdList) {
+                stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, deviceId);
                 stmt.setInt(2, appId);
                 stmt.setInt(3, tenantId);
-                stmt.addBatch();
+                stmt.execute();
             }
-            stmt.executeBatch();
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mapping", e);
         } finally {

@@ -42,25 +42,22 @@ public interface DeviceManagementProviderService extends OperationManager {
     /**
      * Method to retrieve all the devices with pagination support.
      *
-     * @param deviceType     Device platform
-     * @param index          Starting row number
-     * @param limit          No of rows to fetch
+     * @param request        PaginationRequest object holding the data for pagination
      * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * devices.
      */
-    PaginationResult getAllDevices(String deviceType, int index, int limit) throws DeviceManagementException;
+    PaginationResult getDevicesByType(PaginationRequest request) throws DeviceManagementException;
 
     /**
      * Method to retrieve all the devices with pagination support.
      *
-     * @param index          Starting row number
-     * @param limit          No of rows to fetch
+     * @param request        PaginationRequest object holding the data for pagination
      * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * devices.
      */
-    PaginationResult getAllDevices(int index, int limit) throws DeviceManagementException;
+    PaginationResult getAllDevices(PaginationRequest request) throws DeviceManagementException;
 
     void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
 
@@ -77,6 +74,26 @@ public interface DeviceManagementProviderService extends OperationManager {
      * configuration.
      */
     TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException;
+
+    /**
+     * Method to get the list of devices owned by an user with paging information.
+     *
+     * @param request  PaginationRequest object holding the data for pagination
+     * @return List of devices owned by a particular user along with the required parameters necessary to do pagination.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    PaginationResult getDevicesOfUser(PaginationRequest request) throws DeviceManagementException;
+
+    /**
+     * Method to get the list of devices filtered by the ownership with paging information.
+     *
+     * @param request   PaginationRequest object holding the data for pagination
+     * @return List of devices owned by a particular user along with the required parameters necessary to do pagination.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    PaginationResult getDevicesByOwnership(PaginationRequest request) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by an user.
@@ -154,6 +171,16 @@ public interface DeviceManagementProviderService extends OperationManager {
      */
     List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
 
+    /**
+     * This method is used to retrieve list of devices that matches with the given device name with paging information.
+     *
+     * @param request PaginationRequest object holding the data for pagination
+     * @return List of devices in given status along with the required parameters necessary to do pagination.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    PaginationResult getDevicesByName(PaginationRequest request) throws DeviceManagementException;
+
     void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status active) throws DeviceManagementException;
 
     /**
@@ -164,6 +191,16 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @throws DeviceManagementException
      */
     List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException;
+
+    /**
+     * This method is used to retrieve list of devices based on the device status with paging information.
+     *
+     * @param request PaginationRequest object holding the data for pagination
+     * @return List of devices in given status along with the required parameters necessary to do pagination.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * device list
+     */
+    PaginationResult getDevicesByStatus(PaginationRequest request) throws DeviceManagementException;
 
     License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
 

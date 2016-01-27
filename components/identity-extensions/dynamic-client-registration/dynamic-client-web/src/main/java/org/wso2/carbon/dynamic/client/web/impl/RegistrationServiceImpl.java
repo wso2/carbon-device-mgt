@@ -37,8 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.QueryParam;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class RegistrationServiceImpl implements RegistrationService {
 
     private static final Log log = LogFactory.getLog(RegistrationServiceImpl.class);
@@ -89,7 +87,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 boolean status = dynamicClientRegistrationService.unregisterOAuthApplication(userId, applicationName,
                                                                                              consumerKey);
                 if (status) {
-                    return Response.status(Response.Status.ACCEPTED).build();
+                    return Response.status(Response.Status.OK).build();
                 }
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }

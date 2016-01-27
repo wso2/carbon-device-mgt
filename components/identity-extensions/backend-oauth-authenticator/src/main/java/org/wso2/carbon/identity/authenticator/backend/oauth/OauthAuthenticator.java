@@ -44,21 +44,10 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
     private OAuth2TokenValidator tokenValidator;
 
     public OauthAuthenticator() {
-        AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
-        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
-                getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
-        boolean isRemote;
-        String hostUrl;
-        if (authenticatorConfig != null) {
-            isRemote = Boolean.parseBoolean(authenticatorConfig.getParameters().get("isRemote"));
-            hostUrl = authenticatorConfig.getParameters().get("hostURL");
-        }else{
-            throw new IllegalArgumentException("Configuration parameters need to be defined in Authenticators.xml");
-        }
         try {
-            tokenValidator = OAuthValidatorFactory.getValidator(isRemote, hostUrl);
+            tokenValidator = OAuthValidatorFactory.getValidator();
         } catch (IllegalArgumentException e) {
-            log.error("Failed to initialise Authenticator",e);
+            log.error("Failed to initialise Authenticator", e);
         }
     }
 
@@ -70,14 +59,16 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
      */
     public boolean isHandle(MessageContext messageContext) {
         HttpServletRequest httpServletRequest = getHttpRequest(messageContext);
-        String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
-        if (headerValue != null && !headerValue.trim().isEmpty()) {
-            String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);
-            if (OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BEARER.equals(headerPart[0])) {
+        if (httpServletRequest != null) {
+            String headerValue = httpServletRequest.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
+            if (headerValue != null && !headerValue.trim().isEmpty()) {
+                String[] headerPart = headerValue.trim().split(OauthAuthenticatorConstants.SPLITING_CHARACTOR);
+                if (OauthAuthenticatorConstants.AUTHORIZATION_HEADER_PREFIX_BEARER.equals(headerPart[0])) {
+                    return true;
+                }
+            } else if (httpServletRequest.getParameter(OauthAuthenticatorConstants.BEARER_TOKEN_IDENTIFIER) != null) {
                 return true;
             }
-        } else if (httpServletRequest.getParameter(OauthAuthenticatorConstants.BEARER_TOKEN_IDENTIFIER) != null) {
-            return true;
         }
         return false;
     }
@@ -145,7 +136,10 @@ public class OauthAuthenticator implements CarbonServerAuthenticator {
      * @return boolean true for enable or otherwise for disable status.
      */
     public boolean isDisabled() {
-        return false;
+        AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
+        AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
+                getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
+        return authenticatorConfig.isDisabled();
     }
 
     /**

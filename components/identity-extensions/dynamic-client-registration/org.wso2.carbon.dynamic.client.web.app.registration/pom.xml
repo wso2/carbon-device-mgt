@@ -17,18 +17,17 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>dynamic-client-registration</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>0.9.2-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.dynamic.client.web.app.registration</artifactId>
-    <version>0.9.2-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Dynamic client web app registration</name>
     <description>WSO2 Carbon - Dynamic Client Web-app Registration Service</description>
@@ -56,7 +55,27 @@
                             !org.wso2.carbon.dynamic.client.web.app.registration.internal,
                             org.wso2.carbon.dynamic.client.web.app.registration.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>
+                            javax.xml.bind.*,
+                            com.google.*,
+                            javax.net.ssl,
+                            javax.servlet,
+                            org.apache.axis2.context,
+                            org.apache.catalina,
+                            org.apache.catalina.core,
+                            org.apache.commons.*,
+                            org.apache.http,
+                            org.apache.http.*,
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.core,
+                            org.wso2.carbon.core.security,
+                            org.wso2.carbon.dynamic.client.*,
+                            org.wso2.carbon.registry.*,
+                            org.wso2.carbon.user.*,
+                            org.wso2.carbon.utils
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -114,6 +133,14 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 </project>

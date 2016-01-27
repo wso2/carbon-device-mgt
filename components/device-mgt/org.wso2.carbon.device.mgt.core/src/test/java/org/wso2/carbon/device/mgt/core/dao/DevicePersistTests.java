@@ -36,15 +36,17 @@ import java.sql.*;
 
 public class DevicePersistTests extends BaseDeviceManagementTest {
 
-    DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-    DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+    DeviceDAO deviceDAO;
+    DeviceTypeDAO deviceTypeDAO;
 
     private static final Log log = LogFactory.getLog(DevicePersistTests.class);
 
     @BeforeClass
     @Override
     public void init() throws Exception {
-        initDatSource();
+        initDataSource();
+        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
     @Test

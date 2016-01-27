@@ -40,7 +40,7 @@ public class APIPublisherUtil {
     private static List<HTTPMethod> httpMethods;
 
     static {
-        httpMethods = new ArrayList<HTTPMethod>();
+        httpMethods = new ArrayList<HTTPMethod>(5);
         httpMethods.add(HTTPMethod.GET);
         httpMethods.add(HTTPMethod.POST);
         httpMethods.add(HTTPMethod.DELETE);

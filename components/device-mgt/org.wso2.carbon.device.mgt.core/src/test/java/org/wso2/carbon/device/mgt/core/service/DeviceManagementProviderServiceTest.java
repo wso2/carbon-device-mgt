@@ -21,15 +21,9 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
-import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
-import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
-import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
 
@@ -42,7 +36,7 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     @BeforeClass
     @Override
     public void init() throws Exception {
-        this.initDatSource();
+        this.initDataSource();
         this.providerService = new DeviceManagementProviderServiceImpl();
     }
 

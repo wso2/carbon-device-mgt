@@ -299,6 +299,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     public List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
@@ -311,7 +312,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, username);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
@@ -321,7 +322,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             throw new DeviceManagementDAOException("Error occurred while fetching the list of devices belongs to '" +
                     username + "'", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return devices;
     }
@@ -594,6 +595,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         Connection conn;
         PreparedStatement stmt = null;
         List<Device> devices = new ArrayList<>();
+        ResultSet rs = null;
         try {
             conn = this.getConnection();
             String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
@@ -606,7 +608,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setString(1, deviceName + "%");
             stmt.setInt(2, tenantId);
             stmt.setInt(3, tenantId);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
@@ -616,7 +618,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             throw new DeviceManagementDAOException("Error occurred while fetching the list of devices that matches " +
                     "'" + deviceName + "'", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return devices;
     }
@@ -823,6 +825,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
@@ -836,7 +839,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setInt(1, tenantId);
             stmt.setString(2, status.toString());
             stmt.setInt(3, tenantId);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
@@ -846,7 +849,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             throw new DeviceManagementDAOException("Error occurred while fetching the list of devices that matches to status " +
                     "'" + status + "'", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return devices;
     }

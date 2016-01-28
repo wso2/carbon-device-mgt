@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -24,11 +24,16 @@ import org.wso2.carbon.device.mgt.group.common.GroupUser;
 import java.util.List;
 
 /**
- * Use to expose protected methods to core. Use only for internal access
+ * This class is used to expose protected methods to the core. Use with internal access only.
  */
-public class DeviceGroupBroker extends DeviceGroup {
+public class DeviceGroupBuilder extends DeviceGroup {
 
-    public DeviceGroupBroker(DeviceGroup deviceGroup) {
+    /**
+     * Set device group to be decorated with the builder
+     *
+     * @param deviceGroup to decorate
+     */
+    public DeviceGroupBuilder(DeviceGroup deviceGroup) {
         this.setId(deviceGroup.getId());
         this.setId(deviceGroup.getId());
         this.setDescription(deviceGroup.getDescription());

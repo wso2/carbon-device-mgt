@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.group.core.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
-import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBroker;
+import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBuilder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -114,7 +114,7 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public DeviceGroupBroker getGroup(int groupId) throws GroupManagementDAOException {
+    public DeviceGroupBuilder getGroup(int groupId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
@@ -139,10 +139,10 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<DeviceGroupBroker> getGroups(int tenantId) throws GroupManagementDAOException {
+    public List<DeviceGroupBuilder> getGroups(int tenantId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<DeviceGroupBroker> deviceGroupList = null;
+        List<DeviceGroupBuilder> deviceGroupList = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "
@@ -165,11 +165,11 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<DeviceGroupBroker> getGroups(String groupName, int tenantId)
+    public List<DeviceGroupBuilder> getGroups(String groupName, int tenantId)
             throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<DeviceGroupBroker> deviceGroups = new ArrayList<>();
+        List<DeviceGroupBuilder> deviceGroups = new ArrayList<>();
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, OWNER "

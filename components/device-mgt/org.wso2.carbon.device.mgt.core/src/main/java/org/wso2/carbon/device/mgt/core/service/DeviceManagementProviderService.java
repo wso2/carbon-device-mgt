@@ -127,13 +127,12 @@ public interface DeviceManagementProviderService extends OperationManager {
      * Method to get the list of devices in group.
      *
      * @param groupId of the group
-     * @param index Starting row number
-     * @param limit the limit of the number of devices returned for the group
+     * @param request   PaginationRequest object holding the data for pagination
      * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      * device list
      */
-    PaginationResult getDevices(int groupId, int index, int limit) throws DeviceManagementException;
+    PaginationResult getDevices(int groupId, PaginationRequest request) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.

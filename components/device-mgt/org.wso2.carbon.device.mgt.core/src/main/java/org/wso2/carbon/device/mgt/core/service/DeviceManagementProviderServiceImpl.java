@@ -1009,13 +1009,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      * {@inheritDoc}
      */
     @Override
-    public PaginationResult getDevices(int groupId, int index, int limit) throws DeviceManagementException {
+    public PaginationResult getDevices(int groupId, PaginationRequest request) throws DeviceManagementException {
         int tenantId;
         try {
             DeviceManagementDAOFactory.openConnection();
             tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
-            return deviceDAO.getDevices(groupId, index, limit, tenantId);
+            return deviceDAO.getDevices(groupId, request.getStartIndex(), request.getRowCount(), tenantId);
         } catch (DeviceManagementDAOException | SQLException e) {
             throw new DeviceManagementException("Error occurred while retrieving the list of " +
                                                 "devices that assigned to the group '" +

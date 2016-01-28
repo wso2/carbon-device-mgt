@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.group.core.providers;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
@@ -118,7 +119,7 @@ public interface GroupManagementServiceProvider {
      * @return is group un shared
      * @throws GroupManagementException
      */
-    boolean unShareGroup(String userName, int groupId, String sharingRole)
+    boolean unshareGroup(String userName, int groupId, String sharingRole)
             throws GroupManagementException;
 
     /**
@@ -131,7 +132,7 @@ public interface GroupManagementServiceProvider {
      * @return is role added
      * @throws GroupManagementException
      */
-    boolean addSharing(String userName, int groupId, String roleName, String[] permissions)
+    boolean addGroupSharingRole(String userName, int groupId, String roleName, String[] permissions)
             throws GroupManagementException;
 
     /**
@@ -142,7 +143,7 @@ public interface GroupManagementServiceProvider {
      * @return is role removed
      * @throws GroupManagementException
      */
-    boolean removeSharing(int groupId, String roleName) throws GroupManagementException;
+    boolean removeGroupSharingRole(int groupId, String roleName) throws GroupManagementException;
 
     /**
      * Get all sharing roles for device group
@@ -185,12 +186,11 @@ public interface GroupManagementServiceProvider {
      * Get all devices in device group
      *
      * @param groupId of the group
-     * @param index start index of result set.
-     * @param limit the number of results to be retreived
+     * @param request   PaginationRequest object holding the data for pagination
      * @return list of group devices
      * @throws GroupManagementException
      */
-    PaginationResult getDevices(int groupId, int index, int limit) throws GroupManagementException;
+    PaginationResult getDevices(int groupId, PaginationRequest request) throws GroupManagementException;
 
     /**
      * This method is used to retrieve the device count of a given group.

@@ -234,6 +234,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         PreparedStatement stmt = null;
         List<Application> applications = new ArrayList<>();
         Application application;
+        ResultSet rs = null;
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("Select ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
@@ -244,7 +245,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                     "app.ID = APPMAP.APPLICATION_ID ");
 
             stmt.setInt(1, deviceId);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 application = loadApplication(rs);
@@ -254,7 +255,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             throw new DeviceManagementDAOException("SQL Error occurred while retrieving the list of Applications " +
                     "installed in device id '" + deviceId, e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return applications;
     }

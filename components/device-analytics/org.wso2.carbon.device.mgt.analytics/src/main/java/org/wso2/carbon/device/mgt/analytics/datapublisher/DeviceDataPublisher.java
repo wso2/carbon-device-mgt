@@ -20,7 +20,11 @@ package org.wso2.carbon.device.mgt.analytics.datapublisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.databridge.agent.exception.DataEndpointAgentConfigurationException;
 import org.wso2.carbon.databridge.agent.exception.DataEndpointAuthenticationException;
@@ -29,9 +33,16 @@ import org.wso2.carbon.databridge.agent.exception.DataEndpointException;
 import org.wso2.carbon.databridge.commons.exception.TransportException;
 import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherAlreadyExistsException;
 import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherConfigurationException;
+import org.wso2.carbon.device.mgt.analytics.internal.DeviceAnalyticsDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.analytics.AnalyticsConfigurations;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,6 +51,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DeviceDataPublisher {
 	private static final Log log = LogFactory.getLog(DeviceDataPublisher.class);
+	private static final String TENANT_DAS_CONFIG_LOCATION = "/das/config.json";
+	private static final String USERNAME_CONFIG_TAG = "username";
+	private static final String PASSWORD_CONFIG_TAG = "password";
 	/**
 	 * map to store data publishers for each tenant.
 	 */
@@ -58,7 +72,7 @@ public class DeviceDataPublisher {
 	}
 
 	private DeviceDataPublisher() {
-		dataPublisherMap = new ConcurrentHashMap<String, DataPublisher>();
+		dataPublisherMap = new ConcurrentHashMap<>();
 
 	}
 
@@ -83,18 +97,26 @@ public class DeviceDataPublisher {
 			if(!analyticsConfig.isEnable()) return null;
 
 			String analyticsServerUrlGroups = analyticsConfig.getReceiverServerUrl();
-			String analyticsServerUser = analyticsConfig.getAdminUsername();
+			String analyticsServerUsername = analyticsConfig.getAdminUsername();
 			String analyticsServerPassword = analyticsConfig.getAdminPassword();
+			if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+				int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+				String userInfo[] = getAnalyticsServerUserInfo(tenantId);
+				if(userInfo!=null) {
+					analyticsServerUsername = userInfo[0];
+					analyticsServerPassword = userInfo[1];
+				}
+			}
 
 			//Create new DataPublisher for the tenant.
 			try {
-				dataPublisher = new DataPublisher(analyticsServerUrlGroups, analyticsServerUser,
+				dataPublisher = new DataPublisher(analyticsServerUrlGroups, analyticsServerUsername,
 													  analyticsServerPassword);
 				//Add created DataPublisher.
 				addDataPublisher(tenantDomain, dataPublisher);
 			} catch (DataEndpointAgentConfigurationException e) {
 				String errorMsg = "Configuration Exception on data publisher for ReceiverGroup = " +
-						analyticsServerUrlGroups + " for username " + analyticsServerUser;
+						analyticsServerUrlGroups + " for username " + analyticsServerUsername;
 				throw new DataPublisherConfigurationException(errorMsg, e);
 			} catch (DataEndpointException e) {
 				String errorMsg = "Invalid ReceiverGroup = " + analyticsServerUrlGroups;
@@ -103,7 +125,7 @@ public class DeviceDataPublisher {
 				String errorMsg = "Invalid Data endpoint configuration.";
 				throw new DataPublisherConfigurationException(errorMsg, e);
 			} catch (DataEndpointAuthenticationException e) {
-				String errorMsg = "Authentication Failed for user " + analyticsServerUser;
+				String errorMsg = "Authentication Failed for user " + analyticsServerUsername;
 				throw new DataPublisherConfigurationException(errorMsg, e);
 			} catch (TransportException e) {
 				throw new DataPublisherConfigurationException(e);
@@ -149,4 +171,63 @@ public class DeviceDataPublisher {
 		dataPublisherMap.put(tenantDomain, dataPublisher);
 	}
 
+	/**
+	 * retrieve the credential from registry
+	 * TODO temparary solution for OAUTh
+	 * @param tenantId
+	 * @return
+	 */
+	private String[] getAnalyticsServerUserInfo(int tenantId)
+			throws DataPublisherConfigurationException {
+		try {
+			String config = getConfigRegistryResourceContent(tenantId, TENANT_DAS_CONFIG_LOCATION);
+			JSONObject jsonConfigforDas = new JSONObject(config);
+			String credential[] = new String[2];
+			credential[0] = jsonConfigforDas.getString(USERNAME_CONFIG_TAG);
+			credential[1] = jsonConfigforDas.getString(PASSWORD_CONFIG_TAG);
+			return credential;
+		} catch (RegistryException e) {
+			throw new DataPublisherConfigurationException(e);
+		} catch (JSONException e) {
+			throw new DataPublisherConfigurationException(e);
+		}
+	}
+
+	/**
+	 * get the credential detail from the registry for tenants.
+	 * @param tenantId for identify tenant space.
+	 * @param registryLocation retrive the config file from tenant space.
+	 * @return
+	 * @throws RegistryException
+	 */
+	private String getConfigRegistryResourceContent(int tenantId, final String registryLocation)
+			throws RegistryException {
+		String content = null;
+
+		try {
+			PrivilegedCarbonContext.startTenantFlow();
+			PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
+
+			RegistryService registryService = DeviceAnalyticsDataHolder.getInstance().getRegistryService();
+			if(registryService!=null) {
+				Registry registry = registryService.getConfigSystemRegistry(tenantId);
+				this.loadTenantRegistry(tenantId);
+				if (registry.resourceExists(registryLocation)) {
+					Resource resource = registry.get(registryLocation);
+					content = new String((byte[]) resource.getContent(), Charset.defaultCharset());
+				}
+			}
+		}
+		finally {
+			PrivilegedCarbonContext.endTenantFlow();
+		}
+
+		return content;
+	}
+
+	private void loadTenantRegistry(int tenantId) throws RegistryException {
+		TenantRegistryLoader tenantRegistryLoader = DeviceAnalyticsDataHolder.getInstance().getTenantRegistryLoader();
+		DeviceAnalyticsDataHolder.getInstance().getIndexLoaderService().loadTenantIndex(tenantId);
+		tenantRegistryLoader.loadTenantRegistry(tenantId);
+	}
 }

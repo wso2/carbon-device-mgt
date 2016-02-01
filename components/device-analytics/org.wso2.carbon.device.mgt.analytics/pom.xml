@@ -67,6 +67,14 @@
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -103,7 +111,11 @@
                             org.wso2.carbon.analytics.dataservice.commons.*;version="${carbon.analytics.version}",
                             org.wso2.carbon.analytics.dataservice.core.*;version="${carbon.analytics.version}",
                             org.wso2.carbon.analytics.datasource.commons.exception.*;version="${carbon.analytics.version}",
-                            org.wso2.carbon.device.mgt.core.*
+                            org.wso2.carbon.device.mgt.core.*,
+                            org.wso2.carbon.registry.core.*; version="${carbon.registry.imp.pkg.version.range}",
+                            org.wso2.carbon.registry.common.*,
+                            org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
+                            org.json;version="${commons-json.version}"
                         </Import-Package>
                     </instructions>
                 </configuration>

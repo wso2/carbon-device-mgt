@@ -22,7 +22,7 @@ var serverAddress = function () {
         host = process.getProperty('server.host'),
         ip = process.getProperty('carbon.local.ip');
     var publicMethods = {};
-    publicMethods.getHPPSTSAddress = function () {
+    publicMethods.getHTTPSAddress = function () {
         var port = process.getProperty('mgt.transport.https.proxyPort');
         if (!port) {
             port = process.getProperty('mgt.transport.https.port');

@@ -45,17 +45,17 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
         accessToken.setTokenType(OauthAuthenticatorConstants.BEARER_TOKEN_TYPE);
         accessToken.setIdentifier(token);
         validationRequest.setAccessToken(accessToken);
-        OAuth2TokenValidationResponseDTO tokenValidationResponse =  OAuthAuthenticatorDataHolder.getInstance().
+        OAuth2TokenValidationResponseDTO tokenValidationResponse = OAuthAuthenticatorDataHolder.getInstance().
                 getOAuth2TokenValidationService().findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
         boolean isValid = tokenValidationResponse.isValid();
         String userName = null;
         String tenantDomain = null;
-        if(isValid){
+        if (isValid) {
             userName = MultitenantUtils.getTenantAwareUsername(
                     tokenValidationResponse.getAuthorizedUser());
             tenantDomain =
                     MultitenantUtils.getTenantDomain(tokenValidationResponse.getAuthorizedUser());
         }
-       return new OAuthValidationResponse(userName,tenantDomain,isValid);
+        return new OAuthValidationResponse(userName, tenantDomain, isValid);
     }
 }

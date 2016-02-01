@@ -79,7 +79,7 @@ public class ExternalOAuthValidator implements OAuth2TokenValidator{
         boolean isValid = tokenValidationResponse.getValid();
         String userName = null;
         String tenantDomain = null;
-        if(isValid){
+        if (isValid) {
             userName = MultitenantUtils.getTenantAwareUsername(
                     tokenValidationResponse.getAuthorizedUser());
             tenantDomain = MultitenantUtils.

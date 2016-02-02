@@ -140,7 +140,7 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = null;
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM ( SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, " +
+            String sql = "SELECT * FROM ( SELECT ROWNUM offset, rs.* FROM ( SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, " +
                     "d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                     "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, " +
                     "(SELECT d.ID, d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION, " +
@@ -175,7 +175,7 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM ( SELECT e1.OWNER, e1.OWNERSHIP, e1.ENROLMENT_ID, e1.DEVICE_ID, e1.STATUS, " +
+            String sql = "SELECT * FROM ( SELECT ROWNUM offset, rs.* FROM ( SELECT e1.OWNER, e1.OWNERSHIP, e1.ENROLMENT_ID, e1.DEVICE_ID, e1.STATUS, " +
                     "e1.DATE_OF_LAST_UPDATE, e1.DATE_OF_ENROLMENT, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
                     "d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, " +
                     "e.ID AS ENROLMENT_ID, e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
@@ -210,7 +210,7 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM ( SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, " +
+            String sql = "SELECT * FROM ( SELECT ROWNUM offset, rs.* FROM ( SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, " +
                     "d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                     "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, " +
                     "(SELECT d.ID, d.NAME, d.DESCRIPTION, t.NAME AS DEVICE_TYPE, " +
@@ -246,7 +246,7 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM ( SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
+            String sql = "SELECT * FROM ( SELECT ROWNUM offset, rs.* FROM ( SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
                     "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                     "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, " +
                     "e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, " +
@@ -282,7 +282,7 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT * FROM ( SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
+            String sql = "SELECT * FROM ( SELECT ROWNUM offset, rs.* FROM ( SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
                     "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                     "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, " +
                     "e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, " +

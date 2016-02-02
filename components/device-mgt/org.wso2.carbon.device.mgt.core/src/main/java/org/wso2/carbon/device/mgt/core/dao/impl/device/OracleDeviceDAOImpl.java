@@ -57,11 +57,12 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         boolean isStatusProvided = false;
         try {
             conn = this.getConnection();
-            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
-                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
-                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+            String sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT d1.ID AS DEVICE_ID, " +
+                    "d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, e.OWNER, " +
+                    "e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, " +
+                    "e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
+                    "d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
+                    "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
 
             //Add the query for device-type
             if (deviceType != null && !deviceType.isEmpty()) {
@@ -92,7 +93,7 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
                 isStatusProvided = true;
             }
 
-            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            sql = sql + " ) rs ) WHERE offset >= ? AND ROWNUM <= ?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -139,12 +140,13 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = null;
         try {
             conn = this.getConnection();
-            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
-                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
-                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
-                         "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
-                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            String sql = "SELECT * FROM ( SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, " +
+                    "d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                    "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, " +
+                    "(SELECT d.ID, d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION, " +
+                    "t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND " +
+                    "t.NAME = ? AND d.TENANT_ID = ? ) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = " +
+                    "? ) rs ) WHERE offset >= ? AND ROWNUM <= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, request.getDeviceType());
             stmt.setInt(2, tenantId);
@@ -173,12 +175,13 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT e1.OWNER, e1.OWNERSHIP, e1.ENROLMENT_ID, e1.DEVICE_ID, e1.STATUS, e1.DATE_OF_LAST_UPDATE," +
-                         " e1.DATE_OF_ENROLMENT, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_IDENTIFICATION, t.NAME " +
-                         "AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, e.ID AS ENROLMENT_ID, " +
-                         "e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e WHERE " +
-                         "e.TENANT_ID = ? AND e.OWNER = ?) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
-                         "AND t.ID = d.DEVICE_TYPE_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            String sql = "SELECT * FROM ( SELECT e1.OWNER, e1.OWNERSHIP, e1.ENROLMENT_ID, e1.DEVICE_ID, e1.STATUS, " +
+                    "e1.DATE_OF_LAST_UPDATE, e1.DATE_OF_ENROLMENT, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
+                    "d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, " +
+                    "e.ID AS ENROLMENT_ID, e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                    "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e WHERE e.TENANT_ID = ? AND e.OWNER = ? ) e1, " +
+                    "DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID AND t.ID = d.DEVICE_TYPE_ID ) rs ) WHERE offset >= " +
+                    "? AND ROWNUM <= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, request.getOwner());
@@ -207,12 +210,13 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
-                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, " +
-                         "d.DESCRIPTION, t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, " +
-                         "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.NAME LIKE ? AND d.TENANT_ID = ?) d1 " +
-                         "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            String sql = "SELECT * FROM ( SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, " +
+                    "d1.DEVICE_TYPE, d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                    "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, " +
+                    "(SELECT d.ID, d.NAME, d.DESCRIPTION, t.NAME AS DEVICE_TYPE, " +
+                    "d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = " +
+                    "t.ID AND d.NAME LIKE ? AND d.TENANT_ID = ? ) d1 WHERE DEVICE_ID = " +
+                    "e.DEVICE_ID AND TENANT_ID = ? ) rs ) WHERE offset >= ? AND ROWNUM <= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, request.getDeviceName() + "%");
             stmt.setInt(2, tenantId);
@@ -242,13 +246,13 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, t.NAME AS DEVICE_TYPE, " +
-                         "d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
-                         "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e " +
-                         "WHERE TENANT_ID = ? AND OWNERSHIP = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? OFFSET ? " +
-                         "ROWS FETCH NEXT ? ROWS ONLY";
+            String sql = "SELECT * FROM ( SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
+                    "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                    "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, " +
+                    "e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, " +
+                    "e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e WHERE TENANT_ID = ? AND OWNERSHIP = ?) e, " +
+                    "DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = " +
+                    "t.ID AND d.TENANT_ID = ? ) rs ) WHERE offset >= ? AND ROWNUM <= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, request.getOwnership());
@@ -278,13 +282,13 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
         List<Device> devices = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String sql = "SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, t.NAME AS DEVICE_TYPE, " +
-                         "d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
-                         "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e " +
-                         "WHERE TENANT_ID = ? AND STATUS = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? OFFSET ? ROWS" +
-                         " FETCH NEXT ? ROWS ONLY";
+            String sql = "SELECT * FROM ( SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME AS DEVICE_NAME, " +
+                    "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, " +
+                    "e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, " +
+                    "e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, " +
+                    "e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e WHERE TENANT_ID = ? AND STATUS = ?) e, " +
+                    "DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = " +
+                    "t.ID AND d.TENANT_ID = ? ) rs ) WHERE offset >= ? AND ROWNUM <= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, request.getStatus());

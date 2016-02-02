@@ -45,6 +45,7 @@
         <module>components/device-analytics</module>
         <module>components/identity-extensions</module>
         <module>components/common-api</module>
+        <module>components/cdmf-base-ui</module>
         <module>features/device-mgt</module>
         <module>features/cdmf-base-ui</module>
         <module>features/group-mgt</module>

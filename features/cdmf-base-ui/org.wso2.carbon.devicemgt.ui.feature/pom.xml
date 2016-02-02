@@ -38,29 +38,35 @@
 
     <build>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.lesscss</groupId>-->
-                <!--<artifactId>lesscss-maven-plugin</artifactId>-->
-                <!--<version>1.7.0.1.1</version>-->
-                <!--<configuration>-->
-                    <!--<sourceDirectory>${basedir}/src/main/resources/jaggeryapps/devicemgt/units</sourceDirectory>-->
-                    <!--<outputDirectory>${basedir}/src/main/resources/jaggeryapps/devicemgt/tmp</outputDirectory>-->
-                    <!--<compress>true</compress>-->
-                    <!--<includes>-->
-                        <!--<include>bootstrap/public/less/bootstrap.less</include>-->
-                        <!--<include>theme/public/less/custom-variables.less</include>-->
-                        <!--<include>theme/public/less/header-footer.less</include>-->
-                    <!--</includes>-->
-                    <!--<force>true</force>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>compile</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon.devicemgt</groupId>
+                                    <artifactId>org.wso2.carbon.device.mgt.ui
+                                    </artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>
+                                        ${project.build.directory}/maven-shared-archive-resources/jaggeryapps/devicemgt-cdmf
+                                    </outputDirectory>
+                                    <includes>**/*</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
@@ -99,11 +105,14 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.devicemgt.ui</id>
-                            <propertiesFile>../../../features/etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../../features/etc/feature.properties
+                            </propertiesFile>
                             <adviceFile>
                                 <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:server
+                                    </propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:false
+                                    </propertyDef>
                                 </properties>
                             </adviceFile>
                         </configuration>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
@@ -77,13 +78,13 @@ public class GroupManagerService extends AbstractManagerService {
                     DEFAULT_ADMIN_PERMISSIONS);
             boolean isAdded = (groupId > 0) && groupManagementService.addSharing(userName, groupId,
                     DEFAULT_OPERATOR_ROLE, DEFAULT_OPERATOR_PERMISSIONS);
-            groupManagementService.addSharing(userName, groupId, DEFAULT_STATS_MONITOR_ROLE,
+            groupManagementService.addGroupSharingRole(userName, groupId, DEFAULT_STATS_MONITOR_ROLE,
                     DEFAULT_STATS_MONITOR_PERMISSIONS);
-            groupManagementService.addSharing(userName, groupId, DEFAULT_VIEW_POLICIES,
+            groupManagementService.addGroupSharingRole(userName, groupId, DEFAULT_VIEW_POLICIES,
                     DEFAULT_VIEW_POLICIES_PERMISSIONS);
-            groupManagementService.addSharing(userName, groupId, DEFAULT_MANAGE_POLICIES,
+            groupManagementService.addGroupSharingRole(userName, groupId, DEFAULT_MANAGE_POLICIES,
                     DEFAULT_MANAGE_POLICIES_PERMISSIONS);
-            groupManagementService.addSharing(userName, groupId, DEFAULT_VIEW_EVENTS,
+            groupManagementService.addGroupSharingRole(userName, groupId, DEFAULT_VIEW_EVENTS,
                     DEFAULT_VIEW_EVENTS_PERMISSIONS);
             if (isAdded) {
                 return Response.status(Response.Status.CREATED).build();
@@ -413,8 +414,8 @@ public class GroupManagerService extends AbstractManagerService {
     public Response getDevices(@PathParam("groupId") int groupId, @QueryParam("index") int index,
                                @QueryParam("limit") int limit) {
         try {
-            PaginationResult paginationResult = this.getServiceProvider(GroupManagementServiceProvider.class)
-                    .getDevices(groupId, index, limit);
+            PaginationRequest request = new PaginationRequest(index, limit);
+            PaginationResult paginationResult = this.getServiceProvider(GroupManagementServiceProvider.class).getDevices(groupId, request);
             return Response.status(Response.Status.OK).entity(paginationResult).build();
         } catch (GroupManagementException e) {
             log.error(e.getErrorMessage(), e);

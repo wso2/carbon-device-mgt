@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -44,7 +44,7 @@ public class StatsManagerService extends AbstractManagerService {
 
     @Context  //injected response proxy supporting multiple thread
     private HttpServletResponse response;
-
+    //TODO this needs to be removed.
     @Path("/stats/devices/{deviceType}/{deviceIdentifier}")
     @GET
     @Produces("application/json")
@@ -66,7 +66,7 @@ public class StatsManagerService extends AbstractManagerService {
         String query = "owner:" + user + " AND deviceId:" + deviceIdentifier + " AND deviceType:" + deviceType
                 + " AND time : [" + fromDate + " TO " + toDate + "]";
         try {
-            List<Record> records = deviceAnalyticsService.getAllSensorEventsForDevice(table, query);
+            List<Record> records = deviceAnalyticsService.getAllEventsForDevice(table, query);
 
             Collections.sort(records, new Comparator<Record>() {
 

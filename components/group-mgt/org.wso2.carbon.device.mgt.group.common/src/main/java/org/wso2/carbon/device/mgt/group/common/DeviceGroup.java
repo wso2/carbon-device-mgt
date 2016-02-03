@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -111,15 +111,15 @@ public class DeviceGroup implements Serializable {
     }
 
     protected DeviceGroup getGroup() {
-        DeviceGroup g = new DeviceGroup();
-        g.setId(getId());
-        g.setDescription(getDescription());
-        g.setName(getName());
-        g.setDateOfCreation(getDateOfCreation());
-        g.setDateOfLastUpdate(getDateOfLastUpdate());
-        g.setOwner(getOwner());
-        g.setUsers(getUsers());
-        g.setRoles(getRoles());
-        return g;
+        DeviceGroup deviceGroup = new DeviceGroup();
+        deviceGroup.setId(getId());
+        deviceGroup.setDescription(getDescription());
+        deviceGroup.setName(getName());
+        deviceGroup.setDateOfCreation(getDateOfCreation());
+        deviceGroup.setDateOfLastUpdate(getDateOfLastUpdate());
+        deviceGroup.setOwner(getOwner());
+        deviceGroup.setUsers(getUsers());
+        deviceGroup.setRoles(getRoles());
+        return deviceGroup;
     }
 }

@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -23,17 +23,17 @@ import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationException;
-import org.wso2.carbon.dynamic.client.registration.DynamicClientRegistrationService;
 import org.wso2.carbon.dynamic.client.registration.OAuthApplicationInfo;
 import org.wso2.carbon.dynamic.client.registration.profile.RegistrationProfile;
-import org.wso2.carbon.dynamic.client.web.app.registration.dto.OAuthAppDetails;
 import org.wso2.carbon.dynamic.client.web.app.registration.dto.JaggeryOAuthConfigurationSettings;
-import org.wso2.carbon.dynamic.client.web.app.registration.internal.DynamicClientWebAppRegistrationDataHolder;
+import org.wso2.carbon.dynamic.client.web.app.registration.dto.OAuthAppDetails;
 import org.wso2.carbon.dynamic.client.web.app.registration.util.DynamicClientWebAppRegistrationConstants;
 import org.wso2.carbon.dynamic.client.web.app.registration.util.DynamicClientWebAppRegistrationUtil;
 
 import javax.servlet.ServletContext;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class contains the logic to handle the OAuth application creation process.
@@ -52,8 +52,7 @@ public class DynamicClientWebAppRegistrationManager {
         if (dynamicClientWebAppRegistrationManager == null) {
             synchronized (DynamicClientWebAppRegistrationManager.class) {
                 if (dynamicClientWebAppRegistrationManager == null) {
-                    dynamicClientWebAppRegistrationManager =
-                            new DynamicClientWebAppRegistrationManager();
+                    dynamicClientWebAppRegistrationManager = new DynamicClientWebAppRegistrationManager();
                 }
             }
         }
@@ -65,11 +64,9 @@ public class DynamicClientWebAppRegistrationManager {
             log.debug("Registering OAuth application for web app : " + registrationProfile.getClientName());
         }
         if (DynamicClientWebAppRegistrationUtil.validateRegistrationProfile(registrationProfile)) {
-            DynamicClientRegistrationService dynamicClientRegistrationService =
-                    DynamicClientWebAppRegistrationDataHolder.getInstance().getDynamicClientRegistrationService();
             try {
                 OAuthApplicationInfo oAuthApplicationInfo =
-                        dynamicClientRegistrationService.registerOAuthApplication(registrationProfile);
+                        DynamicClientWebAppRegistrationUtil.registerOAuthApplication(registrationProfile);
                 OAuthAppDetails oAuthAppDetails = new OAuthAppDetails();
                 oAuthAppDetails.setWebAppName(registrationProfile.getClientName());
                 oAuthAppDetails.setClientName(oAuthApplicationInfo.getClientName());
@@ -79,14 +76,14 @@ public class DynamicClientWebAppRegistrationManager {
                 if (DynamicClientWebAppRegistrationUtil.putOAuthApplicationData(oAuthAppDetails)) {
                     return oAuthAppDetails;
                 } else {
-                    dynamicClientRegistrationService.unregisterOAuthApplication(registrationProfile.getOwner(),
-                                                        oAuthApplicationInfo.getClientName(),
-                                                        oAuthApplicationInfo.getClientId());
+                    DynamicClientWebAppRegistrationUtil.unregisterOAuthApplication(registrationProfile.getOwner(),
+                            oAuthApplicationInfo.getClientName(),
+                            oAuthApplicationInfo.getClientId());
                     log.warn("Error occurred while persisting the OAuth application data in registry.");
                 }
             } catch (DynamicClientRegistrationException e) {
                 log.error("Error occurred while registering the OAuth application : " +
-                          registrationProfile.getClientName(), e);
+                        registrationProfile.getClientName(), e);
             }
         }
         return null;
@@ -97,7 +94,7 @@ public class DynamicClientWebAppRegistrationManager {
             return DynamicClientWebAppRegistrationUtil.getOAuthApplicationData(clientName);
         } catch (DynamicClientRegistrationException e) {
             log.error("Error occurred while fetching the OAuth application data for web app : " +
-                      clientName, e);
+                    clientName, e);
         }
         return null;
     }
@@ -105,7 +102,7 @@ public class DynamicClientWebAppRegistrationManager {
     public boolean isRegisteredOAuthApplication(String clientName) {
         OAuthAppDetails oAuthAppDetails = this.getOAuthApplicationData(clientName);
         if (oAuthAppDetails != null && (oAuthAppDetails.getClientKey() != null && oAuthAppDetails.getClientSecret() !=
-                                                                                  null)) {
+                null)) {
             return true;
         }
         return false;
@@ -113,7 +110,7 @@ public class DynamicClientWebAppRegistrationManager {
 
     public void saveServletContextToCache(StandardContext context) {
         DynamicClientWebAppRegistrationManager.webAppContexts.put(context.getBaseName(),
-                                                                  context.getServletContext());
+                context.getServletContext());
     }
 
     public void initiateDynamicClientRegistration() {
@@ -132,7 +129,7 @@ public class DynamicClientWebAppRegistrationManager {
             oAuthAppDetails = new OAuthAppDetails();
             webAppName = (String) enumeration.nextElement();
             serviceProviderName = DynamicClientWebAppRegistrationUtil.replaceInvalidChars(DynamicClientWebAppRegistrationUtil.getUserName())
-                                  + "_" + webAppName;
+                    + "_" + webAppName;
             servletContext = DynamicClientWebAppRegistrationManager.webAppContexts.get(webAppName);
             requiredDynamicClientRegistration = servletContext.getInitParameter(
                     DynamicClientWebAppRegistrationConstants.DYNAMIC_CLIENT_REQUIRED_FLAG);
@@ -143,7 +140,7 @@ public class DynamicClientWebAppRegistrationManager {
                 if (!dynamicClientWebAppRegistrationManager.isRegisteredOAuthApplication(serviceProviderName)) {
                     //Construct the RegistrationProfile
                     registrationProfile = DynamicClientWebAppRegistrationUtil.
-                                                        constructRegistrationProfile(servletContext, webAppName);
+                            constructRegistrationProfile(servletContext, webAppName);
                     //Register the OAuth application
                     oAuthAppDetails =
                             dynamicClientWebAppRegistrationManager.registerOAuthApplication(registrationProfile);
@@ -158,21 +155,24 @@ public class DynamicClientWebAppRegistrationManager {
                 if (jaggeryOAuthConfigurationSettings.isRequireDynamicClientRegistration()) {
                     if (!dynamicClientWebAppRegistrationManager.isRegisteredOAuthApplication(serviceProviderName)) {
                         registrationProfile = DynamicClientWebAppRegistrationUtil.
-                                                      constructRegistrationProfile(jaggeryOAuthConfigurationSettings,
-                                                                                   webAppName);
+                                constructRegistrationProfile(jaggeryOAuthConfigurationSettings,
+                                        webAppName);
                         oAuthAppDetails = dynamicClientWebAppRegistrationManager.
-                                                                          registerOAuthApplication(registrationProfile);
+                                registerOAuthApplication(registrationProfile);
                     } else {
                         oAuthAppDetails = dynamicClientWebAppRegistrationManager.getOAuthApplicationData(webAppName);
                     }
                 }
             }
             //Add client credentials to the web-context
-            if ((oAuthAppDetails != null && oAuthAppDetails.getClientKey() != null) && !oAuthAppDetails.getClientKey().isEmpty()) {
+            if ((oAuthAppDetails != null && oAuthAppDetails.getClientKey() != null) &&
+                    !oAuthAppDetails.getClientKey().isEmpty()) {
                 DynamicClientWebAppRegistrationUtil.addClientCredentialsToWebContext(oAuthAppDetails,
-                                                          servletContext);
-                log.info("Added OAuth application credentials to webapp context of webapp : " +
-                         webAppName);
+                        servletContext);
+                if (log.isDebugEnabled()) {
+                    log.debug("Added OAuth application credentials to webapp context of webapp : " +
+                            webAppName);
+                }
             }
         }
     }

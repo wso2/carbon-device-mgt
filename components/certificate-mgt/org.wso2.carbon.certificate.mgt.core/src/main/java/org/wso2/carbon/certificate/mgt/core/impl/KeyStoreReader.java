@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,16 +11,20 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.certificate.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
+import org.wso2.carbon.certificate.mgt.core.util.Serializer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,6 +38,7 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.sql.SQLException;
 
 public class KeyStoreReader {
 
@@ -206,20 +211,26 @@ public class KeyStoreReader {
 
     public Certificate getCertificateByAlias(String alias) throws KeystoreException {
 
-        KeyStore keystore = loadCertificateKeyStore();
-        Certificate raCertificate;
+        Certificate raCertificate = null;
         try {
-            raCertificate = keystore.getCertificate(alias);
-        } catch (KeyStoreException e) {
-            String errorMsg = "KeyStore issue occurred when retrieving RA private key";
+            CertificateManagementDAOFactory.openConnection();
+            byte[] certificateBytes = CertificateManagementDAOFactory.getCertificateDAO().retrieveCertificate(alias);
+            raCertificate = (Certificate) Serializer.deserialize(certificateBytes);
+        } catch (CertificateManagementDAOException e) {
+            String errorMsg = "Error when retrieving certificate the the database for the alias " + alias;
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
+        } catch (ClassNotFoundException | IOException e) {
+            String errorMsg = "Error when deserializing saved certificate.";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } catch (SQLException e) {
+            String errorMsg = "Error when making a connection to the database.";
+            log.error(errorMsg, e);
+            throw new KeystoreException(errorMsg, e);
+        } finally {
+            CertificateManagementDAOFactory.closeConnection();
         }
-
-        if (raCertificate == null) {
-            throw new KeystoreException("RA certificate not found in KeyStore");
-        }
-
         return raCertificate;
     }
 

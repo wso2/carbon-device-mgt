@@ -1,24 +1,27 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.util.List;
 
@@ -41,11 +44,22 @@ public interface OperationManager {
     /**
      * Method to retrieve the list of all operations to a device.
      *
-     * @param deviceId DeviceIdentifier of the device
+     * @param deviceId
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
     List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+
+    /**
+     * Method to retrieve all the operations applied to a device with pagination support.
+     *
+     * @param deviceId       DeviceIdentifier of the device
+     * @param request        PaginationRequest object holding the data for pagination
+     * @return PaginationResult - Result including the required parameters necessary to do pagination.
+     * @throws OperationManagementException If some unusual behaviour is observed while fetching the
+     *                                      operation list.
+     */
+    PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of available operations to a device.

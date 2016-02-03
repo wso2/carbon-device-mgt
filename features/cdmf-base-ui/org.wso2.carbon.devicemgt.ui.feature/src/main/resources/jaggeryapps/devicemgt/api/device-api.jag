@@ -41,11 +41,11 @@ if (!user) {
     response.sendRedirect("/devicemgt/login?#login-required");
     exit();
 } else {
-    if (uriMatcher.match("/{context}/api/devices/{deviceTypeName}/thumbnail/")){
+    if (uriMatcher.match("/{context}/api/devices/{deviceTypeName}/thumbnail/")) {
         deviceTypeId = null;
-        if(deviceTypeId){
+        if (deviceTypeId) {
             result = deviceTypeId;
-        }else{
+        } else {
             log.error("Device type `" + deviceTypeName + "` not found!");
             result = 400;
         }
@@ -87,13 +87,13 @@ if (!user) {
             result = 400;
         } else {
             /**
-                URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
-                        {serverURL} - devicemgt/app/conf/config.json
-                        {deviceType} - from the request
-                        {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
-                        {username} - from request
-                        {deviceName} - from request
-            **/
+             URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
+             {serverURL} - devicemgt/app/conf/config.json
+             {deviceType} - from the request
+             {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
+             {username} - from request
+             {deviceName} - from request
+             **/
 
             deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" + "/manager";
             sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";

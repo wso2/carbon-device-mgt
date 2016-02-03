@@ -85,9 +85,9 @@ function getDeviceData(deviceType, deviceId) {
 
     var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
 
-    if (analyticStreams){
+    if (analyticStreams) {
         var streamTableName;
-        for (var stream in analyticStreams){
+        for (var stream in analyticStreams) {
             streamTableName = analyticStreams[stream]["table"];
             if (stats[streamTableName] == null) {
                 stats[streamTableName] = [];
@@ -95,7 +95,7 @@ function getDeviceData(deviceType, deviceId) {
             stats[streamTableName].push({
                 "device": device.name,
                 "stats": getSensorData(streamTableName, analyticStreams[stream]["ui_unit"]["data"][1]["column"]["name"], uname, device.type, device.deviceIdentifier, from, to),
-                "stream":analyticStreams[stream]
+                "stream": analyticStreams[stream]
             });
         }
     }
@@ -109,10 +109,10 @@ function getSensorData(table, column, user, type, deviceIdentifier, from, to) {
         ///stats/device/type/{type}/identifier/{identifier}
         var endPoint = deviceCloudStatsService + "/stats/device/type/" + type + "/identifier/" + deviceIdentifier;
         var query = "?table=" + encodeURIComponent(table)
-                    + "&column=" + encodeURIComponent(column)
-                    + "&username=" + encodeURIComponent(user)
-                    + "&from=" + from
-                    + "&to=" + to;
+            + "&column=" + encodeURIComponent(column)
+            + "&username=" + encodeURIComponent(user)
+            + "&from=" + from
+            + "&to=" + to;
         endPoint = endPoint + query;
         fetchedData = get(endPoint, {}, "json").data;
         return fetchedData;

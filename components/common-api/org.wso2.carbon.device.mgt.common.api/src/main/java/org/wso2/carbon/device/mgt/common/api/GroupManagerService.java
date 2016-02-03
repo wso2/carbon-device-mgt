@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -24,6 +24,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
@@ -57,13 +58,15 @@ public class GroupManagerService {
     private static final String DEFAULT_MANAGE_POLICIES = "mange-policies";
     private static final String DEFAULT_VIEW_EVENTS = "view-events";
     private static final String[] DEFAULT_ADMIN_PERMISSIONS = {"/permission/device-mgt/admin/groups",
-            "/permission/device-mgt/user/groups"};
+                                                               "/permission/device-mgt/user/groups"};
     private static final String[] DEFAULT_OPERATOR_PERMISSIONS = {"/permission/device-mgt/user/groups/device_operation"};
     private static final String[] DEFAULT_STATS_MONITOR_PERMISSIONS = {"/permission/device-mgt/user/groups/device_monitor"};
     private static final String[] DEFAULT_MANAGE_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/add"};
     private static final String[] DEFAULT_VIEW_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/view"};
     private static final String[] DEFAULT_VIEW_EVENTS_PERMISSIONS = {"/permission/device-mgt/user/groups/device_events"};
+
     private static Log log = LogFactory.getLog(GroupManagerService.class);
+
     @Context  //injected response proxy supporting multiple threads
     private HttpServletResponse response;
     private PrivilegedCarbonContext ctx;
@@ -91,8 +94,9 @@ public class GroupManagerService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean createGroup(@FormParam("name") String name, @FormParam("username") String username,
-            @FormParam("description") String description) {
+    public boolean createGroup(@FormParam("name") String name,
+                               @FormParam("username") String username,
+                               @FormParam("description") String description) {
         DeviceGroup group = new DeviceGroup();
         group.setName(name);
         group.setDescription(description);
@@ -104,16 +108,16 @@ public class GroupManagerService {
             GroupManagementServiceProvider groupManagementService = this.getServiceProvider();
             int groupId = groupManagementService.createGroup(group, DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
             response.setStatus(Response.Status.OK.getStatusCode());
-            isAdded = (groupId > 0) && groupManagementService.addSharing(username, groupId, DEFAULT_OPERATOR_ROLE,
-                    DEFAULT_OPERATOR_PERMISSIONS);
-            groupManagementService.addSharing(username, groupId, DEFAULT_STATS_MONITOR_ROLE,
-                                              DEFAULT_STATS_MONITOR_PERMISSIONS);
-            groupManagementService.addSharing(username, groupId, DEFAULT_VIEW_POLICIES,
-                                              DEFAULT_VIEW_POLICIES_PERMISSIONS);
-            groupManagementService.addSharing(username, groupId, DEFAULT_MANAGE_POLICIES,
-                                              DEFAULT_MANAGE_POLICIES_PERMISSIONS);
-            groupManagementService.addSharing(username, groupId, DEFAULT_VIEW_EVENTS,
-                                              DEFAULT_VIEW_EVENTS_PERMISSIONS);
+            isAdded = (groupId > 0) && groupManagementService.addGroupSharingRole(username, groupId, DEFAULT_OPERATOR_ROLE,
+                                                                                  DEFAULT_OPERATOR_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(username, groupId, DEFAULT_STATS_MONITOR_ROLE,
+                                                       DEFAULT_STATS_MONITOR_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(username, groupId, DEFAULT_VIEW_POLICIES,
+                                                       DEFAULT_VIEW_POLICIES_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(username, groupId, DEFAULT_MANAGE_POLICIES,
+                                                       DEFAULT_MANAGE_POLICIES_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(username, groupId, DEFAULT_VIEW_EVENTS,
+                                                       DEFAULT_VIEW_EVENTS_PERMISSIONS);
         } catch (GroupManagementException e) {
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             log.error(e.getErrorMessage(), e);
@@ -128,8 +132,9 @@ public class GroupManagerService {
     @Consumes("application/json")
     @Produces("application/json")
     public boolean updateGroup(@PathParam("groupId") int groupId, @FormParam("name") String name,
-            @FormParam("username") String username, @FormParam("description") String description) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/modify")){
+                               @FormParam("username") String username,
+                               @FormParam("description") String description) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/modify")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
@@ -156,8 +161,9 @@ public class GroupManagerService {
     @DELETE
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean deleteGroup(@PathParam("groupId") int groupId, @QueryParam("username") String username) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/delete")){
+    public boolean deleteGroup(@PathParam("groupId") int groupId,
+                               @QueryParam("username") String username) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/delete")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
@@ -178,7 +184,8 @@ public class GroupManagerService {
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public DeviceGroup getGroup(@PathParam("groupId") int groupId, @FormParam("username") String username) {
+    public DeviceGroup getGroup(@PathParam("groupId") int groupId,
+                                @FormParam("username") String username) {
         DeviceGroup deviceGroup = null;
         try {
             response.setStatus(Response.Status.OK.getStatusCode());
@@ -196,7 +203,8 @@ public class GroupManagerService {
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public DeviceGroup[] findGroups(@PathParam("groupName") String groupName, @FormParam("username") String username) {
+    public DeviceGroup[] findGroups(@PathParam("groupName") String groupName,
+                                    @FormParam("username") String username) {
         DeviceGroup[] deviceGroups = null;
         try {
             List<DeviceGroup> groups = this.getServiceProvider().findGroups(groupName, username);
@@ -217,14 +225,14 @@ public class GroupManagerService {
     @Consumes("application/json")
     @Produces("application/json")
     public DeviceGroup[] getGroups(@PathParam("username") String username,
-            @QueryParam("permission") String permission) {
+                                   @QueryParam("permission") String permission) {
         DeviceGroup[] deviceGroups = null;
         try {
             GroupManagementServiceProvider groupManagementService = this.getServiceProvider();
             List<DeviceGroup> groups;
-            if(permission != null){
+            if (permission != null) {
                 groups = groupManagementService.getGroups(username, permission);
-            }else{
+            } else {
                 groups = groupManagementService.getGroups(username);
             }
             deviceGroups = new DeviceGroup[groups.size()];
@@ -261,9 +269,11 @@ public class GroupManagerService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean shareGroup(@FormParam("username") String username, @FormParam("shareUser") String shareUser,
-            @PathParam("groupId") int groupId, @FormParam("role") String sharingRole) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")){
+    public boolean shareGroup(@FormParam("username") String username,
+                              @FormParam("shareUser") String shareUser,
+                              @PathParam("groupId") int groupId,
+                              @FormParam("role") String sharingRole) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
@@ -284,16 +294,18 @@ public class GroupManagerService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean unShareGroup(@FormParam("username") String username, @FormParam("unShareUser") String unShareUser,
-            @PathParam("groupId") int groupId, @FormParam("role") String sharingRole) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")){
+    public boolean unShareGroup(@FormParam("username") String username,
+                                @FormParam("unShareUser") String unShareUser,
+                                @PathParam("groupId") int groupId,
+                                @FormParam("role") String sharingRole) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
         boolean isUnShared = false;
         try {
             response.setStatus(Response.Status.OK.getStatusCode());
-            isUnShared = this.getServiceProvider().unShareGroup(unShareUser, groupId, sharingRole);
+            isUnShared = this.getServiceProvider().unshareGroup(unShareUser, groupId, sharingRole);
         } catch (GroupManagementException e) {
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             log.error(e.getErrorMessage(), e);
@@ -307,16 +319,18 @@ public class GroupManagerService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean addSharing(@FormParam("username") String username, @PathParam("groupId") int groupId,
-            @FormParam("role") String roleName, @FormParam("permissions") String[] permissions) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")){
+    public boolean addSharing(@FormParam("username") String username,
+                              @PathParam("groupId") int groupId,
+                              @FormParam("role") String roleName,
+                              @FormParam("permissions") String[] permissions) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
         boolean isAdded = false;
         try {
             response.setStatus(Response.Status.OK.getStatusCode());
-            isAdded = this.getServiceProvider().addSharing(username, groupId, roleName, permissions);
+            isAdded = this.getServiceProvider().addGroupSharingRole(username, groupId, roleName, permissions);
         } catch (GroupManagementException e) {
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             log.error(e.getErrorMessage(), e);
@@ -330,15 +344,16 @@ public class GroupManagerService {
     @DELETE
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean removeSharing(@QueryParam("username") String username, @PathParam("groupId") int groupId,
-            @PathParam("role") String roleName) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")){
+    public boolean removeSharing(@QueryParam("username") String username,
+                                 @PathParam("groupId") int groupId,
+                                 @PathParam("role") String roleName) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/share")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
         }
         boolean isRemoved = false;
         try {
             response.setStatus(Response.Status.OK.getStatusCode());
-            isRemoved = this.getServiceProvider().removeSharing(groupId, roleName);
+            isRemoved = this.getServiceProvider().removeGroupSharingRole(groupId, roleName);
         } catch (GroupManagementException e) {
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             log.error(e.getErrorMessage(), e);
@@ -452,7 +467,8 @@ public class GroupManagerService {
                                        @QueryParam("index") int index,
                                        @QueryParam("limit") int limit) {
         try {
-            return this.getServiceProvider().getDevices(groupId, index, limit);
+            PaginationRequest request = new PaginationRequest(index, limit);
+            return this.getServiceProvider().getDevices(groupId, request);
         } catch (GroupManagementException e) {
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             log.error(e.getErrorMessage(), e);
@@ -466,9 +482,11 @@ public class GroupManagerService {
     @PUT
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean addDevice(@PathParam("groupId") int groupId, @FormParam("deviceId") String deviceId,
-            @FormParam("deviceType") String deviceType, @FormParam("username") String username) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/add_devices")){
+    public boolean addDevice(@PathParam("groupId") int groupId,
+                             @FormParam("deviceId") String deviceId,
+                             @FormParam("deviceType") String deviceType,
+                             @FormParam("username") String username) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/add_devices")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
@@ -490,9 +508,11 @@ public class GroupManagerService {
     @DELETE
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean removeDevice(@PathParam("groupId") int groupId, @FormParam("deviceId") String deviceId,
-            @FormParam("deviceType") String deviceType, @FormParam("username") String username) {
-        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/remove_devices")){
+    public boolean removeDevice(@PathParam("groupId") int groupId,
+                                @FormParam("deviceId") String deviceId,
+                                @FormParam("deviceType") String deviceType,
+                                @FormParam("username") String username) {
+        if (!isAuthorized(username, groupId, "/permission/device-mgt/admin/groups/remove_devices")) {
             response.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             return false;
         }
@@ -514,7 +534,8 @@ public class GroupManagerService {
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public String[] getPermissions(@PathParam("username") String username, @PathParam("groupId") int groupId) {
+    public String[] getPermissions(@PathParam("username") String username,
+                                   @PathParam("groupId") int groupId) {
         String[] permissions = null;
         try {
             response.setStatus(Response.Status.OK.getStatusCode());
@@ -532,8 +553,9 @@ public class GroupManagerService {
     @GET
     @Consumes("application/json")
     @Produces("application/json")
-    public boolean isAuthorized(@PathParam("username") String username, @PathParam("groupId") int groupId,
-            @QueryParam("permission") String permission){
+    public boolean isAuthorized(@PathParam("username") String username,
+                                @PathParam("groupId") int groupId,
+                                @QueryParam("permission") String permission) {
         boolean isAuthorized = false;
         try {
             response.setStatus(Response.Status.OK.getStatusCode());

@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -174,18 +174,18 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     @Override
     public void markDeviceAsNoneCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
 
-        try {
-            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
-            Device device = service.getDevice(deviceIdentifier);
-            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
-                    EnrolmentInfo.Status.BLOCKED);
-
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while marking device as none compliance " + deviceIdentifier.getId() + " - " +
-                    deviceIdentifier.getType();
-            log.error(msg, e);
-            throw new PolicyComplianceException(msg, e);
-        }
+//        try {
+//            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+//            Device device = service.getDevice(deviceIdentifier);
+//            service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+//                    EnrolmentInfo.Status.BLOCKED);
+//
+//        } catch (DeviceManagementException e) {
+//            String msg = "Error occurred while marking device as none compliance " + deviceIdentifier.getId() + " - " +
+//                    deviceIdentifier.getType();
+//            log.error(msg, e);
+//            throw new PolicyComplianceException(msg, e);
+//        }
     }
 
     @Override

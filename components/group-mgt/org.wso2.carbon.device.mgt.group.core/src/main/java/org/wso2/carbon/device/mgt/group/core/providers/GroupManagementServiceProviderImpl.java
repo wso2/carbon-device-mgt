@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -24,6 +24,7 @@ import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
@@ -33,7 +34,7 @@ import org.wso2.carbon.device.mgt.group.common.GroupUser;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
-import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBroker;
+import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBuilder;
 import org.wso2.carbon.device.mgt.group.core.internal.GroupManagementDataHolder;
 import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserRealm;
@@ -48,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class represents implementation of Group Management Services
+ * This class represents implementation of Group Management Services.
  */
 public class GroupManagementServiceProviderImpl implements GroupManagementServiceProvider {
 
@@ -57,7 +58,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     private GroupDAO groupDAO;
 
     /**
-     * Set groupDAO from GroupManagementDAOFactory when class instantiate
+     * Set groupDAO from GroupManagementDAOFactory when class instantiate.
      */
     public GroupManagementServiceProviderImpl() {
         this.groupDAO = GroupManagementDAOFactory.getGroupDAO();
@@ -70,9 +71,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     public int createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
             throws GroupManagementException {
         if (deviceGroup == null) {
-            throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
+            throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
-        DeviceGroupBroker groupBroker = new DeviceGroupBroker(deviceGroup);
+        DeviceGroupBuilder groupBroker = new DeviceGroupBuilder(deviceGroup);
         int tenantId = DeviceManagerUtil.getTenantId();
         int groupId = -1;
         try {
@@ -82,9 +83,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while adding deviceGroup " +
-                                                       "'" + deviceGroup.getName() + "' to database", e);
+                                               "'" + deviceGroup.getName() + "' to database.", e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction", e);
+            throw new GroupManagementException("Error occurred while initiating transaction.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -92,7 +93,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             return -1;
         }
         groupBroker.setId(groupId);
-        addSharing(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
+        addGroupSharingRole(groupBroker.getOwner(), groupBroker.getId(), defaultRole, defaultPermissions);
         if (log.isDebugEnabled()) {
             log.debug("DeviceGroup added: " + groupBroker.getName());
         }
@@ -105,7 +106,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     @Override
     public void updateGroup(DeviceGroup deviceGroup) throws GroupManagementException {
         if (deviceGroup == null) {
-            throw new GroupManagementException("DeviceGroup cannot be null", new NullPointerException());
+            throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
         try {
             GroupManagementDAOFactory.beginTransaction();
@@ -114,9 +115,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while modifying deviceGroup " +
-                                                       "'" + deviceGroup.getName() + "'", e);
+                                               "'" + deviceGroup.getName() + "'.", e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction", e);
+            throw new GroupManagementException("Error occurred while initiating transaction.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -136,7 +137,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         for (String role : groupRoles) {
             if (role != null) {
                 roleName = role.replace("Internal/group-" + groupId + "-", "");
-                removeSharing(groupId, roleName);
+                removeGroupSharingRole(groupId, roleName);
             }
         }
         List<Device> groupDevices = getDevices(groupId);
@@ -146,22 +147,22 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                 GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
             }
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while removing device from group", e);
+            throw new GroupManagementException("Error occurred while removing device from group.", e);
         }
         try {
             GroupManagementDAOFactory.beginTransaction();
             this.groupDAO.deleteGroup(groupId);
             GroupManagementDAOFactory.commitTransaction();
             if (log.isDebugEnabled()) {
-                log.debug("DeviceGroup " + deviceGroup.getName() + " removed");
+                log.debug("DeviceGroup " + deviceGroup.getName() + " removed.");
             }
             return true;
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while removing group " +
-                                                       "'" + groupId + "' data", e);
+                                               "'" + groupId + "' data.", e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction", e);
+            throw new GroupManagementException("Error occurred while initiating transaction.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -172,14 +173,14 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
      */
     @Override
     public DeviceGroup getGroup(int groupId) throws GroupManagementException {
-        DeviceGroupBroker groupBroker;
+        DeviceGroupBuilder groupBroker;
         try {
             GroupManagementDAOFactory.openConnection();
             groupBroker = this.groupDAO.getGroup(groupId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupId, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source", e);
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -198,7 +199,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     @Override
     public List<DeviceGroup> findGroups(String groupName, String owner)
             throws GroupManagementException {
-        List<DeviceGroupBroker> deviceGroups = new ArrayList<>();
+        List<DeviceGroupBuilder> deviceGroups = new ArrayList<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             GroupManagementDAOFactory.openConnection();
@@ -206,12 +207,12 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while finding group " + groupName, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source", e);
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
         List<DeviceGroup> groupsWithData = new ArrayList<>();
-        for (DeviceGroupBroker groupBroker : deviceGroups) {
+        for (DeviceGroupBuilder groupBroker : deviceGroups) {
             groupBroker.setUsers(this.getUsers(groupBroker.getId()));
             groupBroker.setRoles(this.getRoles(groupBroker.getId()));
             groupsWithData.add(groupBroker.getGroup());
@@ -242,7 +243,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             }
             return new ArrayList<>(groups.values());
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager", e);
+            throw new GroupManagementException("Error occurred while getting user store manager.", e);
         }
     }
 
@@ -260,31 +261,20 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     @Override
     public boolean shareGroup(String username, int groupId, String sharingRole)
             throws GroupManagementException {
-        UserStoreManager userStoreManager;
-        String[] roles = new String[1];
-        try {
-            DeviceGroup deviceGroup = getGroup(groupId);
-            if (deviceGroup == null) {
-                return false;
-            }
-            int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-            roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
-            userStoreManager.updateRoleListOfUser(username, null, roles);
-            return true;
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new GroupManagementException(errorMsg, userStoreEx);
-        }
+        return modifyGroupShare(username, groupId, sharingRole, true);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean unShareGroup(String username, int groupId, String sharingRole)
+    public boolean unshareGroup(String username, int groupId, String sharingRole)
+            throws GroupManagementException {
+        return modifyGroupShare(username, groupId, sharingRole, false);
+    }
+
+    private boolean modifyGroupShare(String username, int groupId, String sharingRole,
+                                     boolean isAddNew)
             throws GroupManagementException {
         UserStoreManager userStoreManager;
         String[] roles = new String[1];
@@ -297,12 +287,14 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             userStoreManager = GroupManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
-            userStoreManager.updateRoleListOfUser(username, roles, null);
+            if (isAddNew) {
+                userStoreManager.updateRoleListOfUser(username, null, roles);
+            } else {
+                userStoreManager.updateRoleListOfUser(username, roles, null);
+            }
             return true;
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new GroupManagementException(errorMsg, userStoreEx);
+        } catch (UserStoreException e) {
+            throw new GroupManagementException("User store error in adding user " + username + " to group id:" + groupId, e);
         }
     }
 
@@ -310,7 +302,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
      * {@inheritDoc}
      */
     @Override
-    public boolean addSharing(String username, int groupId, String roleName, String[] permissions)
+    public boolean addGroupSharingRole(String username, int groupId, String roleName,
+                                       String[] permissions)
             throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
@@ -342,7 +335,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
      * {@inheritDoc}
      */
     @Override
-    public boolean removeSharing(int groupId, String roleName) throws GroupManagementException {
+    public boolean removeGroupSharingRole(int groupId, String roleName)
+            throws GroupManagementException {
         UserStoreManager userStoreManager;
         String role;
         try {
@@ -410,7 +404,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             }
             return groupRoleList;
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager", e);
+            throw new GroupManagementException("Error occurred while getting user store manager.", e);
         }
     }
 
@@ -458,7 +452,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         try {
             return GroupManagementDataHolder.getInstance().getDeviceManagementService().getDevices(groupId);
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while getting devices in group", e);
+            throw new GroupManagementException("Error occurred while getting devices in group.", e);
         }
     }
 
@@ -466,12 +460,13 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
      * {@inheritDoc}
      */
     @Override
-    public PaginationResult getDevices(int groupId, int index, int limit) throws GroupManagementException {
+    public PaginationResult getDevices(int groupId, PaginationRequest request)
+            throws GroupManagementException {
         try {
             return GroupManagementDataHolder.getInstance().getDeviceManagementService()
-                    .getDevices(groupId, index, limit);
+                    .getDevices(groupId, request);
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while getting devices in group", e);
+            throw new GroupManagementException("Error occurred while getting devices in group.", e);
         }
     }
 
@@ -483,7 +478,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         try {
             return GroupManagementDataHolder.getInstance().getDeviceManagementService().getDeviceCount(groupId);
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while getting devices in group", e);
+            throw new GroupManagementException("Error occurred while getting devices in group.", e);
         }
     }
 
@@ -504,7 +499,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             device.setGroupId(deviceGroup.getId());
             GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while adding device in to deviceGroup", e);
+            throw new GroupManagementException("Error occurred while adding device in to deviceGroup.", e);
         }
         return true;
     }
@@ -526,7 +521,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             device.setGroupId(0);
             GroupManagementDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while removing device from deviceGroup", e);
+            throw new GroupManagementException("Error occurred while removing device from deviceGroup.", e);
         }
         return true;
     }
@@ -557,7 +552,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             String[] permissions = lstPermissions.toArray(new String[lstPermissions.size()]);
             return UserCoreUtil.optimizePermissions(permissions);
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user realm", e);
+            throw new GroupManagementException("Error occurred while getting user realm.", e);
         }
     }
 
@@ -585,7 +580,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             }
             return new ArrayList<>(groups.values());
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user realm", e);
+            throw new GroupManagementException("Error occurred while getting user realm.", e);
         }
     }
 
@@ -609,7 +604,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             }
             return false;
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user realm", e);
+            throw new GroupManagementException("Error occurred while getting user realm.", e);
         }
     }
 }

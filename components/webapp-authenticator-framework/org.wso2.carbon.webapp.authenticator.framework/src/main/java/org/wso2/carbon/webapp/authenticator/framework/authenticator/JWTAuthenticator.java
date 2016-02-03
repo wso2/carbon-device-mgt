@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -39,6 +39,7 @@ import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkData
 
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 /**
@@ -50,6 +51,11 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	public static final String SIGNED_JWT_AUTH_USERNAME = "Username";
 	private static final String JWT_AUTHENTICATOR = "JWT";
 	private static final String JWT_ASSERTION_HEADER = "X-JWT-Assertion";
+
+    @Override
+    public void init() {
+
+    }
 
     @Override
     public boolean canHandle(Request request) {
@@ -71,10 +77,6 @@ public class JWTAuthenticator implements WebappAuthenticator {
 		String context = tokenizer.nextToken();
 		if (context == null || "".equals(context)) {
             authenticationInfo.setStatus(Status.CONTINUE);
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("Authenticating using JWT header.");
 		}
 
 		//Get the filesystem keystore default primary certificate
@@ -141,4 +143,19 @@ public class JWTAuthenticator implements WebappAuthenticator {
 	public String getName() {
 		return JWTAuthenticator.JWT_AUTHENTICATOR;
 	}
+
+    @Override
+    public void setProperties(Properties properties) {
+
+    }
+
+    @Override
+    public Properties getProperties() {
+        return null;
+    }
+
+    @Override
+    public String getProperty(String name) {
+        return null;
+    }
 }

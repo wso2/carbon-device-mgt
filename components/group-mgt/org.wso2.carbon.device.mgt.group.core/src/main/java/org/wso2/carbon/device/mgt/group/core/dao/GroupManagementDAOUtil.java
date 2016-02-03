@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.group.core.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
-import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBroker;
+import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBuilder;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -81,8 +81,8 @@ public final class GroupManagementDAOUtil {
     }
 
 
-    public static DeviceGroupBroker loadGroup(ResultSet resultSet) throws SQLException {
-        DeviceGroupBroker group = new DeviceGroupBroker(new DeviceGroup());
+    public static DeviceGroupBuilder loadGroup(ResultSet resultSet) throws SQLException {
+        DeviceGroupBuilder group = new DeviceGroupBuilder(new DeviceGroup());
         group.setId(resultSet.getInt("ID"));
         group.setDescription(resultSet.getString("DESCRIPTION"));
         group.setName(resultSet.getString("GROUP_NAME"));

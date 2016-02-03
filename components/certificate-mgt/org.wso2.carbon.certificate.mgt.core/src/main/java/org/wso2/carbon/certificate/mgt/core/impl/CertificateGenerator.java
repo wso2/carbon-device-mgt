@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,10 +11,11 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.certificate.mgt.core.impl;
 
 import org.apache.commons.codec.binary.Base64;
@@ -25,9 +26,7 @@ import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
-import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.cert.CertIOException;
@@ -46,52 +45,28 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
-import org.jscep.message.CertRep;
-import org.jscep.message.MessageDecodingException;
-import org.jscep.message.MessageEncodingException;
-import org.jscep.message.PkcsPkiEnvelopeDecoder;
-import org.jscep.message.PkcsPkiEnvelopeEncoder;
-import org.jscep.message.PkiMessage;
-import org.jscep.message.PkiMessageDecoder;
-import org.jscep.message.PkiMessageEncoder;
+import org.jscep.message.*;
 import org.jscep.transaction.FailInfo;
 import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateDAO;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.dto.CAStatus;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
+import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
+import org.wso2.carbon.certificate.mgt.core.util.Serializer;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
+import java.io.*;
+import java.security.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -293,7 +268,7 @@ public class CertificateGenerator {
 
     public boolean verifySignature(String headerSignature) throws KeystoreException {
         Certificate certificate = extractCertificateFromSignature(headerSignature);
-        return (certificate != null);
+        return  (certificate != null);
     }
 
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
@@ -316,12 +291,12 @@ public class CertificateGenerator {
                 X509Certificate reqCert = (X509Certificate) certificateFactory.
                         generateCertificate(byteArrayInputStream);
 
-                if (reqCert != null && reqCert.getSerialNumber() != null) {
+                if(reqCert != null && reqCert.getSerialNumber() != null) {
                     Certificate lookUpCertificate = keyStoreReader.getCertificateByAlias(
                             reqCert.getSerialNumber().toString());
 
                     if (lookUpCertificate != null && (lookUpCertificate instanceof X509Certificate)) {
-                        return (X509Certificate) lookUpCertificate;
+                        return (X509Certificate)lookUpCertificate;
                     }
                 }
 
@@ -344,8 +319,8 @@ public class CertificateGenerator {
     }
 
     public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
-                                                      PKCS10CertificationRequest request,
-                                                      String issueSubject)
+                                                             PKCS10CertificationRequest request,
+                                                             String issueSubject)
             throws KeystoreException {
 
         CommonUtil commonUtil = new CommonUtil();
@@ -364,31 +339,12 @@ public class CertificateGenerator {
 //
 //            if (rdn == null || rdn.length == 0) {
 //                certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
-//            }request.getSubject().getRDNs()
+//            }
 //        }
 
-        RDN[] certUniqueIdRDN;
-        BigInteger certUniqueIdentifier;
-
-        // IMPORTANT: "Serial-Number" of the certificate used when creating it, is set as its "Alias" to save to keystore.
-        if (request.getSubject().getRDNs(BCStyle.UNIQUE_IDENTIFIER).length != 0) {
-            // if certificate attribute "UNIQUE_IDENTIFIER" exists use its hash as the "Serial-Number" for the certificate.
-            certUniqueIdRDN = request.getSubject().getRDNs(BCStyle.UNIQUE_IDENTIFIER);
-            certUniqueIdentifier = BigInteger.valueOf(certUniqueIdRDN[0].getFirst().getValue().toString().hashCode());
-
-        } else if (request.getSubject().getRDNs(BCStyle.SERIALNUMBER).length != 0) {
-            // else if certificate attribute "SERIAL_NUMBER" exists use its hash as the "Serial-Number" for the certificate.
-            certUniqueIdRDN = request.getSubject().getRDNs(BCStyle.SERIALNUMBER);
-            certUniqueIdentifier = BigInteger.valueOf(certUniqueIdRDN[0].getFirst().getValue().toString().hashCode());
-
-        } else {
-            // else get the BigInteger Value of the integer that is the current system-time in millis as the "Serial-Number".
-            certUniqueIdentifier = CommonUtil.generateSerialNumber();
-        }
-
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
-                new X500Name(issueSubject), certUniqueIdentifier, validityBeginDate, validityEndDate,
-                certSubject, request.getSubjectPublicKeyInfo());
+                new X500Name(issueSubject), CommonUtil.generateSerialNumber(),
+                validityBeginDate, validityEndDate, certSubject, request.getSubjectPublicKeyInfo());
 
         ContentSigner sigGen;
         X509Certificate issuedCert;
@@ -396,12 +352,12 @@ public class CertificateGenerator {
             certificateBuilder.addExtension(X509Extension.keyUsage, true, new KeyUsage(
                     KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
 
-            if (attributes != null) {
+            if(attributes != null) {
                 ASN1Encodable extractedValue = getChallengePassword(attributes);
 
-                if (extractedValue != null) {
+                if(extractedValue != null) {
                     certificateBuilder.addExtension(PKCSObjectIdentifiers.pkcs_9_at_challengePassword, true,
-                                                    extractedValue);
+                            extractedValue);
                 }
             }
 
@@ -433,7 +389,7 @@ public class CertificateGenerator {
 
         for (Attribute attribute : attributes) {
             if (PKCSObjectIdentifiers.pkcs_9_at_challengePassword.equals(attribute.getAttrType())) {
-                if (attribute.getAttrValues() != null && attribute.getAttrValues().size() > 0) {
+                if(attribute.getAttrValues() != null && attribute.getAttrValues().size() > 0) {
                     return attribute.getAttrValues().getObjectAt(0);
                 }
             }
@@ -568,23 +524,38 @@ public class CertificateGenerator {
         }
     }
 
-    private void saveCertInKeyStore(X509Certificate certificate) throws KeystoreException {
+    private void saveCertInKeyStore(X509Certificate certificate)
+            throws KeystoreException {
 
         if (certificate == null) {
             return;
         }
 
         try {
-            KeyStoreReader keyStoreReader = new KeyStoreReader();
-            KeyStore keyStore = keyStoreReader.loadCertificateKeyStore();
-            // the serial number of the certificate used for its creation is set as its alias.
-            keyStore.setCertificateEntry(certificate.getSerialNumber().toString(), certificate);
-
-            keyStoreReader.saveCertificateKeyStore(keyStore);
-        } catch (KeyStoreException e) {
-            String errorMsg = "KeySKeyStoreException occurred when saving the generated certificate";
+            String serialNumber = certificate.getSerialNumber().toString();
+            byte[] bytes = Serializer.serialize(certificate);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
+            CertificateManagementDAOFactory.beginTransaction();
+            certificateDAO.addCertificate(byteArrayInputStream, serialNumber);
+            CertificateManagementDAOFactory.commitTransaction();
+        } catch (IOException e) {
+            String errorMsg = "IOException occurred when saving the generated certificate";
             log.error(errorMsg, e);
+            CertificateManagementDAOFactory.rollbackTransaction();
             throw new KeystoreException(errorMsg, e);
+        } catch (CertificateManagementDAOException e) {
+            String errorMsg = "Error occurred when saving the generated certificate";
+            log.error(errorMsg, e);
+            CertificateManagementDAOFactory.rollbackTransaction();
+            throw new KeystoreException(errorMsg, e);
+        } catch (TransactionManagementException e) {
+            String errorMsg = "Error occurred when saving the generated certificate";
+            log.error(errorMsg, e);
+            CertificateManagementDAOFactory.rollbackTransaction();
+            throw new KeystoreException(errorMsg, e);
+        }finally {
+            CertificateManagementDAOFactory.closeConnection();
         }
     }
 
@@ -625,7 +596,6 @@ public class CertificateGenerator {
 
     /**
      * Get Signed certificate by parsing certificate.
-     *
      * @param binarySecurityToken CSR that comes from the client as a String value.It is base 64 encoded request
      *                            security token.
      * @return Return signed certificate in X508Certificate type object.
@@ -647,7 +617,7 @@ public class CertificateGenerator {
             throw new KeystoreException(msg, e);
         }
         X509Certificate signedCertificate = generateCertificateFromCSR(privateKeyCA, certificationRequest,
-                                                                       certCA.getIssuerX500Principal().getName());
+                certCA.getIssuerX500Principal().getName());
         return signedCertificate;
     }
 }

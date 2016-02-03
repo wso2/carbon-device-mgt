@@ -31,7 +31,7 @@ public abstract class AbstractManagerService {
      * @return OSGi service
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getServiceProvider(Class<T> osgiServiceClass) {
+    protected <T> T getServiceProvider(Class<T> osgiServiceClass) throws DeviceManagementException{
         String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         PrivilegedCarbonContext.startTenantFlow();
         ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -39,7 +39,11 @@ public abstract class AbstractManagerService {
         if (log.isDebugEnabled()) {
             log.debug("Getting thread local carbon context for tenant domain: " + tenantDomain);
         }
-        return (T) ctx.getOSGiService(osgiServiceClass, null);
+        T clazz = (T) ctx.getOSGiService(osgiServiceClass, null);
+        if (clazz == null){
+            throw new DeviceManagementException("Requested OSGi service '" + osgiServiceClass.getName() + "' is not initialized!");
+        }
+        return clazz;
     }
 
     /**

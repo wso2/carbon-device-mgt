@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.AbstractManagerService;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
@@ -65,7 +66,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Policy has been added successfully.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Policy Management related exception.";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -85,7 +86,7 @@ public class PolicyManagementService extends AbstractManagerService {
 			List<Policy> policies = policyAdministratorPoint.getPolicies();
 			Policy[] policyArr = policyAdministratorPoint.getPolicies().toArray(new Policy[policies.size()]);
 			return Response.status(Response.Status.OK).entity(policyArr).build();
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Policy Management related exception";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -112,7 +113,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.error("Policy for ID " + policyId + " not found.");
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Policy Management related exception";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -131,7 +132,7 @@ public class PolicyManagementService extends AbstractManagerService {
 			PolicyAdministratorPoint policyAdministratorPoint = policyManagerService.getPAP();
 			int policyCount = policyAdministratorPoint.getPolicyCount();
 			return Response.status(Response.Status.OK).entity(policyCount).build();
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Policy Management related exception";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -156,7 +157,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Policy with ID " + policyId + " has been updated successfully.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Policy Management related exception";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -186,7 +187,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				}
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 			}
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Exception in updating policy priorities.";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -216,7 +217,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				}
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Exception in deleting policy by id:" + policyId;
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -238,7 +239,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Policy by id:" + policyId + " has been successfully activated.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Exception in activating policy by id:" + policyId;
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -260,7 +261,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Policy by id:" + policyId + " has been successfully inactivated.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Exception in inactivating policy by id:" + policyId;
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -282,7 +283,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Changes have been successfully updated.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyManagementException e) {
+		} catch (PolicyManagementException | DeviceManagementException e) {
 			String error = "Exception in applying changes.";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -304,7 +305,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Policy monitoring service started successfully.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyMonitoringTaskException e) {
+		} catch (PolicyMonitoringTaskException | DeviceManagementException e) {
 			String error = "Policy Management related exception.";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -326,7 +327,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Policy monitoring service updated successfully.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyMonitoringTaskException e) {
+		} catch (PolicyMonitoringTaskException | DeviceManagementException e) {
 			String error = "Policy Management related exception.";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -348,7 +349,7 @@ public class PolicyManagementService extends AbstractManagerService {
 				log.debug("Policy monitoring service stopped successfully.");
 			}
 			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (PolicyMonitoringTaskException e) {
+		} catch (PolicyMonitoringTaskException | DeviceManagementException e) {
 			String error = "Policy Management related exception.";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -369,7 +370,7 @@ public class PolicyManagementService extends AbstractManagerService {
 			deviceIdentifier.setId(deviceId);
 			ComplianceData complianceData = policyManagerService.getDeviceCompliance(deviceIdentifier);
 			return Response.status(Response.Status.OK).entity(complianceData).build();
-		} catch (PolicyComplianceException e) {
+		} catch (PolicyComplianceException | DeviceManagementException e) {
 			String error = "Error occurred while getting the compliance data.";
 			log.error(error, e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

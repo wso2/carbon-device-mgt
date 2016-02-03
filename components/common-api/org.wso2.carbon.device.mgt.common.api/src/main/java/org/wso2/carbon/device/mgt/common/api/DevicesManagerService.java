@@ -308,12 +308,12 @@ public class DevicesManagerService extends AbstractManagerService {
     public Response updateDeviceEnrolmentInfo(@PathParam("deviceType") String deviceType,
                                               @PathParam("identifier") String identifier,
                                               @FormParam("status") EnrolmentInfo.Status status) {
-        DeviceManagementProviderService providerService = this.getServiceProvider(
-                DeviceManagementProviderService.class);
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setType(deviceType);
-        deviceIdentifier.setId(identifier);
         try {
+            DeviceManagementProviderService providerService = this.getServiceProvider(
+                    DeviceManagementProviderService.class);
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setType(deviceType);
+            deviceIdentifier.setId(identifier);
             Device device = providerService.getDevice(deviceIdentifier);
             providerService.updateDeviceEnrolmentInfo(device, status);
             return Response.status(Response.Status.NO_CONTENT).build();

@@ -20,15 +20,11 @@ package org.wso2.carbon.device.mgt.common.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
 import org.wso2.carbon.device.mgt.group.common.GroupUser;
 import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProvider;
-import org.wso2.carbon.device.mgt.common.AbstractManagerService;
 
 import javax.jws.WebService;
 import javax.ws.rs.*;
@@ -91,8 +87,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -118,8 +114,8 @@ public class GroupManagerService extends AbstractManagerService {
             group.setDateOfLastUpdate(new Date().getTime());
             groupManagementService.updateGroup(group);
             return Response.status(Response.Status.NO_CONTENT).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -143,8 +139,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -163,8 +159,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -182,8 +178,8 @@ public class GroupManagerService extends AbstractManagerService {
             DeviceGroup[] deviceGroups = new DeviceGroup[groups.size()];
             groups.toArray(deviceGroups);
             return Response.status(Response.Status.OK).entity(deviceGroups).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -207,8 +203,8 @@ public class GroupManagerService extends AbstractManagerService {
             DeviceGroup[] deviceGroups = new DeviceGroup[groups.size()];
             groups.toArray(deviceGroups);
             return Response.status(Response.Status.OK).entity(deviceGroups).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -222,8 +218,8 @@ public class GroupManagerService extends AbstractManagerService {
         try {
             int count = this.getServiceProvider(GroupManagementServiceProvider.class).getGroupCount(userName);
             return Response.status(Response.Status.OK).entity(count).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -248,8 +244,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -275,8 +271,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -301,8 +297,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -326,8 +322,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -349,8 +345,8 @@ public class GroupManagerService extends AbstractManagerService {
             String[] rolesArray = new String[roles.size()];
             roles.toArray(rolesArray);
             return Response.status(Response.Status.OK).entity(rolesArray).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -367,8 +363,8 @@ public class GroupManagerService extends AbstractManagerService {
             GroupUser[] usersArray = new GroupUser[users.size()];
             users.toArray(usersArray);
             return Response.status(Response.Status.OK).entity(usersArray).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -385,8 +381,8 @@ public class GroupManagerService extends AbstractManagerService {
             Device[] deviceArray = new Device[devices.size()];
             devices.toArray(deviceArray);
             return Response.status(Response.Status.OK).entity(deviceArray).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -400,8 +396,8 @@ public class GroupManagerService extends AbstractManagerService {
         try {
             int count = this.getServiceProvider(GroupManagementServiceProvider.class).getDeviceCount(groupId);
             return Response.status(Response.Status.OK).entity(count).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -417,8 +413,8 @@ public class GroupManagerService extends AbstractManagerService {
             PaginationRequest request = new PaginationRequest(index, limit);
             PaginationResult paginationResult = this.getServiceProvider(GroupManagementServiceProvider.class).getDevices(groupId, request);
             return Response.status(Response.Status.OK).entity(paginationResult).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -444,8 +440,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -470,8 +466,8 @@ public class GroupManagerService extends AbstractManagerService {
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -487,8 +483,8 @@ public class GroupManagerService extends AbstractManagerService {
             String[] permissions = this.getServiceProvider(GroupManagementServiceProvider.class)
                     .getPermissions(userName, groupId);
             return Response.status(Response.Status.OK).entity(permissions).build();
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             this.endTenantFlow();
@@ -512,8 +508,8 @@ public class GroupManagerService extends AbstractManagerService {
         try {
             return this.getServiceProvider(GroupManagementServiceProvider.class).isAuthorized(userName,
                     groupId, permission);
-        } catch (GroupManagementException e) {
-            log.error(e.getErrorMessage(), e);
+        } catch (GroupManagementException | DeviceManagementException e) {
+            log.error(e.getMessage(), e);
             return false;
         } finally {
             this.endTenantFlow();

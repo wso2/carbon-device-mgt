@@ -49,7 +49,7 @@ if (!user) {
     } else if (uriMatcher.match("/{context}/api/operations/{deviceType}/{operation}")) {
         var deviceType = uriMatcher.elements().deviceType;
         var operation = uriMatcher.elements().operation;
-        var deviceId = request.getParameter("deviceId");	
+        var deviceId = request.getParameter("deviceId");
         var params = request.getAllParameters();
         result = operationModule.handlePOSTOperation(deviceType, operation, deviceId, params);
     }

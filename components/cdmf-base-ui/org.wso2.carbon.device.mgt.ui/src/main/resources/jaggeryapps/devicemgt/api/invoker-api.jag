@@ -32,7 +32,7 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
     var method = request.getContent().actionMethod;
     var targetURL = devicemgtProps.httpsURL + request.getContent().actionUrl;
     var payload = request.getContent().actionPayload;
-    if(method == undefined && payload == undefined){
+    if (method == undefined && payload == undefined) {
         method = parse(request.getContent()).actionMethod;
         targetURL = devicemgtProps.httpsURL + parse(request.getContent()).actionUrl;
         payload = parse(request.getContent()).actionPayload;
@@ -41,43 +41,43 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
         switch (method) {
             case constants.HTTP_GET:
                 var responseData = serviceInvokers.XMLHttp.get(
+                    targetURL, function (responsePayload) {
+                        return responsePayload;
+                    },
+                    function (responsePayload) {
+                        return responsePayload;
+                    });
+                result = responseData;
+                break;
+            case constants.HTTP_POST:
+                var responseData = serviceInvokers.XMLHttp.post(
+                    targetURL, payload, function (responsePayload) {
+                        return responsePayload;
+                    },
+                    function (responsePayload) {
+                        return responsePayload;
+                    });
+                result = responseData;
+                break;
+            case constants.HTTP_PUT:
+                var responseData = serviceInvokers.XMLHttp.put(
+                    targetURL, payload, function (responsePayload) {
+                        return responsePayload;
+                    },
+                    function (responsePayload) {
+                        return responsePayload;
+                    });
+                result = responseData;
+                break;
+            case constants.HTTP_DELETE:
+                var responseData =
+                    serviceInvokers.XMLHttp.delete(
                         targetURL, function (responsePayload) {
                             return responsePayload;
                         },
                         function (responsePayload) {
                             return responsePayload;
                         });
-                result = responseData;
-                break;
-            case constants.HTTP_POST:
-                var responseData = serviceInvokers.XMLHttp.post(
-                        targetURL, payload, function (responsePayload) {
-                            return responsePayload;
-                        },
-                        function (responsePayload) {
-                            return responsePayload;
-                        });
-                result = responseData;
-                break;
-            case constants.HTTP_PUT:
-                var responseData = serviceInvokers.XMLHttp.put(
-                        targetURL, payload, function (responsePayload) {
-                            return responsePayload;
-                        },
-                        function (responsePayload) {
-                            return responsePayload;
-                        });
-                result = responseData;
-                break;
-            case constants.HTTP_DELETE:
-                var responseData =
-                        serviceInvokers.XMLHttp.delete(
-                                targetURL, function (responsePayload) {
-                                    return responsePayload;
-                                },
-                                function (responsePayload) {
-                                    return responsePayload;
-                                });
                 result = responseData;
                 break;
         }

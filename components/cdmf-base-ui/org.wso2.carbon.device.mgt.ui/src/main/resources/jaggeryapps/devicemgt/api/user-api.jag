@@ -38,7 +38,7 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
     var password = request.getParameter("password");
     //Check if a username and password is provided
     if ((!username) || (!password)) {
-        response = responseProcessor.buildErrorResponse(response,400,'Username and Password must be provided');
+        response = responseProcessor.buildErrorResponse(response, 400, 'Username and Password must be provided');
     } else {
         try {
             userModule.login(username, password, function (user) {
@@ -51,11 +51,11 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
                     "password": password
                 });
             }, function () {
-                response = responseProcessor.buildSuccessResponse(response,200,{'sessionId':session.getId()});
+                response = responseProcessor.buildSuccessResponse(response, 200, {'sessionId': session.getId()});
             });
         } catch (e) {
             log.error("Exception occurred while a user tried to login to MDM", e);
-            response = responseProcessor.buildErrorResponse(response,401,'username/password is incorrect');
+            response = responseProcessor.buildErrorResponse(response, 401, 'username/password is incorrect');
         }
     }
 } else if (uriMatcher.match("/{context}/api/user/login/")) {
@@ -150,7 +150,7 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
 
     try {
         result = userModule.registerUser(username, firstname, lastname, emailAddress, password,
-                                         userRoles);
+            userRoles);
     } catch (e) {
         log.error("Exception occurred while trying to registering a new user to DC User Store", e);
         // http status code 400 refers to - Bad request.

@@ -37,76 +37,94 @@ var groupModule = require("/app/modules/group.js").groupModule;
 var result, endPoint, data, groupId, group, role;
 
 if (!user) {
-	response = responseProcessor.buildErrorResponse(response, 401, "Unauthorized");
+    response = responseProcessor.buildErrorResponse(response, 401, "Unauthorized");
 } else {
-	if (uriMatcher.match("/{context}/api/group/add")) {
-		group = request.getContent();
-		result = groupModule.addGroup(group);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/update")) {
-		groupId = uriMatcher.elements().groupId;
-		group = request.getContent();
-		result = groupModule.updateGroup(groupId, group);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/remove")) {
-		groupId = uriMatcher.elements().groupId;
-		result = groupModule.removeGroup(groupId);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}")) {
-		groupId = uriMatcher.elements().groupId;
-		result = groupModule.getGroup(groupId);
-	} else if (uriMatcher.match("/{context}/api/group/name/{groupName}")) {
-		var groupName = uriMatcher.elements().groupName;
-		result = groupModule.findGroups(groupName);
-	} else if (uriMatcher.match("/{context}/api/group/all")) {
-		result = groupModule.getGroups();
-	} else if (uriMatcher.match("/{context}/api/group/all/count")) {
-		result = groupModule.getGroupCount();
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/share")) {
-		groupId = uriMatcher.elements().groupId;
-		var shareUser = request.getContent()["shareUser"];
-		role = request.getContent()["role"];
-		result = groupModule.shareGroup(groupId, shareUser, role);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/unshare")) {
-		groupId = uriMatcher.elements().groupId;
-		var unShareUser = request.getContent()["unShareUser"];
-		role = request.getContent()["role"];
-		result = groupModule.unshareGroup(groupId, unShareUser, role);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/role/add")) {
-		groupId = uriMatcher.elements().groupId;
-		var permissions = request.getContent()["permissions"];
-		role = request.getContent()["role"];
-		result = groupModule.addRole(groupId, role, permissions);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/role/delete")) {
-		groupId = uriMatcher.elements().groupId;
-		role = request.getContent()["role"];
-		endPoint = deviceCloudService + "/group/id/" + groupId + "/role/" + role;
-		result = groupModule.deleteRole(groupId, role);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/role/all")) {
-		groupId = uriMatcher.elements().groupId;
-		result = groupModule.getGroupRoles(groupId);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/{userId}/role/all")) {
-		groupId = uriMatcher.elements().groupId;
-		var userId = uriMatcher.elements().userId;
-		result = groupModule.getUserRoles(groupId, userId);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/{userId}/rolemapping")) {
-		groupId = uriMatcher.elements().groupId;
-		userId = uriMatcher.elements().userId;
-		result = groupModule.getRoleMapping(groupId, userId);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/{userId}/roleupdate")) {
-		groupId = uriMatcher.elements().groupId;
-		userId = uriMatcher.elements().userId;
-		var roleMap = request.getContent();
-		result = groupModule.setRoleMapping(groupId, userId, roleMap);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/user/all")) {
-		groupId = uriMatcher.elements().groupId;
-		result = groupModule.getUsers(groupId);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/device/all")) {
-		groupId = uriMatcher.elements().groupId;
-		result = groupModule.getDevices(groupId);
-	} else if (uriMatcher.match("/{context}/api/group/id/{groupId}/assign")) {
-		groupId = uriMatcher.elements().groupId;
-		var deviceId = request.getContent()["deviceId"];
-		var deviceType = request.getContent()["deviceType"];
-		result = groupModule.assignDevice(groupId, deviceId, deviceType);
-	}
+
+    if (uriMatcher.match("/{context}/api/group/add")) {
+        group = request.getContent();
+        result = groupModule.addGroup(group);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/update")) {
+        groupId = uriMatcher.elements().groupId;
+        group = request.getContent();
+        result = groupModule.updateGroup(groupId, group);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/remove")) {
+        groupId = uriMatcher.elements().groupId;
+        result = groupModule.removeGroup(groupId);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}")) {
+        groupId = uriMatcher.elements().groupId;
+        result = groupModule.getGroup(groupId);
+
+    } else if (uriMatcher.match("/{context}/api/group/name/{groupName}")) {
+        var groupName = uriMatcher.elements().groupName;
+        result = groupModule.findGroups(groupName);
+
+    } else if (uriMatcher.match("/{context}/api/group/all")) {
+        result = groupModule.getGroups();
+
+    } else if (uriMatcher.match("/{context}/api/group/all/count")) {
+        result = groupModule.getGroupCount();
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/share")) {
+        groupId = uriMatcher.elements().groupId;
+        var shareUser = request.getContent()["shareUser"];
+        role = request.getContent()["role"];
+        result = groupModule.shareGroup(groupId, shareUser, role);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/unshare")) {
+        groupId = uriMatcher.elements().groupId;
+        var unShareUser = request.getContent()["unShareUser"];
+        role = request.getContent()["role"];
+        result = groupModule.unshareGroup(groupId, unShareUser, role);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/role/add")) {
+        groupId = uriMatcher.elements().groupId;
+        var permissions = request.getContent()["permissions"];
+        role = request.getContent()["role"];
+        result = groupModule.addRole(groupId, role, permissions);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/role/delete")) {
+        groupId = uriMatcher.elements().groupId;
+        role = request.getContent()["role"];
+        endPoint = deviceCloudService + "/group/id/" + groupId + "/role/" + role;
+        result = groupModule.deleteRole(groupId, role);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/role/all")) {
+        groupId = uriMatcher.elements().groupId;
+        result = groupModule.getGroupRoles(groupId);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/{userId}/role/all")) {
+        groupId = uriMatcher.elements().groupId;
+        var userId = uriMatcher.elements().userId;
+        result = groupModule.getUserRoles(groupId, userId);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/{userId}/rolemapping")) {
+        groupId = uriMatcher.elements().groupId;
+        userId = uriMatcher.elements().userId;
+        result = groupModule.getRoleMapping(groupId, userId);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/{userId}/roleupdate")) {
+        groupId = uriMatcher.elements().groupId;
+        userId = uriMatcher.elements().userId;
+        var roleMap = request.getContent();
+        result = groupModule.setRoleMapping(groupId, userId, roleMap);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/user/all")) {
+        groupId = uriMatcher.elements().groupId;
+        result = groupModule.getUsers(groupId);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/device/all")) {
+        groupId = uriMatcher.elements().groupId;
+        result = groupModule.getDevices(groupId);
+
+    } else if (uriMatcher.match("/{context}/api/group/id/{groupId}/assign")) {
+        groupId = uriMatcher.elements().groupId;
+        var deviceId = request.getContent()["deviceId"];
+        var deviceType = request.getContent()["deviceType"];
+        result = groupModule.assignDevice(groupId, deviceId, deviceType);
+    }
 }
 // returning the result.
 if (result) {

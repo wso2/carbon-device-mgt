@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.group.core.dao;
 
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
-import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBroker;
+import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBuilder;
 
 import java.util.List;
 
@@ -61,7 +61,7 @@ public interface GroupDAO {
      * @return Device Group
      * @throws GroupManagementDAOException
      */
-    DeviceGroupBroker getGroup(int groupId) throws GroupManagementDAOException;
+    DeviceGroupBuilder getGroup(int groupId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Device Groups in tenant.
@@ -70,7 +70,7 @@ public interface GroupDAO {
      * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBroker> getGroups(int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroupBuilder> getGroups(int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Groups that matches with the given DeviceGroup name.
@@ -80,7 +80,7 @@ public interface GroupDAO {
      * @return List of DeviceGroup that matches with the given DeviceGroup name.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBroker> getGroups(String groupName, int tenantId)
+    List<DeviceGroupBuilder> getGroups(String groupName, int tenantId)
             throws GroupManagementDAOException;
 
 }

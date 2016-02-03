@@ -1,20 +1,20 @@
 /*
-*  Copyright (c) 2015 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 package org.wso2.carbon.policy.mgt.core.impl;
 
@@ -41,6 +41,7 @@ import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
@@ -123,36 +124,49 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             TaskService taskService = PolicyManagementDataHolder.getInstance().getTaskService();
-            taskService.registerTaskType(PolicyManagementConstants.DELEGATION_TASK_TYPE);
 
             if (log.isDebugEnabled()) {
                 log.debug("Policy delegations task is started for the tenant id " + tenantId);
             }
 
             TaskManager taskManager = taskService.getTaskManager(PolicyManagementConstants.DELEGATION_TASK_TYPE);
-
             TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo();
-
             triggerInfo.setRepeatCount(0);
-
             Map<String, String> properties = new HashMap<>();
             properties.put(PolicyManagementConstants.TENANT_ID, String.valueOf(tenantId));
-
             String taskName = PolicyManagementConstants.DELEGATION_TASK_NAME + "_" + String.valueOf(tenantId);
 
-            if (!taskManager.isTaskScheduled(taskName)) {
-
-                TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.DELEGATION_TASK_CLAZZ,
-                        properties, triggerInfo);
-
-                taskManager.registerTask(taskInfo);
-                taskManager.rescheduleTask(taskInfo.getName());
+            Set<String> registeredTaskTypes = taskService.getRegisteredTaskTypes();
+            //Check whether the TaskType is already registered. If not we'll register it here.
+            if (!registeredTaskTypes.contains(PolicyManagementConstants.DELEGATION_TASK_TYPE)) {
+                taskService.registerTaskType(PolicyManagementConstants.DELEGATION_TASK_TYPE);
+                TaskInfo registeredTaskInfo = null;
+                // getTask method will throw a TaskException if the task is not registered. Hence we'll handle the
+                // exception and register the task.
+                try {
+                    registeredTaskInfo = taskManager.getTask(taskName);
+                } catch (TaskException e) {
+                // No need of any specific logic to handle this exception as it is thrown if the task is not registered.
+                } finally {
+                    // If registeredTaskInfo is null that means there's no registered delegation-task.
+                    if (registeredTaskInfo == null) {
+                        TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.DELEGATION_TASK_CLAZZ,
+                                                         properties, triggerInfo);
+                        taskManager.registerTask(taskInfo);
+                        taskManager.scheduleTask(taskInfo.getName());
+                    }
+                }
             } else {
-                throw new PolicyManagementException("There is a task already running for policy changes. Please try " +
-                        "to apply " +
-                        "changes after few minutes.");
+                if (!taskManager.isTaskScheduled(taskName)) {
+                    TaskInfo taskInfo = new TaskInfo(taskName, PolicyManagementConstants.DELEGATION_TASK_CLAZZ,
+                                                     properties, triggerInfo);
+                    taskManager.scheduleTask(taskInfo.getName());
+                } else {
+                    throw new PolicyManagementException("There is a task already running for policy changes. Please try " +
+                                                        "to apply " +
+                                                        "changes after few minutes.");
+                }
             }
-
         } catch (TaskException e) {
             String msg = "Error occurred while creating the policy delegation task for tenant " +
                     PrivilegedCarbonContext.

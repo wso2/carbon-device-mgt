@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -27,7 +27,7 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.core.common.BaseGroupManagementTest;
 import org.wso2.carbon.device.mgt.group.core.common.TestDataHolder;
-import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBroker;
+import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBuilder;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -128,7 +128,7 @@ public class GroupPersistTests extends BaseGroupManagementTest {
     public void findGroupTest() {
         try {
             GroupManagementDAOFactory.openConnection();
-            List<DeviceGroupBroker> groups = groupDAO.getGroups("Test", TestDataHolder.SUPER_TENANT_ID);
+            List<DeviceGroupBuilder> groups = groupDAO.getGroups("Test", TestDataHolder.SUPER_TENANT_ID);
             Assert.assertNotEquals(groups.size(), 0, "No groups found");
             Assert.assertNotNull(groups.get(0), "Group is null");
             log.debug("Group found: " + groups.get(0).getName());
@@ -149,7 +149,7 @@ public class GroupPersistTests extends BaseGroupManagementTest {
     public void getGroupTest() {
         try {
             GroupManagementDAOFactory.openConnection();
-            List<DeviceGroupBroker> groups = groupDAO.getGroups(TestDataHolder.SUPER_TENANT_ID);
+            List<DeviceGroupBuilder> groups = groupDAO.getGroups(TestDataHolder.SUPER_TENANT_ID);
             Assert.assertNotEquals(groups.size(), 0, "No groups found");
             Assert.assertNotNull(groups.get(0), "Group is null");
             log.debug("No of Groups found: " + groups.size());

@@ -1,34 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
   ~ WSO2 Inc. licenses this file to you under the Apache License,
   ~ Version 2.0 (the "License"); you may not use this file except
   ~ in compliance with the License.
-  ~ you may obtain a copy of the License at
+  ~ You may obtain a copy of the License at
   ~
-  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~ http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing,
   ~ software distributed under the License is distributed on an
   ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~ KIND, either express or implied.  See the License for the
+  ~ KIND, either express or implied. See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>dynamic-client-registration</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>0.9.2-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.dynamic.client.web.app.registration</artifactId>
-    <version>0.9.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Dynamic client web app registration</name>
     <description>WSO2 Carbon - Dynamic Client Web-app Registration Service</description>
@@ -56,7 +55,27 @@
                             !org.wso2.carbon.dynamic.client.web.app.registration.internal,
                             org.wso2.carbon.dynamic.client.web.app.registration.*
                         </Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>
+                            javax.xml.bind.*,
+                            com.google.*,
+                            javax.net.ssl,
+                            javax.servlet,
+                            org.apache.axis2.context,
+                            org.apache.catalina,
+                            org.apache.catalina.core,
+                            org.apache.commons.*,
+                            org.apache.http,
+                            org.apache.http.*,
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.core,
+                            org.wso2.carbon.core.security,
+                            org.wso2.carbon.dynamic.client.*,
+                            org.wso2.carbon.registry.*,
+                            org.wso2.carbon.user.*,
+                            org.wso2.carbon.utils
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -114,6 +133,14 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 </project>

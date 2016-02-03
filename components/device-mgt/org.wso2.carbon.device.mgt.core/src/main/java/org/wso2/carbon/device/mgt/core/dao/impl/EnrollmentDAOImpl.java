@@ -1,21 +1,21 @@
 /*
- *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *   WSO2 Inc. licenses this file to you under the Apache License,
- *   Version 2.0 (the "License"); you may not use this file except
- *   in compliance with the License.
- *   You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing,
- *   software distributed under the License is distributed on an
- *   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *   KIND, either express or implied.  See the License for the
- *   specific language governing permissions and limitations
- *   under the License.
- *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
@@ -71,13 +71,12 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int status = -1;
-        int rows;
         try {
             conn = this.getConnection();
             String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, " +
                     "DATE_OF_ENROLMENT = ?, DATE_OF_LAST_UPDATE = ? WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?" +
                          " AND ID = ?";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, enrolmentInfo.getOwnership().toString());
             stmt.setString(2, enrolmentInfo.getStatus().toString());
             stmt.setTimestamp(3, new Timestamp(enrolmentInfo.getDateOfEnrolment()));
@@ -86,12 +85,7 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             stmt.setString(6, enrolmentInfo.getOwner());
             stmt.setInt(7, tenantId);
             stmt.setInt(8, enrolmentInfo.getId());
-            rows = stmt.executeUpdate();
-
-            if (rows > 0) {
-                status = 1;
-            }
-
+            stmt.executeUpdate();
             return status;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while updating enrolment configuration", e);
@@ -110,18 +104,13 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             conn = this.getConnection();
             String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, " +
                          "DATE_OF_ENROLMENT = ?, DATE_OF_LAST_UPDATE = ? WHERE ID = ?";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, enrolmentInfo.getOwnership().toString());
             stmt.setString(2, enrolmentInfo.getStatus().toString());
             stmt.setTimestamp(3, new Timestamp(enrolmentInfo.getDateOfEnrolment()));
             stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
             stmt.setInt(5, enrolmentInfo.getId());
             stmt.executeUpdate();
-
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                status = 1;
-            }
             return status;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while updating enrolment configuration", e);

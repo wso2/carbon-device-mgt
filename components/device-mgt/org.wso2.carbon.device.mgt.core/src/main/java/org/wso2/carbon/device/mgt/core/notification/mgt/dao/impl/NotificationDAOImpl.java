@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -128,12 +128,10 @@ public class NotificationDAOImpl implements NotificationDAO {
 		try {
 			conn = NotificationManagementDAOFactory.getConnection();
 			String sql =
-					"SELECT n1.NOTIFICATION_ID, n1.DEVICE_ID, n1.OPERATION_ID, n1.STATUS," +
-					" n1.DESCRIPTION, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM " +
-					"DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT NOTIFICATION_ID, DEVICE_ID, " +
-					"OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE " +
-					"TENANT_ID = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID " +
-					"AND TENANT_ID = ?";
+					"SELECT n1.NOTIFICATION_ID, n1.DEVICE_ID, n1.OPERATION_ID, n1.STATUS, n1.DESCRIPTION," +
+					" d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT " +
+					"NOTIFICATION_ID, DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE " +
+					"TENANT_ID = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID AND TENANT_ID = ?";
 			stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, tenantId);
 			stmt.setInt(2, tenantId);
@@ -144,8 +142,7 @@ public class NotificationDAOImpl implements NotificationDAO {
 			}
 		} catch (SQLException e) {
 			throw new NotificationManagementException(
-					"Error occurred while retrieving information of all " +
-					"notifications", e);
+					"Error occurred while retrieving information of all notifications", e);
 		} finally {
 			NotificationDAOUtil.cleanupResources(stmt, rs);
 		}

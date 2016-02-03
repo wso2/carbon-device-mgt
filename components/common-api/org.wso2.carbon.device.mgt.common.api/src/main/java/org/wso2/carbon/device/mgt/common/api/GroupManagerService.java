@@ -76,7 +76,7 @@ public class GroupManagerService extends AbstractManagerService {
                     GroupManagementServiceProvider.class);
             int groupId = groupManagementService.createGroup(group, DEFAULT_ADMIN_ROLE,
                     DEFAULT_ADMIN_PERMISSIONS);
-            boolean isAdded = (groupId > 0) && groupManagementService.addSharing(userName, groupId,
+            boolean isAdded = (groupId > 0) && groupManagementService.addGroupSharingRole(userName, groupId,
                     DEFAULT_OPERATOR_ROLE, DEFAULT_OPERATOR_PERMISSIONS);
             groupManagementService.addGroupSharingRole(userName, groupId, DEFAULT_STATS_MONITOR_ROLE,
                     DEFAULT_STATS_MONITOR_PERMISSIONS);
@@ -268,7 +268,7 @@ public class GroupManagerService extends AbstractManagerService {
         }
 
         try {
-            boolean isUnShared = this.getServiceProvider(GroupManagementServiceProvider.class).unShareGroup(
+            boolean isUnShared = this.getServiceProvider(GroupManagementServiceProvider.class).unshareGroup(
                     unShareUser, groupId, sharingRole);
             if (isUnShared) {
                 return Response.status(Response.Status.NO_CONTENT).build();
@@ -294,7 +294,7 @@ public class GroupManagerService extends AbstractManagerService {
         }
 
         try {
-            boolean isAdded = this.getServiceProvider(GroupManagementServiceProvider.class).addSharing(
+            boolean isAdded = this.getServiceProvider(GroupManagementServiceProvider.class).addGroupSharingRole(
                     userName, groupId, roleName, permissions);
             if (isAdded) {
                 return Response.status(Response.Status.NO_CONTENT).build();
@@ -319,7 +319,7 @@ public class GroupManagerService extends AbstractManagerService {
         }
 
         try {
-            boolean isRemoved = this.getServiceProvider(GroupManagementServiceProvider.class).removeSharing(
+            boolean isRemoved = this.getServiceProvider(GroupManagementServiceProvider.class).removeGroupSharingRole(
                     groupId, roleName);
             if (isRemoved) {
                 return Response.status(Response.Status.NO_CONTENT).build();

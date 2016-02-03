@@ -1,10 +1,32 @@
-package org.wso2.carbon.device.mgt.analytics;
+/*
+ *   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *   WSO2 Inc. licenses this file to you under the Apache License,
+ *   Version 2.0 (the "License"); you may not use this file except
+ *   in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing,
+ *   software distributed under the License is distributed on an
+ *   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *   KIND, either express or implied.  See the License for the
+ *   specific language governing permissions and limitations
+ *   under the License.
+ *
+ */
+package org.wso2.carbon.device.mgt.analytics.datapublisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.databridge.agent.DataPublisher;
-import org.wso2.carbon.databridge.commons.utils.DataBridgeCommonsUtils;
+import org.wso2.carbon.databridge.agent.exception.DataEndpointAgentConfigurationException;
+import org.wso2.carbon.databridge.agent.exception.DataEndpointAuthenticationException;
+import org.wso2.carbon.databridge.agent.exception.DataEndpointConfigurationException;
+import org.wso2.carbon.databridge.agent.exception.DataEndpointException;
+import org.wso2.carbon.databridge.commons.exception.TransportException;
 import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherAlreadyExistsException;
 import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherConfigurationException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -13,8 +35,14 @@ import org.wso2.carbon.device.mgt.core.config.analytics.AnalyticsConfigurations;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This is used to manage data publisher per tenant.
+ */
 public class DeviceDataPublisher {
 	private static final Log log = LogFactory.getLog(DeviceDataPublisher.class);
+	/**
+	 * map to store data publishers for each tenant.
+	 */
 	private static Map<String, DataPublisher> dataPublisherMap;
 	private static DeviceDataPublisher deviceDataPublisher;
 
@@ -34,7 +62,12 @@ public class DeviceDataPublisher {
 
 	}
 
-	private DataPublisher getDataPublisher() throws DataPublisherConfigurationException{
+	/**
+	 * this return the data publisher for the tenant.
+	 * @return
+	 * @throws DataPublisherConfigurationException
+	 */
+	public DataPublisher getDataPublisher() throws DataPublisherConfigurationException{
 
 		String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
 
@@ -53,28 +86,33 @@ public class DeviceDataPublisher {
 			String analyticsServerUser = analyticsConfig.getAdminUsername();
 			String analyticsServerPassword = analyticsConfig.getAdminPassword();
 
-
 			//Create new DataPublisher for the tenant.
 			try {
 				dataPublisher = new DataPublisher(analyticsServerUrlGroups, analyticsServerUser,
-												  analyticsServerPassword);
-			} catch (Exception e) {
-				String errorMsg = "Configuration Exception on data publisher for ReceiverGroup = " +
-						analyticsServerUrlGroups + " for username " + analyticsServerUser;
-				log.error(errorMsg);
-				throw new DataPublisherConfigurationException(errorMsg, e);
-			}
-
-			try {
+													  analyticsServerPassword);
 				//Add created DataPublisher.
 				addDataPublisher(tenantDomain, dataPublisher);
+			} catch (DataEndpointAgentConfigurationException e) {
+				String errorMsg = "Configuration Exception on data publisher for ReceiverGroup = " +
+						analyticsServerUrlGroups + " for username " + analyticsServerUser;
+				throw new DataPublisherConfigurationException(errorMsg, e);
+			} catch (DataEndpointException e) {
+				String errorMsg = "Invalid ReceiverGroup = " + analyticsServerUrlGroups;
+				throw new DataPublisherConfigurationException(errorMsg, e);
+			} catch (DataEndpointConfigurationException e) {
+				String errorMsg = "Invalid Data endpoint configuration.";
+				throw new DataPublisherConfigurationException(errorMsg, e);
+			} catch (DataEndpointAuthenticationException e) {
+				String errorMsg = "Authentication Failed for user " + analyticsServerUser;
+				throw new DataPublisherConfigurationException(errorMsg, e);
+			} catch (TransportException e) {
+				throw new DataPublisherConfigurationException(e);
 			} catch (DataPublisherAlreadyExistsException e) {
 				log.warn("Attempting to register a data publisher for the tenant " + tenantDomain +
 								 " when one already exists. Returning existing data publisher");
 				return getDataPublisher(tenantDomain);
 			}
 		}
-
 		return dataPublisher;
 	}
 
@@ -84,7 +122,7 @@ public class DeviceDataPublisher {
 	 * @param tenantDomain - The tenant domain under which the data publisher is registered
 	 * @return - Instance of the DataPublisher which was registered. Null if not registered.
 	 */
-	public  DataPublisher getDataPublisher(String tenantDomain) {
+	private  DataPublisher getDataPublisher(String tenantDomain) {
 		if (dataPublisherMap.containsKey(tenantDomain)) {
 			return dataPublisherMap.get(tenantDomain);
 		}
@@ -97,10 +135,9 @@ public class DeviceDataPublisher {
 	 * @param tenantDomain  - The tenant domain under which the data publisher will be registered.
 	 * @param dataPublisher - Instance of the LoadBalancingDataPublisher
 	 * @throws DataPublisherAlreadyExistsException -
-	 * If a data publisher has already been registered under the
-	 *                                                                                         tenant domain
+	 * If a data publisher has already been registered under the tenant domain
 	 */
-	public void addDataPublisher(String tenantDomain,
+	private void addDataPublisher(String tenantDomain,
 										DataPublisher dataPublisher)
 			throws DataPublisherAlreadyExistsException {
 		if (dataPublisherMap.containsKey(tenantDomain)) {
@@ -110,23 +147,6 @@ public class DeviceDataPublisher {
 		}
 
 		dataPublisherMap.put(tenantDomain, dataPublisher);
-	}
-
-	public boolean publishEvent(String streamName, String version, Object[] metaDataArray,
-			Object[] correlationDataArray, Object[] payloadDataArray) throws DataPublisherConfigurationException {
-
-
-		DataPublisher dataPublisher = getDataPublisher();
-		if (dataPublisher != null) {
-			String streamId = DataBridgeCommonsUtils.generateStreamId(streamName, version);
-			dataPublisher.tryPublish(streamId, System.currentTimeMillis(),metaDataArray, correlationDataArray,
-									 payloadDataArray);
-
-		} else {
-			return false;
-		}
-
-		return true;
 	}
 
 }

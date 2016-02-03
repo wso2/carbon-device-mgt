@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -41,22 +41,17 @@ public class DeviceAnalyticsServiceComponent {
     private static Log log = LogFactory.getLog(DeviceAnalyticsServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("Initializing device analytics bundle");
-            }
-
-            BundleContext bundleContext = componentContext.getBundleContext();
-
-            bundleContext.registerService(DeviceAnalyticsService.class, new DeviceAnalyticsServiceImpl(), null);
-
-            if (log.isDebugEnabled()) {
-                log.debug("Device management analytics bundle has been successfully initialized");
-            }
-        } catch (Throwable e) {
-            log.error("Error occurred while initializing device management analytics bundle", e);
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing device analytics bundle");
         }
 
+        BundleContext bundleContext = componentContext.getBundleContext();
+
+        bundleContext.registerService(DeviceAnalyticsService.class, new DeviceAnalyticsServiceImpl(), null);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Device management analytics bundle has been successfully initialized");
+        }
     }
 
     protected void deactivate(ComponentContext componentContext) {
@@ -86,9 +81,4 @@ public class DeviceAnalyticsServiceComponent {
         }
         DeviceAnalyticsDataHolder.getInstance().setAnalyticsDataAPI(null);
     }
-
-
-
-
-
 }

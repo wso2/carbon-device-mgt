@@ -48,7 +48,7 @@ import java.util.List;
 
 	@Context  //injected response proxy supporting multiple thread
 	private HttpServletResponse response;
-
+    //TODO this needs to be removed.
     @Path("/stats/device/type/{type}/identifier/{identifier}")
 	@GET
 	@Consumes("application/json")
@@ -69,7 +69,7 @@ import java.util.List;
         String query = "owner:" + user + " AND deviceId:" + identifier + " AND deviceType:" + type +
                     " AND time : [" + fromDate + " TO " + toDate + "]";
         try {
-            List<Record> records = deviceAnalyticsService.getAllSensorEventsForDevice(table, query);
+            List<Record> records = deviceAnalyticsService.getAllEventsForDevice(table, query);
 
             Collections.sort(records, new Comparator<Record>() {
                 @Override

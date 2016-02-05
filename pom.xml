@@ -1730,7 +1730,7 @@
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>4.3.1</carbon.api.mgt.version>
+        <carbon.api.mgt.version>4.3.2-SNAPSHOT</carbon.api.mgt.version>
 
         <!--CXF properties-->
         <cxf.version>2.7.16</cxf.version>

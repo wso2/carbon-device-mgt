@@ -26,7 +26,9 @@ import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.cert.CertIOException;
@@ -64,6 +66,7 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.*;
@@ -342,12 +345,33 @@ public class CertificateGenerator {
 //            }
 //        }
 
+        RDN[] certUniqueIdRDN;
+        BigInteger certUniqueIdentifier;
+
+        // IMPORTANT: "Serial-Number" of the certificate used when creating it, is set as its "Alias" to save to keystore.
+        if (request.getSubject().getRDNs(BCStyle.UNIQUE_IDENTIFIER).length != 0) {
+            // if certificate attribute "UNIQUE_IDENTIFIER" exists use its hash as the "Serial-Number" for the certificate.
+            certUniqueIdRDN = request.getSubject().getRDNs(BCStyle.UNIQUE_IDENTIFIER);
+            certUniqueIdentifier = BigInteger.valueOf(certUniqueIdRDN[0].getFirst().getValue().toString().hashCode());
+
+        } else if (request.getSubject().getRDNs(BCStyle.SERIALNUMBER).length != 0) {
+            // else if certificate attribute "SERIAL_NUMBER" exists use its hash as the "Serial-Number" for the certificate.
+            certUniqueIdRDN = request.getSubject().getRDNs(BCStyle.SERIALNUMBER);
+            certUniqueIdentifier = BigInteger.valueOf(certUniqueIdRDN[0].getFirst().getValue().toString().hashCode());
+
+        } else {
+            // else get the BigInteger Value of the integer that is the current system-time in millis as the "Serial-Number".
+            certUniqueIdentifier = CommonUtil.generateSerialNumber();
+        }
+
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
-                new X500Name(issueSubject), CommonUtil.generateSerialNumber(),
-                validityBeginDate, validityEndDate, certSubject, request.getSubjectPublicKeyInfo());
+                new X500Name(issueSubject), certUniqueIdentifier, validityBeginDate, validityEndDate,
+                certSubject, request.getSubjectPublicKeyInfo());
+
 
         ContentSigner sigGen;
         X509Certificate issuedCert;
+
         try {
             certificateBuilder.addExtension(X509Extension.keyUsage, true, new KeyUsage(
                     KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
@@ -532,6 +556,7 @@ public class CertificateGenerator {
         }
 
         try {
+            // the serial number of the certificate used for its creation is set as its alias.
             String serialNumber = certificate.getSerialNumber().toString();
             byte[] bytes = Serializer.serialize(certificate);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);

@@ -115,7 +115,6 @@ $(document).ready(function () {
                         // Refreshing with success message
                         $("#user-create-form").addClass("hidden");
                         $("#user-created-msg").removeClass("hidden");
-                        generateQRCode("#user-created-msg .qr-code");
                     }
                 }, function (data) {
                     if (data["status"] == 409) {

@@ -171,6 +171,11 @@ function getDateTime(from, to) {
 }
 
 function getStats(from, to) {
+
+    var tzOffset = new Date().getTimezoneOffset() * 60 / 1000;
+    from += tzOffset;
+    to += tzOffset;
+
     $('#div-chart').html('<div style="height:200px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
     var requestData = {};
     var getStatsRequest;
@@ -266,6 +271,8 @@ function drawLineGraph(graphId, chartDataRaw) {
         series: []
     };
 
+    var tzOffset = new Date().getTimezoneOffset() * 60;
+
     var k = 0;
     var min = Number.MAX_VALUE;
     var max = Number.MIN_VALUE;
@@ -283,7 +290,7 @@ function drawLineGraph(graphId, chartDataRaw) {
                     min_val = y_val;
                 }
                 chartData.push({
-                    x: parseInt(chartDataRaw[i].stats[j].time),
+                    x: parseInt(chartDataRaw[i].stats[j].time) - tzOffset,
                     y: y_val
                 });
             }
@@ -342,7 +349,13 @@ function drawLineGraph(graphId, chartDataRaw) {
     });
 
     var hoverDetail = new Rickshaw.Graph.HoverDetail({
-        graph: graph
+        graph: graph,
+        formatter: function(series, x, y) {
+            var date = '<span class="date">' + moment((x + tzOffset) * 1000).format('Do MMM YYYY h:mm:ss a') + '</span>';
+            var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+            var content = swatch + series.name + ": " + parseInt(y) + '<br>' + date;
+            return content;
+        }
     });
 
     var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
@@ -392,13 +405,15 @@ function drawBarGraph(graphId, chartDataRaw) {
         series: []
     };
 
+    var tzOffset = new Date().getTimezoneOffset() * 60;
+
     var k = 0;
     for (var i = 0; i < chartDataRaw.length; i++) {
         var chartData = [];
         if (chartDataRaw[i].stats.length > 0) {
             for (var j = 0; j < chartDataRaw[i].stats.length; j++) {
                 chartData.push({
-                    x: parseInt(chartDataRaw[i].stats[j].time),
+                    x: parseInt(chartDataRaw[i].stats[j].time) - tzOffset,
                     y: parseInt(chartDataRaw[i].stats[j].value > 0 ? 1 : 0)
                 });
             }

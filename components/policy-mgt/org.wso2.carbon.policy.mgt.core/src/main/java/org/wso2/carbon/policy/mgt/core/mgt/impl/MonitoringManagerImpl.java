@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -107,6 +107,9 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     complianceData.setPolicyId(policy.getId());
                 } catch (SQLException e) {
                     throw new PolicyComplianceException("Error occurred while opening a data source connection", e);
+                } catch (MonitoringDAOException e) {
+                    throw new PolicyComplianceException("Unable to add the none compliance features to database for device " +
+                                                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
                 } finally {
                     PolicyManagementDAOFactory.closeConnection();
                 }
@@ -121,10 +124,15 @@ public class MonitoringManagerImpl implements MonitoringManager {
                         if (log.isDebugEnabled()) {
                             log.debug("Compliance status primary key " + complianceData.getId());
                         }
+                        monitoringDAO.deleteNoneComplianceData(complianceData.getId());
                         monitoringDAO.addNonComplianceFeatures(complianceData.getId(), device.getId(),
                                 complianceFeatures);
 
                         PolicyManagementDAOFactory.commitTransaction();
+                    } catch (MonitoringDAOException e) {
+                        PolicyManagementDAOFactory.rollbackTransaction();
+                        throw new PolicyComplianceException("Unable to add the none compliance features to database for device " +
+                                                            deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
                     } finally {
                         PolicyManagementDAOFactory.closeConnection();
                     }
@@ -144,6 +152,10 @@ public class MonitoringManagerImpl implements MonitoringManager {
                                 .getId());
                         monitoringDAO.deleteNoneComplianceData(complianceData.getId());
                         PolicyManagementDAOFactory.commitTransaction();
+                    } catch (MonitoringDAOException e) {
+                        PolicyManagementDAOFactory.rollbackTransaction();
+                        throw new PolicyComplianceException("Unable to remove the none compliance features from database for device " +
+                                                            deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
                     } finally {
                         PolicyManagementDAOFactory.closeConnection();
                     }
@@ -154,16 +166,10 @@ public class MonitoringManagerImpl implements MonitoringManager {
                 }
             }
         } catch (DeviceManagementException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyComplianceException("Unable tor retrieve device data from DB for " +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
         } catch (PolicyManagerDAOException | PolicyManagementException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyComplianceException("Unable tor retrieve policy data from DB for device " +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
-        } catch (MonitoringDAOException e) {
-            PolicyManagementDAOFactory.rollbackTransaction();
-            throw new PolicyComplianceException("Unable to add the none compliance features to database for device " +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
         }
         return complianceFeatures;

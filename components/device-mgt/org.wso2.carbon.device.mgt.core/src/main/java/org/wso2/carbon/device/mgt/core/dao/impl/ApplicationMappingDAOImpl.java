@@ -1,21 +1,21 @@
 /*
- *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *   WSO2 Inc. licenses this file to you under the Apache License,
- *   Version 2.0 (the "License"); you may not use this file except
- *   in compliance with the License.
- *   You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing,
- *   software distributed under the License is distributed on an
- *   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *   KIND, either express or implied.  See the License for the
- *   specific language governing permissions and limitations
- *   under the License.
- *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
@@ -78,6 +78,8 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
             conn = this.getConnection();
             String sql = "INSERT INTO DM_DEVICE_APPLICATION_MAPPING (DEVICE_ID, APPLICATION_ID, " +
                     "TENANT_ID) VALUES (?, ?, ?)";
+
+            conn.setAutoCommit(false);
             stmt = conn.prepareStatement(sql);
 
             for (int applicationId : applicationIds) {
@@ -87,12 +89,6 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-
-//            rs = stmt.getGeneratedKeys();
-//            while (rs.next()) {
-//                mappingIds.add(rs.getInt(1));
-//            }
-//            return mappingIds;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mappings", e);
         } finally {
@@ -106,18 +102,17 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         Connection conn;
         PreparedStatement stmt = null;
         try {
-            conn = this.getConnection();
             String sql = "DELETE DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
 
-            for (Integer appId : appIdList) {
+            conn = this.getConnection();
+            for (int appId : appIdList) {
+                stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, deviceId);
                 stmt.setInt(2, appId);
                 stmt.setInt(3, tenantId);
-                stmt.addBatch();
+                stmt.execute();
             }
-            stmt.executeBatch();
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mapping", e);
         } finally {

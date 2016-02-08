@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,21 +11,33 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.certificate.mgt.core.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.certificate.mgt.core.config.CertificateConfigurationManager;
+import org.wso2.carbon.certificate.mgt.core.config.CertificateManagementConfig;
+import org.wso2.carbon.certificate.mgt.core.config.datasource.DataSourceConfig;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 /**
  * @scr.component name="org.wso2.carbon.certificate.mgt" immediate="true"
+ * @scr.reference name="org.wso2.carbon.device.manager"
+ * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setDeviceManagementService"
+ * unbind="unsetDeviceManagementService"
  */
 public class CertificateManagementServiceComponent {
 
@@ -37,10 +49,15 @@ public class CertificateManagementServiceComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing certificate management core bundle");
             }
+            CertificateConfigurationManager.getInstance().initConfig();
+            CertificateManagementConfig config = CertificateConfigurationManager.getInstance().getPolicyManagementConfig();
+            DataSourceConfig dsConfig = config.getCertificateManagementRepository().getDataSourceConfig();
+            CertificateManagementDAOFactory.init(dsConfig);
 
             BundleContext bundleContext = componentContext.getBundleContext();
             bundleContext.registerService(CertificateManagementService.class.getName(),
                     CertificateManagementServiceImpl.getInstance(), null);
+
 
             if (log.isDebugEnabled()) {
                 log.debug("Certificate management core bundle has been successfully initialized");
@@ -53,6 +70,20 @@ public class CertificateManagementServiceComponent {
     @SuppressWarnings("unused")
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
+    }
+
+    protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Device Management Service");
+        }
+        CertificateManagementDataHolder.getInstance().setDeviceManagementService(deviceManagerService);
+    }
+
+    protected void unsetDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing Device Management Service");
+        }
+        CertificateManagementDataHolder.getInstance().setDeviceManagementService(null);
     }
 
 }

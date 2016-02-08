@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-~ Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-~
-~ WSO2 Inc. licenses this file to you under the Apache License,
-~ Version 2.0 (the "License"); you may not use this file except
-~ in compliance with the License.
-~ You may obtain a copy of the License at
-~
-~    http://www.apache.org/licenses/LICENSE-2.0
-~
-~ Unless required by applicable law or agreed to in writing,
-~ software distributed under the License is distributed on an
-~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~ KIND, either express or implied.  See the License for the
-~ specific language governing permissions and limitations
-~ under the License.
--->
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>webapp-authenticator-framework</artifactId>
-        <version>0.9.2-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>org.wso2.carbon.webapp.authenticator.framework</artifactId>
-    <version>0.9.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Web Application Authenticator Framework Bundle</name>
     <description>WSO2 Carbon - Web Application Authenticator Framework Bundle</description>
@@ -73,6 +71,7 @@
                             org.apache.tomcat.util.buf,
                             org.apache.tomcat.util.http,
                             org.osgi.service.component,
+                            org.osgi.framework,
                             org.w3c.dom,
                             org.wso2.carbon.apimgt.api,
                             org.wso2.carbon.apimgt.core.authenticate,
@@ -100,10 +99,39 @@
                             org.wso2.carbon.device.mgt.core.permission.mgt,
                             org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.common.permission.mgt,
-                            org.wso2.carbon.device.mgt.core.scep
+                            org.wso2.carbon.device.mgt.core.scep,
+                            org.apache.axis2,
+                            org.apache.axis2.client,
+                            org.apache.commons.codec.binary,
+                            org.apache.commons.httpclient,
+                            org.wso2.carbon.core.security,
+                            org.apache.axis2.context,
+                            org.apache.commons.httpclient.params,
+                            org.apache.commons.pool,
+                            org.apache.commons.pool.impl,
+                            org.apache.http.conn,
+                            org.apache.http.impl.conn,
+                            javax.xml.soap,
+                            javax.xml.stream,
+                            org.apache.axiom.soap,
+                            org.apache.axiom.soap.impl.builder,
+                            org.apache.axiom.om,
+                            org.apache.axiom.om.impl.builder,
+                            org.apache.axiom.om.util
                         </Import-Package>
-                        <!--<Fragment-Host>tomcat</Fragment-Host>-->
                     </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
+                    </systemPropertyVariables>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                 </configuration>
             </plugin>
         </plugins>
@@ -169,6 +197,22 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient.wso2</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-pool.wso2</groupId>
+            <artifactId>commons-pool</artifactId>
         </dependency>
     </dependencies>
 

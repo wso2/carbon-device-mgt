@@ -1,21 +1,21 @@
 /*
- *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *   WSO2 Inc. licenses this file to you under the Apache License,
- *   Version 2.0 (the "License"); you may not use this file except
- *   in compliance with the License.
- *   You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing,
- *   software distributed under the License is distributed on an
- *   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *   KIND, either express or implied.  See the License for the
- *   specific language governing permissions and limitations
- *   under the License.
- *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
@@ -26,9 +26,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +41,8 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
         int applicationId = -1;
         try {
             conn = this.getConnection();
@@ -58,7 +58,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             stmt.setString(6, application.getLocationUrl());
             stmt.setString(7, application.getImageUrl());
             stmt.setInt(8, tenantId);
-            stmt.setObject(9, application.getAppProperties());
+
+            bao = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bao);
+            oos.writeObject(application.getAppProperties());
+            stmt.setBytes(9, bao.toByteArray());
+
             stmt.setString(10, application.getApplicationIdentifier());
             stmt.execute();
 
@@ -70,7 +75,23 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding application '" +
                     application.getName() + "'", e);
+        } catch (IOException e) {
+            throw new DeviceManagementDAOException("Error occurred while serializing application properties object", e);
         } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
     }
@@ -81,6 +102,8 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs;
+        ByteArrayOutputStream bao = null;
+        ObjectOutputStream oos = null;
         List<Integer> applicationIds = new ArrayList<>();
         try {
             conn = this.getConnection();
@@ -99,7 +122,12 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 stmt.setString(6, application.getLocationUrl());
                 stmt.setString(7, application.getImageUrl());
                 stmt.setInt(8, tenantId);
-                stmt.setObject(9, application.getAppProperties());
+
+                bao = new ByteArrayOutputStream();
+                oos = new ObjectOutputStream(bao);
+                oos.writeObject(application.getAppProperties());
+                stmt.setBytes(9, bao.toByteArray());
+
                 stmt.setString(10, application.getApplicationIdentifier());
                 stmt.executeUpdate();
 
@@ -111,7 +139,23 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             return applicationIds;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding bulk application list", e);
+        } catch (IOException e) {
+            throw new DeviceManagementDAOException("Error occurred while serializing application properties object", e);
         } finally {
+            if (bao != null) {
+                try {
+                    bao.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
@@ -190,6 +234,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         PreparedStatement stmt = null;
         List<Application> applications = new ArrayList<>();
         Application application;
+        ResultSet rs = null;
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("Select ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
@@ -200,7 +245,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                     "app.ID = APPMAP.APPLICATION_ID ");
 
             stmt.setInt(1, deviceId);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 application = loadApplication(rs);
@@ -210,7 +255,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             throw new DeviceManagementDAOException("SQL Error occurred while retrieving the list of Applications " +
                     "installed in device id '" + deviceId, e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return applications;
     }

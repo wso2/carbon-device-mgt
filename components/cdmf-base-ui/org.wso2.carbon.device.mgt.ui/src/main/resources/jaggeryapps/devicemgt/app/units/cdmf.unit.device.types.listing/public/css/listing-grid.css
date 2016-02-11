@@ -19,3 +19,25 @@
 .table.list-table.grid-view .text-left-on-grid-view{
     display: none;
 }
+
+.try-device-container {
+    position: relative;
+}
+
+.try-device-image {
+    position: absolute;
+    top: 20px;
+    width: 192px;
+    background: #11375b;
+}
+
+.try-device-text {
+    font-size: 22px;
+    margin: 80px 210px;
+    font-weight: 300;
+}
+
+.try-device-message {
+    border-color: transparent;
+    margin: 20px 10px;
+}

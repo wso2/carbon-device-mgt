@@ -43,30 +43,30 @@ function onRequest(context) {
                     deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
                 }
             }
-            deviceTypesList.push({
-                "hasCustTemplate": false,
-                "deviceTypeLabel": deviceTypeLabel,
-                "deviceTypeName": deviceTypes[i].name,
-                "deviceCategory": deviceCategory,
-                "deviceTypeId": deviceTypes[i].id
-            });
-            //if (deviceCategory == 'virtual'){
-            //    virtualDeviceTypesList.push({
-            //        "hasCustTemplate": false,
-            //        "deviceTypeLabel": deviceTypeLabel,
-            //        "deviceTypeName": deviceTypes[i].name,
-            //        "deviceCategory": deviceCategory,
-            //        "deviceTypeId": deviceTypes[i].id
-            //    });
-            //}else{
-            //    deviceTypesList.push({
-            //        "hasCustTemplate": false,
-            //        "deviceTypeLabel": deviceTypeLabel,
-            //        "deviceTypeName": deviceTypes[i].name,
-            //        "deviceCategory": deviceCategory,
-            //        "deviceTypeId": deviceTypes[i].id
-            //    });
-            //}
+            //deviceTypesList.push({
+            //    "hasCustTemplate": false,
+            //    "deviceTypeLabel": deviceTypeLabel,
+            //    "deviceTypeName": deviceTypes[i].name,
+            //    "deviceCategory": deviceCategory,
+            //    "deviceTypeId": deviceTypes[i].id
+            //});
+            if (deviceCategory == 'virtual'){
+                virtualDeviceTypesList.push({
+                    "hasCustTemplate": false,
+                    "deviceTypeLabel": deviceTypeLabel,
+                    "deviceTypeName": deviceTypes[i].name,
+                    "deviceCategory": deviceCategory,
+                    "deviceTypeId": deviceTypes[i].id
+                });
+            }else{
+                deviceTypesList.push({
+                    "hasCustTemplate": false,
+                    "deviceTypeLabel": deviceTypeLabel,
+                    "deviceTypeName": deviceTypes[i].name,
+                    "deviceCategory": deviceCategory,
+                    "deviceTypeId": deviceTypes[i].id
+                });
+            }
         }
         if (virtualDeviceTypesList.length > 0) {
             viewModel.virtualDeviceTypesList = virtualDeviceTypesList;

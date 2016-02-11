@@ -14,10 +14,7 @@
             <th></th>
         </tr>
         </thead>
-
         <tbody id="ast-container">
-
-        <br class="c-both"/>
         </tbody>
     </table>
 </div>
@@ -35,12 +32,12 @@
             <span class="page-sub-title">Virtual Devices</span>
         </div>
     </div>
+    <h3 style="margin-left: 10px;">Don't have a device?</h3>
     {{#each virtualDeviceTypesList}}
         <div class="try-device-container">
             <div class="message message-info try-device-message">
-                <p class="try-device-text">Don't have a device?
-                    <button
-                            href="{{appContext}}/device/{{deviceTypeName}}/enroll"
+                <p class="try-device-text">
+                    <button onclick="location.href='{{@app.context}}/device/{{deviceTypeName}}/enroll'"
                             class="btn btn-default btn-primary">Try
                     </button>
                                            our {{deviceTypeLabel}} device
@@ -54,30 +51,6 @@
 
 {{#zone "topCss"}}
     {{css "css/listing-grid.css"}}
-    <style>
-        .try-device-container {
-            position: relative;
-        }
-
-        .try-device-image {
-            position: absolute;
-            top: 20px;
-            left: 10px;
-            width: 192px;
-            background: #11375b;
-        }
-
-        .try-device-text {
-            font-size: 22px;
-            margin: 80px 190px;
-            font-weight: 300;
-        }
-
-        .try-device-message {
-            border-color: transparent;
-            margin: 20px 10px;
-        }
-    </style>
 {{/zone}}
 {{#zone "bottomJs"}}
     <script id="device-listing" data-current-user="{{currentUser.username}}"

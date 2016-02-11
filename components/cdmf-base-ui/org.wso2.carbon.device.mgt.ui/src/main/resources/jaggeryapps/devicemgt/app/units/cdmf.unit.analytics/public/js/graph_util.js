@@ -121,9 +121,9 @@ $(document).ready(function () {
         .bind('datepicker-apply', function (event, dateRange) {
             $(this).addClass('active');
             $(this).siblings().removeClass('active');
-            fromDate = dateRange.date1 != "Invalid Date" ? dateRange.date1.getTime() / 1000 : null;
-            toDate = dateRange.date2 != "Invalid Date" ? dateRange.date2.getTime() / 1000 : null;
-            getStats(fromDate, toDate);
+            fromDate = dateRange.date1 != "Invalid Date" ? dateRange.date1.getTime() : null;
+            toDate = dateRange.date2 != "Invalid Date" ? dateRange.date2.getTime() : null;
+            getDateTime(fromDate, toDate);
         }
     );
     getDateTime(currentDay.getTime() - 3600000, currentDay.getTime());

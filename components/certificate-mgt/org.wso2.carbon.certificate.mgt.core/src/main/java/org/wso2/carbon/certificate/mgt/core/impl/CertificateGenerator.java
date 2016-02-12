@@ -53,7 +53,6 @@ import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOExceptio
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.dto.CAStatus;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
-import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
@@ -594,7 +593,8 @@ public class CertificateGenerator {
     }
 
     /**
-     * Get Signed certificate by parsing certificate.
+     * This method is used to retrieve signed certificate from certificate signing request.
+     *
      * @param binarySecurityToken CSR that comes from the client as a String value.It is base 64 encoded request
      *                            security token.
      * @return Return signed certificate in X508Certificate type object.
@@ -611,9 +611,7 @@ public class CertificateGenerator {
         try {
             certificationRequest = new PKCS10CertificationRequest(byteArrayBst);
         } catch (IOException e) {
-            String msg = "CSR cannot be recovered.";
-            log.error(msg, e);
-            throw new KeystoreException(msg, e);
+            throw new KeystoreException("CSR cannot be recovered.", e);
         }
         X509Certificate signedCertificate = generateCertificateFromCSR(privateKeyCA, certificationRequest,
                 certCA.getIssuerX500Principal().getName());

@@ -35,12 +35,13 @@ public class OAuthValidatorFactory {
 
     /**
      * The method check the configuration and provide the appropriate implementation for OAuth2TokenValidator
+     *
      * @return OAuth2TokenValidator
      */
     public static OAuth2TokenValidator getValidator() throws IllegalArgumentException {
         AuthenticatorsConfiguration authenticatorsConfiguration = AuthenticatorsConfiguration.getInstance();
         AuthenticatorsConfiguration.AuthenticatorConfig authenticatorConfig = authenticatorsConfiguration.
-                                                 getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
+                getAuthenticatorConfig(OauthAuthenticatorConstants.AUTHENTICATOR_NAME);
         boolean isRemote;
         String hostUrl;
         String adminUserName;
@@ -51,7 +52,7 @@ public class OAuthValidatorFactory {
             hostUrl = authenticatorConfig.getParameters().get(AUTHENTICATOR_CONFIG_HOST_URL);
             adminUserName = authenticatorConfig.getParameters().get(AUTHENTICATOR_CONFIG_ADMIN_USERNAME);
             adminPassword = authenticatorConfig.getParameters().get(AUTHENTICATOR_CONFIG_ADMIN_PASSWORD);
-        }else{
+        } else {
             throw new IllegalArgumentException("Configuration parameters need to be defined in Authenticators.xml");
         }
         if (isRemote) {

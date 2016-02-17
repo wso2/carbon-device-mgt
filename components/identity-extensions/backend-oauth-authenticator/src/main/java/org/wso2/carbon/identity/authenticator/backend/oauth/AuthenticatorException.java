@@ -36,6 +36,4 @@ public class AuthenticatorException extends Exception {
     public AuthenticatorException(String message, Throwable e) {
         super(message, e);
     }
-
-
 }

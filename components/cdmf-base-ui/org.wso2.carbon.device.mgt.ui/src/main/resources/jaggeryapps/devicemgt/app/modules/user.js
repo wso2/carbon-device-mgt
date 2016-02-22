@@ -65,37 +65,25 @@ var userModule = function () {
      * }
      */
     privateMethods.callBackend = function (url, method) {
-        switch (method) {
-            case constants.HTTP_GET:
-                var response = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-                        var response = {};
-                        response.content = responsePayload["responseContent"];
-                        if(responsePayload["responseContent"] == null && responsePayload != null){
-                            response.content = responsePayload;
-                        }
-                        response.status = "success";
-                        return response;
-                    },
-                    function (responsePayload) {
-                        var response = {};
-                        response.content = responsePayload;
-                        response.status = "error";
-                        return response;
-                    });
+        if (constants.HTTP_GET == method) {
+            var response = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
+                var response = {};
+                response.content = responsePayload["responseContent"];
+                if (responsePayload["responseContent"] == null && responsePayload != null) {
+                    response.content = responsePayload;
+                }
+                response.status = "success";
                 return response;
-                break;
-            case constants.HTTP_POST:
-                //todo
-                log.error("programing error");
-                break;
-            case constants.HTTP_PUT:
-                //todo
-                log.error("programing error");
-                break;
-            case constants.HTTP_DELETE:
-                //todo
-                log.error("programing error");
-                break;
+            },
+            function (responsePayload) {
+                var response = {};
+                response.content = responsePayload;
+                response.status = "error";
+                return response;
+            });
+            return response;
+        } else {
+            log.error("Programming error : This method only support HTTP GET requests.");
         }
     };
 
@@ -103,7 +91,7 @@ var userModule = function () {
      @Deprecated
      */
     /**
-     * Add user to devicemgt-user-store.
+     * Add user to mdm-user-store.
      *
      * @param username Username of the user
      * @param firstname First name of the user
@@ -151,67 +139,11 @@ var userModule = function () {
         }
     };
 
-    /**
-     * Register user to dc-user-store.
-     *
-     * @param username Username of the user
-     * @param firstname First name of the user
-     * @param lastname Last name of the user
-     * @param emailAddress Email address of the user
-     * @param password Password of the user
-     * @param userRoles Roles assigned to the user
-     *
-     * @returns {number} HTTP Status code 201 if succeeded, 409 if user already exists
-     */
-    publicMethods.registerUser = function (username, firstname, lastname, emailAddress, password, userRoles) {
-        var carbon = require('carbon');
-        var tenantId = carbon.server.tenantId();
-        var url = carbon.server.address('https') + "/admin/services";
-        var server = new carbon.server.Server(url);
-        var userManager = new carbon.user.UserManager(server, tenantId);
-
-        try {
-            if (userManager.userExists(username)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("A user with name '" + username + "' already exists.");
-                }
-                // http status code 409 refers to - conflict.
-                return 409;
-            } else {
-                var defaultUserClaims = privateMethods.buildDefaultUserClaims(firstname, lastname, emailAddress);
-
-                for (var role in userRoles){
-                    if (userRoles[role] == "iot-admin" && !userManager.roleExists("iot-admin")){
-                        var permissions = {
-                            '/permission/admin/device-mgt/devices': ['ui.execute'],
-                            '/permission/admin/device-mgt/policies': ['ui.execute'],
-                            '/permission/admin/device-mgt/user': ['ui.execute'],
-                            '/permission/admin/device-mgt/users': ['ui.execute'],
-                            '/permission/admin/device-mgt/admin/devices': ['ui.execute'],
-                            '/permission/admin/device-mgt/admin/groups': ['ui.execute'],
-                            '/permission/admin/device-mgt/admin/policies': ['ui.execute']
-                        };
-                        userManager.addRole("iot-admin", ["admin"], permissions);
-                    }
-                }
-
-                userManager.addUser(username, password, userRoles, defaultUserClaims, "default");
-                if (log.isDebugEnabled()) {
-                    log.debug("A new user with name '" + username + "' was created.");
-                }
-                // http status code 201 refers to - created.
-                return 201;
-            }
-        } catch (e) {
-            throw e;
-        }
-    };
-
     /*
      @Deprecated
      */
     /**
-     * Remove an existing user from devicemgt-user-store.
+     * Remove an existing user from mdm-user-store.
      *
      * @param username Username of the user
      * @returns {number} HTTP Status code 200 if succeeded, 409 if the user does not exist
@@ -309,14 +241,14 @@ var userModule = function () {
      */
     /**
      * Send an initial invitation email to a user with username/password attached
-     * for the very-first enrollment with WSO2 CDM.
+     * for the very-first enrollment with WSO2 MDM.
      *
      * @param username Username of the user
      * @param password Password of the user
      */
     privateMethods.inviteUserToEnroll = function (username, password) {
         var carbon = require('carbon');
-        var enrollmentURL = devicemgtProps.httpsURL + devicemgtProps.appContext + "download-agent";
+        var enrollmentURL = devicemgtProps.generalConfig.host + devicemgtProps.webAgentContext + "download-agent";
         var carbonUser = session.get(constants.USER_SESSION_KEY);
         var utility = require('/app/modules/utility.js').utility;
         if (!carbonUser) {
@@ -376,7 +308,7 @@ var userModule = function () {
             log.error("User object was not found in the session");
             throw constants.ERRORS.USER_NOT_FOUND;
         }
-        var enrollmentURL = devicemgtProps.httpsURL + devicemgtProps.appContext + "download-agent";
+        var enrollmentURL = devicemgtProps.generalConfig.host + devicemgtProps.webAgentContext + "download-agent";
 
         try {
             utility.startTenantFlow(carbonUser);
@@ -511,6 +443,30 @@ var userModule = function () {
         }
     };
 
+    /*
+     @Updated
+     */
+    /**
+     * Get User Roles from user store (Internal roles not included).
+     */
+    publicMethods.getRolesByUserStore = function (userStore) {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        var utility = require('/app/modules/utility.js')["utility"];
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/" + encodeURIComponent(userStore);
+            return privateMethods.callBackend(url, constants.HTTP_GET);
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
     /**
      * Get Platforms.
      */
@@ -546,7 +502,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/" + roleName;
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "roles/role?rolename=" + encodeURIComponent(roleName);
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             return response;
         } catch (e) {
@@ -557,7 +513,7 @@ var userModule = function () {
     };
 
     /**
-     * Authenticate a user when he or she attempts to login to Devicemgt.
+     * Authenticate a user when he or she attempts to login to MDM.
      *
      * @param username Username of the user
      * @param password Password of the user
@@ -570,13 +526,18 @@ var userModule = function () {
         try {
             // check if the user is an authenticated user.
             var isAuthenticated = carbonServer.authenticate(username, password);
-            if (isAuthenticated) {
-                var tenantUser = carbonModule.server.tenantUser(username);
-                session.put(constants.USER_SESSION_KEY, tenantUser);
-                successCallback(tenantUser);
-            } else {
-                failureCallback();
+            if (!isAuthenticated) {
+                failureCallback("authentication");
+                return;
             }
+            var tenantUser = carbonModule.server.tenantUser(username);
+            var isAuthorizedToLogin = privateMethods.isAuthorizedToLogin(tenantUser);
+            if (!isAuthorizedToLogin) {
+                failureCallback("authorization");
+                return;
+            }
+            session.put(constants.USER_SESSION_KEY, tenantUser);
+            successCallback(tenantUser);
         } catch (e) {
             throw e;
         }
@@ -611,6 +572,21 @@ var userModule = function () {
         }
     };
 
+    privateMethods.isAuthorizedToLogin = function(carbonUser) {
+        var utility = require('/app/modules/utility.js').utility;
+        try {
+            utility.startTenantFlow(carbonUser);
+            var tenantId = carbon.server.tenantId();
+            var userManager = new carbon.user.UserManager(server, tenantId);
+            var user = new carbon.user.User(userManager, carbonUser.username);
+            return user.isAuthorized("/permission/admin/login", "ui.execute");
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
     publicMethods.getUIPermissions = function () {
         var permissions = {};
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/devices/list") ||
@@ -635,6 +611,9 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/add")) {
             permissions["ADD_USER"] = true;
         }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/remove")) {
+            permissions["REMOVE_USER"] = true;
+        }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/roles/add")) {
             permissions["ADD_ROLE"] = true;
         }
@@ -650,6 +629,10 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/platform-configs/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
         }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
+            permissions["LIST_OWN_DEVICES"] = true;
+        }
+
         return permissions;
     };
 

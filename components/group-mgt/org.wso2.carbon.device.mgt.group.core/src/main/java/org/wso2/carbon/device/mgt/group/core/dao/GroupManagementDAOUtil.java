@@ -80,7 +80,6 @@ public final class GroupManagementDAOUtil {
         }
     }
 
-
     public static DeviceGroupBuilder loadGroup(ResultSet resultSet) throws SQLException {
         DeviceGroupBuilder group = new DeviceGroupBuilder(new DeviceGroup());
         group.setId(resultSet.getInt("ID"));

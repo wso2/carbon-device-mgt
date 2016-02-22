@@ -29,9 +29,10 @@ var util = function () {
     module.getDyanmicCredentials = function (owner) {
         var payload = {
             "callbackUrl": devicemgtProps.callBackUrl,
-            "clientName": "mdm",
+            "clientName": "devicemgt",
             "tokenScope": "admin",
             "owner": adminUserName,
+            "applicationType": "webapp",
             "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer",
             "saasApp" :true
         };
@@ -89,9 +90,11 @@ var util = function () {
             tokenPair.refreshToken = data.refresh_token;
             tokenPair.accessToken = data.access_token;
         } else if (xhr.status == 403) {
-            throw "Error in obtaining token with Password grant type";
+            log.error("Error in obtaining token with Password grant type");
+            return null;
         } else {
-            throw "Error in obtaining token with Password grant type";
+            log.error("Error in obtaining token with Password grant type");
+            return null;
         }
         return tokenPair;
     };
@@ -143,7 +146,6 @@ var util = function () {
         if (scope) {
             url = url + "&scope=" + scope
         }
-        new Log().info(url);
         xhr.send(url);
         delete clientData;
         var tokenPair = {};

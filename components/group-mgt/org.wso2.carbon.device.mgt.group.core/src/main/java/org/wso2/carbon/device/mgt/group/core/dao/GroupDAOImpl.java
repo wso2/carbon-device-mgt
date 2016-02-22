@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.device.mgt.group.core.dao;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.group.common.DeviceGroup;
 import org.wso2.carbon.device.mgt.group.core.internal.DeviceGroupBuilder;
 
@@ -35,8 +33,6 @@ import java.util.List;
  * This class represents implementation of GroupDAO
  */
 public class GroupDAOImpl implements GroupDAO {
-
-    private static final Log log = LogFactory.getLog(GroupDAOImpl.class);
 
     @Override
     public int addGroup(DeviceGroup deviceGroup, int tenantId) throws GroupManagementDAOException {
@@ -63,7 +59,6 @@ public class GroupDAOImpl implements GroupDAO {
         } catch (SQLException e) {
             String msg = "Error occurred while adding deviceGroup " +
                          "'" + deviceGroup.getName() + "'";
-            log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
@@ -87,7 +82,6 @@ public class GroupDAOImpl implements GroupDAO {
         } catch (SQLException e) {
             String msg = "Error occurred while updating deviceGroup " +
                          "'" + deviceGroup.getName() + "'";
-            log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
@@ -106,7 +100,6 @@ public class GroupDAOImpl implements GroupDAO {
         } catch (SQLException e) {
             String msg = "Error occurred while deleting group " +
                          "'" + groupId + "'";
-            log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
@@ -131,7 +124,6 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             String msg = "Error occurred while obtaining Device Group by id: " + groupId;
-            log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
@@ -156,7 +148,6 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             String msg = "Error occurred while listing all groups in tenant: " + tenantId;
-            log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
@@ -183,7 +174,6 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             String msg = "Error occurred while listing Device Groups by name: " + groupName + " in tenant: " + tenantId;
-            log.error(msg, e);
             throw new GroupManagementDAOException(msg, e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);

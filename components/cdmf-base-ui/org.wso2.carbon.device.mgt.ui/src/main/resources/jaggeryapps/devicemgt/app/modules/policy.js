@@ -31,6 +31,75 @@ policyModule = function () {
     var publicMethods = {};
     var privateMethods = {};
 
+    privateMethods.handleGetAllPoliciesError = function (responsePayload) {
+        var response = {};
+        response.status = "error";
+        /* responsePayload == "Scope validation failed"
+         Here the response.context("Scope validation failed") is used other then response.status(401).
+         Reason for this is IDP return 401 as the status in 4 different situations such as,
+         1. UnAuthorized.
+         2. Scope Validation Failed.
+         3. Permission Denied.
+         4. Access Token Expired.
+         5. Access Token Invalid.
+         In these cases in order to identify the correct situation we have to compare the unique value from status and
+         context which is context.
+         */
+        if (responsePayload == "Scope validation failed") {
+            response.content = "Permission Denied";
+        } else {
+            response.content = responsePayload;
+        }
+        return response;
+    };
+
+    privateMethods.handleGetAllPoliciesSuccess = function (responsePayload) {
+        var isUpdated = false;
+        var policyListFromRestEndpoint = responsePayload["responseContent"];
+        var policyListToView = [];
+        var i, policyObjectFromRestEndpoint, policyObjectToView;
+        for (i = 0; i < policyListFromRestEndpoint.length; i++) {
+            // get list object
+            policyObjectFromRestEndpoint = policyListFromRestEndpoint[i];
+            // populate list object values to view-object
+            policyObjectToView = {};
+            policyObjectToView["id"] = policyObjectFromRestEndpoint["id"];
+            policyObjectToView["priorityId"] = policyObjectFromRestEndpoint["priorityId"];
+            policyObjectToView["name"] = policyObjectFromRestEndpoint["policyName"];
+            policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"]["name"];
+            policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
+            policyObjectToView["roles"] = privateMethods.
+            getElementsInAString(policyObjectFromRestEndpoint["roles"]);
+            policyObjectToView["users"] = privateMethods.
+            getElementsInAString(policyObjectFromRestEndpoint["users"]);
+            policyObjectToView["compliance"] = policyObjectFromRestEndpoint["compliance"];
+
+            if (policyObjectFromRestEndpoint["active"] == true && policyObjectFromRestEndpoint["updated"] == true) {
+                policyObjectToView["status"] = "Active/Updated";
+                isUpdated = true;
+            } else if (policyObjectFromRestEndpoint["active"] == true &&
+                       policyObjectFromRestEndpoint["updated"] == false) {
+                policyObjectToView["status"] = "Active";
+            } else if (policyObjectFromRestEndpoint["active"] == false &&
+                       policyObjectFromRestEndpoint["updated"] == true) {
+                policyObjectToView["status"] = "Inactive/Updated";
+                isUpdated = true;
+            } else if (policyObjectFromRestEndpoint["active"] == false &&
+                       policyObjectFromRestEndpoint["updated"] == false) {
+                policyObjectToView["status"] = "Inactive";
+            }
+            // push view-objects to list
+            policyListToView.push(policyObjectToView);
+        }
+        // generate response
+        var response = {};
+        response.updated = isUpdated;
+        response.status = "success";
+        response.content = policyListToView;
+        return response;
+    };
+
+
     publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription, deviceId) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
@@ -88,65 +157,13 @@ policyModule = function () {
             log.error("User object was not found in the session");
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
-        var utility = require('/app/modules/utility.js')["utility"];
         try {
-            utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/policies";
-            var isUpdated = false;
-            var response = serviceInvokers.XMLHttp.get(url,function(responsePayload){
-                var response = {};
-                var policyListFromRestEndpoint = responsePayload["responseContent"];
-                if(!policyListFromRestEndpoint){
-                    throw new Error("Error retrieving policy list from url:" + url);
-                }
-                var policyListToView = [];
-                var i, policyObjectFromRestEndpoint, policyObjectToView;
-                for (i = 0; i < policyListFromRestEndpoint.length; i++) {
-                    // get list object
-                    policyObjectFromRestEndpoint = policyListFromRestEndpoint[i];
-                    // populate list object values to view-object
-                    policyObjectToView = {};
-                    policyObjectToView["id"] = policyObjectFromRestEndpoint["id"];
-                    policyObjectToView["priorityId"] = policyObjectFromRestEndpoint["priorityId"];
-                    policyObjectToView["name"] = policyObjectFromRestEndpoint["policyName"];
-                    policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"]["name"];
-                    policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
-                    policyObjectToView["roles"] = privateMethods.
-                    getElementsInAString(policyObjectFromRestEndpoint["roles"]);
-                    policyObjectToView["users"] = privateMethods.
-                    getElementsInAString(policyObjectFromRestEndpoint["users"]);
-                    policyObjectToView["compliance"] = policyObjectFromRestEndpoint["compliance"];
-
-                    if(policyObjectFromRestEndpoint["active"] == true &&  policyObjectFromRestEndpoint["updated"] == true) {
-                        policyObjectToView["status"] = "Active/Updated";
-                        isUpdated = true;
-                    } else if(policyObjectFromRestEndpoint["active"] == true &&  policyObjectFromRestEndpoint["updated"] == false) {
-                        policyObjectToView["status"] = "Active";
-                    } else if(policyObjectFromRestEndpoint["active"] == false &&  policyObjectFromRestEndpoint["updated"] == true) {
-                        policyObjectToView["status"] = "Inactive/Updated";
-                        isUpdated = true;
-                    } else if(policyObjectFromRestEndpoint["active"] == false &&  policyObjectFromRestEndpoint["updated"] == false) {
-                        policyObjectToView["status"] = "Inactive";
-                    }
-                    policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
-                    // push view-objects to list
-                    policyListToView.push(policyObjectToView);
-                }
-                // generate response
-                response.updated = isUpdated;
-                response.status = "success";
-                response.content = policyListToView;
-                return response;
-            },function(){
-                var response = {};
-                response.status = "error";
-                return response;
-            });
+            var response = serviceInvokers.XMLHttp.
+            get(url, privateMethods.handleGetAllPoliciesSuccess,privateMethods.handleGetAllPoliciesError);
             return response;
         } catch (e) {
             throw e;
-        } finally {
-            utility.endTenantFlow();
         }
     };
 
@@ -202,7 +219,6 @@ policyModule = function () {
      */
     publicMethods.updatePolicyPriorities = function (payload) {
         var carbonUser = session.get(constants.USER_SESSION_KEY);
-        var utility = require('/app/modules/utility.js').utility;
         if (!carbonUser) {
             log.error("User object was not found in the session");
             throw constants.ERRORS.USER_NOT_FOUND;

@@ -33,6 +33,8 @@ deviceModule = function () {
     var ConfigOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
     var CommandOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 
+    var deviceManagementService = utility.getDeviceManagementService();
+
     var publicMethods = {};
     var privateMethods = {};
 
@@ -316,19 +318,22 @@ deviceModule = function () {
     /*
      @Updated
      */
-    publicMethods.getLicense = function (deviceType, languageCode) {
+    publicMethods.getLicense = function (deviceType) {
         var url;
         var license;
-        if(deviceType != null && deviceType != undefined && deviceType == "windows"){
+        if (deviceType == "windows") {
             url = devicemgtProps["httpURL"] + "/mdm-windows-agent/services/device/license";
-        } else{
+        } else if (deviceType == "ios") {
             url = devicemgtProps["httpsURL"] + "/ios-enrollment/license/";
         }
-        serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-            license = responsePayload.text;
-        }, function (responsePayload) {
-            return null;
-        });
+
+        if (url != null && url != undefined) {
+            serviceInvokers.XMLHttp.get(url, function (responsePayload) {
+                license = responsePayload.text;
+            }, function (responsePayload) {
+                return null;
+            });
+        }
         return license;
     };
 

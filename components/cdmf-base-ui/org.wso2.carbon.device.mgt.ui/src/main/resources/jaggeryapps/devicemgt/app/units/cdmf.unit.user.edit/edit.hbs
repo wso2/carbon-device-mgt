@@ -15,12 +15,12 @@
                             <i class="icon fw fw-error"></i><span></span>
                         </div>
                         <label class="wr-input-label">
-                            User Name * <br>
+                            User Name <br>
                         </label>
-
                         <div class="wr-input-control">
-                            <input type="text" id="username" class="form-control"
-                                   value="{{editUser.username}}" disabled/>
+                            <input type="text" id="username" data-regex="{{usernameJSRegEx}}"
+                                   data-errormsg="{{usernameRegExViolationErrorMsg}}"
+                                   class="form-control" value="{{editUser.username}}" disabled/>
                         </div>
                         <label class="wr-input-label">
                             Password * <br>
@@ -32,22 +32,21 @@
                             <input type="password" id="password" class="form-control" value=""/>
                         </div>
                         <label class="wr-input-label">First Name *</label>
-
                         <div class="wr-input-control">
-                            <input type="text" id="firstname" class="form-control"
-                                   value="{{editUser.firstname}}"/>
+                            <input type="text" id="firstname" data-regex="{{firstnameJSRegEx}}"
+                                   data-errormsg="{{firstnameRegExViolationErrorMsg}}"
+                                   class="form-control" value="{{editUser.firstname}}"/>
                         </div>
                         <label class="wr-input-label">Last Name *</label>
-
                         <div class="wr-input-control">
-                            <input type="text" id="lastname" class="form-control"
-                                   value="{{editUser.lastname}}"/>
+                            <input type="text" id="lastname" data-regex="{{lastnameJSRegEx}}"
+                                   data-errormsg="{{lastnameRegExViolationErrorMsg}}"
+                                   class="form-control" value="{{editUser.lastname}}"/>
                         </div>
                         <label class="wr-input-label">
-                            Email Address * <br>
+                            Email Address <br>
                             ( ex: sam@gmail.com )
                         </label>
-
                         <div class="wr-input-control">
                             <input type="email" id="emailAddress" class="form-control"
                                    value="{{editUser.emailAddress}}"/>
@@ -57,11 +56,15 @@
                             User Roles
                             <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
                         </label>
-
                         <div class="wr-input-control">
-                            <select id="roles" class="form-control select2" multiple="multiple">
+                            <select id="roles" class="form-control select2" multiple="multiple"
+                                    selectedVals="
+                                 {{#each usersRoles}}
+                                        {{this}},
+                                    {{/each}}
+                                ">
                                 {{#each userRoles}}
-                                    <option selected="selected">{{this}}</option>
+                                    <option>{{this}}</option>
                                 {{/each}}
                             </select>
                         </div>
@@ -76,18 +79,18 @@
                 <p class="page-sub-title">User was updated successfully.</p>
 
                 <br>Please click <b>"View Updated User"</b>, if you wish to view the updated user or
-                click
+                    click
                 <b>"View User List"</b> to complete the process and go back to the user list.
                 <hr/>
                 <button class="wr-btn" onclick="window.location.href='{{@app.context}}/users'">View
                                                                                                User
                                                                                                List
                 </button>
-                <a href="{{@app.context}}/user/edit?username={{editUser.username}}"
+                <a href="{{@app.context}}/user/view?username={{editUser.username}}"
                    class="cu-btn-inner">
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>
-                            <i class="fw fw-add fw-stack-1x"></i>
+                            <i class="fw fw-user fw-stack-1x"></i>
                         </span>
                     View Updated User
                 </a>

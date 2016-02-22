@@ -41,50 +41,53 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
         switch (method) {
             case constants.HTTP_GET:
                 var responseData = serviceInvokers.XMLHttp.get(
-                    targetURL, function (responsePayload) {
-                        return responsePayload;
-                    },
-                    function (responsePayload) {
-                        return responsePayload;
-                    });
-                result = responseData;
+                        targetURL, function (responsePayload) {
+                            response.status = 200;
+                            response.content = responsePayload;
+                        },
+                        function (responsePayload) {
+                            response.status = responsePayload.status;
+                            response.content = responsePayload.responseText;
+                        });
                 break;
             case constants.HTTP_POST:
                 var responseData = serviceInvokers.XMLHttp.post(
-                    targetURL, payload, function (responsePayload) {
-                        return responsePayload;
-                    },
-                    function (responsePayload) {
-                        return responsePayload;
-                    });
-                result = responseData;
+                        targetURL, payload, function (responsePayload) {
+                            response.status = 200;
+                            response.content = responsePayload;
+                        },
+                        function (responsePayload) {
+                            response.status = responsePayload.status;
+                            response.content = responsePayload.responseText;
+                        });
                 break;
             case constants.HTTP_PUT:
                 var responseData = serviceInvokers.XMLHttp.put(
-                    targetURL, payload, function (responsePayload) {
-                        return responsePayload;
-                    },
-                    function (responsePayload) {
-                        return responsePayload;
-                    });
-                result = responseData;
+                        targetURL, payload, function (responsePayload) {
+                            response.status = 200;
+                            response.content = responsePayload;
+                        },
+                        function (responsePayload) {
+                            response.status = responsePayload.status;
+                            response.content = responsePayload.responseText;
+                        });
                 break;
             case constants.HTTP_DELETE:
                 var responseData =
-                    serviceInvokers.XMLHttp.delete(
-                        targetURL, function (responsePayload) {
-                            return responsePayload;
-                        },
-                        function (responsePayload) {
-                            return responsePayload;
-                        });
-                result = responseData;
+                        serviceInvokers.XMLHttp.delete(
+                                targetURL, function (responsePayload) {
+                                    response.status = 200;
+                                    response.content = responsePayload;
+                                },
+                                function (responsePayload) {
+                                    response.status = responsePayload.status;
+                                    response.content = responsePayload.responseText;
+                                });
                 break;
         }
     } catch (e) {
         log.error("Exception occurred while accessing sevices", e);
     }
 }
-print(result);
 
 %>

@@ -17,28 +17,43 @@
  */
 
 /**
- * Returns a context with the user object to be populated by the edit-user page.
+ * Returns a page with the user object to be populated by the edit-user page.
  *
- * @param context Object that gets updated with the dynamic state of this page to be presented
- * @returns {*} A context object that returns the dynamic state of this page to be presented
+ * @param page Object that gets updated with the dynamic state of this page to be presented
+ * @returns {*} A page object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
-
-    var uri = request.getRequestURI();
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var userName = request.getParameter("username");
+    var page = {};
 
     if (userName) {
+        var userStore = "PRIMARY";
+        if(userName.indexOf("/") > -1) {
+            userStore = userName.substr(0, userName.indexOf('/'));
+        }
         var response = userModule.getUser(userName);
 
         if (response["status"] == "success") {
-            context["editUser"] = response["content"];
+            page["editUser"] = response["content"];
         }
 
         response = userModule.getRolesByUsername(userName);
         if (response["status"] == "success") {
-            context["userRoles"] = response["content"];
+            page["usersRoles"] = response["content"];
         }
+        response = userModule.getRolesByUserStore(userStore);
+        if (response["status"] == "success") {
+            page["userRoles"] = response["content"];
+        }
+
     }
-    return context;
+    page["usernameJSRegEx"] = devicemgtProps.userValidationConfig.usernameJSRegEx;
+    page["usernameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.usernameRegExViolationErrorMsg;
+    page["firstnameJSRegEx"] = devicemgtProps.userValidationConfig.firstnameJSRegEx;
+    page["firstnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.firstnameRegExViolationErrorMsg;
+    page["lastnameJSRegEx"] = devicemgtProps.userValidationConfig.lastnameJSRegEx;
+    page["lastnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.lastnameRegExViolationErrorMsg;
+    return page;
 }

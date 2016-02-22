@@ -1,40 +1,47 @@
 {
-    "appContext" : "/devicemgt/",
-    "apiContext" : "api",
-    "httpsURL" : "%https.ip%",
-    "httpURL" : "%http.ip%",
-    "enrollmentURL": "%https.ip%/devicemgt/enrollment",
-    "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
-    "iOSAPIRoot" : "%https.ip%/ios/",
-    "dynamicClientRegistrationEndPoint" : "%https.ip%/dynamic-client-web/register/",
-    "adminService":"%https.ip%",
-    "idPServer":"%https.ip%",
-    "callBackUrl":"%https.ip%/devicemgt_admin",
-    "adminUser":"admin",
-    "usernameLength":30,
-    "device" : {
-        "ios" : {
-            "location" : "%http.ip%/devicemgt/public/asset-download-agent-ios/asset/ios-agent.ipa",
-            "bundleID" : "org.wso2.carbon.emm.iOSMDMAgent",
-            "version" : "1.0",
-            "appName" : "EMM iOS Agent"
-        }
-    },
-    "androidAgentApp" : "android-agent.apk",
-    "windowsConfigRoot" : "%http.ip%/mdm-windows-agent/services/federated/bst/authentication",
-    "ssoConfiguration" : {
-        "enabled" : false,
-        "issuer": "devicemgt",
-        "appName": "devicemgt",
-        "identityProviderURL" : "%https.ip%/sso/samlsso.jag",
-        "responseSigningEnabled" : "true",
-        "keyStorePassword" : "wso2carbon",
-        "identityAlias" : "wso2carbon",
-        "keyStoreName" : "/repository/resources/security/wso2carbon.jks"
-    },
-    "generalConfig" : {
-        "companyName": "WSO2 Carbon Device Manager",
-        "browserTitle": "WSO2 Device Manager",
-        "copyrightText" : "\u00A9 %date-year%, WSO2 Inc. (http://www.wso2.org) All Rights Reserved."
-    }
+  "appContext" : "/devicemgt/",
+  "webAgentContext" : "/emm-web-agent/",
+  "apiContext" : "api",
+  "httpsURL" : "%https.ip%",
+  "httpURL" : "%http.ip%",
+  "enrollmentDir": "/emm-web-agent/enrollment",
+  "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
+  "iOSAPIRoot" : "%https.ip%/ios/",
+  "dynamicClientRegistrationEndPoint" : "%https.ip%/dynamic-client-web/register/",
+  "adminService":"%https.ip%",
+  "idPServer":"%https.ip%",
+  "callBackUrl":"%https.ip%/devicemgt_admin",
+  "adminUser":"admin",
+  "usernameLength":30,
+  "ssoConfiguration" : {
+    "enabled" : false,
+    "issuer" : "devicemgt",
+    "appName" : "devicemgt",
+    "identityProviderURL" : "%https.ip%/sso/samlsso.jag",
+    "responseSigningEnabled" : "true",
+    "keyStorePassword" : "wso2carbon",
+    "identityAlias" : "wso2carbon",
+    "keyStoreName" : "/repository/resources/security/wso2carbon.jks"
+  },
+  "userValidationConfig" : {
+    "usernameJSRegEx" : "^[\\S]{3,30}$",
+    "usernameRegExViolationErrorMsg" : "Provided username is invalid.",
+    "firstnameJSRegEx" : "^[\\S]{3,30}$",
+    "firstnameRegExViolationErrorMsg" : "Provided first name is invalid.",
+    "lastnameJSRegEx" : "^[\\S]{3,30}$",
+    "lastnameRegExViolationErrorMsg" : "Provided last name is invalid."
+  },
+  "roleValidationConfig" : {
+    "rolenameJSRegEx" : "^[\\S]{3,30}$",
+    "rolenameRegExViolationErrorMsg" : "Provided role name is invalid."
+  },
+  "generalConfig" : {
+    "host" : "https://localhost:9443",
+    "companyName" : "WSO2 Carbon Device Manager",
+    "browserTitle" : "WSO2 Device Manager",
+    "copyrightPrefix" : "\u00A9 %date-year%, ",
+    "copyrightOwner" : "WSO2 Inc.",
+    "copyrightOwnersSite" : "http://www.wso2.org",
+    "copyrightSuffix" : " All Rights Reserved."
+  }
 }

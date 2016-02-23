@@ -209,17 +209,11 @@ public final class DeviceManagerUtil {
      */
 	public static int getTenantId(String tenantDomain) throws DeviceManagementException{
 		try {
-			TenantManager tenantManager= DeviceManagementDataHolder.getInstance().getTenantManager();
+            if(tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)){
+                return MultitenantConstants.SUPER_TENANT_ID;
 
-			//Simple Workaround to pass the testcases;
-			if(tenantManager==null){
-				if(tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)){
-					return MultitenantConstants.SUPER_TENANT_ID;
-
-				}
-				throw new DeviceManagementException("Realm service is not initialized properly");
-
-			}
+            }
+            TenantManager tenantManager= DeviceManagementDataHolder.getInstance().getTenantManager();
 			int tenantId = tenantManager.getTenantId(tenantDomain);
 			if(tenantId ==-1) {
 				throw new DeviceManagementException("invalid tenant Domain :" + tenantDomain);

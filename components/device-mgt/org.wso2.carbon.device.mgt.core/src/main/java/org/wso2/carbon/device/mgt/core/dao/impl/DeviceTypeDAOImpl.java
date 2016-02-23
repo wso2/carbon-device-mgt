@@ -45,7 +45,7 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 			conn = this.getConnection();
 			stmt = conn.prepareStatement(
 					"INSERT INTO DM_DEVICE_TYPE (NAME,PROVIDER_TENANT_ID,SHARE_WITH_ALL_TENANTS) " +
-							"VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+							"VALUES (?,?,?)", new String[] {"id"});
 			stmt.setString(1, deviceType.getName());
 			stmt.setInt(2, deviceTypeProviderTenantId);
 			stmt.setBoolean(3, sharedWithAllTenants);

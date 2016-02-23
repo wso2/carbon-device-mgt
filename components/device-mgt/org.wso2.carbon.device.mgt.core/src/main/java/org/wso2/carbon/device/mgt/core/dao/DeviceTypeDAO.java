@@ -27,18 +27,57 @@ import java.util.List;
  */
 public interface DeviceTypeDAO {
 
+	/**
+	 * add a device type to the specific tenant id.
+	 * @param deviceType
+	 * @param deviceTypeProviderTenantId provider tenant id
+	 * @param sharedWithAllTenants set to true if its visible to all tenants
+	 * @return
+	 * @throws DeviceManagementDAOException
+	 */
 	int addDeviceType(DeviceType deviceType, int deviceTypeProviderTenantId,
 					  boolean sharedWithAllTenants) throws DeviceManagementDAOException;
 
+	/**
+	 * update device type details of a specfic tenants.
+	 * @param deviceType
+	 * @param deviceTypeProviderTenantId
+	 * @throws DeviceManagementDAOException
+	 */
 	void updateDeviceType(DeviceType deviceType, int deviceTypeProviderTenantId)
 			throws DeviceManagementDAOException;
 
+	/**
+	 * get device type detail of a specific tenant.
+	 * @param tenantId
+	 * @return
+	 * @throws DeviceManagementDAOException
+	 */
 	List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException;
 
+	/**
+	 * retrieve the device type with its id.
+	 * @param id
+	 * @return
+	 * @throws DeviceManagementDAOException
+	 */
 	DeviceType getDeviceType(int id) throws DeviceManagementDAOException;
 
+	/**
+	 * retreive the device type with it name and tenant id.
+	 * @param name
+	 * @param tenantId
+	 * @return
+	 * @throws DeviceManagementDAOException
+	 */
 	DeviceType getDeviceType(String name,int tenantId) throws DeviceManagementDAOException;
 
+	/**
+	 * remove the device type from tenant.
+	 * @param name
+	 * @param tenantId
+	 * @throws DeviceManagementDAOException
+	 */
 	void removeDeviceType(String name,int tenantId) throws DeviceManagementDAOException;
 
 	/**

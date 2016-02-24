@@ -85,6 +85,14 @@
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -114,14 +122,18 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging.*,
-                            org.wso2.carbon.context;version="${carbon.kernel.version}",
-                            org.wso2.carbon.utils;version="${carbon.kernel.version}",
-                            org.wso2.carbon.databridge.*;version="${carbon.analytics.common.version}",
-                            org.wso2.carbon.analytics.api.*;version="${carbon.analytics.version}",
-                            org.wso2.carbon.analytics.dataservice.commons.*;version="${carbon.analytics.version}",
-                            org.wso2.carbon.analytics.dataservice.core.*;version="${carbon.analytics.version}",
-                            org.wso2.carbon.analytics.datasource.commons.exception.*;version="${carbon.analytics.version}",
-                            org.wso2.carbon.device.mgt.core.*
+                            org.wso2.carbon.context;version="${carbon.kernel.version.range}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.version.range}",
+                            org.wso2.carbon.databridge.*;version="${carbon.analytics.common.version.range}",
+                            org.wso2.carbon.analytics.api.*;version="${carbon.analytics.version.range}",
+                            org.wso2.carbon.analytics.dataservice.commons.*;version="${carbon.analytics.version.range}",
+                            org.wso2.carbon.analytics.dataservice.core.*;version="${carbon.analytics.version.range}",
+                            org.wso2.carbon.analytics.datasource.commons.exception.*;version="${carbon.analytics.version.range}",
+                            org.wso2.carbon.device.mgt.core.*,
+                            org.wso2.carbon.registry.core.*;resolution:=optional,
+                            org.wso2.carbon.registry.common.*;version="${carbon.registry.imp.pkg.version.range}",
+                            org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
+                            org.json;version="${commons-json.version}"
                         </Import-Package>
                     </instructions>
                 </configuration>

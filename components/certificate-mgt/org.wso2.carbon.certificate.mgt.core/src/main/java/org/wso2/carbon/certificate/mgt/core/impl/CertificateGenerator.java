@@ -44,7 +44,14 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
-import org.jscep.message.*;
+import org.jscep.message.PkcsPkiEnvelopeDecoder;
+import org.jscep.message.PkcsPkiEnvelopeEncoder;
+import org.jscep.message.CertRep;
+import org.jscep.message.PkiMessageEncoder;
+import org.jscep.message.PkiMessageDecoder;
+import org.jscep.message.PkiMessage;
+import org.jscep.message.MessageEncodingException;
+import org.jscep.message.MessageDecodingException;
 import org.jscep.transaction.FailInfo;
 import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
@@ -61,10 +68,30 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
-import java.security.*;
+import java.io.DataInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.File;
+import java.security.Security;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
+import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.security.PrivateKey;
 import java.security.cert.Certificate;
-import java.security.cert.*;
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -266,7 +293,7 @@ public class CertificateGenerator {
 
     public boolean verifySignature(String headerSignature) throws KeystoreException {
         Certificate certificate = extractCertificateFromSignature(headerSignature);
-        return  (certificate != null);
+        return (certificate != null);
     }
 
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
@@ -289,12 +316,12 @@ public class CertificateGenerator {
                 X509Certificate reqCert = (X509Certificate) certificateFactory.
                         generateCertificate(byteArrayInputStream);
 
-                if(reqCert != null && reqCert.getSerialNumber() != null) {
+                if (reqCert != null && reqCert.getSerialNumber() != null) {
                     Certificate lookUpCertificate = keyStoreReader.getCertificateByAlias(
                             reqCert.getSerialNumber().toString());
 
                     if (lookUpCertificate != null && (lookUpCertificate instanceof X509Certificate)) {
-                        return (X509Certificate)lookUpCertificate;
+                        return (X509Certificate) lookUpCertificate;
                     }
                 }
 
@@ -317,8 +344,8 @@ public class CertificateGenerator {
     }
 
     public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
-                                                             PKCS10CertificationRequest request,
-                                                             String issueSubject)
+                                                      PKCS10CertificationRequest request,
+                                                      String issueSubject)
             throws KeystoreException {
 
         CommonUtil commonUtil = new CommonUtil();
@@ -350,10 +377,10 @@ public class CertificateGenerator {
             certificateBuilder.addExtension(X509Extension.keyUsage, true, new KeyUsage(
                     KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
 
-            if(attributes != null) {
+            if (attributes != null) {
                 ASN1Encodable extractedValue = getChallengePassword(attributes);
 
-                if(extractedValue != null) {
+                if (extractedValue != null) {
                     certificateBuilder.addExtension(PKCSObjectIdentifiers.pkcs_9_at_challengePassword, true,
                             extractedValue);
                 }
@@ -387,7 +414,7 @@ public class CertificateGenerator {
 
         for (Attribute attribute : attributes) {
             if (PKCSObjectIdentifiers.pkcs_9_at_challengePassword.equals(attribute.getAttrType())) {
-                if(attribute.getAttrValues() != null && attribute.getAttrValues().size() > 0) {
+                if (attribute.getAttrValues() != null && attribute.getAttrValues().size() > 0) {
                     return attribute.getAttrValues().getObjectAt(0);
                 }
             }
@@ -552,7 +579,7 @@ public class CertificateGenerator {
             log.error(errorMsg, e);
             CertificateManagementDAOFactory.rollbackTransaction();
             throw new KeystoreException(errorMsg, e);
-        }finally {
+        } finally {
             CertificateManagementDAOFactory.closeConnection();
         }
     }

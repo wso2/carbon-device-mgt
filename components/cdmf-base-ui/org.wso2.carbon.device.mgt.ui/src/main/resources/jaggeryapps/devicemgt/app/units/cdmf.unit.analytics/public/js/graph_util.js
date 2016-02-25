@@ -16,17 +16,12 @@
  * under the License.
  */
 
-var fromDate;
-var toDate;
-
-var currentDay = new Date();
+var fromDate, toDate, currentDay = new Date();
 var startDate = new Date(currentDay.getTime() - (60 * 60 * 24 * 100));
 var endDate = new Date(currentDay.getTime());
 
-var groupId;
-
-var color = ['#c05020', '#30c020', '#6060c0', '#170B3B', '#5E610B', '#2F0B3A', '#FF4000', '#2F0B3A', 'steelblue'];
-var stats;
+var palette = new Rickshaw.Color.Palette({scheme: 'classic9'});
+var groupId, stats;
 
 // create a custom bar renderer that shift bars
 Rickshaw.Graph.Renderer.BinaryBar = Rickshaw.Class.create(Rickshaw.Graph.Renderer.Bar, {
@@ -57,31 +52,35 @@ Rickshaw.Graph.Renderer.BinaryBar = Rickshaw.Class.create(Rickshaw.Graph.Rendere
 
         var index = 0;
         series.forEach(function (series) {
-            if (series.disabled) return;
+            if (series.disabled) {
+                return;
+            }
 
             var nodes = vis.selectAll("path")
-                .data(series.stack.filter(function (d) {
-                    return d.y !== null
-                }))
-                .enter().append("svg:rect")
-                .attr("x", function (d) {
-                    return graph.x(d.x) + barXOffset
-                })
-                .attr("y", function (d) {
-                    return ((graph.y(index + Math.abs(d.y))) * (d.y < 0 ? -1 : 1 ))
-                })
-                .attr("width", seriesBarWidth)
-                .attr("height", function (d) {
-                    return graph.y.magnitude(Math.abs(d.y))
-                })
-                .attr("transform", transform);
+                    .data(series.stack.filter(function (d) {
+                        return d.y !== null
+                    }))
+                    .enter().append("svg:rect")
+                    .attr("x", function (d) {
+                        return graph.x(d.x) + barXOffset
+                    })
+                    .attr("y", function (d) {
+                        return ((graph.y(index + Math.abs(d.y))) * (d.y < 0 ? -1 : 1 ))
+                    })
+                    .attr("width", seriesBarWidth)
+                    .attr("height", function (d) {
+                        return graph.y.magnitude(Math.abs(d.y))
+                    })
+                    .attr("transform", transform);
 
             index++;
             Array.prototype.forEach.call(nodes[0], function (n) {
                 n.setAttribute('fill', series.color);
             });
 
-            if (this.unstack) barXOffset += seriesBarWidth;
+            if (this.unstack) {
+                barXOffset += seriesBarWidth;
+            }
 
         }, this);
     }
@@ -118,14 +117,14 @@ $(document).ready(function () {
 
     $('#date-range').html(DateRange);
     $('#date-range').dateRangePicker(configObject)
-        .bind('datepicker-apply', function (event, dateRange) {
-            $(this).addClass('active');
-            $(this).siblings().removeClass('active');
-            fromDate = dateRange.date1 != "Invalid Date" ? dateRange.date1.getTime() : null;
-            toDate = dateRange.date2 != "Invalid Date" ? dateRange.date2.getTime() : null;
-            getDateTime(fromDate, toDate);
-        }
-    );
+            .bind('datepicker-apply', function (event, dateRange) {
+                      $(this).addClass('active');
+                      $(this).siblings().removeClass('active');
+                      fromDate = dateRange.date1 != "Invalid Date" ? dateRange.date1.getTime() / 1000 : null;
+                      toDate = dateRange.date2 != "Invalid Date" ? dateRange.date2.getTime() / 1000 : null;
+                      getStats(fromDate, toDate);
+                  }
+            );
     getDateTime(currentDay.getTime() - 3600000, currentDay.getTime());
     $('#hour-btn').addClass('active');
 });
@@ -176,7 +175,9 @@ function getStats(from, to) {
     from += tzOffset;
     to += tzOffset;
 
-    $('#div-chart').html('<div style="height:200px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
+    $('#div-chart').html('<div style="height:200px" data-state="loading" ' +
+                         'data-loading-text="Loading..." data-loading-style="icon-only" ' +
+                         'data-loading-inverse="true"></div>');
     var requestData = {};
     var getStatsRequest;
     if (from) {
@@ -188,10 +189,10 @@ function getStats(from, to) {
     if (groupId && groupId != "0") {
         requestData['groupId'] = groupId;
         getStatsRequest = $.ajax({
-            url: "api/stats/group",
-            method: "GET",
-            data: requestData
-        });
+                                     url: "api/stats/group",
+                                     method: "GET",
+                                     data: requestData
+                                 });
     } else {
         var deviceId = getQueryParams().deviceId;
         var deviceType = getQueryParams().deviceType;
@@ -200,10 +201,10 @@ function getStats(from, to) {
         requestData['deviceType'] = deviceType;
 
         getStatsRequest = $.ajax({
-            url: "api/stats",
-            method: "GET",
-            data: requestData
-        });
+                                     url: "api/stats",
+                                     method: "GET",
+                                     data: requestData
+                                 });
     }
     getStatsRequest.done(function (data) {
         stats = data;
@@ -215,8 +216,8 @@ function getStats(from, to) {
     });
 }
 
-$(window).on('resize', function(){
-    if (stats){
+$(window).on('resize', function () {
+    if (stats) {
         updateGraphs();
     }
 });
@@ -225,14 +226,20 @@ function updateGraphs() {
     console.log(stats);
     var graphId = 1;
     $('#div-chart').html("");
-    for (var stats_data in stats){
-        switch (stats[stats_data][0]["stream"]["ui_unit"]["name"]){
+    for (var stats_data in stats) {
+        switch (stats[stats_data][0]["stream"]["ui_unit"]["name"]) {
             case "cdmf.unit.analytics.line-chart":
-                $('#div-chart').append("<div class='row margin-double shrink'><div><h2 class='grey'>" + stats[stats_data][0]["stream"]["name"] + "</h2><hr><div id='canvas-wrapper" + graphId + "'></div></div><hr class='spaced'></div>");
+                $('#div-chart').append("<div class='row margin-double shrink'><div>" +
+                                       "<h2 class='grey'>" + stats[stats_data][0]["stream"]["name"] +
+                                       "</h2><hr><div id='canvas-wrapper" + graphId +
+                                       "'></div></div><hr class='spaced'></div>");
                 drawLineGraph(graphId++, stats[stats_data]);
                 break;
             case "cdmf.unit.analytics.bar-chart":
-                $('#div-chart').append("<div class='row margin-double shrink'><div><h2 class='grey'>" + stats[stats_data][0]["stream"]["name"] + "</h2><hr><div id='canvas-wrapper" + graphId + "'></div></div><hr class='spaced'></div>");
+                $('#div-chart').append("<div class='row margin-double shrink'><div><h2 class='grey'>" +
+                                       stats[stats_data][0]["stream"]["name"] +
+                                       "</h2><hr><div id='canvas-wrapper" + graphId + "'></div></div>" +
+                                       "<hr class='spaced'></div>");
                 drawBarGraph(graphId++, stats[stats_data]);
                 break;
         }
@@ -251,12 +258,14 @@ function drawLineGraph(graphId, chartDataRaw) {
     var chartDiv = "chart" + graphId;
     var sliderDiv = "slider" + graphId;
     var y_axis = "y_axis" + graphId;
-    $(chartWrapperElmId).html("").html('<div id = "' + y_axis
-        + '" class="custom_y_axis"></div><div class="legend_container" id="legend_container'
-        + graphId + '"><div id="smoother' + graphId + '" title="Smoothing"></div><div class="legend" id="legend'
-        + graphId + '"></div></div><div id="' + chartDiv
-        + '" class="custom_rickshaw_graph"></div><div class="custom_x_axis"></div><div id="' + sliderDiv
-        + '" class="custom_slider"></div>');
+    $(chartWrapperElmId).html("").html('<div id = "' + y_axis + '" class="custom_y_axis"></div>' +
+                                       '<div class="legend_container" id="legend_container' +
+                                       graphId + '"><div id="smoother' + graphId +
+                                       '" title="Smoothing"></div><div class="legend" id="legend' +
+                                       graphId + '"></div></div><div id="' + chartDiv +
+                                       '" class="custom_rickshaw_graph"></div>' +
+                                       '<div class="custom_x_axis"></div><div id="' + sliderDiv +
+                                       '" class="custom_slider"></div>');
 
     var graphConfig = {
         element: document.getElementById(chartDiv),
@@ -264,6 +273,7 @@ function drawLineGraph(graphId, chartDataRaw) {
         height: 400,
         strokeWidth: 2,
         renderer: 'line',
+        interpolation: "linear",
         unstack: true,
         stack: false,
         xScale: d3.time.scale(),
@@ -273,7 +283,6 @@ function drawLineGraph(graphId, chartDataRaw) {
 
     var tzOffset = new Date().getTimezoneOffset() * 60;
 
-    var k = 0;
     var min = Number.MAX_VALUE;
     var max = Number.MIN_VALUE;
     var range_min = 99999, range_max = 0;
@@ -290,9 +299,9 @@ function drawLineGraph(graphId, chartDataRaw) {
                     min_val = y_val;
                 }
                 chartData.push({
-                    x: parseInt(chartDataRaw[i].stats[j].time) - tzOffset,
-                    y: y_val
-                });
+                                   x: parseInt(chartDataRaw[i].stats[j].time) - tzOffset,
+                                   y: y_val
+                               });
             }
             if (range_max < max_val) {
                 range_max = max_val;
@@ -301,14 +310,13 @@ function drawLineGraph(graphId, chartDataRaw) {
                 range_min = min_val;
             }
             graphConfig['series'].push({
-                'color': color[k],
-                'data': summerizeLine(chartData),
-                'name': chartDataRaw[i].device,
-                'scale': d3.scale.linear().domain([Math.min(min, min_val) - 5, Math.max(max, max_val) + 5]).nice()
-            });
-        }
-        if (++k == color.length) {
-            k = 0;
+                                           'color': palette.color(),
+                                           'data': summerizeLine(chartData),
+                                           'name': chartDataRaw[i].device,
+                                           'scale': d3.scale.linear().domain(
+                                                   [Math.min(min, min_val) - 5,
+                                                    Math.max(max, max_val) + 5]).nice()
+                                       });
         }
     }
 
@@ -350,11 +358,12 @@ function drawLineGraph(graphId, chartDataRaw) {
 
     var hoverDetail = new Rickshaw.Graph.HoverDetail({
         graph: graph,
-        formatter: function(series, x, y) {
-            var date = '<span class="date">' + moment((x + tzOffset) * 1000).format('Do MMM YYYY h:mm:ss a') + '</span>';
-            var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-            var content = swatch + series.name + ": " + parseInt(y) + '<br>' + date;
-            return content;
+        formatter: function (series, x, y) {
+            var date = '<span class="date">' +
+                       moment((x + tzOffset) * 1000).format('Do MMM YYYY h:mm:ss a') + '</span>';
+            var swatch = '<span class="detail_swatch" style="background-color: ' +
+                         series.color + '"></span>';
+            return swatch + series.name + ": " + parseInt(y) + '<br>' + date;
         }
     });
 
@@ -386,12 +395,14 @@ function drawBarGraph(graphId, chartDataRaw) {
     var chartDiv = "chart" + graphId;
     var sliderDiv = "slider" + graphId;
     var y_axis = "y_axis" + graphId;
-    $(chartWrapperElmId).html("").html('<div id = "' + y_axis
-        + '" class="custom_y_axis"></div><div class="legend_container" id="legend_container'
-        + graphId + '"><div id="smoother' + graphId + '" title="Smoothing"></div><div class="legend" id="legend'
-        + graphId + '"></div></div><div id="' + chartDiv
-        + '" class="custom_rickshaw_graph"></div><div class="custom_x_axis"></div><div id="' + sliderDiv
-        + '" class="custom_slider"></div>');
+    $(chartWrapperElmId).html("").html('<div id = "' + y_axis + '" class="custom_y_axis"></div>' +
+                                       '<div class="legend_container" id="legend_container' +
+                                       graphId + '"><div id="smoother' + graphId +
+                                       '" title="Smoothing"></div><div class="legend" id="legend' +
+                                       graphId + '"></div></div><div id="' + chartDiv +
+                                       '" class="custom_rickshaw_graph"></div>' +
+                                       '<div class="custom_x_axis"></div><div id="' + sliderDiv +
+                                       '" class="custom_slider"></div>');
 
     var graphConfig = {
         element: document.getElementById(chartDiv),
@@ -407,24 +418,20 @@ function drawBarGraph(graphId, chartDataRaw) {
 
     var tzOffset = new Date().getTimezoneOffset() * 60;
 
-    var k = 0;
     for (var i = 0; i < chartDataRaw.length; i++) {
         var chartData = [];
         if (chartDataRaw[i].stats.length > 0) {
             for (var j = 0; j < chartDataRaw[i].stats.length; j++) {
                 chartData.push({
-                    x: parseInt(chartDataRaw[i].stats[j].time) - tzOffset,
-                    y: parseInt(chartDataRaw[i].stats[j].value > 0 ? 1 : 0)
-                });
+                                   x: parseInt(chartDataRaw[i].stats[j].time) - tzOffset,
+                                   y: parseInt(chartDataRaw[i].stats[j].value > 0 ? 1 : 0)
+                               });
             }
             graphConfig['series'].push({
-                'color': color[k],
-                'data': summerizeBar(chartData),
-                'name': chartDataRaw[i].device
-            });
-        }
-        if (++k == color.length) {
-            k = 0;
+                                           'color': palette.color(),
+                                           'data': summerizeBar(chartData),
+                                           'name': chartDataRaw[i].device
+                                       });
         }
     }
 
@@ -530,9 +537,9 @@ function convertDate(date) {
     var day = date.getDate();
     var hour = date.getHours();
     var minute = date.getMinutes();
-    return date.getFullYear() + '-' + (('' + month).length < 2 ? '0' : '')
-        + month + '-' + (('' + day).length < 2 ? '0' : '') + day + " " + (('' + hour).length < 2 ? '0' : '')
-        + hour + ":" + (('' + minute).length < 2 ? '0' : '') + minute;
+    return date.getFullYear() + '-' + (('' + month).length < 2 ? '0' : '') + month + '-' +
+           (('' + day).length < 2 ? '0' : '') + day + " " + (('' + hour).length < 2 ? '0' : '') +
+           hour + ":" + (('' + minute).length < 2 ? '0' : '') + minute;
 }
 
 function summerizeLine(data) {
@@ -571,8 +578,8 @@ function getQueryParams() {
     var qs = document.location.search.split('+').join(' ');
 
     var params = {},
-        tokens,
-        re = /[?&]?([^=]+)=([^&]*)/g;
+            tokens,
+            re = /[?&]?([^=]+)=([^&]*)/g;
 
     while (tokens = re.exec(qs)) {
         params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);

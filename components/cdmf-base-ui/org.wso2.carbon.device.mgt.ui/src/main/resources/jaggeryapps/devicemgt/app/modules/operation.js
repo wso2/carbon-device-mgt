@@ -63,7 +63,6 @@ var operationModule = function () {
             }
             return featureList;
         } catch (e) {
-            log.error(e);
             throw e;
         }
     };

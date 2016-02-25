@@ -1426,6 +1426,11 @@
                 <version>${neethi.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${apache.http.version}</version>
@@ -1441,7 +1446,6 @@
                 <artifactId>httpclient</artifactId>
                 <version>${httpcomponents.httpclient.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -1692,10 +1696,10 @@
         <eclipse.paho.version>1.0.2</eclipse.paho.version>
 
         <!--Carbon Analytics-->
-        <carbon.analytics.common.version>5.0.5</carbon.analytics.common.version>
-        <carbon.analytics.common.version.range>[5.0.5,6.0.0)</carbon.analytics.common.version.range>
-        <carbon.analytics.version>1.0.4</carbon.analytics.version>
-        <carbon.analytics.version.range>[1.0.4,2.0.0]</carbon.analytics.version.range>
+        <carbon.analytics.common.version>5.0.11-SNAPSHOT</carbon.analytics.common.version>
+        <carbon.analytics.common.version.range>[5.0.11,6.0.0)</carbon.analytics.common.version.range>
+        <carbon.analytics.version>1.0.6-SNAPSHOT</carbon.analytics.version>
+        <carbon.analytics.version.range>[1.0.6,2.0.0]</carbon.analytics.version.range>
 
         <!-- Carbon Deployment -->
         <carbon.deployment.version>4.6.0</carbon.deployment.version>
@@ -1708,6 +1712,7 @@
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.4.8</carbon.registry.version>
+        <carbon.registry.imp.pkg.version.range>[4.4.8, 5.0.0)</carbon.registry.imp.pkg.version.range>
 
         <!-- Carbon Governance -->
         <carbon.governance.version>4.5.8</carbon.governance.version>
@@ -1724,7 +1729,7 @@
         <carbon.device.mgt.version>1.1.0-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.4.8</carbon.commons.version>
+        <carbon.commons.version>4.4.9</carbon.commons.version>
         <version.commons.codec>1.4.0.wso2v1</version.commons.codec>
         <version.commons.io>2.4.0.wso2v1</version.commons.io>
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
@@ -1763,7 +1768,7 @@
         <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
         <orbit.version.commons-httpclient>3.1.0.wso2v2</orbit.version.commons-httpclient>
         <commons-json.version>2.0.0.wso2v1</commons-json.version>
-
+        <commons-json.version.range>[2.0.0.wso2v1, 3.0.0)</commons-json.version.range>
         <httpclient.version>4.3.1.wso2v2</httpclient.version>
 
         <!--SC Annotations Dependency -->

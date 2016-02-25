@@ -1697,9 +1697,9 @@
 
         <!--Carbon Analytics-->
         <carbon.analytics.common.version>5.0.11-SNAPSHOT</carbon.analytics.common.version>
-        <carbon.analytics.common.version.range>[5.0.11-SNAPSHOT,6.0.0)</carbon.analytics.common.version.range>
+        <carbon.analytics.common.version.range>[5.0.11,6.0.0)</carbon.analytics.common.version.range>
         <carbon.analytics.version>1.0.6-SNAPSHOT</carbon.analytics.version>
-        <carbon.analytics.version.range>[1.0.6-SNAPSHOT,2.0.0]</carbon.analytics.version.range>
+        <carbon.analytics.version.range>[1.0.6,2.0.0]</carbon.analytics.version.range>
 
         <!-- Carbon Deployment -->
         <carbon.deployment.version>4.6.0</carbon.deployment.version>

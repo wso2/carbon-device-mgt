@@ -30,6 +30,7 @@
         }
     },
     "errorPages": {
+        "404": "cdmf.page.error-404",
         "default": "uuf.page.error"
     }
 }

@@ -164,7 +164,7 @@ var userModule = function () {
                     log.debug("A user with name '" + username + "' already exists.");
                 }
                 // http status code 409 refers to - conflict.
-                return 409;
+                return constants.HTTP_CONFLICT;
             } else {
                 var defaultUserClaims = privateMethods.buildDefaultUserClaims(firstname, lastname, emailAddress);
 
@@ -188,7 +188,7 @@ var userModule = function () {
                     log.debug("A new user with name '" + username + "' was created.");
                 }
                 // http status code 201 refers to - created.
-                return 201;
+                return constants.HTTP_CREATED;
             }
         } catch (e) {
             throw e;

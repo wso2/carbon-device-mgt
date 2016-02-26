@@ -37,35 +37,40 @@ var operationModule = function () {
     }
 
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
-        var GenericFeatureManager = Packages.org.wso2.carbon.apimgt.webapp.publisher.feature.management.GenericFeatureManager;
-        try {
-            var featureManager = GenericFeatureManager.getInstance();
-            var features = featureManager.getFeatures(deviceType);
-            var featureList = [];
-            var feature;
-            for (var i = 0; i < features.size(); i++) {
-                if (features.get(i).getType() != operationType) {
-                    continue;
-                }
-                feature = {};
-                feature["operation"] = new String(features.get(i).getCode());
-                feature["name"] = new String(features.get(i).getName());
-                feature["description"] = new String(features.get(i).getDescription());
-                feature["deviceType"] = new String(features.get(i).getDeviceType());
-                feature["params"] = [];
-                var metaData = features.get(i).getMetadataEntries();
-                if (metaData && metaData != null) {
-                    for (var j = 0; j < metaData.size(); j++) {
-                        feature["params"].push(new String(metaData.get(j).getValue()));
+        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/features/" + deviceType;
+        var featuresList = serviceInvokers.XMLHttp.get(
+            url, function (responsePayload) {
+                var features = responsePayload.responseContent;
+                var featureList = [];
+                var feature;
+                for (var i = 0; i < features.size(); i++) {
+                    if (features.get(i).getType() != operationType) {
+                        continue;
                     }
+                    feature = {};
+                    feature["operation"] = new String(features.get(i).getCode());
+                    feature["name"] = new String(features.get(i).getName());
+                    feature["description"] = new String(features.get(i).getDescription());
+                    feature["deviceType"] = new String(features.get(i).getDeviceType());
+                    feature["params"] = [];
+                    var metaData = features.get(i).getMetadataEntries();
+                    if (metaData && metaData != null) {
+                        for (var j = 0; j < metaData.size(); j++) {
+                            feature["params"].push(new String(metaData.get(j).getValue()));
+                        }
+                    }
+                    featureList.push(feature);
                 }
-                featureList.push(feature);
+                return featureList;
             }
-            return featureList;
-        } catch (e) {
-            log.error(e);
-            throw e;
-        }
+            ,
+            function (responsePayload) {
+                var response = {};
+                response["status"] = "error";
+                return response;
+            }
+        );
+        return featuresList;
     };
 
     publicMethods.getControlOperations = function (deviceType) {

@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.apimgt.webapp.publisher.lifecycle.listener;
+package org.wso2.carbon.device.mgt.extensions.feature.mgt.lifecycle.listener;
 
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
@@ -24,11 +24,11 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.webapp.publisher.feature.management.GenericFeatureManager;
-import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationUtil;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.Feature;
-
+import org.wso2.carbon.device.mgt.extensions.feature.mgt.GenericFeatureManager;
+import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
+import org.wso2.carbon.device.mgt.extensions.feature.mgt.util.AnnotationUtil;
 import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.util.List;
@@ -50,30 +50,23 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
         if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
             ServletContext servletContext = context.getServletContext();
-
-
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
-
             if (isManagedApi) {
                 try {
                     AnnotationUtil annotationUtil = new AnnotationUtil(context);
 
                     Set<String> annotatedAPIClasses = annotationUtil.
-                            scanStandardContext(org.wso2.carbon.apimgt.annotations.device.DeviceType.class.getName());
+                            scanStandardContext(DeviceType.class.getName());
                     Map<String,List<Feature>> features = annotationUtil.extractFeatures(annotatedAPIClasses);
 
                     if(features!=null && !features.isEmpty()) {
                         GenericFeatureManager.getInstance().addFeatures(features);
                     }
-
-
                 } catch (IOException e) {
                     log.error("Error enconterd while discovering annotated classes.", e);
                 } catch (ClassNotFoundException e) {
                     log.error("Error while scanning class for annotations.", e);
-                } catch (DeviceManagementException e) {
-                    log.error("Error encountered while persisting device features.", e);
                 }
             }
         }

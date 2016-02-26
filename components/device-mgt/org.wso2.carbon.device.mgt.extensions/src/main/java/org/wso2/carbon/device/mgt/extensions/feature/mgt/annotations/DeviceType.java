@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -16,22 +16,15 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.apimgt.annotations.device.feature;
+package org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Feature {
-
-    String code();
-
-    String name();
-
-    String description();
-
-    String type();
+public @interface DeviceType {
+    String value();
 }

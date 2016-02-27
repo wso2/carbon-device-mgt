@@ -38,31 +38,40 @@ var operationModule = function () {
 
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
         var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/features/" + deviceType;
-        var featuresList = serviceInvokers.XMLHttp.get(
-            url, function (responsePayload) {
-                var features = responsePayload.responseContent;
-                var featureList = [];
-                var feature;
-                for (var i = 0; i < features.size(); i++) {
-                    if (features.get(i).getType() != operationType) {
-                        continue;
-                    }
-                    feature = {};
-                    feature["operation"] = new String(features.get(i).getCode());
-                    feature["name"] = new String(features.get(i).getName());
-                    feature["description"] = new String(features.get(i).getDescription());
-                    feature["deviceType"] = new String(features.get(i).getDeviceType());
-                    feature["params"] = [];
-                    var metaData = features.get(i).getMetadataEntries();
-                    if (metaData && metaData != null) {
-                        for (var j = 0; j < metaData.size(); j++) {
-                            feature["params"].push(new String(metaData.get(j).getValue()));
+        var featuresList = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
+            var features = responsePayload.responseContent;
+            var featureList = [];
+            var feature;
+            for (var i = 0; i < features.size(); i++) {
+                feature = {};
+                if (features.get(i).getType() != operationType) {
+                    continue;
+                } else if (features.get(i).getType() == 'monitor') {
+                    var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
+                    if (analyticStreams) {
+                        for (var stream in analyticStreams) {
+                            if (analyticStreams[stream].name == features.get(i).getName()) {
+                                feature.ui_unit = analyticStreams[stream].ui_unit;
+                                break;
+                            }
                         }
+                    }
+                }
+                feature["operation"] = new String(features.get(i).getCode());
+                feature["name"] = new String(features.get(i).getName());
+                feature["description"] = new String(features.get(i).getDescription());
+                feature["deviceType"] = new String(features.get(i).getDeviceType());
+                feature["params"] = [];
+                var metaData = features.get(i).getMetadataEntries();
+                if (metaData && metaData != null) {
+                    for (var j = 0; j < metaData.size(); j++) {
+                        feature["params"].push(new String(metaData.get(j).getValue()));
                     }
                     featureList.push(feature);
                 }
-                return featureList;
             }
+            return featureList;
+        }
             ,
             function (responsePayload) {
                 var response = {};
@@ -71,6 +80,10 @@ var operationModule = function () {
             }
         );
         return featuresList;
+            return featureList;
+        } catch (e) {
+            throw e;
+        }
     };
 
     publicMethods.getControlOperations = function (deviceType) {
@@ -91,7 +104,10 @@ var operationModule = function () {
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, params) {
         var user = session.get(constants.USER_SESSION_KEY);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '", "' + constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) + '"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId +
+                     '","protocol":"mqtt", "sessionId":"' + session.getId() + '", "' +
+                     constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX +
+                     getAccessToken(deviceType, user.username, deviceId) + '"}';
         log.warn("header: " + header);
         return post(endPoint, params, JSON.parse(header), "json");
     };
@@ -99,7 +115,10 @@ var operationModule = function () {
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {
         var user = session.get(constants.USER_SESSION_KEY);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "' + constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) + '"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId +
+                     '","protocol":"mqtt", "' + constants.AUTHORIZATION_HEADER + '":"' +
+                     constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) +
+                     '"}';
         var result = get(endPoint, {}, JSON.parse(header), "json");
         if (result.data) {
             var values = result.data.sensorValue.split(',');
@@ -113,8 +132,7 @@ var operationModule = function () {
                 for (var v in values) {
                     sqSum += Math.pow(values[v], 2);
                 }
-                var sqRootValue = Math.sqrt(sqSum);
-                result.data[operationName] = sqRootValue;
+                result.data[operationName] = Math.sqrt(sqSum);
             }
             delete result.data['sensorValue'];
         }

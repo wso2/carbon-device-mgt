@@ -127,7 +127,7 @@ public class AnnotationUtil {
 										featureMap.put(deviceType, featureList);
 									}
 								} catch (Throwable throwable) {
-									throwable.printStackTrace();
+									log.error("Class not found for " + className);
 								}
 								return featureMap;
 							}

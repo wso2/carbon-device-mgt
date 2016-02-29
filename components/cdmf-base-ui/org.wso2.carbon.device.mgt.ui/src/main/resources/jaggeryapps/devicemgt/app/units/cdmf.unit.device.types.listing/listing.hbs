@@ -61,7 +61,7 @@
     <script type="text/javascript">
             {{! WARN: DO NOT BLINDLY PASS WHOLE CONTEXT HERE}}
         var clientJsAppContext = "{{{@app.context}}}";
-        var deviceTypesList = "{{{deviceTypesList}}}";
+        var deviceTypesList = {{{deviceTypesList}}};
     </script>
     {{js "js/listing.js"}}
 {{/zone}}

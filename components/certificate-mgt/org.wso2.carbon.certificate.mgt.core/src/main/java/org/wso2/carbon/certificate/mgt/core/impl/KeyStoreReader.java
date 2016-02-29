@@ -219,19 +219,28 @@ public class KeyStoreReader {
                 raCertificate = (Certificate) Serializer.deserialize(certificateBytes);
             }else {
                 String errorMsg = "NULL_CERT : No certificate found for the alias " + alias;
+                if(log.isDebugEnabled()){
+                    log.error(errorMsg);
+                }
                 throw new KeystoreException(errorMsg);
             }
         } catch (CertificateManagementDAOException e) {
             String errorMsg = "Error when retrieving certificate the database for the alias " + alias;
-            log.error(errorMsg, e);
+            if(log.isDebugEnabled()){
+                log.error(errorMsg, e);
+            }
             throw new KeystoreException(errorMsg, e);
         } catch (ClassNotFoundException | IOException e) {
             String errorMsg = "Error when deserializing saved certificate.";
-            log.error(errorMsg, e);
+            if(log.isDebugEnabled()){
+                log.error(errorMsg, e);
+            }
             throw new KeystoreException(errorMsg, e);
         } catch (SQLException e) {
             String errorMsg = "Error when making a connection to the database.";
-            log.error(errorMsg, e);
+            if(log.isDebugEnabled()){
+                log.error(errorMsg, e);
+            }
             throw new KeystoreException(errorMsg, e);
         } finally {
             CertificateManagementDAOFactory.closeConnection();

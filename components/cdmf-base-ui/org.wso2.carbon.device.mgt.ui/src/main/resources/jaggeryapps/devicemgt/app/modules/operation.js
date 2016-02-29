@@ -37,17 +37,28 @@ var operationModule = function () {
     }
 
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
-        var GenericFeatureManager = Packages.org.wso2.carbon.apimgt.webapp.publisher.feature.management.GenericFeatureManager;
+        var GenericFeatureManager = Packages.org.wso2.carbon.apimgt.webapp.publisher.feature.
+                management.GenericFeatureManager;
         try {
             var featureManager = GenericFeatureManager.getInstance();
             var features = featureManager.getFeatures(deviceType);
             var featureList = [];
             var feature;
             for (var i = 0; i < features.size(); i++) {
+                feature = {};
                 if (features.get(i).getType() != operationType) {
                     continue;
+                } else if (features.get(i).getType() == 'monitor') {
+                    var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
+                    if (analyticStreams) {
+                        for (var stream in analyticStreams) {
+                            if (analyticStreams[stream].name == features.get(i).getName()) {
+                                feature.ui_unit = analyticStreams[stream].ui_unit;
+                                break;
+                            }
+                        }
+                    }
                 }
-                feature = {};
                 feature["operation"] = new String(features.get(i).getCode());
                 feature["name"] = new String(features.get(i).getName());
                 feature["description"] = new String(features.get(i).getDescription());
@@ -63,7 +74,6 @@ var operationModule = function () {
             }
             return featureList;
         } catch (e) {
-            log.error(e);
             throw e;
         }
     };
@@ -86,7 +96,10 @@ var operationModule = function () {
     publicMethods.handlePOSTOperation = function (deviceType, operation, deviceId, params) {
         var user = session.get(constants.USER_SESSION_KEY);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "sessionId":"' + session.getId() + '", "' + constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) + '"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId +
+                     '","protocol":"mqtt", "sessionId":"' + session.getId() + '", "' +
+                     constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX +
+                     getAccessToken(deviceType, user.username, deviceId) + '"}';
         log.warn("header: " + header);
         return post(endPoint, params, JSON.parse(header), "json");
     };
@@ -94,7 +107,10 @@ var operationModule = function () {
     publicMethods.handleGETOperation = function (deviceType, operation, operationName, deviceId) {
         var user = session.get(constants.USER_SESSION_KEY);
         var endPoint = devicemgtProps["httpsURL"] + '/' + deviceType + "/controller/" + operation;
-        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId + '","protocol":"mqtt", "' + constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) + '"}';
+        var header = '{"owner":"' + user.username + '","deviceId":"' + deviceId +
+                     '","protocol":"mqtt", "' + constants.AUTHORIZATION_HEADER + '":"' +
+                     constants.BEARER_PREFIX + getAccessToken(deviceType, user.username, deviceId) +
+                     '"}';
         var result = get(endPoint, {}, JSON.parse(header), "json");
         if (result.data) {
             var values = result.data.sensorValue.split(',');
@@ -108,8 +124,7 @@ var operationModule = function () {
                 for (var v in values) {
                     sqSum += Math.pow(values[v], 2);
                 }
-                var sqRootValue = Math.sqrt(sqSum);
-                result.data[operationName] = sqRootValue;
+                result.data[operationName] = Math.sqrt(sqSum);
             }
             delete result.data['sensorValue'];
         }

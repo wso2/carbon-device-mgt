@@ -34,10 +34,10 @@
     </div>
     <h3 style="margin-left: 10px;">Don't have a device?</h3>
     {{#each virtualDeviceTypesList}}
-        <div class="try-device-container">
+        <div class="try-device-container" id="{{deviceTypeName}}">
             <div class="message message-info try-device-message">
                 <p class="try-device-text">
-                    <button onclick="location.href='{{@app.context}}/device/{{deviceTypeName}}/enroll'"
+                    <button id="{{deviceTypeName}}" onclick="location.href='{{@app.context}}/device/{{deviceTypeName}}/enroll'"
                             class="btn btn-default btn-primary">Try
                     </button>
                                            our {{deviceTypeLabel}} device
@@ -61,7 +61,7 @@
     <script type="text/javascript">
             {{! WARN: DO NOT BLINDLY PASS WHOLE CONTEXT HERE}}
         var clientJsAppContext = "{{{@app.context}}}";
-        var deviceTypesList = {{{deviceTypesList}}};
+        var deviceTypesList = "{{{deviceTypesList}}}";
     </script>
     {{js "js/listing.js"}}
 {{/zone}}

@@ -38,12 +38,11 @@ if (!user) {
     if (uriMatcher.match("/{context}/api/policies/add")) {
         var content = request.getContent();
         log.info("@@@@@ Policy Declaration : " + stringify(content));
-
         var policyName = content.policyName;
         var policyDefinition = content.profile.policyDefinition;
         var policyDescription = content.profile.policyDescription;
         deviceType = content.profile.deviceType.name;
-        deviceId = content.profile.deviceId;
+        deviceId = content.deviceId;
         try {
             result = policyModule.addPolicy(policyName, deviceType, policyDefinition, policyDescription, deviceId);
         } catch (e) {
@@ -51,6 +50,8 @@ if (!user) {
             // http status code 500 refers to - Internal Server Error.
             responseProcessor.buildErrorResponse(response, 500, "Internal server error");
         }
+    }else{
+        log.warn("Error..");
     }
 
     // returning the result.

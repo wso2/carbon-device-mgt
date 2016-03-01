@@ -78,14 +78,14 @@ policyModule = function () {
                 policyObjectToView["status"] = "Active/Updated";
                 isUpdated = true;
             } else if (policyObjectFromRestEndpoint["active"] == true &&
-                       policyObjectFromRestEndpoint["updated"] == false) {
+                policyObjectFromRestEndpoint["updated"] == false) {
                 policyObjectToView["status"] = "Active";
             } else if (policyObjectFromRestEndpoint["active"] == false &&
-                       policyObjectFromRestEndpoint["updated"] == true) {
+                policyObjectFromRestEndpoint["updated"] == true) {
                 policyObjectToView["status"] = "Inactive/Updated";
                 isUpdated = true;
             } else if (policyObjectFromRestEndpoint["active"] == false &&
-                       policyObjectFromRestEndpoint["updated"] == false) {
+                policyObjectFromRestEndpoint["updated"] == false) {
                 policyObjectToView["status"] = "Inactive";
             }
             // push view-objects to list
@@ -101,6 +101,7 @@ policyModule = function () {
 
 
     publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription, deviceId) {
+
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
@@ -108,10 +109,10 @@ policyModule = function () {
         }
         if (policyName && deviceType) {
             var queName = "WSO2IoTServer/" + carbonUser.username + "/" + deviceType;
-
+            var deviceQueName;
             if (deviceId){
-                queName += "/" + deviceId;
-                privateMethods.publish(queName, policyName, deviceType, policyDefinition);
+                deviceQueName = queName + "/" + deviceId;
+                privateMethods.publish(deviceQueName, policyName, deviceType, policyDefinition);
             } else {
                 var deviceManagementService = utility.getDeviceManagementService();
                 var devices = deviceManagementService.getDevicesOfUser(carbonUser.username);
@@ -119,8 +120,8 @@ policyModule = function () {
                 for (var i = 0; i < devices.size(); i++) {
                     device = devices.get(i);
                     deviceId = device.getDeviceIdentifier();
-                    queName += "/" + deviceId;
-                    privateMethods.publish(queName, policyName, deviceType, policyDefinition);
+                    deviceQueName = queName + "/" + deviceId;
+                    privateMethods.publish(deviceQueName, policyName, deviceType, policyDefinition);
                 }
             }
 

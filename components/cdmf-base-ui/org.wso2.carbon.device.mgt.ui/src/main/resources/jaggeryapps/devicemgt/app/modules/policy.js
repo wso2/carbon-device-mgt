@@ -78,14 +78,14 @@ policyModule = function () {
                 policyObjectToView["status"] = "Active/Updated";
                 isUpdated = true;
             } else if (policyObjectFromRestEndpoint["active"] == true &&
-                policyObjectFromRestEndpoint["updated"] == false) {
+                       policyObjectFromRestEndpoint["updated"] == false) {
                 policyObjectToView["status"] = "Active";
             } else if (policyObjectFromRestEndpoint["active"] == false &&
-                policyObjectFromRestEndpoint["updated"] == true) {
+                       policyObjectFromRestEndpoint["updated"] == true) {
                 policyObjectToView["status"] = "Inactive/Updated";
                 isUpdated = true;
             } else if (policyObjectFromRestEndpoint["active"] == false &&
-                policyObjectFromRestEndpoint["updated"] == false) {
+                       policyObjectFromRestEndpoint["updated"] == false) {
                 policyObjectToView["status"] = "Inactive";
             }
             // push view-objects to list
@@ -99,9 +99,8 @@ policyModule = function () {
         return response;
     };
 
-
-    publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription, deviceId) {
-
+    publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription,
+                                        deviceId) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
@@ -110,7 +109,7 @@ policyModule = function () {
         if (policyName && deviceType) {
             var queName = "WSO2IoTServer/" + carbonUser.username + "/" + deviceType;
             var deviceQueName;
-            if (deviceId){
+            if (deviceId) {
                 deviceQueName = queName + "/" + deviceId;
                 privateMethods.publish(deviceQueName, policyName, deviceType, policyDefinition);
             } else {
@@ -124,16 +123,12 @@ policyModule = function () {
                     privateMethods.publish(deviceQueName, policyName, deviceType, policyDefinition);
                 }
             }
-
             return true;
         }
         return false;
     };
 
-
     privateMethods.publish = function (queName, policyName, deviceType, policyDefinition) {
-        log.warn("Queue : " + queName);
-
         var configurationService = utility.getConfigurationService();
         var mqttEndPointDeviceConfig = configurationService.getControlQueue(constants.MQTT_QUEUE_CONFIG_NAME);
         var mqttBrokerURL = mqttEndPointDeviceConfig.getServerURL();
@@ -145,8 +140,8 @@ policyModule = function () {
 
         var policyPayload = "POLICY:" + policyDefinition;
         var result = mqttsender.pushToMQTT(queName, policyPayload, mqttQueueEndpoint, "MQTT_Agent");
-        log.warn(result);
         mqttsender = null;
+        return result;
     };
 
     /*
@@ -160,9 +155,8 @@ policyModule = function () {
         }
         try {
             var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/policies";
-            var response = serviceInvokers.XMLHttp.
-            get(url, privateMethods.handleGetAllPoliciesSuccess,privateMethods.handleGetAllPoliciesError);
-            return response;
+            return serviceInvokers.XMLHttp.
+            get(url, privateMethods.handleGetAllPoliciesSuccess, privateMethods.handleGetAllPoliciesError);
         } catch (e) {
             throw e;
         }
@@ -193,7 +187,7 @@ policyModule = function () {
             log.error("User object was not found in the session");
             throw constants.ERRORS.USER_NOT_FOUND;
         }
-        try{
+        try {
             utility.startTenantFlow(carbonUser);
             var policyManagementService = utility.getPolicyManagementService();
             var policyAdminPoint = policyManagementService.getPAP();
@@ -208,7 +202,7 @@ policyModule = function () {
                 profileList.push(profileObject);
             }
             return profileList;
-        }catch (e) {
+        } catch (e) {
             throw e;
         } finally {
             utility.endTenantFlow();
@@ -224,7 +218,7 @@ policyModule = function () {
             log.error("User object was not found in the session");
             throw constants.ERRORS.USER_NOT_FOUND;
         }
-        try{
+        try {
             utility.startTenantFlow(carbonUser);
             var policyManagementService = utility.getPolicyManagementService();
             var policyAdminPoint = policyManagementService.getPAP();
@@ -238,7 +232,7 @@ policyModule = function () {
                 policyList.add(policyObject);
             }
             policyAdminPoint.updatePolicyPriorities(policyList);
-        }catch (e) {
+        } catch (e) {
             throw e;
         } finally {
             utility.endTenantFlow();
@@ -256,7 +250,7 @@ policyModule = function () {
             log.error("User object was not found in the session");
             throw constants.ERRORS.USER_NOT_FOUND;
         }
-        try{
+        try {
             utility.startTenantFlow(carbonUser);
             var policyManagementService = utility.getPolicyManagementService();
             var policyAdminPoint = policyManagementService.getPAP();
@@ -268,7 +262,7 @@ policyModule = function () {
                 // http status code 409 refers to - conflict.
                 return 409;
             }
-        }catch (e) {
+        } catch (e) {
             throw e;
         } finally {
             utility.endTenantFlow();

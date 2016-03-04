@@ -1,60 +1,48 @@
 <%
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 var uri = request.getRequestURI();
 var uriMatcher = new URIMatcher(String(uri));
 
 var log = new Log("api/device-api.jag");
-
 var constants = require("/app/modules/constants.js");
-
 var deviceModule = require("/app/modules/device.js").deviceModule;
 var utility = require("/app/modules/utility.js").utility;
 var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 
 var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
-
-var responseProcessor = require('utils').response;
-response.contentType = 'application/json';
-
 var user = session.get(constants.USER_SESSION_KEY);
-
 var result;
+
+response.contentType = 'application/json';
 
 if (!user) {
     //response = responseProcessor.buildErrorResponse(response, 401, "Unauthorized");
     response.sendRedirect("/devicemgt/login?#login-required");
     exit();
 } else {
-    if (uriMatcher.match("/{context}/api/devices/{deviceTypeName}/thumbnail/")) {
-        deviceTypeId = null;
-        if (deviceTypeId) {
-            result = deviceTypeId;
-        } else {
-            log.error("Device type `" + deviceTypeName + "` not found!");
-            result = 400;
-        }
-
-    } else if (uriMatcher.match("/{context}/api/devices/sketch/download/{downloadId}")) {
+    if (uriMatcher.match("/{context}/api/devices/sketch/download/{downloadId}")) {
         downloadId = uriMatcher.elements().downloadId;
         //Just download the already created zip archive
         var sketchFolder = "repository/resources/sketches";
-        var archivesPath = "file://" + CarbonUtils.getCarbonHome() + "/" + sketchFolder + "/archives/" + downloadId + ".zip";
+        var archivesPath = "file://" + CarbonUtils.getCarbonHome() + "/" + sketchFolder + "/archives/" +
+                           downloadId + ".zip";
         var zipFile = new File(archivesPath);
         response.addHeader('Content-type', "application/zip, application/octet-stream");
         response.addHeader('Cache-Control', 'public,max-age=12960000');
@@ -95,17 +83,25 @@ if (!user) {
              {deviceName} - from request
              **/
 
-            deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" + "/manager";
-            sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
-            var deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
+            var deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" + "/manager";
+            var sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
+            deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
 
             if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
-                sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
+                sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" +
+                                         "/" + deviceTypeConfig.deviceType.downloadAgentUri;
+            }
+            var tokenPair = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
+            if (tokenPair) {
+                response.addHeader(constants.AUTHORIZATION_HEADER, constants.BEARER_PREFIX +
+                                                                   tokenPair.accessToken);
+                response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" +
+                                      deviceName);
+            } else {
+                response.sendRedirect(devicemgtProps["httpsURL"] + "/devicemgt/login");
+                exit();
             }
         }
-
-        response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName);
-        exit();//stop execution
 
     } else if (uriMatcher.match("/{context}/api/devices/sketch/generate_link")) {
 
@@ -135,11 +131,14 @@ if (!user) {
             var deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
             //replace download endpoint
             if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentLinkGenUri) {
-                sketchGenerateLinkEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" + "/" + deviceTypeConfig.deviceType.downloadAgentLinkGenUri;
+                sketchGenerateLinkEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" +
+                                             "/" + deviceTypeConfig.deviceType.downloadAgentLinkGenUri;
             }
 
-            var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" + deviceName, null, "text");
-            result = "curl -k " + devicemgtProps["httpsURL"] + constants.WEB_APP_CONTEXT + "/api/devices/sketch/download/" + fileId.data;
+            var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" +
+                             deviceName, null, "text");
+            result = "curl -k " + devicemgtProps["httpsURL"] + constants.WEB_APP_CONTEXT +
+                     "/api/devices/sketch/download/" + fileId.data;
         }
 
     } else if (uriMatcher.match("/{context}/api/devices/all")) {

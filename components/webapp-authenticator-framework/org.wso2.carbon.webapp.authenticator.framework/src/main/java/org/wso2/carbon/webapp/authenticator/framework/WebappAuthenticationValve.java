@@ -26,6 +26,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.authorizer.WebappTenantAuthorizer;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -51,6 +52,8 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
             return;
         }
         AuthenticationInfo authenticationInfo = authenticator.authenticate(request, response);
+        WebappAuthenticator.Status status = WebappTenantAuthorizer.authorize(request, authenticationInfo);
+        authenticationInfo.setStatus(status);
         if (authenticationInfo.getTenantId() != -1) {
             try {
                 PrivilegedCarbonContext.startTenantFlow();

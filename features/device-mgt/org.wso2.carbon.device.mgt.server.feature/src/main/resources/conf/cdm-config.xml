@@ -62,6 +62,12 @@
             <AdminUsername>admin</AdminUsername>
             <AdminPassword>admin</AdminPassword>
         </AnalyticsConfiguration>
+        <TokenConfiguration>
+            <!-- Token Endpoint to generate access token for server to server communication. -->
+            <tokenEndpointURL>https://localhost:9443/oauth2/token</tokenEndpointURL>
+            <!-- Custom grannt type handler used for server to server authentication -->
+            <deviceGrantType>devicecloud</deviceGrantType>
+        </TokenConfiguration>
     </ManagementRepository>
 </DeviceMgtConfiguration>
 

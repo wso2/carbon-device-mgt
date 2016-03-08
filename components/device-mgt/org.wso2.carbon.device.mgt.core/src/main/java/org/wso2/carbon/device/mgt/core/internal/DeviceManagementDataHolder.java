@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.api.mgt.APIManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -46,6 +47,7 @@ public class DeviceManagementDataHolder {
     private ConfigurationContextService configurationContextService;
     private HashMap<String,Boolean> requireDeviceAuthorization = new HashMap<>();
     private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
+    private APIManagementProviderService apiManagementProviderService;
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -163,5 +165,14 @@ public class DeviceManagementDataHolder {
     public void setDeviceAccessAuthorizationService(
             DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
         this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
+    }
+
+    public APIManagementProviderService getAPIManagementProviderService() {
+        return apiManagementProviderService;
+    }
+
+    public void setAPIManagementProviderService(
+            APIManagementProviderService apiManagementProviderService) {
+        this.apiManagementProviderService = apiManagementProviderService;
     }
 }

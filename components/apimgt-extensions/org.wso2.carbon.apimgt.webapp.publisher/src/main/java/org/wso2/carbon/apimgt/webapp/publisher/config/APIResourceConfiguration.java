@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher.config;
 
-import org.wso2.carbon.device.mgt.common.Feature;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -28,14 +26,9 @@ import java.util.List;
 public class APIResourceConfiguration {
 
 	private String name;
-
 	private String context;
-
 	private String version;
-
 	private List<APIResource> resources;
-
-	private List<Feature> features;
 
 	public List<APIResource> getResources() {
 		return resources;
@@ -73,12 +66,4 @@ public class APIResourceConfiguration {
 		this.version = version;
 	}
 
-	public List<Feature> getFeatures() {
-		return features;
-	}
-
-	@XmlElement(name = "Features")
-	public void setFeatures(List<Feature> features) {
-		this.features = features;
-	}
 }

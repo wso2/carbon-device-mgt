@@ -26,8 +26,6 @@ import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
-import org.wso2.carbon.device.mgt.common.Feature;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -127,7 +125,6 @@ public class AnnotationUtil {
                                         }
 
                                         try {
-
                                             for(int k=0;k<apiClazzMethods.length;k++){
                                                 switch (apiClazzMethods[k].getName()){
                                                     case "name" :
@@ -143,7 +140,6 @@ public class AnnotationUtil {
                                             }
 
                                             String rootContext = "";
-
                                             pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
                                             pathClazzMethods = pathClazz.getMethods();
 
@@ -156,21 +152,18 @@ public class AnnotationUtil {
                                             }
 
                                             Method[] annotatedMethods = clazz.getDeclaredMethods();
-
                                             resourceList = getApiResources(rootContext, annotatedMethods);
-
                                             apiResourceConfig.setResources(resourceList);
                                         } catch (Throwable throwable) {
                                             log.error("Error encountered while scanning for annotations", throwable);
                                         }
                                     }
                                 } catch (ClassNotFoundException e) {
-                                    e.printStackTrace();
+                                    log.error("Error when passing the api annotation for device type apis.");
                                 }
                                 return apiResourceConfig;
                             }
                         });
-
                 apiResourceConfigs.add(resource);
             }
         }

@@ -95,15 +95,19 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.keymgt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.lcm</artifactId>
         </dependency>
     </dependencies>
 
@@ -147,7 +151,9 @@
                             org.wso2.carbon.core,
                             org.apache.commons.lang,
                             org.wso2.carbon.utils,
-                            org.wso2.carbon.apimgt.annotations.*
+                            org.wso2.carbon.apimgt.annotations.*,
+                            org.wso2.carbon.governance.lcm.util.*,
+                            org.wso2.carbon.registry.core.*
                         </Import-Package>
                         <Embed-Dependency>
                             scribe;scope=compile|runtime;inline=false;

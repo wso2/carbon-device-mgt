@@ -28,6 +28,23 @@ function inputIsValid(regExp, inputString) {
     return regExp.test(inputString);
 }
 
+//holds the list of inline validation methods
+var validateInline = {};
+/**
+ * Checks if provided email address is valid against
+ * the email format.
+ */
+validateInline["emailAddress"] = function () {
+    var email = $("#emailAddress").val();
+    if (emailIsValid(email)) {
+        $("#emailValidationText").removeClass("inline-warning");
+        $("#emailValidationText").hide();
+    } else {
+        $("#emailValidationText").addClass("inline-warning");
+        $("#emailValidationText").show();
+    }
+};
+
 /**
  * Checks if an email address has the valid format or not.
  *
@@ -40,9 +57,10 @@ function emailIsValid(email) {
 }
 
 $(document).ready(function () {
+    $("#emailValidationText").hide();
     $("select.select2[multiple=multiple]").select2({
-                                                       tags: false
-                                                   });
+        tags: false
+    });
     var roleList = $("#roles").attr("selectedVals").trim().replace(/ /g, "");
     roleList = roleList.replace(/(\r\n|\n|\r)/gm, "");
     var roleArr = roleList.split(",");
@@ -51,7 +69,7 @@ $(document).ready(function () {
     /**
      * Following click function would execute
      * when a user clicks on "Add User" button
-     * on Add User page in WSO2 MDM Console.
+     * on Add User page in WSO2 Devicemgt Console.
      */
     $("button#add-user-btn").click(function () {
         var usernameInput = $("input#username");
@@ -63,14 +81,10 @@ $(document).ready(function () {
         var lastname = lastnameInput.val();
         var emailAddress = $("input#emailAddress").val();
         var roles = $("select#roles").val();
-        var password = $("input#password").val();
         var errorMsgWrapper = "#user-create-error-msg";
         var errorMsg = "#user-create-error-msg span";
         if (!username) {
             $(errorMsg).text("Username is a required field. It cannot be empty.");
-            $(errorMsgWrapper).removeClass("hidden");
-        } else if (username.length > charLimit || username.length < 3) {
-            $(errorMsg).text("Username must be between 3 and " + charLimit + " characters long.");
             $(errorMsgWrapper).removeClass("hidden");
         } else if (!inputIsValid(usernameInput.data("regex"), username)) {
             $(errorMsg).text(usernameInput.data("errormsg"));
@@ -101,16 +115,7 @@ $(document).ready(function () {
             addUserFormData.lastname = lastname;
             addUserFormData.emailAddress = emailAddress;
 
-            if (password != ""){
-                if (!inputIsValid(/^[\S]{5,30}$/, password)) {
-                    $(errorMsg).text("Provided password doesn't conform to the password policy. Please check.");
-                    $(errorMsgWrapper).removeClass("hidden");
-                }
-                // Base64 encode the password
-                addUserFormData.password = window.btoa(password);
-            }
-
-            if (roles == null) {
+            if (!roles) {
                 roles = [];
             }
             addUserFormData.roles = roles;
@@ -118,33 +123,40 @@ $(document).ready(function () {
             var addUserAPI = "/devicemgt_admin/users?username=" + username;
 
             invokerUtil.put(
-                    addUserAPI,
-                    addUserFormData,
-                    function (data) {
-                        data = JSON.parse(data);
-                        if (data["statusCode"] == 201) {
-                            // Clearing user input fields.
-                            $("input#username").val("");
-                            $("input#firstname").val("");
-                            $("input#lastname").val("");
-                            $("input#email").val("");
-                            $("input#password").val("");
-                            $("select#roles").select2("val", "");
-                            // Refreshing with success message
-                            $("#user-create-form").addClass("hidden");
-                            $("#user-created-msg").removeClass("hidden");
-                        }
-                    }, function (data) {
-                        if (data["status"] == 409) {
-                            $(errorMsg).text("User : " + username + " doesn't exists. You cannot proceed.");
-                        } else if (data["status"] == 500) {
-                            $(errorMsg).text("An unexpected error occurred @ backend server. Please try again later.");
-                        } else {
-                            $(errorMsg).text(data.errorMessage);
-                        }
-                        $(errorMsgWrapper).removeClass("hidden");
+                addUserAPI,
+                addUserFormData,
+                function (data) {
+                    data = JSON.parse(data);
+                    if (data["statusCode"] == 201) {
+                        // Clearing user input fields.
+                        $("input#username").val("");
+                        $("input#firstname").val("");
+                        $("input#lastname").val("");
+                        $("input#email").val("");
+                        $("select#roles").select2("val", "");
+                        // Refreshing with success message
+                        $("#user-create-form").addClass("hidden");
+                        $("#user-created-msg").removeClass("hidden");
                     }
+                }, function (data) {
+                    if (data["status"] == 409) {
+                        $(errorMsg).text("User : " + username + " doesn't exists. You cannot proceed.");
+                    } else if (data["status"] == 500) {
+                        $(errorMsg).text("An unexpected error occurred @ backend server. Please try again later.");
+                    } else {
+                        $(errorMsg).text(data.errorMessage);
+                    }
+                    $(errorMsgWrapper).removeClass("hidden");
+                }
             );
         }
+    });
+
+    $("#emailAddress").focus(function() {
+        $("#emailValidationText").hide();
+    });
+
+    $("#emailAddress").blur(function() {
+        validateInline["emailAddress"]();
     });
 });

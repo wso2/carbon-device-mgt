@@ -21,12 +21,14 @@ function onRequest(context) {
     var response = userModule.getUsers();
     var users = {};
     context["permissions"] = userModule.getUIPermissions();
-    if (response["status"] == "success") {
-        context["users"] = response["content"];
-        context["userListingStatusMsg"] = "Total number of Users found : " + context["users"].length;
-    } else {
-        context["users"] = [];
-        context["userListingStatusMsg"] = "Error in retrieving user list.";
+    if(userModule.isAuthorized("/permission/admin/device-mgt/roles/delete")){
+        context["removePermitted"] = true;
     }
+    if(userModule.isAuthorized("/permission/admin/device-mgt/roles/update")){
+        context["editPermitted"] = true;
+    }
+    var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();
+    context["appContext"] = deviceMgtProps.appContext;
+    context["adminRole"] = deviceMgtProps.adminRole;
     return context;
 }

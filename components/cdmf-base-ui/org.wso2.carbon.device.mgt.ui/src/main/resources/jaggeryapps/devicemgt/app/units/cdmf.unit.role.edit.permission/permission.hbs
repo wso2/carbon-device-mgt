@@ -6,17 +6,23 @@
                 <div class="wr-form">
                     <p class="page-sub-title">Change Role permissions</p>
                     <p>Please note that * sign represents required fields of data.</p>
-                    <hr />
+                    <hr/>
                     <div class="row">
                         <div class="col-lg-8">
                             <div id="role-create-error-msg" class="alert alert-danger hidden" role="alert">
                                 <i class="icon fw fw-error"></i><span></span>
                             </div>
-                            <div id="permissionList" class="well" data-currentrole="{{roleName}}"></div>
+                            <div id="permissionList" class="well" data-currentrole="{{roleName}}">
+                                <div id="loading-content" class="col-centered">
+                                    <i class="fw fw-settings fw-spin fw-2x"></i>
+                                    Loading permissions list . . .
+                                    <br>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <br>
-                    <button id="update-permissions-btn" class="wr-btn">&nbsp;&nbsp;&nbsp;&nbsp;Update Role Permissions&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                    <button id="update-permissions-btn" class="wr-btn">Update Role Permissions</button>
                 </div>
             </div>
             <div id="role-created-msg" class="container col-centered wr-content hidden">
@@ -37,6 +43,20 @@
                     </a>
                 </div>
             </div>
+            <div id="child-deselect-error-content" class="hide">
+                                <div class="content">
+                                    <div class="row">
+                                        <div class="col-lg-5 col-md-6 col-centered">
+                                            <h3>Can't deselect child permissions when parent permission is selected.</h3>
+                                            <div class="buttons">
+                                                <a href="#" id="child-deselect-error-link" class="btn-operations">
+                                                    Ok
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                         </div>
             <!-- /content -->
         </div>
     </div>

@@ -18,19 +18,24 @@
 
 /**
  * Returns the dynamic state to be populated by add-user page.
- * 
+ *
  * @param context Object that gets updated with the dynamic state of this page to be presented
  * @returns {*} A context object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
-    var response = userModule.getRoles();
+    var response = userModule.getRolesByUserStore("PRIMARY");
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     context["charLimit"] = devicemgtProps.usernameLength;
     if (response["status"] == "success") {
         context["roles"] = response["content"];
     }
-    var userStores = userModule.getSecondaryUserStores();
-    context["userStores"] = userStores;
+    context["usernameJSRegEx"] = devicemgtProps.userValidationConfig.usernameJSRegEx;
+    context["usernameHelpText"] = devicemgtProps.userValidationConfig.usernameHelpMsg;
+    context["usernameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.usernameRegExViolationErrorMsg;
+    context["firstnameJSRegEx"] = devicemgtProps.userValidationConfig.firstnameJSRegEx;
+    context["firstnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.firstnameRegExViolationErrorMsg;
+    context["lastnameJSRegEx"] = devicemgtProps.userValidationConfig.lastnameJSRegEx;
+    context["lastnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.lastnameRegExViolationErrorMsg;
     return context;
 }

@@ -558,7 +558,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "roles/role?rolename=" + encodeURIComponent(roleName);
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/role?rolename=" + encodeURIComponent(roleName);
             var response = privateMethods.callBackend(url, constants.HTTP_GET);
             return response;
         } catch (e) {

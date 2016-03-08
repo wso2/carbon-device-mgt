@@ -23,9 +23,8 @@
 $(function () {
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({
-        beforeStop : function () {
+        beforeStop: function () {
             var sortedIDs = $(this).sortable('toArray');
-            console.log(sortedIDs);
         }
     });
     $(sortableElem).disableSelection();
@@ -35,16 +34,17 @@ var modalPopup = ".wr-modalpopup";
 var modalPopupContainer = modalPopup + " .modalpopup-container";
 var modalPopupContent = modalPopup + " .modalpopup-content";
 var body = "body";
-var dataTableSelection = '.DTTT_selected';
-$('#user-grid').datatables_extended();
+var isInit = true;
 $(".icon .text").res_text(0.2);
+
+var resetPasswordServiceURL = "/devicemgt_admin/users/reset-password";
 
 /*
  * set popup maximum height function.
  */
 function setPopupMaxHeight() {
-    $(modalPopupContent).css('max-height', ($(body).height() - ($(body).height()/100 * 30)));
-    $(modalPopupContainer).css('margin-top', (-($(modalPopupContainer).height()/2)));
+    $(modalPopupContent).css('max-height', ($(body).height() - ($(body).height() / 100 * 30)));
+    $(modalPopupContainer).css('margin-top', (-($(modalPopupContainer).height() / 2)));
 }
 
 /*
@@ -68,10 +68,10 @@ function hidePopup() {
  */
 function getSelectedUsernames() {
     var usernameList = [];
-    var thisTable = $(".DTTT_selected").closest('.dataTables_wrapper').find('.dataTable').dataTable();
-    thisTable.api().rows().every(function(){
-        if($(this.node()).hasClass('DTTT_selected')){
-            usernameList.push($(thisTable.api().row(this).node()).data('id'));
+    var userList = $("#user-grid").find('> tbody > tr');
+    userList.each(function () {
+        if ($(this).hasClass('DTTT_selected')) {
+            usernameList.push($(this).attr('data-username'));
         }
     });
     return usernameList;
@@ -86,7 +86,7 @@ $("a.invite-user-link").click(function () {
     var usernameList = getSelectedUsernames();
     var inviteUserAPI = "/devicemgt_admin/users/email-invitation";
 
-    if (usernameList == 0) {
+    if (usernameList.length == 0) {
         $(modalPopupContent).html($("#errorUsers").html());
     } else {
         $(modalPopupContent).html($('#invite-user-modal-content').html());
@@ -123,9 +123,9 @@ $("a.invite-user-link").click(function () {
  * when a user clicks on "Remove" link
  * on User Listing page in WSO2 Devicemgt Console.
  */
-$("a.remove-user-link").click(function () {
-    var username = $(this).data("username");
-    var userid = $(this).data("userid");
+function removeUser(uname, uid) {
+    var username = uname;
+    var userid = uid;
     var removeUserAPI = "/devicemgt_admin/users?username=" + username;
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
@@ -156,5 +156,158 @@ $("a.remove-user-link").click(function () {
 
     $("a#remove-user-cancel-link").click(function () {
         hidePopup();
+    });
+}
+
+/**
+ * Following click function would execute
+ * when a user clicks on "Reset Password" link
+ * on User Listing page in WSO2 MDM Console.
+ */
+function resetPassword(uname) {
+
+    $(modalPopupContent).html($('#reset-password-window').html());
+    showPopup();
+
+    $("a#reset-password-yes-link").click(function () {
+        var newPassword = $("#new-password").val();
+        var confirmedPassword = $("#confirmed-password").val();
+        var user = uname;
+
+        var errorMsgWrapper = "#notification-error-msg";
+        var errorMsg = "#notification-error-msg span";
+        if (!newPassword) {
+            $(errorMsg).text("New password is a required field. It cannot be empty.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (!confirmedPassword) {
+            $(errorMsg).text("Retyping the new password is required.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (confirmedPassword != newPassword) {
+            $(errorMsg).text("New password doesn't match the confirmation.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (!inputIsValid(/^[\S]{5,30}$/, confirmedPassword)) {
+            $(errorMsg).text("Password should be minimum 5 characters long, should not include any whitespaces.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else {
+            var resetPasswordFormData = {};
+            resetPasswordFormData.username = user;
+            resetPasswordFormData.newPassword = window.btoa(unescape(encodeURIComponent(confirmedPassword)));
+
+            invokerUtil.post(
+                resetPasswordServiceURL,
+                resetPasswordFormData,
+                function (data) {   // The success callback
+                    data = JSON.parse(data);
+                    if (data.statusCode == 201) {
+                        $(modalPopupContent).html($('#reset-password-success-content').html());
+                        $("a#reset-password-success-link").click(function () {
+                            hidePopup();
+                        });
+                    }
+                }, function (data) {    // The error callback
+                    if (data.statusCode == 400) {
+                        $(errorMsg).text("Old password does not match with the provided value.");
+                        $(errorMsgWrapper).removeClass("hidden");
+                    } else {
+                        $(errorMsg).text("An unexpected error occurred. Please try again later.");
+                        $(errorMsgWrapper).removeClass("hidden");
+                    }
+                }
+            );
+        }
+    });
+
+    $("a#reset-password-cancel-link").click(function () {
+        hidePopup();
+    });
+}
+
+/**
+ * Following on click function would execute
+ * when a user type on the search field on User Listing page in
+ * WSO2 MDM Console then click on the search button.
+ */
+$("#search-btn").click(function () {
+    var searchQuery = $("#search-by-username").val();
+    $("#ast-container").empty();
+    loadUsers(searchQuery);
+});
+
+/**
+ * Following function would execute
+ * when a user clicks on the list item
+ * initial mode and with out select mode.
+ */
+function InitiateViewOption() {
+    $(location).attr('href', $(this).data("url"));
+}
+
+function loadUsers(searchParam) {
+    $("#loading-content").show();
+    var userListing = $("#user-listing");
+    var userListingSrc = userListing.attr("src");
+    $.template("user-listing", userListingSrc, function (template) {
+        var serviceURL = "/devicemgt_admin/users";
+        if (searchParam) {
+            serviceURL = serviceURL + "/view-users?username=" + searchParam;
+        }
+        var successCallback = function (data) {
+            if (!data) {
+                $('#ast-container').addClass('hidden');
+                $('#user-listing-status-msg').text('No users are available to be displayed.');
+                return;
+            }
+            var canRemove = $("#can-remove").val();
+            var canEdit = $("#can-edit").val();
+            var canResetPassword = $("#can-reset-password").val();
+            data = JSON.parse(data);
+            data = data.responseContent;
+            var viewModel = {};
+            viewModel.users = data;
+            for (var i = 0; i < viewModel.users.length; i++) {
+                viewModel.users[i].userid = viewModel.users[i].username.replace(/[^\w\s]/gi, '');
+                if (canRemove) {
+                    viewModel.users[i].canRemove = true;
+                }
+                if (canEdit) {
+                    viewModel.users[i].canEdit = true;
+                }
+                if (canResetPassword) {
+                    viewModel.users[i].canEdit = true;
+                }
+                viewModel.users[i].adminUser = $("#user-table").data("user");
+            }
+            if (data.length > 0) {
+                $('#ast-container').removeClass('hidden');
+                $('#user-listing-status-msg').text("");
+                var content = template(viewModel);
+                $("#ast-container").html(content);
+            } else {
+                $('#ast-container').addClass('hidden');
+                $('#user-listing-status-msg').text('No users are available to be displayed.');
+            }
+            $("#loading-content").hide();
+            if (isInit) {
+                $('#user-grid').datatables_extended();
+                isInit = false;
+            }
+            $(".icon .text").res_text(0.2);
+        };
+        invokerUtil.get(serviceURL,
+                        successCallback,
+                        function (message) {
+                            $('#ast-container').addClass('hidden');
+                            $('#user-listing-status-msg').
+                                text('Invalid search query. Try again with a valid search query');
+                        }
+        );
+    });
+}
+
+$(document).ready(function () {
+    loadUsers();
+
+    $(".viewEnabledIcon").click(function () {
+        InitiateViewOption();
     });
 });

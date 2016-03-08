@@ -152,11 +152,11 @@ $(document).ready(function () {
         }
     });
 
-    $("#emailAddress").focus(function() {
+    $("#emailAddress").focus(function () {
         $("#emailValidationText").hide();
     });
 
-    $("#emailAddress").blur(function() {
+    $("#emailAddress").blur(function () {
         validateInline["emailAddress"]();
     });
 });

@@ -294,12 +294,12 @@ function loadUsers(searchParam) {
             $(".icon .text").res_text(0.2);
         };
         invokerUtil.get(serviceURL,
-                        successCallback,
-                        function (message) {
-                            $('#ast-container').addClass('hidden');
-                            $('#user-listing-status-msg').
-                                text('Invalid search query. Try again with a valid search query');
-                        }
+            successCallback,
+            function (message) {
+                $('#ast-container').addClass('hidden');
+                $('#user-listing-status-msg').
+                    text('Invalid search query. Try again with a valid search query');
+            }
         );
     });
 }

@@ -21,10 +21,10 @@ function onRequest(context) {
     var response = userModule.getUsers();
     var users = {};
     context["permissions"] = userModule.getUIPermissions();
-    if(userModule.isAuthorized("/permission/admin/device-mgt/roles/delete")){
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/delete")) {
         context["removePermitted"] = true;
     }
-    if(userModule.isAuthorized("/permission/admin/device-mgt/roles/update")){
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/update")) {
         context["editPermitted"] = true;
     }
     var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();

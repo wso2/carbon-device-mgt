@@ -29,7 +29,7 @@ function onRequest(context) {
 
     if (userName) {
         var userStore = "PRIMARY";
-        if(userName.indexOf("/") > -1) {
+        if (userName.indexOf("/") > -1) {
             userStore = userName.substr(0, userName.indexOf('/'));
         }
         var response = userModule.getUser(userName);

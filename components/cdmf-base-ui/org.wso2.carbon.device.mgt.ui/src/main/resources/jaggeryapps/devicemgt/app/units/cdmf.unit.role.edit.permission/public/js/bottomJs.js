@@ -102,14 +102,14 @@ $(document).ready(function () {
                         treeData = { nodeList: treeData.nodeList };
                         var content = template(treeData);
                         $("#permissionList").html(content);
-                        $("#permissionList").on("click", ".permissionTree .permissionItem", function(){
+                        $("#permissionList").on("click", ".permissionTree .permissionItem", function() {
                             var parentValue = $(this).prop('checked');
                             $(this).closest("li").find("li input").each(function () {
                                 $(this).prop('checked',parentValue);
                             });
                         });
                     }
-                    $("#permissionList li input").click(function(){
+                    $("#permissionList li input").click(function() {
                         var parentInput = $(this).parents("ul:eq(1) > li").find('input:eq(0)');
                         if(parentInput && parentInput.is(':checked')){
                             $(modalPopupContent).html($('#child-deselect-error-content').html());

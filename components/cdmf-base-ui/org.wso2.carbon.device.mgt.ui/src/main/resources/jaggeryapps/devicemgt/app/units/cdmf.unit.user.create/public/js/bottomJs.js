@@ -35,7 +35,7 @@ var validateInline = {};
  */
 validateInline["user-name"] = function () {
     var usernameinput = $("input#username");
-    if (inputIsValid( usernameinput.data("regex"), usernameinput.val())) {
+    if (inputIsValid(usernameinput.data("regex"), usernameinput.val())) {
         $("#userNameValidationText").removeClass("inline-warning");
     } else {
         $("#userNameValidationText").addClass("inline-warning");
@@ -67,13 +67,13 @@ function emailIsValid(email) {
     var regExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return regExp.test(email);
 }
-$( "#userStore" )
+$("#userStore")
     .change(function () {
         var str = "";
-        $( "select option:selected" ).each(function() {
-            str += $( this ).text() + " ";
+        $("select option:selected").each(function () {
+            str += $(this).text() + " ";
         });
-        var addUserAPI = "/devicemgt_admin/roles/"+ str;
+        var addUserAPI = "/devicemgt_admin/roles/" + str;
 
         invokerUtil.get(
             addUserAPI,
@@ -84,8 +84,8 @@ $( "#userStore" )
                     $(errorMsgWrapper).removeClass("hidden");
                 } else if (data["statusCode"] == 200) {
                     $("#roles").empty();
-                    for(i=0;i<data.responseContent.length;i++){
-                        var newOption = $('<option value="'+data.responseContent[i]+'">'+data.responseContent[i]+'</option>');
+                    for (i = 0; i < data.responseContent.length; i++) {
+                        var newOption = $('<option value="' + data.responseContent[i] + '">' + data.responseContent[i] + '</option>');
                         $('#roles').append(newOption);
                     }
                 }
@@ -193,19 +193,19 @@ $(document).ready(function () {
         }
     });
 
-    $("#username").focus(function() {
+    $("#username").focus(function () {
         $("#userNameValidationText").removeClass("inline-warning");
     });
 
-    $("#username").blur(function() {
+    $("#username").blur(function () {
         validateInline["user-name"]();
     });
 
-    $("#emailAddress").focus(function() {
+    $("#emailAddress").focus(function () {
         $("#emailValidationText").hide();
     });
 
-    $("#emailAddress").blur(function() {
+    $("#emailAddress").blur(function () {
         validateInline["emailAddress"]();
     });
 });

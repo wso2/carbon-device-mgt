@@ -28,6 +28,7 @@ var userModule = require("/app/modules/user.js").userModule;
 var deviceModule = require("/app/modules/device.js").deviceModule;
 var utility = require("/app/modules/utility.js").utility;
 var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
+var util = require("/app/modules/util.js").util;
 
 var responseProcessor = require('utils').response;
 
@@ -61,6 +62,8 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
 } else if (uriMatcher.match("/{context}/api/user/login/")) {
     username = request.getParameter("username");
     password = request.getParameter("password");
+    username = util.decode(username);
+    password = util.decode(password);
     try {
         userModule.login(username, password, function (user) {
             if (log.isDebugEnabled()) {

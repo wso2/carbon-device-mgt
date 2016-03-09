@@ -28,7 +28,24 @@
  * Tree view function
  * @return {Null}
  */
+var modalPopup = ".wr-modalpopup";
+var modalPopupContent = modalPopup + " .modalpopup-content";
 
+/*
+ * hide popup function.
+ */
+function hidePopup() {
+    $(modalPopupContent).html('');
+    $(modalPopup).hide();
+}
+
+/*
+ * show popup function.
+ */
+function showPopup() {
+    $(modalPopup).show();
+    setPopupMaxHeight();
+}
 $.fn.tree_view = function(){
     var tree = $(this);
     tree.find('li').has("ul").each(function () {
@@ -74,7 +91,7 @@ $(document).ready(function () {
     var listPartialSrc = $("#list-partial").attr("src");
     var treeTemplateSrc = $("#tree-template").attr("src");
     var roleName = $("#permissionList").data("currentrole");
-    var serviceUrl = "/mdm-admin/roles/permissions?rolename=" + roleName;
+    var serviceUrl = "/devicemgt_admin/roles/permissions?rolename=" + encodeURIComponent(roleName);
     $.registerPartial("list", listPartialSrc, function(){
         $.template("treeTemplate", treeTemplateSrc, function (template) {
             invokerUtil.get(serviceUrl,
@@ -85,20 +102,31 @@ $(document).ready(function () {
                         treeData = { nodeList: treeData.nodeList };
                         var content = template(treeData);
                         $("#permissionList").html(content);
-                        $("#permissionList").on("click", ".permissionTree .permissionItem", function(){
-                            $(this).closest("li").find("li input").each(function(){
-                                var check = $(this).prop('checked');
-                                check = !check;
-                                $(this).prop('checked', check);
+                        $("#permissionList").on("click", ".permissionTree .permissionItem", function() {
+                            var parentValue = $(this).prop('checked');
+                            $(this).closest("li").find("li input").each(function () {
+                                $(this).prop('checked',parentValue);
                             });
                         });
                     }
+                    $("#permissionList li input").click(function() {
+                        var parentInput = $(this).parents("ul:eq(1) > li").find('input:eq(0)');
+                        if(parentInput && parentInput.is(':checked')){
+                            $(modalPopupContent).html($('#child-deselect-error-content').html());
+                            showPopup();
+                            $("a#child-deselect-error-link").click(function () {
+                                hidePopup();
+                            });
+                            return false;
+                        }
+                    });
                     $('#permissionList').tree_view();
                 }, function(message){
                     console.log(message);
                 });
         });
     });
+
     /**
      * Following click function would execute
      * when a user clicks on "Add Role" button
@@ -106,7 +134,7 @@ $(document).ready(function () {
      */
     $("button#update-permissions-btn").click(function() {
         var roleName = $("#permissionList").data("currentrole");
-        var updateRolePermissionAPI = "/mdm-admin/roles?rolename=" + roleName;
+        var updateRolePermissionAPI = "/devicemgt_admin/roles?rolename=" + roleName;
         var updateRolePermissionData = {};
         var perms = [];
         $("#permissionList li input:checked").each(function(){
@@ -116,14 +144,14 @@ $(document).ready(function () {
         invokerUtil.put(
             updateRolePermissionAPI,
             updateRolePermissionData,
-            function (data, status, jqXHR) {
-                if (jqXHR.status == 200) {
+            function (jqXHR) {
+                if (JSON.parse(jqXHR).statusCode == 200 || jqXHR.status == 200) {
                     // Refreshing with success message
                     $("#role-create-form").addClass("hidden");
                     $("#role-created-msg").removeClass("hidden");
                 }
-            }, function () {
-                $(errorMsg).text("An unexpected error occurred. Please try again later.");
+            }, function (data) {
+                $(errorMsg).text(JSON.parse(data.responseText).errorMessage);
                 $(errorMsgWrapper).removeClass("hidden");
             }
         );

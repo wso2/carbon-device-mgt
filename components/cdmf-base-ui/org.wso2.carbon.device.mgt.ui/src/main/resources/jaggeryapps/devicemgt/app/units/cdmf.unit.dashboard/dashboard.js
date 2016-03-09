@@ -38,6 +38,7 @@ function onRequest(context) {
     page_data.group_count = groupModule.getGroupCount();
     page_data.user_count = userModule.getUsers()["content"].length;
     page_data.policy_count = policyModule.getAllPolicies()["content"].length;
+    page_data.role_count = userModule.getRoles()["content"].length;
 
     return page_data;
 }

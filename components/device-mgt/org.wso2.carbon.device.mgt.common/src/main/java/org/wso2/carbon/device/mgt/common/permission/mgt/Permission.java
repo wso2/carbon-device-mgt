@@ -31,7 +31,6 @@ public class Permission {
     private String path; // permission string
     private String url; // url of the resource
     private String method; // http method
-    private String scope; //scope of the resource
 
     public String getName() {
         return name;
@@ -50,15 +49,6 @@ public class Permission {
     public void setPath(String path) {
         this.path = path;
     }
-
-    public String getScope() {
-        return scope;
-    }
-
-    @XmlElement(name = "scope", required = false)
-	public void setScope(String scope) {
-		this.scope = scope;
-	}
 
     public String getUrl() {
         return url;

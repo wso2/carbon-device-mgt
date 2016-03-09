@@ -23,7 +23,6 @@ import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementExce
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * This class will add, update custom permissions defined in permission.xml in webapps and it will
@@ -59,9 +58,7 @@ public class PermissionManagerServiceImpl implements PermissionManagerService {
     }
 
     @Override
-    public Permission getPermission(Properties properties) throws PermissionManagementException {
-        String url = (String) properties.get(URL_PROPERTY);
-        String httpMethod = (String) properties.get(HTTP_METHOD_PROPERTY);
-        return permissionTree.getPermission(url, httpMethod);
+    public List<Permission> getPermissions(String url) throws PermissionManagementException {
+        return permissionTree.getPermission(url);
     }
 }

@@ -24,7 +24,12 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +50,11 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             stmt = conn.prepareStatement(sql, new String[] {"id"});
             stmt.setInt(1, deviceId);
             stmt.setString(2, enrolmentInfo.getOwner());
-            stmt.setString(3, enrolmentInfo.getOwnership().toString());
+            if (enrolmentInfo.getOwnership() == null) {
+                stmt.setNull(3, Types.VARCHAR);
+            } else {
+                stmt.setString(3, enrolmentInfo.getOwnership().toString());
+            }
             stmt.setString(4, enrolmentInfo.getStatus().toString());
             stmt.setTimestamp(5, new Timestamp(new Date().getTime()));
             stmt.setTimestamp(6, new Timestamp(new Date().getTime()));
@@ -77,7 +86,11 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
                     "DATE_OF_ENROLMENT = ?, DATE_OF_LAST_UPDATE = ? WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?" +
                          " AND ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, enrolmentInfo.getOwnership().toString());
+            if (enrolmentInfo.getOwnership() == null) {
+                stmt.setNull(1, Types.VARCHAR);
+            } else {
+                stmt.setString(1, enrolmentInfo.getOwnership().toString());
+            }
             stmt.setString(2, enrolmentInfo.getStatus().toString());
             stmt.setTimestamp(3, new Timestamp(enrolmentInfo.getDateOfEnrolment()));
             stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
@@ -105,7 +118,11 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, " +
                          "DATE_OF_ENROLMENT = ?, DATE_OF_LAST_UPDATE = ? WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, enrolmentInfo.getOwnership().toString());
+            if (enrolmentInfo.getOwnership() == null) {
+                stmt.setNull(1, Types.VARCHAR);
+            } else {
+                stmt.setString(1, enrolmentInfo.getOwnership().toString());
+            }
             stmt.setString(2, enrolmentInfo.getStatus().toString());
             stmt.setTimestamp(3, new Timestamp(enrolmentInfo.getDateOfEnrolment()));
             stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
@@ -261,7 +278,9 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
     private EnrolmentInfo loadEnrolment(ResultSet rs) throws SQLException {
         EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
         enrolmentInfo.setOwner(rs.getString("OWNER"));
-        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
+        if (rs.getString("OWNERSHIP") != null) {
+            enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
+        }
         enrolmentInfo.setDateOfEnrolment(rs.getTimestamp("DATE_OF_ENROLMENT").getTime());
         enrolmentInfo.setDateOfLastUpdate(rs.getTimestamp("DATE_OF_LAST_UPDATE").getTime());
         enrolmentInfo.setStatus(EnrolmentInfo.Status.valueOf(rs.getString("STATUS")));

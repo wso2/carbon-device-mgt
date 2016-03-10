@@ -19,26 +19,27 @@
 function onRequest(context) {
     var constants = require("/app/modules/constants.js");
     var user = session.get(constants.USER_SESSION_KEY);
-
     var userModule = require("/app/modules/user.js").userModule;
     var permissions = userModule.getUIPermissions();
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-    var page_data = {};
-    page_data.permissions = permissions;
-    page_data.enrollmentURL = devicemgtProps.enrollmentURL;
+
+    if (!permissions.VIEW_DASHBOARD) {
+        response.sendRedirect(constants.WEB_APP_CONTEXT + "/devices");
+        return;
+    }
+
+    var page = {};
+    page.permissions = permissions;
+    page.enrollmentURL = devicemgtProps.enrollmentURL;
     var deviceModule = require("/app/modules/device.js").deviceModule;
     var groupModule = require("/app/modules/group.js").groupModule;
     var policyModule = require("/app/modules/policy.js").policyModule;
 
-    if (!permissions.VIEW_DASHBOARD) {
-        response.sendRedirect(constants.WEB_APP_CONTEXT + "/devices");
-    }
+    page.device_count = deviceModule.getOwnDevicesCount();
+    page.group_count = groupModule.getGroupCount();
+    page.user_count = userModule.getUsers()["content"].length;
+    page.policy_count = policyModule.getAllPolicies()["content"].length;
+    page.role_count = userModule.getRoles()["content"].length;
 
-    page_data.device_count = deviceModule.getOwnDevicesCount();
-    page_data.group_count = groupModule.getGroupCount();
-    page_data.user_count = userModule.getUsers()["content"].length;
-    page_data.policy_count = policyModule.getAllPolicies()["content"].length;
-    page_data.role_count = userModule.getRoles()["content"].length;
-
-    return page_data;
+    return page;
 }

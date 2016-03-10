@@ -17,6 +17,18 @@
  */
 
 /**
+ * Checks if provided input is valid against RegEx input.
+ *
+ * @param regExp Regular expression
+ * @param inputString Input string to check
+ * @returns {boolean} Returns true if input matches RegEx
+ */
+function inputIsValid(regExp, inputString) {
+    regExp = new RegExp(regExp);
+    return regExp.test(inputString);
+}
+
+/**
  * Sorting function of users
  * listed on User Management page in WSO2 Devicemgt Console.
  */
@@ -100,9 +112,9 @@ $("a.invite-user-link").click(function () {
             usernameList,
             function () {
                 $(modalPopupContent).html($('#invite-user-success-content').html());
-                $("a#invite-user-success-link").click(function () {
+                setTimeout(function () {
                     hidePopup();
-                });
+                }, 1000);
             },
             function () {
                 $(modalPopupContent).html($('#invite-user-error-content').html());
@@ -131,6 +143,7 @@ function removeUser(uname, uid) {
     showPopup();
 
     $("a#remove-user-yes-link").click(function () {
+        $(modalPopupContent).html($('#remove-user-wait-content').html());
         invokerUtil.delete(
             removeUserAPI,
             function () {
@@ -141,9 +154,9 @@ function removeUser(uname, uid) {
                 $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
                 // update modal-content with success message
                 $(modalPopupContent).html($('#remove-user-success-content').html());
-                $("a#remove-user-success-link").click(function () {
+                setTimeout(function () {
                     hidePopup();
-                });
+                }, 1000);
             },
             function () {
                 $(modalPopupContent).html($('#remove-user-error-content').html());
@@ -170,6 +183,7 @@ function resetPassword(uname) {
     showPopup();
 
     $("a#reset-password-yes-link").click(function () {
+        $(modalPopupContent).html($('#reset-password-wait-content').html());
         var newPassword = $("#new-password").val();
         var confirmedPassword = $("#confirmed-password").val();
         var user = uname;
@@ -200,9 +214,9 @@ function resetPassword(uname) {
                     data = JSON.parse(data);
                     if (data.statusCode == 201) {
                         $(modalPopupContent).html($('#reset-password-success-content').html());
-                        $("a#reset-password-success-link").click(function () {
+                        setTimeout(function () {
                             hidePopup();
-                        });
+                        }, 1000);
                     }
                 }, function (data) {    // The error callback
                     if (data.statusCode == 400) {
@@ -273,7 +287,7 @@ function loadUsers(searchParam) {
                     viewModel.users[i].canEdit = true;
                 }
                 if (canResetPassword) {
-                    viewModel.users[i].canEdit = true;
+                    viewModel.users[i].canResetPassword = true;
                 }
                 viewModel.users[i].adminUser = $("#user-table").data("user");
             }

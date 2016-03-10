@@ -20,7 +20,7 @@ function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
     var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();
     context["permissions"] = userModule.getUIPermissions();
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/delete")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/remove")) {
         context["removePermitted"] = true;
     }
 

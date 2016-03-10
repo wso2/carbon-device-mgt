@@ -32,16 +32,13 @@ import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 
-import java.util.Properties;
+import java.util.List;
 
 /**
  * Custom OAuth2Token Scope validation implementation for DeviceManagement. This will validate the
  * user permissions before dispatching the HTTP request to the actual endpoint.
  */
 public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
-
-    private static final String URL_PROPERTY = "URL";
-    private static final String HTTP_METHOD_PROPERTY = "HTTP_METHOD";
 
     public static final class PermissionMethod {
         private PermissionMethod() {
@@ -71,23 +68,25 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
             url = url.substring(0, urlParamIndex);
         }
 
-        Properties properties = new Properties();
-        properties.put(PermissionBasedScopeValidator.URL_PROPERTY, url.toLowerCase());
-        properties.put(PermissionBasedScopeValidator.HTTP_METHOD_PROPERTY, method.toUpperCase());
         PermissionManagerService permissionManagerService = OAuthExtensionsDataHolder.getInstance().
                 getPermissionManagerService();
         try {
-            Permission permission = permissionManagerService.getPermission(properties);
+            List<Permission> permissions = permissionManagerService.getPermissions(url.toLowerCase());
             User authzUser = accessTokenDO.getAuthzUser();
-            if ((permission != null) && (authzUser != null)) {
+            if ((permissions != null) && (authzUser != null)) {
                 String username = authzUser.getUserName();
                 String userStore = authzUser.getUserStoreDomain();
                 int tenantId = OAuthExtUtils.getTenantId(authzUser.getTenantDomain());
                 UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
-                    status = userRealm.getAuthorizationManager()
-                                      .isUserAuthorized(userStore +"/"+ username, permission.getPath(),
-                                                        PermissionMethod.UI_EXECUTE);
+                    for (Permission permission : permissions) {
+                        status = userRealm.getAuthorizationManager().
+                                isUserAuthorized(userStore + "/" + username,
+                                        permission.getPath(), PermissionMethod.UI_EXECUTE);
+                        if (status) {
+                            break;
+                        }
+                    }
                 }
             }
         } catch (PermissionManagementException e) {

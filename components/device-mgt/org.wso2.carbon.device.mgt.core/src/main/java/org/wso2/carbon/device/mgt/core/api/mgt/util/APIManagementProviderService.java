@@ -13,10 +13,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.wso2.carbon.device.mgt.core.api.mgt;
+package org.wso2.carbon.device.mgt.core.api.mgt.util;
 
 import org.wso2.carbon.device.mgt.common.api.mgt.APIManagerException;
 import org.wso2.carbon.device.mgt.common.api.mgt.ApiApplicationKey;
+import org.wso2.carbon.device.mgt.core.api.mgt.TokenClient;
 
 /**
  * This comprise on operation that is been done with api manager from CDMF.
@@ -64,7 +65,7 @@ public interface APIManagementProviderService {
 	 * Register existing Oauth application as apim application.
 	 */
 	void registerExistingOAuthApplicationToAPIApplication(String jsonString, String applicationName, String clientId,
-													   String username) throws APIManagerException;
+														  String username) throws APIManagerException;
 
 	/**
 	 * @return This returns a token client which is used to generate token.

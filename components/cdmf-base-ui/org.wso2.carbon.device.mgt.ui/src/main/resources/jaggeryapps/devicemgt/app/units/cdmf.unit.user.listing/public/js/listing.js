@@ -183,7 +183,6 @@ function resetPassword(uname) {
     showPopup();
 
     $("a#reset-password-yes-link").click(function () {
-        $(modalPopupContent).html($('#reset-password-wait-content').html());
         var newPassword = $("#new-password").val();
         var confirmedPassword = $("#confirmed-password").val();
         var user = uname;
@@ -206,6 +205,7 @@ function resetPassword(uname) {
             var resetPasswordFormData = {};
             resetPasswordFormData.username = user;
             resetPasswordFormData.newPassword = window.btoa(unescape(encodeURIComponent(confirmedPassword)));
+            $(modalPopupContent).html($('#reset-password-wait-content').html());
 
             invokerUtil.post(
                 resetPasswordServiceURL,

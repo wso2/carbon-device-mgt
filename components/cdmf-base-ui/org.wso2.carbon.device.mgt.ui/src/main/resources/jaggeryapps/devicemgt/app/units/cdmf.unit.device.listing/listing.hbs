@@ -1,4 +1,4 @@
-{{#if deviceCount}}
+<div id="device-listing-container">
     <span id="permission" data-permission="{{permissions}}"></span>
     <div class="container-fluid">
         <span id="device-listing-status-msg"></span>
@@ -39,40 +39,39 @@
             <a href="#">By Ownership</a>
         </div>
     </div>
-{{else}}
-    <div id="ast-container" class="ast-container list-view">
-        <div class="ctrl-info-panel col-centered text-center wr-login">
-            <h2>You don't have any device
-                {{#if groupId}}
-                assigned to this group
-                {{else}}
-                registered
-                {{/if}}
-                at the moment.</h2>
-            <br/>
+</div>
+<div id="empty-device-listing-container" class="ast-container list-view hidden">
+    <div class="ctrl-info-panel col-centered text-center wr-login">
+        <h2>You don't have any device
+            {{#if groupId}}
+            assigned to this group
+            {{else}}
+            registered
+            {{/if}}
+            at the moment.</h2>
+        <br/>
 
-            <p class="text-center">
-                {{#if groupId}}
-                    <a href="{{@app.context}}/devices" class="wr-btn">
+        <p class="text-center">
+            {{#if groupId}}
+                <a href="{{@app.context}}/devices" class="wr-btn">
                     <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-add fw-stack-1x"></i>
                     </span>
-                        Assign from My Devices
-                    </a>
-                {{else}}
-                    <a href="{{@app.context}}/device/enroll" class="wr-btn">
+                    Assign from My Devices
+                </a>
+            {{else}}
+                <a href="{{@app.context}}/device/enroll" class="wr-btn">
                     <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-add fw-stack-1x"></i>
                     </span>
-                        Enroll New Device
-                    </a>
-                {{/if}}
-            </p>
-        </div>
+                    Enroll New Device
+                </a>
+            {{/if}}
+        </p>
     </div>
-{{/if}}
+</div>
 
 <div id="group-device-modal-content" class="hide">
     <div class="modal-content">

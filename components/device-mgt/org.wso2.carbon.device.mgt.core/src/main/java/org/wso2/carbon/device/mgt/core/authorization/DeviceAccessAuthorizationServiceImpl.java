@@ -42,7 +42,10 @@ import java.util.Map;
  */
 public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthorizationService {
 
-    private final static String EMM_ADMIN_PERMISSION = "/device-mgt/admin-device-access";
+    private final static String EMM_ADMIN_PERMISSION = "/device-mgt/emm-admin";
+    private final static String EMM_ADMIN = "Device Management Administrator";
+    private final static String DEVICE_MGT_PERMISSION = "/device-mgt";
+    private final static String DEVICE_MGT = "Device Management";
     private static Log log = LogFactory.getLog(DeviceAccessAuthorizationServiceImpl.class);
 
     public static final class PermissionMethod {
@@ -244,6 +247,11 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
 
     private boolean addAdminPermissionToRegistry() throws PermissionManagementException {
         Permission permission = new Permission();
+        permission.setName(DEVICE_MGT);
+        permission.setPath(PermissionUtils.getAbsolutePermissionPath(DEVICE_MGT_PERMISSION));
+        PermissionUtils.putPermission(permission);
+        permission = new Permission();
+        permission.setName(EMM_ADMIN);
         permission.setPath(PermissionUtils.getAbsolutePermissionPath(EMM_ADMIN_PERMISSION));
         return PermissionUtils.putPermission(permission);
     }

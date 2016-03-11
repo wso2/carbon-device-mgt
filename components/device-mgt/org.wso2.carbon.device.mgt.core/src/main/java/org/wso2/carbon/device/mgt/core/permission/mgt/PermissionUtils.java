@@ -89,7 +89,7 @@ public class PermissionUtils {
 				currentToken = tokenizer.nextToken();
 				tempPath = lastToken + "/" + currentToken;
 				if(!checkResourceExists(tempPath)) {
-                    createRegistryCollection(tempPath, currentToken);
+                    createRegistryCollection(tempPath, permission.getName());
 				}
 				lastToken = tempPath;
 			}

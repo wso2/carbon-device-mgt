@@ -28,15 +28,16 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.email.*;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
-import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.email.sender.core.ContentProviderInfo;
+import org.wso2.carbon.email.sender.core.EmailContext;
+import org.wso2.carbon.email.sender.core.EmailSendingFailedException;
+import org.wso2.carbon.email.sender.core.TypedValue;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.sql.SQLException;
@@ -49,13 +50,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     private DeviceTypeDAO deviceTypeDAO;
     private EnrollmentDAO enrollmentDAO;
     private DeviceManagementPluginRepository pluginRepository;
-    private EmailContentProvider contentProvider;
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
 
     public DeviceManagementProviderServiceImpl() {
         this.pluginRepository = new DeviceManagementPluginRepository();
-        this.contentProvider = EmailContentProviderFactory.getContentProvider();
         initDataAccessObjects();
         /* Registering a listener to retrieve events when some device management service plugin is installed after
         * the component is done getting initialized */
@@ -443,8 +442,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevices(request, tenantId);
             count = deviceDAO.getDeviceCount(request, tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                                                "the current tenant", e);
+            throw new DeviceManagementException(
+                    "Error occurred while retrieving device list pertaining to the current tenant", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -512,58 +511,44 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void sendEnrolmentInvitation(EmailContext emailCtx) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
-        EmailConfigurations emailConfig =
-                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                        getDeviceManagementConfigRepository().getEmailConfigurations();
-        params.put(EmailConstants.FIRST_NAME,
-                new TypedValue<Class<?>, Object>(String.class, emailCtx.getProperty("first-name")));
-        params.put(EmailConstants.DOWNLOAD_URL,
-                new TypedValue<Class<?>, Object>(String.class,
-                        emailConfig.getlBHostPortPrefix() + emailConfig.getEnrollmentContextPath()));
-        params.put(EmailConstants.SERVER_BASE_URL_HTTPS,
-                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpsUrl()));
-        params.put(EmailConstants.SERVER_BASE_URL_HTTP,
-                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpUrl()));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
-            EmailData data = contentProvider.getContent("user-enrollment", params);
-            EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailCtx.getRecipients(), data);
-        } catch (ContentProcessingInterruptedException e) {
-            throw new DeviceManagementException("Error occurred while processing contents of the " +
-                    "enrollment invitation", e);
+            EmailContext ctx =
+                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-enrollment", params),
+                            metaInfo.getRecipients()).build();
+            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException e) {
             throw new DeviceManagementException("Error occurred while sending enrollment invitation", e);
         }
     }
 
     @Override
-    public void sendRegistrationEmail(EmailContext emailCtx) throws DeviceManagementException {
+    public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
-        EmailConfigurations emailConfig =
-                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                        getDeviceManagementConfigRepository().getEmailConfigurations();
-        params.put(EmailConstants.FIRST_NAME,
-                new TypedValue<Class<?>, Object>(String.class, emailCtx.getProperty("first-name")));
-        params.put(EmailConstants.DOWNLOAD_URL,
-                new TypedValue<Class<?>, Object>(String.class,
-                        emailConfig.getlBHostPortPrefix() + emailConfig.getEnrollmentContextPath()));
-        params.put(EmailConstants.USERNAME,
-                new TypedValue<Class<?>, Object>(String.class, emailCtx.getProperty("username")));
-        params.put(EmailConstants.PASSWORD,
-                new TypedValue<Class<?>, Object>(String.class, emailCtx.getProperty("password")));
-        params.put(EmailConstants.DOMAIN,
-                new TypedValue<Class<?>, Object>(String.class, emailCtx.getProperty("domain")));
-        params.put(EmailConstants.SERVER_BASE_URL_HTTPS,
-                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpsUrl()));
-        params.put(EmailConstants.SERVER_BASE_URL_HTTP,
-                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpUrl()));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.USERNAME,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("username")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.PASSWORD,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("password")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.DOMAIN,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("domain")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
-            EmailData data = contentProvider.getContent("user-registration", params);
-            EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailCtx.getRecipients(), data);
-        } catch (ContentProcessingInterruptedException e) {
-            throw new DeviceManagementException("Error occurred while processing contents of the " +
-                    "enrollment invitation", e);
+            EmailContext ctx =
+                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-registration", params),
+                            metaInfo.getRecipients()).build();
+            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException e) {
             throw new DeviceManagementException("Error occurred while sending user registration notification", e);
         }
@@ -647,11 +632,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             Map<String, DeviceManagementService> registeredTypes = pluginRepository.getAllDeviceManagementServices();
             DeviceType deviceType;
             if (registeredTypes != null && deviceTypesInDatabase != null) {
-                for (int x = 0; x < deviceTypesInDatabase.size(); x++) {
-                    if (registeredTypes.get(deviceTypesInDatabase.get(x).getName()) != null) {
+                for (DeviceType aDeviceTypesInDatabase : deviceTypesInDatabase) {
+                    if (registeredTypes.get(aDeviceTypesInDatabase.getName()) != null) {
                         deviceType = new DeviceType();
-                        deviceType.setId(deviceTypesInDatabase.get(x).getId());
-                        deviceType.setName(deviceTypesInDatabase.get(x).getName());
+                        deviceType.setId(aDeviceTypesInDatabase.getId());
+                        deviceType.setName(aDeviceTypesInDatabase.getName());
                         deviceTypesResponse.add(deviceType);
                     }
                 }

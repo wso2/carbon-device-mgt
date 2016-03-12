@@ -61,49 +61,4 @@ public class DeviceManagementAxis2ConfigContextObserver implements Axis2Configur
 
     }
 
-    private void setupEmailTemplates() throws DeviceManagementException {
-        File templateDir =
-                new File(CarbonUtils.getCarbonRepository() + "resources" + File.separator + "email-templates");
-        if (!templateDir.exists()) {
-            if (log.isDebugEnabled()) {
-                log.debug("The directory that is expected to use as the container for all email templates is not " +
-                        "available. Therefore, no template is uploaded to the registry");
-            }
-        }
-        if (templateDir.canRead()) {
-            File[] templates = templateDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    name = name.toLowerCase();
-                    return name.endsWith(".vm");
-                }
-            });
-            try {
-                Registry registry =
-                        CarbonContext.getThreadLocalCarbonContext().getRegistry(RegistryType.SYSTEM_CONFIGURATION);
-                if (!registry.resourceExists(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH)) {
-                    Collection collection = registry.newCollection();
-                    registry.put(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH, collection);
-                    for (File template : templates) {
-                        Resource resource = registry.newResource();
-                        resource.setContent(template);
-                        registry.put(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName(), resource);
-                    }
-                } else {
-                    for (File template : templates) {
-                        if (!registry.resourceExists(
-                                EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName())) {
-                            Resource resource = registry.newResource();
-                            resource.setContent(template);
-                            registry.put(
-                                    EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName(), resource);
-                        }
-                    }
-                }
-            } catch (RegistryException e) {
-                throw new DeviceManagementException("Error occurred while setting up email templates", e);
-            }
-        }
-    }
-
 }

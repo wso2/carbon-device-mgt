@@ -17,13 +17,10 @@
  */
 package org.wso2.carbon.device.mgt.core.internal;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
@@ -54,21 +51,12 @@ import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceIm
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
-import org.wso2.carbon.registry.api.Collection;
-import org.wso2.carbon.registry.api.Registry;
-import org.wso2.carbon.registry.api.RegistryException;
-import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,6 +98,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setConfigurationContextService"
  * unbind="unsetConfigurationContextService"
+ * @scr.reference name="email.sender.service"
+ * interface="org.wso2.carbon.email.sender.core.service.EmailSenderService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setEmailSenderService"
+ * unbind="unsetEmailSenderService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -151,9 +145,6 @@ public class DeviceManagementServiceComponent {
                 }
                 this.setupDeviceManagementSchema(dsConfig);
             }
-
-            /* Setting up email templates */
-            this.setupEmailTemplates();
 
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
             this.registerServices(componentContext);
@@ -228,78 +219,6 @@ public class DeviceManagementServiceComponent {
                     new ApplicationManagerProviderServiceImpl(appConfig), null);
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
-        }
-    }
-
-    private void setupEmailTemplates() throws DeviceManagementException {
-        File templateDir =
-                new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
-                        "resources" + File.separator + "email-templates");
-        if (!templateDir.exists()) {
-            if (log.isDebugEnabled()) {
-                log.debug("The directory that is expected to use as the container for all email templates is not " +
-                        "available. Therefore, no template is uploaded to the registry");
-            }
-        }
-        if (templateDir.canRead()) {
-            File[] templates = templateDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    name = name.toLowerCase();
-                    return name.endsWith(".vm");
-                }
-            });
-            try {
-                Registry registry =
-                        DeviceManagementDataHolder.getInstance().getRegistryService().getConfigSystemRegistry();
-                if (!registry.resourceExists(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH)) {
-                    Collection collection = registry.newCollection();
-                    registry.put(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH, collection);
-                    for (File template : templates) {
-                        Resource resource = registry.newResource();
-                        String contents = FileUtils.readFileToString(template);
-                        resource.setContent(contents.getBytes());
-                        registry.put(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName(), resource);
-                    }
-                } else {
-                    /* Existence of a given resource is not checked consciously, before performing registry.put() below.
-                    *  The rationale is that, the only less expensive way that one can check if a resource exists is
-                    *  that through registry.resourceExists(), which only checks if 'some' resource exists at the given
-                    *  registry path. However, this does not capture scenarios where there can be updated contents to
-                    *  the same resource of which the path hasn't changed after it has been initialized for the first
-                    *  time. Therefore, whenever the server starts-up, all email templates are updated just to avoid
-                    *  the aforementioned problem */
-                    for (File template : templates) {
-                        Resource resource = registry.newResource();
-                        String contents = FileUtils.readFileToString(template);
-                        resource.setContent(contents.getBytes());
-                        registry.put(
-                                EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName(), resource);
-                    }
-                }
-            } catch (RegistryException e) {
-                throw new DeviceManagementException("Error occurred while setting up email templates", e);
-            } catch (FileNotFoundException e) {
-                throw new DeviceManagementException("Error occurred while writing template file contents as an " +
-                        "input stream of a resource", e);
-            } catch (IOException e) {
-                throw new DeviceManagementException("Error occurred while serializing file contents to a string", e);
-            }
-        }
-    }
-
-    private Element parseFile(File file) throws DeviceManagementException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        try {
-            builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-            return doc.getDocumentElement();
-        } catch (ParserConfigurationException e) {
-            throw new DeviceManagementException("Error occurred while creating a document builder to parse file '" +
-                    file.getName() + "'", e);
-        } catch (SAXException | IOException e) {
-            throw new DeviceManagementException("Error occurred while parsing file '" + file.getName() + "'", e);
         }
     }
 
@@ -430,6 +349,20 @@ public class DeviceManagementServiceComponent {
             log.debug("Un-setting ConfigurationContextService");
         }
         DeviceManagementDataHolder.getInstance().setConfigurationContextService(null);
+    }
+
+    protected void setEmailSenderService(EmailSenderService emailSenderService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Email Sender Service");
+        }
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(emailSenderService);
+    }
+
+    protected void unsetEmailSenderService(EmailSenderService emailSenderService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting Email Sender Service");
+        }
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(null);
     }
 
     public static void registerStartupListener(DeviceManagerStartupListener startupListener) {

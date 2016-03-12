@@ -21,38 +21,31 @@
 
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <artifactId>device-mgt-feature</artifactId>
+        <artifactId>email-sender-feature</artifactId>
         <version>1.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.device.mgt.server.feature</artifactId>
+    <artifactId>org.wso2.carbon.email.sender.feature</artifactId>
     <packaging>pom</packaging>
     <version>1.0.4-SNAPSHOT</version>
-    <name>WSO2 Carbon - Device Management Server Feature</name>
+    <name>WSO2 Carbon - Email Sender Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the core bundles required for Back-end Device Management functionality
+    <description>This feature contains the core bundles required for email sender related functionality
     </description>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.commons</groupId>
-            <artifactId>org.wso2.carbon.email.verification</artifactId>
+            <artifactId>org.wso2.carbon.email.sender.core</artifactId>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
                 <executions>
@@ -89,7 +82,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.device.mgt.server</id>
+                            <id>org.wso2.carbon.email.sender</id>
                             <propertiesFile>../../../features/etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -99,23 +92,11 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.core:${carbon.device.mgt.version}
-                                </bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
-                                </bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.commons:org.wso2.carbon.email.verification
-                                </bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${carbon.identity.version}
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.email.sender.core:${carbon.device.mgt.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.device.mgt.extensions:${carbon.device.mgt.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.email.sender:${carbon.device.mgt.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

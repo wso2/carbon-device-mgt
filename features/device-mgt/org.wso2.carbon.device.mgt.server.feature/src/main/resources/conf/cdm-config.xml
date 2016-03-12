@@ -24,14 +24,6 @@
                 <Name>jdbc/DM_DS</Name>
             </JndiLookupDefinition>
         </DataSourceConfiguration>
-        <EmailClientConfiguration>
-            <minimumThread>8</minimumThread>
-            <maximumThread>100</maximumThread>
-            <keepAliveTime>20</keepAliveTime>
-            <ThreadQueueCapacity>1000</ThreadQueueCapacity>
-            <LBHostPortPrefix>https://localhost:9443</LBHostPortPrefix>
-            <enrollmentContextPath>/emm-web-agent/enrollment</enrollmentContextPath>
-        </EmailClientConfiguration>
         <IdentityConfiguration>
             <ServerUrl>https://localhost:9443</ServerUrl>
             <AdminUsername>admin</AdminUsername>

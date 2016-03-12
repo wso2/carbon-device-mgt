@@ -31,12 +31,15 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.ConfigurationContextService;
+import org.wso2.carbon.utils.NetworkUtils;
 
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -165,6 +168,43 @@ public final class DeviceManagerUtil {
     public static int getTenantId() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         return ctx.getTenantId();
+    }
+
+    public static String getServerBaseHttpsUrl() {
+        String hostName = "localhost";
+        try {
+            hostName = NetworkUtils.getMgtHostName();
+        } catch (Exception ignored) {
+        }
+        String mgtConsoleTransport = CarbonUtils.getManagementTransport();
+        ConfigurationContextService configContextService =
+                DeviceManagementDataHolder.getInstance().getConfigurationContextService();
+        int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
+        int httpsProxyPort =
+                CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
+                        mgtConsoleTransport);
+        if (httpsProxyPort > 0) {
+            port = httpsProxyPort;
+        }
+        return "https://" + hostName + ":" + port;
+    }
+
+    public static String getServerBaseHttpUrl() {
+        String hostName = "localhost";
+        try {
+            hostName = NetworkUtils.getMgtHostName();
+        } catch (Exception ignored) {
+        }
+        ConfigurationContextService configContextService =
+                DeviceManagementDataHolder.getInstance().getConfigurationContextService();
+        int port = CarbonUtils.getTransportPort(configContextService, "http");
+        int httpProxyPort =
+                CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
+                        "http");
+        if (httpProxyPort > 0) {
+            port = httpProxyPort;
+        }
+        return "http://" + hostName + ":" + port;
     }
 
 }

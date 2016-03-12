@@ -18,15 +18,11 @@
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.DeviceManager;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.email.EmailContext;
 
 import java.util.List;
 
@@ -43,94 +39,95 @@ public interface DeviceManagementProviderService extends OperationManager {
     /**
      * Method to retrieve all the devices with pagination support.
      *
-     * @param request        PaginationRequest object holding the data for pagination
+     * @param request PaginationRequest object holding the data for pagination
      * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * devices.
+     *                                   devices.
      */
     PaginationResult getDevicesByType(PaginationRequest request) throws DeviceManagementException;
 
     /**
      * Method to retrieve all the devices with pagination support.
      *
-     * @param request        PaginationRequest object holding the data for pagination
+     * @param request PaginationRequest object holding the data for pagination
      * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * devices.
+     *                                   devices.
      */
     PaginationResult getAllDevices(PaginationRequest request) throws DeviceManagementException;
 
-    void sendEnrolmentInvitation(EmailContext emailContext) throws DeviceManagementException;
+    void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException;
 
-    void sendRegistrationEmail(EmailContext emailContext) throws DeviceManagementException;
+    void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;
 
     /**
      * Proxy method to get the tenant configuration of a given platform.
      *
-     * @param deviceType          Device platform
+     * @param deviceType Device platform
      * @return Tenant configuration settings of the particular tenant and platform.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * configuration.
+     *                                   configuration.
      */
     TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by an user with paging information.
      *
-     * @param request  PaginationRequest object holding the data for pagination
+     * @param request PaginationRequest object holding the data for pagination
      * @return List of devices owned by a particular user along with the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * device list
+     *                                   device list
      */
     PaginationResult getDevicesOfUser(PaginationRequest request) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices filtered by the ownership with paging information.
      *
-     * @param request   PaginationRequest object holding the data for pagination
+     * @param request PaginationRequest object holding the data for pagination
      * @return List of devices owned by a particular user along with the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * device list
+     *                                   device list
      */
     PaginationResult getDevicesByOwnership(PaginationRequest request) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by an user.
      *
-     * @param userName          Username of the user
+     * @param userName Username of the user
      * @return List of devices owned by a particular user
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * device list
+     *                                   device list
      */
     List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.
      *
-     * @param roleName          Role name of the users
+     * @param roleName Role name of the users
      * @return List of devices owned by users of a particular role
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * device list
+     *                                   device list
      */
     List<Device> getAllDevicesOfRole(String roleName) throws DeviceManagementException;
 
     /**
      * Method to get the count of all types of devices.
+     *
      * @return device count
      * @throws DeviceManagementException If some unusual behaviour is observed while counting
-     * the devices
+     *                                   the devices
      */
     int getDeviceCount() throws DeviceManagementException;
 
     /**
      * Method to get the list of devices that matches with the given device name.
      *
-     * @param deviceName    name of the device
+     * @param deviceName name of the device
      * @return List of devices that matches with the given device name.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * device list
+     *                                   device list
      */
     List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
 
@@ -140,7 +137,7 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @param request PaginationRequest object holding the data for pagination
      * @return List of devices in given status along with the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * device list
+     *                                   device list
      */
     PaginationResult getDevicesByName(PaginationRequest request) throws DeviceManagementException;
 
@@ -161,7 +158,7 @@ public interface DeviceManagementProviderService extends OperationManager {
      * @param request PaginationRequest object holding the data for pagination
      * @return List of devices in given status along with the required parameters necessary to do pagination.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     * device list
+     *                                   device list
      */
     PaginationResult getDevicesByStatus(PaginationRequest request) throws DeviceManagementException;
 
@@ -189,7 +186,7 @@ public interface DeviceManagementProviderService extends OperationManager {
 
     Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException;
 
-	List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException;
+    List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException;
 
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 
@@ -200,6 +197,6 @@ public interface DeviceManagementProviderService extends OperationManager {
     boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                       EnrolmentInfo.Status status) throws DeviceManagementException;
 
-    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)throws DeviceManagementException;
+    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
 
 }

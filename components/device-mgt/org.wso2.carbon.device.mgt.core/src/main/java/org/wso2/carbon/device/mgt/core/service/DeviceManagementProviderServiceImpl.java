@@ -522,6 +522,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         params.put(EmailConstants.DOWNLOAD_URL,
                 new TypedValue<Class<?>, Object>(String.class,
                         emailConfig.getlBHostPortPrefix() + emailConfig.getEnrollmentContextPath()));
+        params.put(EmailConstants.SERVER_BASE_URL_HTTPS,
+                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpsUrl()));
+        params.put(EmailConstants.SERVER_BASE_URL_HTTP,
+                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpUrl()));
         try {
             EmailData data = contentProvider.getContent("user-enrollment", params);
             EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailCtx.getRecipients(), data);
@@ -550,6 +554,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 new TypedValue<Class<?>, Object>(String.class, emailCtx.getProperty("password")));
         params.put(EmailConstants.DOMAIN,
                 new TypedValue<Class<?>, Object>(String.class, emailCtx.getProperty("domain")));
+        params.put(EmailConstants.SERVER_BASE_URL_HTTPS,
+                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpsUrl()));
+        params.put(EmailConstants.SERVER_BASE_URL_HTTP,
+                new TypedValue<Class<?>, Object>(String.class, EmailUtil.getServerBaseHttpUrl()));
         try {
             EmailData data = contentProvider.getContent("user-registration", params);
             EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailCtx.getRecipients(), data);

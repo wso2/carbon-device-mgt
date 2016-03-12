@@ -44,7 +44,6 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 public class RegistryBasedLicenseManager implements LicenseManager {
 
-    private Registry registry;
     private GenericArtifactManager artifactManager;
     private static final Log log = LogFactory.getLog(RegistryBasedLicenseManager.class);
 
@@ -54,7 +53,6 @@ public class RegistryBasedLicenseManager implements LicenseManager {
             throw new IllegalArgumentException("Registry instance retrieved is null. Hence, " +
                     "'Registry based license manager cannot be initialized'");
         }
-        this.registry = registry;
         try {
             this.artifactManager = GenericArtifactManagerFactory.getTenantAwareGovernanceArtifactManager(registry);
         } catch (LicenseManagementException e) {

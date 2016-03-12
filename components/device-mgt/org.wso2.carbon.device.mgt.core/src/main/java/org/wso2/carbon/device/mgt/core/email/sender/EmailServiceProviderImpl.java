@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.email.sender;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
@@ -31,15 +32,18 @@ import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.axis2.transport.mail.MailConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
+import org.wso2.carbon.device.mgt.core.email.EmailData;
+import org.wso2.carbon.device.mgt.core.email.EmailSendingFailedException;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.service.EmailService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
+import javax.xml.stream.XMLStreamException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -62,11 +66,9 @@ public class EmailServiceProviderImpl implements EmailService {
     private static Log log = LogFactory.getLog(EmailServiceProviderImpl.class);
 
     @Override
-    public void sendEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
-        for (String toAddr : emailMessageProperties.getMailTo()) {
-            threadPoolExecutor
-                    .submit(new EmailSender(toAddr, emailMessageProperties.getSubject(),
-                            emailMessageProperties.getMessageBody()));
+    public void sendEmail(Set<String> recipients, EmailData emailData) throws EmailSendingFailedException {
+        for (String recipient : recipients) {
+            threadPoolExecutor.submit(new EmailSender(recipient, emailData.getSubject(), emailData.getBody()));
         }
     }
 
@@ -83,34 +85,42 @@ public class EmailServiceProviderImpl implements EmailService {
         }
 
         public void run() {
-            Map<String, String> headerMap = new HashMap<String, String>();
-            headerMap.put(MailConstants.MAIL_HEADER_SUBJECT, subject);
-            OMElement payload = OMAbstractFactory.getOMFactory().createOMElement(
-                    BaseConstants.DEFAULT_TEXT_WRAPPER, null);
-            payload.setText(body);
+            OMElement payload = null;
             try {
-                ServiceClient serviceClient;
-                ConfigurationContext configContext = EmailServiceDataHolder.getInstance().
-                        getConfigurationContextService().getServerConfigContext();
-                //Set configuration service client if available, else create new service client
-                if (configContext != null) {
-                    serviceClient = new ServiceClient(configContext, null);
-                } else {
-
-                    serviceClient = new ServiceClient();
+                payload = AXIOMUtil.stringToOM(body);
+            } catch (XMLStreamException e) {
+                log.error("Error occurred while converting email body contents to an XML", e);
+            }
+            try {
+                ConfigurationContextService configCtxService =
+                        EmailServiceDataHolder.getInstance().getConfigurationContextService();
+                if (configCtxService == null) {
+                    throw new IllegalStateException("Configuration Context Service is not available");
                 }
+                ConfigurationContext configCtx = configCtxService.getServerConfigContext();
+                ServiceClient serviceClient = new ServiceClient(configCtx, null);
+
+                Map<String, String> headerMap = new HashMap<>();
+                headerMap.put(MailConstants.MAIL_HEADER_SUBJECT, subject);
+
                 Options options = new Options();
-                options.setProperty(Constants.Configuration.ENABLE_REST, Constants.VALUE_TRUE);
                 options.setProperty(MessageContext.TRANSPORT_HEADERS, headerMap);
-                options.setProperty(MailConstants.TRANSPORT_MAIL_FORMAT,
-                        MailConstants.TRANSPORT_FORMAT_TEXT);
+                options.setProperty("FORCE_CONTENT_TYPE_BASED_FORMATTER", "true");
+                options.setProperty(Constants.Configuration.MESSAGE_TYPE, "text/html");
+                options.setProperty(Constants.Configuration.CONTENT_TYPE, "text/html");
                 options.setTo(new EndpointReference(EMAIL_URI_SCHEME + to));
+
                 serviceClient.setOptions(options);
                 serviceClient.fireAndForget(payload);
-                log.debug("Sending confirmation mail to " + to);
+                if (log.isDebugEnabled()) {
+                    log.debug("Email has been successfully sent to '" + to + "'");
+                }
             } catch (AxisFault e) {
-                log.error("Error in delivering the message, subject: '" + subject + "', to: '" + to + "'", e);
+                log.error("Error occurred while delivering the message, subject: '" + subject + "', to: '" + to +
+                        "'", e);
             }
         }
+
     }
+
 }

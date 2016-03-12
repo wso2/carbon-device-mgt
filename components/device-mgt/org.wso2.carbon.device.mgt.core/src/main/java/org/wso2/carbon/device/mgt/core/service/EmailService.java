@@ -17,11 +17,13 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
+import org.wso2.carbon.device.mgt.core.email.EmailData;
+import org.wso2.carbon.device.mgt.core.email.EmailSendingFailedException;
+
+import java.util.Set;
 
 public interface EmailService {
 
-    public void sendEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException;
+    void sendEmail(Set<String> recipients, EmailData emailData) throws EmailSendingFailedException;
 
 }

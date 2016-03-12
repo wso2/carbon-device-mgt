@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.email.EmailContext;
 
 import java.util.List;
 
@@ -59,9 +60,9 @@ public interface DeviceManagementProviderService extends OperationManager {
      */
     PaginationResult getAllDevices(PaginationRequest request) throws DeviceManagementException;
 
-    void sendEnrolmentInvitation(EmailMessageProperties config) throws DeviceManagementException;
+    void sendEnrolmentInvitation(EmailContext emailContext) throws DeviceManagementException;
 
-    void sendRegistrationEmail(EmailMessageProperties config) throws DeviceManagementException;
+    void sendRegistrationEmail(EmailContext emailContext) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;
 

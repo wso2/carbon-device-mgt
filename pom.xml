@@ -1278,7 +1278,16 @@
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons.httpclient.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io.wso2</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1581,7 +1590,8 @@
         <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
         <httpcomponents.httpclient.version>4.2.3.wso2v1</httpcomponents.httpclient.version>
         <commons.httpclient.version>3.1.0.wso2v2</commons.httpclient.version>
-
+        <velocity.version>1.7</velocity.version>
+        <commons-io.version>2.4.0.wso2v1</commons-io.version>
     </properties>
 
 </project>

@@ -18,14 +18,17 @@
 
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
+import org.wso2.carbon.device.mgt.core.email.EmailData;
+import org.wso2.carbon.device.mgt.core.email.EmailSendingFailedException;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 
-public class EmailServiceImpl implements EmailService{
+import java.util.Set;
+
+public class EmailServiceImpl implements EmailService {
 
     @Override
-    public void sendEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
-        EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
+    public void sendEmail(Set<String> recipients, EmailData emailData) throws EmailSendingFailedException {
+        EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(recipients, emailData);
     }
+
 }

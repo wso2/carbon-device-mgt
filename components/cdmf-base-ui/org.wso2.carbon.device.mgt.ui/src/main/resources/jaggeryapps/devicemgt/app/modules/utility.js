@@ -219,8 +219,8 @@ utility = function () {
         var deviceTypeConfigFile = new File(parent + sep + "repository" + sep + "conf" + sep
                                             + "device-types" + sep + deviceType + ".json");
         if (deviceTypeConfigFile.isExists()) {
-            deviceTypeConfigFile.open("r");
             try {
+                deviceTypeConfigFile.open("r");
                 deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
             } catch (err) {
                 log.error("Error while reading device config file for `" + deviceType + "`: " + err);

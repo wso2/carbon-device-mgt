@@ -137,7 +137,7 @@ public class AnnotationUtil {
                                                         apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
                                                         break;
                                                     case "tags" :
-                                                        apiResourceConfig.setTag(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                        apiResourceConfig.setTags(invokeMethod(apiClazzMethods[k], apiAnno));
                                                         break;
                                                 }
                                             }
@@ -255,5 +255,13 @@ public class AnnotationUtil {
             default:
                 return null;
         }
+    }
+
+    /**
+     * When an annotation and method is passed, this method invokes that executes said method against the annotation
+     */
+    private String[] invokeMethod(Method method, Annotation annotation) throws Throwable {
+        InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
+        return ((String[])methodHandler.invoke(annotation, method, null));
     }
 }

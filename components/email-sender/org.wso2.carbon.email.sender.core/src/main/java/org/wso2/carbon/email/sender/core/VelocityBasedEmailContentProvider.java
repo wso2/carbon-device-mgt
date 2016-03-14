@@ -45,9 +45,9 @@ public class VelocityBasedEmailContentProvider implements EmailContentProvider {
     public VelocityBasedEmailContentProvider() {
         engine = new VelocityEngine();
         engine.setProperty("resource.loader", "registry");
-        engine.setProperty("velocimacro.library", "");
         engine.setProperty("registry.resource.loader.class",
                 "org.wso2.carbon.email.sender.core.RegistryBasedResourceLoader");
+        engine.setProperty("velocimacro.library", "");
         engine.init();
     }
 

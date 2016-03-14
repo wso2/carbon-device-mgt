@@ -53,6 +53,7 @@ public class APIConfig {
     private String transports;
     private APIProvider provider;
     private boolean isSecured;
+    private String contextTemplate;
 
     public void init() throws APIManagementException {
         try {
@@ -134,6 +135,15 @@ public class APIConfig {
     @SuppressWarnings("unused")
     public void setSecured(boolean secured) {
         isSecured = secured;
+    }
+
+    @XmlElement(name = "ContextTemplate", required = true)
+    public String getContextTemplate() {
+        return contextTemplate;
+    }
+
+    public void setContextTemplate(String contextTemplate) {
+        this.contextTemplate = contextTemplate;
     }
 
 }

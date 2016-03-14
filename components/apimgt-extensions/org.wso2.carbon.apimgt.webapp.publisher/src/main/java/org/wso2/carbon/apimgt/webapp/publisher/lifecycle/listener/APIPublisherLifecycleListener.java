@@ -111,6 +111,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             context = servletContext.getContextPath();
         }
         apiConfig.setContext(context);
+        apiConfig.setContextTemplate(context);
 
         String endpoint = servletContext.getInitParameter(PARAM_MANAGED_API_ENDPOINT);
         if (endpoint == null || endpoint.isEmpty()) {

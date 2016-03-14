@@ -26,7 +26,8 @@ public class EmailContext {
     private Properties properties;
     private ContentProviderInfo contentProviderInfo;
 
-    private EmailContext(final ContentProviderInfo contentProviderInfo, final Set<String> recipients, final Properties properties) {
+    private EmailContext(final ContentProviderInfo contentProviderInfo, final Set<String> recipients,
+                         final Properties properties) {
         if (contentProviderInfo == null) {
             throw new IllegalArgumentException("Content provider information cannot be null");
         }

@@ -107,8 +107,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                 headerMap.put(MailConstants.MAIL_HEADER_SUBJECT, subject);
 
                 Options options = new Options();
+                options.setProperty(Constants.Configuration.ENABLE_REST, Constants.VALUE_TRUE);
                 options.setProperty(MessageContext.TRANSPORT_HEADERS, headerMap);
-                options.setProperty("FORCE_CONTENT_TYPE_BASED_FORMATTER", "true");
                 options.setProperty(Constants.Configuration.MESSAGE_TYPE, "text/html");
                 options.setProperty(Constants.Configuration.CONTENT_TYPE, "text/html");
                 options.setTo(new EndpointReference(EMAIL_URI_SCHEME + to));

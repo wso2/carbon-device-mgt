@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -37,10 +38,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class DeviceManagerUtil {
 
@@ -165,6 +163,19 @@ public final class DeviceManagerUtil {
     public static int getTenantId() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         return ctx.getTenantId();
+    }
+
+
+    public static List<DeviceIdentifier> convertDevices(List<Device> devices) {
+
+        List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+        for (Device device : devices) {
+            DeviceIdentifier identifier = new DeviceIdentifier();
+            identifier.setId(device.getDeviceIdentifier());
+            identifier.setType(device.getType());
+            deviceIdentifiers.add(identifier);
+        }
+        return deviceIdentifiers;
     }
 
 }

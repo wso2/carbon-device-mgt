@@ -80,6 +80,8 @@
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
                             org.wso2.carbon.apimgt.impl,
+                            org.wso2.carbon.ntask.core.*,
+                            org.wso2.carbon.ntask.common,
                             org.wso2.carbon.ndatasource.core,
                             org.apache.axis2.transport.mail,
                             org.apache.catalina,
@@ -216,6 +218,18 @@
             <groupId>org.wso2.tomcat</groupId>
             <artifactId>tomcat-servlet-api</artifactId>
         </dependency>
+
+        <!--Ntask dependencies-->
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
+        </dependency>
+
+        <!--&lt;!&ndash;Data dependencies&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.carbon.data</groupId>-->
+            <!--<artifactId>org.wso2.carbon.dataservices.sql.driver</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
 
 </project>

@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.device.mgt.common.api.mgt;
+package org.wso2.carbon.device.mgt.extensions.api.mgt.dto;
 
 /**
  * This holds api application consumer key and secret.

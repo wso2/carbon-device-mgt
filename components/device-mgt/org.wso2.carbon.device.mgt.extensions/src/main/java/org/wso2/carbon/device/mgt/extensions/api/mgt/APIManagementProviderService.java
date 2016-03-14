@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+* Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.wso2.carbon.device.mgt.core.api.mgt;
+package org.wso2.carbon.device.mgt.extensions.api.mgt;
 
-import org.wso2.carbon.device.mgt.common.api.mgt.APIManagerException;
-import org.wso2.carbon.device.mgt.common.api.mgt.ApiApplicationKey;
+import org.wso2.carbon.device.mgt.extensions.api.mgt.dto.ApiApplicationKey;
+import org.wso2.carbon.device.mgt.extensions.api.mgt.exception.APIManagerException;
 
 /**
  * This comprise on operation that is been done with api manager from CDMF.
@@ -27,12 +27,12 @@ public interface APIManagementProviderService {
 	 * This method registers an api application and then subscribe the application to the api.
 	 *
 	 * @param apiApplicationName name of the application.
-	 * @param deviceTypes        are used retrieved the publish api details.
+	 * @param tags        are used subscribe the apis with the tag.
 	 * @param username           subscription is created for the user.
 	 * @param groupId            grouping of device api
 	 * @throws APIManagerException
 	 */
-	int createApplicationAndSubscribeDeviceAPIs(String apiApplicationName, String deviceTypes[], String username,
+	int createApplicationAndSubscribeToAPIs(String apiApplicationName, String tags[], String username,
 												String groupId) throws APIManagerException;
 
 	/**
@@ -46,17 +46,17 @@ public interface APIManagementProviderService {
 											   String groupId) throws APIManagerException;
 
 	/**
-	 * Generate and retreive application keys. if the application does not exist then create it.
+	 * Generate and retreive application keys. if the application does  exist then return it.
 	 *
 	 * @param apiApplicationName name of the application.
-	 * @param deviceTypes        names of the api that application needs to be subscribed.
+	 * @param tags        names of the api that application needs to be subscribed.
 	 * @param keyType            of the application.
 	 * @param groupId            grouping of device apis
 	 * @param username           to whom the application is created
 	 * @return consumerkey and secrete of the created application.
 	 * @throws APIManagerException
 	 */
-	ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String deviceTypes[],
+	ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
 														 String keyType, String groupId, String username)
 			throws APIManagerException;
 
@@ -66,8 +66,4 @@ public interface APIManagementProviderService {
 	void registerExistingOAuthApplicationToAPIApplication(String jsonString, String applicationName, String clientId,
 														  String username) throws APIManagerException;
 
-	/**
-	 * @return This returns a token client which is used to generate token.
-	 */
-	TokenClient getTokenClient();
 }

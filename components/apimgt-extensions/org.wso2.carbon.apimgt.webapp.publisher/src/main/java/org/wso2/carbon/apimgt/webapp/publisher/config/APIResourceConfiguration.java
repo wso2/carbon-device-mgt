@@ -29,6 +29,7 @@ public class APIResourceConfiguration {
 	private String context;
 	private String version;
 	private List<APIResource> resources;
+	private String[] tags;
 
 	public List<APIResource> getResources() {
 		return resources;
@@ -64,6 +65,15 @@ public class APIResourceConfiguration {
 	@XmlElement(name = "Version")
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String[] getTags() {
+		return tags;
+	}
+
+	@XmlElement(name = "Tags")
+	public void setTags(String[] tags) {
+		this.tags = tags;
 	}
 
 }

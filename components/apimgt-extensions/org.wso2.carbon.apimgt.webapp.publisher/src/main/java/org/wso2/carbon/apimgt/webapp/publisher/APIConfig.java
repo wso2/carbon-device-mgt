@@ -63,6 +63,7 @@ public class APIConfig {
     private List<String> tenants;
     private boolean isSharedWithAllTenants;
     private String tenantDomain;
+    private String[] tags;
 
     public void init() throws APIManagementException {
         try {
@@ -183,5 +184,15 @@ public class APIConfig {
     @SuppressWarnings("unused")
     public void setTenantDomain(String tenantDomain) {
         this.tenantDomain = tenantDomain;
+    }
+
+    @XmlElement(name = "tags", required = false)
+    public String[] getTags() {
+        return tags;
+    }
+
+    @SuppressWarnings("unused")
+    public void setTags(String[] tags) {
+        this.tags = tags;
     }
 }

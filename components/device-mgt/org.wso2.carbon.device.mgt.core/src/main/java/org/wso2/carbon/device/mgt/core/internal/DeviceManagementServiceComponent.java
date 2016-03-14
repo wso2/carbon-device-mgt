@@ -34,8 +34,6 @@ import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
-import org.wso2.carbon.device.mgt.core.api.mgt.APIManagementProviderService;
-import org.wso2.carbon.device.mgt.core.api.mgt.APIManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -58,7 +56,6 @@ import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -213,11 +210,6 @@ public class DeviceManagementServiceComponent {
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
         }
-
-         /* Registering API Management service */
-        APIManagementProviderService apiManagementProviderService = new APIManagementProviderServiceImpl();
-        DeviceManagementDataHolder.getInstance().setAPIManagementProviderService(apiManagementProviderService);
-        bundleContext.registerService(APIManagementProviderService.class.getName(), apiManagementProviderService, null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {

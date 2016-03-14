@@ -136,6 +136,9 @@ public class AnnotationUtil {
                                                     case "context" :
                                                         apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
                                                         break;
+                                                    case "tags" :
+                                                        apiResourceConfig.setTag(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                                                        break;
                                                 }
                                             }
 

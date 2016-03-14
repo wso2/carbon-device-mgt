@@ -1451,6 +1451,11 @@
                 <artifactId>httpclient</artifactId>
                 <version>${httpcomponents.httpclient.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${com.nimbus.version}}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1741,7 +1746,7 @@
 
         <!-- Carbon API Management -->
         <carbon.api.mgt.version>4.3.2-SNAPSHOT</carbon.api.mgt.version>
-
+        <carbon.api.mgt.version.range>(4.3.2,5.0.0]</carbon.api.mgt.version.range>
         <!--CXF properties-->
         <cxf.version>2.7.16</cxf.version>
         <cxf.bindings.version>2.5.11</cxf.bindings.version>
@@ -1789,7 +1794,8 @@
         <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
         <httpcomponents.httpclient.version>4.2.3.wso2v1</httpcomponents.httpclient.version>
         <commons.httpclient.version>3.1.0.wso2v2</commons.httpclient.version>
-
+        <com.nimbus.version>2.26.1.wso2v3</com.nimbus.version>
+        <com.nimbus.version.range>[2.26.1.wso2v3, 3.0.0)</com.nimbus.version.range>
     </properties>
 
 </project>

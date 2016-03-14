@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.device.mgt.common.api.mgt;
+package org.wso2.carbon.device.mgt.extensions.api.mgt.exception;
 
 /**
  * Handles the exceptions related to API management.

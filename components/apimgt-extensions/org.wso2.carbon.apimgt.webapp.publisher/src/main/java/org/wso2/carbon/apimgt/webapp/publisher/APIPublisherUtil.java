@@ -98,7 +98,10 @@ public class APIPublisherUtil {
             api.setAsDefaultVersion(Boolean.TRUE);
             api.setAsPublishedDefaultVersion(Boolean.TRUE);
         }
-
+        if (config.getTags() != null && config.getTags().length > 0) {
+            Set<String> tags = new HashSet<>(Arrays.asList(config.getTags()));
+            api.addTags(tags);
+        }
         return api;
     }
 

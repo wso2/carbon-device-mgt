@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.core.api.mgt;
+package org.wso2.carbon.device.mgt.extensions.api.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,19 +26,16 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.api.model.APIKey;
+import org.wso2.carbon.apimgt.api.model.Application;
 import org.wso2.carbon.apimgt.api.model.SubscribedAPI;
 import org.wso2.carbon.apimgt.api.model.Subscriber;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.api.mgt.APIManagerException;
-import org.wso2.carbon.device.mgt.common.api.mgt.ApiApplicationKey;
-import org.wso2.carbon.device.mgt.core.api.mgt.impl.TokenClientImpl;
-import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
-import org.wso2.carbon.apimgt.api.model.Application;
-
+import org.wso2.carbon.device.mgt.extensions.api.mgt.dto.ApiApplicationKey;
+import org.wso2.carbon.device.mgt.extensions.api.mgt.exception.APIManagerException;
+import org.wso2.carbon.device.mgt.extensions.api.mgt.util.APIManagerUtil;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,50 +45,42 @@ import java.util.Set;
 public class APIManagementProviderServiceImpl implements APIManagementProviderService {
 
 	private static final Log log = LogFactory.getLog(APIManagementProviderServiceImpl.class);
-	private static TokenClient tokenClient;
 	private static final String DEFAULT_TOKEN_TYPE = "PRODUCTION";
 	private static final String DEFAULT_TIER = "Unlimited";
 	private static final String ALLOWED_DOMAINS[] = {"ALL"};
-
-	public APIManagementProviderServiceImpl() {
-		tokenClient = new TokenClientImpl();
-	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int createApplicationAndSubscribeDeviceAPIs(String apiApplicationName, String deviceTypes[],
-													   String username, String groupId) throws APIManagerException {
+	public int createApplicationAndSubscribeToAPIs(String apiApplicationName, String tags[], String username,
+												   String groupId) throws APIManagerException {
 		int applicationId = createApplication(apiApplicationName, username, groupId);
 		try {
 			APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
-			List<API> userVisibleAPIs = apiConsumer.getAllAPIs();
 			Subscriber subscriber = apiConsumer.getSubscriber(username);
-			if (subscriber == null) {
-				addSubscriber(username, "", "");
-				subscriber = apiConsumer.getSubscriber(username);
+			Set<API> userVisibleAPIs = null;
+			for (String tag : tags) {
+				Set<API> tagAPIs = apiConsumer.getAPIsWithTag(tag);
+				if (userVisibleAPIs == null) {
+					userVisibleAPIs = tagAPIs;
+				} else {
+					userVisibleAPIs.addAll(tagAPIs);
+				}
 			}
-			Set<SubscribedAPI> subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber);
-			for (String deviceType : deviceTypes) {
-				boolean isDeviceTypeApiSubscribed = false;
+			if (userVisibleAPIs != null) {
+				Set<SubscribedAPI> subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber);
 				for (API userVisbleAPI : userVisibleAPIs) {
 					APIIdentifier apiIdentifier = userVisbleAPI.getId();
-					if (apiIdentifier.getApiName().equals(deviceType)) {
-						boolean isSubscribed = false;
-						isDeviceTypeApiSubscribed = true;
-						for (SubscribedAPI subscribedAPI : subscribedAPIs) {
-							if (subscribedAPI.getApiId().equals(apiIdentifier)) {
-								isSubscribed = true;
-							}
-						}
-						if (!isSubscribed) {
-							addSubscription(apiIdentifier, applicationId, username);
+					boolean isSubscribed = false;
+					for (SubscribedAPI subscribedAPI : subscribedAPIs) {
+						if (subscribedAPI.getApiId().equals(apiIdentifier)) {
+							isSubscribed = true;
 						}
 					}
-				}
-				if (!isDeviceTypeApiSubscribed) {
-					log.warn("No device type found for " + deviceType);
+					if (!isSubscribed) {
+						addSubscription(apiIdentifier, applicationId, username);
+					}
 				}
 			}
 		} catch (APIManagementException e) {
@@ -106,15 +95,11 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 		int applicationId = createApplication(apiApplicationName, username, groupId);
 		try {
 			APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
-			String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-			Set<API> tenantVisibleAPIs = apiConsumer.getAllPublishedAPIs(tenantDomain);
+			String tenantDomain = MultitenantUtils.getTenantDomain(username);
+			Set<API> userVisibleAPIs = apiConsumer.getAllPublishedAPIs(tenantDomain);
 			Subscriber subscriber = apiConsumer.getSubscriber(username);
-			if (subscriber == null) {
-				addSubscriber(username, "", "");
-				subscriber = apiConsumer.getSubscriber(username);
-			}
 			Set<SubscribedAPI> subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber);
-			for (API visibleApi : tenantVisibleAPIs) {
+			for (API visibleApi : userVisibleAPIs) {
 				APIIdentifier apiIdentifier = visibleApi.getId();
 				boolean isSubscribed = false;
 				for (SubscribedAPI subscribedAPI : subscribedAPIs) {
@@ -136,19 +121,15 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String deviceTypes[],
+	public ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
 																String keyType, String groupId, String username)
 			throws APIManagerException {
 		try {
 			APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
 			Application apiApplication = apiConsumer.getApplicationsByName(username, apiApplicationName, groupId);
 			if (apiApplication == null) {
-				createApplicationAndSubscribeDeviceAPIs(apiApplicationName, deviceTypes, username, groupId);
+				createApplicationAndSubscribeToAPIs(apiApplicationName, tags, username, groupId);
 				apiApplication = apiConsumer.getApplicationsByName(username, apiApplicationName, groupId);
-			}
-			if (apiApplication == null) {
-				throw new APIManagerException("Failed to create an application with application name: " +
-													  apiApplicationName + " for user: " + username);
 			}
 			boolean alreadyContainsKey = false;
 			APIKey retrievedApiApplicationKey = null;
@@ -188,21 +169,13 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public TokenClient getTokenClient() {
-		return tokenClient;
-	}
-
-
 	private int createApplication(String applicationName, String username, String groupId) throws APIManagerException {
 		try {
 			APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
 			if (apiConsumer != null) {
 				if (apiConsumer.getSubscriber(username) == null) {
-					addSubscriber(username, "", groupId);
+					String tenantDomain = MultitenantUtils.getTenantDomain(username);
+					addSubscriber(username, "", groupId, APIManagerUtil.getTenantId(tenantDomain));
 				} else {
 					if (log.isDebugEnabled()) {
 						log.debug("Subscriber [" + username + "] already exist");
@@ -255,7 +228,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 	}
 
 
-	private void addSubscriber(String subscriberName, String subscriberEmail, String groupId)
+	private void addSubscriber(String subscriberName, String subscriberEmail, String groupId, int tenantId)
 			throws APIManagerException {
 		if (log.isDebugEnabled()) {
 			log.debug("Creating subscriber with name  " + subscriberName);
@@ -266,7 +239,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 				Subscriber subscriber = new Subscriber(subscriberName);
 				subscriber.setSubscribedDate(new Date());
 				subscriber.setEmail(subscriberEmail);
-				subscriber.setTenantId(DeviceManagerUtil.getTenantId());
+				subscriber.setTenantId(tenantId);
 				consumer.addSubscriber(subscriber, groupId);
 				if (log.isDebugEnabled()) {
 					log.debug("Successfully created subscriber with name : " + subscriberName + " with groupID : " +
@@ -287,7 +260,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 	 */
 	@Override
 	public void registerExistingOAuthApplicationToAPIApplication(String jsonString, String applicationName,
-															  String clientId, String username)
+																 String clientId, String username)
 			throws APIManagerException {
 		APIConsumer apiConsumer;
 		try {
@@ -301,17 +274,5 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 			throw new APIManagerException(
 					"Failed registering the OAuth app [ clientId " + clientId + " ] with api manager application", e);
 		}
-	}
-
-	/**
-	 *  When an input is having '@',replace it with '-AT-' [This is required to persist API data in registry,as registry paths don't allow '@' sign.]
-	 * @param input inputString
-	 * @return String modifiedString
-	 */
-	private static String replaceEmailDomain(String input){
-		if(input!=null&& input.contains(APIConstants.EMAIL_DOMAIN_SEPARATOR) ){
-			input=input.replace(APIConstants.EMAIL_DOMAIN_SEPARATOR,APIConstants.EMAIL_DOMAIN_SEPARATOR_REPLACEMENT);
-		}
-		return input;
 	}
 }

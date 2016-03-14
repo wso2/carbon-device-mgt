@@ -206,9 +206,14 @@ utility = function () {
     publicMethods.getIoTServerConfig = function (configName) {
         var path = "/config/iot-config.json";
         var file = new File(path);
-        file.open("r");
-        var content = file.readAll();
-        file.close();
+        try {
+            file.open("r");
+            var content = file.readAll();
+        }catch(err){
+            log.error("Error while reading IoT server config file `" + path + "`: " + err);
+        } finally {
+            file.close();
+        }
         var json = parse(content);
         return json[configName];
     };

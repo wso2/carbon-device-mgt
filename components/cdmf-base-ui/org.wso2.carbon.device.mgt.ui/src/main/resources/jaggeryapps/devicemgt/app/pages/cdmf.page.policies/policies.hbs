@@ -1,7 +1,6 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Policy Management"}}
-{{unit "cdmf.unit.ui.content.title" pageHeader="Policy List"}}
 
-{{unit "cdmf.unit.lib.data-table"}}
+{{unit "cdmf.unit.data-tables-extended"}}
 
 {{#zone "breadcrumbs"}}
     <li>
@@ -24,6 +23,24 @@
                 <i class="fw fw-ring fw-stack-2x"></i>
             </span>
             Add Policy
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/policy/priority" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-throttling-policy fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+            Policy Priority
+        </a>
+    </li>
+    <li>
+        <a href="#" class="cu-btn" id="appbar-btn-apply-changes">
+            <span class="icon fw-stack">
+                <i class="fw fw-check fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+            Apply Changes To Devices
         </a>
     </li>
 {{/zone}}

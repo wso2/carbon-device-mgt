@@ -121,8 +121,16 @@ utility = function () {
             name: "List Users"
         }], "device-mgt/admin", type);
         userModule.addPermissions([{
+            key: "users/update",
+            name: "Update Users"
+        }], "device-mgt/admin", type);
+        userModule.addPermissions([{
             key: "users/remove",
             name: "Remove Users"
+        }], "device-mgt/admin", type);
+        userModule.addPermissions([{
+            key: "users/reset-password",
+            name: "Reset User Passwords"
         }], "device-mgt/admin", type);
 
         userModule.addPermissions([{key: "roles", name: "Roles"}], "device-mgt/admin", type);

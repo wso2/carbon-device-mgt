@@ -24,8 +24,24 @@
  * @returns {boolean} Returns true if input matches RegEx
  */
 function inputIsValid(regExp, inputString) {
+    regExp = new RegExp(regExp);
     return regExp.test(inputString);
 }
+
+var validateInline = {};
+
+/**
+ * Validate if provided username is valid against RegEx configures.
+ */
+validateInline["role-name"] = function () {
+    var rolenameinput = $("input#rolename");
+    if (inputIsValid( rolenameinput.data("regex"), rolenameinput.val())) {
+        $("#roleNameValidationText").removeClass("inline-warning");
+    } else {
+        $("#roleNameValidationText").addClass("inline-warning");
+    }
+};
+
 function formatRepo (user) {
     if (user.loading) {
         return user.text
@@ -48,14 +64,14 @@ function formatRepo (user) {
 }
 
 function formatRepoSelection (user) {
-    return user.username || user.text;;
+    return user.username || user.text;
 }
 
 $(document).ready(function () {
 
     $("#users").select2({
         multiple:true,
-        tags: true,
+        tags: false,
         ajax: {
             url: window.location.origin + "/devicemgt/api/invoker/execute/",
             method: "POST",
@@ -67,12 +83,8 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = "/devicemgt_admin/users";
-                postData.actionPayload = JSON.stringify({
-                    q: params.term, // search term
-                    page: params.page
-                });
-
+                postData.actionUrl = "/devicemgt_admin/users/view-users?username=" + params.term;
+                postData.actionPayload = null;
                 return JSON.stringify(postData);
             },
             processResults: function (data, page) {
@@ -99,7 +111,8 @@ $(document).ready(function () {
      * on Add Role page in WSO2 Devicemgt Console.
      */
     $("button#add-role-btn").click(function() {
-        var roleName = $("input#rolename").val();
+        var rolenameInput = $("input#rolename");
+        var roleName = rolenameInput.val();
         var domain = $("#domain").val();
         var users = $("#users").val();
 
@@ -108,14 +121,14 @@ $(document).ready(function () {
         if (!roleName) {
             $(errorMsg).text("Role name is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");
-        } else if (!inputIsValid(/^[^~?!#$:;%^*`+={}\[\]\\()|<>,'"" "]{3,30}$/, roleName)) {
-            $(errorMsg).text("Provided role name is invalid. Please check.");
+        } else if (!inputIsValid(rolenameInput.data("regex"), roleName)) {
+            $(errorMsg).text(rolenameInput.data("errormsg"));
             $(errorMsgWrapper).removeClass("hidden");
         } else if (!domain) {
             $(errorMsg).text("Domain is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");
-        } else if (!inputIsValid(/^[^~?!#$:;%^*`+={}\[\]\\()|<>,'"0-9]{1,30}$/, domain)) {
-            $(errorMsg).text("Provided domain is invalid. Please check.");
+        } else if (!inputIsValid(/^[^~?!#$:;%^*`+={}\[\]\\()|<>,'"]/, domain)) {
+            $(errorMsg).text("Provided domain is invalid.");
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addRoleFormData = {};
@@ -136,17 +149,35 @@ $(document).ready(function () {
                 addRoleAPI,
                 addRoleFormData,
                 function (data) {
+                    data = JSON.parse(data);
+                    if (data.errorMessage) {
+                        $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
+                        $(errorMsgWrapper).removeClass("hidden");
+                    } else {
                         // Clearing user input fields.
                         $("input#rolename").val("");
                         $("#domain").val("");
                         // Refreshing with success message
                         $("#role-create-form").addClass("hidden");
                         $("#role-created-msg").removeClass("hidden");
-                }, function () {
-                    $(errorMsg).text("An unexpected error occurred. Please try again later.");
+                    }
+                }, function (data) {
+                    if (JSON.parse(data.responseText).errorMessage.indexOf("RoleExisting") > -1) {
+                        $(errorMsg).text("Role name : " + roleName + " already exists. Pick another role name.");
+                    } else {
+                        $(errorMsg).text(JSON.parse(data.responseText).errorMessage);
+                    }
                     $(errorMsgWrapper).removeClass("hidden");
                 }
             );
         }
+    });
+
+    $("#rolename").focus(function() {
+        $("#roleNameValidationText").removeClass("inline-warning");
+    });
+
+    $("#rolename").blur(function() {
+        validateInline["role-name"]();
     });
 });

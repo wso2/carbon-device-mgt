@@ -24,11 +24,15 @@
  */
 function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
+    var deviceMgtProps = require('/app/conf/devicemgt-props.js').config();
     var response = userModule.getRoles();
     if (response["status"] == "success") {
         context["roles"] = response["content"];
     }
     var userStores = userModule.getSecondaryUserStores();
     context["userStores"] = userStores;
+    context["roleNameJSRegEx"] = deviceMgtProps.roleValidationConfig.rolenameJSRegEx;
+    context["roleNameHelpText"] = deviceMgtProps.roleValidationConfig.rolenameHelpMsg;
+    context["roleNameRegExViolationErrorMsg"] = deviceMgtProps.roleValidationConfig.rolenameRegExViolationErrorMsg;
     return context;
 }

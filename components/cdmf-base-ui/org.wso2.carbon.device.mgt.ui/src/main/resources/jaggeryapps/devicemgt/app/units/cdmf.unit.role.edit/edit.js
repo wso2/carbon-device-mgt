@@ -24,10 +24,10 @@
  */
 function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
-
+    var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();
     var uri = request.getRequestURI();
     var uriMatcher = new URIMatcher(String(uri));
-    var isMatched = uriMatcher.match("/{context}/roles/edit-role/{rolename}");
+    var isMatched = uriMatcher.match("/{context}/role/edit/{rolename}");
 
     if (isMatched) {
         var matchedElements = uriMatcher.elements();
@@ -40,5 +40,8 @@ function onRequest(context) {
         context["userStores"] = userStores;
     }
     //TODO: error scenario
+    context["roleNameJSRegEx"] = deviceMgtProps.roleValidationConfig.rolenameJSRegEx;
+    context["roleNameHelpText"] = deviceMgtProps.roleValidationConfig.rolenameHelpMsg;
+    context["roleNameRegExViolationErrorMsg"] = deviceMgtProps.roleValidationConfig.rolenameRegExViolationErrorMsg;
     return context;
 }

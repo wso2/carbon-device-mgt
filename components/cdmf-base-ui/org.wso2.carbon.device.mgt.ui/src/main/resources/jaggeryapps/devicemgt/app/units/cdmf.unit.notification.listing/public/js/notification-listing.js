@@ -22,6 +22,15 @@ var responseCodes = {
     "INTERNAL_SERVER_ERROR": "Internal Server Error"
 };
 
+/**
+ * Following function would execute
+ * when a user clicks on the list item
+ * initial mode and with out select mode.
+ */
+function InitiateViewOption() {
+    $(location).attr('href', $(this).data("url"));
+}
+
 $(document).ready(function () {
     var permissionSet = {};
     $.setPermission = function (permission) {
@@ -57,8 +66,15 @@ $(document).ready(function () {
                 }
 
                 $(errorMsgWrapper).removeClass("hidden");
-            }, function () {
-                $(errorMsg).text("An unexpected error occurred.");
+            }, function (data) {
+                data = data.status;
+                if (data == 500) {
+                    $(errorMsg).text("Exception occurred at backend.");
+                } else if (data == 403) {
+                    $(errorMsg).text("Action was not permitted.");
+                } else {
+                    $(errorMsg).text("An unexpected error occurred.");
+                }
                 $(errorMsgWrapper).removeClass("hidden");
             }
         );
@@ -86,7 +102,7 @@ function loadNotifications(){
         };
         invokerUtil.get(serviceURL,
             successCallback, function(message){
-                console.log(message);
+                console.log(message.content);
         });
     });
 }

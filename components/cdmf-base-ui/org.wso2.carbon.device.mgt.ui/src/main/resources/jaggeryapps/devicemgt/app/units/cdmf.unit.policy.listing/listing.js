@@ -17,30 +17,38 @@
  */
 
 function onRequest(context) {
-    var log = new Log("policy-listing.js");
+    // var log = new Log("policy-listing.js");
     var policyModule = require("/app/modules/policy.js")["policyModule"];
+    var userModule = require("/app/modules/user.js")["userModule"];
     var response = policyModule.getAllPolicies();
-    var pageData = {};
     if (response["status"] == "success") {
         var policyListToView = response["content"];
-        pageData["policyListToView"] = policyListToView;
+        context["policyListToView"] = policyListToView;
         var policyCount = policyListToView.length;
         if (policyCount == 0) {
-            pageData["saveNewPrioritiesButtonEnabled"] = false;
-            pageData["noPolicy"] = true;
+            context["policyListingStatusMsg"] = "No policy is available to be displayed.";
+            context["saveNewPrioritiesButtonEnabled"] = false;
+            context["noPolicy"] = true;
         } else if (policyCount == 1) {
-            pageData["saveNewPrioritiesButtonEnabled"] = false;
-            pageData["isUpdated"] = response["updated"];
+            context["saveNewPrioritiesButtonEnabled"] = false;
+            context["noPolicy"] = false;
+            context["isUpdated"] = response["updated"];
         } else {
-            pageData["saveNewPrioritiesButtonEnabled"] = true;
-            pageData["isUpdated"] = response["updated"];
+            context["saveNewPrioritiesButtonEnabled"] = true;
+            context["noPolicy"] = false;
+            context["isUpdated"] = response["updated"];
         }
     } else {
         // here, response["status"] == "error"
-        pageData["policyListToView"] = [];
-        pageData["saveNewPrioritiesButtonEnabled"] = false;
-        pageData["noPolicy"] = true;
+        context["policyListToView"] = [];
+        context["policyListingStatusMsg"] = "An unexpected error occurred @ backend. Please try again later.";
+        context["saveNewPrioritiesButtonEnabled"] = false;
+        context["noPolicy"] = true;
     }
-    log.info(pageData);
-    return pageData;
+
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/delete")) {
+        context["removePermitted"] = true;
+    }
+
+    return context;
 }

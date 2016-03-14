@@ -20,18 +20,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <artifactId>device-mgt</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
+        <artifactId>email-sender</artifactId>
+        <version>1.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
-    <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <artifactId>org.wso2.carbon.email.sender.core</artifactId>
+    <version>1.0.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Device Management Core</name>
-    <description>WSO2 Carbon - Device Management Core</description>
+    <name>WSO2 Carbon - Email Sender Core</name>
+    <description>WSO2 Carbon - Email Sender Core</description>
     <url>http://wso2.org</url>
 
     <build>
@@ -50,45 +50,34 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Device Management Core Bundle</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.device.mgt.core.internal</Private-Package>
+                        <Bundle-Description>Email Management Core Bundle</Bundle-Description>
+                        <Private-Package>org.wso2.carbon.email.sender.core.internal</Private-Package>
                         <Import-Package>
                             org.apache.axis2.*;version="${axis2.osgi.version.range}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging,
-                            javax.naming,
                             javax.xml.*,
-                            javax.servlet.*,
-                            org.xml.sax,
-                            javax.sql.*,
                             org.wso2.carbon.context,
-                            org.wso2.carbon.core,
                             org.wso2.carbon.utils.*,
                             org.wso2.carbon.registry.api,
-                            org.wso2.carbon.device.mgt.common.*,
-                            org.wso2.carbon.user.api,
-                            org.wso2.carbon.user.core.*,
-                            org.wso2.carbon.registry.core.service,
-                            org.wso2.carbon.registry.core,
-                            org.wso2.carbon.registry.core.exceptions,
-                            org.wso2.carbon.registry.core.session,
-                            org.wso2.carbon.registry.api,
                             org.w3c.dom,
-                            org.wso2.carbon.identity.oauth.stub,
-                            org.wso2.carbon.identity.oauth.stub.dto,
-                            org.wso2.carbon.ndatasource.core,
-                            org.wso2.carbon.apimgt.impl,
-                            org.wso2.carbon.ndatasource.core,
-                            org.apache.catalina,
-                            org.apache.catalina.core,
-                            org.apache.commons.collections,
-                            org.wso2.carbon.email.sender.*
+                            org.apache.velocity,
+                            org.apache.velocity.app,
+                            org.apache.velocity.context,
+                            org.apache.velocity.exception,
+                            org.apache.velocity.runtime.resource,
+                            org.apache.velocity.runtime.resource.loader,
+                            org.apache.commons.io,
+                            org.apache.axis2.transport.mail,
+                            org.wso2.carbon.registry.core.service,
+                            org.wso2.carbon.registry.core.session,
+                            org.apache.commons.collections
                         </Import-Package>
                         <Export-Package>
-                            !org.wso2.carbon.device.mgt.core.internal,
-                            org.wso2.carbon.device.mgt.core.*
+                            !org.wso2.carbon.email.sender.core.internal,
+                            org.wso2.carbon.email.sender.core.*
                         </Export-Package>
                     </instructions>
                 </configuration>
@@ -121,10 +110,6 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.logging</artifactId>
         </dependency>
@@ -133,29 +118,8 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ndatasource.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.user.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.user.api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -163,67 +127,31 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.wso2</groupId>
-            <artifactId>jdbc-pool</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.governance</groupId>
-            <artifactId>org.wso2.carbon.governance.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2.transport</groupId>
-            <artifactId>axis2-transport-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-            <artifactId>axiom</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
-            <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.tomcat</groupId>
-            <artifactId>tomcat</artifactId>
+            <groupId>commons-io.wso2</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.tomcat</groupId>
-            <artifactId>tomcat-servlet-api</artifactId>
+            <groupId>org.apache.axis2.transport</groupId>
+            <artifactId>axis2-transport-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.core</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-collections.wso2</groupId>
             <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.email.sender.core</artifactId>
         </dependency>
     </dependencies>
 

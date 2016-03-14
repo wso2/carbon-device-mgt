@@ -15,17 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.mgt.core.email;
+package org.wso2.carbon.email.sender.core.service;
 
-public final class EmailConstants {
+import org.wso2.carbon.email.sender.core.EmailContext;
+import org.wso2.carbon.email.sender.core.EmailSendingFailedException;
 
-    public static final class EnrolmentEmailConstants {
-        public static final String DOMAIN = "domain-name";
-        public static final String USERNAME = "user-name";
-        public static final String DOWNLOAD_URL = "downloadUrl";
-        public static final String ENCODED_SCHEME = "UTF-8";
-        public static final String PASSWORD = "password";
-        public static final String FIRST_NAME = "first-name";
-    }
+public interface EmailSenderService {
+
+    void sendEmail(EmailContext emailCtx) throws EmailSendingFailedException;
 
 }

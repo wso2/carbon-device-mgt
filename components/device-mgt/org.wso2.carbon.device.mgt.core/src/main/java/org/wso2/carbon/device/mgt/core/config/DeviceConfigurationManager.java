@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.core.config;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.core.config.email.NotificationMessagesConfig;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.xml.sax.SAXException;
@@ -35,21 +34,17 @@ import javax.xml.validation.SchemaFactory;
 import java.io.File;
 
 /**
- * Class responsible for the cdm manager configuration initialization.
+ * Class responsible for the cdm configuration initialization.
  */
 public class DeviceConfigurationManager {
 
     private DeviceManagementConfig currentDeviceConfig;
-    private NotificationMessagesConfig notificationMessagesConfig;
     private static DeviceConfigurationManager deviceConfigManager;
 
     private static final String DEVICE_MGT_CONFIG_PATH =
             CarbonUtils.getCarbonConfigDirPath() + File.separator +
                     DeviceManagementConstants.DataSourceProperties.DEVICE_CONFIG_XML_NAME;
     private static final String DEVICE_MGT_CONFIG_SCHEMA_PATH = "resources/config/schema/device-mgt-config-schema.xsd";
-    private static final String NOTIFICATION_MSG_CONFIG_PATH =
-            CarbonUtils.getCarbonConfigDirPath() + File.separator +
-                    DeviceManagementConstants.NotificationProperties.NOTIFICATION_CONFIG_FILE;
 
     public static DeviceConfigurationManager getInstance() {
         if (deviceConfigManager == null) {
@@ -63,7 +58,6 @@ public class DeviceConfigurationManager {
     }
 
     public synchronized void initConfig() throws DeviceManagementException {
-
         try {
             File deviceMgtConfig = new File(DeviceConfigurationManager.DEVICE_MGT_CONFIG_PATH);
             Document doc = DeviceManagerUtil.convertToDocument(deviceMgtConfig);
@@ -75,18 +69,6 @@ public class DeviceConfigurationManager {
             this.currentDeviceConfig = (DeviceManagementConfig) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {
             throw new DeviceManagementException("Error occurred while initializing Data Source config", e);
-        }
-
-        try {
-            File notificationConfig = new File(DeviceConfigurationManager.NOTIFICATION_MSG_CONFIG_PATH);
-            Document doc = DeviceManagerUtil.convertToDocument(notificationConfig);
-
-            /* Un-marshaling Notifications Management configuration */
-            JAXBContext notificationContext = JAXBContext.newInstance(NotificationMessagesConfig.class);
-            Unmarshaller unmarshaller = notificationContext.createUnmarshaller();
-            this.notificationMessagesConfig = (NotificationMessagesConfig) unmarshaller.unmarshal(doc);
-        } catch(JAXBException e){
-            throw new DeviceManagementException("Error occurred while initializing Notification settings config", e);
         }
     }
 
@@ -103,10 +85,6 @@ public class DeviceConfigurationManager {
 
     public DeviceManagementConfig getDeviceManagementConfig() {
         return currentDeviceConfig;
-    }
-
-    public NotificationMessagesConfig getNotificationMessagesConfig() {
-        return notificationMessagesConfig;
     }
 
 }

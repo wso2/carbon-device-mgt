@@ -51,6 +51,7 @@ import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceIm
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -97,6 +98,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setConfigurationContextService"
  * unbind="unsetConfigurationContextService"
+ * @scr.reference name="email.sender.service"
+ * interface="org.wso2.carbon.email.sender.core.service.EmailSenderService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setEmailSenderService"
+ * unbind="unsetEmailSenderService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -107,6 +114,8 @@ public class DeviceManagementServiceComponent {
     private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
     private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
     private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
+
+    private static final String EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH = "/email-templates";
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
@@ -181,9 +190,9 @@ public class DeviceManagementServiceComponent {
         bundleContext.registerService(DeviceManagementProviderService.class.getName(), deviceManagementProvider, null);
 
 	    /* Registering Tenant Configuration Management Service */
-	    TenantConfigurationManagementService
-			    tenantConfiguration = new TenantConfigurationManagementServiceImpl();
-	    bundleContext.registerService(TenantConfigurationManagementService.class.getName(), tenantConfiguration, null);
+        TenantConfigurationManagementService
+                tenantConfiguration = new TenantConfigurationManagementServiceImpl();
+        bundleContext.registerService(TenantConfigurationManagementService.class.getName(), tenantConfiguration, null);
 
         /* Registering Notification Service */
         NotificationManagementService notificationManagementService
@@ -199,7 +208,7 @@ public class DeviceManagementServiceComponent {
         DeviceAccessAuthorizationService deviceAccessAuthorizationService = new DeviceAccessAuthorizationServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
         bundleContext.registerService(DeviceAccessAuthorizationService.class.getName(),
-                                      deviceAccessAuthorizationService, null);
+                deviceAccessAuthorizationService, null);
 
 	     /* Registering App Management service */
         try {
@@ -340,6 +349,20 @@ public class DeviceManagementServiceComponent {
             log.debug("Un-setting ConfigurationContextService");
         }
         DeviceManagementDataHolder.getInstance().setConfigurationContextService(null);
+    }
+
+    protected void setEmailSenderService(EmailSenderService emailSenderService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Email Sender Service");
+        }
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(emailSenderService);
+    }
+
+    protected void unsetEmailSenderService(EmailSenderService emailSenderService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting Email Sender Service");
+        }
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(null);
     }
 
     public static void registerStartupListener(DeviceManagerStartupListener startupListener) {

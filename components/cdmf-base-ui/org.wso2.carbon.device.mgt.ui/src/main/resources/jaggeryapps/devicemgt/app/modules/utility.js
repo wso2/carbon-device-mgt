@@ -188,10 +188,10 @@ utility = function () {
             name: "List Individual Devices"
         }], "device-mgt/user", type);
         userModule.addPermissions([{
-                    key: "devices/operation",
-                    name: "Perform Operation on an Individual Device"
-                }],
-                "device-mgt/user", type);
+                key: "devices/operation",
+                name: "Perform Operation on an Individual Device"
+            }],
+            "device-mgt/user", type);
 
         userModule.addPermissions([{
             key: "platform-configs",
@@ -209,7 +209,7 @@ utility = function () {
         try {
             file.open("r");
             var content = file.readAll();
-        }catch(err){
+        } catch (err) {
             log.error("Error while reading IoT server config file `" + path + "`: " + err);
         } finally {
             file.close();

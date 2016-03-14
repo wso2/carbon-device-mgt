@@ -42,8 +42,8 @@ function setPopupMaxHeight() {
     var maxHeight = "max-height";
     var marginTop = "margin-top";
     var body = "body";
-    $(modalPopupContent).css(maxHeight, ($(body).height() - ($(body).height()/100 * 30)));
-    $(modalPopupContainer).css(marginTop, (-($(modalPopupContainer).height()/2)));
+    $(modalPopupContent).css(maxHeight, ($(body).height() - ($(body).height() / 100 * 30)));
+    $(modalPopupContainer).css(marginTop, (-($(modalPopupContainer).height() / 2)));
 }
 
 /*
@@ -91,7 +91,7 @@ $(document).ready(function () {
             },
             function () {
                 $("#save-policy-priorities-error-content").find(".message-from-server").html(
-                    "Message From Server  :  " + data["statusText"]);
+                        "Message From Server  :  " + data["statusText"]);
                 $(modalPopupContent).html($('#save-policy-priorities-error-content').html());
                 showPopup();
                 $("a#save-policy-priorities-error-link").click(function () {
@@ -99,7 +99,6 @@ $(document).ready(function () {
                 });
             }
         );
-        
     });
 
     $(applyChangesBtn).click(function () {

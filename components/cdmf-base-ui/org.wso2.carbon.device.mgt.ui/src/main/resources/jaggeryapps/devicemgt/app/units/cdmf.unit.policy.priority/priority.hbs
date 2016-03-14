@@ -1,20 +1,19 @@
-    <div class="row wr-device-board">
-        <div class="col-lg-12 wr-secondary-bar">
+<div class="row wr-device-board">
+    <div class="col-lg-12 wr-secondary-bar">
             <span class="page-sub-title">
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Policy List by priority order
+                &nbsp;Policy List by priority order
             </span>
-        </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <!-- content -->
-            <div class="wr-content">
-                <span id="policy-listing-status-msg" >{{policyListingStatusMsg}}</span>
-                <div class="wr-list-group wr-sortable policy-list">
-                    {{#each policyListToView}}
-                        <span class="list-group-item" id="{{id}}">
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <span id="policy-listing-status-msg">{{policyListingStatusMsg}}</span>
+
+        <div class="wr-list-group wr-sortable policy-list">
+            {{#each policyListToView}}
+                <span class="list-group-item " place="place_{{id}}" id="{{id}}">
                             <div class="row no-gutter">
-                                <div class="col-lg-3 clearfix">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 clearfix">
                                     <span class="wr-sortable-icon"><i class="fw fw-sort"></i></span>
                                     <span class="editable-text wr-sort-index">
                                         <input type="text" id="dd" class="index">
@@ -27,6 +26,9 @@
                                         {{#equal platform "android"}}
                                             <i class=" fw fw-android"></i>
                                         {{/equal}}
+                                        {{#equal platform "windows"}}
+                                            <i class=" fw fw-windows"></i>
+                                        {{/equal}}
                                         {{#equal platform "ios"}}
                                             <i class=" fw fw-apple"></i>
                                         {{/equal}}
@@ -36,27 +38,27 @@
                                         <span class="wr-list-username">{{platform}}</span>
                                     </span>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                                     <div class="row no-gutter">
-                                        <div class="wr-desc-list-configs highlight col-lg-4">
+                                        <div class="wr-desc-list-configs highlight col-xs-12 col-sm-4 col-md-4 col-lg-4">
                                             <div>
                                                 <b>Ownership Type : </b> {{ownershipType}}
                                             </div>
                                         </div>
                                         {{#if roles}}
-                                            <div class="wr-desc-list-configs highlight col-lg-4">
+                                            <div class="wr-desc-list-configs highlight col-xs-12 col-sm-4 col-md-4 col-lg-4">
                                                 <div>
                                                     <b>Assigned Role(s) : </b> {{roles}}
                                                 </div>
                                             </div>
                                         {{else}}
-                                            <div class="wr-desc-list-configs highlight col-lg-4">
+                                            <div class="wr-desc-list-configs highlight col-xs-12 col-sm-4 col-md-4 col-lg-4">
                                                 <div>
                                                     <b>Assigned User(s) : </b> {{users}}
                                                 </div>
                                             </div>
                                         {{/if}}
-                                        <div class="wr-desc-list-configs col-lg-4">
+                                        <div class="wr-desc-list-configs col-xs-12 col-sm-4 col-md-4 col-lg-4">
                                             <div>
                                                 <b>Compliance Type :</b> {{compliance}}
                                             </div>
@@ -65,111 +67,125 @@
                                 </div>
                             </div>
                         </span>
-                    {{/each}}
-                </div>
-                <div id="save-new-priorities-button" class="wr-input-control wr-btn-grp">
-                    <button class="wr-btn hide" id="sortUpdateBtn" data-policycount="{{policyCount}}" data-enabled="{{saveNewPrioritiesButtonEnabled}}" disabled>Save New Priority Order</button>
-                    <button class="wr-btn" id="applyChangesBtn">Apply Changes</button>
-                </div>
-            </div>
-            <!-- /content -->
+            {{/each}}
         </div>
+        {{#equal noPolicy false}}
+            <div id="save-new-priorities-button" class="wr-input-control wr-btn-grp">
+                <button class="wr-btn hide" id="sortUpdateBtn" data-policycount="{{policyCount}}"
+                        data-enabled="{{saveNewPrioritiesButtonEnabled}}" disabled>Save New Priority
+                    Order
+                </button>
+                <button class="wr-btn" id="applyChangesBtn">Apply Changes to Devices</button>
+            </div>
+        {{/equal}}
     </div>
+</div>
 
-    <div id="change-policy-modal-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Do you really want to apply changes to all policies?</h3>
-                    <div class="buttons">
-                        <a href="#" id="change-policy-yes-link" class="btn-operations">
-                            &nbsp;&nbsp;&nbsp;&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;
-                        </a>
-                        &nbsp;&nbsp;
-                        <a href="#" id="change-policy-cancel-link" class="btn-operations">
-                            &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="change-policy-modal-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>Do you really want to apply changes to all policies?</h3>
 
-    <div id="change-policy-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. Changes applied successfully.</h3>
-                    <div class="buttons">
-                        <a href="#" id="change-policy-success-link" class="btn-operations">
-                            &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
-                        </a>
-                    </div>
+                <div class="buttons">
+                    <a href="javascript:void(0)" id="change-policy-yes-link" class="btn-operations">
+                        Yes
+                    </a>
+                    <a href="javascript:void(0)" id="change-policy-cancel-link"
+                       class="btn-operations">
+                        No
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="change-policy-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
-                    <div class="buttons">
-                        <a href="#" id="change-policy-error-link" class="btn-operations">
-                            &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="change-policy-success-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>Done. Changes applied successfully.</h3>
 
-    <div id="remove-policy-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
-                    <div class="buttons">
-                        <a href="#" id="remove-policy-error-link" class="btn-operations">
-                            &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
-                        </a>
-                    </div>
+                <div class="buttons">
+                    <a href="javascript:void(0)" id="change-policy-success-link"
+                       class="btn-operations">
+                        Ok
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="save-policy-priorities-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. New Policy priorities were successfully updated.</h3>
-                    <div class="buttons">
-                        <a href="#" id="save-policy-priorities-success-link" class="btn-operations">
-                            &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="change-policy-error-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>An unexpected error occurred. Please try again later.</h3>
 
-    <div id="save-policy-priorities-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
-                    <h4 class="message-from-server"></h4>
-                    <div class="buttons">
-                        <a href="#" id="save-policy-priorities-error-link" class="btn-operations">
-                            &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
-                        </a>
-                    </div>
+                <div class="buttons">
+                    <a href="javascript:void(0)" id="change-policy-error-link"
+                       class="btn-operations">
+                        Ok
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<div id="remove-policy-error-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>An unexpected error occurred. Please try again later.</h3>
+
+                <div class="buttons">
+                    <a href="javascript:void(0)" id="remove-policy-error-link"
+                       class="btn-operations">
+                        Ok
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="save-policy-priorities-success-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>Done. New Policy priorities were successfully updated.</h3>
+
+                <div class="buttons">
+                    <a href="javascript:void(0)" id="save-policy-priorities-success-link"
+                       class="btn-operations">
+                        Ok
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="save-policy-priorities-error-content" class="hide">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>An unexpected error occurred. Please try again later.</h3>
+                <h4 class="message-from-server"></h4>
+
+                <div class="buttons">
+                    <a href="javascript:void(0)" id="save-policy-priorities-error-link"
+                       class="btn-operations">
+                        Ok
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {{#zone "bottomJs"}}
     {{js "js/policy-priority.js"}}

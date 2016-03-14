@@ -33,7 +33,6 @@ var result;
 response.contentType = 'application/json';
 
 if (!user) {
-    //response = responseProcessor.buildErrorResponse(response, 401, "Unauthorized");
     response.sendRedirect("/devicemgt/login?#login-required");
     exit();
 } else {
@@ -71,7 +70,7 @@ if (!user) {
 
         if (!sketchType) {
             log.error("Sketch Type is empty!");
-            // http status code 400 refers to - Bad request.
+            // HTTP status code 400 refers to - Bad request.
             result = 400;
         } else {
             /**
@@ -113,7 +112,7 @@ if (!user) {
 
         if (!sketchType) {
             log.error("Sketch Type is empty!");
-            // http status code 400 refers to - Bad request.
+            // HTTP status code 400 refers to - Bad request.
             result = 400;
         } else {
 
@@ -166,7 +165,7 @@ if (!user) {
     }
 }
 
-// returning the result.
+// Returning the result.
 if (result) {
     print(result);
 }

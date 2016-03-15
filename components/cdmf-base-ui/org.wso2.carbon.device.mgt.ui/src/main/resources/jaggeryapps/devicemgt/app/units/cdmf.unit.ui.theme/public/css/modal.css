@@ -80,17 +80,6 @@
 
 }
 
-/*.wr-modalpopup .modalpopup-content .buttons {*/
-/*margin-top: 30px;*/
-/*}*/
-
-/*.wr-modalpopup .modalpopup-content .buttons .btn-operations {*/
-/*background: #fff;*/
-/*color: #333;*/
-/*text-transform: uppercase;*/
-/*font-weight: 500;*/
-/*}*/
-
 .wr-modalpopup .modalpopup-bg {
     position: fixed;
     z-index: 1000000;

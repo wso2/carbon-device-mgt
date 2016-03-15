@@ -188,10 +188,10 @@ utility = function () {
             name: "List Individual Devices"
         }], "device-mgt/user", type);
         userModule.addPermissions([{
-                    key: "devices/operation",
-                    name: "Perform Operation on an Individual Device"
-                }],
-                "device-mgt/user", type);
+                key: "devices/operation",
+                name: "Perform Operation on an Individual Device"
+            }],
+            "device-mgt/user", type);
 
         userModule.addPermissions([{
             key: "platform-configs",
@@ -206,9 +206,14 @@ utility = function () {
     publicMethods.getIoTServerConfig = function (configName) {
         var path = "/config/iot-config.json";
         var file = new File(path);
-        file.open("r");
-        var content = file.readAll();
-        file.close();
+        try {
+            file.open("r");
+            var content = file.readAll();
+        } catch (err) {
+            log.error("Error while reading IoT server config file `" + path + "`: " + err);
+        } finally {
+            file.close();
+        }
         var json = parse(content);
         return json[configName];
     };
@@ -227,8 +232,8 @@ utility = function () {
         var deviceTypeConfigFile = new File(parent + sep + "repository" + sep + "conf" + sep
                                             + "device-types" + sep + deviceType + ".json");
         if (deviceTypeConfigFile.isExists()) {
-            deviceTypeConfigFile.open("r");
             try {
+                deviceTypeConfigFile.open("r");
                 deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
             } catch (err) {
                 log.error("Error while reading device config file for `" + deviceType + "`: " + err);

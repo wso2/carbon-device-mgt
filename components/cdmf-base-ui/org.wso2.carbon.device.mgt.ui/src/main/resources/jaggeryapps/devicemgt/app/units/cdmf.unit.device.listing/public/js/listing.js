@@ -119,7 +119,7 @@ function loadDevices() {
         var serviceURL;
         if ($.hasPermission("LIST_OWN_DEVICES") || $.hasPermission("LIST_DEVICES")) {
             //Get authenticated users devices
-            serviceURL = "/mdm-admin/users/devices?username=" + currentUser;
+            serviceURL = "/devicemgt_admin/users/devices?username=" + currentUser;
         } else {
             $("#loading-content").remove();
             $('#device-table').addClass('hidden');
@@ -133,7 +133,8 @@ function loadDevices() {
             viewModel.devices = data;
             viewModel.imageLocation = imageResource;
             if (data.length > 0) {
-                $('#device-grid').removeClass('hidden');
+                $('#device-listing-container').removeClass('hidden');
+                $('#empty-device-listing-container').addClass('hidden');
                 var content = template(viewModel);
                 $("#ast-container").html(content);
                 /*
@@ -144,8 +145,8 @@ function loadDevices() {
                 });
                 attachDeviceEvents();
             } else {
-                $('#device-table').addClass('hidden');
-                $('#device-listing-status-msg').text('No device is available to be displayed.');
+                $('#device-listing-container').addClass('hidden');
+                $('#empty-device-listing-container').removeClass('hidden');
             }
             $("#loading-content").remove();
             $('#device-grid').datatables_extended();

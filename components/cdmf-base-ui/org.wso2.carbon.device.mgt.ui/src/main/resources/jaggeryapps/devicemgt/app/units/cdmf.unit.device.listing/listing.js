@@ -16,35 +16,21 @@
  * under the License.
  */
 
-function onRequest(context){
-    var page_data = {};
+function onRequest(context) {
+    var page = {};
     var groupId = request.getParameter("groupId");
     var userModule = require("/app/modules/user.js").userModule;
     var constants = require("/app/modules/constants.js");
     var permissions = [];
     var currentUser = session.get(constants.USER_SESSION_KEY);
-    if (currentUser){
-        if(userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/devices/list")){
+    if (currentUser) {
+        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/list")) {
             permissions.push("LIST_DEVICES");
-        }else if(userModule.isAuthorized("/permission/admin/device-mgt/user/devices/list")){
+        } else if (userModule.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
             permissions.push("LIST_OWN_DEVICES");
-        }else if(userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/policies/list")){
-            permissions.push("LIST_POLICIES");
         }
-        page_data.permissions = stringify(permissions);
-        page_data.currentUser = currentUser;
-        var deviceCount;
-        if (groupId) {
-            var groupModule = require("/app/modules/group.js").groupModule;
-            deviceCount = groupModule.getDevices(groupId).data.length;
-            page_data.groupId = groupId;
-        } else {
-            var deviceModule = require("/app/modules/device.js").deviceModule;
-            deviceCount = deviceModule.getOwnDevicesCount();
-        }
-        if (deviceCount > 0){
-            page_data.deviceCount = deviceCount;
-        }
+        page.permissions = stringify(permissions);
+        page.currentUser = currentUser;
     }
-    return page_data;
+    return page;
 }

@@ -21,9 +21,12 @@ package org.wso2.carbon.webapp.authenticator.framework.Utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 
@@ -47,4 +50,28 @@ public class Utils {
         }
         return tenantId;
     }
+
+    public static String getTenantDomain(int tenantId) throws AuthenticationException {
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+
+            RealmService realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
+            if (realmService == null) {
+                String msg = "RealmService is not initialized";
+                log.error(msg);
+                throw new AuthenticationException(msg);
+            }
+
+            return realmService.getTenantManager().getDomain(tenantId);
+
+        } catch (UserStoreException e) {
+            String msg = "User store not initialized";
+            log.error(msg);
+            throw new AuthenticationException(msg, e);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
 }

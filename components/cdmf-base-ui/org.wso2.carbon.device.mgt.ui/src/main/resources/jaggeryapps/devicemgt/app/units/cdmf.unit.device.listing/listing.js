@@ -29,6 +29,15 @@ function onRequest(context) {
         } else if (userModule.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
             permissions.push("LIST_OWN_DEVICES");
         }
+        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/add")) {
+            permissions.push("ADD_DEVICE");
+        }
+        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/edit")) {
+            permissions.push("EDIT_DEVICE");
+        }
+        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/remove")) {
+            permissions.push("REMOVE_DEVICE");
+        }
         page.permissions = stringify(permissions);
         page.currentUser = currentUser;
     }

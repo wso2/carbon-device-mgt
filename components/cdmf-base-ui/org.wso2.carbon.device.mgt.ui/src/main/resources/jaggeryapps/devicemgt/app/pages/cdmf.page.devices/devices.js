@@ -17,10 +17,20 @@
  */
 
 function onRequest(context) {
+    var constants = require("/app/modules/constants.js");
+    var page = {};
     var groupName = request.getParameter("groupName");
     var title = "Devices";
     if (groupName) {
         title = groupName + " " + title;
+        page.groupName = groupName;
     }
-    return {"title": title, "groupName": groupName};
+    page.title =title;
+    var currentUser = session.get(constants.USER_SESSION_KEY);
+    if (currentUser) {
+        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/add")) {
+            page.addDevice = true;
+        }
+    }
+    return page;
 }

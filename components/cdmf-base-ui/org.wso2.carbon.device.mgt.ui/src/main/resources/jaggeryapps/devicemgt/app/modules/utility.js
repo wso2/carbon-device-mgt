@@ -91,6 +91,18 @@ utility = function () {
             name: "List All Devices"
         }], "device-mgt/admin", type);
         userModule.addPermissions([{
+            key: "devices/add",
+            name: "Add Device"
+        }], "device-mgt/admin", type);
+        userModule.addPermissions([{
+            key: "devices/edit",
+            name: "Edit Device"
+        }], "device-mgt/admin", type);
+        userModule.addPermissions([{
+            key: "devices/remove",
+            name: "Remove Device"
+        }], "device-mgt/admin", type);
+        userModule.addPermissions([{
             key: "groups",
             name: "Groups"
         }], "device-mgt/admin", type);
@@ -190,8 +202,7 @@ utility = function () {
         userModule.addPermissions([{
                 key: "devices/operation",
                 name: "Perform Operation on an Individual Device"
-            }],
-            "device-mgt/user", type);
+        }], "device-mgt/user", type);
 
         userModule.addPermissions([{
             key: "platform-configs",

@@ -27,3 +27,14 @@ application.put("carbonServer", carbonServer);
 var userModule = require("/app/modules/user.js")["userModule"];
 var utility = require("/app/modules/utility.js")["utility"];
 utility.insertAppPermissions(userModule, "init");
+
+var permissions = {
+    '/permission/admin/device-mgt/devices': ['ui.execute'],
+    '/permission/admin/device-mgt/policies': ['ui.execute'],
+    '/permission/admin/device-mgt/user': ['ui.execute'],
+    '/permission/admin/device-mgt/users': ['ui.execute'],
+    '/permission/admin/device-mgt/admin/devices': ['ui.execute'],
+    '/permission/admin/device-mgt/admin/groups': ['ui.execute'],
+    '/permission/admin/device-mgt/admin/policies': ['ui.execute']
+};
+userModule.addRole("devicemgt-user", ["admin"], permissions);

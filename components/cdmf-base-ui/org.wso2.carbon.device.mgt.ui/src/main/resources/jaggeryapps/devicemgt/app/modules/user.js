@@ -167,22 +167,6 @@ var userModule = function () {
                 return constants.HTTP_CONFLICT;
             } else {
                 var defaultUserClaims = privateMethods.buildDefaultUserClaims(firstname, lastname, emailAddress);
-
-                for (var role in userRoles){
-                    if (userRoles[role] == "iot-admin" && !userManager.roleExists("iot-admin")){
-                        var permissions = {
-                            '/permission/admin/device-mgt/devices': ['ui.execute'],
-                            '/permission/admin/device-mgt/policies': ['ui.execute'],
-                            '/permission/admin/device-mgt/user': ['ui.execute'],
-                            '/permission/admin/device-mgt/users': ['ui.execute'],
-                            '/permission/admin/device-mgt/admin/devices': ['ui.execute'],
-                            '/permission/admin/device-mgt/admin/groups': ['ui.execute'],
-                            '/permission/admin/device-mgt/admin/policies': ['ui.execute']
-                        };
-                        userManager.addRole("iot-admin", ["admin"], permissions);
-                    }
-                }
-
                 userManager.addUser(username, password, userRoles, defaultUserClaims, "default");
                 if (log.isDebugEnabled()) {
                     log.debug("A new user with name '" + username + "' was created.");
@@ -690,6 +674,26 @@ var userModule = function () {
         }
 
         return permissions;
+    };
+
+    /**
+     * Add new role with permissions.
+     *
+     * @param roleName    Name of the role
+     * @param users       List of users to assign the role
+     * @param permissions List of permissions
+     */
+    publicMethods.addRole = function (roleName, users, permissions) {
+        var carbon = require('carbon');
+        var tenantId = carbon.server.tenantId();
+        var url = carbon.server.address('https') + "/admin/services";
+        var server = new carbon.server.Server(url);
+        var userManager = new carbon.user.UserManager(server, tenantId);
+        try {
+            userManager.addRole(roleName, users, permissions);
+        } catch (e) {
+            throw e;
+        }
     };
 
     publicMethods.addPermissions = function (permissionList, path, init) {

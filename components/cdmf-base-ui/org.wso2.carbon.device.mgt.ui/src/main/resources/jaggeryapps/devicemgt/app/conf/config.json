@@ -33,7 +33,7 @@
     "lastnameJSRegEx" : "^[\\S]{3,30}$",
     "lastnameRegExViolationErrorMsg" : "Provided last name is invalid.",
     "emailJSRegEx" : "/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/",
-    "emailRegExViolationErrorMsg" : "Provided last name is invalid."
+    "emailRegExViolationErrorMsg" : "Provided email is invalid."
   },
   "roleValidationConfig" : {
     "rolenameJSRegEx" : "^[\\S]{3,30}$",

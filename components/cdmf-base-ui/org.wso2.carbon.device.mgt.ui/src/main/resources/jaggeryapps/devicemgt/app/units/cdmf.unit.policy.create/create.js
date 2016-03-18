@@ -17,27 +17,39 @@
  */
 
 function onRequest(context) {
-    //var log = new Log("create.js");
+    var log = new Log("create.js");
     var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
 
     var utility = require("/app/modules/utility.js").utility;
     var userModule = require("/app/modules/user.js")["userModule"];
 
+    var JFile = Packages.java.io.File;
+    var sep = JFile.separator;
+
+    var systemProcess = require('process');
+    var parent = 'file:///' + (systemProcess.getProperty('jaggery.home') ||
+                               systemProcess.getProperty('carbon.home')).replace(/[\\]/g, '/').replace(/^[\/]/g, '');
     var types = {};
+    types["types"] = [];
     var typesListResponse = userModule.getPlatforms();
     if (typesListResponse["status"] == "success") {
         for (var type in typesListResponse["content"]) {
             var deviceType = typesListResponse["content"][type]["name"];
-            typesListResponse["content"][type]["icon"] = utility.getDeviceThumb(deviceType);
             var configs = utility.getDeviceTypeConfig(deviceType);
             var deviceTypeLabel = deviceType;
             if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
                 deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
             }
-            typesListResponse["content"][type]["label"] = deviceTypeLabel;
+            var policyWizard = new File(parent + sep + "repository" + sep + "deployment" + sep + "server" + sep +
+                                        "jaggeryapps" + sep + "devicemgt" + sep + "app" + sep + "units" + sep +
+                                        "cdmf.unit.device.type." + deviceType + ".policy-wizard");
+            if(policyWizard.isExists()){
+                typesListResponse["content"][type]["icon"] = utility.getDeviceThumb(deviceType);
+                typesListResponse["content"][type]["label"] = deviceTypeLabel;
+                types["types"].push(typesListResponse["content"][type]);
+            }
         }
-        types["types"] = typesListResponse["content"];
     }
     return types;
 }

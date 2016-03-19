@@ -690,7 +690,11 @@ var userModule = function () {
         var server = new carbon.server.Server(url);
         var userManager = new carbon.user.UserManager(server, tenantId);
         try {
-            userManager.addRole(roleName, users, permissions);
+            if (!userManager.roleExists(roleName)) {
+                userManager.addRole(roleName, users, permissions);
+            } else {
+                log.info("Role exist with name: " + roleName);
+            }
         } catch (e) {
             throw e;
         }

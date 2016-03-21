@@ -20,16 +20,24 @@ package org.wso2.carbon.certificate.mgt.core.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateDAO;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
+import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
 import org.wso2.carbon.certificate.mgt.core.impl.KeyStoreReader;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.sql.SQLException;
 import java.util.List;
 
 public class CertificateManagementServiceImpl implements CertificateManagementService {
@@ -94,6 +102,10 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         return certificateGenerator.verifySignature(headerSignature);
     }
 
+    public CertificateResponse verifyPEMSignature(X509Certificate requestCertificate) throws KeystoreException {
+        return certificateGenerator.verifyPEMSignature(requestCertificate);
+    }
+
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
         return certificateGenerator.extractCertificateFromSignature(headerSignature);
     }
@@ -104,6 +116,65 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
 
     public X509Certificate getSignedCertificateFromCSR(String binarySecurityToken) throws KeystoreException {
         return certificateGenerator.getSignedCertificateFromCSR(binarySecurityToken);
+    }
+
+    public CertificateResponse getCertificateBySerial(String serial) throws KeystoreException {
+        return keyStoreReader.getCertificateBySerial(serial);
+    }
+
+    public void saveCertificate(List<org.wso2.carbon.certificate.mgt.core.bean.Certificate> certificate)
+            throws KeystoreException {
+        certificateGenerator.saveCertInKeyStore(certificate);
+    }
+
+    public X509Certificate pemToX509Certificate(String pem) throws KeystoreException {
+        return certificateGenerator.pemToX509Certificate(pem);
+    }
+
+    public CertificateResponse retrieveCertificate(String serialNumber)
+            throws CertificateManagementDAOException {
+        CertificateDAO certificateDAO;
+        try {
+            CertificateManagementDAOFactory.openConnection();
+            certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
+            return certificateDAO.retrieveCertificate(serialNumber);
+        } catch (SQLException e) {
+            String errorMsg = "Error when opening connection";
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            CertificateManagementDAOFactory.closeConnection();
+        }
+    }
+
+    public PaginationResult getAllCertificates(PaginationRequest request)
+            throws CertificateManagementDAOException {
+        try {
+            CertificateManagementDAOFactory.openConnection();
+            CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
+            return certificateDAO.getAllCertificates(request);
+        } catch (SQLException e) {
+            String errorMsg = "Error when opening connection";
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            CertificateManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException {
+        try {
+            CertificateManagementDAOFactory.openConnection();
+            CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
+            return certificateDAO.removeCertificate(serialNumber);
+        } catch (SQLException e) {
+            String errorMsg = "Error when opening connection";
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            CertificateManagementDAOFactory.closeConnection();
+        }
     }
 
 }

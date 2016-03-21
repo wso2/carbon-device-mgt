@@ -18,58 +18,172 @@
 
 package org.wso2.carbon.certificate.mgt.core.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.certificate.mgt.core.bean.Certificate;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateDAO;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOUtil;
+import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
+import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
+import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateManagerUtil;
+import org.wso2.carbon.certificate.mgt.core.util.Serializer;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GenericCertificateDAOImpl implements CertificateDAO {
+    private static final Log log = LogFactory.getLog(GenericCertificateDAOImpl.class);
+
     @Override
-    public void addCertificate(ByteArrayInputStream byteArrayInputStream, String serialNumber)
+    public void addCertificate(List<Certificate> certificates)
             throws CertificateManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_CERTIFICATE (SERIAL_NUMBER, CERTIFICATE) VALUES (?,?)");
-            stmt.setString(1, serialNumber);
-            stmt.setObject(2, byteArrayInputStream);
-            stmt.execute();
-        } catch (SQLException e) {
-            throw new CertificateManagementDAOException("Error occurred while saving certificate with serial " +
-                                                        serialNumber, e);
+            stmt = conn.prepareStatement(
+                    "INSERT INTO DM_DEVICE_CERTIFICATE (SERIAL_NUMBER, CERTIFICATE, TENANT_ID) VALUES (?,?,?)");
+            for (Certificate certificate : certificates) {
+                String serialNumber = certificate.getSerial();
+                if (serialNumber == null || serialNumber.isEmpty()) {
+                    serialNumber = String.valueOf(certificate.getCertificate().getSerialNumber());
+                }
+                byte[] bytes = Serializer.serialize(certificate.getCertificate());
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+
+                stmt.setString(1, serialNumber);
+                stmt.setObject(2, byteArrayInputStream);
+                stmt.setInt(3, certificate.getTenantId());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        } catch (SQLException | IOException e) {
+            throw new CertificateManagementDAOException("Error occurred while saving certificates. "
+                    , e);
         } finally {
             CertificateManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
 
     @Override
-    public byte[] retrieveCertificate(String serialNumber)
+    public CertificateResponse retrieveCertificate(String serialNumber)
             throws CertificateManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        byte[] binaryStream = null;
+        CertificateResponse certificateResponse = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "SELECT CERTIFICATE FROM DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER = ?";
+            String query =
+                    "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER = ?" +
+                    " AND TENANT_ID = ? ";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, serialNumber);
+            stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                binaryStream = resultSet.getBytes("CERTIFICATE");
+                certificateResponse = new CertificateResponse();
+                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                certificateResponse.setCertificate(certificateBytes);
+                certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
+                certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
+                break;
             }
         } catch (SQLException e) {
-            throw new CertificateManagementDAOException(
-                    "Unable to get the read the certificate with serial" + serialNumber, e);
+            String errorMsg =
+                    "Unable to get the read the certificate with serial" + serialNumber;
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
         } finally {
             CertificateManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
-        return binaryStream;
+        return certificateResponse;
+    }
+
+    @Override
+    public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        CertificateResponse certificateResponse;
+        List<CertificateResponse> certificates = new ArrayList<>();
+        PaginationResult paginationResult;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            Connection conn = this.getConnection();
+            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? " +
+                         "ORDER BY ID DESC LIMIT ?,?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            stmt.setInt(2, request.getStartIndex());
+            stmt.setInt(3, request.getRowCount());
+            resultSet = stmt.executeQuery();
+
+            int resultCount = 0;
+            while (resultSet.next()) {
+                certificateResponse = new CertificateResponse();
+                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
+                certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
+                certificates.add(certificateResponse);
+                resultCount++;
+            }
+            paginationResult = new PaginationResult();
+            paginationResult.setData(certificates);
+            paginationResult.setRecordsTotal(resultCount);
+        } catch (SQLException e) {
+            String errorMsg =  "SQL error occurred while retrieving the certificates.";
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
+        return paginationResult;
+    }
+
+    @Override
+    public boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            conn = this.getConnection();
+            String query =
+                    "DELETE FROM DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER = ?" +
+                    " AND TENANT_ID = ? ";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, serialNumber);
+            stmt.setInt(2, tenantId);
+
+            if(stmt.executeUpdate() > 0) {
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            String errorMsg =
+                    "Unable to get the read the certificate with serial" + serialNumber;
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            CertificateManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
     }
 
     private Connection getConnection() throws SQLException {

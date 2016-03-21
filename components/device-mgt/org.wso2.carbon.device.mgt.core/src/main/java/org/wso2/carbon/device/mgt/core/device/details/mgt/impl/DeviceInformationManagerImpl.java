@@ -28,7 +28,7 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInfomationManager;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
@@ -36,7 +36,7 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 import java.sql.SQLException;
 
-public class DeviceInformationManagerImpl implements DeviceInfomationManager {
+public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
     private static Log log = LogFactory.getLog(DeviceInformationManagerImpl.class);
 
@@ -50,6 +50,10 @@ public class DeviceInformationManagerImpl implements DeviceInfomationManager {
     public void addDeviceInfo(DeviceInfo deviceInfo) throws DeviceDetailsMgtException {
 
         try {
+            Device device = DeviceManagementDataHolder.getInstance().
+                    getDeviceManagementProvider().getDevice(deviceInfo.getDeviceIdentifier());
+            deviceInfo.setDeviceId(device.getId());
+
             DeviceManagementDAOFactory.beginTransaction();
             deviceDetailsDAO.deleteDeviceInformation(deviceInfo.getDeviceId());
             deviceDetailsDAO.deleteDeviceProperties(deviceInfo.getDeviceId());
@@ -62,6 +66,9 @@ public class DeviceInformationManagerImpl implements DeviceInfomationManager {
         } catch (DeviceDetailsMgtDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while adding the device information.");
+        } catch (DeviceManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceDetailsMgtException("Error occurred while retrieving the device information.");
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }

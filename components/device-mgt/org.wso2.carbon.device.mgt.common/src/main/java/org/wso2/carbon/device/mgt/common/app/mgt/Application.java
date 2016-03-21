@@ -23,6 +23,8 @@ import java.util.Properties;
 
 public class Application implements Serializable {
 
+    private static final long serialVersionUID = 1998101711L;
+
     private int id;
     private String platform;
     private String category;

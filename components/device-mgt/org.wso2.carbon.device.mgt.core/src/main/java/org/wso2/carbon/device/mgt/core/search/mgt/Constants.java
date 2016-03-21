@@ -20,5 +20,8 @@
 package org.wso2.carbon.device.mgt.core.search.mgt;
 
 public class Constants {
-}
 
+    public static String GENERAL = "GENERAL";
+    public static String PROP_AND = "PROP_AND";
+    public static String PROP_OR = "PROP_OR";
+}

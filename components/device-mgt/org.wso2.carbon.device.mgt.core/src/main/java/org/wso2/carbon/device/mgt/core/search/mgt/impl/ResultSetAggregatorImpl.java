@@ -20,6 +20,7 @@
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.core.search.mgt.Constants;
 import org.wso2.carbon.device.mgt.core.search.mgt.ResultSetAggregator;
 
 import java.util.ArrayList;
@@ -28,26 +29,22 @@ import java.util.List;
 import java.util.Map;
 
 public class ResultSetAggregatorImpl implements ResultSetAggregator {
+
     @Override
     public List<DeviceWrapper> aggregate(Map<String, List<DeviceWrapper>> deviceWrappers) {
 
-        Map<Integer, DeviceWrapper> generalQueryMap = this.convertToMap(deviceWrappers.get("GENERAL"));
-        Map<Integer, DeviceWrapper> andMap = this.convertToMap(deviceWrappers.get("PROP_AND"));
-        Map<Integer, DeviceWrapper> orMap = this.convertToMap(deviceWrappers.get("PROP_OR"));
-
-
+        Map<Integer, DeviceWrapper> generalQueryMap = this.convertToMap(deviceWrappers.get(Constants.GENERAL));
+        Map<Integer, DeviceWrapper> andMap = this.convertToMap(deviceWrappers.get(Constants.PROP_AND));
+        Map<Integer, DeviceWrapper> orMap = this.convertToMap(deviceWrappers.get(Constants.PROP_OR));
         List<DeviceWrapper> finalResult = new ArrayList<>();
-
         for (Integer a : andMap.keySet()) {
-            if(generalQueryMap.containsKey(a)) {
+            if (generalQueryMap.containsKey(a)) {
                 finalResult.add(andMap.get(a));
             }
         }
-
         for (Integer a : orMap.keySet()) {
             finalResult.add(orMap.get(a));
         }
-
         return finalResult;
     }
 
@@ -63,4 +60,3 @@ public class ResultSetAggregatorImpl implements ResultSetAggregator {
         return deviceWrapperMap;
     }
 }
-

@@ -19,5 +19,13 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt.dao;
 
+import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+
+import java.util.List;
+
 public interface SearchDAO {
+
+    List<DeviceWrapper> searchDeviceDetailsTable(String query) throws SearchDAOException;
+
+    List<DeviceWrapper> searchDevicePropertyTable(String query) throws SearchDAOException;
 }

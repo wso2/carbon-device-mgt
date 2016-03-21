@@ -115,6 +115,7 @@
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.device.mgt.extensions:${carbon.device.mgt.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.email.sender:${carbon.device.mgt.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

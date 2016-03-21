@@ -24,10 +24,48 @@ import java.util.List;
 public interface DeviceTaskManager {
 
     /**
-     * This method will get the operation list from
-     * @return
+     * This method will get the operation list from configurations.
+     *
+     * @return - list of Task Operations.
      * @throws DeviceMgtTaskException
      */
     List<TaskOperation> getOperationList() throws DeviceMgtTaskException;
+
+
+    /**
+     * This method will take the monitoring frequency.
+     * @return - integer
+     * @throws DeviceMgtTaskException
+     */
+    int getTaskFrequency() throws DeviceMgtTaskException;
+
+    /**
+     * This method will return the task clazz from configurations.
+     * @return - Fully qualified class name.
+     * @throws DeviceMgtTaskException
+     */
+    String getTaskImplementedClazz() throws DeviceMgtTaskException;
+
+    /**
+     * This method checks wheather task is enabled in config file.
+     * @return - return true or false
+     * @throws DeviceMgtTaskException
+     */
+    boolean isTaskEnabled() throws DeviceMgtTaskException;
+
+
+    /**
+     * This method will add the operations to devices
+     * @throws DeviceMgtTaskException
+     */
+    void addOperations() throws DeviceMgtTaskException;
+
+
+    /**
+     * This method will return the operation names which should be added in each iterations.
+     * @return
+     * @throws DeviceMgtTaskException
+     */
+    List<String> getValidOperationNames() throws DeviceMgtTaskException;
 
 }

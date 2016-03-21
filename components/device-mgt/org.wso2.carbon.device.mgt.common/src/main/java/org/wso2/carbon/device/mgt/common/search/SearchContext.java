@@ -19,6 +19,36 @@
 
 package org.wso2.carbon.device.mgt.common.search;
 
+import java.util.List;
+
 public class SearchContext {
+
+    private List<Condition> conditions;
+    private int start;
+    private int end;
+
+    public List<Condition> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(List<Condition> conditions) {
+        this.conditions = conditions;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public void setEnd(int end) {
+        this.end = end;
+    }
 }
 

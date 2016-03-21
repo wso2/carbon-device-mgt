@@ -47,7 +47,10 @@ public class DeviceManagementDataHolder {
     private ConfigurationContextService configurationContextService;
     private HashMap<String,Boolean> requireDeviceAuthorization = new HashMap<>();
     private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
+
     private TaskService taskService;
+    //private EmailSenderService emailSenderService;
+
 
     private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
@@ -167,6 +170,7 @@ public class DeviceManagementDataHolder {
         this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
     }
 
+
     public TaskService getTaskService() {
         return taskService;
     }
@@ -174,4 +178,13 @@ public class DeviceManagementDataHolder {
     public void setTaskService(TaskService taskService) {
         this.taskService = taskService;
     }
+//
+//    public EmailSenderService getEmailSenderService() {
+//        return emailSenderService;
+//    }
+//
+//    public void setEmailSenderService(EmailSenderService emailSenderService) {
+//        this.emailSenderService = emailSenderService;
+//    }
+
 }

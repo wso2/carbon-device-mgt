@@ -19,14 +19,16 @@
 
 package org.wso2.carbon.device.mgt.core.device.details.mgt.dao;
 
-import org.wso2.carbon.device.mgt.common.device.details.DeviceApplication;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
-import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtDAOException;
+
+import java.util.Map;
 
 /**
  * This class will store device details related generic information such as cpu/memory utilization, battery level,
  * plugged in to a power source or operation on battery.
+ * In CDM framework, we only keep the snapshot of the device information. So previous details are deleted as soon as new
+ * data is arrived.
  */
 
 public interface DeviceDetailsDAO {
@@ -39,12 +41,41 @@ public interface DeviceDetailsDAO {
     void addDeviceInformation(DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException;
 
     /**
+     * This method will add the device properties to the database.
+     * @param propertyMap - device properties.
+     * @throws DeviceDetailsMgtDAOException
+     */
+    void addDeviceProperties(Map<String, String> propertyMap, int deviceId) throws DeviceDetailsMgtDAOException;
+
+    /**
      * This method will return the device information when device id is provided.
      * @param deviceId - device Id
      * @return DeviceInfo
      * @throws DeviceDetailsMgtDAOException
      */
     DeviceInfo getDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException;
+
+    /**
+     * This method will return the device properties from database.
+     * @param deviceId
+     * @return - device properties map.
+     * @throws DeviceDetailsMgtDAOException
+     */
+    Map<String, String> getDeviceProperties(int deviceId) throws DeviceDetailsMgtDAOException;
+
+    /**
+     * This method will delete the device information from the database.
+     * @param deviceId - Integer.
+     * @throws DeviceDetailsMgtDAOException
+     */
+    void deleteDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException;
+
+    /**
+     * This method will delete the device properties from database.
+     * @param deviceId - Integer.
+     * @throws DeviceDetailsMgtDAOException
+     */
+    void deleteDeviceProperties(int deviceId) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will add device location to database.
@@ -62,17 +93,31 @@ public interface DeviceDetailsDAO {
     DeviceLocation getDeviceLocation(int deviceId) throws DeviceDetailsMgtDAOException;
 
     /**
-     * This method will add device application to database.
-     * @param deviceApplication - Device application
-     * @throws DeviceDetailsMgtDAOException
-     */
-    void addDeviceApplications(DeviceApplication deviceApplication) throws DeviceDetailsMgtDAOException;
-
-    /**
-     * This method will return the device application list once device id is provided.
+     * This method will delete the device location from the database.
      * @param deviceId
-     * @return
      * @throws DeviceDetailsMgtDAOException
      */
-    DeviceApplication getDeviceApplications(int deviceId) throws DeviceDetailsMgtDAOException;
+    void deleteDeviceLocation(int deviceId) throws DeviceDetailsMgtDAOException;
+
+//    /**
+//     * This method will add device application to database.
+//     * @param deviceApplication - Device application
+//     * @throws DeviceDetailsMgtDAOException
+//     */
+//    void addDeviceApplications(DeviceApplication deviceApplication) throws DeviceDetailsMgtDAOException;
+//
+//    /**
+//     * This method will return the device application list once device id is provided.
+//     * @param deviceId
+//     * @return
+//     * @throws DeviceDetailsMgtDAOException
+//     */
+//    DeviceApplication getDeviceApplications(int deviceId) throws DeviceDetailsMgtDAOException;
+//
+//    /**
+//     * This method will delete the application list from the database.
+//     * @param deviceId - Integer
+//     * @throws DeviceDetailsMgtDAOException
+//     */
+//    void deleteDeviceApplications(int deviceId) throws DeviceDetailsMgtDAOException;
 }

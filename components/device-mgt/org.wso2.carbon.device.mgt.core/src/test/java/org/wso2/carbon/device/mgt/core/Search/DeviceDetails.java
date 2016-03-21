@@ -17,8 +17,42 @@
  */
 
 
-package org.wso2.carbon.device.mgt.core.Search;
+package org.wso2.carbon.device.mgt.core.search;
 
-public class DeviceDetails {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.impl.DeviceInformationManagerImpl;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.search.util.Utils;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+
+public class DeviceDetails extends BaseDeviceManagementTest {
+
+    private static final Log log = LogFactory.getLog(DeviceDetails.class);
+
+    @BeforeClass
+    @Override
+    public void init() throws Exception {
+
+        DeviceManagementProviderService deviceManagementProviderService = new DeviceManagementProviderServiceImpl();
+        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProviderService);
+
+    }
+
+    @Test
+    public void addDeviceDetails() throws Exception {
+
+        log.debug("Adding the device details to database.....!");
+        DeviceInformationManager deviceInformationManager = new DeviceInformationManagerImpl();
+        deviceInformationManager.addDeviceInfo(Utils.getDeviceInfo());
+        deviceInformationManager.addDeviceLocation(Utils.getSampleDeviceLocation());
+        log.debug("Device details added to database.....!");
+    }
+
 }
 

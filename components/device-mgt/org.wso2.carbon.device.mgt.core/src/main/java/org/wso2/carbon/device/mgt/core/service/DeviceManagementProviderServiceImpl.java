@@ -28,26 +28,17 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
-import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.email.EmailConstants;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
-import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.email.sender.core.TypedValue;
 import org.wso2.carbon.user.api.UserStoreException;
 
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
@@ -517,130 +508,47 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void sendEnrolmentInvitation(EmailMessageProperties emailMessageProperties)
-            throws DeviceManagementException {
-        List<NotificationMessages> notificationMessages =
-                DeviceConfigurationManager.getInstance().getNotificationMessagesConfig().getNotificationMessagesList();
-        String messageHeader = "";
-        String messageBody = "";
-        String messageFooter1 = "";
-        String messageFooter2 = "";
-        String messageFooter3 = "";
-        String url = "";
-        String subject = "";
-
-        for (NotificationMessages notificationMessage : notificationMessages) {
-            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.ENROL_NOTIFICATION_TYPE
-                    .equals(notificationMessage.getType())) {
-                messageHeader = notificationMessage.getHeader();
-                messageBody = notificationMessage.getBody();
-                messageFooter1 = notificationMessage.getFooterLine1();
-                messageFooter2 = notificationMessage.getFooterLine2();
-                messageFooter3 = notificationMessage.getFooterLine3();
-                url = notificationMessage.getUrl();
-                subject = notificationMessage.getSubject();
-                break;
-            }
-        }
-
-        StringBuilder messageBuilder = new StringBuilder();
-
-        try {
-
-            // Reading the download url from the cdm-config.xml file
-            EmailConfigurations emailConfig =
-                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                            getDeviceManagementConfigRepository().getEmailConfigurations();
-            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix() +
-                                                   emailConfig.getEnrollmentContextPath());
-            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getFirstName(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBody = messageBody.trim() + System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
-                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"))
-                    .append(System.getProperty("line.separator"));
-            messageBuilder.append(messageBody);
-            messageBuilder.append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
-            messageBuilder.append(messageFooter1.trim())
-                    .append(System.getProperty("line.separator")).append(messageFooter2.trim()).append(System
-                    .getProperty("line.separator")).append(messageFooter3.trim());
-        } catch (IOException e) {
-            throw new DeviceManagementException("Error replacing tags in email template '" +
-                    emailMessageProperties.getSubject() + "'", e);
-        }
-        emailMessageProperties.setMessageBody(messageBuilder.toString());
-        emailMessageProperties.setSubject(subject);
-        EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
+    public void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException {
+        Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
+//        try {
+//            EmailContext ctx =
+//                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-enrollment", params),
+//                            metaInfo.getRecipients()).build();
+////            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
+//        } catch (EmailSendingFailedException e) {
+//            throw new DeviceManagementException("Error occurred while sending enrollment invitation", e);
+//        }
     }
 
     @Override
-    public void sendRegistrationEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
-        List<NotificationMessages> notificationMessages =
-                DeviceConfigurationManager.getInstance().getNotificationMessagesConfig().getNotificationMessagesList();
-        String messageHeader = "";
-        String messageBody = "";
-        String messageFooter1 = "";
-        String messageFooter2 = "";
-        String messageFooter3 = "";
-        String url = "";
-        String subject = "";
-
-        for (NotificationMessages notificationMessage : notificationMessages) {
-            if (org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailNotifications.
-                    USER_REGISTRATION_NOTIFICATION_TYPE.equals(notificationMessage.getType())) {
-                messageHeader = notificationMessage.getHeader();
-                messageBody = notificationMessage.getBody();
-                messageFooter1 = notificationMessage.getFooterLine1();
-                messageFooter2 = notificationMessage.getFooterLine2();
-                messageFooter3 = notificationMessage.getFooterLine3();
-                url = notificationMessage.getUrl();
-                subject = notificationMessage.getSubject();
-                break;
-            }
-        }
-        StringBuilder messageBuilder = new StringBuilder();
-        try {
-            // Reading the download url from the cdm-config.xml file
-            EmailConfigurations emailConfig =
-                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                            getDeviceManagementConfigRepository().getEmailConfigurations();
-            emailMessageProperties.setEnrolmentUrl(emailConfig.getlBHostPortPrefix() +
-                                                   emailConfig.getEnrollmentContextPath());
-            messageHeader = messageHeader.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.FIRST_NAME + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getFirstName(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
-                            .USERNAME
-                            + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
-                            .ENCODED_SCHEME));
-            messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.DOMAIN
-                            + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getDomainName(), EmailConstants.EnrolmentEmailConstants
-                            .ENCODED_SCHEME));
-            messageBody = messageBody.replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants.PASSWORD + "\\}",
-                    URLEncoder.encode(emailMessageProperties.getPassword(), EmailConstants.EnrolmentEmailConstants
-                            .ENCODED_SCHEME));
-            messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
-                    URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
-                            EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
-            messageBuilder.append(messageHeader).append(System.getProperty("line.separator"));
-            messageBuilder.append(messageBody).append(System.getProperty("line.separator")).append(
-                    messageFooter1.trim());
-            messageBuilder.append(System.getProperty("line.separator")).append(messageFooter2.trim());
-            messageBuilder.append(System.getProperty("line.separator")).append(messageFooter3.trim());
-
-        } catch (IOException e) {
-            throw new DeviceManagementException("Error replacing tags in email template '" +
-                    emailMessageProperties.getSubject() + "'", e);
-        }
-        emailMessageProperties.setMessageBody(messageBuilder.toString());
-        emailMessageProperties.setSubject(subject);
-        EmailServiceDataHolder.getInstance().getEmailServiceProvider().sendEmail(emailMessageProperties);
+    public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException {
+        Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.USERNAME,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("username")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.PASSWORD,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("password")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.DOMAIN,
+                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("domain")));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
+        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
+                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
+//        try {
+//            EmailContext ctx =
+//                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-registration", params),
+//                            metaInfo.getRecipients()).build();
+//            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
+//        } catch (EmailSendingFailedException e) {
+//            throw new DeviceManagementException("Error occurred while sending user registration notification", e);
+//        }
     }
 
     @Override
@@ -721,11 +629,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             Map<String, DeviceManagementService> registeredTypes = pluginRepository.getAllDeviceManagementServices();
             DeviceType deviceType;
             if (registeredTypes != null && deviceTypesInDatabase != null) {
-                for (int x = 0; x < deviceTypesInDatabase.size(); x++) {
-                    if (registeredTypes.get(deviceTypesInDatabase.get(x).getName()) != null) {
+                for (DeviceType aDeviceTypesInDatabase : deviceTypesInDatabase) {
+                    if (registeredTypes.get(aDeviceTypesInDatabase.getName()) != null) {
                         deviceType = new DeviceType();
-                        deviceType.setId(deviceTypesInDatabase.get(x).getId());
-                        deviceType.setName(deviceTypesInDatabase.get(x).getName());
+                        deviceType.setId(aDeviceTypesInDatabase.getId());
+                        deviceType.setName(aDeviceTypesInDatabase.getName());
                         deviceTypesResponse.add(deviceType);
                     }
                 }

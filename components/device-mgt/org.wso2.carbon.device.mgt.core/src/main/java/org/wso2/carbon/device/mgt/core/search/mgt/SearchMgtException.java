@@ -19,6 +19,41 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt;
 
-public class SearchMgtException {
+public class SearchMgtException extends Exception {
+
+    private static final long serialVersionUID = -315127931137777499L;
+
+    private String errorMessage;
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public SearchMgtException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+        setErrorMessage(msg);
+    }
+
+    public SearchMgtException(String message, Throwable cause) {
+        super(message, cause);
+        setErrorMessage(message);
+    }
+
+    public SearchMgtException(String msg) {
+        super(msg);
+        setErrorMessage(msg);
+    }
+
+    public SearchMgtException() {
+        super();
+    }
+
+    public SearchMgtException(Throwable cause) {
+        super(cause);
+    }
 }
 

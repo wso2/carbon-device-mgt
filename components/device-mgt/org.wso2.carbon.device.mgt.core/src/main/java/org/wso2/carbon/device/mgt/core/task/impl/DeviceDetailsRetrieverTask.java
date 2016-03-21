@@ -30,7 +30,7 @@ import java.util.Map;
 public class DeviceDetailsRetrieverTask implements Task {
 
     private static Log log = LogFactory.getLog(DeviceDetailsRetrieverTask.class);
-    private DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl();
+//    private DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl();
 
     @Override
     public void setProperties(Map<String, String> map) {
@@ -48,6 +48,9 @@ public class DeviceDetailsRetrieverTask implements Task {
         if (log.isDebugEnabled()) {
             log.debug("Device details retrieving task started to run.");
         }
+
+        DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl();
+
         try {
             deviceTaskManager.addOperations();
         } catch (DeviceMgtTaskException e) {

@@ -41,6 +41,7 @@
         <module>components/certificate-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/identity-extensions</module>
+	    <module>components/email-sender</module>
         <module>features/device-mgt</module>
         <module>features/apimgt-extensions</module>
         <module>features/policy-mgt</module>
@@ -48,6 +49,7 @@
         <module>features/certificate-mgt</module>
         <module>features/dynamic-client-registration</module>
         <module>features/oauth-extensions</module>
+ 	    <module>features/email-sender</module>
     </modules>
 
     <dependencyManagement>
@@ -249,6 +251,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.identity.authenticator.backend.oauth</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.email.sender.core</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->
@@ -1226,12 +1233,6 @@
             </dependency>
 
             <dependency>
-                <groupId>commons-io.wso2</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${version.commons.io}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>commons-lang.wso2</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>${version.commons.lang}</version>
@@ -1277,6 +1278,30 @@
                 <groupId>commons-httpclient.wso2</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons.httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io.wso2</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections.wso2</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+
+
+            <!--Tomcat-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${tomcat.version}</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>
@@ -1394,6 +1419,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.18</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.6</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -1581,7 +1611,12 @@
         <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
         <httpcomponents.httpclient.version>4.2.3.wso2v1</httpcomponents.httpclient.version>
         <commons.httpclient.version>3.1.0.wso2v2</commons.httpclient.version>
+        <velocity.version>1.7</velocity.version>
+        <commons-io.version>2.4.0.wso2v1</commons-io.version>
+        <commons-collections.version>3.2.0.wso2v1</commons-collections.version>
 
+        <!--Tomcat version-->
+        <tomcat.version>5.1.34</tomcat.version>
     </properties>
 
 </project>

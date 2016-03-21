@@ -19,6 +19,41 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt;
 
-public class InvalidOperatorException {
+public class InvalidOperatorException extends Exception {
+
+    private static final long serialVersionUID = -3151279311388888499L;
+
+    private String errorMessage;
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public InvalidOperatorException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+        setErrorMessage(msg);
+    }
+
+    public InvalidOperatorException(String message, Throwable cause) {
+        super(message, cause);
+        setErrorMessage(message);
+    }
+
+    public InvalidOperatorException(String msg) {
+        super(msg);
+        setErrorMessage(msg);
+    }
+
+    public InvalidOperatorException() {
+        super();
+    }
+
+    public InvalidOperatorException(Throwable cause) {
+        super(cause);
+    }
 }
 

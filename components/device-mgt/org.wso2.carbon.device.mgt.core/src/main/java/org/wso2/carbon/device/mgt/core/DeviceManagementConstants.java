@@ -58,4 +58,21 @@ public final class DeviceManagementConstants {
         public static final String MONITOR_OPERATION_CODE = "MONITOR";
         public static final String POLICY_OPERATION_CODE = PolicyOperation.POLICY_OPERATION_CODE;
     }
+
+    public static final class EmailAttributes {
+        private EmailAttributes() {
+            throw new AssertionError();
+        }
+
+        public static final String ENCODED_SCHEME = "UTF-8";
+        public static final String FIRST_NAME = "first-name";
+        public static final String USERNAME = "username";
+        public static final String PASSWORD = "password";
+        public static final String DOMAIN = "domain-name";
+
+        public static final String SERVER_BASE_URL_HTTPS = "base-url-https";
+        public static final String SERVER_BASE_URL_HTTP = "base-url-http";
+        public static final String DOWNLOAD_URL = "download-url";
+    }
+
 }

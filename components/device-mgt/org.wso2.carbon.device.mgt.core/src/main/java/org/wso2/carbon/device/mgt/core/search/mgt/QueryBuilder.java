@@ -20,19 +20,20 @@
 package org.wso2.carbon.device.mgt.core.search.mgt;
 
 import org.wso2.carbon.device.mgt.common.search.Condition;
-import org.wso2.carbon.device.mgt.core.search.mgt.InvalidOperatorException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface QueryBuilder {
 
-    void processAND(List<Condition> conditions) throws InvalidOperatorException;
+    Map<String, List<String>> buildQueries(List<Condition> conditions) throws InvalidOperatorException;
 
-    void processOR(List<Condition> conditions) throws InvalidOperatorException;
+    String processAND(List<Condition> conditions) throws InvalidOperatorException;
 
-    void processEQUALS(List<Condition> conditions) throws InvalidOperatorException;
+    String processOR(List<Condition> conditions) throws InvalidOperatorException;
 
-    void processGREATERTHAN(List<Condition> conditions) throws InvalidOperatorException;
+    List<String> processANDProperties(List<Condition> conditions) throws InvalidOperatorException;
 
-    void processLESSTHAN(List<Condition> conditions) throws InvalidOperatorException;
+    List<String> processORProperties(List<Condition> conditions) throws InvalidOperatorException;
+
 }

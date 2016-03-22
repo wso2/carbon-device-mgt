@@ -90,31 +90,6 @@
             <groupId>commons-lang.wso2</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.analytics</groupId>
-            <artifactId>org.wso2.carbon.analytics.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.registry</groupId>
-            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.json.wso2</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -134,10 +109,8 @@
                             org.wso2.carbon.device.mgt.extensions.*
                         </Export-Package>
                         <Import-Package>
-                            org.osgi.framework,
-                            org.osgi.service.component,
                             org.wso2.carbon.governance.api.*,
-                            javax.xml.namespace,
+                            javax.xml.namespace;resolution:=optional,
                             org.wso2.carbon.context,
                             org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.common.license.mgt,
@@ -150,20 +123,12 @@
                             org.apache.commons.logging,
                             org.apache.catalina,
                             org.apache.catalina.core,
-                            javax.servlet,
-                            javax.xml.*,
+                            javax.servlet;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
                             org.apache.commons.lang,
-                            org.wso2.carbon.registry.core.*;resolution:=optional,
-                            org.wso2.carbon.registry.common.*;version="${carbon.registry.imp.pkg.version.range}",
-                            org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
-                            com.nimbusds.jwt.*;version="${com.nimbus.version.range}",
-                            com.nimbusds.jose.*;version="${com.nimbus.version.range}",
-                            org.json;version="${commons-json.version.range}",
-                            org.wso2.carbon.apimgt.api;version="${carbon.api.mgt.version.range}",
-                            org.wso2.carbon.apimgt.api.model;version="${carbon.api.mgt.version.range}",
-                            org.wso2.carbon.apimgt.impl;version="${carbon.api.mgt.version.range}"
+                            javax.ws.rs;version="0.0.0",
+                            org.scannotation
                         </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -55,11 +55,8 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
             if (isManagedApi) {
                 try {
                     AnnotationUtil annotationUtil = new AnnotationUtil(context);
-
-                    Set<String> annotatedAPIClasses = annotationUtil.
-                            scanStandardContext(DeviceType.class.getName());
+                    Set<String> annotatedAPIClasses = annotationUtil.scanStandardContext(DeviceType.class.getName());
                     Map<String,List<Feature>> features = annotationUtil.extractFeatures(annotatedAPIClasses);
-
                     if(features!=null && !features.isEmpty()) {
                         GenericFeatureManager.getInstance().addFeatures(features);
                     }

@@ -57,6 +57,7 @@
         <module>features/oauth-extensions</module>
         <module>features/device-analytics</module>
         <module>features/common-api</module>
+        <module>features/jwt-client</module>
     </modules>
 
     <dependencyManagement>
@@ -234,11 +235,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.devicemgt.grant</artifactId>
-                <version>${carbon.device.mgt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
                 <version>${carbon.device.mgt.version}</version>
                 <exclusions>
@@ -293,6 +289,21 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.analytics</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.jwt.client.extension</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.application.extension</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.application.extension.api</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->
@@ -1408,6 +1419,11 @@
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.wso2</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
 
             <!--Dependencies on XMPP Client Library-->
             <dependency>
@@ -1447,14 +1463,9 @@
                 <version>${commons.pool.wso2.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents.wso2</groupId>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>${httpcomponents.httpclient.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.com.nimbusds</groupId>
-                <artifactId>nimbus-jose-jwt</artifactId>
-                <version>${com.nimbus.version}}</version>
+                <version>${httpclient.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -1745,8 +1756,8 @@
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>4.3.2-SNAPSHOT</carbon.api.mgt.version>
-        <carbon.api.mgt.version.range>(4.3.2,5.0.0]</carbon.api.mgt.version.range>
+        <carbon.api.mgt.version>5.0.3</carbon.api.mgt.version>
+        <carbon.api.mgt.version.range>(5.0.0,6.0.0]</carbon.api.mgt.version.range>
         <!--CXF properties-->
         <cxf.version>2.7.16</cxf.version>
         <cxf.bindings.version>2.5.11</cxf.bindings.version>
@@ -1766,13 +1777,14 @@
 
         <!-- Nimbus Jose-->
         <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>
+        <nimbus.orbit.version.range>[2.26.1, 3.0.0)</nimbus.orbit.version.range>
 
         <json.wso2.version>2.0.0.wso2v1</json.wso2.version>
         <google.gson.version>2.3.1</google.gson.version>
         <jsr311.version>1.1.1</jsr311.version>
         <commons.logging.version>1.2</commons.logging.version>
         <apache.http.version>4.5.1</apache.http.version>
-
+        <apache.http.version.range>[4.5.1, 5.0.0)</apache.http.version.range>
         <!-- Neethi version-->
         <neethi.version>2.0.4</neethi.version>
         <neethi.wso2.version>2.0.4.wso2v4</neethi.wso2.version>
@@ -1780,7 +1792,8 @@
         <commons-json.version>2.0.0.wso2v1</commons-json.version>
         <commons-json.version.range>[2.0.0.wso2v1, 3.0.0)</commons-json.version.range>
         <httpclient.version>4.3.1.wso2v2</httpclient.version>
-
+        <httpclient.version.range>[4.3.1, 5.0.0)</httpclient.version.range>
+        <httpcore.version>4.3.3.wso2v1</httpcore.version>
         <!--SC Annotations Dependency -->
         <scannotation.version>1.0.3.wso2v1</scannotation.version>
 
@@ -1794,8 +1807,6 @@
         <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
         <httpcomponents.httpclient.version>4.2.3.wso2v1</httpcomponents.httpclient.version>
         <commons.httpclient.version>3.1.0.wso2v2</commons.httpclient.version>
-        <com.nimbus.version>2.26.1.wso2v3</com.nimbus.version>
-        <com.nimbus.version.range>[2.26.1.wso2v3, 3.0.0)</com.nimbus.version.range>
     </properties>
 
 </project>

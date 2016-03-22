@@ -82,13 +82,7 @@
                             org.wso2.carbon.ndatasource.core,
                             org.apache.axis2.transport.mail,
                             org.apache.catalina,
-                            org.apache.catalina.core,
-                            org.wso2.carbon.apimgt.impl.*,
-                            org.wso2.carbon.apimgt.api.*,
-                            org.json;version="${commons-json.version}",
-                            javax.net.ssl,
-                            org.apache.commons.codec.binary,
-                            org.apache.http.*
+                            org.apache.catalina.core
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

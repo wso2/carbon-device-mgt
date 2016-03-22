@@ -148,7 +148,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 		apiConfig.setContext(context);
 
 		String[] tags = apidef.getTags();
-		if (tags == null || tags.length > 0) {
+		if (tags == null || tags.length == 0) {
 			if (log.isDebugEnabled()) {
 				log.debug("'API tag not set in @API Annotation'");
 			}

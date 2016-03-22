@@ -52,8 +52,11 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
             return;
         }
         AuthenticationInfo authenticationInfo = authenticator.authenticate(request, response);
-        WebappAuthenticator.Status status = WebappTenantAuthorizer.authorize(request, authenticationInfo);
-        authenticationInfo.setStatus(status);
+        if(authenticationInfo.getStatus() == WebappAuthenticator.Status.CONTINUE || authenticationInfo.getStatus() ==
+                WebappAuthenticator.Status.SUCCESS) {
+            WebappAuthenticator.Status status = WebappTenantAuthorizer.authorize(request, authenticationInfo);
+            authenticationInfo.setStatus(status);
+        }
         if (authenticationInfo.getTenantId() != -1) {
             try {
                 PrivilegedCarbonContext.startTenantFlow();

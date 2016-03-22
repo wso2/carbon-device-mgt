@@ -72,8 +72,6 @@ public class AnnotationUtil {
      * @throws IOException
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        Set<String> entityClasses = null;
-
         AnnotationDB db = new AnnotationDB();
         db.addIgnoredPackages(PACKAGE_ORG_APACHE);
         db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);

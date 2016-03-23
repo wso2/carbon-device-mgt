@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -16,60 +16,63 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.apimgt.webapp.publisher.feature.management;
+package org.wso2.carbon.device.mgt.extensions.feature.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This stores the features for device types that are mentioned through the annotations.
+ */
 public class GenericFeatureManager {
 
     private static final Log log = LogFactory.getLog(GenericFeatureManager.class);
-    private static Map<String,List<Feature>> featureSet = null;
-
-    private static GenericFeatureManager instance = null;
+    private static Map<String,List<Feature>> featureSet = new HashMap<>();
+    private static GenericFeatureManager instance = new GenericFeatureManager();
 
     private GenericFeatureManager() {
-        synchronized (this) {
-            featureSet = new HashMap<String,List<Feature>>();
-        }
     }
 
     public static GenericFeatureManager getInstance(){
-        if(instance==null){
-            instance = new GenericFeatureManager();
-        }
         return instance;
     }
 
-    public boolean addFeature(Feature feature) throws DeviceManagementException {
-        throw new DeviceManagementException("Adding of individual features is not supported");
+    /**
+     *
+     * @param deviceTypeFeatures feature list for each device type.
+     */
+    public void addFeatures(Map<String,List<Feature>> deviceTypeFeatures) {
+        this.featureSet.putAll(deviceTypeFeatures);
     }
 
-    public boolean addFeatures(Map<String,List<Feature>> freshFeatures) throws DeviceManagementException {
-        this.featureSet.putAll(freshFeatures);
-        return true;
-    }
-
-    public Feature getFeature(String deviceType, String featureCode) throws DeviceManagementException {
+    /**
+     *
+     * @param deviceType
+     * @param featureName
+     * @return  the extracted feature for the which matches the feature name and device type.
+     */
+    public Feature getFeature(String deviceType, String featureName) {
         Feature extractedFeature = null;
         List<Feature> deviceFeatureList = featureSet.get(deviceType);
         for(Feature feature : deviceFeatureList){
-            if(feature.getCode().equalsIgnoreCase(featureCode)){
+            if(feature.getName().equalsIgnoreCase(featureName)){
                 extractedFeature = feature;
             }
         }
         return extractedFeature;
     }
 
-    public List<Feature> getFeatures(String deviceType) throws DeviceManagementException {
+    /**
+     *
+     * @param deviceType returns the features for the device type.
+     * @return
+     */
+    public List<Feature> getFeatures(String deviceType) {
         return featureSet.get(deviceType);
     }
 

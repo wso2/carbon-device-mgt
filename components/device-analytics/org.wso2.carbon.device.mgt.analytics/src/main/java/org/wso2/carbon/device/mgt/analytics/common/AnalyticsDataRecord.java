@@ -46,7 +46,7 @@ public class AnalyticsDataRecord {
 	}
 
 	public void setValues(Map<String, Object> values) {
-		this.values.get(values);
+		this.values = values;
 	}
 
 	public long getTimestamp() {

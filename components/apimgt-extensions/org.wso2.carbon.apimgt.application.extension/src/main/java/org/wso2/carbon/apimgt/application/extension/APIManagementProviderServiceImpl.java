@@ -72,7 +72,6 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 				throw new APIManagerException("Api application creation failed for " + apiApplicationName +
 													  " to the user " + username);
 			}
-
 			APIKey retrievedApiApplicationKey = null;
 			for (APIKey apiKey : application.getKeys()) {
 				String applicationKeyType = apiKey.getType();
@@ -93,15 +92,15 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 			} else {
 				allowedDomains[0] = APIManagerUtil.getTenantDomain();
 			}
-			String validityTime = "3600";
-			String ownerJsonString = "{\"username\":\"" + username + "\"}";
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put(ApiApplicationConstants.JSONSTRING_USERNAME_TAG, username);
+			String ownerJsonString = jsonObject.toJSONString();
 			Map<String, Object> keyDetails = apiConsumer.requestApprovalForApplicationRegistration(username,
 																								   apiApplicationName,
 																								   keyType, "",
 																								   allowedDomains,
-																								   validityTime,
-																								   "null",
-																								   groupId,
+																								   ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD,
+																								   "null", groupId,
 																								   ownerJsonString);
 			ApiApplicationKey apiApplicationKey = new ApiApplicationKey();
 			apiApplicationKey.setConsumerKey((String) keyDetails.get(APIConstants.FrontEndParameterNames
@@ -125,6 +124,8 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 		try {
 			APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
 			if (apiConsumer != null) {
+				String groupId = getLoggedInUserGroupId(username, APIManagerUtil.getTenantDomain());
+				createApplication(apiConsumer, applicationName, username, groupId);
 				String[] allowedDomains = new String[1];
 				if (isAllowedAllDomains) {
 					allowedDomains[0] = ApiApplicationConstants.ALLOWED_DOMAINS;

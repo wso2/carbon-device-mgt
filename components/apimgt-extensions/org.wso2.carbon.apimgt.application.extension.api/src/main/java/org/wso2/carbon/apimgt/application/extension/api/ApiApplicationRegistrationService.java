@@ -28,6 +28,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * This is the application registration service that exposed for apimApplicationRegistration
+ */
 public interface ApiApplicationRegistrationService {
 
 	/**

@@ -32,28 +32,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RegistrationProfile {
 
-	@XmlElement(required = true) private String apiApplicationName;
-	@XmlElement(required = true) private String deviceTypes[];
+	@XmlElement(required = true) private String applicationName;
+	@XmlElement(required = true) private String tags[];
 	@XmlElement(required = true) private boolean isAllowedToAllDomains;
 	@XmlElement(required = true) private boolean isMappingAnExistingOAuthApp;
 	private String consumerKey;
 	private String consumerSecret;
-	private String jsonString;
 
-	public String getApiApplicationName() {
-		return apiApplicationName;
+	public String getApplicationName() {
+		return applicationName;
 	}
 
 	public void setApiApplicationName(String apiApplicationName) {
-		this.apiApplicationName = apiApplicationName;
+		this.applicationName = apiApplicationName;
 	}
 
-	public String[] getDeviceTypes() {
-		return deviceTypes;
+	public String[] getTags() {
+		return tags;
 	}
 
-	public void setDeviceTypes(String[] deviceTypes) {
-		this.deviceTypes = deviceTypes;
+	public void setTags(String[] tags) {
+		this.tags = tags;
 	}
 
 	public boolean isAllowedToAllDomains() {
@@ -86,13 +85,5 @@ public class RegistrationProfile {
 
 	public void setConsumerSecret(String consumerSecret) {
 		this.consumerSecret = consumerSecret;
-	}
-
-	public String getJsonString() {
-		return jsonString;
-	}
-
-	public void setJsonString(String jsonString) {
-		this.jsonString = jsonString;
 	}
 }

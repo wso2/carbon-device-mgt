@@ -20,6 +20,7 @@ package org.wso2.carbon.apimgt.application.extension.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONObject;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
 import org.wso2.carbon.apimgt.application.extension.api.util.RegistrationProfile;
 import org.wso2.carbon.apimgt.application.extension.constants.ApiApplicationConstants;
@@ -36,6 +37,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+
 public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegistrationService {
 	private static final Log log = LogFactory.getLog(ApiApplicationRegistrationServiceImpl.class);
 
@@ -47,7 +49,12 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
 		try {
 			PrivilegedCarbonContext.startTenantFlow();
 			PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-			String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration().getAdminUserName();
+			if (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId() == -1) {
+				String msg = "Invalid tenant domain : " + tenantDomain;
+				response = Response.status(Response.Status.NOT_ACCEPTABLE).entity(msg).build();
+			}
+			String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
+					.getRealmConfiguration().getAdminUserName();
 			PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
 			APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
 			ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
@@ -75,19 +82,28 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
 			String username = APIUtil.getAuthenticatedUser();
 			APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
 			if (registrationProfile.isMappingAnExistingOAuthApp()) {
+				JSONObject jsonStringObject = new JSONObject();
+				jsonStringObject.put(ApiApplicationConstants.JSONSTRING_USERNAME_TAG, username);
+				jsonStringObject.put(ApiApplicationConstants.JSONSTRING_KEY_TYPE_TAG,
+									 ApiApplicationConstants.DEFAULT_TOKEN_TYPE);
+				jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_ID, registrationProfile.getConsumerKey());
+				jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_SECRET,
+									 registrationProfile.getConsumerSecret());
+				jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG,
+									 ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
 				apiManagementProviderService.registerExistingOAuthApplicationToAPIApplication(
-						registrationProfile.getJsonString(), registrationProfile.getApiApplicationName(),
+						jsonStringObject.toJSONString(), registrationProfile.getApplicationName(),
 						registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains());
-				return Response.status(Response.Status.ACCEPTED).entity("OAuth app is mapped as APIM app").build();
+				return Response.status(Response.Status.ACCEPTED).entity("OAuth App is mapped as APIM App").build();
 			} else {
 				ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
-						registrationProfile.getApiApplicationName(), registrationProfile.getDeviceTypes(),
+						registrationProfile.getApplicationName(), registrationProfile.getTags(),
 						ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username, false);
 				return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
 			}
 		} catch (APIManagerException e) {
 			String msg = "Error occurred while registering an application '"
-					+ registrationProfile.getApiApplicationName() + "'";
+					+ registrationProfile.getApplicationName() + "'";
 			log.error(msg, e);
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
 		}
@@ -110,6 +126,4 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
 		}
 		return response;
 	}
-
-
 }

@@ -26,8 +26,6 @@ import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
-import org.wso2.carbon.device.mgt.common.Feature;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -74,8 +72,6 @@ public class AnnotationUtil {
      * @throws IOException
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        Set<String> entityClasses = null;
-
         AnnotationDB db = new AnnotationDB();
         db.addIgnoredPackages(PACKAGE_ORG_APACHE);
         db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
@@ -127,7 +123,6 @@ public class AnnotationUtil {
                                         }
 
                                         try {
-
                                             for(int k=0;k<apiClazzMethods.length;k++){
                                                 switch (apiClazzMethods[k].getName()){
                                                     case "name" :
@@ -139,11 +134,13 @@ public class AnnotationUtil {
                                                     case "context" :
                                                         apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
                                                         break;
+                                                    case "tags" :
+                                                        apiResourceConfig.setTags(invokeMethod(apiClazzMethods[k], apiAnno));
+                                                        break;
                                                 }
                                             }
 
                                             String rootContext = "";
-
                                             pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
                                             pathClazzMethods = pathClazz.getMethods();
 
@@ -156,21 +153,18 @@ public class AnnotationUtil {
                                             }
 
                                             Method[] annotatedMethods = clazz.getDeclaredMethods();
-
                                             resourceList = getApiResources(rootContext, annotatedMethods);
-
                                             apiResourceConfig.setResources(resourceList);
                                         } catch (Throwable throwable) {
                                             log.error("Error encountered while scanning for annotations", throwable);
                                         }
                                     }
                                 } catch (ClassNotFoundException e) {
-                                    e.printStackTrace();
+                                    log.error("Error when passing the api annotation for device type apis.");
                                 }
                                 return apiResourceConfig;
                             }
                         });
-
                 apiResourceConfigs.add(resource);
             }
         }
@@ -259,5 +253,13 @@ public class AnnotationUtil {
             default:
                 return null;
         }
+    }
+
+    /**
+     * When an annotation and method is passed, this method invokes that executes said method against the annotation
+     */
+    private String[] invokeMethod(Method method, Annotation annotation) throws Throwable {
+        InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
+        return ((String[])methodHandler.invoke(annotation, method, null));
     }
 }

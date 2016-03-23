@@ -52,14 +52,6 @@ public interface DeviceManagementService extends ApplicationManager {
      */
     boolean isSharedWithAllTenants();
 
-    /**
-     * If the tenant domain is not shared between all then it can specifically shared between set
-     * tenants.
-     *
-     * @return
-     */
-    String[] getSharedTenantsDomain();
-
     void init() throws DeviceManagementException;
 
     DeviceManager getDeviceManager();

@@ -20,9 +20,9 @@ package org.wso2.carbon.device.mgt.common.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.analytics.datasource.commons.Record;
-import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.common.AnalyticsDataRecord;
+import org.wso2.carbon.device.mgt.analytics.exception.DeviceManagementAnalyticsException;
 import org.wso2.carbon.device.mgt.analytics.service.DeviceAnalyticsService;
 import org.wso2.carbon.device.mgt.common.AbstractManagerService;
 import org.wso2.carbon.device.mgt.common.impl.analytics.statistics.dto.DeviceUsageDTO;
@@ -66,12 +66,12 @@ public class StatsManagerService extends AbstractManagerService {
         String query = "owner:" + user + " AND deviceId:" + deviceIdentifier + " AND deviceType:" + deviceType
                 + " AND time : [" + fromDate + " TO " + toDate + "]";
         try {
-            List<Record> records = deviceAnalyticsService.getAllEventsForDevice(table, query);
+            List<AnalyticsDataRecord> records = deviceAnalyticsService.getAllEventsForDevice(table, query);
 
-            Collections.sort(records, new Comparator<Record>() {
+            Collections.sort(records, new Comparator<AnalyticsDataRecord>() {
 
                 @Override
-                public int compare(Record o1, Record o2) {
+                public int compare(AnalyticsDataRecord o1, AnalyticsDataRecord o2) {
                     long t1 = (Long) o1.getValue("time");
                     long t2 = (Long) o2.getValue("time");
                     if (t1 < t2) {
@@ -84,7 +84,7 @@ public class StatsManagerService extends AbstractManagerService {
                 }
             });
 
-            for (Record record : records) {
+            for (AnalyticsDataRecord record : records) {
                 DeviceUsageDTO deviceUsageDTO = new DeviceUsageDTO();
                 deviceUsageDTO.setTime("" + (long) record.getValue("time"));
                 deviceUsageDTO.setValue("" + (float) record.getValue(column.toLowerCase()));
@@ -93,7 +93,7 @@ public class StatsManagerService extends AbstractManagerService {
             DeviceUsageDTO[] deviceUsageDTOsArr = deviceUsageDTOs.toArray(
                     new DeviceUsageDTO[deviceUsageDTOs.size()]);
             return Response.status(Response.Status.OK).entity(deviceUsageDTOsArr).build();
-        } catch (AnalyticsException e) {
+        } catch (DeviceManagementAnalyticsException e) {
             String errorMsg = "Error on retrieving stats on table " + table + " with query " + query;
             log.error(errorMsg);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

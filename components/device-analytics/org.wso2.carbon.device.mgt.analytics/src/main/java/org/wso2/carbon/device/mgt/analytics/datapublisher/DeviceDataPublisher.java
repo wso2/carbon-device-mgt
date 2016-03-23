@@ -78,40 +78,36 @@ public class DeviceDataPublisher {
 
 	/**
 	 * this return the data publisher for the tenant.
+	 *
 	 * @return
 	 * @throws DataPublisherConfigurationException
 	 */
-	public DataPublisher getDataPublisher() throws DataPublisherConfigurationException{
+	public DataPublisher getDataPublisher() throws DataPublisherConfigurationException {
 
 		String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-
 		//Get LoadBalancingDataPublisher which has been registered for the tenant.
 		DataPublisher dataPublisher = getDataPublisher(tenantDomain);
-
-
 		//If a LoadBalancingDataPublisher had not been registered for the tenant.
 		if (dataPublisher == null) {
-			AnalyticsConfigurations analyticsConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-					getDeviceManagementConfigRepository().getAnalyticsConfigurations();
-
-			if(!analyticsConfig.isEnable()) return null;
-
+			AnalyticsConfigurations analyticsConfig =
+					DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+							getDeviceManagementConfigRepository().getAnalyticsConfigurations();
+			if (!analyticsConfig.isEnable()) return null;
 			String analyticsServerUrlGroups = analyticsConfig.getReceiverServerUrl();
 			String analyticsServerUsername = analyticsConfig.getAdminUsername();
 			String analyticsServerPassword = analyticsConfig.getAdminPassword();
-			if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+			if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
 				int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 				String userInfo[] = getAnalyticsServerUserInfo(tenantId);
-				if(userInfo!=null) {
+				if (userInfo != null) {
 					analyticsServerUsername = userInfo[0];
 					analyticsServerPassword = userInfo[1];
 				}
 			}
-
 			//Create new DataPublisher for the tenant.
 			try {
 				dataPublisher = new DataPublisher(analyticsServerUrlGroups, analyticsServerUsername,
-													  analyticsServerPassword);
+												  analyticsServerPassword);
 				//Add created DataPublisher.
 				addDataPublisher(tenantDomain, dataPublisher);
 			} catch (DataEndpointAgentConfigurationException e) {
@@ -144,7 +140,7 @@ public class DeviceDataPublisher {
 	 * @param tenantDomain - The tenant domain under which the data publisher is registered
 	 * @return - Instance of the DataPublisher which was registered. Null if not registered.
 	 */
-	private  DataPublisher getDataPublisher(String tenantDomain) {
+	private DataPublisher getDataPublisher(String tenantDomain) {
 		if (dataPublisherMap.containsKey(tenantDomain)) {
 			return dataPublisherMap.get(tenantDomain);
 		}
@@ -157,10 +153,10 @@ public class DeviceDataPublisher {
 	 * @param tenantDomain  - The tenant domain under which the data publisher will be registered.
 	 * @param dataPublisher - Instance of the LoadBalancingDataPublisher
 	 * @throws DataPublisherAlreadyExistsException -
-	 * If a data publisher has already been registered under the tenant domain
+	 *                                             If a data publisher has already been registered under the tenant
+	 *                                             domain
 	 */
-	private void addDataPublisher(String tenantDomain,
-										DataPublisher dataPublisher)
+	private void addDataPublisher(String tenantDomain, DataPublisher dataPublisher)
 			throws DataPublisherAlreadyExistsException {
 		if (dataPublisherMap.containsKey(tenantDomain)) {
 			throw new DataPublisherAlreadyExistsException(
@@ -173,12 +169,9 @@ public class DeviceDataPublisher {
 
 	/**
 	 * retrieve the credential from registry
-	 * TODO temparary solution for OAUTh
-	 * @param tenantId
-	 * @return
+	 *
 	 */
-	private String[] getAnalyticsServerUserInfo(int tenantId)
-			throws DataPublisherConfigurationException {
+	private String[] getAnalyticsServerUserInfo(int tenantId) throws DataPublisherConfigurationException {
 		try {
 			String config = getConfigRegistryResourceContent(tenantId, TENANT_DAS_CONFIG_LOCATION);
 			JSONObject jsonConfigforDas = new JSONObject(config);
@@ -187,29 +180,29 @@ public class DeviceDataPublisher {
 			credential[1] = jsonConfigforDas.getString(PASSWORD_CONFIG_TAG);
 			return credential;
 		} catch (RegistryException e) {
-			throw new DataPublisherConfigurationException(e);
+			throw new DataPublisherConfigurationException("Failed to load the registry for tenant " + tenantId, e);
 		} catch (JSONException e) {
-			throw new DataPublisherConfigurationException(e);
+			throw new DataPublisherConfigurationException(
+					"Failed to parse the credential from the registry for tenant " + tenantId, e);
 		}
 	}
 
 	/**
 	 * get the credential detail from the registry for tenants.
-	 * @param tenantId for identify tenant space.
+	 *
+	 * @param tenantId         for identify tenant space.
 	 * @param registryLocation retrive the config file from tenant space.
-	 * @return
+	 * @return the config for tenant
 	 * @throws RegistryException
 	 */
 	private String getConfigRegistryResourceContent(int tenantId, final String registryLocation)
 			throws RegistryException {
 		String content = null;
-
 		try {
 			PrivilegedCarbonContext.startTenantFlow();
 			PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
-
 			RegistryService registryService = DeviceAnalyticsDataHolder.getInstance().getRegistryService();
-			if(registryService!=null) {
+			if (registryService != null) {
 				Registry registry = registryService.getConfigSystemRegistry(tenantId);
 				this.loadTenantRegistry(tenantId);
 				if (registry.resourceExists(registryLocation)) {
@@ -217,8 +210,7 @@ public class DeviceDataPublisher {
 					content = new String((byte[]) resource.getContent(), Charset.defaultCharset());
 				}
 			}
-		}
-		finally {
+		} finally {
 			PrivilegedCarbonContext.endTenantFlow();
 		}
 

@@ -25,14 +25,17 @@ import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.dataservice.commons.AnalyticsDataResponse;
 import org.wso2.carbon.analytics.dataservice.commons.AnalyticsDrillDownRequest;
 import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
+import org.wso2.carbon.analytics.dataservice.commons.exception.AnalyticsIndexException;
 import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataServiceUtils;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.databridge.commons.utils.DataBridgeCommonsUtils;
+import org.wso2.carbon.device.mgt.analytics.common.AnalyticsDataRecord;
 import org.wso2.carbon.device.mgt.analytics.datapublisher.DeviceDataPublisher;
 import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherConfigurationException;
+import org.wso2.carbon.device.mgt.analytics.exception.DeviceManagementAnalyticsException;
 import org.wso2.carbon.device.mgt.analytics.internal.DeviceAnalyticsDataHolder;
 
 import java.util.ArrayList;
@@ -44,7 +47,6 @@ import java.util.List;
  */
 public class DeviceAnalyticsServiceImpl implements DeviceAnalyticsService {
 	private static Log log = LogFactory.getLog(DeviceAnalyticsServiceImpl.class);
-	private static final String SORT_SCORE_VALUE = "1 - (time / 10000000000)";
 
 	/**
 	 * @param streamName           is the name of the stream that the data needs to pushed
@@ -57,14 +59,13 @@ public class DeviceAnalyticsServiceImpl implements DeviceAnalyticsService {
 	 */
 	@Override
 	public boolean publishEvent(String streamName, String version, Object[] metaDataArray,
-								Object[] correlationDataArray, Object[] payloadDataArray)
-			throws DataPublisherConfigurationException {
+								Object[] correlationDataArray,
+								Object[] payloadDataArray) throws DataPublisherConfigurationException {
 		DataPublisher dataPublisher = DeviceDataPublisher.getInstance().getDataPublisher();
 		if (dataPublisher != null) {
 			String streamId = DataBridgeCommonsUtils.generateStreamId(streamName, version);
-			return dataPublisher.tryPublish(streamId, System.currentTimeMillis(),metaDataArray, correlationDataArray,
-									 payloadDataArray);
-
+			return dataPublisher.tryPublish(streamId, System.currentTimeMillis(), metaDataArray, correlationDataArray,
+											payloadDataArray);
 		} else {
 			return false;
 		}
@@ -77,27 +78,28 @@ public class DeviceAnalyticsServiceImpl implements DeviceAnalyticsService {
 	 * @throws AnalyticsException
 	 */
 	@Override
-	public List<Record> getAllEventsForDevice(String tableName, String query)
-			throws AnalyticsException {
-
-		int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-		AnalyticsDataAPI analyticsDataAPI =
-				DeviceAnalyticsDataHolder.getInstance().getAnalyticsDataAPI();
-		int eventCount = analyticsDataAPI.searchCount(tenantId, tableName, query);
-		if (eventCount == 0) {
-			return new ArrayList<>();
+	public List<AnalyticsDataRecord> getAllEventsForDevice(String tableName, String query) throws
+																						   DeviceManagementAnalyticsException {
+		try {
+			int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+			AnalyticsDataAPI analyticsDataAPI = DeviceAnalyticsDataHolder.getInstance().getAnalyticsDataAPI();
+			int eventCount = analyticsDataAPI.searchCount(tenantId, tableName, query);
+			if (eventCount == 0) {
+				return new ArrayList<>();
+			}
+			AnalyticsDrillDownRequest drillDownRequest = new AnalyticsDrillDownRequest();
+			drillDownRequest.setQuery(query);
+			drillDownRequest.setTableName(tableName);
+			drillDownRequest.setRecordCount(eventCount);
+			List<SearchResultEntry> resultEntries = analyticsDataAPI.drillDownSearch(tenantId, drillDownRequest);
+			List<String> recordIds = getRecordIds(resultEntries);
+			AnalyticsDataResponse response = analyticsDataAPI.get(tenantId, tableName, 1, null, recordIds);
+			List<Record> records = AnalyticsDataServiceUtils.listRecords(analyticsDataAPI, response);
+			return getAnalyticsDataRecords(records);
+		} catch (AnalyticsException e) {
+			throw new DeviceManagementAnalyticsException(
+					"Failed fetch data for table " + tableName + "with the query " + query);
 		}
-		AnalyticsDrillDownRequest drillDownRequest = new AnalyticsDrillDownRequest();
-		drillDownRequest.setScoreFunction(SORT_SCORE_VALUE);
-		drillDownRequest.setQuery(query);
-		drillDownRequest.setTableName(tableName);
-		drillDownRequest.setRecordCount(eventCount);
-		List<SearchResultEntry> resultEntries = analyticsDataAPI.drillDownSearch(tenantId,
-																				 drillDownRequest);
-		List<String> recordIds = getRecordIds(resultEntries);
-		AnalyticsDataResponse response = analyticsDataAPI.get(tenantId, tableName, 1, null,
-															  recordIds);
-		return AnalyticsDataServiceUtils.listRecords(analyticsDataAPI, response);
 	}
 
 	private List<String> getRecordIds(List<SearchResultEntry> searchResults) {
@@ -106,6 +108,15 @@ public class DeviceAnalyticsServiceImpl implements DeviceAnalyticsService {
 			ids.add(searchResult.getId());
 		}
 		return ids;
+	}
+
+	private List<AnalyticsDataRecord> getAnalyticsDataRecords(List<Record> records) {
+		List<AnalyticsDataRecord> analyticsDataRecords = new ArrayList<>();
+		for (Record record : records) {
+			AnalyticsDataRecord analyticsDataRecord = new AnalyticsDataRecord(record.getValues());
+			analyticsDataRecords.add(analyticsDataRecord);
+		}
+		return analyticsDataRecords;
 	}
 
 }

@@ -228,6 +228,8 @@ public interface DeviceManagementProviderService extends OperationManager {
 
 	List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException;
 
+    String getDeviceTypeTenantProvider(String type) throws DeviceManagementException;
+
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 
     boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException;

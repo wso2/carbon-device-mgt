@@ -38,8 +38,8 @@ $(function () {
                                      });
 
             postRequest.done(function (data, textStatus, jqxhr) {
-                //var successCallback = function (data, jqxhr) {
-                var status = jqxhr.status;
+                var status = JSON.parse(jqxhr.responseText).data.statusCode;
+                console.log(status);
                 if (status == 200) {
                     $('.wr-validation-summary strong').text("Group created. You will be redirected to groups");
                     $('.wr-validation-summary').removeClass("hidden");
@@ -49,13 +49,12 @@ $(function () {
                         window.location = "../groups";
                     }, 1500);
                 } else {
-                    displayErrors(jqxhr);
+                    displayErrors(status);
                 }
-                //};
             });
 
             postRequest.fail(function (jqXHR, textStatus) {
-                displayErrors(jqXHR);
+                displayErrors(status);
             });
 
             //invokerUtil.post("/common/group_manager/group", group,
@@ -68,19 +67,19 @@ $(function () {
     });
 });
 
-function displayErrors(jqXHR) {
+function displayErrors(status) {
     showPopup();
-    if (jqXHR.status == 400) {
+    if (status == 400) {
         $(modalPopupContent).html($('#group-400-content').html());
         $("a#group-400-link").click(function () {
             hidePopup();
         });
-    } else if (jqXHR.status == 403) {
+    } else if (status == 403) {
         $(modalPopupContent).html($('#group-403-content').html());
         $("a#group-403-link").click(function () {
             hidePopup();
         });
-    } else if (jqXHR.status == 409) {
+    } else if (status == 409) {
         $(modalPopupContent).html($('#group-409-content').html());
         $("a#group-409-link").click(function () {
             hidePopup();
@@ -90,7 +89,6 @@ function displayErrors(jqXHR) {
         $("a#group-unexpected-error-link").click(function () {
             hidePopup();
         });
-        console.log("Error code: " + jqXHR.status);
+        console.log("Error code: " + status);
     }
 }
-

@@ -78,8 +78,13 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         int groupId = -1;
         try {
             GroupManagementDAOFactory.beginTransaction();
-            groupId = this.groupDAO.addGroup(groupBroker, tenantId);
-            GroupManagementDAOFactory.commitTransaction();
+            boolean nameIsExists = this.groupDAO.isNameExist(deviceGroup.getName());
+            if (!nameIsExists) {
+                groupId = this.groupDAO.addGroup(groupBroker, tenantId);
+                GroupManagementDAOFactory.commitTransaction();
+            }else {
+                return -2;
+            }
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while adding deviceGroup " +
@@ -607,4 +612,5 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             throw new GroupManagementException("Error occurred while getting user realm.", e);
         }
     }
+
 }

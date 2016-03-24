@@ -181,4 +181,27 @@ public class GroupDAOImpl implements GroupDAO {
         return deviceGroups;
     }
 
+    @Override
+    public boolean isNameExist(String groupName) throws GroupManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rst = null;
+        try {
+            Connection conn = GroupManagementDAOFactory.getConnection();
+            String sql = "SELECT ID FROM DM_GROUP WHERE GROUP_NAME = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, groupName);
+            rst = stmt.executeQuery();
+            if (rst.next()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while group Id listing by group name " + groupName;
+            throw new GroupManagementDAOException(msg, e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(stmt, rst);
+        }
+    }
+
 }

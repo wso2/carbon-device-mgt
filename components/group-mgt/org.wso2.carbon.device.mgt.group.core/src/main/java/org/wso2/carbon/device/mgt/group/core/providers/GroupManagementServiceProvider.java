@@ -252,4 +252,5 @@ public interface GroupManagementServiceProvider {
      */
     boolean isAuthorized(String username, int groupId, String permission)
             throws GroupManagementException;
+
 }

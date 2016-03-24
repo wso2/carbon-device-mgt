@@ -83,4 +83,5 @@ public interface GroupDAO {
     List<DeviceGroupBuilder> getGroups(String groupName, int tenantId)
             throws GroupManagementDAOException;
 
+    boolean isNameExist(String groupName) throws GroupManagementDAOException;
 }

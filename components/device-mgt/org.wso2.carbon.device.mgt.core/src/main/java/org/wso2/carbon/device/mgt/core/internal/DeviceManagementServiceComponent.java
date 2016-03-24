@@ -56,7 +56,6 @@ import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +97,7 @@ import java.util.List;
  * policy="dynamic"
  * bind="setConfigurationContextService"
  * unbind="unsetConfigurationContextService"
+ *
  */
 public class DeviceManagementServiceComponent {
 

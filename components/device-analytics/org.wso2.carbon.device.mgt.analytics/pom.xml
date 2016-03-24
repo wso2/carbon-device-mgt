@@ -125,6 +125,7 @@
                             org.wso2.carbon.context;version="${carbon.kernel.version.range}",
                             org.wso2.carbon.utils;version="${carbon.kernel.version.range}",
                             org.wso2.carbon.databridge.*;version="${carbon.analytics.common.version.range}",
+                            org.wso2.carbon.analytics.*;version="${carbon.analytics.version.range}",
                             org.wso2.carbon.analytics.api.*;version="${carbon.analytics.version.range}",
                             org.wso2.carbon.analytics.dataservice.commons.*;version="${carbon.analytics.version.range}",
                             org.wso2.carbon.analytics.dataservice.core.*;version="${carbon.analytics.version.range}",

@@ -101,9 +101,7 @@ public final class DeviceManagerUtil {
      * @param typeName device type
      * @return status of the operation
      */
-    public static boolean registerDeviceType(String typeName, int tenantId,
-                                             boolean sharedWithAllTenants, String sharedTenants[])
-            throws DeviceManagementException {
+    public static boolean registerDeviceType(String typeName, int tenantId, boolean isSharedWithAllTenants) throws DeviceManagementException {
         boolean status;
         try {
             DeviceManagementDAOFactory.beginTransaction();
@@ -112,31 +110,7 @@ public final class DeviceManagerUtil {
             if (deviceType == null) {
                 deviceType = new DeviceType();
                 deviceType.setName(typeName);
-                int deviceTypeId = deviceTypeDAO.addDeviceType(deviceType, tenantId
-                        , sharedWithAllTenants);
-
-                //Once device type is added then share between tenants
-                if (!sharedWithAllTenants && sharedTenants != null && sharedTenants.length > 0) {
-                    deviceType.setId(deviceTypeId);
-                    List<Integer> tenantIdList = new ArrayList<>();
-                    for (String sharedTenant : sharedTenants) {
-                        try {
-                            tenantIdList.add(DeviceManagerUtil.getTenantId(sharedTenant));
-                        } catch (DeviceManagementException e) {
-                            log.error("Device Type '" + typeName
-                                      + "' is shared with invalid tenant domain - "
-                                      + Arrays.toString(sharedTenants));
-                        }
-                    }
-                    int tenantIds[] = new int[tenantIdList.size()];
-
-                    for (int i = 0; i < tenantIdList.size(); i++) {
-                        tenantIds[i] = tenantIdList.get(i);
-
-                    }
-
-                    deviceTypeDAO.shareDeviceType(deviceTypeId, tenantIds);
-                }
+                deviceTypeDAO.addDeviceType(deviceType, tenantId, isSharedWithAllTenants);
                 status = true;
             }else{
                 status = false;
@@ -168,8 +142,6 @@ public final class DeviceManagerUtil {
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
             DeviceType deviceType = deviceTypeDAO.getDeviceType(typeName, tenantId);
             if (deviceType != null) {
-                DeviceType dt = new DeviceType();
-                dt.setName(typeName);
                 deviceTypeDAO.removeDeviceType(typeName, tenantId);
             }
             DeviceManagementDAOFactory.commitTransaction();
@@ -207,21 +179,42 @@ public final class DeviceManagerUtil {
      * @return
      * @throws DeviceManagementException
      */
-	public static int getTenantId(String tenantDomain) throws DeviceManagementException{
-		try {
-            if(tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)){
+    public static int getTenantId(String tenantDomain) throws DeviceManagementException {
+        try {
+            if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
                 return MultitenantConstants.SUPER_TENANT_ID;
-
             }
-            TenantManager tenantManager= DeviceManagementDataHolder.getInstance().getTenantManager();
-			int tenantId = tenantManager.getTenantId(tenantDomain);
-			if(tenantId ==-1) {
-				throw new DeviceManagementException("invalid tenant Domain :" + tenantDomain);
-			}
-			return tenantId;
-		} catch (UserStoreException e) {
-			throw new DeviceManagementException("invalid tenant Domain :" + tenantDomain);
-		}
-	}
+            TenantManager tenantManager = DeviceManagementDataHolder.getInstance().getTenantManager();
+            int tenantId = tenantManager.getTenantId(tenantDomain);
+            if (tenantId == -1) {
+                throw new DeviceManagementException("invalid tenant Domain :" + tenantDomain);
+            }
+            return tenantId;
+        } catch (UserStoreException e) {
+            throw new DeviceManagementException("invalid tenant Domain :" + tenantDomain);
+        }
+    }
 
+    /**
+     * returns the tenant domain of the tenant id
+     *
+     * @param tenantId
+     * @return
+     * @throws DeviceManagementException
+     */
+    public static String getTenantDomain(int tenantId) throws DeviceManagementException {
+        try {
+            if (tenantId == MultitenantConstants.SUPER_TENANT_ID) {
+                return MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+            }
+            TenantManager tenantManager = DeviceManagementDataHolder.getInstance().getTenantManager();
+            String tenantDomain = tenantManager.getDomain(tenantId);
+            if (tenantDomain == null) {
+                throw new DeviceManagementException("invalid tenant id :" + tenantId);
+            }
+            return tenantDomain;
+        } catch (UserStoreException e) {
+            throw new DeviceManagementException("invalid tenant id :" + tenantId);
+        }
+    }
 }

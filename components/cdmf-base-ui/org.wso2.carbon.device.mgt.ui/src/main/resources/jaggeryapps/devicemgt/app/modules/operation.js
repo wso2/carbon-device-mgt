@@ -37,11 +37,9 @@ var operationModule = function () {
     }
 
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
-        var GenericFeatureManager = Packages.org.wso2.carbon.apimgt.webapp.publisher.feature.
-                management.GenericFeatureManager;
-        try {
-            var featureManager = GenericFeatureManager.getInstance();
-            var features = featureManager.getFeatures(deviceType);
+        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/features/" + deviceType;
+        var featuresList = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
+            var features = responsePayload.responseContent;
             var featureList = [];
             var feature;
             for (var i = 0; i < features.size(); i++) {
@@ -69,9 +67,19 @@ var operationModule = function () {
                     for (var j = 0; j < metaData.size(); j++) {
                         feature["params"].push(new String(metaData.get(j).getValue()));
                     }
+                    featureList.push(feature);
                 }
-                featureList.push(feature);
             }
+            return featureList;
+        }
+            ,
+            function (responsePayload) {
+                var response = {};
+                response["status"] = "error";
+                return response;
+            }
+        );
+        return featuresList;
             return featureList;
         } catch (e) {
             throw e;

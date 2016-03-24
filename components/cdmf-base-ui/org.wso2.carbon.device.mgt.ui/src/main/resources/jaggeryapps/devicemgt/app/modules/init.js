@@ -30,6 +30,7 @@ utility.insertAppPermissions(userModule, "init");
 
 var permissions = {
     '/permission/admin/device-mgt/devices': ['ui.execute'],
+    '/permission/admin/device-mgt/operations': ['ui.execute'],
     '/permission/admin/device-mgt/policies': ['ui.execute'],
     '/permission/admin/device-mgt/user': ['ui.execute'],
     '/permission/admin/device-mgt/users': ['ui.execute'],

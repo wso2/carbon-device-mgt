@@ -54,11 +54,6 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
-    public String[] getSharedTenantsDomain() {
-        return null;
-    }
-
-    @Override
     public void init() throws DeviceManagementException {
 
     }

@@ -32,4 +32,6 @@ public @interface API {
     String version();
 
     String context();
+
+    String[] tags();
 }

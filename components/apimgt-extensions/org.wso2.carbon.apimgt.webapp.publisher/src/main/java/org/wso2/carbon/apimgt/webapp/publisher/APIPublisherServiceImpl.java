@@ -21,18 +21,22 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 import com.google.gson.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.api.APIConsumer;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.FaultGatewaysException;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIIdentifier;
-import org.wso2.carbon.apimgt.api.model.Application;
-import org.wso2.carbon.apimgt.api.model.Subscriber;
 import org.wso2.carbon.apimgt.api.model.URITemplate;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
+import org.wso2.carbon.governance.lcm.util.CommonUtil;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import java.util.Date;
+import javax.xml.stream.XMLStreamException;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -48,22 +52,40 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         if (log.isDebugEnabled()) {
             log.debug("Publishing API '" + api.getId() + "'");
         }
-        APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
-        if (provider != null) {
-            if (!provider.isAPIAvailable(api.getId())) {
-                provider.addAPI(api);
-                log.info("Successfully published API '" + api.getId().getApiName() + "' with context '" +
-                                 api.getContext() + "' and version '" + api.getId().getVersion() + "'");
+        try {
+            String tenantDomain = MultitenantUtils.getTenantDomain(api.getApiOwner());
+            int tenantId =
+                    APIPublisherDataHolder.getInstance().getRealmService().getTenantManager().getTenantId(tenantDomain);
+            // Below code snippet is added load API Lifecycle in tenant mode, where in it does not load when tenant is loaded.
+            RegistryService registryService = APIPublisherDataHolder.getInstance().getRegistryService();
+            CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(tenantId),
+                                                          CommonUtil.getRootSystemRegistry(tenantId));
+            APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
+            MultitenantUtils.getTenantDomain(api.getApiOwner());
+            if (provider != null) {
+                if (!provider.isAPIAvailable(api.getId())) {
+                    provider.addAPI(api);
+                    log.info("Successfully published API '" + api.getId().getApiName() + "' with context '" +
+                                     api.getContext() + "' and version '" + api.getId().getVersion() + "'");
+                } else {
+                    provider.updateAPI(api);
+                    log.info("An API already exists with the name '" + api.getId().getApiName() + "', context '" +
+                                     api.getContext() + "' and version '" + api.getId().getVersion() +
+                                     "'. Thus, the API config is updated");
+                }
+                provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
             } else {
-                provider.updateAPI(api);
-                log.info("An API already exists with the name '" + api.getId().getApiName() + "', context '" +
-                                 api.getContext() + "' and version '" + api.getId().getVersion() +
-                                 "'. Thus, the API config is updated");
+                throw new APIManagementException("API provider configured for the given API configuration is null. " +
+                                                         "Thus, the API is not published");
             }
-            provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
-        } else {
-            throw new APIManagementException("API provider configured for the given API configuration is null. " +
-                                                     "Thus, the API is not published");
+        } catch (UserStoreException e) {
+            throw new APIManagementException("Failed to get the tenant id for the user " + api.getApiOwner(), e);
+        } catch (FileNotFoundException e) {
+            throw new APIManagementException("Failed to retrieve life cycle file ", e);
+        } catch (RegistryException e) {
+            throw new APIManagementException("Failed to access the registry ", e);
+        } catch (XMLStreamException e) {
+            throw new APIManagementException("Failed parsing the lifecycle xml.", e);
         }
     }
 
@@ -103,60 +125,6 @@ public class APIPublisherServiceImpl implements APIPublisherService {
     }
 
     @Override
-    public int createApplication(Application application, String apiOwner)
-            throws APIManagementException, FaultGatewaysException {
-        if (log.isDebugEnabled()) {
-            log.debug("Publishing API '" + application.getId() + "'");
-        }
-        APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(apiOwner);
-        if (consumer != null) {
-            log.info("Successfully created application wit id : " + application.getId());
-            return consumer.addApplication(application, apiOwner);
-        } else {
-            throw new APIManagementException("API provider configured for the given API configuration is null. " +
-                                                     "Thus, the API is not published");
-        }
-    }
-
-    @Override
-    public void addSubscription(APIIdentifier apiId, int applicationId, String userName)
-            throws APIManagementException, FaultGatewaysException {
-        if (log.isDebugEnabled()) {
-            log.debug("Creating subscription for API " + apiId);
-        }
-        APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(userName);
-        if (consumer != null) {
-            consumer.addSubscription(apiId, userName, applicationId);
-            log.info("Successfully created subscription for API : " + apiId + " from application : " + applicationId);
-        } else {
-            throw new APIManagementException("API provider configured for the given API configuration is null. " +
-                                                     "Thus, the API is not published");
-        }
-    }
-
-    @Override
-    public void adddSubscriber(String subscriberName, String groupId)
-            throws APIManagementException, FaultGatewaysException {
-        if (log.isDebugEnabled()) {
-            log.debug("Creating subscriber with name  " + subscriberName);
-        }
-        APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(subscriberName);
-        if (consumer != null) {
-            Subscriber subscriber = new Subscriber((String) subscriberName);
-            subscriber.setSubscribedDate(new Date());
-            //TODO : need to set the proper email
-            subscriber.setEmail("");
-            subscriber.setTenantId(-1234);
-            consumer.addSubscriber(subscriber, groupId);
-            log.info("Successfully created subscriber with name : " + subscriberName + " with groupID : " + groupId);
-        } else {
-            throw new APIManagementException("API provider configured for the given API configuration is null. " +
-                                                     "Thus, the API is not published");
-        }
-    }
-
-
-    @Override
     public void removeAPI(APIIdentifier id) throws APIManagementException {
         if (log.isDebugEnabled()) {
             log.debug("Removing API '" + id.getApiName() + "'");
@@ -184,5 +152,4 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             log.debug("End of publishing the batch of APIs");
         }
     }
-
 }

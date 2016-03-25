@@ -26,10 +26,11 @@ function onRequest(context) {
         page.groupName = groupName;
     }
     page.title =title;
+    page.permissions = {};
     var currentUser = session.get(constants.USER_SESSION_KEY);
     if (currentUser) {
         if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/add")) {
-            page.addDevice = true;
+            page.permissions.enroll = true;
         }
     }
     return page;

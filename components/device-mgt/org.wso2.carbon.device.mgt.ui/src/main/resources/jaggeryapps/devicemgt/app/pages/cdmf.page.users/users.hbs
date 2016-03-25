@@ -1,0 +1,32 @@
+{{unit "cdmf.unit.ui.title" pageTitle="User Management"}}
+
+{{unit "cdmf.unit.data-tables-extended"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/users">
+            Users
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "navbarActions"}}
+    <li>
+        <a href="{{@app.context}}/user/add" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-add fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+            Add User
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    {{unit "cdmf.unit.user.listing"}}
+{{/zone}}

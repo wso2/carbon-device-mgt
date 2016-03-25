@@ -1,0 +1,67 @@
+{{unit "cdmf.unit.ui.title" pageTitle="Device Management"}}
+
+{{unit "uuf.unit.lib.data-table"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    {{#if groupName}}
+        <li>
+            <a href="{{@app.context}}/groups">
+                Groups
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                {{groupName}}
+            </a>
+        </li>
+    {{else}}
+        <li>
+            <a href="{{@app.context}}/devices">
+                Devices
+            </a>
+        </li>
+    {{/if}}
+{{/zone}}
+
+{{#zone "navbarActions"}}
+    {{#if groupName}}
+        <li>
+            <a href="{{@app.context}}/devices" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-add fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+                Assign from My Devices
+            </a>
+        </li>
+    {{else}}
+        {{#if permissions.addDevice}}
+            <li>
+                <a href="{{@app.context}}/device/enroll" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-add fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+                    Enroll Device
+                </a>
+            </li>
+        {{/if}}
+    {{/if}}
+{{/zone}}
+
+{{#zone "content"}}
+    <div class="wr-device-list row">
+        <div class="wr-hidden-operations wr-advance-operations"></div>
+        <div class="col-md-12 wr-page-content">
+            <div>
+                {{unit "cdmf.unit.device.operation-mod"}}
+                {{unit "cdmf.unit.device.listing"}}
+            </div>
+        </div>
+    </div>
+{{/zone}}

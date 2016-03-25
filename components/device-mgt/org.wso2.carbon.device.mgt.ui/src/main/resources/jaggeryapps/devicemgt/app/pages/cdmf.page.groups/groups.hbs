@@ -1,0 +1,40 @@
+{{unit "cdmf.unit.ui.title" pageTitle="Group Management"}}
+{{unit "cdmf.unit.ui.content.title" pageHeader="Groups"}}
+
+{{unit "cdmf.unit.lib.data-table"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/groups">
+            Groups
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "navbarActions"}}
+    <li>
+        <a href="{{@app.context}}/group/add" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-add fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+            Add Group
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    <div class="wr-device-list row">
+        <div class="wr-hidden-operations wr-advance-operations"></div>
+        <div class="col-md-12 wr-page-content">
+            <div>
+                {{unit "cdmf.unit.group.listing"}}
+            </div>
+        </div>
+    </div>
+{{/zone}}

@@ -1,0 +1,41 @@
+{{unit "cdmf.unit.ui.title" pageTitle="Device"}}
+{{! unit "cdmf.unit.ui.content.title" pageHeader="Device Download"}}
+
+{{unit "cdmf.unit.data-tables-extended"}}
+{{unit "cdmf.unit.lib.handlebars"}}
+{{unit "cdmf.unit.lib.service-invoker-utility"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/devices">
+            Devices
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/device/enroll">
+            Enroll Device
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/device/{{deviceType}}/enroll">
+            {{label}}
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    <div class="wr-device-list row">
+        <div class="wr-hidden-operations wr-advance-operations"></div>
+        <div class="col-md-12 wr-page-content">
+            <div>
+                {{! dynamically resolves device type-view unit according to deviceType URI param }}
+                {{unit deviceTypeViewUnitName}}
+            </div>
+        </div>
+    </div>
+{{/zone}}

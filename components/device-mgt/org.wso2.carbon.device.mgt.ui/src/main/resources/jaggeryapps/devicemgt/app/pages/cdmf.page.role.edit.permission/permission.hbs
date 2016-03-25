@@ -1,0 +1,27 @@
+{{unit "cdmf.unit.ui.title" pageTitle="Role Management"}}
+
+{{unit "cdmf.unit.lib.service-invoker-utility"}}
+{{unit "cdmf.unit.lib.data-table"}}
+{{unit "cdmf.unit.lib.handlebars"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/roles">
+            Roles
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            Edit Permission
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    {{unit "cdmf.unit.role.edit.permission"}}
+{{/zone}}

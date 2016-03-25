@@ -1,0 +1,25 @@
+{{unit "cdmf.unit.ui.title" pageTitle="Role Management"}}
+
+{{unit "cdmf.unit.lib.select2"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/roles">
+            Roles
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            Edit
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    {{unit "cdmf.unit.role.edit"}}
+{{/zone}}

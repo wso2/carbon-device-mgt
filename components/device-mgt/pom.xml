@@ -40,6 +40,7 @@
         <module>org.wso2.carbon.device.mgt.common</module>
         <module>org.wso2.carbon.device.mgt.extensions</module>
         <module>org.wso2.carbon.device.mgt.ui</module>
+        <module>org.wso2.carbon.device.mgt.analytics</module>
     </modules>
 
     <build>
@@ -61,4 +62,5 @@
             </plugins>
         </pluginManagement>
     </build>
+
 </project>

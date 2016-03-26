@@ -258,6 +258,12 @@
                 <artifactId>org.wso2.carbon.email.sender.core</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.analytics</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+
             <!-- Device Management dependencies -->
 
             <!-- Governance dependencies -->
@@ -1240,7 +1246,7 @@
             <dependency>
                 <groupId>org.json.wso2</groupId>
                 <artifactId>json</artifactId>
-                <version>${json.wso2.version}</version>
+                <version>${commons-json.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -1295,13 +1301,53 @@
                 <version>${commons-collections.version}</version>
             </dependency>
 
-
             <!--Tomcat-->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${tomcat.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- Carbon Analytics Commons -->
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.core</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.databridge.commons.thrift</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.agent</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+
+            <!-- Carbon Analytics -->
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.api</artifactId>
+                <version>${carbon.analytics.version}</version>
+            </dependency>
+
+            <!-- Carbon Registry -->
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+                <version>${carbon.registry.version}</version>
             </dependency>
 
         </dependencies>
@@ -1508,6 +1554,7 @@
     <properties>
         <testng.version>6.1.1</testng.version>
         <carbon.kernel.version>4.4.3</carbon.kernel.version>
+        <carbon.kernel.version.range>[4.4.0, 4.5.0)</carbon.kernel.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <maven-buildnumber-plugin.version>1.3</maven-buildnumber-plugin.version>
 
@@ -1576,6 +1623,18 @@
         <!-- Carbon API Management -->
         <carbon.api.mgt.version>4.3.0</carbon.api.mgt.version>
 
+        <!-- Carbon Analytics Commons -->
+        <carbon.analytics.common.version>5.0.11-SNAPSHOT</carbon.analytics.common.version>
+        <carbon.analytics.common.version.range>[5.0.11,6.0.0)</carbon.analytics.common.version.range>
+
+        <!-- Carbon Analytics -->
+        <carbon.analytics.version>1.0.6-SNAPSHOT</carbon.analytics.version>
+        <carbon.analytics.version.range>[1.0.6,2.0.0]</carbon.analytics.version.range>
+
+        <!-- Carbon Registry -->
+        <carbon.registry.version>4.4.8</carbon.registry.version>
+        <carbon.registry.imp.pkg.version.range>[4.4.8, 5.0.0)</carbon.registry.imp.pkg.version.range>
+
         <!--CXF properties-->
         <cxf.version>2.7.16</cxf.version>
         <cxf.bindings.version>2.5.11</cxf.bindings.version>
@@ -1595,7 +1654,7 @@
         <!-- Nimbus Jose-->
         <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>
 
-        <json.wso2.version>2.0.0.wso2v1</json.wso2.version>
+        <commons-json.version>2.0.0.wso2v1</commons-json.version>
         <google.gson.version>2.3.1</google.gson.version>
         <jsr311.version>1.1.1</jsr311.version>
         <commons.logging.version>1.2</commons.logging.version>

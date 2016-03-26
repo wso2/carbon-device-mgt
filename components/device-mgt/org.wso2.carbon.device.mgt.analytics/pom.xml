@@ -132,7 +132,8 @@
                             javax.xml.bind,
                             javax.xml.bind.annotation,
                             javax.xml.parsers,
-                            org.w3c.dom
+                            org.w3c.dom,
+                            org.wso2.carbon.base
                         </Import-Package>
                     </instructions>
                 </configuration>

@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Device Management Aggregate Feature</name>
+    <name>WSO2 Carbon - Device Management Aggregate Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains all the bundles required for device management related functionalities</description>
 

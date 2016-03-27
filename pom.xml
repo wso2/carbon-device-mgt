@@ -260,10 +260,9 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.mgt.analytics</artifactId>
+                <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
-
             <!-- Device Management dependencies -->
 
             <!-- Governance dependencies -->
@@ -1276,11 +1275,6 @@
                 <version>${commons.pool.wso2.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents.wso2</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${httpcomponents.httpclient.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-httpclient.wso2</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons.httpclient.version}</version>
@@ -1348,6 +1342,23 @@
                 <groupId>org.wso2.carbon.registry</groupId>
                 <artifactId>org.wso2.carbon.registry.indexing</artifactId>
                 <version>${carbon.registry.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.orbit.org.scannotation</groupId>
+                <artifactId>scannotation</artifactId>
+                <version>${scannotation.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents.wso2</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
             </dependency>
 
         </dependencies>
@@ -1667,10 +1678,17 @@
         <!-- Release plugin ID for github-->
         <project.scm.id>github-scm</project.scm.id>
 
+        <!--SC Annotations Dependency -->
+        <scannotation.version>1.0.3.wso2v1</scannotation.version>
+
         <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
-        <httpcomponents.httpclient.version>4.2.3.wso2v1</httpcomponents.httpclient.version>
+
+        <httpclient.version>4.3.1.wso2v2</httpclient.version>
+        <httpcore.version>4.3.3.wso2v1</httpcore.version>
         <commons.httpclient.version>3.1.0.wso2v2</commons.httpclient.version>
+
         <velocity.version>1.7</velocity.version>
+
         <commons-io.version>2.4.0.wso2v1</commons-io.version>
         <commons-collections.version>3.2.0.wso2v1</commons-collections.version>
 

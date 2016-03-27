@@ -1,0 +1,2 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/conf/device-analytics-config.xml,target:${installFolder}/../../conf/etc/device-analytics-config.xml,overwrite:true);\

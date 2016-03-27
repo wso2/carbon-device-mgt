@@ -81,6 +81,35 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
     }
 
     @Override
+    public List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<DeviceType> deviceTypes = new ArrayList<>();
+        try {
+            conn = this.getConnection();
+            String sql =
+                    "SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where PROVIDER_TENANT_ID =" +
+                            "? OR SHARED_WITH_ALL_TENANTS = TRUE";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                DeviceType deviceType = new DeviceType();
+                deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
+                deviceType.setName(rs.getString("DEVICE_TYPE"));
+                deviceTypes.add(deviceType);
+            }
+            return deviceTypes;
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while fetching the registered device types", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
     public DeviceType getDeviceType(int id) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;

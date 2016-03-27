@@ -33,6 +33,8 @@ public interface DeviceTypeDAO {
 
 	List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException;
 
+    List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException;
+
 	DeviceType getDeviceType(int id) throws DeviceManagementDAOException;
 
 	DeviceType getDeviceType(String name) throws DeviceManagementDAOException;

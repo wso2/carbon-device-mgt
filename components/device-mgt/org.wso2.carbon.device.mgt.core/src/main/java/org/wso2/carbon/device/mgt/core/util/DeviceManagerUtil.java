@@ -168,12 +168,6 @@ public final class DeviceManagerUtil {
         return propertiesMap;
     }
 
-    public static int getTenantId() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        return ctx.getTenantId();
-    }
-
-
     public static List<DeviceIdentifier> convertDevices(List<Device> devices) {
 
         List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();

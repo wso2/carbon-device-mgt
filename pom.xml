@@ -1734,6 +1734,7 @@
         <commons.pool.wso2.version>1.5.6.wso2v1</commons.pool.wso2.version>
 
         <httpclient.version>4.3.1.wso2v2</httpclient.version>
+        <httpclient.version.range>[4.3.1, 5.0.0)</httpclient.version.range>
         <httpcore.version>4.3.3.wso2v1</httpcore.version>
         <commons.httpclient.version>3.1.0.wso2v2</commons.httpclient.version>
 
@@ -1750,6 +1751,10 @@
         <smack.wso2.version>3.0.4.wso2v1</smack.wso2.version>
         <smackx.wso2.version>3.0.4.wso2v1</smackx.wso2.version>
         <eclipse.paho.version>1.0.2</eclipse.paho.version>
+
+        <!-- Nimbus Jose-->
+        <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>
+        <nimbus.orbit.version.range>[2.26.1, 3.0.0)</nimbus.orbit.version.range>
     </properties>
 
 </project>

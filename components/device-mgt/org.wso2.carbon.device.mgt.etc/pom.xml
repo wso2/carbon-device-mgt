@@ -90,7 +90,9 @@
 							org.wso2.carbon.device.mgt.core.*,
 							org.wso2.carbon.context.*;version="${carbon.kernel.version.range}",
 							org.wso2.carbon.ndatasource.core;version="${carbon.kernel.version.range}",
-							org.eclipse.paho.client.mqttv3.*;version="${eclipse.paho.version}"
+							org.eclipse.paho.client.mqttv3.*;version="${eclipse.paho.version}",
+                            javax.xml,
+                            org.wso2.carbon.user.core;version="${carbon.kernel.version.range}"
 						</Import-Package>
 						<Export-Package>
 							!org.wso2.carbon.device.mgt.etc.internal,

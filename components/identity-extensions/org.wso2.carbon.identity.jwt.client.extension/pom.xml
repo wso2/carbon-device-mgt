@@ -170,7 +170,8 @@
                             org.wso2.carbon.core.util,
                             javax.net.ssl,
                             org.wso2.carbon.user.core.service,
-                            org.wso2.carbon.user.core.tenant
+                            org.wso2.carbon.user.core.tenant,
+                            org.wso2.carbon.base
                         </Import-Package>
                     </instructions>
                 </configuration>

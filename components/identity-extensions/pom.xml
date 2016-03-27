@@ -37,7 +37,7 @@
         <module>org.wso2.carbon.device.mgt.oauth.extensions</module>
         <module>org.wso2.carbon.identity.jwt.client.extension</module>
         <module>dynamic-client-registration</module>
-        <module>backend-oauth-authenticator</module>
+        <module>org.wso2.carbon.identity.authenticator.backend.oauth</module>
     </modules>
 
 </project>

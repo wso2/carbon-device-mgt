@@ -29,13 +29,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>identity-extensions</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Dynamic Client Registration Component</name>
     <url>http://wso2.org</url>
 
     <modules>
         <module>org.wso2.carbon.device.mgt.oauth.extensions</module>
+        <module>org.wso2.carbon.identity.jwt.client.extension</module>
         <module>dynamic-client-registration</module>
         <module>backend-oauth-authenticator</module>
     </modules>

@@ -16,10 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.analytics;
+package org.wso2.carbon.device.mgt.analytics.data.publisher;
 
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherConfigurationException;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

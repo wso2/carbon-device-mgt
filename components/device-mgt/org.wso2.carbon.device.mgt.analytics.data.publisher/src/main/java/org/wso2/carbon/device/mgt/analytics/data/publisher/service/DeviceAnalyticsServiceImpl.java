@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.analytics.service;
+package org.wso2.carbon.device.mgt.analytics.data.publisher.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,11 +31,11 @@ import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.databridge.commons.utils.DataBridgeCommonsUtils;
-import org.wso2.carbon.device.mgt.analytics.AnalyticsDataRecord;
-import org.wso2.carbon.device.mgt.analytics.DeviceDataPublisher;
-import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherConfigurationException;
-import org.wso2.carbon.device.mgt.analytics.exception.DeviceManagementAnalyticsException;
-import org.wso2.carbon.device.mgt.analytics.internal.DeviceAnalyticsDataHolder;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.AnalyticsDataRecord;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.DeviceDataPublisher;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DeviceManagementAnalyticsException;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.internal.DeviceAnalyticsDataHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +78,7 @@ public class DeviceAnalyticsServiceImpl implements DeviceAnalyticsService {
 	 */
 	@Override
 	public List<AnalyticsDataRecord> getAllEventsForDevice(String tableName, String query) throws
-																						   DeviceManagementAnalyticsException {
+            DeviceManagementAnalyticsException {
 		try {
 			int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 			AnalyticsDataAPI analyticsDataAPI = DeviceAnalyticsDataHolder.getInstance().getAnalyticsDataAPI();

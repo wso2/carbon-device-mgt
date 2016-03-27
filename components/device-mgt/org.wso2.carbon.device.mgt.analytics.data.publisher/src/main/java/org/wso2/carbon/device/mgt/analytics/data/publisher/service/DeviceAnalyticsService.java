@@ -16,11 +16,12 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.analytics.service;
+package org.wso2.carbon.device.mgt.analytics.data.publisher.service;
 
-import org.wso2.carbon.device.mgt.analytics.AnalyticsDataRecord;
-import org.wso2.carbon.device.mgt.analytics.exception.DataPublisherConfigurationException;
-import org.wso2.carbon.device.mgt.analytics.exception.DeviceManagementAnalyticsException;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.AnalyticsDataRecord;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DeviceManagementAnalyticsException;
+
 import java.util.List;
 
 /**
@@ -48,5 +49,7 @@ public interface DeviceAnalyticsService {
      * @return the record list
      * @throws DeviceManagementAnalyticsException
      */
-    List<AnalyticsDataRecord> getAllEventsForDevice(String tableName, String query) throws DeviceManagementAnalyticsException;
+    List<AnalyticsDataRecord> getAllEventsForDevice(String tableName,
+                                                    String query) throws DeviceManagementAnalyticsException;
+
 }

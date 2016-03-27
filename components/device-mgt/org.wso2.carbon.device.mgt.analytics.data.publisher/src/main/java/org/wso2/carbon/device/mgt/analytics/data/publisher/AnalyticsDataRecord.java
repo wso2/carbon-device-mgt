@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.analytics;
+package org.wso2.carbon.device.mgt.analytics.data.publisher;
 
 import java.util.HashMap;
 import java.util.Map;

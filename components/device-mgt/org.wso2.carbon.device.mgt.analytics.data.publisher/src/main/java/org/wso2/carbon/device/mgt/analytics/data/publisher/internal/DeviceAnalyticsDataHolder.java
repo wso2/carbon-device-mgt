@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.analytics.internal;
+package org.wso2.carbon.device.mgt.analytics.data.publisher.internal;
 
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.registry.core.service.RegistryService;

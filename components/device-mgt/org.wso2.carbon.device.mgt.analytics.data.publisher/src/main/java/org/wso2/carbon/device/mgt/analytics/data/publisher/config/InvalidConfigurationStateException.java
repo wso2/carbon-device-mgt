@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.analytics.config;
+package org.wso2.carbon.device.mgt.analytics.data.publisher.config;
 
 public class InvalidConfigurationStateException extends RuntimeException {
 

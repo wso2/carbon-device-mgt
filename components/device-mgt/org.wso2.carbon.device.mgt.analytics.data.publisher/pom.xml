@@ -30,7 +30,6 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Device Analytics</name>
     <description>WSO2 Carbon - Device Analytics</description>
@@ -112,7 +111,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Data Publisher</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.device.mgt.analytics.internal</Private-Package>
+                        <Private-Package>org.wso2.carbon.device.mgt.analytics.data.publisher.internal</Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.analytics.data.publisher.internal,
                             org.wso2.carbon.device.mgt.analytics.data.publisher.*;version="${carbon.device.mgt.version}"

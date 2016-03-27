@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.analytics.exception;
+package org.wso2.carbon.device.mgt.analytics.data.publisher.exception;
 
 public class DataPublisherConfigurationException extends Exception {
 	public DataPublisherConfigurationException() {
@@ -40,4 +40,5 @@ public class DataPublisherConfigurationException extends Exception {
 												  boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
+
 }

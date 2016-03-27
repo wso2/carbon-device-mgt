@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.analytics.exception;
+package org.wso2.carbon.device.mgt.analytics.data.publisher.exception;
 
 public class DeviceManagementAnalyticsException extends Exception {
 	public DeviceManagementAnalyticsException() {

@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.device.mgt.analytics.exception;
+package org.wso2.carbon.device.mgt.analytics.data.publisher.exception;
 
 public class DataPublisherAlreadyExistsException extends  Exception {
 	public DataPublisherAlreadyExistsException() {

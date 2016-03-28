@@ -64,7 +64,6 @@
                             org.wso2.carbon.context,
                             org.wso2.carbon.core,
                             org.wso2.carbon.utils.*,
-                            org.wso2.carbon.registry.api,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
@@ -80,12 +79,10 @@
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.ntask.core.*,
                             org.wso2.carbon.ntask.common,
-                            org.wso2.carbon.ndatasource.core,
                             org.apache.catalina,
                             org.apache.catalina.core,
                             org.apache.commons.collections,
-                            org.wso2.carbon.email.sender.*,
-                            org.wso2.carbon
+                            org.wso2.carbon.email.sender.*
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

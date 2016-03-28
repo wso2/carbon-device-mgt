@@ -82,7 +82,8 @@
                             org.apache.catalina,
                             org.apache.catalina.core,
                             org.apache.commons.collections,
-                            org.wso2.carbon.email.sender.*
+                            org.wso2.carbon.email.sender.*,
+                            org.wso2.carbon
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,

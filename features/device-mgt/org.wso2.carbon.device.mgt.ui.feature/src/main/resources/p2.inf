@@ -1,3 +1,3 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/jaggeryapps/devicemgt-cdmf);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.devicemgt.ui_${feature.version}/jaggeryapps/devicemgt-cdmf,target:${installFolder}/../../deployment/server/jaggeryapps/devicemgt-cdmf,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.ui_${feature.version}/jaggeryapps/devicemgt-cdmf,target:${installFolder}/../../deployment/server/jaggeryapps/devicemgt-cdmf,overwrite:true);\

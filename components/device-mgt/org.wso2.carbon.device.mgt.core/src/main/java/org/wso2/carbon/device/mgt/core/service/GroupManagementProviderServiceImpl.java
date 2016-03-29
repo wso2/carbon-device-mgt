@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.apache.commons.logging.Log;
@@ -209,6 +210,46 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             groupsWithData.add(groupBroker.getGroup());
         }
         return groupsWithData;
+    }
+
+    @Override
+    public List<DeviceGroup> getGroups(PaginationRequest request) throws GroupManagementException {
+        List<DeviceGroupBuilder> deviceGroups = new ArrayList<>();
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            GroupManagementDAOFactory.openConnection();
+            deviceGroups = this.groupDAO.getGroups(request, tenantId);
+        } catch (GroupManagementDAOException e) {
+            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+        List<DeviceGroup> groupsWithData = new ArrayList<>();
+        for (DeviceGroupBuilder groupBroker : deviceGroups) {
+            groupBroker.setUsers(this.getUsers(groupBroker.getId()));
+            groupBroker.setRoles(this.getRoles(groupBroker.getId()));
+            groupsWithData.add(groupBroker.getGroup());
+        }
+        return groupsWithData;
+    }
+
+    @Override
+    public int getGroupCount() throws GroupManagementException {
+        try {
+            int count;
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            GroupManagementDAOFactory.openConnection();
+            count = groupDAO.getGroupCount(tenantId);
+            return count;
+        } catch (GroupManagementDAOException e) {
+            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
     }
 
     /**
@@ -415,9 +456,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public List<Device> getDevices(int groupId) throws GroupManagementException {
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            GroupManagementDAOFactory.getConnection();
             return this.groupDAO.getDevices(groupId, tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while getting devices in group.", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
@@ -429,9 +475,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             throws GroupManagementException {
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
+            GroupManagementDAOFactory.getConnection();
             return this.groupDAO.getDevices(groupId, request, tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while getting devices in group.", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
@@ -442,17 +493,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public int getDeviceCount(int groupId) throws GroupManagementException {
         try {
             int count;
-            GroupManagementDAOFactory.beginTransaction();
+            GroupManagementDAOFactory.getConnection();
             count = groupDAO.getDeviceCount(groupId,
                                             CarbonContext.getThreadLocalCarbonContext().getTenantId());
-            GroupManagementDAOFactory.commitTransaction();
             return count;
         } catch (GroupManagementDAOException e) {
-            GroupManagementDAOFactory.rollbackTransaction();
-            throw new GroupManagementException("Error occurred while retrieving device count of group " +
-                                               "'" + groupId + "'.", e);
-        } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction.", e);
+            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -473,11 +521,18 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 return false;
             }
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            GroupManagementDAOFactory.beginTransaction();
             this.groupDAO.addDevice(groupId, device.getId(), tenantId);
+            GroupManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while retrieving device.", e);
         } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while adding device to group '" + groupId + "'.", e);
+        } catch (TransactionManagementException e) {
+            throw new GroupManagementException("Error occurred while initiating transaction.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
         return true;
     }
@@ -497,11 +552,18 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 return false;
             }
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            GroupManagementDAOFactory.beginTransaction();
             this.groupDAO.removeDevice(groupId, device.getId(), tenantId);
+            GroupManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while retrieving device.", e);
+        } catch (TransactionManagementException e) {
+            throw new GroupManagementException("Error occurred while initiating transaction.", e);
         } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while adding device to group '" + groupId + "'.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
         return true;
     }

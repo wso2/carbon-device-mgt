@@ -67,11 +67,22 @@ public interface GroupDAO {
     /**
      * Get the list of Device Groups in tenant.
      *
+     * @param request for pagination.
      * @param tenantId of user's tenant.
      * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBuilder> getGroups(int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroupBuilder> getGroups(PaginationRequest request, int tenantId) throws GroupManagementDAOException;
+
+
+    /**
+     * Get count of Device Groups in tenant.
+     *
+     * @param tenantId of user's tenant.
+     * @return List of all Device Groups in tenant.
+     * @throws GroupManagementDAOException
+     */
+    int getGroupCount(int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Groups that matches with the given DeviceGroup name.

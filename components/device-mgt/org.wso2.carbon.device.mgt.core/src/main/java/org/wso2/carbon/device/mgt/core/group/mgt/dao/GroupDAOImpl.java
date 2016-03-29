@@ -147,16 +147,21 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<DeviceGroupBuilder> getGroups(int tenantId) throws GroupManagementDAOException {
+    public List<DeviceGroupBuilder> getGroups(PaginationRequest request, int tenantId)
+            throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<DeviceGroupBuilder> deviceGroupList = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER "
-                         + "FROM DM_GROUP WHERE TENANT_ID = ?";
+                         + "FROM DM_GROUP WHERE TENANT_ID = ? LIMIT ?, ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
+            //noinspection JpaQueryApiInspection
+            stmt.setInt(2, request.getStartIndex());
+            //noinspection JpaQueryApiInspection
+            stmt.setInt(3, request.getRowCount());
             resultSet = stmt.executeQuery();
             deviceGroupList = new ArrayList<>();
             while (resultSet.next()) {
@@ -168,6 +173,28 @@ public class GroupDAOImpl implements GroupDAO {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
         return deviceGroupList;
+    }
+
+    @Override
+    public int getGroupCount(int tenantId) throws GroupManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        try {
+            Connection conn = GroupManagementDAOFactory.getConnection();
+            String sql = "SELECT COUNT(ID) AS DEVICE_COUNT FROM DM_DEVICE_GROUP_MAP WHERE TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("DEVICE_COUNT");
+            } else {
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new GroupManagementDAOException("Error occurred while getting group count'", e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
     }
 
     @Override
@@ -363,6 +390,7 @@ public class GroupDAOImpl implements GroupDAO {
             stmt.setInt(3, tenantId);
             //noinspection JpaQueryApiInspection
             stmt.setInt(4, request.getStartIndex());
+            //noinspection JpaQueryApiInspection
             stmt.setInt(5, request.getRowCount());
             rs = stmt.executeQuery();
             devices = new ArrayList<>();

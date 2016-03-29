@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.Device;
@@ -77,6 +78,22 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     List<DeviceGroup> findInGroups(String groupName, String username) throws GroupManagementException;
+
+    /**
+     * Get all device groups in tenant
+     *
+     * @return list of groups
+     * @throws GroupManagementException
+     */
+    List<DeviceGroup> getGroups(PaginationRequest request) throws GroupManagementException;
+
+    /**
+     * Get all device group count in tenant
+     *
+     * @return group count
+     * @throws GroupManagementException
+     */
+    int getGroupCount() throws GroupManagementException;
 
     /**
      * Get device groups of user

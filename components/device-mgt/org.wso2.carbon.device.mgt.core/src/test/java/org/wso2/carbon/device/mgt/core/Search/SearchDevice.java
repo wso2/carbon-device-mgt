@@ -48,14 +48,36 @@ public class SearchDevice extends BaseDeviceManagementTest {
 
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
-        Condition cond = new Condition();
 
+
+        Condition cond = new Condition();
         cond.setKey("BATTERY_VOLTAGE");
         cond.setOperator("=");
         cond.setValue("40");
         cond.setState(Condition.State.AND);
         conditions.add(cond);
+
+        Condition cond2 = new Condition();
+        cond2.setKey("CPU_USAGE");
+        cond2.setOperator(">");
+        cond2.setValue("40");
+        cond2.setState(Condition.State.OR);
+        conditions.add(cond2);
+
+        Condition cond3 = new Condition();
+        cond3.setKey("LOCATION");
+        cond3.setOperator("=");
+        cond3.setValue("Colombo");
+        cond3.setState(Condition.State.AND);
+        conditions.add(cond3);
+
         context.setConditions(conditions);
+
+//        Gson gson = new Gson();
+//
+//        String aaa = gson.toJson(context);
+//
+//        log.info(aaa);
 
         SearchManagerService service = new SearchManagerServiceImpl();
         List<DeviceWrapper> deviceWrappers = service.search(context);

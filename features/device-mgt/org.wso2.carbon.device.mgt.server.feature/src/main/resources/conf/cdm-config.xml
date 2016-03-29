@@ -51,7 +51,7 @@
                     <RecurrentTimes>5</RecurrentTimes>
                 </Operation>
                 <Operation>
-                    <Name>LOCATION</Name>
+                    <Name>DEVICE_LOCATION</Name>
                     <RecurrentTimes>1</RecurrentTimes>
                 </Operation>
             </Operations>

@@ -82,9 +82,10 @@ public final class GroupManagementDAOUtil {
 
     public static DeviceGroupBuilder loadGroup(ResultSet resultSet) throws SQLException {
         DeviceGroupBuilder group = new DeviceGroupBuilder(new DeviceGroup());
+        group.setId(resultSet.getInt("ID"));
         group.setDescription(resultSet.getString("DESCRIPTION"));
         group.setName(resultSet.getString("GROUP_NAME"));
-        group.setDateOfCreation(resultSet.getLong("DATE_OF_ENROLLMENT"));
+        group.setDateOfCreation(resultSet.getLong("DATE_OF_CREATE"));
         group.setDateOfLastUpdate(resultSet.getLong("DATE_OF_LAST_UPDATE"));
         group.setOwner(resultSet.getString("OWNER"));
         return group;

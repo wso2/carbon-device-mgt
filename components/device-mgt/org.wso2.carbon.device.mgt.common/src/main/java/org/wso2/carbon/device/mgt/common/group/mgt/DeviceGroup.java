@@ -29,6 +29,7 @@ import java.util.List;
 @XmlRootElement
 public class DeviceGroup implements Serializable {
 
+    private int id;
     private String description;
     private String name;
     private Long dateOfCreation;
@@ -36,6 +37,15 @@ public class DeviceGroup implements Serializable {
     private String owner;
     private List<GroupUser> users;
     private List<String> roles;
+
+    @XmlElement
+    public int getId() {
+        return id;
+    }
+
+    protected void setId(int id) {
+        this.id = id;
+    }
 
     @XmlElement
     public String getDescription() {

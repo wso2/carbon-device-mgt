@@ -33,7 +33,8 @@
             <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>
             <class name="org.wso2.carbon.device.mgt.core.search.DeviceDetails"/>
             <class name="org.wso2.carbon.device.mgt.core.search.SearchDevice"/>
-        </classes>
+            <class name="org.wso2.carbon.device.mgt.core.dao.GroupPersistTests"/>
+            </classes>
     </test>
     <test name="Service Unit Tests" preserve-order="true">
         <classes>

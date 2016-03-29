@@ -31,6 +31,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import javax.sql.DataSource;
@@ -58,6 +59,7 @@ public abstract class BaseDeviceManagementTest {
     public void initDataSource() throws Exception {
         this.dataSource = this.getDataSource(this.readDataSourceConfig());
         DeviceManagementDAOFactory.init(dataSource);
+        GroupManagementDAOFactory.init(dataSource);
     }
 
     @BeforeClass
@@ -135,6 +137,7 @@ public abstract class BaseDeviceManagementTest {
 //            this.cleanApplicationData(conn);
 //            this.cleanupDeviceData(conn);
 //            this.cleanupDeviceTypeData(conn);
+            this.cleanupGroupData(conn);
 
             conn.commit();
         } catch (SQLException e) {
@@ -186,6 +189,12 @@ public abstract class BaseDeviceManagementTest {
 
     private void cleanupDeviceTypeData(Connection conn) throws SQLException {
         try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_TYPE")) {
+            stmt.execute();
+        }
+    }
+
+    private void cleanupGroupData(Connection conn) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_GROUP")) {
             stmt.execute();
         }
     }

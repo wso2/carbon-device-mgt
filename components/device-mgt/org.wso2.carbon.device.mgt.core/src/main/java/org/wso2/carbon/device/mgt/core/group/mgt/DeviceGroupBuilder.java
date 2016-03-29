@@ -34,6 +34,7 @@ public class DeviceGroupBuilder extends DeviceGroup {
      * @param deviceGroup to decorate
      */
     public DeviceGroupBuilder(DeviceGroup deviceGroup) {
+        this.setId(deviceGroup.getId());
         this.setDescription(deviceGroup.getDescription());
         this.setName(deviceGroup.getName());
         this.setDateOfCreation(deviceGroup.getDateOfCreation());
@@ -41,6 +42,11 @@ public class DeviceGroupBuilder extends DeviceGroup {
         this.setOwner(deviceGroup.getOwner());
         this.setUsers(deviceGroup.getUsers());
         this.setRoles(deviceGroup.getRoles());
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
     }
 
     @Override

@@ -67,7 +67,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(configuration.getType()).getDeviceManager();
+                this.getPluginRepository().getDeviceManagementService(configuration.getType(), this.getTenantId()).getDeviceManager();
         return dms.saveConfiguration(configuration);
     }
 
@@ -79,7 +79,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException {
         DeviceManager dms =
-                this.getPluginRepository().getDeviceManagementService(deviceType).getDeviceManager();
+                this.getPluginRepository().getDeviceManagementService(deviceType, this.getTenantId()).getDeviceManager();
         if (dms == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device type '" + deviceType + "' does not have an associated device management " +
@@ -185,7 +185,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             int enrolmentId = 0;
             try {
                 DeviceManagementDAOFactory.beginTransaction();
-                DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+                DeviceType type = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
                 int deviceId = deviceDAO.addDevice(type.getId(), device, tenantId);
                 enrolmentId = enrollmentDAO.addEnrollment(deviceId, device.getEnrolmentInfo(), tenantId);
                 DeviceManagementDAOFactory.commitTransaction();
@@ -226,7 +226,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
-            DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+            DeviceType type = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
             deviceDAO.updateDevice(type.getId(), device, tenantId);
             enrollmentDAO.updateEnrollment(device.getEnrolmentInfo());
             DeviceManagementDAOFactory.commitTransaction();
@@ -287,7 +287,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 }
                 return false;
             }
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
 
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
@@ -621,22 +621,40 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
-        List<DeviceType> deviceTypesInDatabase;
+        List<DeviceType> deviceTypesProvidedByTenant;
+        List<DeviceType> publicSharedDeviceTypesInDB;
         List<DeviceType> deviceTypesResponse = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.openConnection();
-            deviceTypesInDatabase = deviceDAO.getDeviceTypes();
-            Map<String, DeviceManagementService> registeredTypes = pluginRepository.getAllDeviceManagementServices();
-            DeviceType deviceType;
-            if (registeredTypes != null && deviceTypesInDatabase != null) {
-                for (DeviceType aDeviceTypesInDatabase : deviceTypesInDatabase) {
-                    if (registeredTypes.get(aDeviceTypesInDatabase.getName()) != null) {
-                        deviceType = new DeviceType();
-                        deviceType.setId(aDeviceTypesInDatabase.getId());
-                        deviceType.setName(aDeviceTypesInDatabase.getName());
-                        deviceTypesResponse.add(deviceType);
+            int tenantId = this.getTenantId();
+            deviceTypesProvidedByTenant = deviceTypeDAO.getDeviceTypesByProvider(tenantId);
+            publicSharedDeviceTypesInDB = deviceTypeDAO.getSharedDeviceTypes();
+            Map<DeviceTypeIdentifier, DeviceManagementService> registeredTypes =
+                    pluginRepository.getAllDeviceManagementServices(tenantId);
+            Set<String> deviceTypeSetForTenant = new HashSet<>();
+
+            if (registeredTypes != null) {
+                if (deviceTypesProvidedByTenant != null) {
+                    for (DeviceType deviceType : deviceTypesProvidedByTenant) {
+                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType.getName(), tenantId);
+                        if (registeredTypes.get(providerKey) != null) {
+                            deviceTypesResponse.add(deviceType);
+                            deviceTypeSetForTenant.add(deviceType.getName());
+                        }
                     }
                 }
+                // Get the device from the public space, however if there is another device with same name then give
+                // priority to that
+                if (publicSharedDeviceTypesInDB != null) {
+                    for (DeviceType deviceType : publicSharedDeviceTypesInDB) {
+                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType.getName());
+                        if (registeredTypes.get(providerKey) != null && !deviceTypeSetForTenant.contains(
+                                deviceType.getName())) {
+                            deviceTypesResponse.add(deviceType);
+                        }
+                    }
+                }
+
             }
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
@@ -714,7 +732,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             for (DeviceIdentifier deviceId : deviceIds) {
                 DeviceManagementService dms =
-                        getPluginRepository().getDeviceManagementService(deviceId.getType());
+                        getPluginRepository().getDeviceManagementService(deviceId.getType(), this.getTenantId());
                 dms.notifyOperationToDevices(operation, deviceIds);
             }
         } catch (DeviceManagementException deviceMgtEx) {
@@ -1068,7 +1086,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType(), this.getTenantId());
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(status);
             deviceDAO.updateDevice(deviceType.getId(), device, this.getTenantId());
@@ -1171,7 +1189,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private DeviceManager getDeviceManager(String deviceType) {
         DeviceManagementService deviceManagementService =
-                this.getPluginRepository().getDeviceManagementService(deviceType);
+                this.getPluginRepository().getDeviceManagementService(deviceType, this.getTenantId());
         if (deviceManagementService == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device type '" + deviceType + "' does not have an associated device management " +

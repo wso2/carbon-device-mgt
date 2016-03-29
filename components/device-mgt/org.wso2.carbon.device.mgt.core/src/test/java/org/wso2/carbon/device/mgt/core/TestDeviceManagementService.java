@@ -34,13 +34,23 @@ import java.util.List;
 public class TestDeviceManagementService implements DeviceManagementService {
 
     private String providerType;
+    private String tenantDomain;
 
-    public TestDeviceManagementService(String deviceType){
+    public TestDeviceManagementService(String deviceType, String tenantDomain){
         providerType = deviceType;
+        this.tenantDomain = tenantDomain;
     }
     @Override
     public String getType() {
         return providerType;
+    }
+
+    @Override
+    public String getProviderTenantDomain() { return tenantDomain;}
+
+    @Override
+    public boolean isSharedWithAllTenants() {
+        return true;
     }
 
     @Override

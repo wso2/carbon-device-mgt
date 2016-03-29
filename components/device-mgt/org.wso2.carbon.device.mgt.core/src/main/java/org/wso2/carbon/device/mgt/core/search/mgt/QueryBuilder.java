@@ -32,6 +32,8 @@ public interface QueryBuilder {
 
     String processOR(List<Condition> conditions) throws InvalidOperatorException;
 
+    List<String>  processLocation(Condition condition) throws InvalidOperatorException;
+
     List<String> processANDProperties(List<Condition> conditions) throws InvalidOperatorException;
 
     List<String> processORProperties(List<Condition> conditions) throws InvalidOperatorException;

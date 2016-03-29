@@ -20,8 +20,8 @@ package org.wso2.carbon.device.mgt.core.group.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import java.sql.Connection;
@@ -304,13 +304,79 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public List<Device> getDevices(int groupId, int tenantId) throws GroupManagementDAOException {
-        return null;
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Device> devices = null;
+        try {
+            conn = GroupManagementDAOFactory.getConnection();
+            String sql = "SELECT d1.DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT gd.DEVICE_ID, " +
+                         "gd.DESCRIPTION, gd.NAME, gd.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE " +
+                         "FROM (SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION, " +
+                         "d.DEVICE_TYPE_ID FROM DM_DEVICE d, DM_DEVICE_GROUP_MAP dgm WHERE dgm.GROUP_ID = ? " +
+                         "AND d.ID = dgm.DEVICE_ID AND d.TENANT_ID = ?) gd, DM_DEVICE_TYPE t " +
+                         "WHERE gd.DEVICE_TYPE_ID = t.ID) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, groupId);
+            stmt.setInt(2, tenantId);
+            stmt.setInt(3, tenantId);
+            rs = stmt.executeQuery();
+            devices = new ArrayList<>();
+            while (rs.next()) {
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new GroupManagementDAOException("Error occurred while retrieving information of all " +
+                                                  "registered devices", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return devices;
     }
 
+    @SuppressWarnings("JpaQueryApiInspection")
     @Override
-    public PaginationResult getDevices(int groupId, PaginationRequest request, int tenantId)
+    public List<Device> getDevices(int groupId, PaginationRequest request, int tenantId)
             throws GroupManagementDAOException {
-        return null;
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Device> devices = null;
+        try {
+            conn = GroupManagementDAOFactory.getConnection();
+            String sql = "SELECT d1.DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                         "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                         "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT gd.DEVICE_ID, " +
+                         "gd.DESCRIPTION, gd.NAME, gd.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE " +
+                         "FROM (SELECT d.ID AS DEVICE_ID, d.DESCRIPTION, d.NAME, d.DEVICE_IDENTIFICATION, " +
+                         "d.DEVICE_TYPE_ID FROM DM_DEVICE d, DM_DEVICE_GROUP_MAP dgm WHERE dgm.GROUP_ID = ? " +
+                         "AND d.ID = dgm.DEVICE_ID AND d.TENANT_ID = ?) gd, DM_DEVICE_TYPE t " +
+                         "WHERE gd.DEVICE_TYPE_ID = t.ID) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? " +
+                         "LIMIT ?, ?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, groupId);
+            stmt.setInt(2, tenantId);
+            stmt.setInt(3, tenantId);
+            //noinspection JpaQueryApiInspection
+            stmt.setInt(4, request.getStartIndex());
+            stmt.setInt(5, request.getRowCount());
+            rs = stmt.executeQuery();
+            devices = new ArrayList<>();
+            while (rs.next()) {
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new GroupManagementDAOException("Error occurred while retrieving information of all " +
+                                                  "registered devices", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return devices;
     }
 
 }

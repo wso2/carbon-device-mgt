@@ -19,15 +19,11 @@
 package org.wso2.carbon.device.mgt.core.group.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * This interface represents the key operations associated with persisting group related information.
@@ -151,10 +147,10 @@ public interface GroupDAO {
      * Get all devices of a given tenant and device group.
      *
      * @param groupId of the group.
-     * @param tenantId of user's tenant.
      * @param request for pagination.
+     * @param tenantId of user's tenant.
      * @return list of device in group
      * @throws GroupManagementDAOException
      */
-    PaginationResult getDevices(int groupId, PaginationRequest request, int tenantId) throws GroupManagementDAOException;
+    List<Device> getDevices(int groupId, PaginationRequest request, int tenantId) throws GroupManagementDAOException;
 }

@@ -44,9 +44,13 @@ public class QueryBuilderImpl implements QueryBuilder {
         List<Condition> orColumns = new ArrayList<>();
         List<Condition> otherANDColumns = new ArrayList<>();
         List<Condition> otherORColumns = new ArrayList<>();
+        Condition locConditon = new Condition();
 
         if (conditions.size() == 1) {
-            if (Utils.getDeviceDetailsColumnNames().containsKey(conditions.get(0)) ||
+
+            if (conditions.get(0).getKey().equalsIgnoreCase(Constants.LOCATION)) {
+                locConditon = conditions.get(0);
+            } else if (Utils.getDeviceDetailsColumnNames().containsKey(conditions.get(0)) ||
                     Utils.getDeviceLocationColumnNames().containsKey(conditions.get(0))) {
                 andColumns.add(conditions.get(0));
             } else {
@@ -54,7 +58,9 @@ public class QueryBuilderImpl implements QueryBuilder {
             }
         } else {
             for (Condition con : conditions) {
-                if (Utils.getDeviceDetailsColumnNames().containsKey(con.getKey()) ||
+                if (con.getKey().equalsIgnoreCase(Constants.LOCATION)) {
+                    locConditon = con;
+                } else if (Utils.getDeviceDetailsColumnNames().containsKey(con.getKey()) ||
                         Utils.getDeviceLocationColumnNames().containsKey(con.getKey())) {
                     if (con.getState().equals(Condition.State.AND)) {
                         andColumns.add(con);
@@ -80,11 +86,13 @@ public class QueryBuilderImpl implements QueryBuilder {
                 this.processOR(orColumns)));
         queries.put(Constants.PROP_AND, this.processANDProperties(otherANDColumns));
         queries.put(Constants.PROP_OR, this.processORProperties(otherORColumns));
+        queries.put(Constants.LOCATION, this.processLocation(locConditon));
 
         if (log.isDebugEnabled()) {
             log.debug("General Query : " + queries.get(Constants.GENERAL));
             log.debug("Property with AND Query : " + queries.get(Constants.PROP_AND));
             log.debug("Property with OR Query : " + queries.get(Constants.PROP_OR));
+            log.debug("Location related Query : " + queries.get(Constants.LOCATION));
         }
 
         return queries;
@@ -126,6 +134,13 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
     @Override
+    public List<String> processLocation(Condition condition) throws InvalidOperatorException {
+        List<String> queryList = new ArrayList<>();
+        queryList.add(this.buildLocationQuery(condition.getValue()));
+        return queryList;
+    }
+
+    @Override
     public List<String> processANDProperties(List<Condition> conditions) throws InvalidOperatorException {
         return this.getQueryList(conditions);
     }
@@ -146,6 +161,18 @@ public class QueryBuilderImpl implements QueryBuilder {
         return queryList;
     }
 
+    private String buildLocationQuery(String location) {
+
+        String query = this.getGenericQueryPart();
+        query = query + " OR STREET1 LIKE \'%" + location + "%\'";
+        query = query + " OR STREET2 LIKE \'%" + location + "%\'";
+        query = query + " OR CITY LIKE \'%" + location + "%\'";
+        query = query + " OR STATE LIKE \'%" + location + "%\'";
+        query = query + " OR COUNTRY LIKE \'%" + location + "%\'";
+        query = query + " OR ZIP LIKE \'%" + location + "%\'";
+        return query;
+    }
+
     private String getGenericQueryPart() {
 
         return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
@@ -158,18 +185,6 @@ public class QueryBuilderImpl implements QueryBuilder {
                 "DL.STATE, DL.COUNTRY FROM DM_DEVICE_DETAIL AS DD, DM_DEVICE AS D, DM_DEVICE_LOCATION AS DL, " +
                 "DM_DEVICE_TYPE AS DT WHERE D.TENANT_ID = " +
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
-//        CREATE TABLE IF NOT EXISTS DM_DEVICE (
-//                ID                    INTEGER auto_increment NOT NULL,
-//        DESCRIPTION           TEXT DEFAULT NULL,
-//        NAME                  VARCHAR(100) DEFAULT NULL,
-//        DEVICE_TYPE_ID        INT(11) DEFAULT NULL,
-//        DEVICE_IDENTIFICATION VARCHAR(300) DEFAULT NULL,
-//        TENANT_ID INTEGER DEFAULT 0,
-//                PRIMARY KEY (ID),
-//                CONSTRAINT fk_DM_DEVICE_DM_DEVICE_TYPE2 FOREIGN KEY (DEVICE_TYPE_ID )
-//        REFERENCES DM_DEVICE_TYPE (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
-//        );
 
 
     }
@@ -190,4 +205,3 @@ public class QueryBuilderImpl implements QueryBuilder {
 
     }
 }
-

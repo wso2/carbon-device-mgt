@@ -47,8 +47,8 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
-                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES,APP_IDENTIFIER) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
+                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID, APP_PROPERTIES, APP_IDENTIFIER, MEMORY_USAGE) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             stmt.setString(1, application.getName());
             stmt.setString(2, application.getPlatform());
@@ -65,6 +65,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             stmt.setBytes(9, bao.toByteArray());
 
             stmt.setString(10, application.getApplicationIdentifier());
+            stmt.setInt(11, application.getMemoryUsage());
             stmt.execute();
 
             rs = stmt.getGeneratedKeys();
@@ -108,8 +109,8 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_APPLICATION (NAME, PLATFORM, CATEGORY, " +
-                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES,APP_IDENTIFIER) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)", new String[] {"id"});
+                    "VERSION, TYPE, LOCATION_URL, IMAGE_URL, TENANT_ID,APP_PROPERTIES, APP_IDENTIFIER, MEMORY_USAGE) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", new String[]{"id"});
 
 
             for (Application application : applications) {
@@ -129,6 +130,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
                 stmt.setBytes(9, bao.toByteArray());
 
                 stmt.setString(10, application.getApplicationIdentifier());
+                stmt.setInt(11, application.getMemoryUsage());
                 stmt.executeUpdate();
 
                 rs = stmt.getGeneratedKeys();
@@ -170,7 +172,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             conn = this.getConnection();
             conn.setAutoCommit(false);
             stmt = conn.prepareStatement("DELETE DM_APPLICATION WHERE APP_IDENTIFIER = ? AND TENANT_ID = ?",
-                    new String[] {"id"});
+                    new String[]{"id"});
 
             for (Application app : apps) {
                 stmt.setString(1, app.getApplicationIdentifier());
@@ -206,7 +208,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("SELECT ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
-                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, TENANT_ID FROM DM_APPLICATION WHERE APP_IDENTIFIER = ? " +
+                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, TENANT_ID FROM DM_APPLICATION WHERE APP_IDENTIFIER = ? " +
                     "AND TENANT_ID = ?");
             stmt.setString(1, identifier);
             stmt.setInt(2, tenantId);
@@ -238,7 +240,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("Select ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
-                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, TENANT_ID From DM_APPLICATION app  " +
+                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, TENANT_ID From DM_APPLICATION app  " +
                     "INNER JOIN " +
                     "(Select APPLICATION_ID  From DM_DEVICE_APPLICATION_MAPPING WHERE  DEVICE_ID=?) APPMAP " +
                     "ON " +
@@ -284,6 +286,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
             application.setLocationUrl(rs.getString("LOCATION_URL"));
             application.setPlatform(rs.getString("PLATFORM"));
             application.setVersion(rs.getString("VERSION"));
+            application.setMemoryUsage(rs.getInt("MEMORY_USAGE"));
             application.setApplicationIdentifier(rs.getString("APP_IDENTIFIER"));
 
         } catch (IOException e) {

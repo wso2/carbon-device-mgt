@@ -86,7 +86,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     @Override
     public void addDeviceProperties(Map<String, String> propertyMap, int deviceId) throws DeviceDetailsMgtDAOException {
 
-        if(propertyMap.isEmpty()){
+        if (propertyMap.isEmpty()) {
             log.warn("Property map of device id :" + deviceId + " is empty.");
             return;
         }

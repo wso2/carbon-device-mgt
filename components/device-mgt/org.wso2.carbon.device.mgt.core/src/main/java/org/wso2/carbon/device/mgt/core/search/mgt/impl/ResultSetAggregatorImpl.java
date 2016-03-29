@@ -36,15 +36,28 @@ public class ResultSetAggregatorImpl implements ResultSetAggregator {
         Map<Integer, DeviceWrapper> generalQueryMap = this.convertToMap(deviceWrappers.get(Constants.GENERAL));
         Map<Integer, DeviceWrapper> andMap = this.convertToMap(deviceWrappers.get(Constants.PROP_AND));
         Map<Integer, DeviceWrapper> orMap = this.convertToMap(deviceWrappers.get(Constants.PROP_OR));
+        Map<Integer, DeviceWrapper> locationMap = this.convertToMap(deviceWrappers.get(Constants.LOCATION));
+
         List<DeviceWrapper> finalResult = new ArrayList<>();
         for (Integer a : andMap.keySet()) {
             if (generalQueryMap.containsKey(a)) {
-                finalResult.add(andMap.get(a));
+                if (!finalResult.contains(a)) {
+                    finalResult.add(andMap.get(a));
+                }
             }
         }
         for (Integer a : orMap.keySet()) {
-            finalResult.add(orMap.get(a));
+            if (!finalResult.contains(a)) {
+                finalResult.add(orMap.get(a));
+            }
         }
+
+        for (Integer a : locationMap.keySet()) {
+            if (!finalResult.contains(a)) {
+                finalResult.add(locationMap.get(a));
+            }
+        }
+
         return finalResult;
     }
 

@@ -47,6 +47,7 @@ public class ProcessorImpl implements Processor {
         List<DeviceWrapper> generalDevices = new ArrayList<>();
         List<List<DeviceWrapper>> allANDDevices = new ArrayList<>();
         List<List<DeviceWrapper>> allORDevices = new ArrayList<>();
+        List<DeviceWrapper> locationDevices = new ArrayList<>();
         try {
             Map<String, List<String>> queries = queryBuilder.buildQueries(searchContext.getConditions());
             DeviceManagementDAOFactory.openConnection();
@@ -66,6 +67,10 @@ public class ProcessorImpl implements Processor {
                     allORDevices.add(orDevices);
                 }
             }
+            if (queries.containsKey(Constants.LOCATION)) {
+                locationDevices = searchDAO.searchDevicePropertyTable(
+                        queries.get(Constants.LOCATION).get(0));
+            }
         } catch (InvalidOperatorException e) {
             throw new SearchMgtException("Invalid operator was provided, so cannot execute the search.", e);
         } catch (SQLException e) {
@@ -84,6 +89,7 @@ public class ProcessorImpl implements Processor {
         deviceWrappers.put(Constants.GENERAL, generalDevices);
         deviceWrappers.put(Constants.PROP_AND, this.processANDSearch(allANDDevices));
         deviceWrappers.put(Constants.PROP_OR, this.processORSearch(allORDevices));
+        deviceWrappers.put(Constants.LOCATION, locationDevices);
 
         return aggregator.aggregate(deviceWrappers);
     }
@@ -157,5 +163,6 @@ public class ProcessorImpl implements Processor {
         }
         return maps;
     }
+
 }
 

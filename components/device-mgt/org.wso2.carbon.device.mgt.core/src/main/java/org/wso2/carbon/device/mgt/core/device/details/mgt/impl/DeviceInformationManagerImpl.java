@@ -136,14 +136,5 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         }
     }
 
-//    @Override
-//    public void addDeviceApplications(DeviceApplication deviceApplication) throws DeviceDetailsMgtException {
-//
-//    }
-//
-//    @Override
-//    public DeviceApplication getDeviceApplication(DeviceIdentifier deviceIdentifier) throws DeviceDetailsMgtException {
-//        return null;
-//    }
 }
 

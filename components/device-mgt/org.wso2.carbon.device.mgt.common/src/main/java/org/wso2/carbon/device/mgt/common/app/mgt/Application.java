@@ -36,6 +36,8 @@ public class Application implements Serializable {
     private Properties appProperties;
     private String applicationIdentifier;
 
+    private int memoryUsage;
+
     public String getType() {
         return type;
     }
@@ -109,6 +111,14 @@ public class Application implements Serializable {
 
     public void setApplicationIdentifier(String applicationIdentifier) {
         this.applicationIdentifier = applicationIdentifier;
+    }
+
+    public int getMemoryUsage() {
+        return memoryUsage;
+    }
+
+    public void setMemoryUsage(int memoryUsage) {
+        this.memoryUsage = memoryUsage;
     }
 
     public boolean equals(Object o) {

@@ -177,4 +177,19 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         }
     }
 
+    @Override
+    public List<CertificateResponse> getCertificates() throws CertificateManagementDAOException {
+        try {
+            CertificateManagementDAOFactory.openConnection();
+            CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
+            return certificateDAO.getAllCertificates();
+        } catch (SQLException e) {
+            String errorMsg = "Error when opening connection";
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            CertificateManagementDAOFactory.closeConnection();
+        }
+    }
+
 }

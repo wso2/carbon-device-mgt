@@ -54,7 +54,7 @@ public class DevicePersistTests extends BaseDeviceManagementTest {
         DeviceType deviceType = TestDataHolder.generateDeviceTypeData(TestDataHolder.TEST_DEVICE_TYPE);
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            deviceTypeDAO.addDeviceType(deviceType);
+            deviceTypeDAO.addDeviceType(deviceType, TestDataHolder.SUPER_TENANT_ID, true);
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while adding device type '" + deviceType.getName() + "'";

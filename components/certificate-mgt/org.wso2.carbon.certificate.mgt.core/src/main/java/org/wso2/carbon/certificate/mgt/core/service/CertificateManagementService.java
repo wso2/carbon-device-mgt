@@ -74,4 +74,6 @@ public interface CertificateManagementService {
     public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementDAOException;
 
     boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException;
+
+    public List<CertificateResponse> getCertificates() throws CertificateManagementDAOException;
 }

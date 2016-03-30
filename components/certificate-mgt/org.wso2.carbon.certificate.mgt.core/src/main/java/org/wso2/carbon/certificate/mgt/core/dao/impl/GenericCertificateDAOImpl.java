@@ -158,6 +158,39 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
+    public List<CertificateResponse> getAllCertificates() throws CertificateManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        CertificateResponse certificateResponse;
+        List<CertificateResponse> certificates = new ArrayList<>();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            Connection conn = this.getConnection();
+            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? " +
+                         "ORDER BY ID DESC";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                certificateResponse = new CertificateResponse();
+                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
+                certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
+                certificates.add(certificateResponse);
+            }
+        } catch (SQLException e) {
+            String errorMsg =  "SQL error occurred while retrieving the certificates.";
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
+        return certificates;
+    }
+
+    @Override
     public boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;

@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.jwt.client.extension.exception;
+package org.wso2.carbon.identity.jwt.client.extension.exception;
 
 public class JWTClientConfigurationException extends Exception {
 	public JWTClientConfigurationException() {

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jwt.client.extension;
+package org.wso2.carbon.identity.jwt.client.extension;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -39,11 +39,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
-import org.wso2.carbon.device.mgt.jwt.client.extension.constant.JWTConstants;
-import org.wso2.carbon.device.mgt.jwt.client.extension.dto.AccessTokenInfo;
-import org.wso2.carbon.device.mgt.jwt.client.extension.dto.JWTConfig;
-import org.wso2.carbon.device.mgt.jwt.client.extension.exception.JWTClientException;
-import org.wso2.carbon.device.mgt.jwt.client.extension.util.JWTClientUtil;
+import org.wso2.carbon.identity.jwt.client.extension.constant.JWTConstants;
+import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
+import org.wso2.carbon.identity.jwt.client.extension.dto.JWTConfig;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
+import org.wso2.carbon.identity.jwt.client.extension.util.JWTClientUtil;
 
 import java.io.File;
 import java.io.IOException;

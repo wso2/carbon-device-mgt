@@ -1,4 +1,4 @@
-package org.wso2.carbon.device.mgt.jwt.client.extension.dto;
+package org.wso2.carbon.identity.jwt.client.extension.dto;
 
 import java.util.ArrayList;
 import java.util.List;

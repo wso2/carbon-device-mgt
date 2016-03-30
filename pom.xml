@@ -1718,7 +1718,7 @@
         <carbon.api.mgt.version.range>(5.0.0,6.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->
-        <carbon.analytics.common.version>5.0.11-SNAPSHOT</carbon.analytics.common.version>
+        <carbon.analytics.common.version>5.0.11</carbon.analytics.common.version>
         <carbon.analytics.common.version.range>[5.0.11,6.0.0)</carbon.analytics.common.version.range>
 
         <!-- Carbon Analytics -->

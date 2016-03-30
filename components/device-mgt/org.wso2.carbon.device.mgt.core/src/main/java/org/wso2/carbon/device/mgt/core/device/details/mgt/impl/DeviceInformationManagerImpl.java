@@ -101,6 +101,9 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     public void addDeviceLocation(DeviceLocation deviceLocation) throws DeviceDetailsMgtException {
 
         try {
+            Device device = DeviceManagementDataHolder.getInstance().
+                    getDeviceManagementProvider().getDevice(deviceLocation.getDeviceIdentifier());
+            deviceLocation.setDeviceId(device.getId());
             DeviceManagementDAOFactory.beginTransaction();
             deviceDetailsDAO.deleteDeviceLocation(deviceLocation.getDeviceId());
             deviceDetailsDAO.addDeviceLocation(deviceLocation);
@@ -111,6 +114,9 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         } catch (DeviceDetailsMgtDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while adding the device location information.");
+        } catch (DeviceManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceDetailsMgtException("Error occurred while getting the device information.");
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }

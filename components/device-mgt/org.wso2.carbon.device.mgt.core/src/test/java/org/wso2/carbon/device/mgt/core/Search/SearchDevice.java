@@ -27,8 +27,11 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.Condition;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.impl.SearchManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +43,8 @@ public class SearchDevice extends BaseDeviceManagementTest {
     @BeforeClass
     @Override
     public void init() throws Exception {
-
+        DeviceManagementProviderService deviceManagementProviderService = new DeviceManagementProviderServiceImpl();
+        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceManagementProviderService);
     }
 
     @Test

@@ -103,7 +103,8 @@
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.utils.multitenancy,
                             org.json.simple,
-                            org.wso2.carbon.context
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.base
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.apimgt.application.extension.internal,

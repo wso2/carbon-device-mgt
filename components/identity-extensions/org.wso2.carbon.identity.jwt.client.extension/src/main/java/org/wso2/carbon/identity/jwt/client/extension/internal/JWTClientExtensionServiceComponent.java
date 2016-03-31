@@ -16,12 +16,12 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.jwt.client.extension.internal;
+package org.wso2.carbon.identity.jwt.client.extension.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.device.mgt.jwt.client.extension.util.JWTClientUtil;
+import org.wso2.carbon.identity.jwt.client.extension.util.JWTClientUtil;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
@@ -30,7 +30,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 import java.io.IOException;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.jwt.client.extension.internal.JWTClientExtensionServiceComponent"
+ * @scr.component name="org.wso2.carbon.identity.jwt.client.extension.internal.JWTClientExtensionServiceComponent"
  * immediate="true"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"

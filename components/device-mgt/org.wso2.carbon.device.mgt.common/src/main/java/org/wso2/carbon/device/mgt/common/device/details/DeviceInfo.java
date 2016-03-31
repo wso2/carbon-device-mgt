@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeviceInfo implements Serializable{
+public class DeviceInfo implements Serializable {
 
     private static final long serialVersionUID = 1998101733L;
 
@@ -79,7 +79,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getIMEI() {
-        return IMEI;
+        if (IMEI != null) {
+            return IMEI;
+        } else {
+            return "";
+        }
     }
 
     public void setIMEI(String IMEI) {
@@ -87,7 +91,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getIMSI() {
-        return IMSI;
+        if (IMSI != null) {
+            return IMSI;
+        } else {
+            return "";
+        }
     }
 
     public void setIMSI(String IMSI) {
@@ -95,7 +103,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getDeviceModel() {
-        return deviceModel;
+        if (deviceModel != null) {
+            return deviceModel;
+        } else {
+            return "";
+        }
     }
 
     public void setDeviceModel(String deviceModel) {
@@ -103,7 +115,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getVendor() {
-        return vendor;
+        if (vendor != null) {
+            return vendor;
+        } else {
+            return "";
+        }
     }
 
     public void setVendor(String vendor) {
@@ -111,7 +127,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getOsVersion() {
-        return osVersion;
+        if (osVersion != null) {
+            return osVersion;
+        } else {
+            return "";
+        }
     }
 
     public void setOsVersion(String osVersion) {
@@ -119,7 +139,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getBatteryLevel() {
-        return batteryLevel;
+        if (batteryLevel != null) {
+            return batteryLevel;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setBatteryLevel(Double batteryLevel) {
@@ -127,7 +151,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getInternalTotalMemory() {
-        return internalTotalMemory;
+        if (internalTotalMemory != null) {
+            return internalTotalMemory;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setInternalTotalMemory(Double internalTotalMemory) {
@@ -135,7 +163,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getInternalAvailableMemory() {
-        return internalAvailableMemory;
+        if (internalAvailableMemory != null) {
+            return internalAvailableMemory;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setInternalAvailableMemory(Double internalAvailableMemory) {
@@ -143,7 +175,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getExternalTotalMemory() {
-        return externalTotalMemory;
+        if (externalTotalMemory != null) {
+            return externalTotalMemory;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setExternalTotalMemory(Double externalTotalMemory) {
@@ -151,7 +187,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getExternalAvailableMemory() {
-        return externalAvailableMemory;
+        if (externalAvailableMemory != null) {
+            return externalAvailableMemory;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setExternalAvailableMemory(Double externalAvailableMemory) {
@@ -159,7 +199,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getOperator() {
-        return operator;
+        if (operator != null) {
+            return operator;
+        } else {
+            return "";
+        }
     }
 
     public void setOperator(String operator) {
@@ -167,7 +211,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getConnectionType() {
-        return connectionType;
+        if (connectionType != null) {
+            return connectionType;
+        } else {
+            return "";
+        }
     }
 
     public void setConnectionType(String connectionType) {
@@ -175,7 +223,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getMobileSignalStrength() {
-        return mobileSignalStrength;
+        if (mobileSignalStrength != null) {
+            return mobileSignalStrength;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setMobileSignalStrength(Double mobileSignalStrength) {
@@ -183,7 +235,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public String getSsid() {
-        return ssid;
+        if (ssid != null) {
+            return ssid;
+        } else {
+            return "";
+        }
     }
 
     public void setSsid(String ssid) {
@@ -191,7 +247,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getCpuUsage() {
-        return cpuUsage;
+        if (cpuUsage != null) {
+            return cpuUsage;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setCpuUsage(Double cpuUsage) {
@@ -199,7 +259,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getTotalRAMMemory() {
-        return totalRAMMemory;
+        if (totalRAMMemory != null) {
+            return totalRAMMemory;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setTotalRAMMemory(Double totalRAMMemory) {
@@ -207,7 +271,11 @@ public class DeviceInfo implements Serializable{
     }
 
     public Double getAvailableRAMMemory() {
-        return availableRAMMemory;
+        if (availableRAMMemory != null) {
+            return availableRAMMemory;
+        } else {
+            return 0.0;
+        }
     }
 
     public void setAvailableRAMMemory(Double availableRAMMemory) {
@@ -222,7 +290,7 @@ public class DeviceInfo implements Serializable{
         this.pluggedIn = pluggedIn;
     }
 
-    public void setDeviceDetailsMap(Map<String,String> deviceDetailsMap) {
+    public void setDeviceDetailsMap(Map<String, String> deviceDetailsMap) {
         this.deviceDetailsMap = deviceDetailsMap;
     }
 

@@ -34,13 +34,7 @@ public class Utils {
 
         DeviceInfo deviceInfo = new DeviceInfo();
 
-
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setType(TestDataHolder.TEST_DEVICE_TYPE);
-        deviceIdentifier.setId("12345");
-
-
-        deviceInfo.setDeviceIdentifier(deviceIdentifier);
+        deviceInfo.setDeviceIdentifier(Utils.getDeviceIdentifier());
 
         deviceInfo.setDeviceId(1);
         deviceInfo.setIMSI("e6f236ac82537a8e");
@@ -88,6 +82,7 @@ public class Utils {
 
 
         DeviceLocation deviceLocation = new DeviceLocation();
+        deviceLocation.setDeviceIdentifier(Utils.getDeviceIdentifier());
         deviceLocation.setLatitude(76.2422);
         deviceLocation.setLongitude(81.43);
         deviceLocation.setStreet1("4");
@@ -99,6 +94,14 @@ public class Utils {
         deviceLocation.setDeviceId(1);
 
         return deviceLocation;
+    }
+
+    private static DeviceIdentifier getDeviceIdentifier(){
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setType(TestDataHolder.TEST_DEVICE_TYPE);
+        deviceIdentifier.setId("12345");
+
+        return deviceIdentifier;
     }
 }
 

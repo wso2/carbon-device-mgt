@@ -43,7 +43,7 @@ public class ApplicationManagementProviderServiceTest {
     public void init() {
         deviceManagementPluginRepository = new DeviceManagementPluginRepository();
         TestDeviceManagementService testDeviceManagementService =
-                new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE);
+                new TestDeviceManagementService(TestDataHolder.TEST_DEVICE_TYPE, TestDataHolder.SUPER_TENANT_DOMAIN);
         try {
             deviceManagementPluginRepository.addDeviceManagementProvider(testDeviceManagementService);
         } catch (DeviceManagementException e) {

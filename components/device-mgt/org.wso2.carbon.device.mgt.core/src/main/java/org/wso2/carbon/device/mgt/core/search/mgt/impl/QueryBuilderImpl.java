@@ -50,8 +50,8 @@ public class QueryBuilderImpl implements QueryBuilder {
 
             if (conditions.get(0).getKey().equalsIgnoreCase(Constants.LOCATION)) {
                 locConditon = conditions.get(0);
-            } else if (Utils.getDeviceDetailsColumnNames().containsKey(conditions.get(0)) ||
-                    Utils.getDeviceLocationColumnNames().containsKey(conditions.get(0))) {
+            } else if (Utils.getDeviceDetailsColumnNames().containsKey(conditions.get(0).getKey()) ||
+                    Utils.getDeviceLocationColumnNames().containsKey(conditions.get(0).getKey())) {
                 andColumns.add(conditions.get(0));
             } else {
                 otherANDColumns.add(conditions.get(0));

@@ -36,6 +36,7 @@
 
     <modules>
         <module>org.wso2.carbon.apimgt.webapp.publisher.feature</module>
+        <module>org.wso2.carbon.apimgt.application.extension.feature</module>
     </modules>
 
 </project>

@@ -125,7 +125,7 @@
                             javax.servlet;resolution:=optional,
                             javax.xml.*;resolution:=optional,
                             org.apache.commons.lang,
-                            javax.ws.rs;resolution:=optional,
+                            javax.ws.rs;version="0.0.0";resolution:=optional,
                             org.scannotation
                         </Import-Package>
                     </instructions>

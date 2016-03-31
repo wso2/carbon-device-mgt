@@ -68,4 +68,12 @@ public interface DeviceTaskManager {
      */
     List<String> getValidOperationNames() throws DeviceMgtTaskException;
 
+    /**
+     * This method will check wheather give operation is added by the task.
+     * @param opName - Operation name
+     * @return - true or false
+     * @throws DeviceMgtTaskException
+     */
+    boolean isTaskOperation(String opName);
+
 }

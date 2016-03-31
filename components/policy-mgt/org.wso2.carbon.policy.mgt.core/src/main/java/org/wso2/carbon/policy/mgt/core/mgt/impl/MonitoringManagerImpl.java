@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -375,7 +376,8 @@ public class MonitoringManagerImpl implements MonitoringManager {
         List<DeviceType> deviceTypes = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.openConnection();
-            deviceTypes = deviceTypeDAO.getDeviceTypes();
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            deviceTypes = deviceTypeDAO.getDeviceTypes(tenantId);
         } catch (Exception e) {
             log.error("Error occurred while getting the device types.", e);
         } finally {

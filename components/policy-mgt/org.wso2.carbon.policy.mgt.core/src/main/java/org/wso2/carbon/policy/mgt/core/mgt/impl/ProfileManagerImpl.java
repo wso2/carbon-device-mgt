@@ -20,6 +20,7 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -184,8 +185,9 @@ public class ProfileManagerImpl implements ProfileManager {
         List<DeviceType> deviceTypes;
 
         try {
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             DeviceManagementDAOFactory.openConnection();
-            deviceTypes = deviceTypeDAO.getDeviceTypes();
+            deviceTypes = deviceTypeDAO.getDeviceTypes(tenantId);
         } catch (SQLException e) {
             throw new ProfileManagementException("Error occurred while opening a connection to the data source", e);
         } catch (DeviceManagementDAOException e) {
@@ -236,7 +238,8 @@ public class ProfileManagerImpl implements ProfileManager {
 
         try {
             DeviceManagementDAOFactory.openConnection();
-            deviceType = deviceTypeDAO.getDeviceType(deviceTypeName);
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new ProfileManagementException("Error occurred while retrieving device type information", e);
         } catch (SQLException e) {

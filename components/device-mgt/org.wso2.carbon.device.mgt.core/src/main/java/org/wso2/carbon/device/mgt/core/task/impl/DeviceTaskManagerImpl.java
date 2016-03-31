@@ -76,7 +76,7 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
     @Override
     public String getTaskImplementedClazz() throws DeviceMgtTaskException {
 
-       return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+        return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getDeviceManagementConfigRepository().getTaskConfiguration().getTaskClazz();
     }
 
@@ -97,7 +97,7 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
             List<Device> devices = deviceManagementProviderService.getAllDevices();
             List<String> operations = this.getValidOperationNames();
 
-            if(!devices.isEmpty()) {
+            if (!devices.isEmpty()) {
 
                 for (String str : operations) {
                     CommandOperation operation = new CommandOperation();
@@ -107,12 +107,12 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
                     deviceManagementProviderService.addOperation(operation, DeviceManagerUtil.convertDevices(devices));
                 }
             } else {
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug("No devices are available to perform the operations.");
                 }
             }
         } catch (DeviceManagementException e) {
-            throw  new DeviceMgtTaskException("Error occurred while retrieving the device list.", e);
+            throw new DeviceMgtTaskException("Error occurred while retrieving the device list.", e);
         } catch (OperationManagementException e) {
             throw new DeviceMgtTaskException("Error occurred while adding the operations to devices", e);
         }
@@ -142,10 +142,26 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
             }
         }
 
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Valid operation names are : " + Arrays.toString(opNames.toArray()));
         }
         return opNames;
+    }
+
+    @Override
+    public boolean isTaskOperation(String opName) {
+        try {
+            List<TaskOperation> taskOperations = this.getOperationList();
+            for (TaskOperation taop : taskOperations) {
+                if (taop.getTaskName().equalsIgnoreCase(opName)) {
+                    return true;
+                }
+            }
+        } catch (DeviceMgtTaskException e) {
+            // ignoring the error, no need to throw, If error occurs, return value will be false.
+        }
+        return false;
+
     }
 }
 

@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.mgt.jwt.client.extension.util;
+package org.wso2.carbon.identity.jwt.client.extension.util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -29,7 +29,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.jwt.client.extension.internal.JWTClientExtensionDataHolder;
+import org.wso2.carbon.identity.jwt.client.extension.internal.JWTClientExtensionDataHolder;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;

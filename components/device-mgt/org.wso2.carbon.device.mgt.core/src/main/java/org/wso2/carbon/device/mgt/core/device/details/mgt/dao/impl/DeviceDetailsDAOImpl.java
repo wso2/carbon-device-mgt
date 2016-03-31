@@ -47,31 +47,27 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
         try {
             conn = this.getConnection();
 
-            stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_DETAIL (DEVICE_ID, IMEI, IMSI, DEVICE_MODEL, " +
+            stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_DETAIL (DEVICE_ID, DEVICE_MODEL, " +
                     "VENDOR, OS_VERSION, BATTERY_LEVEL, INTERNAL_TOTAL_MEMORY, INTERNAL_AVAILABLE_MEMORY, " +
-                    "EXTERNAL_TOTAL_MEMORY, EXTERNAL_AVAILABLE_MEMORY, OPERATOR, CONNECTION_TYPE, " +
-                    "MOBILE_SIGNAL_STRENGTH, SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?,? ); ");
+                    "EXTERNAL_TOTAL_MEMORY, EXTERNAL_AVAILABLE_MEMORY,  CONNECTION_TYPE, " +
+                    "SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             stmt.setInt(1, deviceInfo.getDeviceId());
-            stmt.setString(2, deviceInfo.getIMEI());
-            stmt.setString(3, deviceInfo.getIMSI());
-            stmt.setString(4, deviceInfo.getDeviceModel());
-            stmt.setString(5, deviceInfo.getVendor());
-            stmt.setString(6, deviceInfo.getOsVersion());
-            stmt.setDouble(7, deviceInfo.getBatteryLevel());
-            stmt.setDouble(8, deviceInfo.getInternalTotalMemory());
-            stmt.setDouble(9, deviceInfo.getInternalAvailableMemory());
-            stmt.setDouble(10, deviceInfo.getExternalTotalMemory());
-            stmt.setDouble(11, deviceInfo.getExternalAvailableMemory());
-            stmt.setString(12, deviceInfo.getOperator());
-            stmt.setString(13, deviceInfo.getConnectionType());
-            stmt.setDouble(14, deviceInfo.getMobileSignalStrength());
-            stmt.setString(15, deviceInfo.getSsid());
-            stmt.setDouble(16, deviceInfo.getCpuUsage());
-            stmt.setDouble(17, deviceInfo.getTotalRAMMemory());
-            stmt.setDouble(18, deviceInfo.getAvailableRAMMemory());
-            stmt.setBoolean(19, deviceInfo.isPluggedIn());
+            stmt.setString(2, deviceInfo.getDeviceModel());
+            stmt.setString(3, deviceInfo.getVendor());
+            stmt.setString(4, deviceInfo.getOsVersion());
+            stmt.setDouble(5, deviceInfo.getBatteryLevel());
+            stmt.setDouble(6, deviceInfo.getInternalTotalMemory());
+            stmt.setDouble(7, deviceInfo.getInternalAvailableMemory());
+            stmt.setDouble(8, deviceInfo.getExternalTotalMemory());
+            stmt.setDouble(9, deviceInfo.getExternalAvailableMemory());
+            stmt.setString(10, deviceInfo.getConnectionType());
+            stmt.setString(11, deviceInfo.getSsid());
+            stmt.setDouble(12, deviceInfo.getCpuUsage());
+            stmt.setDouble(13, deviceInfo.getTotalRAMMemory());
+            stmt.setDouble(14, deviceInfo.getAvailableRAMMemory());
+            stmt.setBoolean(15, deviceInfo.isPluggedIn());
 
             stmt.execute();
 
@@ -128,8 +124,8 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
 
             while (rs.next()) {
                 deviceInfo.setDeviceId(rs.getInt("DEVICE_ID"));
-                deviceInfo.setIMEI(rs.getString("IMEI"));
-                deviceInfo.setIMSI(rs.getString("IMSI"));
+//                deviceInfo.setIMEI(rs.getString("IMEI"));
+//                deviceInfo.setIMSI(rs.getString("IMSI"));
                 deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
                 deviceInfo.setVendor(rs.getString("VENDOR"));
                 deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
@@ -138,9 +134,9 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
                 deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setExternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
                 deviceInfo.setExternalAvailableMemory(rs.getDouble("EXTERNAL_AVAILABLE_MEMORY"));
-                deviceInfo.setOperator(rs.getString("OPERATOR"));
+//                deviceInfo.setOperator(rs.getString("OPERATOR"));
                 deviceInfo.setConnectionType(rs.getString("CONNECTION_TYPE"));
-                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
+//                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
                 deviceInfo.setSsid(rs.getString("SSID"));
                 deviceInfo.setCpuUsage(rs.getDouble("CPU_USAGE"));
                 deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));

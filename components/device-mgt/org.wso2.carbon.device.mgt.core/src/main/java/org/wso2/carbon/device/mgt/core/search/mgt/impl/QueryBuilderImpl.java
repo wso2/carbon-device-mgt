@@ -82,11 +82,19 @@ public class QueryBuilderImpl implements QueryBuilder {
         }
 
         Map<String, List<String>> queries = new HashMap<>();
-        queries.put(Constants.GENERAL, Utils.convertStringToList(this.getGenericQueryPart() + this.processAND(andColumns) +
-                this.processOR(orColumns)));
-        queries.put(Constants.PROP_AND, this.processANDProperties(otherANDColumns));
-        queries.put(Constants.PROP_OR, this.processORProperties(otherORColumns));
-        queries.put(Constants.LOCATION, this.processLocation(locConditon));
+        if ((!andColumns.isEmpty()) || (!orColumns.isEmpty())) {
+            queries.put(Constants.GENERAL, Utils.convertStringToList(this.getGenericQueryPart() + this.processAND(andColumns) +
+                    this.processOR(orColumns)));
+        }
+        if (!otherANDColumns.isEmpty()) {
+            queries.put(Constants.PROP_AND, this.processANDProperties(otherANDColumns));
+        }
+        if (!otherORColumns.isEmpty()) {
+            queries.put(Constants.PROP_OR, this.processORProperties(otherORColumns));
+        }
+        if (locConditon != null && locConditon.getValue() != null) {
+            queries.put(Constants.LOCATION, this.processLocation(locConditon));
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("General Query : " + queries.get(Constants.GENERAL));
@@ -164,12 +172,12 @@ public class QueryBuilderImpl implements QueryBuilder {
     private String buildLocationQuery(String location) {
 
         String query = this.getGenericQueryPart();
-        query = query + " OR STREET1 LIKE \'%" + location + "%\'";
-        query = query + " OR STREET2 LIKE \'%" + location + "%\'";
-        query = query + " OR CITY LIKE \'%" + location + "%\'";
-        query = query + " OR STATE LIKE \'%" + location + "%\'";
-        query = query + " OR COUNTRY LIKE \'%" + location + "%\'";
-        query = query + " OR ZIP LIKE \'%" + location + "%\'";
+        query = query + " AND DL.STREET1 LIKE \'%" + location + "%\'";
+        query = query + " OR DL.STREET2 LIKE \'%" + location + "%\'";
+        query = query + " OR DL.CITY LIKE \'%" + location + "%\'";
+        query = query + " OR DL.STATE LIKE \'%" + location + "%\'";
+        query = query + " OR DL.COUNTRY LIKE \'%" + location + "%\'";
+        query = query + " OR DL.ZIP LIKE \'%" + location + "%\'";
         return query;
     }
 
@@ -177,13 +185,13 @@ public class QueryBuilderImpl implements QueryBuilder {
 
         return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
                 "  D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
-                "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.IMEI, DD.IMSI, DD.DEVICE_MODEL, DD.VENDOR, \n" +
+                "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
                 "DD.OS_VERSION, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
-                "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.OPERATOR, DD.CONNECTION_TYPE, \n" +
-                "DD.MOBILE_SIGNAL_STRENGTH, DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
+                "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
+                "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                 "DD.PLUGGED_IN, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
                 "DL.STATE, DL.COUNTRY FROM DM_DEVICE_DETAIL AS DD, DM_DEVICE AS D, DM_DEVICE_LOCATION AS DL, " +
-                "DM_DEVICE_TYPE AS DT WHERE D.TENANT_ID = " +
+                "DM_DEVICE_TYPE AS DT WHERE DEVICE_TYPE_ID=D.DEVICE_TYPE_ID AND D.TENANT_ID = " +
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
 
@@ -193,14 +201,14 @@ public class QueryBuilderImpl implements QueryBuilder {
 
         return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
                 " D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
-                "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.IMEI, DD.IMSI, DD.DEVICE_MODEL, DD.VENDOR, \n" +
+                "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
                 "DD.OS_VERSION, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
-                "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.OPERATOR, DD.CONNECTION_TYPE, \n" +
-                "DD.MOBILE_SIGNAL_STRENGTH, DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
+                "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
+                "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                 "DD.PLUGGED_IN, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
                 "DL.STATE, DL.COUNTRY, DI.KEY_FIELD, DI.VALUE_FIELD FROM DM_DEVICE_DETAIL AS DD, " +
                 "DM_DEVICE AS D, DM_DEVICE_LOCATION AS DL, \n" +
-                "DM_DEVICE_INFO AS DI, DM_DEVICE_TYPE AS DT WHERE D.TENANT_ID = " +
+                "DM_DEVICE_INFO AS DI, DM_DEVICE_TYPE AS DT WHERE DEVICE_TYPE_ID=D.DEVICE_TYPE_ID AND D.TENANT_ID = " +
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
     }

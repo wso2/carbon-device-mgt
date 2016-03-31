@@ -117,6 +117,44 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
+    public List<CertificateResponse> searchCertificate(String serialNumber)
+            throws CertificateManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        CertificateResponse certificateResponse = null;
+        List<CertificateResponse> certificates = new ArrayList<>();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            conn = this.getConnection();
+            String query =
+                    "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER LIKE ?" +
+                    " AND TENANT_ID = ? ";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, "%" + serialNumber + "%");
+            stmt.setInt(2, tenantId);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                certificateResponse = new CertificateResponse();
+                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
+                certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
+                certificates.add(certificateResponse);
+            }
+        } catch (SQLException e) {
+            String errorMsg =
+                    "Unable to get the read the certificate with serial" + serialNumber;
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        } finally {
+            CertificateManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
+        return certificates;
+    }
+
+    @Override
     public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;

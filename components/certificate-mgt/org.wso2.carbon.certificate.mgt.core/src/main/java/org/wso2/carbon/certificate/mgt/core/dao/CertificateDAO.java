@@ -72,4 +72,6 @@ public interface CertificateDAO {
      * @return whether the certificate was removed or not.
      */
     boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException;
+
+    public List<CertificateResponse> searchCertificate(String serialNumber) throws CertificateManagementDAOException;
 }

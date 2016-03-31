@@ -28,13 +28,14 @@ import java.util.List;
  */
 public class DeviceGroupBuilder extends DeviceGroup {
 
+    private int groupId;
+
     /**
      * Set device group to be decorated with the builder
      *
      * @param deviceGroup to decorate
      */
     public DeviceGroupBuilder(DeviceGroup deviceGroup) {
-        this.setId(deviceGroup.getId());
         this.setDescription(deviceGroup.getDescription());
         this.setName(deviceGroup.getName());
         this.setDateOfCreation(deviceGroup.getDateOfCreation());
@@ -42,11 +43,6 @@ public class DeviceGroupBuilder extends DeviceGroup {
         this.setOwner(deviceGroup.getOwner());
         this.setUsers(deviceGroup.getUsers());
         this.setRoles(deviceGroup.getRoles());
-    }
-
-    @Override
-    public void setId(int id) {
-        super.setId(id);
     }
 
     @Override
@@ -64,4 +60,11 @@ public class DeviceGroupBuilder extends DeviceGroup {
         return super.getGroup();
     }
 
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
 }

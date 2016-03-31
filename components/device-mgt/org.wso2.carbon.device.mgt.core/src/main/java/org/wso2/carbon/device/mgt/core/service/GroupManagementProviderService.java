@@ -47,11 +47,12 @@ public interface GroupManagementProviderService {
     /**
      * Update existing device group.
      *
-     * @param deviceGroup to update.
-     * @param oldGroupName  of the group.
+     * @param deviceGroup  to update.
+     * @param oldGroupName of the group.
+     * @param oldOwner     of the group.
      * @throws GroupManagementException
      */
-    void updateGroup(DeviceGroup deviceGroup, String oldGroupName) throws GroupManagementException;
+    void updateGroup(DeviceGroup deviceGroup, String oldGroupName, String oldOwner) throws GroupManagementException;
 
     /**
      * Delete existing device group.

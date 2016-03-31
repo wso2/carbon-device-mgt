@@ -44,6 +44,7 @@ import org.wso2.carbon.user.core.util.UserCoreUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,14 +103,16 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      * {@inheritDoc}
      */
     @Override
-    public void updateGroup(DeviceGroup deviceGroup, String oldGroupName) throws GroupManagementException {
+    public void updateGroup(DeviceGroup deviceGroup, String oldGroupName, String oldOwner)
+            throws GroupManagementException {
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.beginTransaction();
-            this.groupDAO.updateGroup(deviceGroup, oldGroupName, tenantId);
+            deviceGroup.setDateOfLastUpdate(new Date().getTime());
+            this.groupDAO.updateGroup(deviceGroup, oldGroupName, oldOwner, tenantId);
             GroupManagementDAOFactory.commitTransaction();
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();

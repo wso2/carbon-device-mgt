@@ -67,20 +67,21 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public void updateGroup(DeviceGroup deviceGroup, String oldGroupName, int tenantId)
+    public void updateGroup(DeviceGroup deviceGroup, String oldGroupName, String oldOwner, int tenantId)
             throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "UPDATE DM_GROUP SET DESCRIPTION = ?, GROUP_NAME = ?, DATE_OF_LAST_UPDATE = ?, OWNER = ? "
-                         + "WHERE GROUP_NAME = ? AND TENANT_ID = ?";
+                         + "WHERE GROUP_NAME = ? AND OWNER = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceGroup.getDescription());
             stmt.setString(2, deviceGroup.getName());
             stmt.setLong(3, deviceGroup.getDateOfLastUpdate());
             stmt.setString(4, deviceGroup.getOwner());
             stmt.setString(5, oldGroupName);
-            stmt.setInt(6, tenantId);
+            stmt.setString(6, oldOwner);
+            stmt.setInt(7, tenantId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while updating deviceGroup '" +

@@ -197,7 +197,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         try {
             GroupManagementDAOFactory.beginTransaction();
             groupDAO.updateGroup(group, TestDataHolder.generateDummyGroupData().getName(),
-                                 TestDataHolder.SUPER_TENANT_ID);
+                                 TestDataHolder.generateDummyGroupData().getOwner(), TestDataHolder.SUPER_TENANT_ID);
             GroupManagementDAOFactory.commitTransaction();
             log.debug("Group updated");
         } catch (GroupManagementDAOException e) {

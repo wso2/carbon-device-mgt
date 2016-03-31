@@ -43,10 +43,12 @@ public interface GroupDAO {
      *
      * @param deviceGroup   group to update.
      * @param oldGroupName  of the group.
+     * @param oldOwner      of the group.
      * @param tenantId      of the group.
      * @throws GroupManagementDAOException
      */
-    void updateGroup(DeviceGroup deviceGroup, String oldGroupName, int tenantId) throws GroupManagementDAOException;
+    void updateGroup(DeviceGroup deviceGroup, String oldGroupName, String oldOwner, int tenantId)
+            throws GroupManagementDAOException;
 
     /**
      * Delete an existing Device Group.

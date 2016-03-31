@@ -20,11 +20,16 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
+import org.wso2.carbon.apimgt.api.model.URITemplate;
+import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This bean class carries the properties used by some API that needs to be published within the underlying
@@ -48,18 +53,33 @@ public class APIConfig {
     private String name;
     private String owner;
     private String context;
+    private String contextTemplate;
     private String endpoint;
     private String version;
     private String transports;
     private APIProvider provider;
     private boolean isSecured;
+    private Set<URITemplate> uriTemplates;
+    private List<String> tenants;
+    private boolean isSharedWithAllTenants;
+    private String tenantDomain;
+    private String[] tags;
 
     public void init() throws APIManagementException {
         try {
-            this.provider = APIManagerFactory.getInstance().getAPIProvider(this.getOwner());
+            this.provider = APIManagerFactory.getInstance().getAPIProvider(owner);
         } catch (APIManagementException e) {
             throw new APIManagementException("Error occurred while initializing API provider", e);
         }
+    }
+
+    @XmlElement(name = "ContextTemplate", required = true)
+    public String getContextTemplate() {
+        return contextTemplate;
+    }
+
+    public void setContextTemplate(String contextTemplate) {
+        this.contextTemplate = contextTemplate;
     }
 
     @XmlTransient
@@ -136,4 +156,43 @@ public class APIConfig {
         isSecured = secured;
     }
 
+    @XmlElement(name = "UriTemplates", required = false)
+    public Set<URITemplate> getUriTemplates() {
+        return uriTemplates;
+    }
+
+    @SuppressWarnings("unused")
+    public void setUriTemplates(Set<URITemplate> uriTemplates) {
+        this.uriTemplates = uriTemplates;
+    }
+
+    @XmlElement(name = "isSharedWithAllTenants", required = false)
+    public boolean isSharedWithAllTenants() {
+        return isSharedWithAllTenants;
+    }
+
+    @SuppressWarnings("unused")
+    public void setSharedWithAllTenants(boolean isSharedWithAllTenants) {
+        this.isSharedWithAllTenants = isSharedWithAllTenants;
+    }
+
+    @XmlElement(name = "tenantDomain", required = false)
+    public String getTenantDomain() {
+        return tenantDomain;
+    }
+
+    @SuppressWarnings("unused")
+    public void setTenantDomain(String tenantDomain) {
+        this.tenantDomain = tenantDomain;
+    }
+
+    @XmlElement(name = "tags", required = false)
+    public String[] getTags() {
+        return tags;
+    }
+
+    @SuppressWarnings("unused")
+    public void setTags(String[] tags) {
+        this.tags = tags;
+    }
 }

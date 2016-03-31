@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jwt.client.extension.dto;
+package org.wso2.carbon.identity.jwt.client.extension.dto;
 
 /**
  * This holds the token information that return from the token endpoint.

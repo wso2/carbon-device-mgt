@@ -16,17 +16,17 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jwt.client.extension;
+package org.wso2.carbon.identity.jwt.client.extension;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.jwt.client.extension.dto.JWTConfig;
-import org.wso2.carbon.device.mgt.jwt.client.extension.exception.JWTClientAlreadyExistsException;
-import org.wso2.carbon.device.mgt.jwt.client.extension.exception.JWTClientConfigurationException;
-import org.wso2.carbon.device.mgt.jwt.client.extension.exception.JWTClientException;
-import org.wso2.carbon.device.mgt.jwt.client.extension.util.JWTClientUtil;
+import org.wso2.carbon.identity.jwt.client.extension.dto.JWTConfig;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientAlreadyExistsException;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientConfigurationException;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
+import org.wso2.carbon.identity.jwt.client.extension.util.JWTClientUtil;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 

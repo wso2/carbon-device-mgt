@@ -215,6 +215,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(device.getType());
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
@@ -227,6 +228,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
             DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+            Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
+            device.setId(currentDevice.getId());
+            device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
             deviceDAO.updateDevice(type.getId(), device, tenantId);
             enrollmentDAO.updateEnrollment(device.getEnrolmentInfo());
             DeviceManagementDAOFactory.commitTransaction();

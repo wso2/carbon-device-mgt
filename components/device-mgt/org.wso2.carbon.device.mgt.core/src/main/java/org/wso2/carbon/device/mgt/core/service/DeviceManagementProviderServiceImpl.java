@@ -227,7 +227,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
-            DeviceType type = deviceTypeDAO.getDeviceType(device.getType());
+
+            DeviceType type = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
             Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
             device.setId(currentDevice.getId());
             device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());

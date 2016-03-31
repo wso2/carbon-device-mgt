@@ -26,6 +26,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.authorizer.WebappTenantAuthorizer;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -44,6 +45,8 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
             return;
         }
 
+
+
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(request);
         if (authenticator == null) {
             String msg = "Failed to load an appropriate authenticator to authenticate the request";
@@ -51,6 +54,11 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
             return;
         }
         AuthenticationInfo authenticationInfo = authenticator.authenticate(request, response);
+        if (isManagedAPI(request) && (authenticationInfo.getStatus() == WebappAuthenticator.Status.CONTINUE ||
+                authenticationInfo.getStatus() == WebappAuthenticator.Status.SUCCESS)) {
+            WebappAuthenticator.Status status = WebappTenantAuthorizer.authorize(request, authenticationInfo);
+            authenticationInfo.setStatus(status);
+        }
         if (authenticationInfo.getTenantId() != -1) {
             try {
                 PrivilegedCarbonContext.startTenantFlow();
@@ -75,6 +83,11 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
     private boolean skipAuthentication(Request request) {
         String param = request.getContext().findParameter("doAuthentication");
         return (param == null || !Boolean.parseBoolean(param) || isNonSecuredEndPoint(request));
+    }
+
+    private boolean isManagedAPI(Request request) {
+        String param = request.getContext().findParameter("managed-api-enabled");
+        return (param != null && Boolean.parseBoolean(param));
     }
 
     private boolean isContextSkipped(Request request) {

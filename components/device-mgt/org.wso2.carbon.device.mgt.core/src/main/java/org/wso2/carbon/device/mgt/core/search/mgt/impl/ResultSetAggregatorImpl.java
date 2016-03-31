@@ -23,10 +23,7 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.core.search.mgt.Constants;
 import org.wso2.carbon.device.mgt.core.search.mgt.ResultSetAggregator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResultSetAggregatorImpl implements ResultSetAggregator {
 
@@ -37,24 +34,36 @@ public class ResultSetAggregatorImpl implements ResultSetAggregator {
         Map<Integer, DeviceWrapper> andMap = this.convertToMap(deviceWrappers.get(Constants.PROP_AND));
         Map<Integer, DeviceWrapper> orMap = this.convertToMap(deviceWrappers.get(Constants.PROP_OR));
         Map<Integer, DeviceWrapper> locationMap = this.convertToMap(deviceWrappers.get(Constants.LOCATION));
-
+        Map<Integer, DeviceWrapper> finalMap = new HashMap<>();
         List<DeviceWrapper> finalResult = new ArrayList<>();
-        for (Integer a : andMap.keySet()) {
-            if (generalQueryMap.containsKey(a)) {
-                if (!finalResult.contains(a)) {
+
+        if (andMap.isEmpty()) {
+            finalMap = generalQueryMap;
+            finalResult = this.convertDeviceMapToList(generalQueryMap);
+        } else {
+            for (Integer a : andMap.keySet()) {
+                if (generalQueryMap.isEmpty()) {
                     finalResult.add(andMap.get(a));
+                    finalMap.put(a, andMap.get(a));
+                } else if (generalQueryMap.containsKey(a)) {
+                    if (!finalMap.containsKey(a)) {
+                        finalResult.add(andMap.get(a));
+                        finalMap.put(a, andMap.get(a));
+                    }
                 }
             }
         }
         for (Integer a : orMap.keySet()) {
-            if (!finalResult.contains(a)) {
+            if (!finalMap.containsKey(a)) {
                 finalResult.add(orMap.get(a));
+                finalMap.put(a, orMap.get(a));
             }
         }
 
         for (Integer a : locationMap.keySet()) {
-            if (!finalResult.contains(a)) {
+            if (!finalMap.containsKey(a)) {
                 finalResult.add(locationMap.get(a));
+                finalMap.put(a, locationMap.get(a));
             }
         }
 
@@ -71,5 +80,14 @@ public class ResultSetAggregatorImpl implements ResultSetAggregator {
             deviceWrapperMap.put(dw.getDevice().getId(), dw);
         }
         return deviceWrapperMap;
+    }
+
+    private List<DeviceWrapper> convertDeviceMapToList(Map<Integer, DeviceWrapper> map) {
+        List<DeviceWrapper> list = new ArrayList<>();
+
+        for (Integer a : map.keySet()) {
+            list.add(map.get(a));
+        }
+        return list;
     }
 }

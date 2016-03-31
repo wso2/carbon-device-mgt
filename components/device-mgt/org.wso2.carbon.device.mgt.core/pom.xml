@@ -83,7 +83,8 @@
                             org.apache.catalina.core,
                             org.apache.commons.collections,
                             org.wso2.carbon.email.sender.*,
-                            org.wso2.carbon
+                            org.wso2.carbon,
+                            org.wso2.carbon.base
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -238,11 +239,11 @@
         </dependency>
 
 
-        <!--<dependency>-->
-            <!--<groupId>com.google.code.gson</groupId>-->
-            <!--<artifactId>gson</artifactId>-->
-            <!--<version>1.7.1</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>1.7.1</version>
+        </dependency>
 
     </dependencies>
 

@@ -32,8 +32,6 @@ public class Utils {
 
         Map<String, String> colonmsMap = new HashMap<>();
 
-        colonmsMap.put("IMEI", "IMEI");
-        colonmsMap.put("IMSI", "IMSI");
         colonmsMap.put("deviceModel", "DEVICE_MODEL");
         colonmsMap.put("vendor", "VENDOR");
         colonmsMap.put("osVersion", "OS_VERSION");
@@ -42,9 +40,7 @@ public class Utils {
         colonmsMap.put("internalAvailableMemory", "INTERNAL_AVAILABLE_MEMORY");
         colonmsMap.put("externalTotalMemory", "EXTERNAL_TOTAL_MEMORY");
         colonmsMap.put("externalAvailableMemory", "EXTERNAL_AVAILABLE_MEMORY");
-        colonmsMap.put("operator", "OPERATOR");
         colonmsMap.put("connectionType", "CONNECTION_TYPE");
-        colonmsMap.put("mobileSignalStrength", "MOBILE_SIGNAL_STRENGTH");
         colonmsMap.put("ssid", "SSID");
         colonmsMap.put("cpuUsage", "CPU_USAGE");
         colonmsMap.put("totalRAMMemory", "TOTAL_RAM_MEMORY");

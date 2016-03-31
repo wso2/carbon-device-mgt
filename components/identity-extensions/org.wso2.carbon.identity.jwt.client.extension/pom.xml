@@ -133,10 +133,10 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Device Management JWT Client Bundle</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.device.mgt.jwt.client.extension.internal</Private-Package>
+                        <Private-Package>org.wso2.carbon.identity.jwt.client.extension.internal</Private-Package>
                         <Export-Package>
-                            !org.wso2.carbon.device.mgt.jwt.client.extension.internal,
-                            org.wso2.carbon.device.mgt.jwt.client.extension.*
+                            !org.wso2.carbon.identity.jwt.client.extension.internal,
+                            org.wso2.carbon.identity.jwt.client.extension.*
                         </Export-Package>
                         <Import-Package>
                             org.osgi.framework,

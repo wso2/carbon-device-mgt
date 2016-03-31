@@ -78,12 +78,12 @@ public class SearchDAOImpl implements SearchDAO {
                 deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
                 deviceInfo.setExternalAvailableMemory(rs.getDouble("EXTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setExternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-                deviceInfo.setIMEI(rs.getString("IMEI"));
-                deviceInfo.setIMSI(rs.getString("IMSI"));
+//                deviceInfo.setIMEI(rs.getString("IMEI"));
+//                deviceInfo.setIMSI(rs.getString("IMSI"));
                 deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setInternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
-                deviceInfo.setOperator(rs.getString("OPERATOR"));
+//                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
+//                deviceInfo.setOperator(rs.getString("OPERATOR"));
                 deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
                 deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
                 deviceInfo.setSsid(rs.getString("SSID"));
@@ -143,7 +143,7 @@ public class SearchDAOImpl implements SearchDAO {
                 Device device = new Device();
                 device.setId(rs.getInt("ID"));
                 device.setDescription(rs.getString("DESCRIPTION"));
-                device.setName("NAME");
+                device.setName(rs.getString("NAME"));
                 device.setType(rs.getString("DEVICE_TYPE_NAME"));
                 device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
 
@@ -160,12 +160,12 @@ public class SearchDAOImpl implements SearchDAO {
                 deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
                 deviceInfo.setExternalAvailableMemory(rs.getDouble("EXTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setExternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-                deviceInfo.setIMEI(rs.getString("IMEI"));
-                deviceInfo.setIMSI(rs.getString("IMSI"));
+//                deviceInfo.setIMEI(rs.getString("IMEI"));
+//                deviceInfo.setIMSI(rs.getString("IMSI"));
                 deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setInternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
-                deviceInfo.setOperator(rs.getString("OPERATOR"));
+//                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
+//                deviceInfo.setOperator(rs.getString("OPERATOR"));
                 deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
                 deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
                 deviceInfo.setSsid(rs.getString("SSID"));

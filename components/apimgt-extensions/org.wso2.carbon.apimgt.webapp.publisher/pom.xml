@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <artifactId>apimgt-extensions</artifactId>
@@ -61,6 +81,30 @@
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.scannotation</groupId>
+            <artifactId>scannotation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.lcm</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -81,7 +125,8 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>API Management Webapp Publisher</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.apimgt.webapp.publisher.internal</Private-Package>
+                        <Private-Package>org.wso2.carbon.apimgt.webapp.publisher.internal
+                        </Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.apimgt.webapp.publisher.internal,
                             org.wso2.carbon.apimgt.webapp.publisher.*
@@ -91,7 +136,8 @@
                             org.osgi.service.component,
                             org.apache.commons.logging,
                             javax.servlet,
-                            javax.xml.bind.annotation,
+                            javax.xml.*,
+                            com.google.gson.*,
                             org.apache.catalina,
                             org.apache.catalina.core,
                             org.wso2.carbon.apimgt.api,
@@ -99,8 +145,16 @@
                             org.wso2.carbon.apimgt.impl,
                             org.apache.axis2.*;version="${axis2.osgi.version.range}",
                             org.wso2.carbon.core,
-                            org.wso2.carbon.utils
+                            org.apache.commons.lang,
+                            org.wso2.carbon.utils,
+                            org.wso2.carbon.apimgt.annotations.*,
+                            org.wso2.carbon.governance.lcm.util.*,
+                            org.wso2.carbon.registry.core.*
                         </Import-Package>
+                        <Embed-Dependency>
+                            scribe;scope=compile|runtime;inline=false;
+                        </Embed-Dependency>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

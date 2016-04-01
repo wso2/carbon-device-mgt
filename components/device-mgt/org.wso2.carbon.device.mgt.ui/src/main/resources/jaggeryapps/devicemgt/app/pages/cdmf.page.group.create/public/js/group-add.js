@@ -27,20 +27,10 @@ $(function () {
             $('.wr-validation-summary').removeClass("hidden");
             return false;
         } else {
-            var addGroupAPI = "../api/group/add";
             var group = {"name": name, "description": description};
-            var postRequest = $.ajax({
-                                         url: addGroupAPI,
-                                         method: "POST",
-                                         contentType: "application/json",
-                                         accept: "application/json",
-                                         data: JSON.stringify(group)
-                                     });
 
-            postRequest.done(function (data, textStatus, jqxhr) {
-                var status = JSON.parse(jqxhr.responseText).data.statusCode;
-                console.log(status);
-                if (status == 200) {
+            var successCallback = function (data) {
+                if (data.status == 201) {
                     $('.wr-validation-summary strong').text("Group created. You will be redirected to groups");
                     $('.wr-validation-summary').removeClass("hidden");
                     $('.wr-validation-summary strong').removeClass("label-danger");
@@ -51,16 +41,12 @@ $(function () {
                 } else {
                     displayErrors(status);
                 }
-            });
+            };
 
-            postRequest.fail(function (jqXHR, textStatus) {
-                displayErrors(status);
-            });
-
-            //invokerUtil.post("/common/group_manager/group", group,
-            //                successCallback, function (message) {
-            //            console.log(message.content);
-            //        });
+            invokerUtil.post("/common/group_manager/groups", group,
+                             successCallback, function (message) {
+                        displayErrors(message.content);
+                    });
 
             return false;
         }

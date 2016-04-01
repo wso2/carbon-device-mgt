@@ -1,19 +1,19 @@
 {{#each groups}}
-    <tr data-type="selectable" data-groupid="{{id}}">
+    <tr data-type="selectable" data-group-name="{{name}}" data-group-owner="{{owner}}">
         <td class="remove-padding icon-only content-fill">
             <div class="thumbnail icon">
                 <img class="square-element text fw "
-                     src="public/cdmf.unit.group.listing/images/group-icon.png"/>
+                     src="public/cdmf.page.groups/images/group-icon.png"/>
             </div>
         </td>
         <td class="fade-edge">
-            <h4 data-groupid="{{id}}">{{name}}</h4>
+            <h4>{{name}}</h4>
         </td>
         <td class="fade-edge remove-padding-top" data-search="{{owner}}"
             data-display="{{owner}}"
             data-grid-label="Owner">{{owner}}</td>
         <td class="text-right content-fill text-left-on-grid-view no-wrap">
-            <a href="devices?groupId={{id}}&groupName={{name}}"
+            <a href="devices?groupName={{name}}&groupOwner={{owner}}"
                data-click-event="remove-form" class="btn padding-reduce-on-grid-view">
                 <span class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -21,7 +21,7 @@
                 </span>
                 <span class="hidden-xs hidden-on-grid-view">View Devices</span>
             </a>
-            <a href="analytics?groupId={{id}}&groupName={{name}}"
+            <a href="analytics?groupName={{name}}&groupOwner={{owner}}"
                data-click-event="remove-form" class="btn padding-reduce-on-grid-view">
                 <span class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -31,7 +31,7 @@
             </a>
             <a href="#" data-click-event="remove-form"
                class="btn padding-reduce-on-grid-view share-group-link"
-               data-groupid="{{id}}">
+               data-group-name="{{name}}" data-group-owner="{{owner}}">
                 <span class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-share fw-stack-1x"></i>
@@ -40,8 +40,8 @@
             </a>
             <a href="#" data-click-event="remove-form"
                class="btn padding-reduce-on-grid-view edit-group-link"
-               data-groupid="{{id}}" data-groupname="{{name}}"
-               data-groupdescription="{{description}}">
+               data-group-name="{{name}}" data-group-owner="{{owner}}"
+               data-group-description="{{description}}">
                 <span class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-edit fw-stack-1x"></i>
@@ -50,7 +50,7 @@
             </a>
             <a href="#" data-click-event="remove-form"
                class="btn padding-reduce-on-grid-view remove-group-link"
-               data-groupid="{{id}}">
+               data-group-name="{{name}}" data-group-owner="{{owner}}">
                 <span class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-delete fw-stack-1x"></i>

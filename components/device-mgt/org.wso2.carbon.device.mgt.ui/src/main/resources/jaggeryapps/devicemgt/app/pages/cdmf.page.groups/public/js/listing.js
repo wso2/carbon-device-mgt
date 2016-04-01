@@ -87,14 +87,8 @@ function loadGroups() {
     var groupListingSrc = groupListing.attr("src");
     var currentUser = groupListing.data("currentUser");
     $.template("group-listing", groupListingSrc, function (template) {
-        var serviceURL = "api/group/all";
 
-        var getGroupsRequest = $.ajax({
-                                          url: serviceURL,
-                                          method: "GET"
-                                      });
-
-        getGroupsRequest.done(function (data) {
+        var successCallback = function (data) {
             data = JSON.parse(data);
             var viewModel = {};
             viewModel.groups = data.data;
@@ -112,7 +106,12 @@ function loadGroups() {
 
             $('#group-grid').datatables_extended();
             $(".icon .text").res_text(0.2);
-        });
+        };
+
+        invokerUtil.get("/common/group_manager/groups?start=0&rowCount=1000",
+                        successCallback, function (message) {
+                    displayErrors(message.content);
+                });
 
     });
 }
@@ -199,24 +198,16 @@ function hidePopup() {
  * Following functions should be triggered after AJAX request is made.
  */
 function attachEvents() {
-    /**
-     * Following click function would execute
-     * when a user clicks on "Share" link
-     * on Group Management page in WSO2 IoT Server Console.
-     */
-    $(".view-group-link").click(function () {
-        var groupId = $(this).data("groupid");
-        window.location = "devices?groupId=" + groupId;
-    });
 
     /**
      * Following click function would execute
      * when a user clicks on "Share" link
-     * on Group Management page in WSO2 IoT Server Console.
+     * on Group Management page in WSO2 Device Management Server Console.
      */
     $("a.share-group-link").click(function () {
-        var groupId = $(this).data("groupid");
         var username = $("#group-listing").data("current-user");
+        var groupName = $(this).data("group-name");
+        var groupOwner = $(this).data("group-owner");
         $(modalPopupContent).html($('#share-group-w1-modal-content').html());
         $('#user-names').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
         showPopup();
@@ -250,86 +241,7 @@ function attachEvents() {
                 $("a#share-group-next-link").show();
                 $("a#share-group-next-link").click(function () {
                     var selectedUser = $('#share-user-selector').val();
-                    $(modalPopupContent).html($('#share-group-w2-modal-content').html());
-                    $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
-                    $("a#share-group-yes-link").hide();
-
-                    var roleMappingRequest = $.ajax({
-                                                        url: "api/group/id/" + groupId + "/" + selectedUser + "/rolemapping",
-                                                        method: "GET",
-                                                        contentType: "application/json",
-                                                        accept: "application/json"
-                                                    });
-
-                    roleMappingRequest.done(function (data, txtStatus, jqxhr) {
-                        var roleMap = JSON.parse(data);
-                        var status = jqxhr.status;
-                        if (status == 200) {
-                            roleMap = roleMap.data;
-                            var str = '';
-                            var isChecked = '';
-                            var hasRoles;
-                            for (var role in roleMap) {
-                                if (roleMap[role].assigned == true) {
-                                    isChecked = 'checked';
-                                }
-                                str += '<label class="checkbox-text"><input type="checkbox" id="user-role-' + roleMap[role].role + '" value="' + roleMap[role].role
-                                       + '" ' + isChecked + '/>' + roleMap[role].role + '</label>&nbsp;&nbsp;&nbsp;&nbsp;';
-                                hasRoles = true;
-                            }
-                            if (!hasRoles) {
-                                str = "There is no any roles for this group";
-                                return;
-                            }
-                            $('#user-roles').html(str);
-                            $("a#share-group-yes-link").show();
-                            $("a#share-group-yes-link").click(function () {
-                                var updatedRoleMap = [];
-                                for (var role in roleMap) {
-                                    if ($('#user-role-' + roleMap[role].role).is(':checked') != roleMap[role].assigned) {
-                                        roleMap[role].assigned = $('#user-role-' + roleMap[role].role).is(':checked');
-                                        updatedRoleMap.push(roleMap[role]);
-                                    }
-                                }
-
-                                var roleUpdateRequest = $.ajax({
-                                                                   url: "api/group/id/" + groupId + "/" + selectedUser + "/roleupdate",
-                                                                   method: "POST",
-                                                                   contentType: "application/json",
-                                                                   accept: "application/json",
-                                                                   data: JSON.stringify(updatedRoleMap)
-                                                               });
-
-                                roleUpdateRequest.done(function (data, txtStatus,
-                                                                 jqxhr) {
-                                    var status = jqxhr.status;
-                                    if (status == 200) {
-                                        $(modalPopupContent).html($('#share-group-200-content').html());
-                                        setTimeout(function () {
-                                            hidePopup();
-                                            location.reload(false);
-                                        }, 2000);
-                                    } else {
-                                        displayErrors(status);
-                                    }
-                                });
-
-                                roleUpdateRequest.fail(function (jqXHR) {
-                                    displayErrors(jqXHR);
-                                });
-                            });
-                        } else {
-                            displayErrors(status);
-                        }
-                    });
-
-                    roleMappingRequest.fail(function (jqXHR) {
-                        displayErrors(jqXHR);
-                    });
-
-                    $("a#share-group-w2-cancel-link").click(function () {
-                        hidePopup();
-                    });
+                    getAllRoles(groupName, groupOwner, selectedUser);
                 });
             } else {
                 displayErrors(status);
@@ -351,23 +263,15 @@ function attachEvents() {
      * on Group Management page in WSO2 IoT Server Console.
      */
     $("a.remove-group-link").click(function () {
-        var groupId = $(this).data("groupid");
-        var removeGroupApi = "api/group/id/" + groupId + "/remove";
+        var groupName = $(this).data("group-name");
+        var groupOwner = $(this).data("group-owner");
 
         $(modalPopupContent).html($('#remove-group-modal-content').html());
         showPopup();
 
         $("a#remove-group-yes-link").click(function () {
-            var deleteRequest = $.ajax({
-                                           url: removeGroupApi,
-                                           method: "DELETE",
-                                           contentType: "application/json",
-                                           accept: "application/json"
-                                       });
-
-            deleteRequest.done(function (data, txtStatus, jqxhr) {
-                var status = jqxhr.status;
-                if (status == 200) {
+            var successCallback = function (data) {
+                if (data.status == 200) {
                     $(modalPopupContent).html($('#remove-group-200-content').html());
                     setTimeout(function () {
                         hidePopup();
@@ -376,11 +280,12 @@ function attachEvents() {
                 } else {
                     displayErrors(status);
                 }
-            });
+            };
 
-            deleteRequest.fail(function (jqXHR) {
-                displayErrors(jqXHR);
-            });
+            invokerUtil.delete("/common/group_manager/groups/" + groupOwner + "/" + groupName,
+                               successCallback, function (message) {
+                        displayErrors(message.content);
+                    });
         });
 
         $("a#remove-group-cancel-link").click(function () {
@@ -395,10 +300,9 @@ function attachEvents() {
      * on Device Management page in WSO2 MDM Console.
      */
     $("a.edit-group-link").click(function () {
-        var groupId = $(this).data("groupid");
-        var groupName = $(this).data("groupname");
-        var groupDescription = $(this).data("groupdescription");
-        var editGroupApi = "api/group/id/" + groupId + "/update";
+        var groupName = $(this).data("group-name");
+        var groupOwner = $(this).data("group-owner");
+        var groupDescription = $(this).data("group-description");
 
         $(modalPopupContent).html($('#edit-group-modal-content').html());
         $('#edit-group-name').val(groupName);
@@ -408,19 +312,10 @@ function attachEvents() {
         $("a#edit-group-yes-link").click(function () {
             var newGroupName = $('#edit-group-name').val();
             var newGroupDescription = $('#edit-group-description').val();
-            var group = {"name": newGroupName, "description": newGroupDescription};
+            var group = {"name": newGroupName, "description": newGroupDescription, "owner": groupOwner};
 
-            var groupUpdateRequest = $.ajax({
-                                                url: editGroupApi,
-                                                method: "POST",
-                                                contentType: "application/json",
-                                                accept: "application/json",
-                                                data: JSON.stringify(group)
-                                            });
-
-            groupUpdateRequest.done(function (data, txtStatus, jqxhr) {
-                var status = jqxhr.status;
-                if (status == 200) {
+            var successCallback = function (data) {
+                if (data.status == 200) {
                     $(modalPopupContent).html($('#edit-group-200-content').html());
                     $("h4[data-groupid='" + groupId + "']").html(newGroupName);
                     setTimeout(function () {
@@ -429,17 +324,117 @@ function attachEvents() {
                 } else {
                     displayErrors(status);
                 }
-            });
+            };
 
-            groupUpdateRequest.fail(function (jqXHR) {
-                displayErrors(jqXHR);
-            });
+            invokerUtil.put("/common/group_manager/groups/" + groupOwner + "/" + groupName,
+                            successCallback, function (message) {
+                        displayErrors(message.content);
+                    });
         });
 
         $("a#edit-group-cancel-link").click(function () {
             hidePopup();
         });
     });
+}
+
+function getAllRoles(groupName, groupOwner, selectedUser) {
+    $(modalPopupContent).html($('#share-group-w2-modal-content').html());
+    $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
+    $("a#share-group-yes-link").hide();
+    var successCallback = function (data) {
+        if (data.status == 200) {
+            if (data.data.length > 0) {
+                generateRoleMap(groupName, groupOwner, selectedUser, data.data);
+            } else {
+                $('#user-roles').html("There is no any roles for this group.");
+            }
+        } else {
+            displayErrors(status);
+        }
+    };
+
+    invokerUtil.get("/common/group_manager/groups/" + groupOwner + "/" + groupName + "/share/roles",
+                    successCallback, function (message) {
+                displayErrors(message.content);
+            });
+
+    $("a#share-group-w2-cancel-link").click(function () {
+        hidePopup();
+    });
+}
+
+function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
+    var successCallback = function (data) {
+        if (data.status == 200) {
+            var userRoles = data.data;
+            var roleMap = [];
+            var str = '';
+            var isChecked = '';
+
+            for (var role in allRoles) {
+                var objRole = {"role": allRoles[role], "assigned": false};
+                for (var usrRole in userRoles) {
+                    if (allRoles[role] == userRoles[usrRole]) {
+                        objRole.assigned = true;
+                        isChecked = 'checked';
+                        break;
+                    }
+                }
+                str += '<label class="checkbox-text"><input type="checkbox" id="user-role-' + roleMap[role].role + '" value="' + roleMap[role].role
+                       + '" ' + isChecked + '/>' + roleMap[role].role + '</label>&nbsp;&nbsp;&nbsp;&nbsp;';
+                roleMap.push(objRole);
+            }
+
+            $('#user-roles').html(str);
+            $("a#share-group-yes-link").show();
+            var isOngoing;
+            $("a#share-group-yes-link").click(function () {
+                if (isOngoing) {
+                    return false;
+                }
+                $("a#share-group-yes-link").html("Wait...");
+                isOngoing = true;
+                for (var role in roleMap) {
+                    if ($('#user-role-' + roleMap[role].role).is(':checked') != roleMap[role].assigned) {
+                        roleMap[role].assigned = $('#user-role-' + roleMap[role].role).is(':checked');
+                        updateGroupShare(groupName, groupOwner, selectedUser, roleMap[role]);
+                    }
+                }
+            });
+        } else {
+            displayErrors(status);
+        }
+    };
+
+    invokerUtil.get("/common/group_manager/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+                    successCallback, function (message) {
+                displayErrors(message.content);
+            });
+
+    $("a#share-group-w2-cancel-link").click(function () {
+        hidePopup();
+    });
+}
+
+function updateGroupShare(groupName, groupOwner, selectedUser, role) {
+    var successCallback = function (data) {
+        var status = data.status;
+        if (status == 200) {
+            $(modalPopupContent).html($('#share-group-200-content').html());
+            setTimeout(function () {
+                hidePopup();
+                location.reload(false);
+            }, 2000);
+        } else {
+            displayErrors(status);
+        }
+    };
+
+    invokerUtil.put("/common/group_manager/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+                    role, successCallback, function (message) {
+                displayErrors(message.content);
+            });
 }
 
 function displayErrors(jqXHR) {

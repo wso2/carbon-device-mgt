@@ -76,4 +76,6 @@ public interface CertificateManagementService {
     boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException;
 
     public List<CertificateResponse> getCertificates() throws CertificateManagementDAOException;
+
+    public List<CertificateResponse> searchCertificates(String serialNumber) throws CertificateManagementDAOException;
 }

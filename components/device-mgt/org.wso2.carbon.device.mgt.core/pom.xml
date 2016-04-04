@@ -18,17 +18,16 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Device Management Core</name>
     <description>WSO2 Carbon - Device Management Core</description>
@@ -43,7 +42,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -66,7 +64,6 @@
                             org.wso2.carbon.context,
                             org.wso2.carbon.core,
                             org.wso2.carbon.utils.*,
-                            org.wso2.carbon.registry.api,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
@@ -80,10 +77,14 @@
                             org.wso2.carbon.identity.oauth.stub.dto,
                             org.wso2.carbon.ndatasource.core,
                             org.wso2.carbon.apimgt.impl,
-                            org.wso2.carbon.ndatasource.core,
-                            org.apache.axis2.transport.mail,
+                            org.wso2.carbon.ntask.core.*,
+                            org.wso2.carbon.ntask.common,
                             org.apache.catalina,
-                            org.apache.catalina.core
+                            org.apache.catalina.core,
+                            org.apache.commons.collections,
+                            org.wso2.carbon.email.sender.*,
+                            org.wso2.carbon,
+                            org.wso2.carbon.base
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -92,11 +93,9 @@
                     </instructions>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18</version>
                 <configuration>
                     <systemPropertyVariables>
                         <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
@@ -106,7 +105,6 @@
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
@@ -216,6 +214,37 @@
             <groupId>org.wso2.tomcat</groupId>
             <artifactId>tomcat-servlet-api</artifactId>
         </dependency>
+
+        <!--Ntask dependencies-->
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>commons-collections.wso2</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.email.sender.core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.34</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>

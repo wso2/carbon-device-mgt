@@ -23,6 +23,8 @@ import java.util.Properties;
 
 public class Application implements Serializable {
 
+    private static final long serialVersionUID = 1998101711L;
+
     private int id;
     private String platform;
     private String category;
@@ -33,6 +35,8 @@ public class Application implements Serializable {
     private String type;
     private Properties appProperties;
     private String applicationIdentifier;
+
+    private int memoryUsage;
 
     public String getType() {
         return type;
@@ -107,6 +111,14 @@ public class Application implements Serializable {
 
     public void setApplicationIdentifier(String applicationIdentifier) {
         this.applicationIdentifier = applicationIdentifier;
+    }
+
+    public int getMemoryUsage() {
+        return memoryUsage;
+    }
+
+    public void setMemoryUsage(int memoryUsage) {
+        this.memoryUsage = memoryUsage;
     }
 
     public boolean equals(Object o) {

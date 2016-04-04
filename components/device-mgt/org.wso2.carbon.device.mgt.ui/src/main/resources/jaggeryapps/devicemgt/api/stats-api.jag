@@ -1,0 +1,124 @@
+<%
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+var uri = request.getRequestURI();
+var uriMatcher = new URIMatcher(String(uri));
+
+var log = new Log("api/stats-api.jag");
+
+var from = request.getParameter("from");
+var to = request.getParameter("to");
+
+var constants = require("/app/modules/constants.js");
+var utility = require("/app/modules/utility.js").utility;
+var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+
+var deviceCloudGroupService = devicemgtProps["httpsURL"] + "/common/group_manager";
+var deviceCloudDeviceService = devicemgtProps["httpsURL"] + "/common/device_manager";
+var deviceCloudStatsService = devicemgtProps["httpsURL"] + "/common/stats_manager";
+
+var stats = {};
+var deviceId;
+var deviceType;
+
+var responseProcessor = require('utils').response;
+response.contentType = 'application/json';
+
+var user = session.get(constants.USER_SESSION_KEY);
+
+if (!user) {
+    response = responseProcessor.buildErrorResponse(response, 401, "Unauthorized");
+} else {
+    if (uriMatcher.match("/{context}/api/stats")) {
+        deviceId = request.getParameter("deviceId");
+        deviceType = request.getParameter("deviceType");
+
+        getDeviceData(deviceType, deviceId);
+
+    } else if (uriMatcher.match("/{context}/api/stats/group")) {
+        var groupId = request.getParameter("groupId");
+
+        //URL: GET https://localhost:9443/devicecloud/group_manager/group/id/{groupId}/device/all
+        var endPoint = deviceCloudGroupService + "/group/id/" + groupId + "/device/all";
+        var data = {"username": user};
+        var devices = get(endPoint, data, "json").data;
+
+        for (var device in devices) {
+            deviceId = devices[device].deviceIdentifier;
+            deviceType = devices[device].type;
+            getDeviceData(deviceType, deviceId);
+        }
+    }
+    log.info(stats);
+    // returning the result.
+    if (stats) {
+        print(stats);
+    }
+}
+
+function getDeviceData(deviceType, deviceId) {
+    //URL: GET https://localhost:9443/devicecloud/device_manager/device/type/{type}/identifier/{identifier}
+    var endPoint = deviceCloudDeviceService + "/device/type/" + deviceType + "/identifier/" + deviceId;
+    var data = {"username": user};
+    var device = get(endPoint, data, "json").data;
+    log.info(device);
+    if (!device) {
+        return;
+    }
+    var uname = device.enrolmentInfo.owner;
+
+    var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
+
+    if (analyticStreams) {
+        var streamTableName;
+        for (var stream in analyticStreams) {
+            streamTableName = analyticStreams[stream]["table"];
+            if (stats[streamTableName] == null) {
+                stats[streamTableName] = [];
+            }
+            stats[streamTableName].push({
+                "device": device.name,
+                "stats": getSensorData(streamTableName, analyticStreams[stream]["ui_unit"]["data"][1]["column"]["name"], uname, device.type, device.deviceIdentifier, from, to),
+                "stream": analyticStreams[stream]
+            });
+        }
+    }
+}
+
+function getSensorData(table, column, user, type, deviceIdentifier, from, to) {
+
+    var fetchedData = [];
+
+    try {
+        ///stats/device/type/{type}/identifier/{identifier}
+        var endPoint = deviceCloudStatsService + "/stats/device/type/" + type + "/identifier/" + deviceIdentifier;
+        var query = "?table=" + encodeURIComponent(table)
+            + "&column=" + encodeURIComponent(column)
+            + "&username=" + encodeURIComponent(user)
+            + "&from=" + from
+            + "&to=" + to;
+        endPoint = endPoint + query;
+        fetchedData = get(endPoint, {}, "json").data;
+        return fetchedData;
+    } catch (error) {
+        log.error(error);
+    }
+}
+
+%>

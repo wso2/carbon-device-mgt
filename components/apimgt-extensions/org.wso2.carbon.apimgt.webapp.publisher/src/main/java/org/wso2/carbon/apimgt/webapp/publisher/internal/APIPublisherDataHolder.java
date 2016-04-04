@@ -18,13 +18,20 @@
  */
 package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
+
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class APIPublisherDataHolder {
 
     private APIPublisherService apiPublisherService;
     private ConfigurationContextService configurationContextService;
+    private RealmService realmService;
+    private TenantManager tenantManager;
+    private RegistryService registryService;
 
     private static APIPublisherDataHolder thisInstance = new APIPublisherDataHolder();
 
@@ -57,4 +64,34 @@ public class APIPublisherDataHolder {
         return configurationContextService;
     }
 
+    public RealmService getRealmService() {
+        if (realmService == null) {
+            throw new IllegalStateException("Realm service is not initialized properly");
+        }
+        return realmService;
+    }
+
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+        this.setTenantManager(realmService);
+    }
+
+    private void setTenantManager(RealmService realmService) {
+        if (realmService == null) {
+            throw new IllegalStateException("Realm service is not initialized properly");
+        }
+        this.tenantManager = realmService.getTenantManager();
+    }
+
+    public TenantManager getTenantManager() {
+        return tenantManager;
+    }
+
+    public RegistryService getRegistryService() {
+        return registryService;
+    }
+
+    public void setRegistryService(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 }

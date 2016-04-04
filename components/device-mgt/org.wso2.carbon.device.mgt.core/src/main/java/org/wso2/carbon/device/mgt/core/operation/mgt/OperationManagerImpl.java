@@ -37,6 +37,8 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.util.OperationDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.util.OperationCreateTimeComparator;
+import org.wso2.carbon.device.mgt.core.task.DeviceTaskManager;
+import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -679,6 +681,13 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     private boolean isAuthenticationSkippedOperation(Operation operation) {
+
+        //This is to check weather operations are coming from the task related to retrieving device information.
+        DeviceTaskManager taskManager = new DeviceTaskManagerImpl();
+        if (taskManager.isTaskOperation(operation.getCode())) {
+            return true;
+        }
+
         boolean status;
         switch (operation.getCode()) {
             case DeviceManagementConstants.AuthorizationSkippedOperationCodes.POLICY_OPERATION_CODE :

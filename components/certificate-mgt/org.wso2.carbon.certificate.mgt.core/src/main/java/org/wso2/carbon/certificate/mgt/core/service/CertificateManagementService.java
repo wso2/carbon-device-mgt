@@ -18,8 +18,12 @@
 package org.wso2.carbon.certificate.mgt.core.service;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
+import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -50,9 +54,28 @@ public interface CertificateManagementService {
 
     boolean verifySignature(String headerSignature) throws KeystoreException;
 
+    public CertificateResponse verifyPEMSignature(X509Certificate requestCertificate) throws KeystoreException;
+
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException;
 
     String extractChallengeToken(X509Certificate certificate);
 
     X509Certificate getSignedCertificateFromCSR(String binarySecurityToken) throws KeystoreException;
+
+    public CertificateResponse getCertificateBySerial(String serial) throws KeystoreException;
+
+    public void saveCertificate(List<org.wso2.carbon.certificate.mgt.core.bean.Certificate> certificate)
+            throws KeystoreException;
+
+    public X509Certificate pemToX509Certificate(String pem) throws KeystoreException;
+
+    public CertificateResponse retrieveCertificate(String serialNumber) throws CertificateManagementDAOException;
+
+    public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementDAOException;
+
+    boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException;
+
+    public List<CertificateResponse> getCertificates() throws CertificateManagementDAOException;
+
+    public List<CertificateResponse> searchCertificates(String serialNumber) throws CertificateManagementDAOException;
 }

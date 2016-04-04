@@ -1,0 +1,21 @@
+<tr data-type="selectable" data-deviceid="{{deviceTypeId}}" data-devicetype="{{deviceTypeName}}"
+    data-href="{{appContext}}/device/{{deviceTypeName}}/enroll" class="clickable-row">
+    <td class="remove-padding icon-only content-fill" data-search="{{deviceCategory}}" data-display="{{deviceCategory}}">
+        <div class="thumbnail icon">
+                <!--<i class="square-element text fw fw-mobile"></i>-->
+                <img class="square-element text fw " src="{{imageLocation}}{{deviceTypeName}}.type-view/images/thumb.png" />
+        </div>
+    </td>
+    <td class="remove-padding-top" data-search="{{deviceTypeLabel}}" data-display="{{deviceTypeLabel}}">
+        {{deviceTypeLabel}}</td>
+    <td class="text-right content-fill text-left-on-grid-view no-wrap">
+        <a href="{{appContext}}/device/{{deviceTypeName}}/enroll"
+           data-click-event="remove-form" class="btn col-md-12">
+                            <span class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-check fw-stack-1x"></i>
+                            </span>
+            <span>Select</span>
+        </a>
+    </td>
+</tr>

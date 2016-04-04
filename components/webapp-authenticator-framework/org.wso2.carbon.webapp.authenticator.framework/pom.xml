@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>webapp-authenticator-framework</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>org.wso2.carbon.webapp.authenticator.framework</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Web Application Authenticator Framework Bundle</name>
     <description>WSO2 Carbon - Web Application Authenticator Framework Bundle</description>
@@ -95,8 +95,7 @@
                             javax.xml,
                             org.apache.axis2.transport.http,
                             org.wso2.carbon.apimgt.impl,
-                            org.wso2.carbon.certificate.mgt.core.service,
-                            org.wso2.carbon.certificate.mgt.core.exception,
+                            org.wso2.carbon.certificate.mgt.core.*,
                             org.wso2.carbon.device.mgt.core.permission.mgt,
                             org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.common.permission.mgt,
@@ -200,7 +199,7 @@
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>

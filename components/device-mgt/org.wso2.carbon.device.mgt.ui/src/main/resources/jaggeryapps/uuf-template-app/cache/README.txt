@@ -1,0 +1,1 @@
+This directory is used to cache static files by UUF framework.

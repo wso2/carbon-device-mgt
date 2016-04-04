@@ -1,0 +1,5 @@
+{
+    "version": "1.0.0",
+    "uri": "/role/edit-permission/{+any}",
+    "layout": "cdmf.layout.default"
+}

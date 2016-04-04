@@ -18,7 +18,9 @@ package org.wso2.carbon.device.mgt.core.common;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import java.util.Date;
 import java.util.Properties;
@@ -29,7 +31,9 @@ public class TestDataHolder {
     public static DeviceType initialTestDeviceType;
     public static String TEST_DEVICE_TYPE = "Test";
     public static Integer SUPER_TENANT_ID = -1234;
+    public static String SUPER_TENANT_DOMAIN="carbon.super";
     public static String initialDeviceIdentifier = "12345";
+    public static String OWNER = "admin";
 
     public static Device generateDummyDeviceData(String deviceType){
 
@@ -37,12 +41,12 @@ public class TestDataHolder {
         EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
         enrolmentInfo.setDateOfEnrolment(new Date().getTime());
         enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
-        enrolmentInfo.setOwner("admin");
+        enrolmentInfo.setOwner(OWNER);
         enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
         enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
         device.setEnrolmentInfo(enrolmentInfo);
         device.setDescription("Test Description");
-        device.setDeviceIdentifier("12345");
+        device.setDeviceIdentifier(initialDeviceIdentifier);
         device.setType(deviceType);
         return device;
     }
@@ -69,5 +73,16 @@ public class TestDataHolder {
         application.setAppProperties(properties);
 
         return application;
+    }
+
+    public static DeviceGroup generateDummyGroupData() {
+        DeviceGroup deviceGroup = new DeviceGroup();
+        deviceGroup.setName("Test device group");
+        deviceGroup.setDescription("Test description");
+        deviceGroup.setDateOfCreation(new Date().getTime());
+        deviceGroup.setDateOfLastUpdate(new Date().getTime());
+        deviceGroup.setOwner(OWNER);
+        DeviceGroupBuilder broker = new DeviceGroupBuilder(deviceGroup);
+        return broker.getGroup();
     }
 }

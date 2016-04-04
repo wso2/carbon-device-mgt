@@ -32,114 +32,179 @@ import java.util.List;
 
 public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 
-    @Override
-    public void addDeviceType(DeviceType deviceType) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        try {
-            conn = this.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_TYPE (NAME) VALUES (?)");
-            stmt.setString(1, deviceType.getName());
-            stmt.execute();
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while registering the device type " +
-                    "'" + deviceType.getName() + "'", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
-        }
-    }
+	@Override
+	public void addDeviceType(DeviceType deviceType, int providerTenantId, boolean isSharedWithAllTenants)
+			throws DeviceManagementDAOException {
+		Connection conn;
+		PreparedStatement stmt = null;
+		try {
+			conn = this.getConnection();
+			stmt = conn.prepareStatement(
+					"INSERT INTO DM_DEVICE_TYPE (NAME,PROVIDER_TENANT_ID,SHARED_WITH_ALL_TENANTS) VALUES (?,?,?)");
+			stmt.setString(1, deviceType.getName());
+			stmt.setInt(2, providerTenantId);
+			stmt.setBoolean(3, isSharedWithAllTenants);
+			stmt.execute();
+		} catch (SQLException e) {
+			throw new DeviceManagementDAOException(
+					"Error occurred while registering the device type '" + deviceType.getName() + "'", e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(stmt, null);
+		}
+	}
 
-    @Override
-    public void updateDeviceType(DeviceType deviceType) throws DeviceManagementDAOException {
+	@Override
+	public void updateDeviceType(DeviceType deviceType, int tenantId)
+			throws DeviceManagementDAOException {
+	}
 
-    }
+	@Override
+	public List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException {
+		Connection conn;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<DeviceType> deviceTypes = new ArrayList<>();
+		try {
+			conn = this.getConnection();
+			String sql =
+					"SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where PROVIDER_TENANT_ID =" +
+							"? OR SHARED_WITH_ALL_TENANTS = TRUE";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, tenantId);
+			rs = stmt.executeQuery();
 
-    @Override
-    public List<DeviceType> getDeviceTypes() throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<DeviceType> deviceTypes =  new ArrayList<>();
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+			while (rs.next()) {
+				DeviceType deviceType = new DeviceType();
+				deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
+				deviceType.setName(rs.getString("DEVICE_TYPE"));
+				deviceTypes.add(deviceType);
+			}
+			return deviceTypes;
+		} catch (SQLException e) {
+			throw new DeviceManagementDAOException("Error occurred while fetching the registered device types", e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+		}
+	}
 
-            while (rs.next()) {
-                DeviceType deviceType = new DeviceType();
-                deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
-                deviceType.setName(rs.getString("DEVICE_TYPE"));
-                deviceTypes.add(deviceType);
-            }
-            return deviceTypes;
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while fetching the registered device types", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-    }
+	@Override
+	public List<DeviceType> getDeviceTypesByProvider(int tenantId) throws DeviceManagementDAOException {
+		Connection conn;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<DeviceType> deviceTypes = new ArrayList<>();
+		try {
+			conn = this.getConnection();
+			String sql =
+					"SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where PROVIDER_TENANT_ID =?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, tenantId);
+			rs = stmt.executeQuery();
 
-    @Override
-    public DeviceType getDeviceType(int id) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE WHERE ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, id);
+			while (rs.next()) {
+				DeviceType deviceType = new DeviceType();
+				deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
+				deviceType.setName(rs.getString("DEVICE_TYPE"));
+				deviceTypes.add(deviceType);
+			}
+			return deviceTypes;
+		} catch (SQLException e) {
+			throw new DeviceManagementDAOException("Error occurred while fetching the registered device types", e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+		}
+	}
 
-            rs = stmt.executeQuery();
-            DeviceType deviceType = null;
-            while (rs.next()) {
-                deviceType = new DeviceType();
-                deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
-                deviceType.setName(rs.getString("DEVICE_TYPE"));
-            }
-            return deviceType;
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while fetching the registered device type", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-    }
+	@Override
+	public List<DeviceType> getSharedDeviceTypes() throws DeviceManagementDAOException {
+		Connection conn;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<DeviceType> deviceTypes = new ArrayList<>();
+		try {
+			conn = this.getConnection();
+			String sql =
+					"SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where  " +
+							"SHARED_WITH_ALL_TENANTS = TRUE";
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
 
-    @Override
-    public DeviceType getDeviceType(String type) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        DeviceType deviceType = null;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT ID From DM_DEVICE_TYPE WHERE NAME = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, type);
-            rs = stmt.executeQuery();
+			while (rs.next()) {
+				DeviceType deviceType = new DeviceType();
+				deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
+				deviceType.setName(rs.getString("DEVICE_TYPE"));
+				deviceTypes.add(deviceType);
+			}
+			return deviceTypes;
+		} catch (SQLException e) {
+			throw new DeviceManagementDAOException("Error occurred while fetching the registered device types", e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+		}
+	}
 
-            if (rs.next()) {
-                deviceType = new DeviceType();
-                deviceType.setId(rs.getInt("ID"));
-                deviceType.setName(type);
-            }
-            return deviceType;
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while fetch device type id for device type " +
-                    "'" + type + "'", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-    }
+	@Override
+	public DeviceType getDeviceType(int id) throws DeviceManagementDAOException {
+		Connection conn;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = this.getConnection();
+			String sql = "SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE WHERE ID = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, id);
+			rs = stmt.executeQuery();
+			DeviceType deviceType = null;
+			while (rs.next()) {
+				deviceType = new DeviceType();
+				deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
+				deviceType.setName(rs.getString("DEVICE_TYPE"));
+			}
+			return deviceType;
+		} catch (SQLException e) {
+			throw new DeviceManagementDAOException(
+					"Error occurred while fetching the registered device type", e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+		}
+	}
 
-    @Override
-    public void removeDeviceType(String type) throws DeviceManagementDAOException {
+	@Override
+	public DeviceType getDeviceType(String type, int tenantId) throws
+															   DeviceManagementDAOException {
+		Connection conn;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		DeviceType deviceType = null;
+		try {
+			conn = this.getConnection();
+			String sql = "SELECT ID AS DEVICE_TYPE_ID FROM DM_DEVICE_TYPE WHERE (PROVIDER_TENANT_ID =? OR " +
+							"SHARED_WITH_ALL_TENANTS = TRUE) AND NAME =?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, tenantId);
+			stmt.setString(2, type);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				deviceType = new DeviceType();
+				deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
+				deviceType.setName(type);
+			}
+			return deviceType;
+		} catch (SQLException e) {
+			throw new DeviceManagementDAOException(
+					"Error occurred while fetch device type id for device type '" + type + "'", e);
+		} finally {
+			DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+		}
+	}
 
-    }
+	@Override
+	public void removeDeviceType(String type, int tenantId) throws DeviceManagementDAOException {
 
-    private Connection getConnection() throws SQLException {
-        return DeviceManagementDAOFactory.getConnection();
-    }
+	}
+
+	private Connection getConnection() throws SQLException {
+		return DeviceManagementDAOFactory.getConnection();
+	}
 
 }

@@ -1,0 +1,51 @@
+<table class="table table-striped table-hover table-bordered display data-table" id="policy-table">
+    <thead>
+    <tr class="sort-row">
+        <th>Policy Name</th>
+        <th>Status</th>
+        <th class="no-sort"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each policies}}
+        <tr data-type="selectable" data-id="{{id}}">
+            <td data-display="{{name}}" data-grid-label="Name">{{name}}</td>
+            <td data-display="{{status}}" data-grid-label="Status">
+                {{#equal status "Active/Updated"}}
+                    <i class="fw fw-warning icon-success"></i> Active/Updated</span>
+                {{/equal}}
+                {{#equal status "Active"}}
+                    <i class="fw fw-ok icon-success"></i> Active</span>
+                {{/equal}}
+                {{#equal status "Inactive/Updated"}}
+                    <i class="fw fw-warning icon-warning"></i> Inactive/Updated</span>
+                {{/equal}}
+                {{#equal status "Inactive"}}
+                    <i class="fw fw-error icon-danger"></i> Inactive</span>
+                {{/equal}}
+            </td>
+            <td class="text-right content-fill text-left-on-grid-view no-wrap">
+                <a href="../policy/view?id={{id}}&type={{platform}}" data-id="{{id}}"
+                   data-click-event="remove-form"
+                   class="policy-view-link">
+                            <span class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-view fw-stack-1x"></i>
+                            </span>
+                    <span class="hidden-xs hidden-on-grid-view">View</span>
+                </a>
+                <a href="../policy/edit?id={{id}}&type={{platform}}"
+                   data-id="{{id}}" data-click-event="remove-form"
+                   class="policy-update-link">
+                            <span class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-settings fw-stack-1x"></i>
+                            </span>
+                    <span class="hidden-xs hidden-on-grid-view">Re-Configure</span>
+                </a>
+            </td>
+        </tr>
+    {{/each}}
+    <br class="c-both"/>
+    </tbody>
+</table>

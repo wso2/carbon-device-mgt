@@ -1,0 +1,45 @@
+<table class="table table-responsive table-striped" id="members">
+    <tbody>
+    {{#if device.viewModel.vendor}}
+        <tr role="row" class="even">
+            <td class="sorting_1" style="padding:10px 15px; width: 1%;;">Device</td>
+            <td style="padding:10px 15px;">{{device.viewModel.vendor}} {{device.properties.model}}</td>
+        </tr>
+    {{/if}}
+    {{#if device.viewModel.model}}
+        <tr role="row" class="odd">
+            <td class="sorting_1" style="padding:10px 15px;">Model</td>
+            <td style="padding:10px 15px;">{{device.viewModel.model}}</td>
+        </tr>
+    {{/if}}
+    {{#if device.viewModel.imei}}
+        <tr role="row" class="even">
+            <td class="sorting_1" style="padding:10px 15px;">IMEI</td>
+            <td style="padding:10px 15px;">{{device.viewModel.imei}}</td>
+        </tr>
+    {{/if}}
+    {{#if device.viewModel.udid}}
+        <tr role="row" class="even">
+            <td class="sorting_1" style="padding:10px 15px;">UDID</td>
+            <td style="padding:10px 15px;">{{device.viewModel.udid}}</td>
+        </tr>
+    {{/if}}
+    {{#if device.viewModel.phoneNumber}}
+        <tr role="row" class="even">
+            <td class="sorting_1" style="padding:10px 15px;">Phone Number</td>
+            <td style="padding:10px 15px;">{{device.viewModel.phoneNumber}}</td>
+        </tr>
+    {{/if}}
+    <tr role="row" class="even">
+        <td class="sorting_1" style="padding:10px 15px;">Status</td>
+        <td style="padding:10px 15px;">
+            {{#equal device.status "ACTIVE"}}<span><i
+                    class="fw fw-ok icon-success"></i> Active</span>{{/equal}}
+            {{#equal device.status "INACTIVE"}}<span><i
+                    class="fw fw-warning icon-warning"></i> Inactive</span>{{/equal}}
+            {{#equal device.status "BLOCKED"}}<span><i class="fw fw-remove icon-danger"></i> Blocked</span>{{/equal}}
+            {{#equal device.status "REMOVED"}}<span><i class="fw fw-delete icon-danger"></i> Removed</span>{{/equal}}
+        </td>
+    </tr>
+    </tbody>
+</table>

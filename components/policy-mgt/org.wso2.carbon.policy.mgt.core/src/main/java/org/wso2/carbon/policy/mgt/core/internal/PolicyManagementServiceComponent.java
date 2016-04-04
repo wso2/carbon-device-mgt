@@ -101,6 +101,20 @@ public class PolicyManagementServiceComponent {
         }
     }
 
+    @SuppressWarnings("unused")
+    protected void deactivate(ComponentContext componentContext) {
+        try {
+            PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                    getDeviceManagementConfigRepository().getPolicyConfiguration();
+            if (policyConfiguration.getMonitoringEnable()) {
+                TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
+                taskScheduleService.stopTask();
+            }
+        } catch (Throwable t) {
+            log.error("Error occurred while destroying the Policy management core.", t);
+        }
+    }
+
 
     /**
      * Sets Realm Service

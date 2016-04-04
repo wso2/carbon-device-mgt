@@ -1,0 +1,62 @@
+{{#each groups}}
+    <tr data-type="selectable" data-group-name="{{name}}" data-group-owner="{{owner}}">
+        <td class="remove-padding icon-only content-fill">
+            <div class="thumbnail icon">
+                <img class="square-element text fw "
+                     src="public/cdmf.page.groups/images/group-icon.png"/>
+            </div>
+        </td>
+        <td class="fade-edge">
+            <h4>{{name}}</h4>
+        </td>
+        <td class="fade-edge remove-padding-top" data-search="{{owner}}"
+            data-display="{{owner}}"
+            data-grid-label="Owner">{{owner}}</td>
+        <td class="text-right content-fill text-left-on-grid-view no-wrap">
+            <a href="devices?groupName={{name}}&groupOwner={{owner}}"
+               data-click-event="remove-form" class="btn padding-reduce-on-grid-view">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-view fw-stack-1x"></i>
+                </span>
+                <span class="hidden-xs hidden-on-grid-view">View Devices</span>
+            </a>
+            <a href="analytics?groupName={{name}}&groupOwner={{owner}}"
+               data-click-event="remove-form" class="btn padding-reduce-on-grid-view">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-statistics fw-stack-1x"></i>
+                </span>
+                <span class="hidden-xs hidden-on-grid-view">Analytics</span>
+            </a>
+            <a href="#" data-click-event="remove-form"
+               class="btn padding-reduce-on-grid-view share-group-link"
+               data-group-name="{{name}}" data-group-owner="{{owner}}">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-share fw-stack-1x"></i>
+                </span>
+                <span class="hidden-xs hidden-on-grid-view">Share</span>
+            </a>
+            <a href="#" data-click-event="remove-form"
+               class="btn padding-reduce-on-grid-view edit-group-link"
+               data-group-name="{{name}}" data-group-owner="{{owner}}"
+               data-group-description="{{description}}">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-edit fw-stack-1x"></i>
+                </span>
+                <span class="hidden-xs hidden-on-grid-view">Edit</span>
+            </a>
+            <a href="#" data-click-event="remove-form"
+               class="btn padding-reduce-on-grid-view remove-group-link"
+               data-group-name="{{name}}" data-group-owner="{{owner}}">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-delete fw-stack-1x"></i>
+                </span>
+                <span class="hidden-xs hidden-on-grid-view">Delete</span>
+            </a>
+        </td>
+    </tr>
+{{/each}}

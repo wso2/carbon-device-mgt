@@ -22,4 +22,12 @@
     <DriverClassName>org.h2.Driver</DriverClassName>
     <User>wso2carbon</User>
     <Password>wso2carbon</Password>
+
+
+    <!-- For MySql -->
+
+    <!--<Url>jdbc:mysql://localhost:3306/WSO2CDM</Url>-->
+    <!--<DriverClassName>com.mysql.jdbc.Driver</DriverClassName>-->
+    <!--<User>root</User>-->
+    <!--<Password></Password>-->
 </DataSourceConfig>

@@ -18,7 +18,12 @@
 
 package org.wso2.carbon.certificate.mgt.core.dao;
 
+import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 /**
  * This class represents the key operations associated with persisting certificate related
@@ -30,21 +35,43 @@ public interface CertificateDAO {
      * This can be used to store a certificate in the database, where it will be stored against the serial number
      * of the certificate.
      *
-     * @param byteArrayInputStream Holds the certificate.
-     * @param serialNumber         Serial number of the certificate.
+     * @param certificate Holds the certificate and relevant details.
      * @throws CertificateManagementDAOException
      */
-    void addCertificate(ByteArrayInputStream byteArrayInputStream, String serialNumber
-    ) throws CertificateManagementDAOException;
+    void addCertificate(List<org.wso2.carbon.certificate.mgt.core.bean.Certificate> certificate)
+            throws CertificateManagementDAOException;
 
     /**
-     * Usage is to obtain a certificate stored in the database by providing the serial number.
+     * Usage is to obtain a certificate stored in the database by providing the common name.
      *
      * @param serialNumber Serial number of the certificate.
      * @return representation of the certificate.
      * @throws CertificateManagementDAOException
      */
-    byte[] retrieveCertificate(String serialNumber
+    org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse retrieveCertificate(String serialNumber
     ) throws CertificateManagementDAOException;
 
+    /**
+     * Get all the certificates in a paginated manner.
+     * @param request Request mentioning pagination details such as length and stating index.
+     * @return Pagination result with data and the count of results.
+     * @throws CertificateManagementDAOException
+     */
+    PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementDAOException;
+
+    /**
+     * Get all the certificates.
+     * @return List of certificates
+     * @throws CertificateManagementDAOException
+     */
+    public List<CertificateResponse> getAllCertificates() throws CertificateManagementDAOException;
+
+    /**
+     * Delete a certificate identified by a serial number()
+     * @param serialNumber serial number
+     * @return whether the certificate was removed or not.
+     */
+    boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException;
+
+    public List<CertificateResponse> searchCertificate(String serialNumber) throws CertificateManagementDAOException;
 }

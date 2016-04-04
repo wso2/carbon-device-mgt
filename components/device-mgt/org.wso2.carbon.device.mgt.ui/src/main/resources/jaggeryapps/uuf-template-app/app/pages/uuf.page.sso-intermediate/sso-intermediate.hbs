@@ -1,0 +1,28 @@
+{{#zone "title"}}Sign In | {{@app.conf.appName}}{{/zone}}
+
+{{unit "uuf.unit.theme"}}
+{{unit "uuf.unit.header.logo"}}{{unit "uuf.unit.header"}}
+{{unit "uuf.unit.footer"}}
+
+{{#zone "content"}}
+    <div class="jumbotron">
+        <p>
+            You are now being redirected to Identity Server. If the redirection fails, please click
+            on the button below.
+        </p>
+
+        <div>
+            <form method="post" action="{{@page.params.identityProviderUrl}}">
+                <input type="hidden" name="SAMLRequest"
+                       value="{{@page.params.encodedSAMLAuthRequest}}" />
+                <input type="hidden" name="RelayState" value="{{@page.params.relayState}}" />
+                <input type="hidden" name="SSOAuthSessionID" value="{{@page.params.sessionId}}" />
+                <button type="submit" class="btn btn-primary">Redirect manually</button>
+            </form>
+        </div>
+    </div>
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    <script type="text/javascript">document.forms[0].submit();</script>
+{{/zone}}

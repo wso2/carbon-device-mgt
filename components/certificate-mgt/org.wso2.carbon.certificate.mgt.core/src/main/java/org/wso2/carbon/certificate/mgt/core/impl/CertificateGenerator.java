@@ -39,18 +39,17 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
 import org.jscep.message.PkcsPkiEnvelopeDecoder;
-import org.jscep.message.PkcsPkiEnvelopeEncoder;
-import org.jscep.message.CertRep;
-import org.jscep.message.PkiMessageEncoder;
 import org.jscep.message.PkiMessageDecoder;
 import org.jscep.message.PkiMessage;
+import org.jscep.message.CertRep;
+import org.jscep.message.PkcsPkiEnvelopeEncoder;
+import org.jscep.message.PkiMessageEncoder;
 import org.jscep.message.MessageEncodingException;
 import org.jscep.message.MessageDecodingException;
 import org.jscep.transaction.FailInfo;
@@ -66,34 +65,15 @@ import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
 import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 import org.wso2.carbon.certificate.mgt.core.util.Serializer;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
-import java.io.DataInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.File;
-import java.security.Security;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
-import java.security.NoSuchAlgorithmException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
-import java.security.PrivateKey;
+import java.io.*;
+import java.security.*;
 import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -315,7 +295,7 @@ public class CertificateGenerator {
 
     public static String getCommonName(X509Certificate requestCertificate) {
         String distinguishedName = requestCertificate.getSubjectDN().getName();
-        if(distinguishedName != null && !distinguishedName.isEmpty()) {
+        if (distinguishedName != null && !distinguishedName.isEmpty()) {
             String[] dnSplits = distinguishedName.split(",");
             for (String dnSplit : dnSplits) {
                 if (dnSplit.contains("CN=")) {
@@ -639,7 +619,6 @@ public class CertificateGenerator {
             CertificateManagementDAOFactory.closeConnection();
         }
     }
-
 
 
     public String extractChallengeToken(X509Certificate certificate) {

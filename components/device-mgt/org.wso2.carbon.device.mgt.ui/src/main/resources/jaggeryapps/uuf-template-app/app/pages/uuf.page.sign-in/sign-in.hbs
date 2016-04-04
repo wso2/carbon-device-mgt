@@ -1,0 +1,46 @@
+{{#zone "title"}}Sign In | {{@app.conf.appName}}{{/zone}}
+
+{{~#zone "content"}}
+    <div class="col-sm-7 col-md-4 center-block" style="float: none; margin-top: 10%;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    {{#defineZone "signIn-title" scope="protected"}}Sign In to UUF Template App{{/defineZone}}
+                </h4>
+            </div>
+            <div class="panel-body">
+                {{#if message}}
+                    <div id="_uuf_login-error-msg" class="alert alert-danger">
+                        <i class="icon fw fw-warning"></i> {{message}}!
+                    </div>
+                {{/if}}
+                <form id="signInForm" method="POST"
+                      class="{{defineZone "signInForm-class" scope="protected"}}"
+                      action="{{#defineZone "signInForm-action" scope="protected"}}{{@app.context}}/uuf/login{{/defineZone}}">
+                    <div class="form-group">
+                        <input type="text" name="username" class="form-control"
+                               placeholder="User Name" required="required" autofocus="autofocus" />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control"
+                               placeholder="Password" required="required" />
+                    </div>
+                    {{#if referer}}
+                        <input type="hidden" name="referer" value="{{referer}}" />
+                    {{/if}}
+                    <div class="form-group" style="padding-top: 10px;">
+                        <input type="submit" name="signInBtn" class="btn btn-primary btn-block"
+                               value="Sign In" />
+                    </div>
+                    {{defineZone "signInForm-below" scope="protected"}}
+                </form>
+            </div>
+        </div>
+    </div>
+{{/zone}}
+
+{{! sign-in form validation}}
+{{~unit "uuf.unit.lib.form-validation"}}
+{{~#zone "bottomJs"}}
+    {{~js "js/sign-in-validations.js"}}
+{{/zone}}

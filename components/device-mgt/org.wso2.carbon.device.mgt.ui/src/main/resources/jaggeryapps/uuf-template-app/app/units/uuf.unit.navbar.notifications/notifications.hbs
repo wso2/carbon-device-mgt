@@ -1,0 +1,19 @@
+{{#zone "navbarCollapsableRightItems"}}
+    <li class="visible-inline-block">
+        <a id="_uuf-notifications-button" data-toggle="sidebar"
+           data-target="#_uuf-notifications-pane" aria-controls="_uuf-notifications-pane"
+           aria-expanded="false">
+            <span class="icon fw-stack"><i class="fw fw-notification fw-stack-1x"></i></span>
+            Notifications
+            <span id="_uuf-notifications-count" class="badge">{{#defineZone "notifications-count"}}0{{/defineZone}}</span>
+        </a>
+    </li>
+{{/zone}}
+
+{{~#zone "sidePanes"}}
+    <div id="_uuf-notifications-pane" class="sidebar-wrapper " data-side="right">
+        <ul id="_uuf-notifications-list" class="sidebar-messages">
+            {{defineZone "notifications-items"}}
+        </ul>
+    </div>
+{{/zone}}

@@ -164,4 +164,5 @@ public class Device implements Serializable{
 	public int hashCode() {
 		return getDeviceIdentifier().hashCode();
 	}
+
 }

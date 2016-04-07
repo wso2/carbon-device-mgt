@@ -237,7 +237,7 @@ public class GroupDAOImpl implements GroupDAO {
         List<DeviceGroupBuilder> deviceGroups = new ArrayList<>();
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
-            String sql = "SELECT DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER "
+            String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER "
                          + "FROM DM_GROUP WHERE GROUP_NAME LIKE ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + groupName + "%");

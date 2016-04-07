@@ -25,14 +25,28 @@ var groupModule = {};
     var utility = require("/app/modules/utility.js").utility;
     var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 
-    var deviceCloudService = devicemgtProps["httpsURL"] + "/common/group_manager";
+    var groupServiceEndpoint = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/groups";
 
     var user = session.get(constants.USER_SESSION_KEY);
 
     var endPoint;
 
     groupModule.getGroupCount = function () {
-        endPoint = deviceCloudService + "/groups/count?userName=" + user.username;
+        endPoint = groupServiceEndpoint + "/user/" + user.username + "/count";
+        return serviceInvokers.XMLHttp.get(
+                endPoint, function (responsePayload) {
+                    return responsePayload;
+                }
+                ,
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return -1;
+                }
+        );
+    };
+
+    groupModule.getGroupDeviceCount = function (groupName, owner) {
+        endPoint = groupServiceEndpoint + "/" + owner + "/" + groupName + "/devices/count";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;

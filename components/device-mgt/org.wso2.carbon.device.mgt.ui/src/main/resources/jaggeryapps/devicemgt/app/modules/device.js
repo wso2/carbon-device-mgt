@@ -348,6 +348,22 @@ deviceModule = function () {
         return result;
     };
 
+    publicMethods.getOwnDevicesCount = function () {
+        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + carbonUser.username
+                  + "/count";
+        return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    return responsePayload;
+                }
+                ,
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return -1;
+                }
+        );
+    };
+
     publicMethods.getAllDevicesCount = function () {
         var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/count";
         return serviceInvokers.XMLHttp.get(

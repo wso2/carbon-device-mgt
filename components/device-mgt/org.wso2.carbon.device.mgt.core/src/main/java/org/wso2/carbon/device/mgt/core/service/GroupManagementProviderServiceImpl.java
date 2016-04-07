@@ -264,6 +264,34 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     @Override
+    public PaginationResult getGroups(String username, int startIndex, int rowCount) throws GroupManagementException {
+        Map<Integer, DeviceGroup> groups = new HashMap<>();
+        UserStoreManager userStoreManager;
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            userStoreManager = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            String[] roleList = userStoreManager.getRoleListOfUser(username);
+            int index = 0;
+            for (String role : roleList) {
+                if (role != null && role.contains("Internal/group-")) {
+                    DeviceGroupBuilder deviceGroupBuilder = extractNewGroupFromRole(groups, role);
+                    if (deviceGroupBuilder != null && startIndex <= index++ && index <= rowCount) {
+                        groups.put(deviceGroupBuilder.getGroupId(), deviceGroupBuilder.getGroup());
+                    }
+                }
+            }
+        } catch (UserStoreException e) {
+            throw new GroupManagementException("Error occurred while getting user store manager.", e);
+        }
+        PaginationResult paginationResult = new PaginationResult();
+        paginationResult.setRecordsTotal(getGroupCount());
+        paginationResult.setData(new ArrayList<>(groups.values()));
+        paginationResult.setRecordsFiltered(groups.size());
+        return paginationResult;
+    }
+
+    @Override
     public int getGroupCount() throws GroupManagementException {
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -563,7 +591,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public List<Device> getDevices(String groupName, String owner) throws GroupManagementException {
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            GroupManagementDAOFactory.getConnection();
+            GroupManagementDAOFactory.openConnection();
             return this.groupDAO.getDevices(groupName, owner, tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while getting devices in group.", e);
@@ -583,7 +611,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         List<Device> devices;
         try {
-            GroupManagementDAOFactory.getConnection();
+            GroupManagementDAOFactory.openConnection();
             devices = this.groupDAO.getDevices(groupName, owner, startIndex, rowCount, tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while getting devices in group.", e);
@@ -606,7 +634,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public int getDeviceCount(String groupName, String owner) throws GroupManagementException {
         try {
             int count;
-            GroupManagementDAOFactory.getConnection();
+            GroupManagementDAOFactory.openConnection();
             count = groupDAO.getDeviceCount(groupName, owner,
                                             CarbonContext.getThreadLocalCarbonContext().getTenantId());
             return count;

@@ -77,7 +77,7 @@ var backendServiceInvoker = function () {
             if (xmlHttpRequest.responseText != null) {
                 return successCallback(parse(xmlHttpRequest.responseText));
             } else {
-                return successCallback({"statusCode": 200, "messageFromServer": "Operation Completed"});
+                return successCallback({"status": xmlHttpRequest.status, "messageFromServer": "Operation Completed"});
             }
         } else if (xmlHttpRequest.status == 401 && (xmlHttpRequest.responseText == TOKEN_EXPIRED ||
                                                     xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {

@@ -27,6 +27,9 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/roles/update")) {
         context["editPermitted"] = true;
     }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/remove")) {
+        context["removePermitted"] = true;
+    }
     var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();
     context["appContext"] = deviceMgtProps.appContext;
     context["adminRole"] = deviceMgtProps.adminRole;

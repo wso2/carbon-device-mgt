@@ -17,10 +17,11 @@
  */
 
 function onRequest(context) {
-    var page = {};
+    var page_data = {};
     var groupId = request.getParameter("groupId");
     var userModule = require("/app/modules/user.js").userModule;
     var constants = require("/app/modules/constants.js");
+    var deviceModule = require("/app/modules/device.js").deviceModule;
     var permissions = [];
     var currentUser = session.get(constants.USER_SESSION_KEY);
     if (currentUser) {
@@ -28,18 +29,40 @@ function onRequest(context) {
             permissions.push("LIST_DEVICES");
         } else if (userModule.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
             permissions.push("LIST_OWN_DEVICES");
+        }else if(userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/policies/list")){
+            permissions.push("LIST_POLICIES");
         }
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/add")) {
-            permissions.push("ADD_DEVICE");
-        }
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/edit")) {
-            permissions.push("EDIT_DEVICE");
-        }
+
         if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/remove")) {
             permissions.push("REMOVE_DEVICE");
         }
-        page.permissions = stringify(permissions);
-        page.currentUser = currentUser;
+
+        page_data.permissions = stringify(permissions);
+        page_data.currentUser = currentUser;
+        var deviceCount;
+        if (groupId) {
+            var groupModule = require("/app/modules/group.js").groupModule;
+            deviceCount = groupModule.getDevices(groupId).data.length;
+            page_data.groupId = groupId;
+        } else {
+            deviceCount = deviceModule.getOwnDevicesCount();
+        }
+        if (deviceCount > 0){
+            page_data.deviceCount = deviceCount;
+            var utility = require("/app/modules/utility.js").utility;
+            var data = deviceModule.getDeviceTypes();
+            var deviceTypes = [];
+            if(data.data) {
+                for(var i = 0; i < data.data.length; i++) {
+                    deviceTypes.push({
+                        "type" : data.data[i].name,
+                        "category"  : utility.getDeviceTypeConfig(data.data[i].name).deviceType.category
+                    });
+                }
+            }
+
+            page_data.deviceTypes = deviceTypes;
+        }
     }
-    return page;
+    return page_data;
 }

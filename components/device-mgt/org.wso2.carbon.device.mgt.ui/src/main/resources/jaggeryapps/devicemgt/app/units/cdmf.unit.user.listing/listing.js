@@ -20,6 +20,10 @@ function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
     var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();
     context["permissions"] = userModule.getUIPermissions();
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/delete")) {
+        context["removePermitted"] = true;
+    }
+
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/remove")) {
         context["removePermitted"] = true;
     }
@@ -27,7 +31,12 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/update")) {
         context["editPermitted"] = true;
     }
-
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
+        context["viewPermitted"] = true;
+    }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/invite")) {
+        context["invitePermitted"] = true;
+    }
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/reset-password")) {
         context["resetPasswordPermitted"] = true;
     }

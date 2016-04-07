@@ -28,17 +28,9 @@
         <td class="fade-edge remove-padding-top" data-search="{{type}}" data-display="{{type}}"
             data-grid-label="Type">{{type}}</td>
 
-        {{#if enrolmentInfo.ownership}}
-            <td class="fade-edge remove-padding-top" data-search="{{enrolmentInfo.ownership}}"
-                data-display="{{enrolmentInfo.ownership}}"
-                data-grid-label="Ownership">
-                {{enrolmentInfo.ownership}}
-            </td>
-        {{else}}
-            <td class="fade-edge remove-padding-top" data-search="{{enrolmentInfo.ownership}}"
-                data-display="{{enrolmentInfo.ownership}}">
-            </td>
-        {{/if}}
+        <td class="fade-edge remove-padding-top" data-search="{{enrolmentInfo.ownership}}"
+            data-display="{{enrolmentInfo.ownership}}"
+            data-grid-label="Ownership">{{enrolmentInfo.ownership}}</td>
 
         <td class="text-right content-fill text-left-on-grid-view no-wrap">
             {{#unequal enrolmentInfo.status "REMOVED"}}

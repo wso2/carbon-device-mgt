@@ -137,7 +137,10 @@ $(document).ready(function () {
         $("#policy-users").hide();
     }
 
-    $("#policy-listing-status-msg").removeClass("hidden");
+    if ($("#policy-listing-status-msg").text()) {
+        $("#policy-listing-status").removeClass("hidden");
+    }
+
     // Click functions related to Policy Listing
     var isUpdated = $('#is-updated').val();
     if (!isUpdated) {
@@ -218,7 +221,7 @@ $(document).ready(function () {
     $(".policy-unpublish-link").click(function () {
         var policyList = getSelectedPolicies();
         var statusList = getSelectedPolicyStates();
-        if (($.inArray('Inactive/Updated', statusList) > -1) || ($.inArray('Inactive', statusList) > -1)) {
+        if ( ($.inArray( 'Inactive/Updated', statusList ) > -1) || ($.inArray( 'Inactive', statusList ) > -1) ) {
             $(modalPopupContent).html($("#errorPolicyUnPublishSelection").html());
             showPopup();
         } else {
@@ -262,7 +265,7 @@ $(document).ready(function () {
     $(".policy-publish-link").click(function () {
         var policyList = getSelectedPolicies();
         var statusList = getSelectedPolicyStates();
-        if (($.inArray('Active/Updated', statusList) > -1) || ($.inArray('Active', statusList) > -1)) {
+        if ( ($.inArray( 'Active/Updated', statusList ) > -1) || ($.inArray( 'Active', statusList ) > -1) ) {
             $(modalPopupContent).html($("#errorPolicyPublishSelection").html());
             showPopup();
         } else {

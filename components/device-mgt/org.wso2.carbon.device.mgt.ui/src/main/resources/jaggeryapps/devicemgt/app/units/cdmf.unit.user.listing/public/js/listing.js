@@ -17,18 +17,6 @@
  */
 
 /**
- * Checks if provided input is valid against RegEx input.
- *
- * @param regExp Regular expression
- * @param inputString Input string to check
- * @returns {boolean} Returns true if input matches RegEx
- */
-function inputIsValid(regExp, inputString) {
-    regExp = new RegExp(regExp);
-    return regExp.test(inputString);
-}
-
-/**
  * Sorting function of users
  * listed on User Management page in WSO2 Devicemgt Console.
  */
@@ -112,9 +100,9 @@ $("a.invite-user-link").click(function () {
             usernameList,
             function () {
                 $(modalPopupContent).html($('#invite-user-success-content').html());
-                setTimeout(function () {
+                $("a#invite-user-success-link").click(function () {
                     hidePopup();
-                }, 1000);
+                });
             },
             function () {
                 $(modalPopupContent).html($('#invite-user-error-content').html());
@@ -143,7 +131,6 @@ function removeUser(uname, uid) {
     showPopup();
 
     $("a#remove-user-yes-link").click(function () {
-        $(modalPopupContent).html($('#remove-user-wait-content').html());
         invokerUtil.delete(
             removeUserAPI,
             function () {
@@ -154,9 +141,9 @@ function removeUser(uname, uid) {
                 $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
                 // update modal-content with success message
                 $(modalPopupContent).html($('#remove-user-success-content').html());
-                setTimeout(function () {
+                $("a#remove-user-success-link").click(function () {
                     hidePopup();
-                }, 1000);
+                });
             },
             function () {
                 $(modalPopupContent).html($('#remove-user-error-content').html());
@@ -205,7 +192,6 @@ function resetPassword(uname) {
             var resetPasswordFormData = {};
             resetPasswordFormData.username = user;
             resetPasswordFormData.newPassword = window.btoa(unescape(encodeURIComponent(confirmedPassword)));
-            $(modalPopupContent).html($('#reset-password-wait-content').html());
 
             invokerUtil.post(
                 resetPasswordServiceURL,
@@ -214,9 +200,9 @@ function resetPassword(uname) {
                     data = JSON.parse(data);
                     if (data.statusCode == 201) {
                         $(modalPopupContent).html($('#reset-password-success-content').html());
-                        setTimeout(function () {
+                        $("a#reset-password-success-link").click(function () {
                             hidePopup();
-                        }, 1000);
+                        });
                     }
                 }, function (data) {    // The error callback
                     if (data.statusCode == 400) {
@@ -253,7 +239,12 @@ $("#search-btn").click(function () {
  * initial mode and with out select mode.
  */
 function InitiateViewOption() {
-    $(location).attr('href', $(this).data("url"));
+    if ($("#can-view").val()) {
+        $(location).attr('href', $(this).data("url"));
+    } else {
+        $(modalPopupContent).html($('#errorUserView').html());
+        showPopup();
+    }
 }
 
 function loadUsers(searchParam) {
@@ -308,12 +299,12 @@ function loadUsers(searchParam) {
             $(".icon .text").res_text(0.2);
         };
         invokerUtil.get(serviceURL,
-            successCallback,
-            function (message) {
-                $('#ast-container').addClass('hidden');
-                $('#user-listing-status-msg').
-                    text('Invalid search query. Try again with a valid search query');
-            }
+                        successCallback,
+                        function (message) {
+                            $('#ast-container').addClass('hidden');
+                            $('#user-listing-status-msg').
+                                text('Invalid search query. Try again with a valid search query');
+                        }
         );
     });
 }
@@ -324,4 +315,7 @@ $(document).ready(function () {
     $(".viewEnabledIcon").click(function () {
         InitiateViewOption();
     });
+    if (!$("#can-invite").val()) {
+        $("#invite-user-button").remove();
+    }
 });

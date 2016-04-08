@@ -54,7 +54,7 @@ $(document).ready(function () {
             null,
             function (data) {
                 data = JSON.parse(data);
-                if (data.statusCode == responseCodes["ACCEPTED"]) {
+                if (data.status == responseCodes["ACCEPTED"]) {
                     $("#config-save-form").addClass("hidden");
                     location.href = redirectUrl;
                 } else if (data == 500) {

@@ -1,20 +1,19 @@
 /*
- *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
- *  Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License.
- *  You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package org.wso2.carbon.device.mgt.core.group.mgt.dao;
@@ -39,7 +38,7 @@ public class GroupManagementDAOFactory {
 
     private static final Log log = LogFactory.getLog(GroupManagementDAOFactory.class);
     private static DataSource dataSource;
-    private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
+    private static ThreadLocal<Connection> currentConnection = new ThreadLocal<>();
 
     /**
      * Get instance of GroupDAO
@@ -162,7 +161,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                                                       "This might have ideally been caused by not properly initiating the transaction via " +
+                                                       "This might have ideally been caused by not properly " +
+                                                       "initiating the transaction via " +
                                                        "'beginTransaction'/'openConnection' methods");
         }
         try {

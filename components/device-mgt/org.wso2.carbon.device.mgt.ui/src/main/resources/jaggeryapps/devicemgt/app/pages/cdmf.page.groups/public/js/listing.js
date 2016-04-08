@@ -108,7 +108,7 @@ function loadGroups() {
             $(".icon .text").res_text(0.2);
         };
 
-        invokerUtil.get("/common/group_manager/groups?start=0&rowCount=1000",
+        invokerUtil.get("/devicemgt_admin/groups/user/" + currentUser + "?start=0&rowCount=1000",
                         successCallback, function (message) {
                     displayErrors(message.content);
                 });
@@ -282,7 +282,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.delete("/common/group_manager/groups/" + groupOwner + "/" + groupName,
+            invokerUtil.delete("/devicemgt_admin/groups/" + groupOwner + "/" + groupName,
                                successCallback, function (message) {
                         displayErrors(message.content);
                     });
@@ -326,7 +326,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.put("/common/group_manager/groups/" + groupOwner + "/" + groupName,
+            invokerUtil.put("/devicemgt_admin/groups/" + groupOwner + "/" + groupName,
                             successCallback, function (message) {
                         displayErrors(message.content);
                     });
@@ -354,7 +354,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
         }
     };
 
-    invokerUtil.get("/common/group_manager/groups/" + groupOwner + "/" + groupName + "/share/roles",
+    invokerUtil.get("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles",
                     successCallback, function (message) {
                 displayErrors(message.content);
             });
@@ -407,7 +407,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
         }
     };
 
-    invokerUtil.get("/common/group_manager/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.get("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
                     successCallback, function (message) {
                 displayErrors(message.content);
             });
@@ -431,7 +431,7 @@ function updateGroupShare(groupName, groupOwner, selectedUser, role) {
         }
     };
 
-    invokerUtil.put("/common/group_manager/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.put("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
                     role, successCallback, function (message) {
                 displayErrors(message.content);
             });

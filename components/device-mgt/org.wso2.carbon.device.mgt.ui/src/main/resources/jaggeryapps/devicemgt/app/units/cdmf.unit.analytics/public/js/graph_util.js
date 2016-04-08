@@ -164,7 +164,6 @@ function getDateTime(from, to) {
     startDate = new Date(from);
     endDate = new Date(to);
     DateRange = convertDate(startDate) + " " + configObject.separator + " " + convertDate(endDate);
-    console.log(DateRange);
     $('#date-range').html(DateRange);
     getStats(from / 1000, to / 1000);
 }

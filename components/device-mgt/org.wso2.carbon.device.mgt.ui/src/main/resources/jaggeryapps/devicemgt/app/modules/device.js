@@ -274,40 +274,39 @@ deviceModule = function () {
             utility.startTenantFlow(carbonUser);
 
             var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/view?type=" + deviceType + "&id=" + deviceId;
-            var dataNew = serviceInvokers.XMLHttp.get(
-                url, function (responsePayload) {
-                    var device = responsePayload.responseContent;
-                    if (device) {
-                        var propertiesList = device["properties"];
-                        var properties = {};
-                        for (var i = 0; i < propertiesList.length; i++) {
-                            properties[propertiesList[i]["name"]] =
-                                propertiesList[i]["value"];
+            return serviceInvokers.XMLHttp.get(
+                    url, function (responsePayload) {
+                        var device = responsePayload.responseContent;
+                        if (device) {
+                            var propertiesList = device["properties"];
+                            var properties = {};
+                            for (var i = 0; i < propertiesList.length; i++) {
+                                properties[propertiesList[i]["name"]] =
+                                        propertiesList[i]["value"];
+                            }
+                            var deviceObject = {};
+                            deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
+                            deviceObject[constants["DEVICE_NAME"]] = device["name"];
+                            deviceObject[constants["DEVICE_OWNERSHIP"]] = device["enrolmentInfo"]["ownership"];
+                            deviceObject[constants["DEVICE_OWNER"]] = device["enrolmentInfo"]["owner"];
+                            deviceObject[constants["DEVICE_STATUS"]] = device["enrolmentInfo"]["status"];
+                            deviceObject[constants["DEVICE_TYPE"]] = device["type"];
+                            if (device["type"] == constants["PLATFORM_IOS"]) {
+                                properties[constants["DEVICE_MODEL"]] = properties[constants["DEVICE_PRODUCT"]];
+                                delete properties[constants["DEVICE_PRODUCT"]];
+                                properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
+                            }
+                            deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
+                            return deviceObject;
                         }
-                        var deviceObject = {};
-                        deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
-                        deviceObject[constants["DEVICE_NAME"]] = device["name"];
-                        deviceObject[constants["DEVICE_OWNERSHIP"]] = device["enrolmentInfo"]["ownership"];
-                        deviceObject[constants["DEVICE_OWNER"]] = device["enrolmentInfo"]["owner"];
-                        deviceObject[constants["DEVICE_STATUS"]] = device["enrolmentInfo"]["status"];
-                        deviceObject[constants["DEVICE_TYPE"]] = device["type"];
-                        if (device["type"] == constants["PLATFORM_IOS"]) {
-                            properties[constants["DEVICE_MODEL"]] = properties[constants["DEVICE_PRODUCT"]];
-                            delete properties[constants["DEVICE_PRODUCT"]];
-                            properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
-                        }
-                        deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
-                        return deviceObject;
                     }
-                }
-                ,
-                function (responsePayload) {
-                    var response = {};
-                    response["status"] = "error";
-                    return response;
-                }
+                    ,
+                    function (responsePayload) {
+                        var response = {};
+                        response["status"] = "error";
+                        return response;
+                    }
             );
-            return dataNew;
         } catch (e) {
             throw e;
         } finally {
@@ -351,25 +350,32 @@ deviceModule = function () {
 
     publicMethods.getOwnDevicesCount = function () {
         var carbonUser = session.get(constants.USER_SESSION_KEY);
-        var listAllDevicesEndPoint = deviceCloudService + "/device/user/" + carbonUser.username + "/all/count";
-        return get(listAllDevicesEndPoint, {}, "json").data;
+        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + carbonUser.username
+                  + "/count";
+        return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    return responsePayload;
+                }
+                ,
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return -1;
+                }
+        );
     };
 
-    publicMethods.getUnGroupedDevices = function () {
-        var carbonUser = session.get(constants.USER_SESSION_KEY);
-        var listAllDevicesEndPoint = deviceCloudService + "/device/user/" + carbonUser.username + "/ungrouped";
-        return get(listAllDevicesEndPoint, {}, "json").data;
-    };
-
-    publicMethods.getUnGroupedDevicesCount = function () {
-        var result = publicMethods.getUnGroupedDevices();
-        var devices = result.data;
-        var count = 0;
-        if (devices) {
-            count = devices.length;
-        }
-        result.data = count;
-        return result;
+    publicMethods.getAllDevicesCount = function () {
+        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/count";
+        return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    return responsePayload;
+                }
+                ,
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return -1;
+                }
+        );
     };
 
     publicMethods.getAllPermittedDevices = function () {

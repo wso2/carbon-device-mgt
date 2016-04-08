@@ -20,7 +20,7 @@
  * This backendServiceInvoker contains the wrappers for back end jaggary calls.
  */
 var backendServiceInvoker = function () {
-    var log = new Log("/app/modules/backend-service-invoker.js")
+    var log = new Log("/app/modules/backend-service-invoker.js");
     var publicXMLHTTPInvokers = {};
     var privateMethods = {};
     var publicWSInvokers = {};
@@ -72,14 +72,12 @@ var backendServiceInvoker = function () {
         } else {
             xmlHttpRequest.send();
         }
-        log.debug("Service Invoker-URL: " + url);
-        log.debug("Service Invoker-Method: " + method);
 
         if ((xmlHttpRequest.status >= 200 && xmlHttpRequest.status < 300) || xmlHttpRequest.status == 302) {
             if (xmlHttpRequest.responseText != null) {
                 return successCallback(parse(xmlHttpRequest.responseText));
             } else {
-                return successCallback({"statusCode": 200, "messageFromServer": "Operation Completed"});
+                return successCallback({"status": xmlHttpRequest.status, "messageFromServer": "Operation Completed"});
             }
         } else if (xmlHttpRequest.status == 401 && (xmlHttpRequest.responseText == TOKEN_EXPIRED ||
                                                     xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
@@ -188,7 +186,7 @@ var backendServiceInvoker = function () {
     privateMethods.initiateWSRequest = function (action, endpoint, successCallback, errorCallback, soapVersion, payload) {
         var ws = require('ws');
         var wsRequest = new ws.WSRequest();
-        var options = new Array();
+        var options = [];
         if (IS_OAUTH_ENABLED) {
             var accessToken = privateMethods.getAccessToken();
             if (accessToken) {

@@ -88,6 +88,11 @@ $.fn.toggleAttr = function (attr, val, val2) {
     });
 };
 $(document).ready(function () {
+
+    if(get('wizard') == 'true') {
+        $("#role_wizard_header").removeClass("hidden");
+    }
+
     var listPartialSrc = $("#list-partial").attr("src");
     var treeTemplateSrc = $("#tree-template").attr("src");
     var roleName = $("#permissionList").data("currentrole");
@@ -157,3 +162,8 @@ $(document).ready(function () {
         );
     });
 });
+
+function get(name){
+    if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+        return decodeURIComponent(name[1]);
+}

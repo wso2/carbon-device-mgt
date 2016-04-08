@@ -63,6 +63,7 @@ var operationModule = function () {
         "AIRPLAY_OPERATION_CODE": "AIR_PLAY",
         "LDAP_OPERATION_CODE": "LDAP",
         "CALENDAR_OPERATION_CODE": "CALDAV",
+        "NOTIFICATION_OPERATION_CODE": "NOTIFICATION",
         "CALENDAR_SUBSCRIPTION_OPERATION_CODE": "CALENDAR_SUBSCRIPTION",
         "APN_OPERATION_CODE": "APN",
         "CELLULAR_OPERATION_CODE": "CELLULAR"
@@ -71,8 +72,9 @@ var operationModule = function () {
     publicMethods.getIOSServiceEndpoint = function (operationCode) {
         var featureMap = {
             "DEVICE_LOCK": "lock",
-            "ALARM": "alarm",
+            "RING": "ring",
             "LOCATION": "location",
+            "NOTIFICATION": "notification",
             "AIR_PLAY": "airplay",
             "RESTRICTION": "restriction",
             "CELLULAR": "cellular",
@@ -538,6 +540,14 @@ var operationModule = function () {
                     }
                 };
                 break;
+            case iosOperationConstants["NOTIFICATION_OPERATION_CODE"]:
+                operationType = operationTypeConstants["PROFILE"];
+                payload = {
+                    "operation": {
+                        "message" : operationData["message"]
+                    }
+                };
+                break;
             default:
                 // If the operation is neither of above, it is a command operation
                 operationType = operationTypeConstants["COMMAND"];
@@ -683,6 +693,8 @@ var operationModule = function () {
             "CLEAR_PASSWORD": "clear-password",
             "APPLICATION_LIST": "get-application-list",
             "DEVICE_RING": "ring-device",
+            "DEVICE_REBOOT": "reboot-device",
+            "UPGRADE_FIRMWARE": "upgrade-firmware",
             "DEVICE_MUTE": "mute",
             "NOTIFICATION": "notification",
             "ENCRYPT_STORAGE": "encrypt",
@@ -802,13 +814,15 @@ var operationModule = function () {
     publicMethods.getWindowsServiceEndpoint = function (operationCode) {
         var featureMap = {
             "CAMERA": "camera",
-            "DEVICE_LOCK": "devicelock",
+            "DEVICE_LOCK": "lock",
             "DEVICE_LOCATION": "location",
             "CLEAR_PASSWORD": "clear-password",
             "APPLICATION_LIST": "get-application-list",
-            "DEVICE_RING": "devicering",
+            "DEVICE_RING": "ring-device",
+            "DEVICE_REBOOT": "reboot-device",
+            "UPGRADE_FIRMWARE": "upgrade-firmware",
             "DEVICE_MUTE": "mute",
-            "LOCK_RESET": "lockreset",
+            "LOCK_RESET": "lock-reset",
             "NOTIFICATION": "notification",
             "ENCRYPT_STORAGE": "encrypt",
             "CHANGE_LOCK_CODE": "change-lock-code",
@@ -818,8 +832,8 @@ var operationModule = function () {
             "BLACKLIST_APPLICATIONS": "blacklist-applications",
             "PASSCODE_POLICY": "password-policy",
             "ENTERPRISE_WIPE": "enterprise-wipe",
-            "WIPE_DATA": "devicewipe",
-            "DISENROLL": "devicedisenroll"
+            "WIPE_DATA": "wipe-data",
+            "DISENROLL": "disenroll"
         };
         return "/mdm-windows-agent/services/windows/operation/" + featureMap[operationCode];
     };
@@ -836,6 +850,8 @@ var operationModule = function () {
             "ENTERPRISE_WIPE": "fw-clear",
             "WIPE_DATA": "fw-database",
             "DEVICE_RING": "fw-dial-up",
+            "DEVICE_REBOOT": "fw-refresh",
+            "UPGRADE_FIRMWARE": "fw-up-arrow",
             "DEVICE_MUTE": "fw-incoming-call",
             "NOTIFICATION": "fw-message",
             "CHANGE_LOCK_CODE": "fw-security"
@@ -855,6 +871,8 @@ var operationModule = function () {
             "DISENROLL": "fw-delete",
             "WIPE_DATA": "fw-clear",
             "DEVICE_RING": "fw-dial-up",
+            "DEVICE_REBOOT": "fw-refresh",
+            "UPGRADE_FIRMWARE": "fw-up-arrow",
             "DEVICE_MUTE": "fw-incoming-call",
             "NOTIFICATION": "fw-message",
             "LOCK_RESET": "fw-key"
@@ -872,7 +890,8 @@ var operationModule = function () {
             "DEVICE_LOCK": "fw-lock",
             "LOCATION": "fw-map-location",
             "ENTERPRISE_WIPE": "fw-clear",
-            "ALARM": "fw-dial-up"
+            "NOTIFICATION": "fw-message",
+            "RING": "fw-dial-up"
         };
         return featureMap[operationCode];
     };
@@ -1059,7 +1078,7 @@ var operationModule = function () {
                 } else if (operationDataObj.is("select")) {
                     operationDataObj.val(value);
                     /* trigger a change of value, so that if slidable panes exist,
-                    make them slide-down or slide-up accordingly */
+                     make them slide-down or slide-up accordingly */
                     operationDataObj.trigger("change");
                 } else if (operationDataObj.hasClass("grouped-array-input")) {
                     // then value is complex

@@ -49,6 +49,12 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/policies/delete")) {
         context["removePermitted"] = true;
     }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/remove")) {
+        context["removePermitted"] = true;
+    }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/update")) {
+        context["editPermitted"] = true;
+    }
 
     return context;
 }

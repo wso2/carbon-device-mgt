@@ -147,4 +147,22 @@ public class Device implements Serializable{
                 "]";
     }
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Device))
+			return false;
+
+		Device device = (Device) o;
+
+		return getDeviceIdentifier().equals(device.getDeviceIdentifier());
+
+	}
+
+	@Override
+	public int hashCode() {
+		return getDeviceIdentifier().hashCode();
+	}
+
 }

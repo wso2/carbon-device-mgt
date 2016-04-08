@@ -82,20 +82,17 @@ if (!user) {
              {deviceName} - from request
              **/
 
-            var deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" + "/manager";
-            var sketchDownloadEndPoint = deviceManagerService + "/device/" + sketchType + "/download";
+            var sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "/devices/download";
             deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
 
             if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
-                sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" +
-                                         "/" + deviceTypeConfig.deviceType.downloadAgentUri;
+                sketchDownloadEndPoint = deviceTypeConfig.deviceType.downloadAgentUri;
             }
             var tokenPair = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
             if (tokenPair) {
-                response.addHeader(constants.AUTHORIZATION_HEADER, constants.BEARER_PREFIX +
-                                                                   tokenPair.accessToken);
-                response.sendRedirect(sketchDownloadEndPoint + "?owner=" + user.username + "&deviceName=" +
-                                      deviceName);
+                response.addHeader(constants.AUTHORIZATION_HEADER, constants.BEARER_PREFIX + tokenPair.accessToken);
+                response.sendRedirect(sketchDownloadEndPoint + "?sketchType=" + sketchType + "&deviceName="
+                                      + deviceName);
             } else {
                 response.sendRedirect(devicemgtProps["httpsURL"] + "/devicemgt/login");
                 exit();

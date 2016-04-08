@@ -198,14 +198,14 @@ function resetPassword(uname) {
                 resetPasswordFormData,
                 function (data) {   // The success callback
                     data = JSON.parse(data);
-                    if (data.statusCode == 201) {
+                    if (data.status == 201) {
                         $(modalPopupContent).html($('#reset-password-success-content').html());
                         $("a#reset-password-success-link").click(function () {
                             hidePopup();
                         });
                     }
                 }, function (data) {    // The error callback
-                    if (data.statusCode == 400) {
+                        if (data.status == 400) {
                         $(errorMsg).text("Old password does not match with the provided value.");
                         $(errorMsgWrapper).removeClass("hidden");
                     } else {

@@ -94,6 +94,17 @@ public interface GroupManagementProviderService {
     PaginationResult getGroups(int startIndex, int rowCount) throws GroupManagementException;
 
     /**
+     * Get paginated device groups in tenant
+     *
+     * @param username  of user.
+     * @param startIndex for pagination.
+     * @param rowCount for pagination.
+     * @return paginated list of groups
+     * @throws GroupManagementException
+     */
+    PaginationResult getGroups(String username, int startIndex, int rowCount) throws GroupManagementException;
+
+    /**
      * Get all device group count in tenant
      *
      * @return group count

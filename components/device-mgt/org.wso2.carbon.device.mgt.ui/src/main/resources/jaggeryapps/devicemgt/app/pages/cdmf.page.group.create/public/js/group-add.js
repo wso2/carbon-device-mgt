@@ -29,7 +29,8 @@ $(function () {
         } else {
             var group = {"name": name, "description": description};
 
-            var successCallback = function (data) {
+            var successCallback = function (jqXHR) {
+                var data = JSON.parse(jqXHR);
                 if (data.status == 201) {
                     $('.wr-validation-summary strong').text("Group created. You will be redirected to groups");
                     $('.wr-validation-summary').removeClass("hidden");
@@ -39,13 +40,13 @@ $(function () {
                         window.location = "../groups";
                     }, 1500);
                 } else {
-                    displayErrors(status);
+                    displayErrors(data.status);
                 }
             };
 
-            invokerUtil.post("/common/group_manager/groups", group,
+            invokerUtil.post("/devicemgt_admin/groups", group,
                              successCallback, function (message) {
-                        displayErrors(message.content);
+                        displayErrors(message);
                     });
 
             return false;
@@ -53,28 +54,11 @@ $(function () {
     });
 });
 
-function displayErrors(status) {
+function displayErrors(message) {
     showPopup();
-    if (status == 400) {
-        $(modalPopupContent).html($('#group-400-content').html());
-        $("a#group-400-link").click(function () {
-            hidePopup();
-        });
-    } else if (status == 403) {
-        $(modalPopupContent).html($('#group-403-content').html());
-        $("a#group-403-link").click(function () {
-            hidePopup();
-        });
-    } else if (status == 409) {
-        $(modalPopupContent).html($('#group-409-content').html());
-        $("a#group-409-link").click(function () {
-            hidePopup();
-        });
-    } else {
-        $(modalPopupContent).html($('#group-unexpected-error-content').html());
-        $("a#group-unexpected-error-link").click(function () {
-            hidePopup();
-        });
-        console.log("Error code: " + status);
-    }
+    $('#error-msg').html(message.responseText);
+    $(modalPopupContent).html($('#group-error-content').html());
+    $("a#group-unexpected-error-link").click(function () {
+        hidePopup();
+    });
 }

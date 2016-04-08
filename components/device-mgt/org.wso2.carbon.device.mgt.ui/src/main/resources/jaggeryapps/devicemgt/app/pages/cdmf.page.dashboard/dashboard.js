@@ -35,7 +35,7 @@ function onRequest(context) {
     var groupModule = require("/app/modules/group.js").groupModule;
     var policyModule = require("/app/modules/policy.js").policyModule;
 
-    page.device_count = deviceModule.getOwnDevicesCount();
+    page.device_count = deviceModule.getAllDevicesCount();
     page.group_count = groupModule.getGroupCount();
     page.user_count = userModule.getUsers()["content"].length;
     page.policy_count = policyModule.getAllPolicies()["content"].length;

@@ -150,7 +150,7 @@ $(document).ready(function () {
             updateRolePermissionAPI,
             updateRolePermissionData,
             function (jqXHR) {
-                if (JSON.parse(jqXHR).statusCode == 200 || jqXHR.status == 200) {
+                if (JSON.parse(jqXHR).status == 200 || jqXHR.status == 200) {
                     // Refreshing with success message
                     $("#role-create-form").addClass("hidden");
                     $("#role-created-msg").removeClass("hidden");

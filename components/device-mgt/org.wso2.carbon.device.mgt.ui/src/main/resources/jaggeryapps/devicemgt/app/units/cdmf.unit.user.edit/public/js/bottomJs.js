@@ -232,7 +232,7 @@ $(document).ready(function () {
                 addUserFormData,
                 function (data) {
                     data = JSON.parse(data);
-                    if (data["statusCode"] == 201) {
+                    if (data["status"] == 201) {
                         // Clearing user input fields.
                         $("input#username").val("");
                         $("input#firstname").val("");

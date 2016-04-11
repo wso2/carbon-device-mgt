@@ -175,9 +175,9 @@ $( "#userStore" )
                 if (data.errorMessage) {
                     $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
                     $(errorMsgWrapper).removeClass("hidden");
-                } else if (data["statusCode"] == 200) {
+                } else if (data["status"] == 200) {
                     $("#roles").empty();
-                    for(i=0;i<data.responseContent.length;i++){
+                    for (var i = 0; i < data.responseContent.length; i++) {
                         var newOption = $('<option value="'+data.responseContent[i]+'">'+data.responseContent[i]+'</option>');
                         $('#roles').append(newOption);
                     }
@@ -254,7 +254,7 @@ $(document).ready(function () {
                     if (data.errorMessage) {
                         $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
                         $(errorMsgWrapper).removeClass("hidden");
-                    } else if (data["statusCode"] == 201) {
+                    } else if (data["status"] == 201) {
                         // Clearing user input fields.
                         $("input#username").val("");
                         $("input#firstname").val("");

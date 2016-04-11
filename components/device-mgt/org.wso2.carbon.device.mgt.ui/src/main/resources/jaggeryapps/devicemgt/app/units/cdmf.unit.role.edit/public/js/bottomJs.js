@@ -109,7 +109,7 @@ function formatRepo (user) {
 }
 
 function formatRepoSelection (user) {
-    return user.username || user.text;;
+    return user.username || user.text;
 }
 
 $(document).ready(function () {
@@ -188,7 +188,7 @@ $(document).ready(function () {
                 addRoleAPI,
                 addRoleFormData,
                 function (jqXHR) {
-                    if (JSON.parse(jqXHR).statusCode == 200 || jqXHR.status == 200) {
+                    if (JSON.parse(jqXHR).status == 200 || jqXHR.status == 200) {
                         // Clearing user input fields.
                         $("input#rolename").val("");
                         $("#domain").val("");

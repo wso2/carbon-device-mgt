@@ -25,10 +25,9 @@ function onRequest(context) {
     var viewModel = {};
     var deviceModule = require("/app/modules/device.js").deviceModule;
     var utility = require("/app/modules/utility.js").utility;
-    var data = deviceModule.getDeviceTypes();
+    var deviceTypes = deviceModule.getDeviceTypes();
 
-    if (data.data) {
-        var deviceTypes = data.data;
+    if (deviceTypes) {
         var deviceTypesList = [], virtualDeviceTypesList = [];
         for (var i = 0; i < deviceTypes.length; i++) {
 
@@ -43,13 +42,6 @@ function onRequest(context) {
                     deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
                 }
             }
-            //deviceTypesList.push({
-            //    "hasCustTemplate": false,
-            //    "deviceTypeLabel": deviceTypeLabel,
-            //    "deviceTypeName": deviceTypes[i].name,
-            //    "deviceCategory": deviceCategory,
-            //    "deviceTypeId": deviceTypes[i].id
-            //});
             if (deviceCategory == 'virtual'){
                 virtualDeviceTypesList.push({
                     "hasCustTemplate": false,

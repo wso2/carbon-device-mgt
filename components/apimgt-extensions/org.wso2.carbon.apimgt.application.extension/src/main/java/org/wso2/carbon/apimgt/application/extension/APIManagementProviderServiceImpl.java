@@ -332,8 +332,8 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             if (userVisibleAPIs != null) {
                 Set<SubscribedAPI> subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber, apiApplicationName,
                                                                                   groupId);
-                for (API userVisbleAPI : userVisibleAPIs) {
-                    APIIdentifier apiIdentifier = userVisbleAPI.getId();
+                for (API userVisibleAPI : userVisibleAPIs) {
+                    APIIdentifier apiIdentifier = userVisibleAPI.getId();
                     boolean isSubscribed = false;
                     if (subscribedAPIs != null) {
                         for (SubscribedAPI subscribedAPI : subscribedAPIs) {

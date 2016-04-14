@@ -18,16 +18,12 @@
  */
 package org.wso2.carbon.device.mgt.analytics.data.publisher.service;
 
-import org.wso2.carbon.device.mgt.analytics.data.publisher.AnalyticsDataRecord;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
-import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DeviceManagementAnalyticsException;
-
-import java.util.List;
 
 /**
  * This service can be used to publish and retreive data from the Analytics Server.
  */
-public interface DeviceAnalyticsService {
+public interface EventsPublisherService {
 
     /**
      * This is used to publish an event to DAS.
@@ -41,15 +37,5 @@ public interface DeviceAnalyticsService {
      */
     boolean publishEvent(String streamName, String version, Object[] metaDataArray, Object[] correlationDataArray,
                          Object[] payloadDataArray) throws DataPublisherConfigurationException;
-
-    /**
-     * This service can be used to retrieve all the event for the query.
-     * @param tableName is the name of the table that events need to be retrieved
-     * @param query is query to be executed.
-     * @return the record list
-     * @throws DeviceManagementAnalyticsException
-     */
-    List<AnalyticsDataRecord> getAllEventsForDevice(String tableName,
-                                                    String query) throws DeviceManagementAnalyticsException;
 
 }

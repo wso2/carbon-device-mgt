@@ -18,34 +18,22 @@
  */
 package org.wso2.carbon.device.mgt.analytics.data.publisher.internal;
 
-import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
 
-public class DeviceAnalyticsDataHolder {
-	private static DeviceAnalyticsDataHolder thisInstance = new DeviceAnalyticsDataHolder();
-	/**
-	 * AnalyticsDataAPI is service used to retrieve data from DAS.
-	 */
-	private AnalyticsDataAPI analyticsDataAPI;
+public class DataPublisherDataHolder {
+	private static DataPublisherDataHolder thisInstance = new DataPublisherDataHolder();
+
 	private TenantRegistryLoader tenantRegistryLoader;
 	private TenantIndexingLoader indexLoader;
 	private RegistryService registryService;
-	private DeviceAnalyticsDataHolder() {
+	private DataPublisherDataHolder() {
 	}
 
 
-	public static DeviceAnalyticsDataHolder getInstance() {
+	public static DataPublisherDataHolder getInstance() {
 		return thisInstance;
-	}
-
-	public AnalyticsDataAPI getAnalyticsDataAPI() {
-		return analyticsDataAPI;
-	}
-
-	public void setAnalyticsDataAPI(AnalyticsDataAPI analyticsDataAPI) {
-		this.analyticsDataAPI = analyticsDataAPI;
 	}
 
 	public void setTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader){

@@ -286,14 +286,18 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
         try {
             APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(subscriberName);
             if (consumer != null) {
-                Subscriber subscriber = new Subscriber(subscriberName);
-                subscriber.setSubscribedDate(new Date());
-                subscriber.setEmail(subscriberEmail);
-                subscriber.setTenantId(tenantId);
-                consumer.addSubscriber(subscriber, groupId);
-                if (log.isDebugEnabled()) {
-                    log.debug("Successfully created subscriber with name : " + subscriberName + " with groupID : " +
-                              groupId);
+                synchronized (consumer) {
+                    if (consumer.getSubscriber(subscriberName) == null) {
+                        Subscriber subscriber = new Subscriber(subscriberName);
+                        subscriber.setSubscribedDate(new Date());
+                        subscriber.setEmail(subscriberEmail);
+                        subscriber.setTenantId(tenantId);
+                        consumer.addSubscriber(subscriber, groupId);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Successfully created subscriber with name : " + subscriberName +
+                                              " with groupID : " + groupId);
+                        }
+                    }
                 }
             } else {
                 throw new APIManagerException("API provider configured for the given API configuration is null. " +

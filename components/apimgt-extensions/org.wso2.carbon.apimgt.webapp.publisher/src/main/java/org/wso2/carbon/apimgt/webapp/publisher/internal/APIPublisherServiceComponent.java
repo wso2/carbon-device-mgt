@@ -25,6 +25,8 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherServiceImpl;
+import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.ServerStartupListener;
+import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -59,7 +61,10 @@ public class APIPublisherServiceComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing device management core bundle");
             }
-
+            BundleContext bundleContext = componentContext.getBundleContext();
+            ServerStartupListener serverStartupListener = new ServerStartupListener();
+            bundleContext.registerService(ServerStartupObserver.class.getName(), serverStartupListener, null);
+            APIPublisherDataHolder.getInstance().setServerStartupListener(serverStartupListener);
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
             this.registerServices(componentContext);
 

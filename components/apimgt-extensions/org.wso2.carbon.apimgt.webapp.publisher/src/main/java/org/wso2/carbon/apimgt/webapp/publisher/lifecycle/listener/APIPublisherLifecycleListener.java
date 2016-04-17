@@ -25,6 +25,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.model.*;
+import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.webapp.publisher.*;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
@@ -47,14 +48,12 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 	private static final String PARAM_MANAGED_API_VERSION = "managed-api-version";
 	private static final String PARAM_MANAGED_API_CONTEXT = "managed-api-context";
 	private static final String PARAM_MANAGED_API_ENDPOINT = "managed-api-endpoint";
-	private static final String PARAM_MANAGED_API_ENDPOINT_CONTEXT = "managed-api-endpoint-context";
 	private static final String PARAM_MANAGED_API_OWNER = "managed-api-owner";
 	private static final String PARAM_MANAGED_API_TRANSPORTS = "managed-api-transports";
 	private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
 	private static final String PARAM_MANAGED_API_APPLICATION = "managed-api-application";
 	private static final String PARAM_SHARED_WITH_ALL_TENANTS = "isSharedWithAllTenants";
 	private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
-	private static final String VERSION_PLACEHOLDER = "{version}";
 	private static final Log log = LogFactory.getLog(APIPublisherLifecycleListener.class);
 
 	@Override
@@ -70,7 +69,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 					AnnotationUtil annotationUtil = new AnnotationUtil(context);
 					Set<String> annotatedAPIClasses = annotationUtil.
 							scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
-					List<APIResourceConfiguration> apiDefinitions = annotationUtil.extractAPIInfo(annotatedAPIClasses);
+					List<APIResourceConfiguration> apiDefinitions = annotationUtil.extractAPIInfo(servletContext, annotatedAPIClasses);
 
 					for (APIResourceConfiguration apiDefinition : apiDefinitions) {
  						APIConfig apiConfig = this.buildApiConfig(servletContext, apiDefinition);
@@ -161,9 +160,9 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 		tenantDomain = (tenantDomain != null && !tenantDomain.isEmpty()) ? tenantDomain :
 				MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
 		apiConfig.setTenantDomain(tenantDomain);
-		String contextTemplate = context + "/" + VERSION_PLACEHOLDER;
+		String contextTemplate = context + "/" + APIConstants.VERSION_PLACEHOLDER;
 		if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-			contextTemplate = context + "/t/" + tenantDomain + "/" + VERSION_PLACEHOLDER;
+			contextTemplate = context + "/t/" + tenantDomain + "/" + APIConstants.VERSION_PLACEHOLDER;
 		}
 		apiConfig.setContextTemplate(contextTemplate);
 
@@ -172,13 +171,8 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 			if (log.isDebugEnabled()) {
 				log.debug("'managed-api-endpoint' attribute is not configured");
 			}
-			String endpointContext = servletContext.getInitParameter(PARAM_MANAGED_API_ENDPOINT_CONTEXT);
-			if (endpointContext != null && !endpointContext.isEmpty()) {
-				endpoint = APIPublisherUtil.getApiEndpointUrl(endpointContext);
-			} else {
-				endpoint = APIPublisherUtil.getApiEndpointUrl(context);
-			}
-
+			String endpointContext = servletContext.getContextPath();
+			endpoint = APIPublisherUtil.getApiEndpointUrl(endpointContext);
 		}
 		apiConfig.setEndpoint(endpoint);
 

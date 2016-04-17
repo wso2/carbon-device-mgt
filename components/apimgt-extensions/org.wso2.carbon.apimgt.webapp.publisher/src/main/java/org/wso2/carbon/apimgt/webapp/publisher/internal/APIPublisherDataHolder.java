@@ -20,6 +20,8 @@ package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
 
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
+import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.ServerStartupListener;
+import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
@@ -32,6 +34,7 @@ public class APIPublisherDataHolder {
     private RealmService realmService;
     private TenantManager tenantManager;
     private RegistryService registryService;
+    private ServerStartupListener serverStartupListener;
 
     private static APIPublisherDataHolder thisInstance = new APIPublisherDataHolder();
 
@@ -93,5 +96,13 @@ public class APIPublisherDataHolder {
 
     public void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
+    }
+
+    public ServerStartupListener getServerStartupListener() {
+        return serverStartupListener;
+    }
+
+    public void setServerStartupListener(ServerStartupListener serverStartupListener) {
+        this.serverStartupListener = serverStartupListener;
     }
 }

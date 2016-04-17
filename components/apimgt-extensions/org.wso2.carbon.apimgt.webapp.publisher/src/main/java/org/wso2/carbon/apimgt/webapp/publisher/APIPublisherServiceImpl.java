@@ -37,7 +37,11 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class represents the concrete implementation of the APIPublisherService that corresponds to providing all
@@ -63,6 +67,10 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
             MultitenantUtils.getTenantDomain(api.getApiOwner());
             if (provider != null) {
+                if (provider.isDuplicateContextTemplate(api.getContext())) {
+                    throw new APIManagementException("Error occurred while adding the API. A duplicate API" +
+                                                             " context already exists for " + api.getContext());
+                }
                 if (!provider.isAPIAvailable(api.getId())) {
                     provider.addAPI(api);
                     log.info("Successfully published API '" + api.getId().getApiName() + "' with context '" +
@@ -90,38 +98,40 @@ public class APIPublisherServiceImpl implements APIPublisherService {
     }
 
     private String createSwaggerDefinition(API api) {
-        //{"paths":{"/controller/*":{"get":{"responses":{"200":{}}}},"/manager/*":{"get":{"responses":{"200":{}}}}},
-        // "swagger":"2.0","info":{"title":"RaspberryPi","version":"1.0.0"}}
-        JsonObject swaggerDefinition = new JsonObject();
+        Map<String, JsonObject> httpVerbsMap = new HashMap<>();
 
-        JsonObject paths = new JsonObject();
         for (URITemplate uriTemplate : api.getUriTemplates()) {
             JsonObject response = new JsonObject();
             response.addProperty("200", "");
 
             JsonObject responses = new JsonObject();
             responses.add("responses", response);
-
-            JsonObject httpVerb = new JsonObject();
-            httpVerb.add(uriTemplate.getHTTPVerb().toLowerCase(), responses);
-
-            JsonObject path = new JsonObject();
-            path.add(uriTemplate.getUriTemplate(), httpVerb);
-
-            paths.add(uriTemplate.getUriTemplate(), httpVerb);
+            JsonObject httpVerbs = httpVerbsMap.get(uriTemplate.getUriTemplate());
+            if (httpVerbs == null) {
+                httpVerbs = new JsonObject();
+            }
+            httpVerbs.add(uriTemplate.getHTTPVerb().toLowerCase(), responses);
+            httpVerbsMap.put(uriTemplate.getUriTemplate(), httpVerbs);
         }
-        swaggerDefinition.add("paths", paths);
-        swaggerDefinition.addProperty("swagger", "2.0");
+
+        Iterator it = httpVerbsMap.entrySet().iterator();
+        JsonObject paths = new JsonObject();
+        while (it.hasNext()) {
+            Map.Entry<String, JsonObject> pair = (Map.Entry)it.next();
+            paths.add(pair.getKey(), pair.getValue());
+            it.remove();
+        }
 
         JsonObject info = new JsonObject();
         info.addProperty("title", api.getId().getApiName());
         info.addProperty("version", api.getId().getVersion());
+
+        JsonObject swaggerDefinition = new JsonObject();
+        swaggerDefinition.add("paths", paths);
+        swaggerDefinition.addProperty("swagger", "2.0");
         swaggerDefinition.add("info", info);
 
         return swaggerDefinition.toString();
-        //return "{\"paths\":{\"/controller/*\":{\"get\":{\"responses\":{\"200\":{}}}},
-        // \"/manager/*\":{\"get\":{\"responses\":{\"200\":{}}}}},\"swagger\":\"2.0\",
-        // \"info\":{\"title\":\"RaspberryPi\",\"version\":\"1.0.0\"}}";
     }
 
     @Override

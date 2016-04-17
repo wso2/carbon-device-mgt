@@ -95,8 +95,9 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                                      ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
                 apiManagementProviderService.registerExistingOAuthApplicationToAPIApplication(
                         jsonStringObject.toJSONString(), registrationProfile.getApplicationName(),
-                        registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains());
-                return Response.status(Response.Status.ACCEPTED).entity("OAuth App is mapped as APIM App").build();
+                        registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains(),
+                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE);
+                return Response.status(Response.Status.ACCEPTED).entity("true").build();
             } else {
                 ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
                         registrationProfile.getApplicationName(), registrationProfile.getTags(),
@@ -107,7 +108,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             String msg = "Error occurred while registering an application '"
                     + registrationProfile.getApplicationName() + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("false").build();
         }
     }
 

@@ -30,7 +30,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.mdm.api.common.MDMAPIException;
 import org.wso2.carbon.mdm.api.util.CredentialManagementResponseBuilder;
-import org.wso2.carbon.mdm.api.util.MDMAPIUtils;
+import org.wso2.carbon.mdm.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.mdm.api.util.ResponsePayload;
 import org.wso2.carbon.mdm.beans.UserCredentialWrapper;
 import org.wso2.carbon.mdm.beans.UserWrapper;
@@ -52,30 +52,38 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
+import java.util.TreeSet;
 
 /**
  * This class represents the JAX-RS services of User related functionality.
  */
+@SuppressWarnings("NonJaxWsWebServices")
 public class User {
 
-    private static Log log = LogFactory.getLog(User.class);
     private static final String ROLE_EVERYONE = "Internal/everyone";
+    private static Log log = LogFactory.getLog(User.class);
 
     /**
      * Method to add user to emm-user-store.
      *
      * @param userWrapper Wrapper object representing input json payload
      * @return {Response} Status of the request wrapped inside Response object
-     * @throws MDMAPIException
      */
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response addUser(UserWrapper userWrapper) throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public Response addUser(UserWrapper userWrapper) {
         ResponsePayload responsePayload = new ResponsePayload();
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
                 // if user already exists
                 if (log.isDebugEnabled()) {
@@ -87,7 +95,7 @@ public class User {
                 responsePayload.
                         setMessageFromServer("User by username: " + userWrapper.getUsername() +
                                 " already exists. Therefore, request made to add user was refused.");
-                return Response.status(HttpStatus.SC_CONFLICT).entity(responsePayload).build();
+                return Response.status(Response.Status.CONFLICT).entity(responsePayload).build();
             } else {
                 String initialUserPassword = generateInitialUserPassword();
                 Map<String, String> defaultUserClaims =
@@ -106,12 +114,12 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_CREATED);
                 responsePayload.setMessageFromServer("User by username: " + userWrapper.getUsername() +
                         " was successfully added.");
-                return Response.status(HttpStatus.SC_CREATED).entity(responsePayload).build();
+                return Response.status(Response.Status.CREATED).entity(responsePayload).build();
             }
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Exception in trying to add user by username: " + userWrapper.getUsername();
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -119,16 +127,15 @@ public class User {
      * Method to get user information from emm-user-store.
      *
      * @param username User-name of the user
-     * @return {Response} Status of the request wrapped inside Response object
-     * @throws MDMAPIException
+     * @return {Response} Status of the request wrapped inside Response object.
      */
     @GET
     @Path("view")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getUser(@QueryParam("username") String username) throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public Response getUser(@QueryParam("username") String username) {
         ResponsePayload responsePayload = new ResponsePayload();
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(username)) {
                 UserWrapper user = new UserWrapper();
                 user.setUsername(username);
@@ -142,7 +149,7 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_OK);
                 responsePayload.setMessageFromServer("User information was retrieved successfully.");
                 responsePayload.setResponseContent(user);
-                return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+                return Response.status(Response.Status.OK).entity(responsePayload).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
                 if (log.isDebugEnabled()) {
@@ -152,12 +159,12 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
                 responsePayload.setMessageFromServer(
                         "User by username: " + username + " does not exist.");
-                return Response.status(HttpStatus.SC_NOT_FOUND).entity(responsePayload).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
             }
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Exception in trying to retrieve user by username: " + username;
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -165,17 +172,15 @@ public class User {
      * Update user in user store
      *
      * @param userWrapper Wrapper object representing input json payload
-     * @return {Response} Status of the request wrapped inside Response object
-     * @throws MDMAPIException
+     * @return {Response} Status of the request wrapped inside Response object.
      */
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response updateUser(UserWrapper userWrapper, @QueryParam("username") String username)
-            throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public Response updateUser(UserWrapper userWrapper, @QueryParam("username") String username) {
         ResponsePayload responsePayload = new ResponsePayload();
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
                 Map<String, String> defaultUserClaims =
                         buildDefaultUserClaims(userWrapper.getFirstname(), userWrapper.getLastname(),
@@ -221,7 +226,7 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_CREATED);
                 responsePayload.setMessageFromServer("User by username: " + userWrapper.getUsername() +
                         " was successfully updated.");
-                return Response.status(HttpStatus.SC_CREATED).entity(responsePayload).build();
+                return Response.status(Response.Status.CREATED).entity(responsePayload).build();
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + userWrapper.getUsername() +
@@ -232,12 +237,12 @@ public class User {
                 responsePayload.
                         setMessageFromServer("User by username: " + userWrapper.getUsername() +
                                 " doesn't  exists. Therefore, request made to update user was refused.");
-                return Response.status(HttpStatus.SC_CONFLICT).entity(responsePayload).build();
+                return Response.status(Response.Status.CONFLICT).entity(responsePayload).build();
             }
-        } catch (UserStoreException | UnsupportedEncodingException e) {
+        } catch (UserStoreException | UnsupportedEncodingException | MDMAPIException e) {
             String msg = "Exception in trying to update user by username: " + userWrapper.getUsername();
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -291,15 +296,14 @@ public class User {
      * Method to remove user from emm-user-store.
      *
      * @param username Username of the user
-     * @return {Response} Status of the request wrapped inside Response object
-     * @throws MDMAPIException
+     * @return {Response} Status of the request wrapped inside Response object.
      */
     @DELETE
     @Produces({MediaType.APPLICATION_JSON})
-    public Response removeUser(@QueryParam("username") String username) throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public Response removeUser(@QueryParam("username") String username) {
         ResponsePayload responsePayload = new ResponsePayload();
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(username)) {
                 // if user already exists, trying to remove user
                 userStoreManager.deleteUser(username);
@@ -311,7 +315,7 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_OK);
                 responsePayload.setMessageFromServer(
                         "User by username: " + username + " was successfully removed.");
-                return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+                return Response.status(Response.Status.OK).entity(responsePayload).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
                 if (log.isDebugEnabled()) {
@@ -321,12 +325,12 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
                 responsePayload.setMessageFromServer(
                         "User by username: " + username + " does not exist for removal.");
-                return Response.status(HttpStatus.SC_BAD_REQUEST).entity(responsePayload).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
             }
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Exception in trying to remove user by username: " + username;
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -336,11 +340,14 @@ public class User {
      * @param userStoreManager User Store Manager associated with the currently logged in user
      * @param username         Username of the currently logged in user
      * @return the list of filtered roles
-     * @throws UserStoreException
      */
-    private List<String> getFilteredRoles(UserStoreManager userStoreManager, String username)
-            throws UserStoreException {
-        String[] roleListOfUser = userStoreManager.getRoleListOfUser(username);
+    private List<String> getFilteredRoles(UserStoreManager userStoreManager, String username) {
+        String[] roleListOfUser = new String[0];
+        try {
+            roleListOfUser = userStoreManager.getRoleListOfUser(username);
+        } catch (UserStoreException e) {
+            e.printStackTrace();
+        }
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roleListOfUser) {
             if (!(role.startsWith("Internal/") || role.startsWith("Application/"))) {
@@ -354,18 +361,17 @@ public class User {
      * Get user's roles by username
      *
      * @param username Username of the user
-     * @return {Response} Status of the request wrapped inside Response object
-     * @throws MDMAPIException
+     * @return {Response} Status of the request wrapped inside Response object.
      */
     @GET
     @Path("roles")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getRoles(@QueryParam("username") String username) throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public Response getRoles(@QueryParam("username") String username) {
         ResponsePayload responsePayload = new ResponsePayload();
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(username)) {
-                responsePayload.setResponseContent(Arrays.asList(getFilteredRoles(userStoreManager, username)));
+                responsePayload.setResponseContent(Collections.singletonList(getFilteredRoles(userStoreManager, username)));
                 // Outputting debug message upon successful removal of user
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " was successfully removed.");
@@ -374,7 +380,7 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_OK);
                 responsePayload.setMessageFromServer(
                         "User roles obtained for user " + username);
-                return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+                return Response.status(Response.Status.OK).entity(responsePayload).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
                 if (log.isDebugEnabled()) {
@@ -384,12 +390,12 @@ public class User {
                 responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
                 responsePayload.setMessageFromServer(
                         "User by username: " + username + " does not exist for role retrieval.");
-                return Response.status(HttpStatus.SC_BAD_REQUEST).entity(responsePayload).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
             }
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Exception in trying to retrieve roles for user by username: " + username;
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -397,17 +403,16 @@ public class User {
      * Get the list of all users with all user-related info.
      *
      * @return A list of users
-     * @throws MDMAPIException
      */
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAllUsers() throws MDMAPIException {
+    public Response getAllUsers() {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information");
         }
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
         List<UserWrapper> userList;
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             String[] users = userStoreManager.listUsers("*", -1);
             userList = new ArrayList<>(users.length);
             UserWrapper user;
@@ -419,10 +424,10 @@ public class User {
                 user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
                 userList.add(user);
             }
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Error occurred while retrieving the list of users";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
@@ -431,25 +436,24 @@ public class User {
         responsePayload.setMessageFromServer("All users were successfully retrieved. " +
                 "Obtained user count: " + count);
         responsePayload.setResponseContent(userList);
-        return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+        return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 
     /**
      * Get the list of all users with all user-related info.
      *
      * @return A list of users
-     * @throws MDMAPIException
      */
     @GET
     @Path("{filter}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getMatchingUsers(@PathParam("filter") String filter) throws MDMAPIException {
+    public Response getMatchingUsers(@PathParam("filter") String filter) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information using the filter : " + filter);
         }
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
         List<UserWrapper> userList;
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             String[] users = userStoreManager.listUsers(filter + "*", -1);
             userList = new ArrayList<>(users.length);
             UserWrapper user;
@@ -461,10 +465,10 @@ public class User {
                 user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
                 userList.add(user);
             }
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Error occurred while retrieving the list of users using the filter : " + filter;
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
@@ -473,24 +477,23 @@ public class User {
         responsePayload.setMessageFromServer("All users were successfully retrieved. " +
                 "Obtained user count: " + count);
         responsePayload.setResponseContent(userList);
-        return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+        return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 
     /**
      * Get the list of user names in the system.
      *
      * @return A list of user names.
-     * @throws MDMAPIException
      */
     @GET
     @Path("view-users")
-    public Response getAllUsersByUsername(@QueryParam("username") String userName) throws MDMAPIException {
+    public Response getAllUsersByUsername(@QueryParam("username") String userName) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users by name");
         }
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
         List<UserWrapper> userList;
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             String[] users = userStoreManager.listUsers("*" + userName + "*", -1);
             userList = new ArrayList<>(users.length);
             UserWrapper user;
@@ -502,10 +505,10 @@ public class User {
                 user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
                 userList.add(user);
             }
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Error occurred while retrieving the list of users";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
@@ -514,31 +517,30 @@ public class User {
         responsePayload.setMessageFromServer("All users by username were successfully retrieved. " +
                 "Obtained user count: " + count);
         responsePayload.setResponseContent(userList);
-        return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+        return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 
     /**
      * Get the list of user names in the system.
      *
      * @return A list of user names.
-     * @throws MDMAPIException
      */
     @GET
     @Path("users-by-username")
-    public Response getAllUserNamesByUsername(@QueryParam("username") String userName) throws MDMAPIException {
+    public Response getAllUserNamesByUsername(@QueryParam("username") String userName) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users by name");
         }
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
         List<String> userList;
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             String[] users = userStoreManager.listUsers("*" + userName + "*", -1);
             userList = new ArrayList<>(users.length);
             Collections.addAll(userList, users);
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Error occurred while retrieving the list of users";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
@@ -547,7 +549,7 @@ public class User {
         responsePayload.setMessageFromServer("All users by username were successfully retrieved. " +
                 "Obtained user count: " + count);
         responsePayload.setResponseContent(userList);
-        return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+        return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 
     /**
@@ -555,11 +557,10 @@ public class User {
      *
      * @param username Username of the user
      * @param claimUri required ClaimUri
-     * @return A list of usernames
-     * @throws MDMAPIException, UserStoreException
+     * @return claim value
      */
     private String getClaimValue(String username, String claimUri) throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+        UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
         try {
             return userStoreManager.getUserClaimValue(username, claimUri, null);
         } catch (UserStoreException e) {
@@ -572,10 +573,8 @@ public class User {
      * Method used to send an invitation email to a new user to enroll a device.
      *
      * @param username Username of the user
-     * @throws MDMAPIException, UserStoreException, DeviceManagementException
      */
-    private void inviteNewlyAddedUserToEnrollDevice(
-            String username, String password) throws MDMAPIException {
+    private void inviteNewlyAddedUserToEnrollDevice(String username, String password) throws MDMAPIException {
         if (log.isDebugEnabled()) {
             log.debug("Sending invitation mail to user by username: " + username);
         }
@@ -587,7 +586,7 @@ public class User {
             username = "/" + username;
         }
         String[] usernameBits = username.split("/");
-        DeviceManagementProviderService deviceManagementProviderService = MDMAPIUtils.getDeviceManagementService();
+        DeviceManagementProviderService deviceManagementProviderService = DeviceMgtAPIUtils.getDeviceManagementService();
 
         Properties props = new Properties();
         props.setProperty("username", usernameBits[1]);
@@ -611,16 +610,15 @@ public class User {
      * Method used to send an invitation email to a existing user to enroll a device.
      *
      * @param usernames Username list of the users to be invited
-     * @throws MDMAPIException
      */
     @POST
     @Path("email-invitation")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response inviteExistingUsersToEnrollDevice(List<String> usernames) throws MDMAPIException {
+    public Response inviteExistingUsersToEnrollDevice(List<String> usernames) {
         if (log.isDebugEnabled()) {
             log.debug("Sending enrollment invitation mail to existing user.");
         }
-        DeviceManagementProviderService deviceManagementProviderService = MDMAPIUtils.getDeviceManagementService();
+        DeviceManagementProviderService deviceManagementProviderService = DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             for (String username : usernames) {
                 String recipient = getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS);
@@ -632,15 +630,15 @@ public class User {
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
                 deviceManagementProviderService.sendEnrolmentInvitation(metaInfo);
             }
-        } catch (DeviceManagementException e) {
+        } catch (DeviceManagementException | MDMAPIException e) {
             String msg = "Error occurred while inviting user to enrol their device";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
         responsePayload.setMessageFromServer("Email invitation was successfully sent to user.");
-        return Response.status(HttpStatus.SC_OK).entity(responsePayload).build();
+        return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 
     /**
@@ -648,27 +646,25 @@ public class User {
      *
      * @param username Username of the device owner
      * @return A list of devices
-     * @throws MDMAPIException
      */
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path("devices")
-    public Object getAllDeviceOfUser(@QueryParam("username") String username, @QueryParam("start") int startIdx,
-                                     @QueryParam("length") int length)
-            throws MDMAPIException {
+    public Response getAllDeviceOfUser(@QueryParam("username") String username, @QueryParam("start") int startIdx,
+                                       @QueryParam("length") int length) {
         DeviceManagementProviderService dmService;
         try {
-            dmService = MDMAPIUtils.getDeviceManagementService();
+            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             if (length > 0) {
                 PaginationRequest request = new PaginationRequest(startIdx, length);
                 request.setOwner(username);
-                return dmService.getDevicesOfUser(request);
+                return Response.status(Response.Status.OK).entity(dmService.getDevicesOfUser(request)).build();
             }
-            return dmService.getDevicesOfUser(username);
+            return Response.status(Response.Status.OK).entity(dmService.getDevicesOfUser(username)).build();
         } catch (DeviceManagementException e) {
             String msg = "Device management error";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -676,22 +672,23 @@ public class User {
      * This method is used to retrieve the user count of the system.
      *
      * @return returns the count.
-     * @throws MDMAPIException
+     * @
      */
     @GET
     @Path("count")
-    public int getUserCount() throws MDMAPIException {
+    public Response getUserCount() {
         try {
-            String[] users = MDMAPIUtils.getUserStoreManager().listUsers("*", -1);
-            if (users == null) {
-                return 0;
+            String[] users = DeviceMgtAPIUtils.getUserStoreManager().listUsers("*", -1);
+            Integer count = 0;
+            if (users != null) {
+                count = users.length;
             }
-            return users.length;
-        } catch (UserStoreException e) {
+            return Response.status(Response.Status.OK).entity(count).build();
+        } catch (UserStoreException | MDMAPIException e) {
             String msg =
                     "Error occurred while retrieving the list of users that exist within the current tenant";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -701,33 +698,30 @@ public class User {
      * @param username
      * @param userList
      * @return
-     * @throws MDMAPIException
+     * @
      */
     @PUT
     @Path("{roleName}/users")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response updateRoles(@PathParam("username") String username, List<String> userList)
-            throws MDMAPIException {
-        final UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public Response updateRoles(@PathParam("username") String username, List<String> userList) {
         try {
+            final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (log.isDebugEnabled()) {
                 log.debug("Updating the roles of a user");
             }
-            SetReferenceTransformer transformer = new SetReferenceTransformer();
+            SetReferenceTransformer<String> transformer = new SetReferenceTransformer<>();
             transformer.transform(Arrays.asList(userStoreManager.getRoleListOfUser(username)),
                     userList);
-            final String[] rolesToAdd = (String[])
-                    transformer.getObjectsToAdd().toArray(new String[transformer.getObjectsToAdd().size()]);
-            final String[] rolesToDelete = (String[])
-                    transformer.getObjectsToRemove().toArray(new String[transformer.getObjectsToRemove().size()]);
+            final String[] rolesToAdd = transformer.getObjectsToAdd().toArray(new String[transformer.getObjectsToAdd().size()]);
+            final String[] rolesToDelete = transformer.getObjectsToRemove().toArray(new String[transformer.getObjectsToRemove().size()]);
 
             userStoreManager.updateRoleListOfUser(username, rolesToDelete, rolesToAdd);
-        } catch (UserStoreException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Error occurred while saving the roles for user: " + username;
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        return Response.status(HttpStatus.SC_OK).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     /**
@@ -735,13 +729,13 @@ public class User {
      *
      * @param credentials Wrapper object representing user credentials.
      * @return {Response} Status of the request wrapped inside Response object.
-     * @throws MDMAPIException
+     * @
      */
     @POST
     @Path("change-password")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response resetPassword(UserCredentialWrapper credentials) throws MDMAPIException {
+    public Response resetPassword(UserCredentialWrapper credentials) {
         return CredentialManagementResponseBuilder.buildChangePasswordResponse(credentials);
     }
 
@@ -750,13 +744,13 @@ public class User {
      *
      * @param credentials Wrapper object representing user credentials.
      * @return {Response} Status of the request wrapped inside Response object.
-     * @throws MDMAPIException
+     * @
      */
     @POST
     @Path("reset-password")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response resetPasswordByAdmin(UserCredentialWrapper credentials) throws MDMAPIException {
+    public Response resetPasswordByAdmin(UserCredentialWrapper credentials) {
         return CredentialManagementResponseBuilder.buildResetPasswordResponse(credentials);
     }
 

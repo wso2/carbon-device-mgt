@@ -37,19 +37,16 @@ public class CredentialManagementResponseBuilder {
 
     private static Log log = LogFactory.getLog(CredentialManagementResponseBuilder.class);
 
-    private ResponsePayload responsePayload;
-
     /**
      * Builds the response to change the password of a user
      * @param credentials - User credentials
      * @return Response Object
-     * @throws MDMAPIException
      */
-    public static Response buildChangePasswordResponse(UserCredentialWrapper credentials) throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public static Response buildChangePasswordResponse(UserCredentialWrapper credentials) {
         ResponsePayload responsePayload = new ResponsePayload();
 
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             byte[] decodedNewPassword = Base64.decodeBase64(credentials.getNewPassword());
             byte[] decodedOldPassword = Base64.decodeBase64(credentials.getOldPassword());
             userStoreManager.updateCredential(credentials.getUsername(), new String(
@@ -57,48 +54,52 @@ public class CredentialManagementResponseBuilder {
             responsePayload.setStatusCode(HttpStatus.SC_CREATED);
             responsePayload.setMessageFromServer("User password by username: " + credentials.getUsername() +
                     " was successfully changed.");
-            return Response.status(HttpStatus.SC_CREATED).entity(responsePayload).build();
+            return Response.status(Response.Status.CREATED).entity(responsePayload).build();
         } catch (UserStoreException e) {
             log.error(e.getMessage(), e);
             responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
             responsePayload.setMessageFromServer("Old password does not match.");
-            return Response.status(HttpStatus.SC_BAD_REQUEST).entity(responsePayload).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
         } catch (UnsupportedEncodingException e) {
             String errorMsg = "Could not change the password of the user: " + credentials.getUsername() +
                     ". The Character Encoding is not supported.";
             log.error(errorMsg, e);
-            throw new MDMAPIException(errorMsg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
+        } catch (MDMAPIException e) {
+            log.error(e.getErrorMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getErrorMessage()).build();
         }
-
     }
 
     /**
      * Builds the response to reset the password of a user
      * @param credentials - User credentials
      * @return Response Object
-     * @throws MDMAPIException
      */
-    public static Response buildResetPasswordResponse(UserCredentialWrapper credentials) throws MDMAPIException {
-        UserStoreManager userStoreManager = MDMAPIUtils.getUserStoreManager();
+    public static Response buildResetPasswordResponse(UserCredentialWrapper credentials) {
         ResponsePayload responsePayload = new ResponsePayload();
         try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             byte[] decodedNewPassword = Base64.decodeBase64(credentials.getNewPassword());
             userStoreManager.updateCredentialByAdmin(credentials.getUsername(), new String(
                     decodedNewPassword, "UTF-8"));
             responsePayload.setStatusCode(HttpStatus.SC_CREATED);
             responsePayload.setMessageFromServer("User password by username: " + credentials.getUsername() +
                     " was successfully changed.");
-            return Response.status(HttpStatus.SC_CREATED).entity(responsePayload).build();
+            return Response.status(Response.Status.CREATED).entity(responsePayload).build();
         } catch (UserStoreException e) {
             log.error(e.getMessage(), e);
             responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
             responsePayload.setMessageFromServer("Could not change the password.");
-            return Response.status(HttpStatus.SC_BAD_REQUEST).entity(responsePayload).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
         } catch (UnsupportedEncodingException e) {
             String errorMsg = "Could not change the password of the user: " + credentials.getUsername() +
                     ". The Character Encoding is not supported.";
             log.error(errorMsg, e);
-            throw new MDMAPIException(errorMsg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
+        } catch (MDMAPIException e) {
+            log.error(e.getErrorMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getErrorMessage()).build();
         }
     }
 

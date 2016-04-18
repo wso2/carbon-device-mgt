@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.mdm.api;
 
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
@@ -29,14 +28,19 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.mdm.api.common.MDMAPIException;
-import org.wso2.carbon.mdm.api.util.MDMAPIUtils;
-import org.wso2.carbon.mdm.api.util.ResponsePayload;
+import org.wso2.carbon.mdm.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.mdm.beans.EnrollmentCertificate;
-import org.wso2.carbon.mdm.exception.*;
-import org.wso2.carbon.mdm.exception.BadRequestException;
-import org.wso2.carbon.mdm.util.MDMUtil;
+import org.wso2.carbon.mdm.exception.Message;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -45,7 +49,8 @@ import java.util.List;
 /**
  * All the certificate related tasks such as saving certificates, can be done through this endpoint.
  */
-@Produces({ "application/json", "application/xml" })
+@SuppressWarnings("NonJaxWsWebServices")
+@Produces({"application/json", "application/xml"})
 @Consumes({ "application/json", "application/xml" })
 public class Certificate {
 
@@ -57,18 +62,16 @@ public class Certificate {
      * @param enrollmentCertificates List of all the certificates which includes the tenant id, certificate as
      *                               a pem and a serial number.
      * @return Status of the data persist operation.
-     * @throws MDMAPIException
      */
     @POST
     @Path("saveCertificate")
     public Response saveCertificate(@HeaderParam("Accept") String acceptHeader,
-                                    EnrollmentCertificate[] enrollmentCertificates) throws MDMAPIException {
-        MediaType responseMediaType = MDMAPIUtils.getResponseMediaType(acceptHeader);
+                                    EnrollmentCertificate[] enrollmentCertificates) {
+        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
         CertificateManagementService certificateService;
-        List<org.wso2.carbon.certificate.mgt.core.bean.Certificate> certificates = new ArrayList<org.wso2.carbon
-                .certificate.mgt.core.bean.Certificate>();
+        List<org.wso2.carbon.certificate.mgt.core.bean.Certificate> certificates = new ArrayList<>();
         org.wso2.carbon.certificate.mgt.core.bean.Certificate certificate;
-        certificateService = MDMAPIUtils.getCertificateManagementService();
+        certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
         try {
             for (EnrollmentCertificate enrollmentCertificate : enrollmentCertificates) {
                 certificate = new org.wso2.carbon.certificate.mgt.core.bean.Certificate();
@@ -83,7 +86,7 @@ public class Certificate {
         } catch (KeystoreException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate.";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
         }
     }
 
@@ -92,22 +95,21 @@ public class Certificate {
      *
      * @param serialNumber serial of the certificate needed.
      * @return certificate response.
-     * @throws MDMAPIException
      */
     @GET
     @Path("{serialNumber}")
     public Response getCertificate(@HeaderParam("Accept") String acceptHeader,
-                                   @PathParam("serialNumber") String serialNumber) throws MDMAPIException {
-        MediaType responseMediaType = MDMAPIUtils.getResponseMediaType(acceptHeader);
+                                   @PathParam("serialNumber") String serialNumber) {
+        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
         Message message = new Message();
 
         if (serialNumber == null || serialNumber.isEmpty()) {
             message.setErrorMessage("Invalid serial number");
             message.setDiscription("Serial number is missing or invalid.");
-            throw new BadRequestException(message, responseMediaType);
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
         }
 
-        CertificateManagementService certificateService = MDMAPIUtils.getCertificateManagementService();
+        CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
         CertificateResponse certificateResponse;
         try {
             certificateResponse = certificateService.getCertificateBySerial(serialNumber);
@@ -118,7 +120,7 @@ public class Certificate {
         } catch (KeystoreException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
-            return Response.serverError().build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
         }
     }
 
@@ -136,20 +138,20 @@ public class Certificate {
                                        @QueryParam("start") int startIndex,
                                        @QueryParam("length") int length)
             throws MDMAPIException {
-        MediaType responseMediaType = MDMAPIUtils.getResponseMediaType(acceptHeader);
+        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
         Message message = new Message();
 
         if (startIndex < 0) {
             message.setErrorMessage("Invalid start index.");
             message.setDiscription("Start index cannot be less that 0.");
-            throw new BadRequestException(message, responseMediaType);
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
         } else if (length <= 0) {
             message.setErrorMessage("Invalid length value.");
             message.setDiscription("Length should be a positive integer.");
-            throw new BadRequestException(message, responseMediaType);
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
         }
 
-        CertificateManagementService certificateService = MDMAPIUtils.getCertificateManagementService();
+        CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
         PaginationRequest paginationRequest = new PaginationRequest(startIndex, length);
         try {
             PaginationResult certificates = certificateService.getAllCertificates(paginationRequest);
@@ -157,7 +159,7 @@ public class Certificate {
         } catch (CertificateManagementDAOException e) {
             String msg = "Error occurred while fetching all certificates.";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
         }
     }
 
@@ -165,16 +167,16 @@ public class Certificate {
     @Path("{serialNumber}")
     public Response removeCertificate(@HeaderParam("Accept") String acceptHeader,
                                        @PathParam("serialNumber") String serialNumber) throws MDMAPIException {
-        MediaType responseMediaType = MDMAPIUtils.getResponseMediaType(acceptHeader);
+        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
         Message message = new Message();
 
         if (serialNumber == null || serialNumber.isEmpty()) {
             message.setErrorMessage("Invalid serial number");
             message.setDiscription("Serial number is missing or invalid.");
-            throw new BadRequestException(message, responseMediaType);
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
         }
 
-        CertificateManagementService certificateService = MDMAPIUtils.getCertificateManagementService();
+        CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
         boolean deleted;
         try {
             deleted = certificateService.removeCertificate(serialNumber);
@@ -186,7 +188,7 @@ public class Certificate {
         } catch (CertificateManagementDAOException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
-            return Response.serverError().build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
         }
     }
 }

@@ -25,9 +25,6 @@ var onFail;
     onSuccess = function (context) {
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
-        var userModule = require("/app/modules/user.js").userModule;
-
-        utility.insertAppPermissions(userModule, "login");
         var properties = {username: context.input.username, password: context.input.password};
         apiWrapperUtil.setupAccessTokenPair("password", properties);
     };

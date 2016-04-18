@@ -59,7 +59,6 @@ public class APIPublisherServiceComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing device management core bundle");
             }
-
             /* Registering declarative service instances exposed by DeviceManagementServiceComponent */
             this.registerServices(componentContext);
 

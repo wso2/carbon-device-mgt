@@ -92,7 +92,7 @@ public class AnnotationUtil {
      * @param entityClasses
      * @return
      */
-    public List<APIResourceConfiguration> extractAPIInfo(Set<String> entityClasses)
+    public List<APIResourceConfiguration> extractAPIInfo(final ServletContext servletContext, Set<String> entityClasses)
             throws ClassNotFoundException {
 
         List<APIResourceConfiguration> apiResourceConfigs = new ArrayList<APIResourceConfiguration>();
@@ -111,7 +111,7 @@ public class AnnotationUtil {
                                             classLoader.loadClass(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
 
-                                    List<APIResource> resourceList = null;
+                                    List<APIResource> resourceList;
                                     apiResourceConfig = new APIResourceConfiguration();
 
                                     if (apiAnno != null) {
@@ -139,21 +139,27 @@ public class AnnotationUtil {
                                                         break;
                                                 }
                                             }
-
-                                            String rootContext = "";
+                                            // All the apis should map to same root "/"
+                                            String rootContext = servletContext.getContextPath();
                                             pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
                                             pathClazzMethods = pathClazz.getMethods();
 
                                             Annotation rootContectAnno = clazz.getAnnotation(pathClazz);
+                                            String subContext = "";
                                             if (rootContectAnno != null) {
-                                                rootContext = invokeMethod(pathClazzMethods[0], rootContectAnno, STRING);
+                                                subContext = invokeMethod(pathClazzMethods[0], rootContectAnno, STRING);
+                                                if (subContext != null && !subContext.isEmpty()) {
+                                                    rootContext = rootContext + "/" + subContext;
+                                                } else {
+                                                    subContext = "";
+                                                }
                                                 if (log.isDebugEnabled()) {
                                                     log.debug("API Root  Context = " + rootContext);
                                                 }
                                             }
 
                                             Method[] annotatedMethods = clazz.getDeclaredMethods();
-                                            resourceList = getApiResources(rootContext, annotatedMethods);
+                                            resourceList = getApiResources(rootContext, subContext, annotatedMethods);
                                             apiResourceConfig.setResources(resourceList);
                                         } catch (Throwable throwable) {
                                             log.error("Error encountered while scanning for annotations", throwable);
@@ -171,7 +177,7 @@ public class AnnotationUtil {
         return apiResourceConfigs;
     }
 
-    private List<APIResource> getApiResources(String rootContext, Method[] annotatedMethods) throws Throwable {
+    private List<APIResource> getApiResources(String resourceRootContext, String apiRootContext, Method[] annotatedMethods) throws Throwable {
         List<APIResource> resourceList;
         resourceList = new ArrayList<APIResource>();
         for (Method method : annotatedMethods) {
@@ -179,12 +185,13 @@ public class AnnotationUtil {
             if (methodContextAnno != null) {
                 String subCtx = invokeMethod(pathClazzMethods[0], methodContextAnno, STRING);
                 APIResource resource = new APIResource();
-                resource.setUriTemplate(makeContextURLReady(subCtx));
+                resource.setUriTemplate(makeContextURLReady(apiRootContext + subCtx));
 
                 String serverIP = System.getProperty(SERVER_HOST);
                 String httpServerPort = System.getProperty(HTTP_PORT);
 
-                resource.setUri(PROTOCOL_HTTP + "://" + serverIP + ":" + httpServerPort + makeContextURLReady(rootContext) + makeContextURLReady(subCtx));
+                resource.setUri(PROTOCOL_HTTP + "://" + serverIP + ":" + httpServerPort + makeContextURLReady(
+                        resourceRootContext) + makeContextURLReady(subCtx));
                 resource.setAuthType(AUTH_TYPE);
 
                 Annotation[] annotations = method.getDeclaredAnnotations();

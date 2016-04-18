@@ -45,8 +45,6 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
             return;
         }
 
-
-
         WebappAuthenticator authenticator = WebappAuthenticatorFactory.getAuthenticator(request);
         if (authenticator == null) {
             String msg = "Failed to load an appropriate authenticator to authenticate the request";

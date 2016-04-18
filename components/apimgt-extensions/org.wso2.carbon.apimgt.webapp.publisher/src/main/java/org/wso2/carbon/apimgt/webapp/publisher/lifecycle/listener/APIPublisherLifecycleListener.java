@@ -25,6 +25,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.model.*;
+import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.webapp.publisher.*;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
@@ -51,7 +52,6 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 	private static final String PARAM_MANAGED_API_TRANSPORTS = "managed-api-transports";
 	private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
 	private static final String PARAM_MANAGED_API_APPLICATION = "managed-api-application";
-	private static final String PARAM_MANAGED_API_CONTEXT_TEMPLATE = "managed-api-context-template";
 	private static final String PARAM_SHARED_WITH_ALL_TENANTS = "isSharedWithAllTenants";
 	private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
 	private static final Log log = LogFactory.getLog(APIPublisherLifecycleListener.class);
@@ -69,7 +69,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 					AnnotationUtil annotationUtil = new AnnotationUtil(context);
 					Set<String> annotatedAPIClasses = annotationUtil.
 							scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
-					List<APIResourceConfiguration> apiDefinitions = annotationUtil.extractAPIInfo(annotatedAPIClasses);
+					List<APIResourceConfiguration> apiDefinitions = annotationUtil.extractAPIInfo(servletContext, annotatedAPIClasses);
 
 					for (APIResourceConfiguration apiDefinition : apiDefinitions) {
  						APIConfig apiConfig = this.buildApiConfig(servletContext, apiDefinition);
@@ -156,14 +156,13 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 			apiConfig.setTags(tags);
 		}
 
-		String contextTemplate = servletContext.getInitParameter(PARAM_MANAGED_API_CONTEXT_TEMPLATE);
-		if (contextTemplate == null || contextTemplate.isEmpty()) {
-			if (log.isDebugEnabled()) {
-				log.debug("'managed-api-context-template' attribute is not configured. Therefore, using the default," +
-								  " " +
-								  "which is the original context template assigned to the web application");
-			}
-			contextTemplate = servletContext.getContextPath();
+		String tenantDomain = servletContext.getInitParameter(PARAM_PROVIDER_TENANT_DOMAIN);
+		tenantDomain = (tenantDomain != null && !tenantDomain.isEmpty()) ? tenantDomain :
+				MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+		apiConfig.setTenantDomain(tenantDomain);
+		String contextTemplate = context + "/" + APIConstants.VERSION_PLACEHOLDER;
+		if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+			contextTemplate = context + "/t/" + tenantDomain + "/" + APIConstants.VERSION_PLACEHOLDER;
 		}
 		apiConfig.setContextTemplate(contextTemplate);
 
@@ -172,7 +171,8 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 			if (log.isDebugEnabled()) {
 				log.debug("'managed-api-endpoint' attribute is not configured");
 			}
-			endpoint = APIPublisherUtil.getApiEndpointUrl(context);
+			String endpointContext = servletContext.getContextPath();
+			endpoint = APIPublisherUtil.getApiEndpointUrl(endpointContext);
 		}
 		apiConfig.setEndpoint(endpoint);
 
@@ -208,12 +208,9 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 		apiConfig.setTransports(transports);
 
 		String sharingValueParam = servletContext.getInitParameter(PARAM_SHARED_WITH_ALL_TENANTS);
-		boolean isSharedWithAllTenants = (sharingValueParam == null || (!sharingValueParam.isEmpty()) && Boolean.parseBoolean(sharingValueParam) );
+		boolean isSharedWithAllTenants = (sharingValueParam == null || (!sharingValueParam.isEmpty()) && Boolean.parseBoolean(
+						sharingValueParam));
 		apiConfig.setSharedWithAllTenants(isSharedWithAllTenants);
-
-		String tenantDomain = servletContext.getInitParameter(PARAM_PROVIDER_TENANT_DOMAIN);
-		tenantDomain = (tenantDomain!= null && !tenantDomain.isEmpty()) ? tenantDomain : MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
-		apiConfig.setTenantDomain(tenantDomain);
 
 		Set<URITemplate> uriTemplates = new LinkedHashSet<URITemplate>();
 		for (APIResource apiResource : apidef.getResources()) {

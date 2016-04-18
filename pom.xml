@@ -1385,13 +1385,6 @@
                 <version>${carbon.analytics.common.version}</version>
             </dependency>
 
-            <!-- Carbon Analytics -->
-            <dependency>
-                <groupId>org.wso2.carbon.analytics</groupId>
-                <artifactId>org.wso2.carbon.analytics.api</artifactId>
-                <version>${carbon.analytics.version}</version>
-            </dependency>
-
             <!-- Carbon Registry -->
             <dependency>
                 <groupId>org.wso2.carbon.registry</groupId>
@@ -1743,10 +1736,6 @@
         <!-- Carbon Analytics Commons -->
         <carbon.analytics.common.version>5.0.11</carbon.analytics.common.version>
         <carbon.analytics.common.version.range>[5.0.11,6.0.0)</carbon.analytics.common.version.range>
-
-        <!-- Carbon Analytics -->
-        <carbon.analytics.version>1.0.5</carbon.analytics.version>
-        <carbon.analytics.version.range>[1.0.5,2.0.0]</carbon.analytics.version.range>
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.4.8</carbon.registry.version>

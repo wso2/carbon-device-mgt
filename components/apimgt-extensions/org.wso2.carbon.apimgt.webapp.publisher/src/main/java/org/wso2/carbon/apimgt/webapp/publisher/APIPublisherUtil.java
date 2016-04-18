@@ -37,6 +37,7 @@ public class APIPublisherUtil {
 
     private static final String DEFAULT_API_VERSION = "1.0.0";
     public static final String API_VERSION_PARAM="{version}";
+    public static final String API_PUBLISH_ENVIRONEMENT = "Production and Sandbox";
 
     enum HTTPMethod {
         GET, POST, DELETE, PUT, OPTIONS
@@ -75,10 +76,13 @@ public class APIPublisherUtil {
         api.setUrl(config.getEndpoint());
         api.addAvailableTiers(provider.getTiers());
         api.setEndpointSecured(true);
-        api.setStatus(APIStatus.PUBLISHED);
+        api.setStatus(APIStatus.CREATED);
         api.setTransports(config.getTransports());
         api.setContextTemplate(config.getContextTemplate());
         api.setUriTemplates(config.getUriTemplates());
+        Set<String> environements = new HashSet<>();
+        environements.add(API_PUBLISH_ENVIRONEMENT);
+        api.setEnvironments(environements);
         Set<Tier> tiers = new HashSet<Tier>();
         tiers.add(new Tier(APIConstants.UNLIMITED_TIER));
         api.addAvailableTiers(tiers);
@@ -91,7 +95,7 @@ public class APIPublisherUtil {
         }
         api.setResponseCache(APIConstants.DISABLED);
 
-        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() + "\",\"config\":null},\"endpoint_type\":\"http\"}";
+        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() + "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
         api.setEndpointConfig(endpointConfig);
 
         if ("".equals(id.getVersion()) || (DEFAULT_API_VERSION.equals(id.getVersion()))) {

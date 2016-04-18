@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.analytics.data.publisher.config;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.analytics.data.publisher.DeviceAnalyticsUtil;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.DataPublisherUtil;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -100,7 +100,7 @@ public class AnalyticsConfiguration {
     public static void init() throws DataPublisherConfigurationException {
         try {
             File authConfig = new File(AnalyticsConfiguration.DEVICE_ANALYTICS_CONFIG_PATH);
-            Document doc = DeviceAnalyticsUtil.convertToDocument(authConfig);
+            Document doc = DataPublisherUtil.convertToDocument(authConfig);
 
             /* Un-marshaling device analytics configuration */
             JAXBContext ctx = JAXBContext.newInstance(AnalyticsConfiguration.class);

@@ -29,7 +29,6 @@ import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.api.model.APIStatus;
 import org.wso2.carbon.apimgt.api.model.URITemplate;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
-import org.wso2.carbon.apimgt.webapp.publisher.exception.APIPublisherException;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
@@ -55,92 +54,54 @@ public class APIPublisherServiceImpl implements APIPublisherService {
 
 	@Override
 	public void publishAPI(final API api) throws APIManagementException, FaultGatewaysException {
-		// A thread is initialized because we cannot guarantee that the gateway is initialized before publishing.
-		// A better solution is needs to be implemented -   should check in apimanager whether
-		// the gateway is local and if so then publish it through OSGI
-		Runnable connector = new Runnable() {
-			public void run() {
-				if (waitForServerStartup()) {
-					return;
+		String tenantDomain = MultitenantUtils.getTenantDomain(api.getApiOwner());
+		PrivilegedCarbonContext.startTenantFlow();
+		PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+		try {
+			int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+			// Below code snippet is added to load API Lifecycle in tenant mode.
+			RegistryService registryService = APIPublisherDataHolder.getInstance().getRegistryService();
+			CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(tenantId),
+														  CommonUtil.getRootSystemRegistry(tenantId));
+			APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
+			MultitenantUtils.getTenantDomain(api.getApiOwner());
+			if (provider != null) {
+				if (provider.isDuplicateContextTemplate(api.getContext())) {
+					throw new APIManagementException(
+							"Error occurred while adding the API. A duplicate API" +
+									" context already exists for " + api.getContext());
 				}
-				if (log.isDebugEnabled()) {
-					log.debug("Publishing API '" + api.getId() + "");
-				}
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					Thread.interrupted();
-				}
-				synchronized (APIPublisherServiceImpl.class) {
-					String tenantDomain = MultitenantUtils.getTenantDomain(api.getApiOwner());
-					PrivilegedCarbonContext.startTenantFlow();
-					PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-					try {
-						int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-						// Below code snippet is added to load API Lifecycle in tenant mode.
-						RegistryService registryService = APIPublisherDataHolder.getInstance().getRegistryService();
-						CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(tenantId),
-																	  CommonUtil.getRootSystemRegistry(tenantId));
-						APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
-						MultitenantUtils.getTenantDomain(api.getApiOwner());
-						if (provider != null) {
-							if (provider.isDuplicateContextTemplate(api.getContext())) {
-								throw new APIManagementException(
-										"Error occurred while adding the API. A duplicate API" +
-												" context already exists for " + api.getContext());
-							}
-							if (!provider.isAPIAvailable(api.getId())) {
-								provider.addAPI(api);
-								provider.changeLifeCycleStatus(api.getId(), PUBLISH_ACTION);
-								if (log.isDebugEnabled()) {
-									log.debug("Successfully published API '" + api.getId().getApiName() +
-									"' with context '" + api.getContext() + "' and version '"
-									+ api.getId().getVersion() + "'");
-								}
-							} else {
-								api.setStatus(APIStatus.PUBLISHED);
-								provider.updateAPI(api);
-								if (log.isDebugEnabled()) {
-									log.debug("An API already exists with the name '" + api.getId().getApiName() +
-													  "', context '" + api.getContext() + "' and version '"
-													  + api.getId().getVersion() + "'. Thus, the API config is updated");
-								}
-							}
-							provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
-						} else {
-							throw new APIManagementException("API provider configured for the given API configuration " +
-											"is null. Thus, the API is not published");
-						}
-					} catch (FileNotFoundException e) {
-						throw new APIPublisherException("Failed to retrieve life cycle file ", e);
-					} catch (RegistryException e) {
-						throw new APIPublisherException("Failed to access the registry ", e);
-					} catch (XMLStreamException e) {
-						throw new APIPublisherException("Failed parsing the lifecycle xml.", e);
-					} catch (FaultGatewaysException e) {
-						throw new APIPublisherException("Failed when publishing to the gateway", e);
-					} catch (APIManagementException e) {
-						throw new APIPublisherException("Failed publishing the API " + api.getId().getApiName(), e);
-					} finally {
-						PrivilegedCarbonContext.endTenantFlow();
+				if (!provider.isAPIAvailable(api.getId())) {
+					provider.addAPI(api);
+					provider.changeLifeCycleStatus(api.getId(), PUBLISH_ACTION);
+					if (log.isDebugEnabled()) {
+						log.debug("Successfully published API '" + api.getId().getApiName() +
+										  "' with context '" + api.getContext() + "' and version '"
+										  + api.getId().getVersion() + "'");
+					}
+				} else {
+					api.setStatus(APIStatus.PUBLISHED);
+					provider.updateAPI(api);
+					if (log.isDebugEnabled()) {
+						log.debug("An API already exists with the name '" + api.getId().getApiName() +
+										  "', context '" + api.getContext() + "' and version '"
+										  + api.getId().getVersion() + "'. Thus, the API config is updated");
 					}
 				}
+				provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
+			} else {
+				throw new APIManagementException("API provider configured for the given API configuration " +
+														 "is null. Thus, the API is not published");
 			}
-		};
-		Thread connectorThread = new Thread(connector);
-		connectorThread.setDaemon(true);
-		connectorThread.start();
-	}
-
-	private boolean waitForServerStartup() {
-		while (!APIPublisherDataHolder.getInstance().getServerStartupListener().isServerReady()) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				Thread.interrupted();
-			}
+		} catch (FileNotFoundException e) {
+			throw new APIManagementException("Failed to retrieve life cycle file ", e);
+		} catch (RegistryException e) {
+			throw new APIManagementException("Failed to access the registry ", e);
+		} catch (XMLStreamException e) {
+			throw new APIManagementException("Failed parsing the lifecycle xml.", e);
+		} finally {
+			PrivilegedCarbonContext.endTenantFlow();
 		}
-		return false;
 	}
 
 	private String createSwaggerDefinition(API api) {

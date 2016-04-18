@@ -26,6 +26,7 @@ import org.wso2.carbon.apimgt.application.extension.api.util.RegistrationProfile
 import org.wso2.carbon.apimgt.application.extension.constants.ApiApplicationConstants;
 import org.wso2.carbon.apimgt.application.extension.dto.ApiApplicationKey;
 import org.wso2.carbon.apimgt.application.extension.exception.APIManagerException;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.apimgt.application.extension.api.util.APIUtil;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -45,13 +46,16 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
     @POST
     public Response register(@PathParam("tenantDomain") String tenantDomain,
                              @QueryParam("applicationName") String applicationName) {
-        Response response;
+        String authenticatedTenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        if (authenticatedTenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
         try {
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
             if (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId() == -1) {
                 String msg = "Invalid tenant domain : " + tenantDomain;
-                response = Response.status(Response.Status.NOT_ACCEPTABLE).entity(msg).build();
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(msg).build();
             }
             String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
                     .getRealmConfiguration().getAdminUserName();
@@ -63,21 +67,19 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
         } catch (APIManagerException e) {
             String msg = "Error occurred while registering an application '" + applicationName + "'";
             log.error(msg, e);
-            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (UserStoreException e) {
             String msg = "Failed to retrieve the tenant" + tenantDomain + "'";
             log.error(msg, e);
-            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
-        return response;
     }
 
     @Path("register")
     @POST
     public Response register(RegistrationProfile registrationProfile) {
-        Response response;
         try {
             String username = APIUtil.getAuthenticatedUser();
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
@@ -93,8 +95,9 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                                      ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
                 apiManagementProviderService.registerExistingOAuthApplicationToAPIApplication(
                         jsonStringObject.toJSONString(), registrationProfile.getApplicationName(),
-                        registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains());
-                return Response.status(Response.Status.ACCEPTED).entity("OAuth App is mapped as APIM App").build();
+                        registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains(),
+                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE);
+                return Response.status(Response.Status.ACCEPTED).entity("true").build();
             } else {
                 ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
                         registrationProfile.getApplicationName(), registrationProfile.getTags(),
@@ -103,17 +106,15 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             }
         } catch (APIManagerException e) {
             String msg = "Error occurred while registering an application '"
-                         + registrationProfile.getApplicationName() + "'";
+                    + registrationProfile.getApplicationName() + "'";
             log.error(msg, e);
-            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("false").build();
         }
-        return response;
     }
 
     @Path("unregister")
     @DELETE
     public Response unregister(@QueryParam("applicationName") String applicationName) {
-        Response response;
         try {
             String username = APIUtil.getAuthenticatedUser();
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
@@ -122,8 +123,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
         } catch (APIManagerException e) {
             String msg = "Error occurred while removing the application '" + applicationName;
             log.error(msg, e);
-            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        return response;
     }
 }

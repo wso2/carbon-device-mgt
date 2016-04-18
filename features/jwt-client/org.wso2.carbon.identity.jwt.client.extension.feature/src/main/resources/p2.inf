@@ -1,3 +1,2 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.identity.jwt.client.extension_${feature.version}/jwt.properties,target:${installFolder}/../../conf/etc/jwt.properties,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.identity.jwt.client.extension_${feature.version}/CDMF_DEFAULT_IDP.xml,target:${installFolder}/../../conf/identity/identity-providers/CDMF_DEFAULT_IDP.xml,overwrite:true);\

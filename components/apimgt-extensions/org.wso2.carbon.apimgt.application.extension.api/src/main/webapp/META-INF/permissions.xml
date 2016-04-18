@@ -30,7 +30,7 @@
     <!-- Device related APIs -->
     <Permission>
         <name>Register tenant specific application</name>
-        <path>/permission/super admin</path>
+        <path>/device-mgt</path>
         <url>/register/tenants/*</url>
         <method>POST</method>
         <scope>super_admin_user</scope>

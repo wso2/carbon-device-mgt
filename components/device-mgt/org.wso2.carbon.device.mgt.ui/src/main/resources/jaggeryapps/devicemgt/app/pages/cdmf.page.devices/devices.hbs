@@ -61,7 +61,7 @@
             <div>
                 {{unit "cdmf.unit.device.operation-mod"}}
                 {{#if deviceCount}}
-                    <span id="permission" data-permission="{{{permissions}}}"></span>
+                    <span id="permission" data-permission="{{permissions.list}}"></span>
                     <div id="loading-content" class="col-centered">
                         <i class="fw fw-settings fw-spin fw-2x"></i>
                         &nbsp;&nbsp;&nbsp;
@@ -324,7 +324,7 @@
 {{/zone}}
 
 {{#zone "bottomJs"}}
-    <script id="device-listing" data-current-user="{{currentUser.username}}"
+    <script id="device-listing" data-current-user="{{currentUser.username}}" data-device-types="{{deviceTypes}}"
             data-image-resource="{{@app.context}}/public/cdmf.unit.device.type."
             src="{{@page.publicUri}}/templates/listing.hbs"
             type="text/x-handlebars-template"></script>

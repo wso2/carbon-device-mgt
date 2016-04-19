@@ -278,9 +278,10 @@ deviceModule = function () {
                         if (device) {
                             var propertiesList = device["properties"];
                             var properties = {};
-                            for (var i = 0; i < propertiesList.length; i++) {
-                                properties[propertiesList[i]["name"]] =
-                                        propertiesList[i]["value"];
+                            if (propertiesList){
+                                for (var i = 0; i < propertiesList.length; i++) {
+                                    properties[propertiesList[i]["name"]] = propertiesList[i]["value"];
+                                }
                             }
                             var deviceObject = {};
                             deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];

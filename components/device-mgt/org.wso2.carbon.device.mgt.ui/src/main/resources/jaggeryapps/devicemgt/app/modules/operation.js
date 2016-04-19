@@ -21,6 +21,7 @@ var operationModule = function () {
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 
     var publicMethods = {};
     var privateMethods = {};
@@ -39,51 +40,45 @@ var operationModule = function () {
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
         var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/features/" + deviceType;
         var featuresList = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-            var features = responsePayload.responseContent;
+            var features = responsePayload;
             var featureList = [];
             var feature;
-            for (var i = 0; i < features.size(); i++) {
+            for (var i = 0; i < features.length; i++) {
                 feature = {};
-                if (features.get(i).getType() != operationType) {
+                if (features[i].type != operationType) {
                     continue;
-                } else if (features.get(i).getType() == 'monitor') {
+                } else if (features[i].type == 'monitor') {
                     var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
                     if (analyticStreams) {
                         for (var stream in analyticStreams) {
-                            if (analyticStreams[stream].name == features.get(i).getName()) {
+                            if (analyticStreams[stream].name == features[i].name) {
                                 feature.ui_unit = analyticStreams[stream].ui_unit;
                                 break;
                             }
                         }
                     }
                 }
-                feature["operation"] = new String(features.get(i).getCode());
-                feature["name"] = new String(features.get(i).getName());
-                feature["description"] = new String(features.get(i).getDescription());
-                feature["deviceType"] = new String(features.get(i).getDeviceType());
+                feature["operation"] = features[i].code;
+                feature["name"] = features[i].name;
+                feature["description"] = features[i].description;
+                feature["deviceType"] = deviceType;
                 feature["params"] = [];
-                var metaData = features.get(i).getMetadataEntries();
-                if (metaData && metaData != null) {
-                    for (var j = 0; j < metaData.size(); j++) {
-                        feature["params"].push(new String(metaData.get(j).getValue()));
+                var metaData = features[i].metadataEntries;
+                if (metaData) {
+                    for (var j = 0; j < metaData.length; j++) {
+                        feature["params"].push(metaData[j].value);
                     }
                     featureList.push(feature);
                 }
             }
             return featureList;
-        }
-            ,
-            function (responsePayload) {
+        }, function (responsePayload) {
                 var response = {};
                 response["status"] = "error";
                 return response;
             }
         );
         return featuresList;
-            return featureList;
-        } catch (e) {
-            throw e;
-        }
     };
 
     publicMethods.getControlOperations = function (deviceType) {
@@ -108,7 +103,6 @@ var operationModule = function () {
                      '","protocol":"mqtt", "sessionId":"' + session.getId() + '", "' +
                      constants.AUTHORIZATION_HEADER + '":"' + constants.BEARER_PREFIX +
                      getAccessToken(deviceType, user.username, deviceId) + '"}';
-        log.warn("header: " + header);
         return post(endPoint, params, JSON.parse(header), "json");
     };
 

@@ -33,18 +33,16 @@ import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServ
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.mdm.api.common.MDMAPIException;
-import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 import org.wso2.carbon.user.api.AuthorizationManager;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -52,12 +50,11 @@ import java.util.List;
 /**
  * MDMAPIUtils class provides utility function used by CDM REST-API classes.
  */
-public class MDMAPIUtils {
+public class DeviceMgtAPIUtils {
 
-    private static final String NOTIFIER_FREQUENCY = "notifierFrequency";
     public static final MediaType DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_JSON_TYPE;
-
-    private static Log log = LogFactory.getLog(MDMAPIUtils.class);
+    private static final String NOTIFIER_FREQUENCY = "notifierFrequency";
+    private static Log log = LogFactory.getLog(DeviceMgtAPIUtils.class);
 
     public static int getNotifierFrequency(TenantConfiguration tenantConfiguration) {
         List<ConfigurationEntry> configEntryList = tenantConfiguration.getConfiguration();
@@ -95,6 +92,18 @@ public class MDMAPIUtils {
             throw new IllegalStateException(msg);
         }
         return deviceManagementProviderService;
+    }
+
+    public static GroupManagementProviderService getGroupManagementProviderService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        GroupManagementProviderService groupManagementProviderService =
+                (GroupManagementProviderService) ctx.getOSGiService(GroupManagementProviderService.class, null);
+        if (groupManagementProviderService == null) {
+            String msg = "Group Management service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return groupManagementProviderService;
     }
 
     public static int getTenantId(String tenantDomain) throws MDMAPIException {

@@ -20,6 +20,7 @@ var apiWrapperUtil = function () {
     var module = {};
     var tokenUtil = require("/app/modules/util.js").util;
     var constants = require("/app/modules/constants.js");
+    var constants = require("/app/modules/constants.js");
 
     module.refreshToken = function () {
         var tokenPair = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
@@ -32,12 +33,12 @@ var apiWrapperUtil = function () {
         var clientData = tokenUtil.getDyanmicCredentials(properties);
         var encodedClientKeys = tokenUtil.encode(clientData.clientId + ":" + clientData.clientSecret);
         session.put(constants.ENCODED_CLIENT_KEYS_IDENTIFIER, encodedClientKeys);
-        if (type == "password") {
+        if (type == constants.GRANT_TYPE_PASSWORD) {
             tokenPair =
                 tokenUtil.getTokenWithPasswordGrantType(properties.username, encodeURIComponent(properties.password), encodedClientKeys);
-        } else if (type == "saml") {
+        } else if (type == constants.GRANT_TYPE_SAML) {
             tokenPair = tokenUtil.
-                getTokenWithSAMLGrantType(properties.samlToken, encodedClientKeys, "PRODUCTION");
+            getTokenWithSAMLGrantType(properties.samlToken, encodedClientKeys, "PRODUCTION");
         }
         session.put(constants.ACCESS_TOKEN_PAIR_IDENTIFIER, tokenPair);
     };

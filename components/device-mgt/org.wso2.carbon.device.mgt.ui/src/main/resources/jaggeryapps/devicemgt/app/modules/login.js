@@ -20,13 +20,19 @@ var onSuccess;
 var onFail;
 
 (function () {
-    var log = new Log("api/user-api.jag");
-
+    var log = new Log("/app/modules/login.js");
+    var constants = require("/app/modules/constants.js");
     onSuccess = function (context) {
+        var properties;
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
-        var properties = {username: context.input.username, password: context.input.password};
-        apiWrapperUtil.setupAccessTokenPair("password", properties);
+        if(context.input.samlToken){
+            properties = {samlToken: context.input.samlToken};
+            apiWrapperUtil.setupAccessTokenPair(constants.GRANT_TYPE_SAML, properties);
+        }else{
+            properties = {username: context.input.username, password: context.input.password};
+            apiWrapperUtil.setupAccessTokenPair(constants.GRANT_TYPE_PASSWORD, properties);
+        }
     };
 
     onFail = function (error) {

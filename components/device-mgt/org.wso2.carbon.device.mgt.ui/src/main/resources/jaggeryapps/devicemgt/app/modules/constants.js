@@ -48,8 +48,8 @@ var LANGUAGE_US = "en_US";
 
 var VENDOR_APPLE = "Apple";
 var ERRORS = {
-        "USER_NOT_FOUND": "USER_NOT_FOUND"
-    };
+    "USER_NOT_FOUND": "USER_NOT_FOUND"
+};
 
 var USER_STORES_NOISY_CHAR = "\"";
 var USER_STORES_SPLITTING_CHAR = "\\n";
@@ -69,6 +69,9 @@ var HTTP_GET = "GET";
 var HTTP_POST = "POST";
 var HTTP_PUT = "PUT";
 var HTTP_DELETE = "DELETE";
+
+var GRANT_TYPE_PASSWORD = "password";
+var GRANT_TYPE_SAML = "saml";
 
 var MQTT_QUEUE_CONFIG_NAME = "MQTT";
 

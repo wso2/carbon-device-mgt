@@ -22,33 +22,42 @@ var invokerUtil = function () {
 
     var END_POINT = window.location.origin+"/devicemgt/api/invoker/execute/";
 
-    module.get = function (url, successCallback, errorCallback) {
+    module.get = function (url, successCallback, errorCallback, contentType, acceptType) {
         var payload = null;
-        execute("GET", url, payload, successCallback, errorCallback);
+        execute("GET", url, payload, successCallback, errorCallback, contentType, acceptType);
     };
-    module.post = function (url, payload, successCallback, errorCallback) {
-        execute("POST", url, payload, successCallback, errorCallback);
+    module.post = function (url, payload, successCallback, errorCallback, contentType, acceptType) {
+        execute("POST", url, payload, successCallback, errorCallback, contentType, acceptType);
     };
-    module.put = function (url, payload, successCallback, errorCallback) {
-        execute("PUT", url, payload, successCallback, errorCallback);
+    module.put = function (url, payload, successCallback, errorCallback, contentType, acceptType) {
+        execute("PUT", url, payload, successCallback, errorCallback, contentType, acceptType);
     };
-    module.delete = function (url, successCallback, errorCallback) {
+    module.delete = function (url, successCallback, errorCallback, contentType, acceptType) {
         var payload = null;
-        execute("DELETE", url, payload, successCallback, errorCallback);
+        execute("DELETE", url, payload, successCallback, errorCallback, contentType, acceptType);
     };
-    function execute (methoad, url, payload, successCallback, errorCallback) {
+    function execute (methoad, url, payload, successCallback, errorCallback, contentType, acceptType) {
+        if(contentType == undefined){
+            contentType = "application/json";
+        }
+        if(acceptType == undefined){
+            acceptType = "application/json";
+        }
         var data = {
             url: END_POINT,
             type: "POST",
-            contentType: "application/json",
-            accept: "application/json",
+            contentType: contentType,
+            accept: acceptType,
             success: successCallback
         };
         console.log(data);
         var paramValue = {};
         paramValue.actionMethod = methoad;
         paramValue.actionUrl = url;
-        paramValue.actionPayload = JSON.stringify(payload);
+        paramValue.actionPayload = payload;
+        if(contentType == "application/json"){
+            paramValue.actionPayload = JSON.stringify(payload);
+        }
         data.data = JSON.stringify(paramValue);
         $.ajax(data).fail(function (jqXHR) {
             if (jqXHR.status == "401") {

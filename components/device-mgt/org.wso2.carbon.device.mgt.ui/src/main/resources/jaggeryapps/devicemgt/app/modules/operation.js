@@ -60,6 +60,7 @@ var operationModule = function () {
                 }
                 feature["operation"] = features[i].code;
                 feature["name"] = features[i].name;
+                feature["method"] = features[i].method;
                 feature["description"] = features[i].description;
                 feature["deviceType"] = deviceType;
                 feature["params"] = [];

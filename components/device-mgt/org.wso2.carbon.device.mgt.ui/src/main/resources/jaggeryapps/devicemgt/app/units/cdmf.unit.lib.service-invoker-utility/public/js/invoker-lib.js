@@ -55,7 +55,7 @@ var invokerUtil = function () {
         paramValue.actionMethod = methoad;
         paramValue.actionUrl = url;
         paramValue.actionPayload = payload;
-        if(acceptType == "application/json"){
+        if(contentType == "application/json"){
             paramValue.actionPayload = JSON.stringify(payload);
         }
         data.data = JSON.stringify(paramValue);

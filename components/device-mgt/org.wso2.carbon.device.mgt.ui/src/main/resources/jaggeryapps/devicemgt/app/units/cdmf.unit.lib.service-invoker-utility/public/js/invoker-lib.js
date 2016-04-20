@@ -55,6 +55,9 @@ var invokerUtil = function () {
         paramValue.actionMethod = methoad;
         paramValue.actionUrl = url;
         paramValue.actionPayload = payload;
+        if(acceptType == "application/json"){
+            paramValue.actionPayload = JSON.stringify(payload);
+        }
         data.data = JSON.stringify(paramValue);
         $.ajax(data).fail(function (jqXHR) {
             if (jqXHR.status == "401") {

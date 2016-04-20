@@ -56,7 +56,7 @@ var module = {};
             cachedAuthModuleConfigs = authModuleConfigs;
         } else {
             log.error("Cannot find User module configurations in application configuration file '"
-                      + constants.FILE_APP_CONF + "'.");
+                + constants.FILE_APP_CONF + "'.");
             cachedAuthModuleConfigs = {};
         }
         return cachedAuthModuleConfigs;
@@ -85,7 +85,7 @@ var module = {};
             return (rv) ? rv : {};
         } else {
             log.error("Cannot find login configurations in Auth module configurations in "
-                      + "application configuration file '" + constants.FILE_APP_CONF + "'.");
+                + "application configuration file '" + constants.FILE_APP_CONF + "'.");
             return {};
         }
     }
@@ -113,7 +113,7 @@ var module = {};
             return (rv) ? rv : {};
         } else {
             log.error("Cannot find logout configurations in Auth module configurations in "
-                      + "application configuration file '" + constants.FILE_APP_CONF + "'.");
+                + "application configuration file '" + constants.FILE_APP_CONF + "'.");
             return {};
         }
     }
@@ -133,7 +133,7 @@ var module = {};
             cachedSsoConfigs = ssoConfigs;
         } else {
             log.error("Cannot find SSO configurations in Auth module configurations in application "
-                      + "configuration file '" + constants.FILE_APP_CONF + "'.");
+                + "configuration file '" + constants.FILE_APP_CONF + "'.");
             cachedSsoConfigs = {};
         }
         return cachedSsoConfigs;
@@ -156,13 +156,13 @@ var module = {};
         if (operation == OPERATION_LOGIN) {
             configs = getLoginConfigurations(event);
             pageFullName = (event == EVENT_SUCCESS) ?
-                           configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_SUCCESS_PAGE] :
-                           configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_FAIL_PAGE];
+                configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_SUCCESS_PAGE] :
+                configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_FAIL_PAGE];
         } else {
             configs = getLogoutConfigurations(event);
             pageFullName = (event == EVENT_SUCCESS) ?
-                           configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_SUCCESS_PAGE] :
-                           configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_FAIL_PAGE];
+                configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_SUCCESS_PAGE] :
+                configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_FAIL_PAGE];
         }
 
         if (pageFullName) {
@@ -173,13 +173,13 @@ var module = {};
                     return page.definition[constants.PAGE_DEFINITION_URI];
                 }
                 log.warn("Page '" + pageFullName + "' mentioned in Auth module configurations in "
-                         + "application configuration file '" + constants.FILE_APP_CONF
-                         + "' is disabled.");
+                    + "application configuration file '" + constants.FILE_APP_CONF
+                    + "' is disabled.");
 
             } else {
                 log.error("Page '" + pageFullName + "' mentioned in Auth module configurations in "
-                          + "application configuration file '" + constants.FILE_APP_CONF
-                          + "' does not exists.");
+                    + "application configuration file '" + constants.FILE_APP_CONF
+                    + "' does not exists.");
             }
         }
         return "/";
@@ -207,13 +207,13 @@ var module = {};
         if (operation == OPERATION_LOGIN) {
             configs = getLoginConfigurations(event);
             scriptFilePath = (event == EVENT_SUCCESS) ?
-                             configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_SUCCESS_SCRIPT] :
-                             configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_FAIL_SCRIPT];
+                configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_SUCCESS_SCRIPT] :
+                configs[constants.APP_CONF_AUTH_MODULE_LOGIN_ON_FAIL_SCRIPT];
         } else {
             configs = getLogoutConfigurations(event);
             scriptFilePath = (event == EVENT_SUCCESS) ?
-                             configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_SUCCESS_SCRIPT] :
-                             configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_FAIL_SCRIPT];
+                configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_SUCCESS_SCRIPT] :
+                configs[constants.APP_CONF_AUTH_MODULE_LOGOUT_ON_FAIL_SCRIPT];
         }
 
         if (!scriptFilePath || (scriptFilePath.length == 0)) {
@@ -222,8 +222,8 @@ var module = {};
         var scriptFile = new File(scriptFilePath);
         if (!scriptFile.isExists() || scriptFile.isDirectory()) {
             log.error("Script '" + scriptFilePath + "' mentioned in Auth module configurations in "
-                      + "application configuration file '" + constants.FILE_APP_CONF
-                      + "' does not exists.");
+                + "application configuration file '" + constants.FILE_APP_CONF
+                + "' does not exists.");
             return true;
         }
 
@@ -265,7 +265,7 @@ var module = {};
         } else {
             // event == EVENT_FAIL
             redirectUri = getRedirectUri(operation, EVENT_FAIL) + "?error=" + scriptArgument.message
-                          + "&" + constants.URL_PARAM_REFERER + "=" + getRelayState(operation);
+                + "&" + constants.URL_PARAM_REFERER + "=" + getRelayState(operation);
         }
         response.sendRedirect(encodeURI(module.getAppContext() + redirectUri));
     }
@@ -276,8 +276,8 @@ var module = {};
         var identityProviderUrl = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_PROVIDER_URL];
         if (!identityProviderUrl || (identityProviderUrl.length == 0)) {
             var msg = "Identity Provider URL is not given in SSO configurations in Auth module "
-                      + "configurations in application configuration file '"
-                      + constants.FILE_APP_CONF + "'.";
+                + "configurations in application configuration file '"
+                + constants.FILE_APP_CONF + "'.";
             log.error(msg);
             response.sendError(500, msg);
             return null;
@@ -286,7 +286,7 @@ var module = {};
         var issuer = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ISSUER];
         if (!issuer || (issuer.length == 0)) {
             var msg = "Issuer is not given in SSO configurations in Auth module configurations in "
-                      + "application configuration file '" + constants.FILE_APP_CONF + "'.";
+                + "application configuration file '" + constants.FILE_APP_CONF + "'.";
             log.error(msg);
             response.sendError(500, msg);
             return null;
@@ -316,8 +316,8 @@ var module = {};
         var identityProviderUrl = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_PROVIDER_URL];
         if (!identityProviderUrl || (identityProviderUrl.length == 0)) {
             var msg = "Identity Provider URL is not given in SSO configurations in Auth module "
-                      + "configurations in application configuration file '"
-                      + constants.FILE_APP_CONF + "'.";
+                + "configurations in application configuration file '"
+                + constants.FILE_APP_CONF + "'.";
             log.error(msg);
             response.sendError(500, msg);
             return null;
@@ -331,7 +331,7 @@ var module = {};
         var issuer = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_ISSUER];
         if (!issuer || (issuer.length == 0)) {
             var msg = "Issuer is not given in SSO configurations in Auth module configurations in "
-                      + "application configuration file '" + constants.FILE_APP_CONF + "'.";
+                + "application configuration file '" + constants.FILE_APP_CONF + "'.";
             log.error(msg);
             response.sendError(500, msg);
             return null;
@@ -341,10 +341,10 @@ var module = {};
         try {
             var ssoClient = require("sso").client;
             encodedSAMLAuthRequest = ssoClient.getEncodedSAMLLogoutRequest(username,
-                                                                           ssoSessionIndex, issuer);
+                ssoSessionIndex, issuer);
         } catch (e) {
             log.error("Cannot create SAML logout authorization token for user '" + username
-                      + "'  with issuer '" + issuer + "'.");
+                + "'  with issuer '" + issuer + "'.");
             log.error(e.message, e);
             response.sendError(500, e.message);
             return null;
@@ -446,17 +446,17 @@ var module = {};
                 intermediatePage = utils.getFurthestChild(intermediatePage);
                 if (!intermediatePage.disabled) {
                     renderer.renderUiComponent(intermediatePage, requestParams, renderingContext,
-                                               lookupTable, response);
+                        lookupTable, response);
                     return;
                 }
                 log.warn("Intermediate page '" + intermediatePageName + " mentioned in Auth module "
-                         + "configurations in application configuration file '"
-                         + constants.FILE_APP_CONF + "' is disabled.");
+                    + "configurations in application configuration file '"
+                    + constants.FILE_APP_CONF + "' is disabled.");
             } else {
                 log.error("Intermediate page '" + intermediatePageName
-                          + " mentioned in Auth module "
-                          + "configurations in application configuration file '"
-                          + constants.FILE_APP_CONF + "' does not exists.");
+                    + " mentioned in Auth module "
+                    + "configurations in application configuration file '"
+                    + constants.FILE_APP_CONF + "' does not exists.");
             }
         }
 
@@ -528,13 +528,13 @@ var module = {};
              *     string}}
              */
             var ssoSession = ssoClient.decodeSAMLLoginResponse(samlResponseObj, samlResponse,
-                                                               session.getId());
+                session.getId());
             if (ssoSession.sessionId) {
                 var ssoSessions = getSsoSessions();
                 ssoSessions[ssoSession.sessionId] = ssoSession;
                 var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
                 utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
-                var scriptArgument = {input: {}, user: module.getCurrentUser()};
+                var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};
                 handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
             } else {
                 var msg = "Cannot decode SAML login response.";

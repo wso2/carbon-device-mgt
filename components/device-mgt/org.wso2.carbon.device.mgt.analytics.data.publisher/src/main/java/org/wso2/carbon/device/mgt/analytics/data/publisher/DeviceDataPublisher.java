@@ -34,7 +34,7 @@ import org.wso2.carbon.databridge.commons.exception.TransportException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.config.AnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherAlreadyExistsException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
-import org.wso2.carbon.device.mgt.analytics.data.publisher.internal.DeviceAnalyticsDataHolder;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.internal.DataPublisherDataHolder;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -71,7 +71,7 @@ public class DeviceDataPublisher {
         return deviceDataPublisher;
     }
 
-    private DeviceDataPublisher() {
+    public DeviceDataPublisher() {
         dataPublisherMap = new ConcurrentHashMap<>();
     }
 
@@ -196,7 +196,7 @@ public class DeviceDataPublisher {
         try {
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
-            RegistryService registryService = DeviceAnalyticsDataHolder.getInstance().getRegistryService();
+            RegistryService registryService = DataPublisherDataHolder.getInstance().getRegistryService();
             if (registryService != null) {
                 Registry registry = registryService.getConfigSystemRegistry(tenantId);
                 this.loadTenantRegistry(tenantId);
@@ -213,8 +213,8 @@ public class DeviceDataPublisher {
     }
 
     private void loadTenantRegistry(int tenantId) throws RegistryException {
-        TenantRegistryLoader tenantRegistryLoader = DeviceAnalyticsDataHolder.getInstance().getTenantRegistryLoader();
-        DeviceAnalyticsDataHolder.getInstance().getIndexLoaderService().loadTenantIndex(tenantId);
+        TenantRegistryLoader tenantRegistryLoader = DataPublisherDataHolder.getInstance().getTenantRegistryLoader();
+        DataPublisherDataHolder.getInstance().getIndexLoaderService().loadTenantIndex(tenantId);
         tenantRegistryLoader.loadTenantRegistry(tenantId);
     }
 

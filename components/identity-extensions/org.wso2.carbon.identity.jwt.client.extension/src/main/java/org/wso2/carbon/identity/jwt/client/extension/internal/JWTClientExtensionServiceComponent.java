@@ -20,7 +20,11 @@ package org.wso2.carbon.identity.jwt.client.extension.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientConfigurationException;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerServiceImpl;
 import org.wso2.carbon.identity.jwt.client.extension.util.JWTClientUtil;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -66,11 +70,16 @@ public class JWTClientExtensionServiceComponent {
             log.debug("Initializing jwt extension bundle");
         }
         try {
-            JWTClientUtil.initialize();
+            JWTClientManagerService jwtClientManagerService = new JWTClientManagerServiceImpl();
+            JWTClientUtil.initialize(jwtClientManagerService);
+            BundleContext bundleContext = componentContext.getBundleContext();
+            bundleContext.registerService(JWTClientManagerService.class.getName(), jwtClientManagerService, null);
         } catch (RegistryException e) {
             log.error("Failed loading the jwt config from registry.", e);
         } catch (IOException e) {
             log.error("Failed loading the jwt config from the file system.", e);
+        } catch (JWTClientConfigurationException e) {
+            log.error("Failed to set default jwt configurations.", e);
         }
     }
 

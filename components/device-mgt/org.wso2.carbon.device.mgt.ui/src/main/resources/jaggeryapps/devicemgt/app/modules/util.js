@@ -17,6 +17,7 @@
  */
 
 var util = function () {
+    var log = new Log("/app/modules/util.js");
     var module = {};
     var Base64 = Packages.org.apache.commons.codec.binary.Base64;
     var String = Packages.java.lang.String;
@@ -123,7 +124,7 @@ var util = function () {
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + clientKeys);
         xhr.send("grant_type=urn:ietf:params:oauth:grant-type:saml2-bearer&assertion=" +
-                 encodeURIComponent(encodedExtractedAssertion) + "&scope=" + "PRODUCTION");
+            encodeURIComponent(encodedExtractedAssertion) + "&scope=" + "PRODUCTION");
         var tokenPair = {};
         if (xhr.status == 200) {
             var data = parse(xhr.responseText);

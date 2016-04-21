@@ -46,7 +46,6 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
                 if (log.isDebugEnabled()) {
                     log.debug("User Logged In : " + user);
                 }
-                utility.insertAppPermissions(userModule, "login");
                 apiWrapperUtil.setupAccessTokenPair("password", {
                     "username": username,
                     "password": password
@@ -69,7 +68,6 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
             if (log.isDebugEnabled()) {
                 log.debug("User Logged In : " + user);
             }
-            utility.insertAppPermissions(userModule, "login");
             apiWrapperUtil.setupAccessTokenPair("password", {"username": username, "password": password});
             var permissions = userModule.getUIPermissions();
             if (permissions.VIEW_DASHBOARD) {

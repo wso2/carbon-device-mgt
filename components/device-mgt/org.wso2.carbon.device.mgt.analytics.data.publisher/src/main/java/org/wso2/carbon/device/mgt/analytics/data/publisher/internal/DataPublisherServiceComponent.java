@@ -23,23 +23,16 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.config.AnalyticsConfiguration;
-import org.wso2.carbon.device.mgt.analytics.data.publisher.service.DeviceAnalyticsService;
-import org.wso2.carbon.device.mgt.analytics.data.publisher.service.DeviceAnalyticsServiceImpl;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherServiceImpl;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.analytics.internal.DeviceAnalyticsServiceComponent"
+ * @scr.component name="org.wso2.carbon.device.mgt.analytics.data.publisher.internal.DataPublisherServiceComponent"
  * immediate="true"
- * @scr.reference name="device.analytics.api"
- * interface="org.wso2.carbon.analytics.api.AnalyticsDataAPI"
- * cardinality="1..1"
- * policy="dynamic"
- * bind="setAnalyticsDataAPI"
- * unbind="unsetAnalyticsDataAPI"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1"
@@ -58,10 +51,10 @@ import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
  * bind="setIndexLoader"
  * unbind="unsetIndexLoader"
  */
-public class DeviceAnalyticsServiceComponent {
+public class DataPublisherServiceComponent {
 
     private ServiceRegistration analyticsServiceRef;
-    private static Log log = LogFactory.getLog(DeviceAnalyticsServiceComponent.class);
+    private static Log log = LogFactory.getLog(DataPublisherServiceComponent.class);
 
     protected void activate(ComponentContext componentCtx) {
         try {
@@ -72,7 +65,7 @@ public class DeviceAnalyticsServiceComponent {
 
             BundleContext bundleCtx = componentCtx.getBundleContext();
             this.analyticsServiceRef =
-                    bundleCtx.registerService(DeviceAnalyticsService.class, new DeviceAnalyticsServiceImpl(), null);
+                    bundleCtx.registerService(EventsPublisherService.class, new EventsPublisherServiceImpl(), null);
 
             if (log.isDebugEnabled()) {
                 log.debug("Device management analytics bundle has been successfully initialized");
@@ -94,58 +87,34 @@ public class DeviceAnalyticsServiceComponent {
         }
     }
 
-    /**
-     * Sets AnalyticsDataAPI Service.
-     *
-     * @param analyticsDataAPI An instance of AnalyticsDataAPI
-     */
-    protected void setAnalyticsDataAPI(AnalyticsDataAPI analyticsDataAPI) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting AnalyticsDataAPI Service");
-        }
-        DeviceAnalyticsDataHolder.getInstance().setAnalyticsDataAPI(analyticsDataAPI);
-    }
-
-    /**
-     * Un sets AnalyticsDataAPI Service.
-     *
-     * @param analyticsDataAPI An instance of AnalyticsDataAPI
-     */
-    protected void unsetAnalyticsDataAPI(AnalyticsDataAPI analyticsDataAPI) {
-        if (log.isDebugEnabled()) {
-            log.debug("Un-Setting AnalyticsDataAPI Service");
-        }
-        DeviceAnalyticsDataHolder.getInstance().setAnalyticsDataAPI(null);
-    }
-
     protected void setRegistryService(RegistryService registryService) {
         if (registryService != null && log.isDebugEnabled()) {
             log.debug("Registry service initialized");
         }
-        DeviceAnalyticsDataHolder.getInstance().setRegistryService(registryService);
+        DataPublisherDataHolder.getInstance().setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        DeviceAnalyticsDataHolder.getInstance().setRegistryService(null);
+        DataPublisherDataHolder.getInstance().setRegistryService(null);
     }
 
     protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader) {
-        DeviceAnalyticsDataHolder.getInstance().setTenantRegistryLoader(tenantRegistryLoader);
+        DataPublisherDataHolder.getInstance().setTenantRegistryLoader(tenantRegistryLoader);
     }
 
     protected void unsetTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader) {
-        DeviceAnalyticsDataHolder.getInstance().setTenantRegistryLoader(null);
+        DataPublisherDataHolder.getInstance().setTenantRegistryLoader(null);
     }
 
     protected void setIndexLoader(TenantIndexingLoader indexLoader) {
         if (indexLoader != null && log.isDebugEnabled()) {
             log.debug("IndexLoader service initialized");
         }
-        DeviceAnalyticsDataHolder.getInstance().setIndexLoaderService(indexLoader);
+        DataPublisherDataHolder.getInstance().setIndexLoaderService(indexLoader);
     }
 
     protected void unsetIndexLoader(TenantIndexingLoader indexLoader) {
-        DeviceAnalyticsDataHolder.getInstance().setIndexLoaderService(null);
+        DataPublisherDataHolder.getInstance().setIndexLoaderService(null);
     }
 
 }

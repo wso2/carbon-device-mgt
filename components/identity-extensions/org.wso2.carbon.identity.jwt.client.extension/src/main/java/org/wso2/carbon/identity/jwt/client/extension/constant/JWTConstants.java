@@ -21,8 +21,15 @@ package org.wso2.carbon.identity.jwt.client.extension.constant;
  * This holds the constants related JWT client component.
  */
 public class JWTConstants {
-	public static final String OAUTH_ACCESS_TOKEN = "access_token";
-	public static final String OAUTH_REFRESH_TOKEN = "refresh_token";
 	public static final String OAUTH_EXPIRES_IN = "expires_in";
 	public static final String OAUTH_TOKEN_TYPE = "token_type";
+	public static final String JWT_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+	public static final String GRANT_TYPE_PARAM_NAME = "grant_type";
+	public static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+	public static final String REFRESH_TOKEN_GRANT_TYPE_PARAM_NAME = "refresh_token";
+	public static final String ACCESS_TOKEN_GRANT_TYPE_PARAM_NAME = "access_token";
+	public static final String JWT_PARAM_NAME = "assertion";
+	public static final String SCOPE_PARAM_NAME = "scope";
+	public static final String DEFAULT_JWT_CLIENT = "default-jwt-client";
 }
+

@@ -25,7 +25,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 
-public class DeviceAnalyticsUtil {
+public class DataPublisherUtil {
 
     public static Document convertToDocument(File file) throws DataPublisherConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

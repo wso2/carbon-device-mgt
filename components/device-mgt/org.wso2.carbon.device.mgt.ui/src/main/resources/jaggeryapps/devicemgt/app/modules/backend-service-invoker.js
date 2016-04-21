@@ -54,11 +54,17 @@ var backendServiceInvoker = function () {
      * @param errorCallback a function to be called if en error is reserved.
      * @param count a counter which hold the number of recursive execution
      */
-    privateMethods.execute = function (method, url, successCallback, errorCallback, payload, count) {
+    privateMethods.execute = function (method, url, successCallback, errorCallback, payload, count, contentType, acceptType) {
         var xmlHttpRequest = new XMLHttpRequest();
         xmlHttpRequest.open(method, url);
-        xmlHttpRequest.setRequestHeader(constants.CONTENT_TYPE_IDENTIFIER, constants.APPLICATION_JSON);
-        xmlHttpRequest.setRequestHeader(constants.ACCEPT_IDENTIFIER, constants.APPLICATION_JSON);
+        if(!contentType){
+            contentType = constants.APPLICATION_JSON;
+        }
+        if(!acceptType){
+            acceptType = constants.APPLICATION_JSON;
+        }
+        xmlHttpRequest.setRequestHeader(constants.CONTENT_TYPE_IDENTIFIER, contentType);
+        xmlHttpRequest.setRequestHeader(constants.ACCEPT_IDENTIFIER, acceptType);
         if (IS_OAUTH_ENABLED) {
             var accessToken = privateMethods.getAccessToken();
             if (!accessToken) {
@@ -98,9 +104,9 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    privateMethods.initiateXMLHTTPRequest = function (method, url, successCallback, errorCallback, payload) {
+    privateMethods.initiateXMLHTTPRequest = function (method, url, successCallback, errorCallback, payload, contentType, acceptType) {
         if (privateMethods.getAccessToken()) {
-            return privateMethods.execute(method, url, successCallback, errorCallback, payload, 0);
+            return privateMethods.execute(method, url, successCallback, errorCallback, payload, 0, contentType, acceptType);
         }
     };
 
@@ -112,7 +118,7 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    privateMethods.initiateHTTPClientRequest = function (method, url, successCallback, errorCallback, payload) {
+    privateMethods.initiateHTTPClientRequest = function (method, url, successCallback, errorCallback, payload, contentType, acceptType) {
         var HttpClient = Packages.org.apache.commons.httpclient.HttpClient;
         var httpMethodObject;
         switch (method) {
@@ -138,11 +144,11 @@ var backendServiceInvoker = function () {
         var Header = Packages.org.apache.commons.httpclient.Header;
         var header = new Header();
         header.setName(constants.CONTENT_TYPE_IDENTIFIER);
-        header.setValue(constants.APPLICATION_JSON);
+        header.setValue(contentType);
         httpMethodObject.addRequestHeader(header);
         header = new Header();
         header.setName(constants.ACCEPT_IDENTIFIER);
-        header.setValue(constants.APPLICATION_JSON);
+        header.setValue(acceptType);
         httpMethodObject.addRequestHeader(header);
         if (IS_OAUTH_ENABLED) {
             var accessToken = privateMethods.getAccessToken();
@@ -226,8 +232,8 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicXMLHTTPInvokers.get = function (url, successCallback, errorCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_GET, url, successCallback, errorCallback);
+    publicXMLHTTPInvokers.get = function (url, successCallback, errorCallback, contentType, acceptType) {
+        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_GET, url, successCallback, errorCallback, contentType, acceptType);
     };
 
     /**
@@ -237,8 +243,8 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicXMLHTTPInvokers.post = function (url, payload, successCallback, errorCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_POST, url, successCallback, errorCallback, payload);
+    publicXMLHTTPInvokers.post = function (url, payload, successCallback, errorCallback, contentType, acceptType) {
+        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_POST, url, successCallback, errorCallback, payload, contentType, acceptType);
     };
 
     /**
@@ -248,8 +254,8 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicXMLHTTPInvokers.put = function (url, payload, successCallback, errorCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_PUT, url, successCallback, errorCallback, payload);
+    publicXMLHTTPInvokers.put = function (url, payload, successCallback, errorCallback, contentType, acceptType) {
+        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_PUT, url, successCallback, errorCallback, payload, contentType, acceptType);
     };
 
     /**
@@ -258,8 +264,8 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicXMLHTTPInvokers.delete = function (url, successCallback, errorCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_DELETE, url, successCallback, errorCallback);
+    publicXMLHTTPInvokers.delete = function (url, successCallback, errorCallback, contentType, acceptType) {
+        return privateMethods.initiateXMLHTTPRequest(constants.HTTP_DELETE, url, successCallback, errorCallback, contentType, acceptType);
     };
 
     /**
@@ -281,8 +287,8 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicHTTPClientInvokers.get = function (url, successCallback, errorCallback) {
-        return privateMethods.initiateHTTPClientRequest(constants.HTTP_GET, url, successCallback, errorCallback);
+    publicHTTPClientInvokers.get = function (url, successCallback, errorCallback, contentType, acceptType) {
+        return privateMethods.initiateHTTPClientRequest(constants.HTTP_GET, url, successCallback, errorCallback, contentType, acceptType);
     };
 
     /**
@@ -292,9 +298,9 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicHTTPClientInvokers.post = function (url, payload, successCallback, errorCallback) {
+    publicHTTPClientInvokers.post = function (url, payload, successCallback, errorCallback, contentType, acceptType) {
         return privateMethods.
-            initiateHTTPClientRequest(constants.HTTP_POST, url, successCallback, errorCallback, payload);
+            initiateHTTPClientRequest(constants.HTTP_POST, url, successCallback, errorCallback, payload, contentType, acceptType);
     };
 
     /**
@@ -304,8 +310,8 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicHTTPClientInvokers.put = function (url, payload, successCallback, errorCallback) {
-        return privateMethods.initiateHTTPClientRequest(constants.HTTP_PUT, url, successCallback, errorCallback, payload);
+    publicHTTPClientInvokers.put = function (url, payload, successCallback, errorCallback, contentType, acceptType) {
+        return privateMethods.initiateHTTPClientRequest(constants.HTTP_PUT, url, successCallback, errorCallback, payload, contentType, acceptType);
     };
 
     /**
@@ -314,8 +320,8 @@ var backendServiceInvoker = function () {
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
      */
-    publicHTTPClientInvokers.delete = function (url, successCallback, errorCallback) {
-        return privateMethods.initiateHTTPClientRequest(constants.HTTP_DELETE, url, successCallback, errorCallback);
+    publicHTTPClientInvokers.delete = function (url, successCallback, errorCallback, contentType, acceptType) {
+        return privateMethods.initiateHTTPClientRequest(constants.HTTP_DELETE, url, successCallback, errorCallback, contentType, acceptType);
     };
 
     var publicInvokers = {};

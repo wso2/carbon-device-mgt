@@ -72,8 +72,10 @@ $(document).ready(function () {
 
     var i;
     var permissionList = $("#permission").data("permission");
-    for (i = 0; i < permissionList.length; i++) {
-        $.setPermission(permissionList[i]);
+    for (var key in permissionList) {
+        if (permissionList.hasOwnProperty(key)) {
+            $.setPermission(key);
+        }
     }
 
     /* for device list sorting drop down */
@@ -171,7 +173,7 @@ function loadDevices(searchType, searchParam){
         serviceURL = "/devicemgt_admin/devices";
     } else if ($.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
-        serviceURL = "/devicemgt_admin/users/devices?username="+currentUser;
+        serviceURL = "/devicemgt_admin/users/devices?username=" + currentUser;
     } else {
         $("#loading-content").remove();
         $('#device-table').addClass('hidden');
@@ -181,14 +183,27 @@ function loadDevices(searchType, searchParam){
     }
 
     function getPropertyValue(deviceProperties, propertyName) {
+        if (!deviceProperties) {
+            return;
+        }
         var property;
-        for (var i =0; i < deviceProperties.length; i++) {
+        for (var i = 0; i < deviceProperties.length; i++) {
             property = deviceProperties[i];
             if (property.name == propertyName) {
                 return property.value;
             }
         }
         return {};
+    }
+
+    function getDeviceTypeLabel(type){
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++){
+            if (deviceTypes[i].type == type){
+                return deviceTypes[i].label;
+            }
+        }
+        return type;
     }
 
     $('#device-grid').datatables_extended ({
@@ -242,7 +257,10 @@ function loadDevices(searchType, searchParam){
                 }
                 return html;
             }},
-            { targets: 4, data: 'type' , className: 'fade-edge remove-padding-top' },
+            { targets: 4, data: 'type' , className: 'fade-edge remove-padding-top'  ,
+                render: function ( status, type, row, meta ) {
+                    return getDeviceTypeLabel(row.type);
+                }},
             { targets: 5, data: 'enrolmentInfo.ownership' , className: 'fade-edge remove-padding-top' },
             { targets: 6, data: 'enrolmentInfo.status' , className: 'text-right content-fill text-left-on-grid-view no-wrap' ,
                 render: function ( status, type, row, meta ) {

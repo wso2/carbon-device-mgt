@@ -17,9 +17,9 @@
   ~ under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
@@ -45,6 +45,15 @@
     <jaxrs:server id="deviceService" address="/devices">
         <jaxrs:serviceBeans>
             <ref bean="deviceServiceBean"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jsonProvider"/>
+            <ref bean="errorHandler"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+    <jaxrs:server id="deviceGroupService" address="/groups">
+        <jaxrs:serviceBeans>
+            <ref bean="groupServiceBean"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
@@ -155,7 +164,8 @@
     </jaxrs:server>
 -->
     <bean id="operationServiceBean" class="org.wso2.carbon.mdm.api.Operation"/>
-    <bean id="deviceServiceBean" class="org.wso2.carbon.mdm.api.MobileDevice"/>
+    <bean id="deviceServiceBean" class="org.wso2.carbon.mdm.api.Device"/>
+    <bean id="groupServiceBean" class="org.wso2.carbon.mdm.api.Group"/>
     <bean id="userServiceBean" class="org.wso2.carbon.mdm.api.User"/>
     <bean id="roleServiceBean" class="org.wso2.carbon.mdm.api.Role"/>
     <bean id="featureServiceBean" class="org.wso2.carbon.mdm.api.Feature"/>

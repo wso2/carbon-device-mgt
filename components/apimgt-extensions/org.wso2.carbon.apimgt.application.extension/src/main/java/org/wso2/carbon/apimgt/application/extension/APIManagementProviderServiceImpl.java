@@ -118,13 +118,47 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     @Override
     public void registerExistingOAuthApplicationToAPIApplication(String jsonString, String applicationName,
                                                                  String clientId, String username,
-                                                                 boolean isAllowedAllDomains)
+                                                                 boolean isAllowedAllDomains, String keyType)
             throws APIManagerException {
         try {
             APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
             if (apiConsumer != null) {
                 String groupId = getLoggedInUserGroupId(username, APIManagerUtil.getTenantDomain());
-                createApplication(apiConsumer, applicationName, username, groupId);
+                int applicationId = createApplication(apiConsumer, applicationName, username, groupId);
+                Subscriber subscriber = apiConsumer.getSubscriber(username);
+                if (subscriber == null) {
+                    String tenantDomain = MultitenantUtils.getTenantDomain(username);
+                    addSubscriber(username, "", groupId, APIManagerUtil.getTenantId(tenantDomain));
+                    subscriber = apiConsumer.getSubscriber(username);
+                }
+                Application[] applications = apiConsumer.getApplications(subscriber, groupId);
+                Application application = null;
+                for (Application app : applications) {
+                    if (app.getId() == applicationId) {
+                        application = app;
+                    }
+                }
+                if (application == null) {
+                    throw new APIManagerException(
+                            "Api application creation failed for " + applicationName + " to the user " + username);
+                }
+
+                APIKey retrievedApiApplicationKey = null;
+                for (APIKey apiKey : application.getKeys()) {
+                    String applicationKeyType = apiKey.getType();
+                    if (applicationKeyType != null && applicationKeyType.equals(keyType)) {
+                        retrievedApiApplicationKey = apiKey;
+                        break;
+                    }
+                }
+                if (retrievedApiApplicationKey != null) {
+                    if (retrievedApiApplicationKey.getConsumerKey().equals(clientId)) {
+                        return;
+                    } else {
+                        throw new APIManagerException("Api application already mapped to another OAuth App");
+                    }
+                }
+
                 String[] allowedDomains = new String[1];
                 if (isAllowedAllDomains) {
                     allowedDomains[0] = ApiApplicationConstants.ALLOWED_DOMAINS;
@@ -286,14 +320,18 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
         try {
             APIConsumer consumer = APIManagerFactory.getInstance().getAPIConsumer(subscriberName);
             if (consumer != null) {
-                Subscriber subscriber = new Subscriber(subscriberName);
-                subscriber.setSubscribedDate(new Date());
-                subscriber.setEmail(subscriberEmail);
-                subscriber.setTenantId(tenantId);
-                consumer.addSubscriber(subscriber, groupId);
-                if (log.isDebugEnabled()) {
-                    log.debug("Successfully created subscriber with name : " + subscriberName + " with groupID : " +
-                              groupId);
+                synchronized (consumer) {
+                    if (consumer.getSubscriber(subscriberName) == null) {
+                        Subscriber subscriber = new Subscriber(subscriberName);
+                        subscriber.setSubscribedDate(new Date());
+                        subscriber.setEmail(subscriberEmail);
+                        subscriber.setTenantId(tenantId);
+                        consumer.addSubscriber(subscriber, groupId);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Successfully created subscriber with name : " + subscriberName +
+                                              " with groupID : " + groupId);
+                        }
+                    }
                 }
             } else {
                 throw new APIManagerException("API provider configured for the given API configuration is null. " +
@@ -332,8 +370,8 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             if (userVisibleAPIs != null) {
                 Set<SubscribedAPI> subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber, apiApplicationName,
                                                                                   groupId);
-                for (API userVisbleAPI : userVisibleAPIs) {
-                    APIIdentifier apiIdentifier = userVisbleAPI.getId();
+                for (API userVisibleAPI : userVisibleAPIs) {
+                    APIIdentifier apiIdentifier = userVisibleAPI.getId();
                     boolean isSubscribed = false;
                     if (subscribedAPIs != null) {
                         for (SubscribedAPI subscribedAPI : subscribedAPIs) {

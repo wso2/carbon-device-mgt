@@ -22,15 +22,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.mdm.api.common.MDMAPIException;
-import org.wso2.carbon.mdm.api.util.MDMAPIUtils;
+import org.wso2.carbon.mdm.api.util.DeviceMgtAPIUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
  * Features
  */
+@SuppressWarnings("NonJaxWsWebServices")
 @Produces({"application/json", "application/xml"})
 @Consumes({"application/json", "application/xml"})
 public class Feature {
@@ -40,24 +45,21 @@ public class Feature {
      * Get all features for Mobile Device Type
      *
      * @return Feature
-     * @throws MDMAPIException
-     *
      */
     @GET
     @Path("/{type}")
-    public List<org.wso2.carbon.device.mgt.common.Feature> getFeatures(@PathParam("type") String type)
-            throws MDMAPIException {
+    public Response getFeatures(@PathParam("type") String type) {
         List<org.wso2.carbon.device.mgt.common.Feature> features;
         DeviceManagementProviderService dmService;
         try {
-            dmService = MDMAPIUtils.getDeviceManagementService();
+            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             features = dmService.getFeatureManager(type).getFeatures();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while retrieving the list of features";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        return features;
+        return Response.status(Response.Status.OK).entity(features).build();
     }
 
 }

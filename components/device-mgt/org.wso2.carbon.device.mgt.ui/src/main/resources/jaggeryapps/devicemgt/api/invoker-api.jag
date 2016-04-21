@@ -30,11 +30,13 @@ var result;
 
 if (uriMatcher.match("/{context}/api/invoker/execute/")) {
     var method = request.getContent().actionMethod;
-    var targetURL = devicemgtProps.httpsURL + request.getContent().actionUrl;
+    var targetURL = getTargetUrl(devicemgtProps.httpsURL, request.getContent().actionUrl);
     var payload = request.getContent().actionPayload;
+    var contentType = request.getHeader(constants.CONTENT_TYPE_IDENTIFIER);
+    var acceptType = request.getHeader(constants.ACCEPT_IDENTIFIER);
     if (method == undefined && payload == undefined) {
         method = parse(request.getContent()).actionMethod;
-        targetURL = devicemgtProps.httpsURL + parse(request.getContent()).actionUrl;
+        targetURL = getTargetUrl(devicemgtProps.httpsURL, parse(request.getContent()).actionUrl);
         payload = parse(request.getContent()).actionPayload;
     }
     try {
@@ -48,7 +50,9 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
                         function (responsePayload) {
                             response.status = responsePayload.status;
                             response.content = responsePayload.responseText;
-                        });
+                        },
+                        contentType,
+                        acceptType);
                 break;
             case constants.HTTP_POST:
                 var responseData = serviceInvokers.XMLHttp.post(
@@ -59,7 +63,9 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
                         function (responsePayload) {
                             response.status = responsePayload.status;
                             response.content = responsePayload.responseText;
-                        });
+                        },
+                        contentType,
+                        acceptType);
                 break;
             case constants.HTTP_PUT:
                 var responseData = serviceInvokers.XMLHttp.put(
@@ -70,23 +76,34 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
                         function (responsePayload) {
                             response.status = responsePayload.status;
                             response.content = responsePayload.responseText;
-                        });
+                        },
+                        contentType,
+                        acceptType);
                 break;
             case constants.HTTP_DELETE:
-                var responseData =
-                        serviceInvokers.XMLHttp.delete(
-                                targetURL, function (responsePayload) {
-                                    response.status = 200;
-                                    response.content = responsePayload;
-                                },
-                                function (responsePayload) {
-                                    response.status = responsePayload.status;
-                                    response.content = responsePayload.responseText;
-                                });
+                var responseData = serviceInvokers.XMLHttp.delete(
+                        targetURL, function (responsePayload) {
+                            response.status = 200;
+                            response.content = responsePayload;
+                        },
+                        function (responsePayload) {
+                            response.status = responsePayload.status;
+                            response.content = responsePayload.responseText;
+                        },
+                        contentType,
+                        acceptType);
                 break;
         }
     } catch (e) {
         log.error("Exception occurred while accessing sevices", e);
+    }
+}
+
+function getTargetUrl(serverUrl, actionUrl){
+    if(actionUrl == undefined || actionUrl.lastIndexOf("http", 0) === 0){
+        return actionUrl;
+    } else {
+        return serverUrl + actionUrl;
     }
 }
 

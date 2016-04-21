@@ -17,7 +17,13 @@
  */
 package org.wso2.carbon.identity.jwt.client.extension.util;
 
-import org.apache.commons.io.FileUtils;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -27,8 +33,12 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.core.util.KeyStoreManager;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
+import org.wso2.carbon.identity.jwt.client.extension.dto.JWTConfig;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientConfigurationException;
+import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.identity.jwt.client.extension.internal.JWTClientExtensionDataHolder;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
@@ -36,13 +46,25 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.utils.CarbonUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URL;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPrivateKey;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
 
 /**
  * This is the utility class that is used for JWT Client.
@@ -55,8 +77,10 @@ public class JWTClientUtil {
 	private static final String JWT_CONFIG_FILE_NAME = "jwt.properties";
 	private static final String SUPERTENANT_JWT_CONFIG_LOCATION =
 			CarbonUtils.getEtcCarbonConfigDirPath() + File.separator + JWT_CONFIG_FILE_NAME;
+
 	/**
 	 * Return a http client instance
+	 *
 	 * @param protocol- service endpoint protocol http/https
 	 * @return
 	 */
@@ -96,12 +120,14 @@ public class JWTClientUtil {
 		}
 	}
 
-	public static void initialize() throws RegistryException, IOException {
-		Resource resource = getConfigRegistryResourceContent(MultitenantConstants.SUPER_TENANT_ID, TENANT_JWT_CONFIG_LOCATION);
-		if (resource == null) {
-			File configFile = new File(SUPERTENANT_JWT_CONFIG_LOCATION);
-			String contents = FileUtils.readFileToString(configFile, "UTF-8");
-			addJWTConfigResourceToRegistry(MultitenantConstants.SUPER_TENANT_ID, contents);
+	public static void initialize(JWTClientManagerService jwtClientManagerService)
+			throws RegistryException, IOException, JWTClientConfigurationException {
+		File configFile = new File(SUPERTENANT_JWT_CONFIG_LOCATION);
+		if (configFile.exists()) {
+			InputStream propertyStream = configFile.toURI().toURL().openStream();
+			Properties properties = new Properties();
+			properties.load(propertyStream);
+			jwtClientManagerService.setDefaultJWTClient(properties);
 		}
 	}
 
@@ -136,7 +162,7 @@ public class JWTClientUtil {
 	/**
 	 * Get the jwt details from the registry for tenants.
 	 *
-	 * @param tenantId  for accesing tenant space.
+	 * @param tenantId for accesing tenant space.
 	 * @return the config for tenant
 	 * @throws RegistryException
 	 */
@@ -161,8 +187,96 @@ public class JWTClientUtil {
 	}
 
 	private static void loadTenantRegistry(int tenantId) throws RegistryException {
-		TenantRegistryLoader tenantRegistryLoader = JWTClientExtensionDataHolder.getInstance().getTenantRegistryLoader();
+		TenantRegistryLoader tenantRegistryLoader =
+				JWTClientExtensionDataHolder.getInstance().getTenantRegistryLoader();
 		JWTClientExtensionDataHolder.getInstance().getIndexLoaderService().loadTenantIndex(tenantId);
 		tenantRegistryLoader.loadTenantRegistry(tenantId);
+	}
+
+	public static String generateSignedJWTAssertion(String username, JWTConfig jwtConfig) throws JWTClientException {
+		try {
+			String subject = username;
+			long currentTimeMillis = System.currentTimeMillis();
+			// add the skew between servers
+			String iss = jwtConfig.getIssuer();
+			if (iss == null || iss.isEmpty()) {
+				return null;
+			}
+			currentTimeMillis += jwtConfig.getSkew();
+			long iat = currentTimeMillis + jwtConfig.getIssuedInternal() * 60 * 1000;
+			long exp = currentTimeMillis + jwtConfig.getExpirationTime() * 60 * 1000;
+			long nbf = currentTimeMillis + jwtConfig.getValidityPeriodFromCurrentTime() * 60 * 1000;
+			String jti = jwtConfig.getJti();
+			if (jti == null) {
+				String defaultTokenId = currentTimeMillis + "" + new Random().nextInt();
+				jti = defaultTokenId;
+			}
+			List<String> aud = jwtConfig.getAudiences();
+			//set up the basic claims
+			JWTClaimsSet claimsSet = new JWTClaimsSet();
+			claimsSet.setIssueTime(new Date(iat));
+			claimsSet.setExpirationTime(new Date(exp));
+			claimsSet.setIssuer(iss);
+			claimsSet.setSubject(username);
+			claimsSet.setNotBeforeTime(new Date(nbf));
+			claimsSet.setJWTID(jti);
+			claimsSet.setAudience(aud);
+
+			// get Keystore params
+			String keyStorePath = jwtConfig.getKeyStorePath();
+			String privateKeyAlias = jwtConfig.getPrivateKeyAlias();
+			String privateKeyPassword = jwtConfig.getPrivateKeyPassword();
+			KeyStore keyStore;
+			RSAPrivateKey rsaPrivateKey;
+			if (keyStorePath != null && !keyStorePath.isEmpty()) {
+				String keyStorePassword = jwtConfig.getKeyStorePassword();
+				keyStore = loadKeyStore(new File(keyStorePath), keyStorePassword, "JKS");
+				rsaPrivateKey = (RSAPrivateKey) keyStore.getKey(privateKeyAlias, privateKeyPassword.toCharArray());
+			} else {
+				int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+				KeyStoreManager tenantKeyStoreManager = KeyStoreManager.getInstance(tenantId);
+				rsaPrivateKey = (RSAPrivateKey) tenantKeyStoreManager.getDefaultPrivateKey();
+			}
+			JWSSigner signer = new RSASSASigner(rsaPrivateKey);
+			SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claimsSet);
+			signedJWT.sign(signer);
+			String assertion = signedJWT.serialize();
+			return assertion;
+		} catch (KeyStoreException e) {
+			throw new JWTClientException("Failed loading the keystore.", e);
+		} catch (IOException e) {
+			throw new JWTClientException("Failed parsing the keystore file.", e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new JWTClientException("No such algorithm found RS256.", e);
+		} catch (CertificateException e) {
+			throw new JWTClientException("Failed loading the certificate from the keystore.", e);
+		} catch (UnrecoverableKeyException e) {
+			throw new JWTClientException("Failed loading the keys from the keystore.", e);
+		} catch (JOSEException e) {
+			throw new JWTClientException(e);
+		} catch (Exception e) {
+			//This is thrown when loading default private key.
+			throw new JWTClientException("Failed loading the private key.", e);
+		}
+	}
+
+	private static KeyStore loadKeyStore(final File keystoreFile, final String password, final String keyStoreType)
+			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+		if (null == keystoreFile) {
+			throw new IllegalArgumentException("Keystore url may not be null");
+		}
+		URI keystoreUri = keystoreFile.toURI();
+		URL keystoreUrl = keystoreUri.toURL();
+		KeyStore keystore = KeyStore.getInstance(keyStoreType);
+		InputStream is = null;
+		try {
+			is = keystoreUrl.openStream();
+			keystore.load(is, null == password ? null : password.toCharArray());
+		} finally {
+			if (null != is) {
+				is.close();
+			}
+		}
+		return keystore;
 	}
 }

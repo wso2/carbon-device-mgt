@@ -28,7 +28,6 @@ var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
 var userModule = require("/app/modules/user.js").userModule;
 var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 
-var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
 var user = session.get(constants.USER_SESSION_KEY);
 var result;
 
@@ -38,107 +37,37 @@ if (!user) {
     response.sendRedirect("/devicemgt/login?#login-required");
     exit();
 } else {
-    if (uriMatcher.match("/{context}/api/devices/sketch/download/{downloadId}")) {
-        downloadId = uriMatcher.elements().downloadId;
-        //Just download the already created zip archive
-        var sketchFolder = "repository/resources/sketches";
-        var archivesPath = "file://" + CarbonUtils.getCarbonHome() + "/" + sketchFolder + "/archives/" +
-                           downloadId + ".zip";
-        var zipFile = new File(archivesPath);
-        response.addHeader('Content-type', "application/zip, application/octet-stream");
-        response.addHeader('Cache-Control', 'public,max-age=12960000');
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + downloadId + ".zip\"");
-
-        try {
-            zipFile.open('r');
-            var stream = zipFile.getStream();
-            print(stream);
-        } catch (err) {
-
-        } finally {
-            if (zipFile != null) {
-                zipFile.close();
-            }
-        }
-
-    } else if (uriMatcher.match("/{context}/api/devices/sketch/download")) {
-        //Create a new zip archive and register user calling endpoint
-
-        /* This should match with $CARBON_HOME/repository/resources/sketches/{sketchType} */
-        sketchType = request.getParameter("sketchType");
-        /* This should be registered device type of the CDMF(Connected Device Management Framework) */
-        deviceType = request.getParameter("deviceType");
-        deviceName = request.getParameter("deviceName");
-
-        if (!sketchType) {
-            log.error("Sketch Type is empty!");
-            // HTTP status code 400 refers to - Bad request.
-            result = 400;
+    if (uriMatcher.match("/{context}/api/devices/sketch/download")) {
+        // works as a proxy to pass the relavant query string to back end api.
+        var queryString = request.getQueryString();
+        if (!queryString) {
+            queryString = "";
         } else {
-            /**
-             URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
-             {serverURL} - devicemgt/app/conf/config.json
-             {deviceType} - from the request
-             {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
-             {username} - from request
-             {deviceName} - from request
-             **/
-
-            var sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "/devices/download";
-            deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
-
-            if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
-                sketchDownloadEndPoint = deviceTypeConfig.deviceType.downloadAgentUri;
-            }
-            var tokenPair = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
-            if (tokenPair) {
-                response.addHeader(constants.AUTHORIZATION_HEADER, constants.BEARER_PREFIX + tokenPair.accessToken);
-                response.sendRedirect(sketchDownloadEndPoint + "?sketchType=" + sketchType + "&deviceName="
-                                      + deviceName);
-            } else {
-                response.sendRedirect(devicemgtProps["httpsURL"] + "/devicemgt/login");
-                exit();
-            }
+            queryString = "?" + queryString;
         }
-
-    } else if (uriMatcher.match("/{context}/api/devices/sketch/generate_link")) {
-
-        var contents = request.getContent();
-        sketchType = contents.sketchType;
-        deviceType = contents.deviceType;
-        deviceName = contents.deviceName;
-        generateLink = contents.generateLink;
-
-        if (!sketchType) {
-            log.error("Sketch Type is empty!");
-            // HTTP status code 400 refers to - Bad request.
-            result = 400;
+        var deviceType = request.getParameter("deviceType"); // need a better solution here
+        deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
+        if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
+            sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
+            serviceInvokers.HttpClient.get(sketchDownloadEndPoint + queryString, function (responsePayload, responseHeaders) {
+                        for (var i = 0; i < responseHeaders.length; i++) {
+                            var header = responseHeaders[i]
+                            var headerName = String(header.getName());
+                            var headerValue = String(header.getValue());
+                            response.addHeader(headerName, headerValue);
+                        }
+                        var streamObject = new Stream(responsePayload);
+                        print(streamObject);
+                    }, function (responsePayload) {
+                        log.error(responsePayload)
+                        var response = {};
+                        response["status"] = "error";
+                        return response;
+                    }
+            );
         } else {
-
-            /**
-             URL: {serverURL}/{deviceType}/{downloadAgentUri}?owner={username}&deviceName={deviceName}
-             {serverURL} - devicemgt/app/conf/config.json
-             {deviceType} - from the request
-             {downloadAgentUri} - device_type_specific_unit/private/conf/device-type.json
-             {username} - from request
-             {deviceName} - from request
-             **/
-
-            deviceManagerService = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" + "/manager";
-            sketchGenerateLinkEndPoint = deviceManagerService + "/device/" + sketchType + "/generate_link";
-            var deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
-            //replace download endpoint
-            if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentLinkGenUri) {
-                sketchGenerateLinkEndPoint = devicemgtProps["httpsURL"] + "/" + deviceType + "_mgt" +
-                                             "/" + deviceTypeConfig.deviceType.downloadAgentLinkGenUri;
-            }
-
-            var fileId = get(sketchGenerateLinkEndPoint + "?owner=" + user.username + "&deviceName=" +
-                             deviceName, null, "text");
-            result = "curl -k " + devicemgtProps["httpsURL"] + constants.WEB_APP_CONTEXT +
-                     "/api/devices/sketch/download/" + fileId.data;
+            result = 400;
         }
-
     } else if (uriMatcher.match("/{context}/api/devices/all")) {
         result = deviceModule.getOwnDevices();
 

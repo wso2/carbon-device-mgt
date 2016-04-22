@@ -31,25 +31,13 @@ function onRequest(context) {
         page.groupName = groupName;
     }
     page.title = title;
-    page.permissions = {};
     var currentUser = session.get(constants.USER_SESSION_KEY);
-    var permissions = [];
     if (currentUser) {
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/list")) {
-            permissions.push("LIST_DEVICES");
-        } else if (userModule.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
-            permissions.push("LIST_OWN_DEVICES");
-        } else if (userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/policies/list")) {
-            permissions.push("LIST_POLICIES");
-        }
+        page.permissions = {};
+        page.permissions.list = stringify(userModule.getUIPermissions());
         if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/add")) {
             permissions.enroll = true;
         }
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/remove")) {
-            permissions.push("REMOVE_DEVICE");
-        }
-
-        page.permissions.list = permissions;
         page.currentUser = currentUser;
         var deviceCount = 0;
         if (groupName && groupOwner) {
@@ -64,15 +52,17 @@ function onRequest(context) {
             var utility = require("/app/modules/utility.js").utility;
             var data = deviceModule.getDeviceTypes();
             var deviceTypes = [];
-            if (data.data) {
-                for (var i = 0; i < data.data.length; i++) {
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var deviceType = utility.getDeviceTypeConfig(data[i].name).deviceType;
                     deviceTypes.push({
-                                         "type": data.data[i].name,
-                                         "category": utility.getDeviceTypeConfig(data.data[i].name).deviceType.category
-                                     });
+                        "type": data[i].name,
+                        "category": deviceType.category,
+                        "label": deviceType.label
+                    });
                 }
             }
-            page.deviceTypes = deviceTypes;
+            page.deviceTypes = stringify(deviceTypes);
         }
     }
     return page;

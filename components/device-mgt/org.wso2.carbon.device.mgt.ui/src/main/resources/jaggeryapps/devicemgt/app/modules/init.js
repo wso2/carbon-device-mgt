@@ -26,7 +26,6 @@ application.put("carbonServer", carbonServer);
 
 var userModule = require("/app/modules/user.js")["userModule"];
 var utility = require("/app/modules/utility.js")["utility"];
-utility.insertAppPermissions(userModule, "init");
 
 var permissions = {
     '/permission/admin/device-mgt/devices': ['ui.execute'],

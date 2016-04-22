@@ -35,6 +35,9 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -61,7 +64,8 @@ public class AnnotationUtil {
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
     public static final String STRING_ARR = "string_arr";
     public static final String STRING = "string";
-    private Class<org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature> featureClazz;
+    private Class<org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature>
+            featureAnnotationClazz;
     private ClassLoader classLoader;
     private ServletContext servletContext;
 
@@ -108,7 +112,7 @@ public class AnnotationUtil {
                                     if (deviceTypeAnno != null) {
                                         Method[] deviceTypeMethod = deviceTypeClazz.getMethods();
                                         String deviceType = invokeMethod(deviceTypeMethod[0], deviceTypeAnno, STRING);
-                                        featureClazz =
+                                        featureAnnotationClazz =
                                                 (Class<org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations
                                                         .Feature>) classLoader.loadClass(
                                                         org.wso2.carbon.device.mgt.extensions.feature.mgt
@@ -130,78 +134,118 @@ public class AnnotationUtil {
         return features;
     }
 
-    private List<Feature> getFeatures(Method[] annotatedMethods) throws Throwable {
+    private List<Feature> getFeatures(Method[] methodsList) throws Throwable {
         List<Feature> featureList = new ArrayList<>();
-        for (Method method : annotatedMethods) {
-            Annotation methodAnnotation = method.getAnnotation(featureClazz);
-            if (methodAnnotation != null) {
-                Annotation[] annotations = method.getDeclaredAnnotations();
+        for (Method currentMethod : methodsList) {
+            Annotation featureAnnotation = currentMethod.getAnnotation(featureAnnotationClazz);
+            if (featureAnnotation != null) {
+                Feature feature = new Feature();
+                feature = processFeatureAnnotation(feature, currentMethod);
+                Annotation[] annotations = currentMethod.getDeclaredAnnotations();
+                Feature.MetadataEntry metadataEntry = new Feature.MetadataEntry();
+                metadataEntry.setId(-1);
+                Map<String, Object> apiParams = new HashMap<>();
                 for (int i = 0; i < annotations.length; i++) {
-                    if (annotations[i].annotationType().getName().equals(
-                            org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature.class.getName())) {
-                        Feature feature = new Feature();
-                        Method[] featureAnnoMethods = featureClazz.getMethods();
-                        Annotation featureAnno = method.getAnnotation(featureClazz);
-
-                        for (int k = 0; k < featureAnnoMethods.length; k++) {
-                            switch (featureAnnoMethods[k].getName()) {
-                                case "name":
-                                    feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                                    break;
-                                case "code":
-                                    feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                                    break;
-                                case "description":
-                                    feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                                    break;
-                                case "type":
-                                    feature.setType(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                                    break;
-                            }
-                        }
-                        //Extracting method with which feature is exposed
-                        if (annotations[i].annotationType().getName().equals(GET.class.getName())) {
-                            feature.setMethod(HttpMethod.GET);
-                        }
-                        if (annotations[i].annotationType().getName().equals(POST.class.getName())) {
-                            feature.setMethod(HttpMethod.POST);
-                        }
-                        if (annotations[i].annotationType().getName().equals(OPTIONS.class.getName())) {
-                            feature.setMethod(HttpMethod.OPTIONS);
-                        }
-                        if (annotations[i].annotationType().getName().equals(DELETE.class.getName())) {
-                            feature.setMethod(HttpMethod.DELETE);
-                        }
-                        if (annotations[i].annotationType().getName().equals(PUT.class.getName())) {
-                            feature.setMethod(HttpMethod.PUT);
-                        }
-                        try {
-                            Class<FormParam> formParamClazz = (Class<FormParam>) classLoader.loadClass(
-                                    FormParam.class.getName());
-                            Method[] formMethods = formParamClazz.getMethods();
-                            //Extract method parameter information and store same as feature meta info
-                            List<Feature.MetadataEntry> metaInfoList = new ArrayList<>();
-                            Annotation[][] paramAnnotations = method.getParameterAnnotations();
-                            for (int j = 0; j < paramAnnotations.length; j++) {
-                                for (Annotation anno : paramAnnotations[j]) {
-                                    if (anno.annotationType().getName().equals(FormParam.class.getName())) {
-                                        Feature.MetadataEntry metadataEntry = new Feature.MetadataEntry();
-                                        metadataEntry.setId(j);
-                                        metadataEntry.setValue(invokeMethod(formMethods[0], anno, STRING));
-                                        metaInfoList.add(metadataEntry);
-                                    }
-                                }
-                            }
-                            feature.setMetadataEntries(metaInfoList);
-                        } catch (ClassNotFoundException e) {
-                            log.debug("No Form Param found for class " + featureClazz.getName());
-                        }
-                        featureList.add(feature);
+                    Annotation currentAnnotation = annotations[i];
+                    feature = processHttpMethodAnnotation(feature, currentAnnotation);
+                    if (currentAnnotation.annotationType().getName().equals(Path.class.getName())) {
+                        String uri = getPathAnnotationValue(currentMethod);
+                        apiParams.put("uri", uri);
                     }
+                    apiParams = processParamAnnotations(apiParams, currentMethod);
                 }
+                metadataEntry.setValue(apiParams);
+                List<Feature.MetadataEntry> metaInfoList = new ArrayList<>();
+                metaInfoList.add(metadataEntry);
+                feature.setMetadataEntries(metaInfoList);
+                featureList.add(feature);
             }
         }
         return featureList;
+    }
+
+    private Map<String, Object> processParamAnnotations(Map<String, Object> apiParams, Method currentMethod) throws Throwable{
+        try {
+            apiParams.put("pathParams", processParamAnnotations(currentMethod, PathParam.class));
+            apiParams.put("queryParams", processParamAnnotations(currentMethod, QueryParam.class));
+            apiParams.put("formParams", processParamAnnotations(currentMethod, FormParam.class));
+        } catch (ClassNotFoundException e) {
+            log.debug("No Form Param found for class " + featureAnnotationClazz.getName());
+        }
+        return apiParams;
+    }
+
+    private List<String> processParamAnnotations(Method currentMethod, Class<?> clazz) throws Throwable{
+        List<String> params = new ArrayList<>();
+        try {
+            Class<?> paramClazz = (Class<?>) classLoader.loadClass(clazz.getName());
+            Method[] formMethods = paramClazz.getMethods();
+            //Extract method parameter information and store same as feature meta info
+            Annotation[][] paramAnnotations = currentMethod.getParameterAnnotations();
+            Method valueMethod = formMethods[0];
+            for (int j = 0; j < paramAnnotations.length; j++) {
+                for (Annotation anno : paramAnnotations[j]) {
+                    if (anno.annotationType().getName().equals(clazz.getName())) {
+                        params.add(invokeMethod(valueMethod, anno, STRING));
+                    }
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            log.debug("No "+ clazz.getName() +" Param found for class " + featureAnnotationClazz.getName());
+        }
+        return params;
+    }
+
+    private Feature processHttpMethodAnnotation(Feature feature, Annotation currentAnnotation) {
+        //Extracting method with which feature is exposed
+        if (currentAnnotation.annotationType().getName().equals(GET.class.getName())) {
+            feature.setMethod(HttpMethod.GET);
+        } else if (currentAnnotation.annotationType().getName().equals(POST.class.getName())) {
+            feature.setMethod(HttpMethod.POST);
+        } else if (currentAnnotation.annotationType().getName().equals(OPTIONS.class.getName())) {
+            feature.setMethod(HttpMethod.OPTIONS);
+        } else if (currentAnnotation.annotationType().getName().equals(DELETE.class.getName())) {
+            feature.setMethod(HttpMethod.DELETE);
+        } else if (currentAnnotation.annotationType().getName().equals(PUT.class.getName())) {
+            feature.setMethod(HttpMethod.PUT);
+        }
+        return feature;
+    }
+
+    private Feature processFeatureAnnotation(Feature feature, Method currentMethod) throws Throwable{
+        Method[] featureAnnoMethods = featureAnnotationClazz.getMethods();
+        Annotation featureAnno = currentMethod.getAnnotation(featureAnnotationClazz);
+        for (int k = 0; k < featureAnnoMethods.length; k++) {
+            switch (featureAnnoMethods[k].getName()) {
+            case "name":
+                feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                break;
+            case "code":
+                feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                break;
+            case "description":
+                feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                break;
+            case "type":
+                feature.setType(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                break;
+            }
+        }
+        return feature;
+    }
+
+    public String getPathAnnotationValue(Method currentMethod) throws Throwable{
+        String uri = "";
+        try {
+            Class<Path> pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
+            Annotation pathAnnno = currentMethod.getAnnotation(pathClazz);
+            Method[] pathMethods = pathClazz.getMethods();
+            Method valueMethod = pathMethods[0];
+            uri =  invokeMethod(valueMethod, pathAnnno, STRING);
+        } catch (ClassNotFoundException e) {
+            log.debug("No Path Param found for class " + featureAnnotationClazz.getName());
+        }
+        return uri;
     }
 
     /**

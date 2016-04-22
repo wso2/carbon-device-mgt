@@ -19,38 +19,37 @@
 
 package org.wso2.carbon.mdm.api;
 
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
-import org.wso2.carbon.mdm.api.common.MDMAPIException;
-import org.wso2.carbon.mdm.api.util.MDMAPIUtils;
+import org.wso2.carbon.mdm.api.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@SuppressWarnings("NonJaxWsWebServices")
 public class DeviceSearch {
 
     private static Log log = LogFactory.getLog(DeviceSearch.class);
 
     @GET
-    public Response getDeviceInfo(SearchContext searchContext) throws MDMAPIException {
+    public Response getDeviceInfo(SearchContext searchContext) {
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
         try {
-            searchManagerService = MDMAPIUtils.getSearchManagerService();
+            searchManagerService = DeviceMgtAPIUtils.getSearchManagerService();
             devices = searchManagerService.search(searchContext);
 
         } catch (SearchMgtException e) {
             String msg = "Error occurred while searching the device information.";
             log.error(msg, e);
-            throw new MDMAPIException(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        return Response.status(HttpStatus.SC_OK).entity(devices).build();
+        return Response.status(Response.Status.OK).entity(devices).build();
     }
 }
 

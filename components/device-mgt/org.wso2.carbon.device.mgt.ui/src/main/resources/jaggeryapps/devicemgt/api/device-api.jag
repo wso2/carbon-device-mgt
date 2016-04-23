@@ -50,6 +50,7 @@ if (!user) {
         if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
             sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
             serviceInvokers.HttpClient.get(sketchDownloadEndPoint + queryString, function (responsePayload, responseHeaders) {
+                    if (responseHeaders) {
                         for (var i = 0; i < responseHeaders.length; i++) {
                             var header = responseHeaders[i]
                             var headerName = String(header.getName());
@@ -58,12 +59,15 @@ if (!user) {
                         }
                         var streamObject = new Stream(responsePayload);
                         print(streamObject);
-                    }, function (responsePayload) {
-                        log.error(responsePayload)
-                        var response = {};
-                        response["status"] = "error";
-                        return response;
+                    } else {
+                        return responsePayload;
                     }
+                }, function (responsePayload) {
+                    log.error(responsePayload)
+                    var response = {};
+                    response["status"] = "error";
+                    return response;
+                }
             );
         } else {
             result = 400;

@@ -131,4 +131,19 @@ class GadgetDataServiceImpl implements GadgetDataService {
         return unmonitoredDeviceCount;
     }
 
+    @Override
+    public Map<String, Integer> getNonCompliantDeviceCountsByFeatures() {
+        Map<String, Integer> nonCompliantDeviceCountsByFeatures = null;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            nonCompliantDeviceCountsByFeatures =
+                    GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getNonCompliantDeviceCountsByFeatures();
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            return null;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return nonCompliantDeviceCountsByFeatures;
+    }
+
 }

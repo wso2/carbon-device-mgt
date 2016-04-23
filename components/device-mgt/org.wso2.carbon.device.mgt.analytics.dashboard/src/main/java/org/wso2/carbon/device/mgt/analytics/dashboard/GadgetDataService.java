@@ -42,4 +42,8 @@ public interface GadgetDataService {
 
     @SuppressWarnings("unused")
     int getUnmonitoredDeviceCount();
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getNonCompliantDeviceCountsByFeatures();
+
 }

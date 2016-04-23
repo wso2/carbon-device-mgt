@@ -89,7 +89,7 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         Map<String, Integer> filteredNonCompliantDeviceCountsByFeatures = new HashMap<>();
         try {
             con = this.getConnection();
-            String sql = "SELECT FEATURE_CODE, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 " +
+            String sql = "SELECT FEATURE_CODE, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
                     "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);

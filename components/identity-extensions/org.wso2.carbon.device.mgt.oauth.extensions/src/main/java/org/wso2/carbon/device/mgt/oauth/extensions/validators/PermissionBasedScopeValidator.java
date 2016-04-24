@@ -85,9 +85,14 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                 int tenantId = OAuthExtUtils.getTenantId(authzUser.getTenantDomain());
                 UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
-                    status = userRealm.getAuthorizationManager()
-                                      .isUserAuthorized(userStore +"/"+ username, permission.getPath(),
-                                                        PermissionMethod.UI_EXECUTE);
+                    if (userStore != null) {
+                        status = userRealm.getAuthorizationManager()
+                                .isUserAuthorized(userStore + "/" + username, permission.getPath(),
+                                                  PermissionMethod.UI_EXECUTE);
+                    } else {
+                        status = userRealm.getAuthorizationManager()
+                                .isUserAuthorized(username, permission.getPath(), PermissionMethod.UI_EXECUTE);
+                    }
                 }
             }
         } catch (PermissionManagementException e) {

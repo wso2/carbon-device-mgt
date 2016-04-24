@@ -62,6 +62,7 @@ var ACCESS_TOKEN_PAIR_IDENTIFIER = "accessTokenPair";
 var ENCODED_CLIENT_KEYS_IDENTIFIER = "encodedClientKey";
 var CONTENT_TYPE_IDENTIFIER = "Content-Type";
 var APPLICATION_JSON = "application/json";
+var APPLICATION_ZIP = "application/zip";
 var ACCEPT_IDENTIFIER = "Accept";
 var AUTHORIZATION_HEADER= "Authorization";
 var BEARER_PREFIX = "Bearer ";

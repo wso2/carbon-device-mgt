@@ -175,7 +175,7 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 }
             }
             stmt = con.prepareStatement(sql);
-            // [2] appending filter column values
+            // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
             if (filters != null && filters.values().size() > 0) {
                 int i = 2;
@@ -212,8 +212,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             con = this.getConnection();
             String sql, advancedSqlFiltering = "";
             // appending filters if exist, to support advanced filtering options
-            // [1] appending filter columns
-            if (filters.size() > 0) {
+            // [1] appending filter columns, if exist
+            if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
@@ -227,16 +227,18 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                         advancedSqlFiltering + "GROUP BY PLATFORM";
             }
             stmt = con.prepareStatement(sql);
-            // [2] appending filter column values
+            // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
-            int i = 2;
-            for (Object value : filters.values()) {
-                if (value instanceof Integer) {
-                    stmt.setInt(i, (Integer) value);
-                } else if (value instanceof String) {
-                    stmt.setString(i, (String) value);
+            if (filters != null && filters.values().size() > 0) {
+                int i = 2;
+                for (Object value : filters.values()) {
+                    if (value instanceof Integer) {
+                        stmt.setInt(i, (Integer) value);
+                    } else if (value instanceof String) {
+                        stmt.setString(i, (String) value);
+                    }
+                    i++;
                 }
-                i++;
             }
             // executing query
             rs = stmt.executeQuery();
@@ -262,37 +264,39 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             con = this.getConnection();
             String sql, advancedSqlFiltering = "";
             // appending filters if exist, to support advanced filtering options
-            // [1] appending filter columns
-            if (filters.size() > 0) {
+            // [1] appending filter columns, if exist
+            if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
             if (filteringViewID == 1) {
-                sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " +
+                sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " +
                         advancedSqlFiltering + "GROUP BY OWNERSHIP";
             } else {
                 // if filteringViewID == 2
-                sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? " +
+                sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? " +
                         advancedSqlFiltering + "GROUP BY OWNERSHIP";
             }
             stmt = con.prepareStatement(sql);
-            // [2] appending filter column values
+            // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
-            int i = 2;
-            for (Object value : filters.values()) {
-                if (value instanceof Integer) {
-                    stmt.setInt(i, (Integer) value);
-                } else if (value instanceof String) {
-                    stmt.setString(i, (String) value);
+            if (filters != null && filters.values().size() > 0) {
+                int i = 2;
+                for (Object value : filters.values()) {
+                    if (value instanceof Integer) {
+                        stmt.setInt(i, (Integer) value);
+                    } else if (value instanceof String) {
+                        stmt.setString(i, (String) value);
+                    }
+                    i++;
                 }
-                i++;
             }
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
             while (rs.next()) {
-                filteredDeviceCountsByOwnershipTypes.put(rs.getString("PLATFORM"), rs.getInt("DEVICE_COUNT"));
+                filteredDeviceCountsByOwnershipTypes.put(rs.getString("OWNERSHIP"), rs.getInt("DEVICE_COUNT"));
             }
         } catch (SQLException e) {
             throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
@@ -319,32 +323,34 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 WHERE TENANT_ID = ?";
             }
             // appending filters to support advanced filtering options
-            // [1] appending filter columns
-            if (filters.size() > 0) {
+            // [1] appending filter columns, if exist
+            if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
                     sql = sql + " AND " + column + " = ?";
                 }
             }
             stmt = con.prepareStatement(sql);
-            // [2] appending filter column values
+            // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
-            int i = 2;
-            for (Object value : filters.values()) {
-                if (value instanceof Integer) {
-                    stmt.setInt(i, (Integer) value);
-                } else if (value instanceof String) {
-                    stmt.setString(i, (String) value);
+            if (filters != null && filters.values().size() > 0) {
+                int i = 2;
+                for (Object value : filters.values()) {
+                    if (value instanceof Integer) {
+                        stmt.setInt(i, (Integer) value);
+                    } else if (value instanceof String) {
+                        stmt.setString(i, (String) value);
+                    }
+                    i++;
                 }
-                i++;
             }
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
             while (rs.next()) {
-                filteredDeviceWithDetails.put("Device-ID", rs.getInt("DEVICE_ID"));
-                filteredDeviceWithDetails.put("Platform", rs.getString("PLATFORM"));
-                filteredDeviceWithDetails.put("Ownership", rs.getString("OWNERSHIP"));
-                filteredDeviceWithDetails.put("Connectivity-Details", rs.getString("CONNECTIVITY_STATUS"));
+                filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
+                filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
+                filteredDeviceWithDetails.put("connectivity-details", rs.getString("CONNECTIVITY_STATUS"));
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
         } catch (SQLException e) {

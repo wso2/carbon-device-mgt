@@ -146,4 +146,34 @@ class GadgetDataServiceImpl implements GadgetDataService {
         return nonCompliantDeviceCountsByFeatures;
     }
 
+    @Override
+    public Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) {
+        Map<String, Integer> deviceCountsByPlatforms = null;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            deviceCountsByPlatforms = GadgetDataServiceDAOFactory.
+                    getGadgetDataServiceDAO().getDeviceCountsByPlatforms(filters);
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            return null;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return deviceCountsByPlatforms;
+    }
+
+    @Override
+    public Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) {
+        Map<String, Integer> deviceCountsByOwnershipTypes = null;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            deviceCountsByOwnershipTypes = GadgetDataServiceDAOFactory.
+                    getGadgetDataServiceDAO().getDeviceCountsByOwnershipTypes(filters);
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            return null;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return deviceCountsByOwnershipTypes;
+    }
+
 }

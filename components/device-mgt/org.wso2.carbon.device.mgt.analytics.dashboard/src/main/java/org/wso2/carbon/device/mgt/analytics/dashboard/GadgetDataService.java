@@ -46,4 +46,10 @@ public interface GadgetDataService {
     @SuppressWarnings("unused")
     Map<String, Integer> getNonCompliantDeviceCountsByFeatures();
 
+    @SuppressWarnings("unused")
+    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters);
+
 }

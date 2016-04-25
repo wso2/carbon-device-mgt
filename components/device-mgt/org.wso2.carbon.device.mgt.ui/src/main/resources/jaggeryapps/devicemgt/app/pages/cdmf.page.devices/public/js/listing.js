@@ -383,18 +383,21 @@ function loadGroupedDevices(groupId) {
 }
 
 function initPage() {
-    var groupId = getParameterByName('groupId');
-    invokerUtil.get(
-        "/devicemgt_admin/devices/count",
+    var deviceListing = $("#device-listing");
+    var currentUser = deviceListing.data("currentUser");
+    var serviceURL;
+    if ($.hasPermission("LIST_DEVICES")) {
+        serviceURL = "/devicemgt_admin/devices/count";
+    } else if ($.hasPermission("LIST_OWN_DEVICES")) {
+        //Get authenticated users devices
+        serviceURL = "/devicemgt_admin/devices/user/"+currentUser+"/count";
+    }
+    invokerUtil.get(serviceURL,
         function (data) {
             if (data) {
                 data = JSON.parse(data);
                 if (Number(data) > 0) {
-                   if (groupId) {
-                        loadGroupedDevices(groupId);
-                   } else {
-                        loadDevices();
-                   }
+                    loadDevices();
                 } else {
                     $("#loading-content").remove();
                     $("#device-listing-status-msg").text("No enrolled devices found.");
@@ -411,19 +414,19 @@ function initPage() {
  * DOM ready functions.
  */
 $(document).ready(function () {
-
-    initPage();
-
     /* Adding selected class for selected devices */
     $(deviceCheckbox).each(function () {
         addDeviceSelectedClass(this);
     });
 
-    var i;
     var permissionList = $("#permission").data("permission");
-    for (i = 0; i < permissionList.length; i++) {
-        $.setPermission(permissionList[i]);
+    for (var key in permissionList) {
+        if (permissionList.hasOwnProperty(key)){
+            $.setPermission(key);
+        }
     }
+
+    initPage();
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({

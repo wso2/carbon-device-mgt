@@ -30,7 +30,7 @@ import java.util.List;
  * Composite interface that acts as the SPI exposing all device management as well as application management
  * functionalities.
  */
-public interface DeviceManagementService extends ApplicationManager {
+public interface DeviceManagementService {
 
     /**
      * Method to retrieve the provider type that implements DeviceManager interface.
@@ -58,6 +58,7 @@ public interface DeviceManagementService extends ApplicationManager {
 
     ApplicationManager getApplicationManager();
 
-    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
+    void notifyOperationToDevices(Operation operation,
+                                  List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
 
 }

@@ -74,39 +74,4 @@ public class TestDeviceManagementService implements DeviceManagementService {
 
     }
 
-    @Override
-    public Application[] getApplications(String domain, int pageNumber, int size)
-            throws ApplicationManagementException {
-        return new Application[0];
-    }
-
-    @Override
-    public void updateApplicationStatus(DeviceIdentifier deviceId, Application application, String status)
-            throws ApplicationManagementException {
-
-    }
-
-    @Override
-    public String getApplicationStatus(DeviceIdentifier deviceId, Application application)
-            throws ApplicationManagementException {
-        return null;
-    }
-
-    @Override
-    public void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
-            throws ApplicationManagementException {
-
-    }
-
-    @Override
-    public void installApplicationForUsers(Operation operation, List<String> userNameList)
-            throws ApplicationManagementException {
-
-    }
-
-    @Override
-    public void installApplicationForUserRoles(Operation operation, List<String> userRoleList)
-            throws ApplicationManagementException {
-
-    }
 }

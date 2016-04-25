@@ -271,6 +271,7 @@ function attachEvents() {
 
         $("a#remove-group-yes-link").click(function () {
             var successCallback = function (data) {
+                data = JSON.parse(data);
                 if (data.status == 200) {
                     $(modalPopupContent).html($('#remove-group-200-content').html());
                     setTimeout(function () {
@@ -282,7 +283,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.delete("/devicemgt_admin/groups/" + groupOwner + "/" + groupName,
+            invokerUtil.delete("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName,
                                successCallback, function (message) {
                         displayErrors(message.content);
                     });
@@ -315,6 +316,7 @@ function attachEvents() {
             var group = {"name": newGroupName, "description": newGroupDescription, "owner": groupOwner};
 
             var successCallback = function (data) {
+                data = JSON.parse(data);
                 if (data.status == 200) {
                     $(modalPopupContent).html($('#edit-group-200-content').html());
                     $("h4[data-groupid='" + groupId + "']").html(newGroupName);
@@ -326,7 +328,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.put("/devicemgt_admin/groups/" + groupOwner + "/" + groupName,
+            invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName, group,
                             successCallback, function (message) {
                         displayErrors(message.content);
                     });
@@ -343,6 +345,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
     $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
     $("a#share-group-yes-link").hide();
     var successCallback = function (data) {
+        data = JSON.parse(data);
         if (data.status == 200) {
             if (data.data.length > 0) {
                 generateRoleMap(groupName, groupOwner, selectedUser, data.data);
@@ -354,7 +357,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles",
+    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles",
                     successCallback, function (message) {
                 displayErrors(message.content);
             });
@@ -366,6 +369,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
 
 function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
     var successCallback = function (data) {
+        data = JSON.parse(data);
         if (data.status == 200) {
             var userRoles = data.data;
             var roleMap = [];
@@ -407,7 +411,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles?userName=" + selectedUser,
                     successCallback, function (message) {
                 displayErrors(message.content);
             });
@@ -419,6 +423,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
 
 function updateGroupShare(groupName, groupOwner, selectedUser, role) {
     var successCallback = function (data) {
+        data = JSON.parse(data);
         var status = data.status;
         if (status == 200) {
             $(modalPopupContent).html($('#share-group-200-content').html());
@@ -431,7 +436,7 @@ function updateGroupShare(groupName, groupOwner, selectedUser, role) {
         }
     };
 
-    invokerUtil.put("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles?userName=" + selectedUser,
                     role, successCallback, function (message) {
                 displayErrors(message.content);
             });

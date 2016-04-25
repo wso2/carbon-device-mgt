@@ -60,6 +60,13 @@
     </Permission>
 
     <Permission>
+        <name>User Devices</name>
+        <path>/device-mgt/user/devices</path>
+        <url>/</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
         <name>Policies</name>
         <path>/device-mgt/admin/policies</path>
         <url>/</url>
@@ -67,8 +74,22 @@
     </Permission>
 
     <Permission>
+        <name>User Policies</name>
+        <path>/device-mgt/user/policies</path>
+        <url>/</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
         <name>Notifications</name>
         <path>/device-mgt/admin/notifications</path>
+        <url>/</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>User Notifications</name>
+        <path>/device-mgt/user/notifications</path>
         <url>/</url>
         <method>GET</method>
     </Permission>
@@ -83,6 +104,13 @@
     <Permission>
         <name>Operations</name>
         <path>/device-mgt/admin/operations</path>
+        <url>/</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>User Operations</name>
+        <path>/device-mgt/user/operations</path>
         <url>/</url>
         <method>GET</method>
     </Permission>
@@ -123,8 +151,15 @@
     </Permission>
 
     <Permission>
-        <name>List devices</name>
+        <name>List device types</name>
         <path>/device-mgt/admin/devices/list</path>
+        <url>/devices/types</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>List device types</name>
+        <path>/device-mgt/user/devices/list</path>
         <url>/devices/types</url>
         <method>GET</method>
     </Permission>
@@ -137,8 +172,22 @@
     </Permission>
 
     <Permission>
+        <name>Add User policy</name>
+        <path>/device-mgt/user/policies/add</path>
+        <url>/devices/types</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
         <name>Edit policy</name>
         <path>/device-mgt/admin/policies/update</path>
+        <url>/devices/types</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Edit User policy</name>
+        <path>/device-mgt/user/policies/update</path>
         <url>/devices/types</url>
         <method>GET</method>
     </Permission>
@@ -151,7 +200,7 @@
     </Permission>
 
     <Permission>
-        <name>View device</name>
+        <name>View user device</name>
         <path>/device-mgt/user/devices/view</path>
         <url>/devices/view</url>
         <method>GET</method>
@@ -173,9 +222,16 @@
     </Permission>
 
     <Permission>
-        <name>List devices</name>
+        <name>Devices Count All</name>
         <path>/device-mgt/admin/devices/list</path>
         <url>/devices/count</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Device Count</name>
+        <path>/device-mgt/user/devices/list</path>
+        <url>/devices/user/*/count</url>
         <method>GET</method>
     </Permission>
 
@@ -501,15 +557,8 @@
     </Permission>
 
     <Permission>
-        <name>List devices</name>
+        <name>List user devices</name>
         <path>/device-mgt/user/devices/list</path>
-        <url>/users/devices</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List devices</name>
-        <path>/device-mgt/admin/devices/list</path>
         <url>/users/devices</url>
         <method>GET</method>
     </Permission>
@@ -854,143 +903,185 @@
 
     <!-- Group related APIs -->
     <Permission>
-        <name>Group Management</name>
+        <name>Group Management Admin</name>
         <path>/device-mgt/admin/groups</path>
+        <url>/</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Group Management User</name>
+        <path>/device-mgt/user/groups</path>
+        <url>/</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Add Group</name>
+        <path>/device-mgt/user/groups/add</path>
         <url>/groups</url>
         <method>POST</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*</url>
+        <name>Group update</name>
+        <path>/device-mgt/user/groups/update</path>
+        <url>/groups/owner/*/name/*</url>
         <method>PUT</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*</url>
+        <name>Group Delete</name>
+        <path>/device-mgt/user/groups/delete</path>
+        <url>/groups/owner/*/name/*</url>
         <method>DELETE</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
+        <name>List All Groups</name>
+        <path>/device-mgt/admin/groups/list</path>
         <url>/groups</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
+        <name>List Groups</name>
+        <path>/device-mgt/user/groups/list</path>
         <url>/groups/user/*</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/search</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
+        <name>List Groups</name>
+        <path>/device-mgt/user/groups/list</path>
         <url>/groups/user/*/all</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
+        <name>View Group</name>
+        <path>/device-mgt/user/groups/view</path>
+        <url>/groups/owner/*/name/*</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Search Group User</name>
+        <path>/device-mgt/user/groups/list</path>
+        <url>/groups/user/*/search</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>All Group Count</name>
+        <path>/device-mgt/admin/groups/list</path>
+        <url>/groups/count</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Group Count</name>
+        <path>/device-mgt/user/groups/list</path>
         <url>/groups/user/*/count</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/share</url>
+        <name>Group Share</name>
+        <path>/device-mgt/user/groups/share</path>
+        <url>/groups/owner/*/name/*/share</url>
         <method>PUT</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/unshare</url>
+        <name>Group Unshare</name>
+        <path>/device-mgt/user/groups/unshare</path>
+        <url>/groups/owner/*/name/*/unshare</url>
         <method>PUT</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/share/roles/*/permissions</url>
+        <name>Group Roles</name>
+        <path>/device-mgt/user/groups/roles</path>
+        <url>/groups/owner/*/name/*/share/roles</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Group Permissions</name>
+        <path>/device-mgt/admin/groups/roles/permissions</path>
+        <url>/groups/owner/*/name/*/share/roles/*/permissions</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Group Add Permissions</name>
+        <path>/device-mgt/admin/groups/roles/permissions/add</path>
+        <url>/groups/owner/*/name/*/share/roles/*/permissions</url>
         <method>PUT</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/share/roles/*/permissions</url>
+        <name>Group Delete Permissions</name>
+        <path>/device-mgt/admin/groups/roles/permissions/delete</path>
+        <url>/groups/owner/*/name/*/share/roles/*/permissions</url>
         <method>DELETE</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/share/roles</url>
+        <name>Group Users</name>
+        <path>/device-mgt/user/groups/users</path>
+        <url>/</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/users</url>
+        <name>List Group Users</name>
+        <path>/device-mgt/user/groups/users/list</path>
+        <url>/groups/owner/*/name/*/users</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/devices/all</url>
+        <name>Get Permissions for Group</name>
+        <path>/device-mgt/user/groups/users/permissions</path>
+        <url>/groups/owner/*/name/*/users/*/permissions</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/devices/count</url>
+        <name>Group Devices</name>
+        <path>/device-mgt/user/groups/devices</path>
+        <url>/</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/devices/*/*</url>
+        <name>List Group Devices</name>
+        <path>/device-mgt/user/groups/devices/list</path>
+        <url>/groups/owner/*/name/*/devices/all</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Group Devices Count</name>
+        <path>/device-mgt/user/groups/devices/count</path>
+        <url>/groups/owner/*/name/*/devices/count</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>Add Device to Group</name>
+        <path>/device-mgt/user/groups/devices/add</path>
+        <url>/groups/owner/*/name/*/devices/*/*</url>
         <method>PUT</method>
     </Permission>
 
     <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/devices/*/*</url>
+        <name>Remove Device from Group</name>
+        <path>/device-mgt/user/groups/devices/remove</path>
+        <url>/groups/owner/*/name/*/devices/*/*</url>
         <method>DELETE</method>
-    </Permission>
-
-    <Permission>
-        <name>Group Management</name>
-        <path>/device-mgt/admin/groups</path>
-        <url>/groups/*/*/users/*/permissions</url>
-        <method>GET</method>
     </Permission>
     <!-- End of Group related APIs -->
 

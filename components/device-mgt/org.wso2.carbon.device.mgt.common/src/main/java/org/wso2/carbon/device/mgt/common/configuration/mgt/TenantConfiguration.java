@@ -28,29 +28,29 @@ import java.util.List;
 /**
  * Represents the tenant configuration for a device platform.
  */
-@XmlRootElement(name="tenantConfiguration")
+@XmlRootElement(name = "tenantConfiguration")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TenantConfiguration implements Serializable{
+public class TenantConfiguration implements Serializable {
 
-	@XmlElement(name="type")
-	private String type;
-	@XmlElement(name="configuration")
-	private List<ConfigurationEntry> configuration;
+    @XmlElement(name = "type")
+    private String type;
+    @XmlElement(name = "configuration")
+    private List<ConfigurationEntry> configuration;
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public List<ConfigurationEntry> getConfiguration() {
-		return configuration;
-	}
+    public List<ConfigurationEntry> getConfiguration() {
+        return configuration;
+    }
 
-	public void setConfiguration(List<ConfigurationEntry> configuration) {
-		this.configuration = configuration;
-	}
+    public void setConfiguration(List<ConfigurationEntry> configuration) {
+        this.configuration = configuration;
+    }
 
 }

@@ -22,18 +22,16 @@ package org.wso2.carbon.device.mgt.core.task;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Utils {
 
-
-    public static HashMap<String, Long> getTenantedTaskOperationMap(HashMap<Integer, HashMap<String, Long>> map) {
-
+    public static Map<String, Long> getTenantedTaskOperationMap(Map<Integer, Map<String, Long>> map) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         if (map.containsKey(tenantId)) {
             return map.get(tenantId);
         } else {
-            HashMap<String, Long> mp = new HashMap<>();
+            Map<String, Long> mp = new HashMap<>();
             map.put(tenantId, mp);
             return mp;
         }

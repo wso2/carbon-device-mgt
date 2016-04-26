@@ -17,8 +17,14 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
+import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
+
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * Represents Device Mgt configuration.
@@ -27,6 +33,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public final class DeviceManagementConfig {
 
     private DeviceManagementConfigRepository deviceManagementConfigRepository;
+    private TaskConfiguration taskConfiguration;
+    private IdentityConfigurations identityConfigurations;
+    private PolicyConfiguration policyConfiguration;
+    //private List<String> pushNotificationProviders;
 
     @XmlElement(name = "ManagementRepository", required = true)
     public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
@@ -37,4 +47,43 @@ public final class DeviceManagementConfig {
         this.deviceManagementConfigRepository = deviceManagementConfigRepository;
     }
 
+    @XmlElement(name = "IdentityConfiguration", required = true)
+    public IdentityConfigurations getIdentityConfigurations() {
+        return identityConfigurations;
+    }
+
+
+    public void setIdentityConfigurations(IdentityConfigurations identityConfigurations) {
+        this.identityConfigurations = identityConfigurations;
+    }
+
+    @XmlElement(name = "PolicyConfiguration", required = true)
+    public PolicyConfiguration getPolicyConfiguration() {
+        return policyConfiguration;
+    }
+
+    public void setPolicyConfiguration(PolicyConfiguration policyConfiguration) {
+        this.policyConfiguration = policyConfiguration;
+    }
+
+    @XmlElement(name = "TaskConfiguration", required = true)
+    public TaskConfiguration getTaskConfiguration() {
+        return taskConfiguration;
+    }
+
+    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+        this.taskConfiguration = taskConfiguration;
+    }
+
+//    @XmlElementWrapper(name = "PushNotificationProviders", required = true)
+//    @XmlElement(name = "Provider", required = true)
+//    public List<String> getPushNotificationProviders() {
+//        return pushNotificationProviders;
+//    }
+//
+//    public void setPushNotificationProviders(List<String> pushNotificationProviders) {
+//        this.pushNotificationProviders = pushNotificationProviders;
+//    }
+
 }
+

@@ -206,6 +206,20 @@
         <method>GET</method>
     </Permission>
 
+    <Permission>
+        <name>Modify user device</name>
+        <path>/device-mgt/user/devices/update</path>
+        <url>/devices/type/*/id/*</url>
+        <method>PUT</method>
+    </Permission>
+
+    <Permission>
+        <name>Remove user device</name>
+        <path>/device-mgt/user/devices/remove</path>
+        <url>/devices/type/*/id/*</url>
+        <method>DELETE</method>
+    </Permission>
+
     <!--<Permission>-->
         <!--<name>Get device</name>-->
         <!--<path>/device-mgt/devices/view</path>-->

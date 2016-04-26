@@ -16,20 +16,27 @@
  * under the License.
  */
 
-function onRequest(context) {
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page = {};
-    if (currentUser) {
-        page.permissions = userModule.getUIPermissions();
-        page.permissions.list = stringify(page.permissions);
-        page.currentUser = currentUser;
-        var groupCount = groupModule.getGroupCount();
-        if (groupCount > 0) {
-            page.groupCount = groupCount;
-        }
+package org.wso2.carbon.device.mgt.jaxrs.beans.ios;
+
+import com.google.gson.Gson;
+import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
+
+import java.io.Serializable;
+
+public class RemoveApplication implements Serializable {
+
+    private String bundleId;
+
+    public String getBundleId() {
+        return bundleId;
     }
-    return page;
+
+    public void setBundleId(String bundleId) {
+        this.bundleId = bundleId;
+    }
+
+    public String toJSON() throws MDMAPIException {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
 }

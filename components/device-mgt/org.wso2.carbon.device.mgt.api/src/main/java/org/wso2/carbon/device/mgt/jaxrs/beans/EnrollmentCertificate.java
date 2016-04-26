@@ -16,20 +16,35 @@
  * under the License.
  */
 
-function onRequest(context) {
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page = {};
-    if (currentUser) {
-        page.permissions = userModule.getUIPermissions();
-        page.permissions.list = stringify(page.permissions);
-        page.currentUser = currentUser;
-        var groupCount = groupModule.getGroupCount();
-        if (groupCount > 0) {
-            page.groupCount = groupCount;
-        }
+package org.wso2.carbon.device.mgt.jaxrs.beans;
+
+public class EnrollmentCertificate {
+    String serial;
+    String pem;
+    int tenantId;
+
+    public int getTenantId() {
+        return tenantId;
     }
-    return page;
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
+
+    public String getPem() {
+        return pem;
+    }
+
+    public void setPem(String pem) {
+        this.pem = pem;
+    }
+
 }

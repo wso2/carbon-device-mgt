@@ -2193,7 +2193,7 @@ input[type=number].form-control {
 }
 
 .table.list-table.grid-view .padding-reduce-on-grid-view {
-  padding: 2px;
+    padding: 1px;
 }
 
 .table.list-table.grid-view .text-left-on-grid-view {
@@ -6428,7 +6428,7 @@ body.inverse .fade-edge:after {
     display: none;
 }
 .table.list-table.grid-view .padding-reduce-on-grid-view {
-    padding: 2px;
+    padding: 1px;
 }
 .table.list-table.grid-view .text-left-on-grid-view {
     text-align: left;

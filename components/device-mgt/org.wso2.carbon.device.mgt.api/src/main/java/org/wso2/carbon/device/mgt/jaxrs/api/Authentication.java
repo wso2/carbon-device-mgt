@@ -16,20 +16,21 @@
  * under the License.
  */
 
-function onRequest(context) {
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page = {};
-    if (currentUser) {
-        page.permissions = userModule.getUIPermissions();
-        page.permissions.list = stringify(page.permissions);
-        page.currentUser = currentUser;
-        var groupCount = groupModule.getGroupCount();
-        if (groupCount > 0) {
-            page.groupCount = groupCount;
-        }
-    }
-    return page;
+package org.wso2.carbon.device.mgt.jaxrs.api;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+
+/**
+ * Authentication related REST-API implementation.
+ */
+@Produces({ "application/json", "application/xml" })
+@Consumes({ "application/json", "application/xml" })
+public class Authentication {
+
+    private static Log log = LogFactory.getLog(Authentication.class);
 }
+

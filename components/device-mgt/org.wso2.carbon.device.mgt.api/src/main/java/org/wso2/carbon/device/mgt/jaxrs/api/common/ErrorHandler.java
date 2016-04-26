@@ -16,20 +16,18 @@
  * under the License.
  */
 
-function onRequest(context) {
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page = {};
-    if (currentUser) {
-        page.permissions = userModule.getUIPermissions();
-        page.permissions.list = stringify(page.permissions);
-        page.currentUser = currentUser;
-        var groupCount = groupModule.getGroupCount();
-        if (groupCount > 0) {
-            page.groupCount = groupCount;
-        }
+package org.wso2.carbon.device.mgt.jaxrs.api.common;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+
+@Produces({ "application/json", "application/xml" })
+public class ErrorHandler implements ExceptionMapper<MDMAPIException> {
+
+    public Response toResponse(MDMAPIException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setErrorMessage(exception.getErrorMessage());
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
     }
-    return page;
 }

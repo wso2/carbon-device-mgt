@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -78,7 +78,8 @@ $.fn.datatables_extended = function(settings){
                                         $( "#operation-guide" ).hide();
                                         $( "#operation-bar" ).removeClass("hidden");
                                         $("#operation-bar").show();
-                                        loadOperationBar(val);
+                                        //TODO: Enable after adding iot operations bar
+                                        //loadOperationBar(val);
                                     }
 
                                 }
@@ -86,13 +87,14 @@ $.fn.datatables_extended = function(settings){
 
                         $(column).each(function () {
                             if ($(column.nodes()).attr('data-search')) {
-                                var titles = [];
+                                var values = [];
                                 column.nodes().unique().sort().each(function (d, j) {
                                     var title = $(d).attr('data-display');
-                                    if ($.inArray(title, titles) < 0) {
-                                        titles.push(title);
-                                        if (title !== undefined) {
-                                            select.append('<option value="' + title + '">' + title + '</option>')
+                                    var value = $(d).attr('data-search');
+                                    if ($.inArray(value, values) < 0) {
+                                        values.push(value);
+                                        if (value !== undefined) {
+                                            select.append('<option value="' + value + '">' + title + '</option>')
                                         }
                                     }
                                 });

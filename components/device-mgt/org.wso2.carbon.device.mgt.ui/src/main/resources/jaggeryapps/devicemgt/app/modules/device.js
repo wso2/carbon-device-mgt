@@ -243,8 +243,7 @@ deviceModule = function () {
                             deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
                             return deviceObject;
                         }
-                    }
-                    ,
+                    },
                     function (responsePayload) {
                         var response = {};
                         response["status"] = "error";
@@ -266,8 +265,7 @@ deviceModule = function () {
         return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return responsePayload;
-                }
-                ,
+                },
                 function (responsePayload) {
                     log.error(responsePayload);
                     return -1;
@@ -280,8 +278,7 @@ deviceModule = function () {
         return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return responsePayload;
-                }
-                ,
+                },
                 function (responsePayload) {
                     log.error(responsePayload);
                     return -1;
@@ -289,14 +286,12 @@ deviceModule = function () {
         );
     };
 
-
     publicMethods.getDeviceTypes = function () {
         var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/types";
         return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return responsePayload;
-                }
-                ,
+                },
                 function (responsePayload) {
                     log.error(responsePayload);
                     return -1;
@@ -336,8 +331,7 @@ deviceModule = function () {
                         responsePayload[i].thumb = utility.getDeviceThumb(responsePayload[i].type);
                     }
                     return responsePayload;
-                }
-                ,
+                },
                 function (responsePayload) {
                     log.error(responsePayload);
                     return -1;

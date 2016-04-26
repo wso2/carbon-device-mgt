@@ -241,6 +241,13 @@
         <url>/devices/name/*/*</url>
         <method>GET</method>
     </Permission>
+
+    <Permission>
+        <name>List All Own Devices</name>
+        <path>/device-mgt/user/devices/list</path>
+        <url>/devices/user/*</url>
+        <method>GET</method>
+    </Permission>
     <!-- End of Device related APIs -->
 
     <!-- Notification related APIs -->

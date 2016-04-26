@@ -35,8 +35,8 @@ function onRequest(context) {
     if (currentUser) {
         page.permissions = {};
         page.permissions.list = stringify(userModule.getUIPermissions());
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/add")) {
-            permissions.enroll = true;
+        if (userModule.isAuthorized("/permission/admin/device-mgt/user/devices/add")) {
+            page.permissions.enroll = true;
         }
         page.currentUser = currentUser;
         var deviceCount = 0;
@@ -58,7 +58,8 @@ function onRequest(context) {
                     deviceTypes.push({
                         "type": data[i].name,
                         "category": deviceType.category,
-                        "label": deviceType.label
+                                         "label": deviceType.label,
+                                         "thumb": utility.getDeviceThumb(data[i].name)
                     });
                 }
             }

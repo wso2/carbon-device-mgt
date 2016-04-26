@@ -18,6 +18,9 @@
 
 var utility;
 utility = function () {
+
+    var constants = require('/app/modules/constants.js');
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var log = new Log("/app/modules/utility.js");
     var JavaClass = Packages.java.lang.Class;
     var PrivilegedCarbonContext = Packages.org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -104,25 +107,42 @@ utility = function () {
     };
 
     publicMethods.getOperationIcon = function (deviceType, operation) {
-        var iconPath = "/app/units/cdmf.unit.device.type."
-                       + deviceType + ".type-view/public/images/operations/" + operation + ".png";
+        var unitName = publicMethods.getTenantedDeviceUnitName(deviceType, "type-view");
+        var iconPath = "/app/units/" + unitName + "/public/images/operations/" + operation + ".png";
         var icon = new File(iconPath);
         if (icon.isExists()) {
-            return "public/cdmf.unit.device.type." + deviceType + ".type-view/images/operations/" + operation + ".png";
+            return devicemgtProps["appContext"] + "public/" + unitName + "/images/operations/" + operation + ".png";
         } else {
             return null;
         }
     };
 
     publicMethods.getDeviceThumb = function (deviceType) {
-        var iconPath = "/app/units/cdmf.unit.device.type."
-                       + deviceType + ".type-view/public/images/thumb.png";
+        var unitName = publicMethods.getTenantedDeviceUnitName(deviceType, "type-view");
+        var iconPath = "/app/units/" + unitName + "/public/images/thumb.png";
         var icon = new File(iconPath);
         if (icon.isExists()) {
-            return "/devicemgt/public/cdmf.unit.device.type." + deviceType + ".type-view/images/thumb.png";
+            return devicemgtProps["appContext"] + "public/" + unitName + "/images/thumb.png";
         } else {
             return null;
         }
+    };
+
+    publicMethods.getTenantedDeviceUnitName = function (deviceType, unitPostfix) {
+        var user = session.get(constants.USER_SESSION_KEY);
+        if (!user) {
+            log.error("User object was not found in the session");
+            throw constants.ERRORS.USER_NOT_FOUND;
+        }
+        var unitName = user.domain + "cdmf.unit.device.type." + deviceType + "." + unitPostfix;
+        if (new File("/app/units/" + unitName).isExists()) {
+            return unitName;
+        }
+        unitName = "cdmf.unit.device.type." + deviceType + "." + unitPostfix;
+        if (new File("/app/units/" + unitName).isExists()) {
+            return unitName;
+        }
+        return null;
     };
 
     return publicMethods;

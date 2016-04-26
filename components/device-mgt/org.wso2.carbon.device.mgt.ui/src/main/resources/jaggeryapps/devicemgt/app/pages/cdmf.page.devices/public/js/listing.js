@@ -213,6 +213,16 @@ function loadDevices(searchType, searchParam){
         return type;
     }
 
+    function getDeviceTypeThumb(type) {
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++) {
+            if (deviceTypes[i].type == type) {
+                return deviceTypes[i].thumb;
+            }
+        }
+        return type;
+    }
+
     $('#device-grid').datatables_extended ({
         serverSide: true,
         processing: false,
@@ -233,7 +243,7 @@ function loadDevices(searchType, searchParam){
         },
         columnDefs: [
             { targets: 0, data: 'name', className: 'remove-padding icon-only content-fill' , render: function ( data, type, row, meta ) {
-                return '<div class="thumbnail icon"><img class="square-element text fw " src="' + imageResource + row.type + '.type-view/images/thumb.png"/></div>';
+                return '<div class="thumbnail icon"><img class="square-element text fw " src="' + getDeviceTypeThumb(row.type) + '"/></div>';
             }},
             { targets: 1, data: 'name', className: 'fade-edge' , render: function ( name, type, row, meta ) {
                 var model = getPropertyValue(row.properties, 'DEVICE_MODEL');

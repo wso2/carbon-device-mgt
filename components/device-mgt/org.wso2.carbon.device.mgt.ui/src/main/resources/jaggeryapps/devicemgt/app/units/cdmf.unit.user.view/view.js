@@ -41,9 +41,8 @@ function onRequest(context) {
         if (response["status"] == "success") {
             userRoles = response["content"];
         }
-
         var deviceModule = require("/app/modules/device.js").deviceModule;
-        devices = deviceModule.listDevicesForUser(userName);
+        devices = deviceModule.getDevices(userName);
     }
     return {"user": user, "userRoles": userRoles, "devices": devices};
 }

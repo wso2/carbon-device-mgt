@@ -17,6 +17,7 @@
  */
 
 function onRequest(context) {
+    var utility = require("/app/modules/utility.js").utility;
     var deviceType = request.getParameter("type");
-    return {"deviceTypePolicyEdit" : "cdmf.unit.device.type." + deviceType + ".policy-edit"};
+    return {"deviceTypePolicyEdit": utility.getTenantedDeviceUnitName(deviceType, "policy-edit")};
 }

@@ -20,6 +20,7 @@ var groupModule = {};
 (function (groupModule) {
     var log = new Log("/app/modules/group.js");
 
+    var userModule = require("/app/modules/user.js").userModule;
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var utility = require("/app/modules/utility.js").utility;
@@ -32,7 +33,12 @@ var groupModule = {};
     var endPoint;
 
     groupModule.getGroupCount = function () {
-        endPoint = groupServiceEndpoint + "/user/" + user.username + "/count";
+        var permissions = userModule.getUIPermissions();
+        if (permissions.LIST_ALL_GROUPS) {
+            endPoint = groupServiceEndpoint + "/count";
+        } else if (permissions.LIST_GROUPS) {
+            endPoint = groupServiceEndpoint + "/user/" + user.username + "/count";
+        }
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;

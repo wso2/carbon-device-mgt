@@ -96,7 +96,7 @@ $(document).ready(function () {
             console.log(message);
         }, function(message){
                 console.log(message.content);
-            });
+        });
     });
 });
 
@@ -213,6 +213,16 @@ function loadDevices(searchType, searchParam){
         return type;
     }
 
+    function getDeviceTypeThumb(type) {
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++) {
+            if (deviceTypes[i].type == type) {
+                return deviceTypes[i].thumb;
+            }
+        }
+        return type;
+    }
+
     $('#device-grid').datatables_extended ({
         serverSide: true,
         processing: false,
@@ -233,7 +243,7 @@ function loadDevices(searchType, searchParam){
         },
         columnDefs: [
             { targets: 0, data: 'name', className: 'remove-padding icon-only content-fill' , render: function ( data, type, row, meta ) {
-                return '<div class="thumbnail icon"><img class="square-element text fw " src="' + imageResource + row.type + '.type-view/images/thumb.png"/></div>';
+                return '<div class="thumbnail icon"><img class="square-element text fw " src="' + getDeviceTypeThumb(row.type) + '"/></div>';
             }},
             { targets: 1, data: 'name', className: 'fade-edge' , render: function ( name, type, row, meta ) {
                 var model = getPropertyValue(row.properties, 'DEVICE_MODEL');
@@ -582,21 +592,19 @@ function attachDeviceEvents() {
     $("a.remove-device-link").click(function () {
         var deviceId = $(this).data("deviceid");
         var deviceType = $(this).data("devicetype");
-        var removeDeviceAPI = "/devicemgt/api/devices/" + deviceType + "/" + deviceId + "/remove";
+        var serviceURL = "/devicemgt_admin/devices/type/" + deviceType + "/id/" + deviceId;
 
         $(modalPopupContent).html($('#remove-device-modal-content').html());
         showPopup();
 
         $("a#remove-device-yes-link").click(function () {
-            var postOperationRequest = $.ajax({
-                                                  url: removeDeviceAPI,
-                                                  method: "post"
-                                              });
-            postOperationRequest.done(function (data) {
+            invokerUtil.delete(serviceURL, function (message) {
                 $(modalPopupContent).html($('#remove-device-200-content').html());
-                window.location.reload(false);
-            });
-            postOperationRequest.fail(function (jqXHR, textStatus) {
+                setTimeout(function () {
+                    hidePopup();
+                    location.reload(false);
+                }, 2000);
+            }, function (message) {
                 displayDeviceErrors(jqXHR);
             });
         });
@@ -604,7 +612,6 @@ function attachDeviceEvents() {
         $("a#remove-device-cancel-link").click(function () {
             hidePopup();
         });
-
     });
 
     /**
@@ -616,7 +623,7 @@ function attachDeviceEvents() {
         var deviceId = $(this).data("deviceid");
         var deviceType = $(this).data("devicetype");
         var deviceName = $(this).data("devicename");
-        var editDeviceAPI = "/devicemgt/api/devices/" + deviceType + "/" + deviceId + "/update?name=";
+        var serviceURL = "/devicemgt_admin/devices/type/" + deviceType + "/id/" + deviceId;
 
         $(modalPopupContent).html($('#edit-device-modal-content').html());
         $('#edit-device-name').val(deviceName);
@@ -624,18 +631,13 @@ function attachDeviceEvents() {
 
         $("a#edit-device-yes-link").click(function () {
             var newDeviceName = $('#edit-device-name').val();
-            var postOperationRequest = $.ajax({
-                                                  url: editDeviceAPI + newDeviceName,
-                                                  method: "post"
-                                              });
-            postOperationRequest.done(function (data) {
+            invokerUtil.put(serviceURL, {"name": newDeviceName}, function (message) {
                 $(modalPopupContent).html($('#edit-device-200-content').html());
                 setTimeout(function () {
                     hidePopup();
                     location.reload(false);
                 }, 2000);
-            });
-            postOperationRequest.fail(function (jqXHR, textStatus) {
+            }, function (message) {
                 displayDeviceErrors(jqXHR);
             });
         });

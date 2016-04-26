@@ -43,8 +43,8 @@ public class TaskScheduleServiceImpl implements TaskScheduleService {
 
 
     public TaskScheduleServiceImpl() {
-        this.policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                getDeviceManagementConfigRepository().getPolicyConfiguration();
+        this.policyConfiguration =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
     }
 
     @Override

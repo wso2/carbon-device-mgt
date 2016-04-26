@@ -24,7 +24,7 @@ import org.wso2.carbon.policy.mgt.common.Profile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MDMUtil {
+public class DeviceMgtUtil {
 
     public static Profile convertProfile(org.wso2.carbon.device.mgt.jaxrs.beans.Profile mdmProfile) {
         Profile profile = new Profile();

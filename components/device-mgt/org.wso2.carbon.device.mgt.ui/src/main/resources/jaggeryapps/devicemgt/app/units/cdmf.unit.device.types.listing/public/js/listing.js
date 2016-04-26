@@ -125,7 +125,6 @@ var deviceTypeCount, compiledDeviceTypesCount = 0;
 function loadDevices(searchType, searchParam){
     var deviceListing = $("#device-listing");
     var deviceListingSrc = deviceListing.attr("src");
-    var imageResource = deviceListing.data("image-resource");
     var currentUser = deviceListing.data("currentUser");
 
     $('#ast-container').html("");
@@ -133,7 +132,7 @@ function loadDevices(searchType, searchParam){
     if(deviceTypesList.length > 0){
         for (var i = 0; i < deviceTypesList.length; i++) {
             var viewModel = {};
-            viewModel.imageLocation = imageResource;
+            viewModel.thumb = deviceTypesList[i].thumb;
             viewModel.appContext = clientJsAppContext;
             viewModel.deviceTypeName = deviceTypesList[i].deviceTypeName;
             viewModel.deviceTypeId = deviceTypesList[i].deviceTypeId;

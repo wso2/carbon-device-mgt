@@ -31,12 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "ManagementRepository")
 public class DeviceManagementConfigRepository {
 
-
-//    private EmailConfigurations emailConfigurations;
-    private TaskConfiguration taskConfiguration;
 	private DataSourceConfig dataSourceConfig;
-	private IdentityConfigurations identityConfigurations;
-	private PolicyConfiguration policyConfiguration;
 
     @XmlElement(name = "DataSourceConfiguration", required = true)
     public DataSourceConfig getDataSourceConfig() {
@@ -47,40 +42,4 @@ public class DeviceManagementConfigRepository {
         this.dataSourceConfig = dataSourceConfig;
     }
 
-//    @XmlElement(name = "EmailClientConfiguration", required = true)
-//    public EmailConfigurations getEmailConfigurations() {
-//        return emailConfigurations;
-//    }
-//
-//    public void setEmailConfigurations(EmailConfigurations emailConfigurations) {
-//        this.emailConfigurations = emailConfigurations;
-//    }
-
-    @XmlElement(name = "IdentityConfiguration", required = true)
-    public IdentityConfigurations getIdentityConfigurations() {
-        return identityConfigurations;
-    }
-
-
-    public void setIdentityConfigurations(IdentityConfigurations identityConfigurations) {
-        this.identityConfigurations = identityConfigurations;
-    }
-
-    @XmlElement(name = "PolicyConfiguration", required = true)
-    public PolicyConfiguration getPolicyConfiguration() {
-        return policyConfiguration;
-    }
-
-    public void setPolicyConfiguration(PolicyConfiguration policyConfiguration) {
-        this.policyConfiguration = policyConfiguration;
-    }
-
-    @XmlElement(name = "TaskConfiguration", required = true)
-    public TaskConfiguration getTaskConfiguration() {
-        return taskConfiguration;
-    }
-
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
-        this.taskConfiguration = taskConfiguration;
-    }
 }

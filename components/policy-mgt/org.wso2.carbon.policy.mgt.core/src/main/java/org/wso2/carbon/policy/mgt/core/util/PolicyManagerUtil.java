@@ -218,7 +218,7 @@ public class PolicyManagerUtil {
 
         if (monitoringFrequency == 0) {
             PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().
-                    getDeviceManagementConfig().getDeviceManagementConfigRepository().getPolicyConfiguration();
+                    getDeviceManagementConfig().getPolicyConfiguration();
             monitoringFrequency = policyConfiguration.getMonitoringFrequency();
         }
 

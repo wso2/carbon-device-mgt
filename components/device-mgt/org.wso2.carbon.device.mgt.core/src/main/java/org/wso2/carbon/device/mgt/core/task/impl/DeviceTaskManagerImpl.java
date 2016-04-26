@@ -36,23 +36,19 @@ import org.wso2.carbon.device.mgt.core.task.TaskOperation;
 import org.wso2.carbon.device.mgt.core.task.Utils;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
     private static Log log = LogFactory.getLog(DeviceTaskManagerImpl.class);
 
-    private static HashMap<Integer, HashMap<String, Long>> map = new HashMap<>();
+    private static Map<Integer, Map<String, Long>> map = new HashMap<>();
 
 
     @Override
     public List<TaskOperation> getOperationList() throws DeviceMgtTaskException {
-
-        TaskConfiguration taskConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                getDeviceManagementConfigRepository().getTaskConfiguration();
+        TaskConfiguration taskConfiguration =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration();
 
         List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
         List<TaskOperation> taskOperations = new ArrayList<>();
@@ -68,29 +64,25 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
     @Override
     public int getTaskFrequency() throws DeviceMgtTaskException {
-
-        return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                getDeviceManagementConfigRepository().getTaskConfiguration().getFrequency();
+        return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration().
+                getFrequency();
     }
 
     @Override
     public String getTaskImplementedClazz() throws DeviceMgtTaskException {
-
-        return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                getDeviceManagementConfigRepository().getTaskConfiguration().getTaskClazz();
+        return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration().
+                getTaskClazz();
     }
 
     @Override
     public boolean isTaskEnabled() throws DeviceMgtTaskException {
-
-        return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                getDeviceManagementConfigRepository().getTaskConfiguration().isEnabled();
+        return DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration().
+                isEnabled();
     }
 
 
     @Override
     public void addOperations() throws DeviceMgtTaskException {
-
         DeviceManagementProviderService deviceManagementProviderService =
                 DeviceManagementDataHolder.getInstance().getDeviceManagementProvider();
         try {
@@ -98,7 +90,6 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
             List<String> operations = this.getValidOperationNames();
 
             if (!devices.isEmpty()) {
-
                 for (String str : operations) {
                     CommandOperation operation = new CommandOperation();
                     operation.setEnabled(true);
@@ -116,17 +107,15 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
         } catch (OperationManagementException e) {
             throw new DeviceMgtTaskException("Error occurred while adding the operations to devices", e);
         }
-
     }
 
     @Override
     public List<String> getValidOperationNames() throws DeviceMgtTaskException {
-
         List<TaskOperation> taskOperations = this.getOperationList();
         List<String> opNames = new ArrayList<>();
         Long milliseconds = System.currentTimeMillis();
         int frequency = this.getTaskFrequency();
-        HashMap<String, Long> mp = Utils.getTenantedTaskOperationMap(map);
+        Map<String, Long> mp = Utils.getTenantedTaskOperationMap(map);
 
         for (TaskOperation top : taskOperations) {
             if (!mp.containsKey(top.getTaskName())) {
@@ -163,5 +152,6 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
         return false;
 
     }
+
 }
 

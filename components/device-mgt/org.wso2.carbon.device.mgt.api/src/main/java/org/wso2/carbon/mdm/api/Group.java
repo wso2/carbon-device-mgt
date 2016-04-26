@@ -97,7 +97,7 @@ public class Group {
         }
     }
 
-    @Path("/{owner}/{groupName}")
+    @Path("/owner/{owner}/name/{groupName}")
     @PUT
     @Consumes("application/json")
     @Produces("application/json")
@@ -112,7 +112,7 @@ public class Group {
         }
     }
 
-    @Path("/{owner}/{groupName}")
+    @Path("/owner/{owner}/name/{groupName}")
     @DELETE
     public Response deleteGroup(@PathParam("groupName") String groupName, @PathParam("owner") String owner) {
         try {
@@ -160,7 +160,7 @@ public class Group {
         }
     }
 
-    @Path("/{owner}/{groupName}")
+    @Path("/owner/{owner}/name/{groupName}")
     @GET
     @Produces("application/json")
     public Response getGroup(@PathParam("groupName") String groupName, @PathParam("owner") String owner) {
@@ -177,14 +177,14 @@ public class Group {
         }
     }
 
-    @Path("/search")
+    @Path("/user/{user}/search")
     @GET
     @Produces("application/json")
     public Response findGroups(@QueryParam("groupName") String groupName,
-                               @QueryParam("userName") String userName) {
+                               @PathParam("user") String user) {
         try {
             List<DeviceGroup> groups = DeviceMgtAPIUtils.getGroupManagementProviderService()
-                    .findInGroups(groupName, userName);
+                    .findInGroups(groupName, user);
             DeviceGroup[] deviceGroups = new DeviceGroup[groups.size()];
             groups.toArray(deviceGroups);
             return Response.status(Response.Status.OK).entity(deviceGroups).build();
@@ -216,6 +216,19 @@ public class Group {
         }
     }
 
+    @Path("/count")
+    @GET
+    @Produces("application/json")
+    public Response getAllGroupCount() {
+        try {
+            int count = DeviceMgtAPIUtils.getGroupManagementProviderService().getGroupCount();
+            return Response.status(Response.Status.OK).entity(count).build();
+        } catch (GroupManagementException e) {
+            log.error(e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
     @Path("/user/{user}/count")
     @GET
     @Produces("application/json")
@@ -229,7 +242,7 @@ public class Group {
         }
     }
 
-    @Path("/{owner}/{groupName}/share")
+    @Path("/owner/{owner}/name/{groupName}/share")
     @PUT
     @Produces("application/json")
     public Response shareGroup(@PathParam("groupName") String groupName, @PathParam("owner") String owner,
@@ -250,7 +263,7 @@ public class Group {
         }
     }
 
-    @Path("/{owner}/{groupName}/unshare")
+    @Path("/owner/{owner}/name/{groupName}/unshare")
     @PUT
     @Produces("application/json")
     public Response unShareGroup(@PathParam("groupName") String groupName, @PathParam("owner") String owner,
@@ -270,7 +283,7 @@ public class Group {
         }
     }
 
-    @Path("/{owner}/{groupName}/share/roles/{roleName}/permissions")
+    @Path("/owner/{owner}/name/{groupName}/share/roles/{roleName}/permissions")
     @PUT
     @Produces("application/json")
     public Response addSharing(@QueryParam("shareUser") String shareUser, @PathParam("groupName") String groupName,
@@ -293,7 +306,7 @@ public class Group {
     }
 
     @DELETE
-    @Path("/{owner}/{groupName}/share/roles/{roleName}/permissions")
+    @Path("/owner/{owner}/name/{groupName}/share/roles/{roleName}/permissions")
     @Produces("application/json")
     public Response removeSharing(@QueryParam("userName") String userName, @PathParam("groupName") String groupName,
                                   @PathParam("owner") String owner,
@@ -313,7 +326,7 @@ public class Group {
     }
 
     @GET
-    @Path("/{owner}/{groupName}/share/roles")
+    @Path("/owner/{owner}/name/{groupName}/share/roles")
     @Produces("application/json")
     public Response getRoles(@PathParam("groupName") String groupName,
                              @PathParam("owner") String owner, @QueryParam("userName") String userName) {
@@ -334,7 +347,7 @@ public class Group {
     }
 
     @GET
-    @Path("/{owner}/{groupName}/users")
+    @Path("/owner/{owner}/name/{groupName}/users")
     @Produces("application/json")
     public Response getUsers(@PathParam("groupName") String groupName,
                              @PathParam("owner") String owner) {
@@ -351,7 +364,7 @@ public class Group {
     }
 
     @GET
-    @Path("/{owner}/{groupName}/devices/all")
+    @Path("/owner/{owner}/name/{groupName}/devices/all")
     @Produces("application/json")
     public Response getDevices(@PathParam("groupName") String groupName,
                                @PathParam("owner") String owner) {
@@ -368,7 +381,7 @@ public class Group {
     }
 
     @GET
-    @Path("/{owner}/{groupName}/devices/count")
+    @Path("/owner/{owner}/name/{groupName}/devices/count")
     @Produces("application/json")
     public Response getDeviceCount(@PathParam("groupName") String groupName,
                                    @PathParam("owner") String owner) {
@@ -382,7 +395,7 @@ public class Group {
     }
 
     @PUT
-    @Path("/{owner}/{groupName}/devices/{deviceType}/{deviceId}")
+    @Path("/owner/{owner}/name/{groupName}/devices/{deviceType}/{deviceId}")
     @Produces("application/json")
     public Response addDevice(@PathParam("groupName") String groupName,
                               @PathParam("owner") String owner, @PathParam("deviceId") String deviceId,
@@ -404,7 +417,7 @@ public class Group {
     }
 
     @DELETE
-    @Path("/{owner}/{groupName}/devices/{deviceType}/{deviceId}")
+    @Path("/owner/{owner}/name/{groupName}/devices/{deviceType}/{deviceId}")
     @Produces("application/json")
     public Response removeDevice(@PathParam("groupName") String groupName,
                                  @PathParam("owner") String owner, @PathParam("deviceId") String deviceId,
@@ -425,7 +438,7 @@ public class Group {
     }
 
     @GET
-    @Path("/{owner}/{groupName}/users/{userName}/permissions")
+    @Path("/owner/{owner}/name/{groupName}/users/{userName}/permissions")
     @Produces("application/json")
     public Response getPermissions(@PathParam("userName") String userName,
                                    @PathParam("groupName") String groupName,

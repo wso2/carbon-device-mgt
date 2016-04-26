@@ -52,8 +52,9 @@ public class DeviceTaskManagerServiceComponent {
                 log.debug("Initializing device details retrieving task manager bundle.");
             }
             // This will start the device details retrieving task.
-            boolean taskEnable = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                    getDeviceManagementConfigRepository().getTaskConfiguration().isEnabled();
+            boolean taskEnable =
+                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration().
+                            isEnabled();
             if (taskEnable) {
                 DeviceTaskManagerService taskManagerService = new DeviceTaskManagerServiceImpl();
                 taskManagerService.startTask();
@@ -70,7 +71,6 @@ public class DeviceTaskManagerServiceComponent {
 
     @SuppressWarnings("unused")
     protected void deactivate(ComponentContext componentContext) {
-
         try {
             DeviceTaskManagerService taskManagerService = new DeviceTaskManagerServiceImpl();
             taskManagerService.stopTask();
@@ -93,6 +93,7 @@ public class DeviceTaskManagerServiceComponent {
         }
         DeviceManagementDataHolder.getInstance().setTaskService(null);
     }
+
 }
 
 

@@ -20,8 +20,10 @@ package org.wso2.carbon.device.mgt.core;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
 import java.util.List;
@@ -41,14 +43,6 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
-    public String getProviderTenantDomain() { return tenantDomain;}
-
-    @Override
-    public boolean isSharedWithAllTenants() {
-        return true;
-    }
-
-    @Override
     public void init() throws DeviceManagementException {
 
     }
@@ -64,9 +58,13 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
-    public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
-            throws DeviceManagementException {
+    public ProvisioningConfig getProvisioningConfig() {
+        return new ProvisioningConfig(tenantDomain, false);
+    }
 
+    @Override
+    public PushNotificationConfig getPushNotificationConfig() {
+        return null;
     }
 
 }

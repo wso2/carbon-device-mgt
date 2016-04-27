@@ -653,6 +653,9 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/list")) {
             permissions["LIST_POLICIES"] = true;
         }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/add")) {
+            permissions["ADD_DEVICE"] = true;
+        }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/groups/add")) {
             permissions["ADD_GROUP"] = true;
         }

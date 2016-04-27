@@ -34,8 +34,9 @@ function onRequest(context) {
     var currentUser = session.get(constants.USER_SESSION_KEY);
     if (currentUser) {
         page.permissions = {};
-        page.permissions.list = stringify(userModule.getUIPermissions());
-        if (userModule.isAuthorized("/permission/admin/device-mgt/user/devices/add")) {
+        var uiPermissions = userModule.getUIPermissions();
+        page.permissions.list = stringify(uiPermissions);
+        if (uiPermissions.ADD_DEVICE) {
             page.permissions.enroll = true;
         }
         page.currentUser = currentUser;
@@ -45,7 +46,7 @@ function onRequest(context) {
             deviceCount = groupModule.getGroupDeviceCount(groupName, groupOwner);
             page.groupOwner = groupOwner;
         } else {
-            deviceCount = deviceModule.getOwnDevicesCount();
+            deviceCount = deviceModule.getDevicesCount();
         }
         if (deviceCount > 0) {
             page.deviceCount = deviceCount;

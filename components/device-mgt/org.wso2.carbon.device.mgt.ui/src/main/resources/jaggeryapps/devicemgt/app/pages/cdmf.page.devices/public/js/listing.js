@@ -300,7 +300,7 @@ function loadDevices(searchType, searchParam){
                     html = '<a href="device/' + deviceType + '?id=' + deviceIdentifier + '" data-click-event="remove-form"' +
                     ' class="btn padding-reduce-on-grid-view"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
                         '<i class="fw fw-view fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">View</span></a>';
-                    html += '<a href="analytics?deviceId=' + deviceIdentifier + '&deviceType=' + deviceType + '&deviceName=' + row.name + '" ' +
+                    html += '<a href="device/' + deviceType + '/analytics?deviceId=' + deviceIdentifier + '&deviceName=' + row.name + '" ' +
                             'data-click-event="remove-form" class="btn padding-reduce-on-grid-view"><span class="fw-stack">' +
                             '<i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
@@ -309,6 +309,11 @@ function loadDevices(searchType, searchParam){
                             '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
                             '<i class="fw fw-edit fw-stack-1x"></i></span>' +
                             '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
+                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-device-link" ' +
+                            'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType + '" data-devicename="' + row.name + '">' +
+                            '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                            '<i class="fw fw-delete fw-stack-1x"></i></span>' +
+                            '<span class="hidden-xs hidden-on-grid-view">Delete</span>';
                 }
                 return html;
             }}

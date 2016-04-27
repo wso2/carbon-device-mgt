@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOException;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -36,12 +38,12 @@ class GadgetDataServiceImpl implements GadgetDataService {
     private static final Log log = LogFactory.getLog(GadgetDataServiceImpl.class);
 
     @Override
-    public int getTotalDeviceCount(Map<String, Object> filters) {
+    public int getTotalDeviceCount() {
         int totalDeviceCount;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             totalDeviceCount = GadgetDataServiceDAOFactory.
-                    getGadgetDataServiceDAO().getTotalDeviceCount(filters);
+                    getGadgetDataServiceDAO().getTotalDeviceCount();
         } catch (GadgetDataServiceDAOException | SQLException e) {
             totalDeviceCount = -1;
             return totalDeviceCount;
@@ -132,18 +134,34 @@ class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public Map<String, Integer> getNonCompliantDeviceCountsByFeatures() {
-        Map<String, Integer> nonCompliantDeviceCountsByFeatures = null;
+    public PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest) {
+        PaginationResult paginationResult = null;
         try {
             GadgetDataServiceDAOFactory.openConnection();
-            nonCompliantDeviceCountsByFeatures =
-                    GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getNonCompliantDeviceCountsByFeatures();
+            paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
+                getNonCompliantDeviceCountsByFeatures(paginationRequest);
         } catch (GadgetDataServiceDAOException | SQLException e) {
             return null;
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
-        return nonCompliantDeviceCountsByFeatures;
+        return paginationResult;
+    }
+
+    @Override
+    public int getDeviceCount(Map<String, Object> filters) {
+        int deviceCount;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            deviceCount = GadgetDataServiceDAOFactory.
+                    getGadgetDataServiceDAO().getDeviceCount(filters);
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            deviceCount = -1;
+            return deviceCount;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return deviceCount;
     }
 
     @Override

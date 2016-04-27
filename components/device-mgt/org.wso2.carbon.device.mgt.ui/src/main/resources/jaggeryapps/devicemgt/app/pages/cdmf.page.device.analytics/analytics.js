@@ -17,7 +17,8 @@
  */
 
 function onRequest(context) {
-	context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
+    var utility = require("/app/modules/utility.js").utility;
+    context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
 		if (arguments.length < 3)
 			throw new Error("Handlebars Helper equal needs 2 parameters");
 		if (lvalue != rvalue) {
@@ -26,10 +27,24 @@ function onRequest(context) {
 			return options.fn(this);
 		}
 	});
-
-	var deviceType = context.uriParams.deviceType;
+    var groupName = request.getParameter("groupName");
+    var groupId = request.getParameter("groupId");
+    var deviceName = request.getParameter("deviceName");
+    var deviceId = request.getParameter("deviceId");
+    var deviceType = context.uriParams.deviceType;
+    var title = "Analytics";
+    if (groupName) {
+        title = "Group " + title;
+    } else {
+        title = "Device " + title;
+    }
 	return {
-		"deviceAnalyticsViewUnitName": "cdmf.unit.device.type." + deviceType + ".analytics-view",
-		"deviceType": deviceType
+        "deviceAnalyticsViewUnitName": utility.getTenantedDeviceUnitName(deviceType, "analytics-view"),
+        "deviceType": deviceType,
+        "title": title,
+        "groupName": groupName,
+        "groupId": groupId,
+        "deviceName": deviceName,
+        "deviceId": deviceId
 	};
 }

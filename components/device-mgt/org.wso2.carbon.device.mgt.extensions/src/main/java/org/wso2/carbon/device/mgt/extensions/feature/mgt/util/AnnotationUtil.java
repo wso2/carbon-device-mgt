@@ -62,8 +62,8 @@ public class AnnotationUtil {
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
-    public static final String STRING_ARR = "string_arr";
-    public static final String STRING = "string";
+    private static final String STRING_ARR = "string_arr";
+    private static final String STRING = "string";
     private Class<org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature>
             featureAnnotationClazz;
     private ClassLoader classLoader;
@@ -164,7 +164,8 @@ public class AnnotationUtil {
         return featureList;
     }
 
-    private Map<String, Object> processParamAnnotations(Map<String, Object> apiParams, Method currentMethod) throws Throwable{
+    private Map<String, Object> processParamAnnotations(Map<String, Object> apiParams, Method currentMethod)
+            throws Throwable{
         try {
             apiParams.put("pathParams", processParamAnnotations(currentMethod, PathParam.class));
             apiParams.put("queryParams", processParamAnnotations(currentMethod, QueryParam.class));
@@ -196,6 +197,12 @@ public class AnnotationUtil {
         return params;
     }
 
+    /**
+     * Read Method annotations indicating HTTP Methods
+     * @param feature
+     * @param currentAnnotation
+     * @return
+     */
     private Feature processHttpMethodAnnotation(Feature feature, Annotation currentAnnotation) {
         //Extracting method with which feature is exposed
         if (currentAnnotation.annotationType().getName().equals(GET.class.getName())) {
@@ -212,6 +219,13 @@ public class AnnotationUtil {
         return feature;
     }
 
+    /**
+     * Read Feature annotation and Identify Features
+     * @param feature
+     * @param currentMethod
+     * @return
+     * @throws Throwable
+     */
     private Feature processFeatureAnnotation(Feature feature, Method currentMethod) throws Throwable{
         Method[] featureAnnoMethods = featureAnnotationClazz.getMethods();
         Annotation featureAnno = currentMethod.getAnnotation(featureAnnotationClazz);
@@ -234,6 +248,12 @@ public class AnnotationUtil {
         return feature;
     }
 
+    /**
+     * Get value depicted by Path Annotation
+     * @param currentMethod
+     * @return
+     * @throws Throwable
+     */
     public String getPathAnnotationValue(Method currentMethod) throws Throwable{
         String uri = "";
         try {

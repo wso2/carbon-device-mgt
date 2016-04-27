@@ -72,10 +72,12 @@ public class APIPublisherUtil {
     }
 
     public static API getAPI(APIConfig config) throws APIManagementException {
+
         APIProvider provider = config.getProvider();
         String apiVersion = config.getVersion();
         APIIdentifier id = new APIIdentifier(replaceEmailDomain(config.getOwner()), config.getName(), apiVersion);
         API api = new API(id);
+
         api.setApiOwner(config.getOwner());
         String context = config.getContext();
         context = context.startsWith("/") ? context : ("/" + context);
@@ -84,12 +86,14 @@ public class APIPublisherUtil {
             //Create tenant aware context for API
             context = "/t/" + providerDomain + context;
         }
+
         // This is to support the new Pluggable version strategy
         // if the context does not contain any {version} segment, we use the default version strategy.
         context = checkAndSetVersionParam(context);
         api.setContextTemplate(context);
         context = updateContextWithVersion(config.getVersion(), context);
         api.setContext(context);
+
         api.setUrl(config.getEndpoint());
         api.addAvailableTiers(provider.getTiers());
         api.setEndpointSecured(true);
@@ -97,12 +101,15 @@ public class APIPublisherUtil {
         api.setTransports(config.getTransports());
         api.setContextTemplate(config.getContextTemplate());
         api.setUriTemplates(config.getUriTemplates());
-        Set<String> environements = new HashSet<>();
-        environements.add(API_PUBLISH_ENVIRONEMENT);
-        api.setEnvironments(environements);
+
+        Set<String> environments = new HashSet<>();
+        environments.add(API_PUBLISH_ENVIRONEMENT);
+        api.setEnvironments(environments);
+
         Set<Tier> tiers = new HashSet<Tier>();
         tiers.add(new Tier(APIConstants.UNLIMITED_TIER));
         api.addAvailableTiers(tiers);
+
         if (config.isSharedWithAllTenants()) {
             api.setSubscriptionAvailability(APIConstants.SUBSCRIPTION_TO_ALL_TENANTS);
             api.setVisibility(APIConstants.API_GLOBAL_VISIBILITY);

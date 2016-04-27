@@ -19,14 +19,15 @@
 function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
     context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
-		if (arguments.length < 3)
-			throw new Error("Handlebars Helper equal needs 2 parameters");
-		if (lvalue != rvalue) {
-			return options.inverse(this);
-		} else {
-			return options.fn(this);
-		}
-	});
+        if (arguments.length < 3) {
+            throw new Error("Handlebars Helper equal needs 2 parameters");
+        }
+        if (lvalue != rvalue) {
+            return options.inverse(this);
+        } else {
+            return options.fn(this);
+        }
+    });
     var groupName = request.getParameter("groupName");
     var groupId = request.getParameter("groupId");
     var deviceName = request.getParameter("deviceName");
@@ -38,7 +39,7 @@ function onRequest(context) {
     } else {
         title = "Device " + title;
     }
-	return {
+    return {
         "deviceAnalyticsViewUnitName": utility.getTenantedDeviceUnitName(deviceType, "analytics-view"),
         "deviceType": deviceType,
         "title": title,
@@ -46,5 +47,5 @@ function onRequest(context) {
         "groupId": groupId,
         "deviceName": deviceName,
         "deviceId": deviceId
-	};
+    };
 }

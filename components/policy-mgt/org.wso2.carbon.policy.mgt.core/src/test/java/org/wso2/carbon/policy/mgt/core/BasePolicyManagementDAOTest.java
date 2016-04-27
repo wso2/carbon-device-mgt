@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
@@ -76,6 +77,7 @@ public abstract class BasePolicyManagementDAOTest {
         DeviceManagementDAOFactory.init(dataSource);
         PolicyManagementDAOFactory.init(dataSource);
         OperationManagementDAOFactory.init(dataSource);
+        GroupManagementDAOFactory.init(dataSource);
     }
 
     public void initiatePrivilegedCaronContext() throws Exception {

@@ -19,11 +19,16 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+
 import java.util.List;
+import java.util.Map;
 
 public interface PolicyFilter {
 
     List<Policy> filterActivePolicies(List<Policy> policies);
+
+    List<Policy> filterDeviceGroupsPolicies(Map<Integer, DeviceGroup> groupMap, List<Policy> policies);
 
     List<Policy> filterRolesBasedPolicies(String roles[], List<Policy> policies);
 

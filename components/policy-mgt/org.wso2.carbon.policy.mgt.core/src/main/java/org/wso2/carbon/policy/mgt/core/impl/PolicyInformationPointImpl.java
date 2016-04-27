@@ -24,10 +24,14 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
@@ -62,41 +66,35 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     public PIPDevice getDeviceData(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         PIPDevice pipDevice = new PIPDevice();
         Device device;
-
         DeviceType deviceType = new DeviceType();
         deviceType.setName(deviceIdentifier.getType());
         DeviceManagementProviderService deviceManagementService = new DeviceManagementProviderServiceImpl();
+        GroupManagementProviderService groupManagementProviderService = new GroupManagementProviderServiceImpl();
 
         try {
             device = deviceManagementService.getDevice(deviceIdentifier);
-            Thread.currentThread();
 
             if (device != null) {
-             /*deviceManagementService.getDeviceType(deviceIdentifier.getType());*/
                 pipDevice.setDevice(device);
                 pipDevice.setRoles(getRoleOfDevice(device));
                 pipDevice.setDeviceType(deviceType);
                 pipDevice.setDeviceIdentifier(deviceIdentifier);
                 pipDevice.setUserId(device.getEnrolmentInfo().getOwner());
                 pipDevice.setOwnershipType(device.getEnrolmentInfo().getOwnership().toString());
+                pipDevice.setDeviceGroups(groupManagementProviderService.getGroups(pipDevice.getDeviceIdentifier()));
 
-                // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
-                // pipDevice.setLongitude();
-                // pipDevice.setAltitude();
-                // pipDevice.setTimestamp();
             } else {
-                // Remove this
-                for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-                    log.debug("StackTraceElement   : " + ste);
-                }
                 throw new PolicyManagementException("Device details cannot be null.");
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred when retrieving the data related to device from the database.";
             log.error(msg, e);
             throw new PolicyManagementException(msg, e);
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred when retrieving the data related to device groups from the database.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
         }
-
         return pipDevice;
     }
 
@@ -127,6 +125,9 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         }
         if (pipDevice.getUserId() != null && !pipDevice.getUserId().isEmpty()) {
             policies = policyFilter.filterUserBasedPolicies(pipDevice.getUserId(), policies);
+        }
+        if (pipDevice.getDeviceGroups() != null && !pipDevice.getDeviceGroups().isEmpty()) {
+
         }
 
         if (log.isDebugEnabled()) {

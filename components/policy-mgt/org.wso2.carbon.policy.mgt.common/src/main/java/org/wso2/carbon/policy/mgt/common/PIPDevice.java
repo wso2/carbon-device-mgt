@@ -21,9 +21,11 @@ package org.wso2.carbon.policy.mgt.common;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 
 //TODO :
@@ -38,6 +40,7 @@ public class PIPDevice {
     private String latitude;
     private String longitude;
     private Timestamp timestamp;
+    private List<DeviceGroup> deviceGroups;
 
     /*This will be used to record attributes to which would come from other PDPs*/
     Map<String, Object> attributes;
@@ -120,5 +123,13 @@ public class PIPDevice {
 
     public void setDeviceIdentifier(DeviceIdentifier deviceIdentifier) {
         this.deviceIdentifier = deviceIdentifier;
+    }
+
+    public List<DeviceGroup> getDeviceGroups() {
+        return deviceGroups;
+    }
+
+    public void setDeviceGroups(List<DeviceGroup> deviceGroups) {
+        this.deviceGroups = deviceGroups;
     }
 }

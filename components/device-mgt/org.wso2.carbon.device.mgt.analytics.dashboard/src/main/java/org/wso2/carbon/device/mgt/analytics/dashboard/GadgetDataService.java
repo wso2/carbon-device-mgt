@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard;
 
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+
 import java.util.Map;
 
 /**
@@ -26,7 +29,7 @@ import java.util.Map;
 public interface GadgetDataService {
 
     @SuppressWarnings("unused")
-    int getTotalDeviceCount(Map<String, Object> filters);
+    int getTotalDeviceCount();
 
     @SuppressWarnings("unused")
     int getActiveDeviceCount();
@@ -44,7 +47,10 @@ public interface GadgetDataService {
     int getUnmonitoredDeviceCount();
 
     @SuppressWarnings("unused")
-    Map<String, Integer> getNonCompliantDeviceCountsByFeatures();
+    PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest);
+
+    @SuppressWarnings("unused")
+    int getDeviceCount(Map<String, Object> filters);
 
     @SuppressWarnings("unused")
     Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters);

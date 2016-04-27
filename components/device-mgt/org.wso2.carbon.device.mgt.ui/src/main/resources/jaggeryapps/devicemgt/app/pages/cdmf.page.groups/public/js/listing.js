@@ -82,6 +82,19 @@ function toTitleCase(str) {
     });
 }
 
+(function () {
+    var permissionSet = {};
+
+    //This method is used to setup permission for device listing
+    $.setPermission = function (permission) {
+        permissionSet[permission] = true;
+    };
+
+    $.hasPermission = function (permission) {
+        return permissionSet[permission];
+    };
+})();
+
 function loadGroups() {
     var groupListing = $("#group-listing");
     var groupListingSrc = groupListing.attr("src");
@@ -108,10 +121,23 @@ function loadGroups() {
             $(".icon .text").res_text(0.2);
         };
 
-        invokerUtil.get("/devicemgt_admin/groups/user/" + currentUser + "?start=0&rowCount=1000",
-                        successCallback, function (message) {
-                    displayErrors(message.content);
-                });
+        var serviceURL;
+        if ($.hasPermission("LIST_ALL_GROUPS")) {
+            serviceURL = "/devicemgt_admin/groups?start=0&rowCount=1000";
+        } else if ($.hasPermission("LIST_GROUPS")) {
+            //Get authenticated users groups
+            serviceURL = "/devicemgt_admin/groups/user/" + currentUser + "?start=0&rowCount=1000";
+        } else {
+            $("#loading-content").remove();
+            $('#device-table').addClass('hidden');
+            $('#device-listing-status-msg').text('Permission denied.');
+            $("#device-listing-status").removeClass(' hidden');
+            return;
+        }
+
+        invokerUtil.get(serviceURL, successCallback, function (message) {
+            displayErrors(message.content);
+        });
 
     });
 }
@@ -129,6 +155,13 @@ function openCollapsedNav() {
  * DOM ready functions.
  */
 $(document).ready(function () {
+    var permissionList = $("#permission").data("permission");
+    for (var key in permissionList) {
+        if (permissionList.hasOwnProperty(key)) {
+            $.setPermission(key);
+        }
+    }
+
     loadGroups();
     //$('#device-grid').datatables_extended();
 
@@ -138,30 +171,36 @@ $(document).ready(function () {
     });
 
     /* for device list sorting drop down */
-    $(".ctrl-filter-type-switcher").popover({
-                                                html: true,
-                                                content: function () {
-                                                    return $("#content-filter-types").html();
-                                                }
-                                            });
+    $(".ctrl-filter-type-switcher").popover(
+            {
+                html: true,
+                content: function () {
+                    return $("#content-filter-types").html();
+                }
+            }
+    );
 
     /* for data tables*/
     $('[data-toggle="tooltip"]').tooltip();
 
     $("[data-toggle=popover]").popover();
 
-    $(".ctrl-filter-type-switcher").popover({
-                                                html: true,
-                                                content: function () {
-                                                    return $('#content-filter-types').html();
-                                                }
-                                            });
+    $(".ctrl-filter-type-switcher").popover(
+            {
+                html: true,
+                content: function () {
+                    return $('#content-filter-types').html();
+                }
+            }
+    );
 
-    $('#nav').affix({
-                        offset: {
-                            top: $('header').height()
-                        }
-                    });
+    $('#nav').affix(
+            {
+                offset: {
+                    top: $('header').height()
+                }
+            }
+    );
 
 });
 
@@ -212,12 +251,14 @@ function attachEvents() {
         $('#user-names').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
         showPopup();
         $("a#share-group-next-link").hide();
-        var userRequest = $.ajax({
-                                     url: "api/user/all",
-                                     method: "GET",
-                                     contentType: "application/json",
-                                     accept: "application/json"
-                                 });
+        var userRequest = $.ajax(
+                {
+                    url: "api/user/all",
+                    method: "GET",
+                    contentType: "application/json",
+                    accept: "application/json"
+                }
+        );
         userRequest.done(function (data, txtStatus, jqxhr) {
             var users = JSON.parse(data);
             var status = jqxhr.status;
@@ -271,6 +312,7 @@ function attachEvents() {
 
         $("a#remove-group-yes-link").click(function () {
             var successCallback = function (data) {
+                data = JSON.parse(data);
                 if (data.status == 200) {
                     $(modalPopupContent).html($('#remove-group-200-content').html());
                     setTimeout(function () {
@@ -282,7 +324,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.delete("/devicemgt_admin/groups/" + groupOwner + "/" + groupName,
+            invokerUtil.delete("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName,
                                successCallback, function (message) {
                         displayErrors(message.content);
                     });
@@ -315,18 +357,18 @@ function attachEvents() {
             var group = {"name": newGroupName, "description": newGroupDescription, "owner": groupOwner};
 
             var successCallback = function (data) {
+                data = JSON.parse(data);
                 if (data.status == 200) {
-                    $(modalPopupContent).html($('#edit-group-200-content').html());
-                    $("h4[data-groupid='" + groupId + "']").html(newGroupName);
                     setTimeout(function () {
                         hidePopup();
+                        location.reload(false);
                     }, 2000);
                 } else {
                     displayErrors(status);
                 }
             };
 
-            invokerUtil.put("/devicemgt_admin/groups/" + groupOwner + "/" + groupName,
+            invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName, group,
                             successCallback, function (message) {
                         displayErrors(message.content);
                     });
@@ -343,6 +385,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
     $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
     $("a#share-group-yes-link").hide();
     var successCallback = function (data) {
+        data = JSON.parse(data);
         if (data.status == 200) {
             if (data.data.length > 0) {
                 generateRoleMap(groupName, groupOwner, selectedUser, data.data);
@@ -354,7 +397,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles",
+    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles",
                     successCallback, function (message) {
                 displayErrors(message.content);
             });
@@ -366,6 +409,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
 
 function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
     var successCallback = function (data) {
+        data = JSON.parse(data);
         if (data.status == 200) {
             var userRoles = data.data;
             var roleMap = [];
@@ -407,7 +451,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles?userName=" + selectedUser,
                     successCallback, function (message) {
                 displayErrors(message.content);
             });
@@ -419,6 +463,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
 
 function updateGroupShare(groupName, groupOwner, selectedUser, role) {
     var successCallback = function (data) {
+        data = JSON.parse(data);
         var status = data.status;
         if (status == 200) {
             $(modalPopupContent).html($('#share-group-200-content').html());
@@ -431,7 +476,7 @@ function updateGroupShare(groupName, groupOwner, selectedUser, role) {
         }
     };
 
-    invokerUtil.put("/devicemgt_admin/groups/" + groupOwner + "/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles?userName=" + selectedUser,
                     role, successCallback, function (message) {
                 displayErrors(message.content);
             });

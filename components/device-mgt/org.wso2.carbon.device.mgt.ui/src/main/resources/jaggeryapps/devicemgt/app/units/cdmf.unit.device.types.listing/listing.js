@@ -42,21 +42,23 @@ function onRequest(context) {
                     deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
                 }
             }
-            if (deviceCategory == 'virtual'){
+            if (deviceCategory == 'virtual') {
                 virtualDeviceTypesList.push({
                     "hasCustTemplate": false,
                     "deviceTypeLabel": deviceTypeLabel,
                     "deviceTypeName": deviceTypes[i].name,
                     "deviceCategory": deviceCategory,
-                    "deviceTypeId": deviceTypes[i].id
+                                                "deviceTypeId": deviceTypes[i].id,
+                                                "thumb": utility.getDeviceThumb(deviceTypes[i].name)
                 });
-            }else{
+            } else {
                 deviceTypesList.push({
                     "hasCustTemplate": false,
                     "deviceTypeLabel": deviceTypeLabel,
                     "deviceTypeName": deviceTypes[i].name,
                     "deviceCategory": deviceCategory,
-                    "deviceTypeId": deviceTypes[i].id
+                                         "deviceTypeId": deviceTypes[i].id,
+                                         "thumb": utility.getDeviceThumb(deviceTypes[i].name)
                 });
             }
         }

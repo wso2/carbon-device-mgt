@@ -70,7 +70,6 @@ $(document).ready(function () {
         addDeviceSelectedClass(this);
     });
 
-    var i;
     var permissionList = $("#permission").data("permission");
     for (var key in permissionList) {
         if (permissionList.hasOwnProperty(key)) {
@@ -97,7 +96,7 @@ $(document).ready(function () {
             console.log(message);
         }, function(message){
                 console.log(message.content);
-            });
+        });
     });
 });
 
@@ -163,10 +162,8 @@ function toTitleCase(str) {
 
 function loadDevices(searchType, searchParam){
     var deviceListing = $("#device-listing");
-    var deviceListingSrc = deviceListing.attr("src");
     var imageResource = deviceListing.data("image-resource");
     var currentUser = deviceListing.data("currentUser");
-    var frontEndPagination = false;
 
     var serviceURL;
     if ($.hasPermission("LIST_DEVICES")) {
@@ -206,6 +203,26 @@ function loadDevices(searchType, searchParam){
         return type;
     }
 
+    function getDeviceTypeCategory(type) {
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++) {
+            if (deviceTypes[i].type == type) {
+                return deviceTypes[i].category;
+            }
+        }
+        return type;
+    }
+
+    function getDeviceTypeThumb(type) {
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++) {
+            if (deviceTypes[i].type == type) {
+                return deviceTypes[i].thumb;
+            }
+        }
+        return type;
+    }
+
     $('#device-grid').datatables_extended ({
         serverSide: true,
         processing: false,
@@ -226,7 +243,7 @@ function loadDevices(searchType, searchParam){
         },
         columnDefs: [
             { targets: 0, data: 'name', className: 'remove-padding icon-only content-fill' , render: function ( data, type, row, meta ) {
-                return '<div class="thumbnail icon"><img class="square-element text fw " src="' + imageResource + row.type + '.type-view/images/thumb.png"/></div>';
+                return '<div class="thumbnail icon"><img class="square-element text fw " src="' + getDeviceTypeThumb(row.type) + '"/></div>';
             }},
             { targets: 1, data: 'name', className: 'fade-edge' , render: function ( name, type, row, meta ) {
                 var model = getPropertyValue(row.properties, 'DEVICE_MODEL');
@@ -238,7 +255,8 @@ function loadDevices(searchType, searchParam){
                 return html;
             }},
             { targets: 2, data: 'enrolmentInfo.owner', className: 'fade-edge remove-padding-top'},
-            { targets: 3, data: 'enrolmentInfo.status', className: 'fade-edge remove-padding-top' ,
+            {
+                targets: 3, data: 'enrolmentInfo.status', className: 'fade-edge remove-padding-top',
                 render: function ( status, type, row, meta ) {
                 var html;
                 switch (status) {
@@ -257,11 +275,22 @@ function loadDevices(searchType, searchParam){
                 }
                 return html;
             }},
-            { targets: 4, data: 'type' , className: 'fade-edge remove-padding-top'  ,
+            {
+                targets: 4, data: 'type', className: 'fade-edge remove-padding-top',
                 render: function ( status, type, row, meta ) {
                     return getDeviceTypeLabel(row.type);
-                }},
-            { targets: 5, data: 'enrolmentInfo.ownership' , className: 'fade-edge remove-padding-top' },
+                }
+            },
+            {
+                targets: 5, data: 'enrolmentInfo.ownership', className: 'fade-edge remove-padding-top',
+                render: function (status, type, row, meta) {
+                    if (getDeviceTypeCategory(row.type) == 'mobile') {
+                        return row.enrolmentInfo.ownership;
+                    } else {
+                        return null;
+                    }
+                }
+            },
             { targets: 6, data: 'enrolmentInfo.status' , className: 'text-right content-fill text-left-on-grid-view no-wrap' ,
                 render: function ( status, type, row, meta ) {
                 var deviceType = row.type;
@@ -271,6 +300,15 @@ function loadDevices(searchType, searchParam){
                     html = '<a href="device/' + deviceType + '?id=' + deviceIdentifier + '" data-click-event="remove-form"' +
                     ' class="btn padding-reduce-on-grid-view"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
                         '<i class="fw fw-view fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">View</span></a>';
+                    html += '<a href="analytics?deviceId=' + deviceIdentifier + '&deviceType=' + deviceType + '&deviceName=' + row.name + '" ' +
+                            'data-click-event="remove-form" class="btn padding-reduce-on-grid-view"><span class="fw-stack">' +
+                            '<i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
+                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
+                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-device-link" ' +
+                            'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType + '" data-devicename="' + row.name + '">' +
+                            '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                            '<i class="fw fw-edit fw-stack-1x"></i></span>' +
+                            '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                 }
                 return html;
             }}
@@ -285,6 +323,7 @@ function loadDevices(searchType, searchParam){
             var status = data.enrolmentInfo.status;
             var ownership = data.enrolmentInfo.ownership;
             var deviceType = data.type;
+            var category = getDeviceTypeCategory(deviceType);
             $.each($('td', row), function (colIndex) {
                 switch(colIndex) {
                     case 1:
@@ -304,18 +343,21 @@ function loadDevices(searchType, searchParam){
                     case 4:
                         $(this).attr('data-grid-label', "Type");
                         $(this).attr('data-search', deviceType);
-                        $(this).attr('data-display', deviceType);
+                        $(this).attr('data-display', getDeviceTypeLabel(deviceType));
                         break;
                     case 5:
-                        $(this).attr('data-grid-label', "Ownership");
-                        $(this).attr('data-search', ownership);
-                        $(this).attr('data-display', ownership);
+                        if (category == 'mobile') {
+                            $(this).attr('data-grid-label', "Ownership");
+                            $(this).attr('data-search', ownership);
+                            $(this).attr('data-display', ownership);
+                        }
                         break;
                 }
             });
         },
         "fnDrawCallback": function( oSettings ) {
             $(".icon .text").res_text(0.2);
+            attachDeviceEvents();
         }
     });
     $(deviceCheckbox).click(function () {
@@ -338,63 +380,22 @@ function openCollapsedNav() {
     });
 }
 
-function loadGroupedDevices(groupId) {
-    var serviceURL = "api/group/id/" + groupId + "/device/all";
-    var deviceListing = $("#device-listing");
-    var deviceListingSrc = deviceListing.attr("src");
-    var imageResource = deviceListing.data("image-resource");
-    var currentUser = deviceListing.data("currentUser");
-    $.template("device-listing", deviceListingSrc, function (template) {
-
-        var loadGroupRequest = $.ajax({
-                                          url: serviceURL,
-                                          method: "GET",
-                                          contentType: "application/json",
-                                          accept: "application/json"
-                                      });
-
-        loadGroupRequest.done(function (data) {
-            data = JSON.parse(data);
-            var viewModel = {};
-            viewModel.devices = data.data;
-            viewModel.imageLocation = imageResource;
-            viewModel.isGroupView = "true";
-            if (viewModel.devices.length > 0) {
-                $('#device-grid').removeClass('hidden');
-                var content = template(viewModel);
-                $("#ast-container").html(content);
-                /*
-                 * On device checkbox select add parent selected style class
-                 */
-                $(deviceCheckbox).click(function () {
-                    addDeviceSelectedClass(this);
-                });
-                attachDeviceEvents();
-            } else {
-                $('#device-table').addClass('hidden');
-                $('#device-listing-status-msg').text('No device is available to be displayed.');
-            }
-            $("#loading-content").remove();
-            $('#device-grid').datatables_extended();
-            $(".icon .text").res_text(0.2);
-        });
-    });
-
-}
-
 function initPage() {
-    var groupId = getParameterByName('groupId');
-    invokerUtil.get(
-        "/devicemgt_admin/devices/count",
+    var deviceListing = $("#device-listing");
+    var currentUser = deviceListing.data("currentUser");
+    var serviceURL;
+    if ($.hasPermission("LIST_DEVICES")) {
+        serviceURL = "/devicemgt_admin/devices/count";
+    } else if ($.hasPermission("LIST_OWN_DEVICES")) {
+        //Get authenticated users devices
+        serviceURL = "/devicemgt_admin/devices/user/"+currentUser+"/count";
+    }
+    invokerUtil.get(serviceURL,
         function (data) {
             if (data) {
                 data = JSON.parse(data);
                 if (Number(data) > 0) {
-                   if (groupId) {
-                        loadGroupedDevices(groupId);
-                   } else {
-                        loadDevices();
-                   }
+                    loadDevices();
                 } else {
                     $("#loading-content").remove();
                     $("#device-listing-status-msg").text("No enrolled devices found.");
@@ -411,19 +412,19 @@ function initPage() {
  * DOM ready functions.
  */
 $(document).ready(function () {
-
-    initPage();
-
     /* Adding selected class for selected devices */
     $(deviceCheckbox).each(function () {
         addDeviceSelectedClass(this);
     });
 
-    var i;
     var permissionList = $("#permission").data("permission");
-    for (i = 0; i < permissionList.length; i++) {
-        $.setPermission(permissionList[i]);
+    for (var key in permissionList) {
+        if (permissionList.hasOwnProperty(key)){
+            $.setPermission(key);
+        }
     }
+
+    initPage();
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
@@ -591,21 +592,19 @@ function attachDeviceEvents() {
     $("a.remove-device-link").click(function () {
         var deviceId = $(this).data("deviceid");
         var deviceType = $(this).data("devicetype");
-        var removeDeviceAPI = "/devicemgt/api/devices/" + deviceType + "/" + deviceId + "/remove";
+        var serviceURL = "/devicemgt_admin/devices/type/" + deviceType + "/id/" + deviceId;
 
         $(modalPopupContent).html($('#remove-device-modal-content').html());
         showPopup();
 
         $("a#remove-device-yes-link").click(function () {
-            var postOperationRequest = $.ajax({
-                                                  url: removeDeviceAPI,
-                                                  method: "post"
-                                              });
-            postOperationRequest.done(function (data) {
+            invokerUtil.delete(serviceURL, function (message) {
                 $(modalPopupContent).html($('#remove-device-200-content').html());
-                window.location.reload(false);
-            });
-            postOperationRequest.fail(function (jqXHR, textStatus) {
+                setTimeout(function () {
+                    hidePopup();
+                    location.reload(false);
+                }, 2000);
+            }, function (message) {
                 displayDeviceErrors(jqXHR);
             });
         });
@@ -613,7 +612,6 @@ function attachDeviceEvents() {
         $("a#remove-device-cancel-link").click(function () {
             hidePopup();
         });
-
     });
 
     /**
@@ -625,7 +623,7 @@ function attachDeviceEvents() {
         var deviceId = $(this).data("deviceid");
         var deviceType = $(this).data("devicetype");
         var deviceName = $(this).data("devicename");
-        var editDeviceAPI = "/devicemgt/api/devices/" + deviceType + "/" + deviceId + "/update?name=";
+        var serviceURL = "/devicemgt_admin/devices/type/" + deviceType + "/id/" + deviceId;
 
         $(modalPopupContent).html($('#edit-device-modal-content').html());
         $('#edit-device-name').val(deviceName);
@@ -633,18 +631,13 @@ function attachDeviceEvents() {
 
         $("a#edit-device-yes-link").click(function () {
             var newDeviceName = $('#edit-device-name').val();
-            var postOperationRequest = $.ajax({
-                                                  url: editDeviceAPI + newDeviceName,
-                                                  method: "post"
-                                              });
-            postOperationRequest.done(function (data) {
+            invokerUtil.put(serviceURL, {"name": newDeviceName}, function (message) {
                 $(modalPopupContent).html($('#edit-device-200-content').html());
-                $("h4[data-deviceid='" + deviceId + "']").html(newDeviceName);
                 setTimeout(function () {
                     hidePopup();
+                    location.reload(false);
                 }, 2000);
-            });
-            postOperationRequest.fail(function (jqXHR, textStatus) {
+            }, function (message) {
                 displayDeviceErrors(jqXHR);
             });
         });

@@ -31,7 +31,7 @@ public class PolicyConfiguration {
     private int minRetriesToMarkUnreachable;
     private int minRetriesToMarkInactive;
 
-    @XmlElement(name = "monitoringClass", required = true)
+    @XmlElement(name = "MonitoringClass", required = true)
     public String getMonitoringClass() {
         return monitoringClass;
     }
@@ -40,7 +40,7 @@ public class PolicyConfiguration {
         this.monitoringClass = monitoringClass;
     }
 
-    @XmlElement(name = "maxRetries", required = true)
+    @XmlElement(name = "MaxRetries", required = true)
     public int getMaxRetries() {
         return maxRetries;
     }
@@ -49,7 +49,7 @@ public class PolicyConfiguration {
         this.maxRetries = maxRetries;
     }
 
-    @XmlElement(name = "minRetriesToMarkUnreachable", required = true)
+    @XmlElement(name = "MinRetriesToMarkUnreachable", required = true)
     public int getMinRetriesToMarkUnreachable() {
         return minRetriesToMarkUnreachable;
     }
@@ -58,7 +58,7 @@ public class PolicyConfiguration {
         this.minRetriesToMarkUnreachable = minRetriesToMarkUnreachable;
     }
 
-    @XmlElement(name = "monitoringEnable", required = true)
+    @XmlElement(name = "MonitoringEnable", required = true)
     public boolean getMonitoringEnable() {
         return monitoringEnable;
     }
@@ -67,7 +67,7 @@ public class PolicyConfiguration {
         this.monitoringEnable = monitoringEnable;
     }
 
-    @XmlElement(name = "minRetriesToMarkInactive", required = true)
+    @XmlElement(name = "MinRetriesToMarkInactive", required = true)
     public int getMinRetriesToMarkInactive() {
         return minRetriesToMarkInactive;
     }
@@ -76,7 +76,7 @@ public class PolicyConfiguration {
         this.minRetriesToMarkInactive = minRetriesToMarkInactive;
     }
 
-    @XmlElement(name = "monitoringFrequency", required = true)
+    @XmlElement(name = "MonitoringFrequency", required = true)
     public int getMonitoringFrequency() {
         return monitoringFrequency;
     }
@@ -84,4 +84,5 @@ public class PolicyConfiguration {
     public void setMonitoringFrequency(int monitoringFrequency) {
         this.monitoringFrequency = monitoringFrequency;
     }
+
 }

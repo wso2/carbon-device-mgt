@@ -87,10 +87,8 @@ public class PolicyManagementServiceComponent {
             componentContext.getBundleContext().registerService(
                     PolicyManagerService.class.getName(), new PolicyManagerServiceImpl(), null);
 
-
-
-            PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                    getDeviceManagementConfigRepository().getPolicyConfiguration();
+            PolicyConfiguration policyConfiguration =
+                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
             if(policyConfiguration.getMonitoringEnable()) {
                 TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
                 taskScheduleService.startTask(PolicyManagerUtil.getMonitoringFequency());
@@ -104,8 +102,8 @@ public class PolicyManagementServiceComponent {
     @SuppressWarnings("unused")
     protected void deactivate(ComponentContext componentContext) {
         try {
-            PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                    getDeviceManagementConfigRepository().getPolicyConfiguration();
+            PolicyConfiguration policyConfiguration =
+                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
             if (policyConfiguration.getMonitoringEnable()) {
                 TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
                 taskScheduleService.stopTask();

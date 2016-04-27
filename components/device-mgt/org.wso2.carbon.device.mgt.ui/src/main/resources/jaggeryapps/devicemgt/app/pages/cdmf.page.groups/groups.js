@@ -21,14 +21,15 @@ function onRequest(context) {
     var userModule = require("/app/modules/user.js").userModule;
     var constants = require("/app/modules/constants.js");
     var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page_data = {};
+    var page = {};
     if (currentUser) {
-        page_data.permissions = userModule.getUIPermissions();
-        page_data.currentUser = currentUser;
+        page.permissions = userModule.getUIPermissions();
+        page.permissions.list = stringify(page.permissions);
+        page.currentUser = currentUser;
         var groupCount = groupModule.getGroupCount();
         if (groupCount > 0) {
-            page_data.groupCount = groupCount;
+            page.groupCount = groupCount;
         }
     }
-    return page_data;
+    return page;
 }

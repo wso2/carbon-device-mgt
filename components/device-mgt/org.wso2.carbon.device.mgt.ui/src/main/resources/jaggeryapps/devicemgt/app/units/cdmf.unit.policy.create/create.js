@@ -17,19 +17,12 @@
  */
 
 function onRequest(context) {
-    var log = new Log("create.js");
     var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
 
     var utility = require("/app/modules/utility.js").utility;
     var userModule = require("/app/modules/user.js")["userModule"];
 
-    var JFile = Packages.java.io.File;
-    var sep = JFile.separator;
-
-    var systemProcess = require('process');
-    var parent = 'file:///' + (systemProcess.getProperty('jaggery.home') ||
-                               systemProcess.getProperty('carbon.home')).replace(/[\\]/g, '/').replace(/^[\/]/g, '');
     var types = {};
     types["types"] = [];
     var typesListResponse = userModule.getPlatforms();
@@ -41,9 +34,7 @@ function onRequest(context) {
             if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
                 deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
             }
-            var policyWizard = new File(parent + sep + "repository" + sep + "deployment" + sep + "server" + sep +
-                                        "jaggeryapps" + sep + "devicemgt" + sep + "app" + sep + "units" + sep +
-                                        "cdmf.unit.device.type." + deviceType + ".policy-wizard");
+            var policyWizard = new File("/app/units/" + utility.getTenantedDeviceUnitName(deviceType, "policy-wizard"));
             if(policyWizard.isExists()){
                 typesListResponse["content"][type]["icon"] = utility.getDeviceThumb(deviceType);
                 typesListResponse["content"][type]["label"] = deviceTypeLabel;

@@ -22,7 +22,7 @@ public final class PolicyManagementConstants {
 
     public static final String DEVICE_CONFIG_XML_NAME = "cdm-config.xml";
     public static final String ANY = "ANY";
-    // public static final String POLICY_BUNDLE = "POLICY_BUNDLE";
+    public static final String POLICY_BUNDLE = "POLICY_BUNDLE";
 
     public static final String TENANT_ID = "TENANT_ID";
 

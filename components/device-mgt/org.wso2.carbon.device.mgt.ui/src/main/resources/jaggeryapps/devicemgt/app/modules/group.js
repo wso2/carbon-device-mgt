@@ -38,12 +38,14 @@ var groupModule = {};
             endPoint = groupServiceEndpoint + "/count";
         } else if (permissions.LIST_GROUPS) {
             endPoint = groupServiceEndpoint + "/user/" + user.username + "/count";
+        } else {
+            log.error("Access denied for user: " + carbonUser.username);
+            return -1;
         }
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;
-                }
-                ,
+                },
                 function (responsePayload) {
                     log.error(responsePayload);
                     return -1;
@@ -56,8 +58,7 @@ var groupModule = {};
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;
-                }
-                ,
+                },
                 function (responsePayload) {
                     log.error(responsePayload);
                     return -1;

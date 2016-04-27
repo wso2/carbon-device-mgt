@@ -18,26 +18,43 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
+import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.user.api.TenantManager;
-import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.servlet.ServletContext;
 import java.util.*;
 
 public class APIPublisherUtil {
 
+    private static final Log log = LogFactory.getLog(APIPublisherUtil.class);
+
     private static final String DEFAULT_API_VERSION = "1.0.0";
-    public static final String API_VERSION_PARAM="{version}";
+    public static final String API_VERSION_PARAM = "{version}";
     public static final String API_PUBLISH_ENVIRONEMENT = "Production and Sandbox";
+
+    private static final String API_CONFIG_DEFAULT_VERSION = "1.0.0";
+
+    private static final String PARAM_MANAGED_API_NAME = "managed-api-name";
+    private static final String PARAM_MANAGED_API_VERSION = "managed-api-version";
+    private static final String PARAM_MANAGED_API_CONTEXT = "managed-api-context";
+    private static final String PARAM_MANAGED_API_ENDPOINT = "managed-api-endpoint";
+    private static final String PARAM_MANAGED_API_OWNER = "managed-api-owner";
+    private static final String PARAM_MANAGED_API_TRANSPORTS = "managed-api-transports";
+    private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
+    private static final String PARAM_MANAGED_API_APPLICATION = "managed-api-application";
+    private static final String PARAM_SHARED_WITH_ALL_TENANTS = "isSharedWithAllTenants";
+    private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
 
     enum HTTPMethod {
         GET, POST, DELETE, PUT, OPTIONS
@@ -95,7 +112,9 @@ public class APIPublisherUtil {
         }
         api.setResponseCache(APIConstants.DISABLED);
 
-        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() + "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
+        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() +
+                "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
+
         api.setEndpointConfig(endpointConfig);
 
         if ("".equals(id.getVersion()) || (DEFAULT_API_VERSION.equals(id.getVersion()))) {
@@ -163,13 +182,15 @@ public class APIPublisherUtil {
     }
 
     /**
-     *  When an input is having '@',replace it with '-AT-' [This is required to persist API data in registry,as registry paths don't allow '@' sign.]
+     * When an input is having '@',replace it with '-AT-'
+     * [This is required to persist API data in registry,as registry paths don't allow '@' sign.]
+     *
      * @param input inputString
      * @return String modifiedString
      */
-    private static String replaceEmailDomain(String input){
-        if(input!=null&& input.contains(APIConstants.EMAIL_DOMAIN_SEPARATOR) ){
-            input=input.replace(APIConstants.EMAIL_DOMAIN_SEPARATOR,APIConstants.EMAIL_DOMAIN_SEPARATOR_REPLACEMENT);
+    private static String replaceEmailDomain(String input) {
+        if (input != null && input.contains(APIConstants.EMAIL_DOMAIN_SEPARATOR)) {
+            input = input.replace(APIConstants.EMAIL_DOMAIN_SEPARATOR, APIConstants.EMAIL_DOMAIN_SEPARATOR_REPLACEMENT);
         }
         return input;
     }
@@ -184,13 +205,129 @@ public class APIPublisherUtil {
     private static String checkAndSetVersionParam(String context) {
         // This is to support the new Pluggable version strategy
         // if the context does not contain any {version} segment, we use the default version strategy.
-        if(!context.contains(API_VERSION_PARAM)){
-            if(!context.endsWith("/")){
+        if (!context.contains(API_VERSION_PARAM)) {
+            if (!context.endsWith("/")) {
                 context = context + "/";
             }
-            context = context +API_VERSION_PARAM;
+            context = context + API_VERSION_PARAM;
         }
         return context;
+    }
+
+    /**
+     * Build the API Configuration to be passed to APIM, from a given list of URL templates
+     *
+     * @param servletContext
+     * @return
+     */
+    public static APIConfig buildApiConfig(ServletContext servletContext, APIResourceConfiguration apidef) {
+        APIConfig apiConfig = new APIConfig();
+
+        String name = apidef.getName();
+        if (name == null || name.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("API Name not set in @API Annotation");
+            }
+            name = servletContext.getServletContextName();
+        }
+        apiConfig.setName(name);
+
+        String version = apidef.getVersion();
+        if (version == null || version.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'API Version not set in @API Annotation'");
+            }
+            version = API_CONFIG_DEFAULT_VERSION;
+        }
+        apiConfig.setVersion(version);
+
+
+        String context = apidef.getContext();
+        if (context == null || context.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'API Context not set in @API Annotation'");
+            }
+            context = servletContext.getContextPath();
+        }
+        apiConfig.setContext(context);
+
+        String[] tags = apidef.getTags();
+        if (tags == null || tags.length == 0) {
+            if (log.isDebugEnabled()) {
+                log.debug("'API tag not set in @API Annotation'");
+            }
+        } else {
+            apiConfig.setTags(tags);
+        }
+
+        String tenantDomain = servletContext.getInitParameter(PARAM_PROVIDER_TENANT_DOMAIN);
+        tenantDomain = (tenantDomain != null && !tenantDomain.isEmpty()) ? tenantDomain :
+                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+        apiConfig.setTenantDomain(tenantDomain);
+        String contextTemplate = context + "/" + APIConstants.VERSION_PLACEHOLDER;
+        if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            contextTemplate = context + "/t/" + tenantDomain + "/" + APIConstants.VERSION_PLACEHOLDER;
+        }
+        apiConfig.setContextTemplate(contextTemplate);
+
+        String endpoint = servletContext.getInitParameter(PARAM_MANAGED_API_ENDPOINT);
+        if (endpoint == null || endpoint.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-endpoint' attribute is not configured");
+            }
+            String endpointContext = servletContext.getContextPath();
+            endpoint = APIPublisherUtil.getApiEndpointUrl(endpointContext);
+        }
+        apiConfig.setEndpoint(endpoint);
+
+        String owner = servletContext.getInitParameter(PARAM_MANAGED_API_OWNER);
+        if (owner == null || owner.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-owner' attribute is not configured");
+            }
+        }
+        apiConfig.setOwner(owner);
+
+        String isSecuredParam = servletContext.getInitParameter(PARAM_MANAGED_API_IS_SECURED);
+        boolean isSecured;
+        if (isSecuredParam == null || isSecuredParam.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-isSecured' attribute is not configured. Therefore, using the default, " +
+                        "which is 'true'");
+            }
+            isSecured = false;
+        } else {
+            isSecured = Boolean.parseBoolean(isSecuredParam);
+        }
+        apiConfig.setSecured(isSecured);
+
+        String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);
+        if (transports == null || transports.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-transports' attribute is not configured. Therefore using the default, " +
+                        "which is 'https'");
+            }
+            transports = "https";
+        }
+        apiConfig.setTransports(transports);
+
+        String sharingValueParam = servletContext.getInitParameter(PARAM_SHARED_WITH_ALL_TENANTS);
+        boolean isSharedWithAllTenants = (sharingValueParam == null || (!sharingValueParam.isEmpty())
+                && Boolean.parseBoolean(sharingValueParam));
+        apiConfig.setSharedWithAllTenants(isSharedWithAllTenants);
+
+        Set<URITemplate> uriTemplates = new LinkedHashSet<URITemplate>();
+        for (APIResource apiResource : apidef.getResources()) {
+            URITemplate template = new URITemplate();
+            template.setAuthType(apiResource.getAuthType());
+            template.setHTTPVerb(apiResource.getHttpVerb());
+            template.setResourceURI(apiResource.getUri());
+            template.setUriTemplate(apiResource.getUriTemplate());
+            uriTemplates.add(template);
+        }
+        apiConfig.setUriTemplates(uriTemplates);
+
+        return apiConfig;
     }
 
 }

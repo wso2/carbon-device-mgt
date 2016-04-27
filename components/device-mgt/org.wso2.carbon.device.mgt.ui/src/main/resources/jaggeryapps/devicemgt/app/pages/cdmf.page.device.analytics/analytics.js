@@ -17,19 +17,19 @@
  */
 
 function onRequest(context) {
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page = {};
-    if (currentUser) {
-        page.permissions = userModule.getUIPermissions();
-        page.permissions.list = stringify(page.permissions);
-        page.currentUser = currentUser;
-        var groupCount = groupModule.getGroupCount();
-        if (groupCount > 0) {
-            page.groupCount = groupCount;
-        }
-    }
-    return page;
+	context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
+		if (arguments.length < 3)
+			throw new Error("Handlebars Helper equal needs 2 parameters");
+		if (lvalue != rvalue) {
+			return options.inverse(this);
+		} else {
+			return options.fn(this);
+		}
+	});
+
+	var deviceType = context.uriParams.deviceType;
+	return {
+		"deviceAnalyticsViewUnitName": "cdmf.unit.device.type." + deviceType + ".analytics-view",
+		"deviceType": deviceType
+	};
 }

@@ -16,20 +16,48 @@
  * under the License.
  */
 
-function onRequest(context) {
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var userModule = require("/app/modules/user.js").userModule;
-    var constants = require("/app/modules/constants.js");
-    var currentUser = session.get(constants.USER_SESSION_KEY);
-    var page = {};
-    if (currentUser) {
-        page.permissions = userModule.getUIPermissions();
-        page.permissions.list = stringify(page.permissions);
-        page.currentUser = currentUser;
-        var groupCount = groupModule.getGroupCount();
-        if (groupCount > 0) {
-            page.groupCount = groupCount;
-        }
-    }
-    return page;
+#rangeSliderWrapper {
+    margin-top: 25px;
+}
+
+#chart {
+    display: inline-block;
+}
+
+#legend {
+    display: inline-block;
+    position: relative;
+    left: 8px;
+}
+
+#legend_container {
+    position: absolute;
+    right: 0;
+    bottom: 26px;
+    width: 0;
+}
+
+#chart_container {
+    float: left;
+    position: relative;
+}
+
+.ast-container {
+    padding-bottom: 30px;
+}
+
+.container {
+    width: auto;
+}
+
+.shrink {
+    margin-right: 20px;
+    margin-left: 20px;
+}
+.date-range{
+    border: 1px solid #ccc;
+}
+
+#dateRangePickerContainer button.active{
+    background-color: #e6e6e6 !important;
 }

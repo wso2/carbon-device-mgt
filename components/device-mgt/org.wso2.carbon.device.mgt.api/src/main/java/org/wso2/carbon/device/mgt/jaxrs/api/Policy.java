@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.util.MDMUtil;
+import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
@@ -62,7 +62,7 @@ public class Policy {
         policy.setPolicyName(policyWrapper.getPolicyName());
         policy.setProfileId(policyWrapper.getProfileId());
 	    policy.setDescription(policyWrapper.getDescription());
-        policy.setProfile(MDMUtil.convertProfile(policyWrapper.getProfile()));
+        policy.setProfile(DeviceMgtUtil.convertProfile(policyWrapper.getProfile()));
         policy.setOwnershipType(policyWrapper.getOwnershipType());
         policy.setRoles(policyWrapper.getRoles());
         policy.setUsers(policyWrapper.getUsers());
@@ -82,7 +82,7 @@ public class Policy {
         policy.setPolicyName(policyWrapper.getPolicyName());
         policy.setProfileId(policyWrapper.getProfileId());
 	    policy.setDescription(policyWrapper.getDescription());
-        policy.setProfile(MDMUtil.convertProfile(policyWrapper.getProfile()));
+        policy.setProfile(DeviceMgtUtil.convertProfile(policyWrapper.getProfile()));
         policy.setOwnershipType(policyWrapper.getOwnershipType());
         policy.setRoles(policyWrapper.getRoles());
         policy.setUsers(policyWrapper.getUsers());
@@ -181,7 +181,7 @@ public class Policy {
         policy.setId(policyId);
         policy.setProfileId(policyWrapper.getProfileId());
         policy.setDescription(policyWrapper.getDescription());
-        policy.setProfile(MDMUtil.convertProfile(policyWrapper.getProfile()));
+        policy.setProfile(DeviceMgtUtil.convertProfile(policyWrapper.getProfile()));
         policy.setOwnershipType(policyWrapper.getOwnershipType());
         policy.setRoles(policyWrapper.getRoles());
         policy.setUsers(policyWrapper.getUsers());

@@ -32,16 +32,13 @@ import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
@@ -56,9 +53,6 @@ import java.util.List;
  */
 public class ApplicationManagerProviderServiceImpl implements ApplicationManagementProviderService {
 
-    private ConfigurationContext configCtx;
-    private ServiceAuthenticator authenticator;
-    private String oAuthAdminServiceUrl;
     private DeviceDAO deviceDAO;
     private ApplicationDAO applicationDAO;
     private ApplicationMappingDAO applicationMappingDAO;
@@ -67,19 +61,6 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     private static final Log log = LogFactory.getLog(ApplicationManagerProviderServiceImpl.class);
 
     public ApplicationManagerProviderServiceImpl(AppManagementConfig appManagementConfig) {
-
-        IdentityConfigurations identityConfig = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                getDeviceManagementConfigRepository().getIdentityConfigurations();
-        this.authenticator =
-                new ServiceAuthenticator(identityConfig.getAdminUsername(), identityConfig.getAdminPassword());
-        this.oAuthAdminServiceUrl =
-                identityConfig.getServerUrl() + DeviceManagementConstants.AppManagement.OAUTH_ADMIN_SERVICE;
-        try {
-            this.configCtx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
-        } catch (AxisFault e) {
-            throw new IllegalArgumentException("Error occurred while initializing Axis2 Configuration Context. " +
-                    "Please check if an appropriate axis2.xml is provided", e);
-        }
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
         this.applicationMappingDAO = DeviceManagementDAOFactory.getApplicationMappingDAO();
@@ -112,7 +93,6 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     @Override
     public void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIds)
             throws ApplicationManagementException {
-
         try {
             DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, deviceIds);
             DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().notifyOperationToDevices
@@ -205,50 +185,6 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             throw new ApplicationManagementException(errorMsg, opeEx);
 
         }
-    }
-
-    public void updateInstalledApplicationListOfDevice(
-            DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
-    }
-
-    private OAuthConsumerAppDTO getAppInfo() throws ApplicationManagementException {
-        OAuthConsumerAppDTO appInfo = null;
-        try {
-            OAuthAdminServiceStub oAuthAdminServiceStub =
-                    new OAuthAdminServiceStub(configCtx, oAuthAdminServiceUrl);
-            authenticator.authenticate(oAuthAdminServiceStub._getServiceClient());
-
-            try {
-                appInfo = oAuthAdminServiceStub.getOAuthApplicationDataByAppName(
-                        DeviceManagementConstants.AppManagement.OAUTH_APPLICATION_NAME);
-            }
-            //application doesn't exist. Due to the way getOAuthApplicationDataByAppName has been
-            //implemented, it throws an AxisFault if the App doesn't exist. Hence the catch.
-            catch (AxisFault fault) {
-                oAuthAdminServiceStub.registerOAuthApplicationData(this.getRequestDTO());
-                appInfo = oAuthAdminServiceStub.getOAuthApplicationDataByAppName(
-                        DeviceManagementConstants.AppManagement.OAUTH_APPLICATION_NAME);
-            }
-        } catch (RemoteException e) {
-            handleException("Error occurred while retrieving app info", e);
-        } catch (OAuthAdminServiceException e) {
-            handleException("Error occurred while invoking OAuth admin service stub", e);
-        }
-        return appInfo;
-    }
-
-    private OAuthConsumerAppDTO getRequestDTO() {
-        OAuthConsumerAppDTO appDTO = new OAuthConsumerAppDTO();
-        appDTO.setApplicationName(DeviceManagementConstants.AppManagement.OAUTH_APPLICATION_NAME);
-        appDTO.setGrantTypes(
-                DeviceManagementConstants.AppManagement.OAUTH2_GRANT_TYPE_CLIENT_CREDENTIALS);
-        appDTO.setOAuthVersion(DeviceManagementConstants.AppManagement.OAUTH_VERSION_2);
-        return appDTO;
-    }
-
-    private void handleException(String msg, Exception e) throws ApplicationManagementException {
-        log.error(msg, e);
-        throw new ApplicationManagementException(msg, e);
     }
 
     @Override

@@ -39,9 +39,8 @@ function onRequest(context) {
     }
 
     return {
-        "deviceTypeViewUnitName": "cdmf.unit.device.type." + deviceType + ".type-view",
+        "deviceTypeViewUnitName": utility.getTenantedDeviceUnitName(deviceType, "type-view"),
         "deviceType": deviceType,
         "label" : configs["deviceType"]["label"]
     };
 }
-

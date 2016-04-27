@@ -100,18 +100,19 @@
                                 <th data-for="By Ownership" class="select-filter"></th>
                                 <th class="no-sort"></th>
                             </tr>
-                            <tr class="bulk-action-row">
-                                <th colspan="7">
-                                    <div id="operation-bar" class="hidden">
-                                        {{unit "mdm.unit.device.operation-bar"}}
-                                    </div>
-                                    <div id="operation-guide" class="bs-callout bs-callout-info">
-                                        <h4>Enabling Device Operations</h4>
-                                        <p>To enable device operations, select the desired platform from above
-                                           filter.</p>
-                                    </div>
-                                </th>
-                            </tr>
+                            <!--TODO: Enable bulk action row after gain compatibility with iot operation bar-->
+                            <!--<tr class="bulk-action-row">-->
+                            <!--<th colspan="7">-->
+                            <!--<div id="operation-bar" class="hidden">-->
+                            <!--{{!unit "mdm.unit.device.operation-bar"}}-->
+                            <!--</div>-->
+                            <!--<div id="operation-guide" class="bs-callout bs-callout-info">-->
+                            <!--<h4>Enabling Device Operations</h4>-->
+                            <!--<p>To enable device operations, select the desired platform from above-->
+                            <!--filter.</p>-->
+                            <!--</div>-->
+                            <!--</th>-->
+                            <!--</tr>-->
                             </thead>
                             <tbody id="ast-container">
 
@@ -325,8 +326,6 @@
 
 {{#zone "bottomJs"}}
     <script id="device-listing" data-current-user="{{currentUser.username}}" data-device-types="{{deviceTypes}}"
-            data-image-resource="{{@app.context}}/public/cdmf.unit.device.type."
-            src="{{@page.publicUri}}/templates/listing.hbs"
             type="text/x-handlebars-template"></script>
     {{js "js/listing.js"}}
 {{/zone}}

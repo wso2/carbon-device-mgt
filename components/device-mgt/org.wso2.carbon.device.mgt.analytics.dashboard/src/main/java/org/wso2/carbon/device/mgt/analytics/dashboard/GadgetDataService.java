@@ -53,9 +53,20 @@ public interface GadgetDataService {
     int getDeviceCount(Map<String, Object> filters);
 
     @SuppressWarnings("unused")
+    int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
     Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters);
 
     @SuppressWarnings("unused")
+    Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                                                       Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
     Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
+                                                                            Map<String, Object> filters);
 
 }

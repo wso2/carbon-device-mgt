@@ -63,6 +63,11 @@ public class Policy implements Comparable<Policy>, Serializable {
 
     private Map<String, Object> attributes;
 
+    /*This will keep the list of groups to which the policy will be applied. */
+
+    private List<DeviceGroupWrapper> deviceGroups;
+
+
     @XmlElement
     public int getId() {
         return id;
@@ -216,6 +221,15 @@ public class Policy implements Comparable<Policy>, Serializable {
         this.tenantId = tenantId;
     }
 
+
+    @XmlElement
+    public List<DeviceGroupWrapper> getDeviceGroups() {
+        return deviceGroups;
+    }
+
+    public void setDeviceGroups(List<DeviceGroupWrapper> deviceGroups) {
+        this.deviceGroups = deviceGroups;
+    }
 
     @Override
     public int compareTo(Policy o) {

@@ -179,6 +179,32 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
+    public List<DeviceGroupBuilder> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        List<DeviceGroupBuilder> deviceGroupBuilders = new ArrayList<>();
+        try {
+            Connection conn = GroupManagementDAOFactory.getConnection();
+            String sql = "SELECT G.ID, G.GROUP_NAME, G.DESCRIPTION, G.DATE_OF_CREATE, G.DATE_OF_LAST_UPDATE, \n" +
+                    "G.OWNER FROM DM_GROUP AS G INNER JOIN DM_DEVICE_GROUP_MAP AS GM ON G.ID = GM.GROUP_ID " +
+                    "WHERE GM.DEVICE_ID = ? AND GM.TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, deviceId);
+            stmt.setInt(2, tenantId);
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+               deviceGroupBuilders.add(GroupManagementDAOUtil.loadGroup(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new GroupManagementDAOException("Error occurred while obtaining information of Device Groups ", e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
+        return deviceGroupBuilders;
+    }
+
+    @Override
     public List<DeviceGroupBuilder> getGroups(int startIndex, int rowCount, int tenantId)
             throws GroupManagementDAOException {
         PreparedStatement stmt = null;

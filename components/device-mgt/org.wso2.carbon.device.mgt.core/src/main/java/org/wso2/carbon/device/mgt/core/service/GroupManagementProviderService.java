@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyEixistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
+import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import java.util.List;
 
@@ -72,6 +73,15 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     DeviceGroup getGroup(String groupName, String owner) throws GroupManagementException;
+
+
+    /**
+     * Get the device group provided the device group id.
+     * @param groupId
+     * @return
+     * @throws GroupManagementException
+     */
+    DeviceGroup getGroup(int groupId) throws GroupManagementException;
 
     /**
      * Get list of device groups matched with %groupName%
@@ -287,5 +297,13 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     List<DeviceGroup> getGroups(String username, String permission) throws GroupManagementException;
+
+    /**
+     * Get the group of device.
+     * @param deviceIdentifier
+     * @return
+     * @throws GroupManagementException
+     */
+    List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException;
 
 }

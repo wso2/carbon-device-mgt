@@ -28,43 +28,65 @@ import java.util.Map;
 
 public class Utils {
 
+    private static Map<String, String> genericColumnsMap = new HashMap<>();
+    private static Map<String, String> locationColumnsMap = new HashMap<>();
+
+    static {
+
+        genericColumnsMap.put("deviceModel", "DEVICE_MODEL");
+        genericColumnsMap.put("vendor", "VENDOR");
+        genericColumnsMap.put("osVersion", "OS_VERSION");
+        genericColumnsMap.put("batteryLevel", "BATTERY_LEVEL");
+        genericColumnsMap.put("internalTotalMemory", "INTERNAL_TOTAL_MEMORY");
+        genericColumnsMap.put("internalAvailableMemory", "INTERNAL_AVAILABLE_MEMORY");
+        genericColumnsMap.put("externalTotalMemory", "EXTERNAL_TOTAL_MEMORY");
+        genericColumnsMap.put("externalAvailableMemory", "EXTERNAL_AVAILABLE_MEMORY");
+        genericColumnsMap.put("connectionType", "CONNECTION_TYPE");
+        genericColumnsMap.put("ssid", "SSID");
+        genericColumnsMap.put("cpuUsage", "CPU_USAGE");
+        genericColumnsMap.put("totalRAMMemory", "TOTAL_RAM_MEMORY");
+        genericColumnsMap.put("availableRAMMemory", "AVAILABLE_RAM_MEMORY");
+        genericColumnsMap.put("pluggedIn", "PLUGGED_IN");
+
+
+        locationColumnsMap.put("latitude", "LATITUDE");
+        locationColumnsMap.put("longitude", "LONGITUDE");
+        locationColumnsMap.put("street1", "STREET1");
+        locationColumnsMap.put("street2", "STREET2");
+        locationColumnsMap.put("city", "CITY");
+        locationColumnsMap.put("state", "ZIP");
+        locationColumnsMap.put("zip", "STATE");
+        locationColumnsMap.put("country", "COUNTRY");
+
+    }
+
     public static Map<String, String> getDeviceDetailsColumnNames() {
-
-        Map<String, String> colonmsMap = new HashMap<>();
-
-        colonmsMap.put("deviceModel", "DEVICE_MODEL");
-        colonmsMap.put("vendor", "VENDOR");
-        colonmsMap.put("osVersion", "OS_VERSION");
-        colonmsMap.put("batteryLevel", "BATTERY_LEVEL");
-        colonmsMap.put("internalTotalMemory", "INTERNAL_TOTAL_MEMORY");
-        colonmsMap.put("internalAvailableMemory", "INTERNAL_AVAILABLE_MEMORY");
-        colonmsMap.put("externalTotalMemory", "EXTERNAL_TOTAL_MEMORY");
-        colonmsMap.put("externalAvailableMemory", "EXTERNAL_AVAILABLE_MEMORY");
-        colonmsMap.put("connectionType", "CONNECTION_TYPE");
-        colonmsMap.put("ssid", "SSID");
-        colonmsMap.put("cpuUsage", "CPU_USAGE");
-        colonmsMap.put("totalRAMMemory", "TOTAL_RAM_MEMORY");
-        colonmsMap.put("availableRAMMemory", "AVAILABLE_RAM_MEMORY");
-        colonmsMap.put("pluggedIn", "PLUGGED_IN");
-
-        return colonmsMap;
+        return genericColumnsMap;
     }
 
     public static Map<String, String> getDeviceLocationColumnNames() {
-        Map<String, String> colonmsMap = new HashMap<>();
-
-        colonmsMap.put("latitude", "LATITUDE");
-        colonmsMap.put("longitude", "LONGITUDE");
-        colonmsMap.put("street1", "STREET1");
-        colonmsMap.put("street2", "STREET2");
-        colonmsMap.put("city", "CITY");
-        colonmsMap.put("state", "ZIP");
-        colonmsMap.put("zip", "STATE");
-        colonmsMap.put("country", "COUNTRY");
-
-        return colonmsMap;
+        return locationColumnsMap;
     }
 
+    public static boolean checkDeviceDetailsColumns(String str) {
+        if (genericColumnsMap.containsKey(str)) {
+            return true;
+        }
+        if (genericColumnsMap.containsValue(str)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkDeviceLocationColumns(String str) {
+        if (locationColumnsMap.containsKey(str)) {
+            return true;
+        }
+        if (locationColumnsMap.containsValue(str)) {
+            return true;
+        }
+        return false;
+    }
 
     public static List<String> convertStringToList(String str) {
 

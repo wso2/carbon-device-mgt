@@ -648,6 +648,17 @@ public class OperationManagerImpl implements OperationManager {
         return operation;
     }
 
+    @Override
+    public Operation getOperationByActivityId(String activity) throws OperationManagementException {
+        // This parses the operation id from activity id (ex : ACTIVITY_23) and converts to the integer.
+        int operationId = Integer.parseInt(
+                activity.replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, ""));
+        if(operationId == 0){
+            throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
+        }
+        return this.getOperation(operationId);
+    }
+
     private OperationDAO lookupOperationDAO(Operation operation) {
 
         if (operation instanceof CommandOperation) {

@@ -18,6 +18,7 @@
 */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.util;
 
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
 
 public class OperationDAOUtil {
@@ -94,6 +95,7 @@ public class OperationDAOUtil {
         operation.setReceivedTimeStamp(dtoOperation.getReceivedTimeStamp());
         operation.setEnabled(dtoOperation.isEnabled());
         operation.setProperties(dtoOperation.getProperties());
+        operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + dtoOperation.getId());
 
         return operation;
     }

@@ -44,6 +44,7 @@ public class Operation implements Serializable {
     private boolean isEnabled;
     private Object payLoad;
     private String operationResponse;
+    private String activityId;
 
     @Override
     public boolean equals(Object o) {
@@ -189,6 +190,14 @@ public class Operation implements Serializable {
 
     public void setOperationResponse(String operationResponse) {
         this.operationResponse = operationResponse;
+    }
+
+    public String getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
     }
 
     @Override

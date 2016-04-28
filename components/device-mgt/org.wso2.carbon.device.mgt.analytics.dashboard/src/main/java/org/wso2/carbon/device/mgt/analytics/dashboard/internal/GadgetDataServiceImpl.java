@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -234,6 +235,47 @@ class GadgetDataServiceImpl implements GadgetDataService {
             GadgetDataServiceDAOFactory.closeConnection();
         }
         return featureNonCompliantDeviceCountsByOwnershipTypes;
+    }
+
+    @Override
+    public PaginationResult getDevicesWithDetails(Map<String, Object> filters, PaginationRequest paginationRequest) {
+        PaginationResult paginationResult = null;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
+                    getDevicesWithDetails(filters, paginationRequest);
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            return null;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return paginationResult;
+    }
+
+    @Override
+    public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                            Map<String, Object> filters, PaginationRequest paginationRequest) {
+        PaginationResult paginationResult = null;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
+                    getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filters, paginationRequest);
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            return null;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return paginationResult;
+    }
+
+    @Override
+    public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) {
+        return null;
+    }
+
+    @Override
+    public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode, Map<String, Object> filters) {
+        return null;
     }
 
 }

@@ -357,7 +357,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return filteredDeviceCountsByOwnershipTypes;
     }
 
-    public Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode, Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
+                                Map<String, Object> filters) throws GadgetDataServiceDAOException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -402,6 +403,155 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return filteredDeviceCountsByOwnershipTypes;
+    }
+
+    public PaginationResult getDevicesWithDetails(Map<String, Object> filters,
+                                        PaginationRequest paginationRequest) throws GadgetDataServiceDAOException {
+        Connection con;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
+        List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
+        int totalRecordsCount = 0;
+        try {
+            con = this.getConnection();
+            String sql, advancedSqlFiltering = "";
+            // appending filters if exist, to support advanced filtering options
+            // [1] appending filter columns, if exist
+            if (filters != null && filters.size() > 0) {
+                for (String column : filters.keySet()) {
+                    advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
+                }
+            }
+            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_1 " +
+                  "WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
+            stmt = con.prepareStatement(sql);
+            // [2] appending filter column values, if exist
+            stmt.setInt(1, tenantId);
+            if (filters != null && filters.values().size() > 0) {
+                int i = 2;
+                for (Object value : filters.values()) {
+                    if (value instanceof Integer) {
+                        stmt.setInt(i, (Integer) value);
+                    } else if (value instanceof String) {
+                        stmt.setString(i, (String) value);
+                    }
+                    i++;
+                }
+                stmt.setInt(i, paginationRequest.getStartIndex());
+                stmt.setInt(++i, paginationRequest.getRowCount());
+            } else {
+                stmt.setInt(2, paginationRequest.getStartIndex());
+                stmt.setInt(3, paginationRequest.getRowCount());
+            }
+            // executing query
+            rs = stmt.executeQuery();
+            // fetching query results
+            while (rs.next()) {
+                filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
+                filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
+                filteredDeviceWithDetails.put("connectivity-details", rs.getString("CONNECTIVITY_STATUS"));
+                filteredDevicesWithDetails.add(filteredDeviceWithDetails);
+            }
+            // fetching total records count
+            sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+
+            // executing query
+            rs = stmt.executeQuery();
+            // fetching query results
+            while (rs.next()) {
+                totalRecordsCount = rs.getInt("DEVICE_COUNT");
+            }
+        } catch (SQLException e) {
+            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        PaginationResult paginationResult = new PaginationResult();
+        paginationResult.setData(filteredDevicesWithDetails);
+        paginationResult.setRecordsTotal(totalRecordsCount);
+        return paginationResult;
+    }
+
+    public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+        Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceDAOException {
+        Connection con;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
+        List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
+        int totalRecordsCount = 0;
+        try {
+            con = this.getConnection();
+            String sql, advancedSqlFiltering = "";
+            // appending filters if exist, to support advanced filtering options
+            // [1] appending filter columns, if exist
+            if (filters != null && filters.size() > 0) {
+                for (String column : filters.keySet()) {
+                    advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
+                }
+            }
+            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
+                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
+            stmt = con.prepareStatement(sql);
+            // [2] appending filter column values, if exist
+            stmt.setInt(1, tenantId);
+            stmt.setString(2, nonCompliantFeatureCode);
+            if (filters != null && filters.values().size() > 0) {
+                int i = 3;
+                for (Object value : filters.values()) {
+                    if (value instanceof Integer) {
+                        stmt.setInt(i, (Integer) value);
+                    } else if (value instanceof String) {
+                        stmt.setString(i, (String) value);
+                    }
+                    i++;
+                }
+                stmt.setInt(i, paginationRequest.getStartIndex());
+                stmt.setInt(++i, paginationRequest.getRowCount());
+            } else {
+                stmt.setInt(3, paginationRequest.getStartIndex());
+                stmt.setInt(4, paginationRequest.getRowCount());
+            }
+            // executing query
+            rs = stmt.executeQuery();
+            // fetching query results
+            while (rs.next()) {
+                filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
+                filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
+                filteredDeviceWithDetails.put("connectivity-details", rs.getString("CONNECTIVITY_STATUS"));
+                filteredDevicesWithDetails.add(filteredDeviceWithDetails);
+            }
+            // fetching total records count
+            sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
+                  "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            stmt.setString(2, nonCompliantFeatureCode);
+
+            // executing query
+            rs = stmt.executeQuery();
+            // fetching query results
+            while (rs.next()) {
+                totalRecordsCount = rs.getInt("DEVICE_COUNT");
+            }
+        } catch (SQLException e) {
+            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        PaginationResult paginationResult = new PaginationResult();
+        paginationResult.setData(filteredDevicesWithDetails);
+        paginationResult.setRecordsTotal(totalRecordsCount);
+        return paginationResult;
     }
 
     public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceDAOException {
@@ -454,7 +604,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return filteredDevicesWithDetails;
     }
 
-    public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode, Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                                    Map<String, Object> filters) throws GadgetDataServiceDAOException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -465,7 +616,7 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             con = this.getConnection();
             String sql;
             sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {

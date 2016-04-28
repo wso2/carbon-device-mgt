@@ -18,46 +18,28 @@
  */
 package org.wso2.carbon.device.mgt.common.spi;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-
-import java.util.List;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 
 /**
  * Composite interface that acts as the SPI exposing all device management as well as application management
  * functionalities.
  */
-public interface DeviceManagementService extends ApplicationManager {
-
-    /**
-     * Method to retrieve the provider type that implements DeviceManager interface.
-     *
-     * @return Returns provider type
-     */
-    String getType();
-
-    /**
-     * This returns the tenant domain of the provider.
-     * @return
-     */
-    String getProviderTenantDomain();
-
-    /**
-     * returns true if the device type is shared between all tenants and false if its not.
-     *
-     * @return
-     */
-    boolean isSharedWithAllTenants();
+public interface DeviceManagementService {
 
     void init() throws DeviceManagementException;
+
+    String getType();
 
     DeviceManager getDeviceManager();
 
     ApplicationManager getApplicationManager();
 
-    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
+    ProvisioningConfig getProvisioningConfig();
+
+    PushNotificationConfig getPushNotificationConfig();
 
 }

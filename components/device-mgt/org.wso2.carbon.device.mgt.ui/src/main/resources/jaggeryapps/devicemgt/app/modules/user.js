@@ -632,7 +632,13 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/devices/list")) {
             permissions["LIST_DEVICES"] = true;
         }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
+            permissions["LIST_OWN_DEVICES"] = true;
+        }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/list")) {
+            permissions["LIST_ALL_GROUPS"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/groups/list")) {
             permissions["LIST_GROUPS"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/list")) {
@@ -642,9 +648,15 @@ var userModule = function () {
             permissions["LIST_ROLES"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/list")) {
+            permissions["LIST_ALL_POLICIES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/list")) {
             permissions["LIST_POLICIES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/add")) {
+            permissions["ADD_DEVICE"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/groups/add")) {
             permissions["ADD_GROUP"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/add")) {
@@ -656,7 +668,7 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/roles/add")) {
             permissions["ADD_ROLE"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/add")) {
             permissions["ADD_POLICY"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/priority")) {
@@ -667,9 +679,6 @@ var userModule = function () {
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/platform-configs/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
-        }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
-            permissions["LIST_OWN_DEVICES"] = true;
         }
 
         return permissions;

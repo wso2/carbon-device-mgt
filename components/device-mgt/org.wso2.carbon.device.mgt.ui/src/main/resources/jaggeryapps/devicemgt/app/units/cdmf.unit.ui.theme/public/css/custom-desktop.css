@@ -16,26 +16,6 @@
  * under the License.
  */
 
-/* ========================================================================
- * methods/mixins
- * ======================================================================== */
-/* ========================================================================
- * default values
- * ======================================================================== */
-@font-face {
-  font-family: "Roboto";
-  font-weight: 400;
-  font-style: "normal";
-  src: url("libs/theme-wso2_1.0/fonts/Roboto/Roboto-Regular.eot");
-  src: url("libs/theme-wso2_1.0/fonts/Roboto/Roboto-Regular.eot?#iefix") format("embedded-opentype"), local("Roboto Regular"), local("Roboto-Regular"), url("libs/theme-wso2_1.0/fonts/Roboto/Roboto-Regular.woff2") format("woff2"), url("libs/theme-wso2_1.0/fonts/Roboto/Roboto-Regular.woff") format("woff"), url("libs/theme-wso2_1.0/fonts/Roboto/Roboto-Regular.ttf") format("truetype"), url("libs/theme-wso2_1.0/fonts/Roboto/Roboto-Regular.svg#Roboto") format("svg");
-}
-
-/* ========================================================================
- * loading fonts
- * ======================================================================== */
-/* ========================================================================
- * icon styles
- * ======================================================================== */
 .icon-success {
   color: #5cb85c;
 }
@@ -2193,7 +2173,7 @@ input[type=number].form-control {
 }
 
 .table.list-table.grid-view .padding-reduce-on-grid-view {
-  padding: 2px;
+    padding: 1px;
 }
 
 .table.list-table.grid-view .text-left-on-grid-view {
@@ -6428,7 +6408,7 @@ body.inverse .fade-edge:after {
     display: none;
 }
 .table.list-table.grid-view .padding-reduce-on-grid-view {
-    padding: 2px;
+    padding: 1px;
 }
 .table.list-table.grid-view .text-left-on-grid-view {
     text-align: left;

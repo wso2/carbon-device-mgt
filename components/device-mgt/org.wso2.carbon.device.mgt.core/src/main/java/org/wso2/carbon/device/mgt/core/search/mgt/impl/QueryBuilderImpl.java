@@ -44,14 +44,14 @@ public class QueryBuilderImpl implements QueryBuilder {
         List<Condition> orColumns = new ArrayList<>();
         List<Condition> otherANDColumns = new ArrayList<>();
         List<Condition> otherORColumns = new ArrayList<>();
-        Condition locConditon = new Condition();
+        Condition locCondition = new Condition();
 
         if (conditions.size() == 1) {
 
             if (conditions.get(0).getKey().equalsIgnoreCase(Constants.LOCATION)) {
-                locConditon = conditions.get(0);
-            } else if (Utils.getDeviceDetailsColumnNames().containsKey(conditions.get(0).getKey()) ||
-                    Utils.getDeviceLocationColumnNames().containsKey(conditions.get(0).getKey())) {
+                locCondition = conditions.get(0);
+            } else if (Utils.checkDeviceDetailsColumns(conditions.get(0).getKey()) ||
+                    Utils.checkDeviceLocationColumns(conditions.get(0).getKey())) {
                 andColumns.add(conditions.get(0));
             } else {
                 otherANDColumns.add(conditions.get(0));
@@ -59,9 +59,9 @@ public class QueryBuilderImpl implements QueryBuilder {
         } else {
             for (Condition con : conditions) {
                 if (con.getKey().equalsIgnoreCase(Constants.LOCATION)) {
-                    locConditon = con;
-                } else if (Utils.getDeviceDetailsColumnNames().containsKey(con.getKey()) ||
-                        Utils.getDeviceLocationColumnNames().containsKey(con.getKey())) {
+                    locCondition = con;
+                } else if (Utils.checkDeviceDetailsColumns(con.getKey()) ||
+                        Utils.checkDeviceLocationColumns(con.getKey())) {
                     if (con.getState().equals(Condition.State.AND)) {
                         andColumns.add(con);
                     } else if (con.getState().equals(Condition.State.OR)) {
@@ -92,8 +92,8 @@ public class QueryBuilderImpl implements QueryBuilder {
         if (!otherORColumns.isEmpty()) {
             queries.put(Constants.PROP_OR, this.processORProperties(otherORColumns));
         }
-        if (locConditon != null && locConditon.getValue() != null) {
-            queries.put(Constants.LOCATION, this.processLocation(locConditon));
+        if (locCondition != null && locCondition.getValue() != null) {
+            queries.put(Constants.LOCATION, this.processLocation(locCondition));
         }
 
         if (log.isDebugEnabled()) {
@@ -112,10 +112,10 @@ public class QueryBuilderImpl implements QueryBuilder {
         String querySuffix = "";
 
         for (Condition con : conditions) {
-            if (Utils.getDeviceDetailsColumnNames().containsKey(con.getKey())) {
+            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
                 querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();
-            } else if (Utils.getDeviceLocationColumnNames().containsKey(con.getKey())) {
+            } else if (Utils.checkDeviceLocationColumns(con.getKey())) {
                 querySuffix = querySuffix + " AND DL." + Utils.getDeviceLocationColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();
             }
@@ -130,10 +130,10 @@ public class QueryBuilderImpl implements QueryBuilder {
         String querySuffix = "";
 
         for (Condition con : conditions) {
-            if (Utils.getDeviceDetailsColumnNames().containsKey(con.getKey())) {
+            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
                 querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();
-            } else if (Utils.getDeviceLocationColumnNames().containsKey(con.getKey())) {
+            } else if (Utils.checkDeviceLocationColumns(con.getKey())) {
                 querySuffix = querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();
             }

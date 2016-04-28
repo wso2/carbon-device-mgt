@@ -1,0 +1,89 @@
+{{#zone "topCss"}}
+    {{css "css/analytics.css"}}
+    {{css "css/daterangepicker.css"}}
+    {{css "css/graph.css"}}
+{{/zone}}
+
+{{unit "cdmf.unit.ui.title" pageTitle="Analytics"}}
+{{unit "cdmf.unit.ui.content.title" pageHeader=title}}
+{{unit "cdmf.unit.lib.service-invoker-utility"}}
+{{unit "cdmf.unit.lib.handlebars"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    {{#if groupName}}
+        <li>
+            <a href="{{@app.context}}/groups">
+                Groups
+            </a>
+        </li>
+        <li>
+            <a href="{{@app.context}}/devices?groupId={{groupId}}&groupName={{groupName}}">
+                {{groupName}}
+            </a>
+        </li>
+    {{else}}
+        <li>
+            <a href="{{@app.context}}/devices">
+                Devices
+            </a>
+        </li>
+        <li>
+            <a href="{{@app.context}}/device/{{deviceType}}?id={{deviceId}}">
+                {{deviceName}}
+            </a>
+        </li>
+    {{/if}}
+    <li>
+        <a href="#">
+            Analytics
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    <div class="container container-bg  white-bg">
+        <div class=" margin-top-double">
+            <div class="row padding-top-double padding-bottom-double margin-bottom-double">
+                <div class="col-lg-3  margin-top-double">
+                    <h1 class="grey ">{{deviceName}} Analytics</h1>
+                </div>
+                <div id="rangeSliderWrapper" class="pull-right col-lg-9">
+                    <div id="dateRangePickerContainer">
+                        <div class="btn-group" role="group">
+                            <button id="hour-btn" type="button"
+                                    class="btn btn-default date-range">Hour
+                            </button>
+                            <button id="h12-btn" type="button"
+                                    class="btn btn-default date-range">12 Hours
+                            </button>
+                            <button id="h24-btn" type="button"
+                                    class="btn btn-default date-range">24 Hours
+                            </button>
+                            <button id="h48-btn" type="button"
+                                    class="btn btn-default date-range">48 Hours
+                            </button>
+                            <button id="date-range" type="button"
+                                    class="btn btn-default date-range last-child"
+                                    data-toggle="popup"
+                                    title="Click to set custom date range"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="clear"></div>
+            <div id="div-chart">
+                {{unit deviceAnalyticsViewUnitName}}
+            </div>
+        </div>
+    </div>
+{{/zone}}
+{{#zone "bottomJs"}}
+    {{js "js/jquery.daterangepicker.js"}}
+    {{js "js/graph_util.js"}}
+{{/zone}}

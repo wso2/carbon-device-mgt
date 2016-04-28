@@ -17,6 +17,7 @@
  */
 
 function onRequest(context){
+    var utility = require("/app/modules/utility.js").utility;
     context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
         if (arguments.length < 3)
             throw new Error("Handlebars Helper equal needs 2 parameters");
@@ -28,6 +29,5 @@ function onRequest(context){
     });
 
     var deviceType = context.uriParams.deviceType;
-
-    return {"deviceViewUnitName" : "cdmf.unit.device.type." + deviceType + ".device-view"};
+    return {"deviceViewUnitName": utility.getTenantedDeviceUnitName(deviceType, "device-view")};
 }

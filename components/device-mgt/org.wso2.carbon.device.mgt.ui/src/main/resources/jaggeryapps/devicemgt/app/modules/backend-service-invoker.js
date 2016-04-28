@@ -162,21 +162,28 @@ var backendServiceInvoker = function () {
             }
 
         }
-        var stringRequestEntity = new StringRequestEntity(stringify(payload));
-        httpMethodObject.setRequestEntity(stringRequestEntity);
+        if (payload) {
+            var stringRequestEntity = new StringRequestEntity(stringify(payload));
+            httpMethodObject.setRequestEntity(stringRequestEntity);
+        }
         var client = new HttpClient();
         try {
             client.executeMethod(httpMethodObject);
             var status = httpMethodObject.getStatusCode();
             if (status == 200) {
-                return successCallback(httpMethodObject.getResponseBody());
+                var responseContentTypeHeader = httpMethodObject.getResponseHeader(constants.CONTENT_TYPE_IDENTIFIER);
+                if (responseContentTypeHeader && responseContentTypeHeader.getValue() == constants.APPLICATION_ZIP) {
+                    return successCallback(httpMethodObject.getResponseBodyAsStream(), httpMethodObject.getResponseHeaders());
+                } else {
+                    return successCallback(httpMethodObject.getResponseBody());
+                }
             } else {
                 return errorCallback(httpMethodObject.getResponseBody());
             }
         } catch (e) {
             return errorCallback(response);
         } finally {
-            method.releaseConnection();
+            httpMethodObject.releaseConnection();
         }
     };
 

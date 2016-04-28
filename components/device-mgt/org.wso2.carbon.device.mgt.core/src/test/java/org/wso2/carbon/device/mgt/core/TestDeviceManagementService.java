@@ -17,17 +17,14 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
-import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
-import org.wso2.carbon.device.mgt.common.license.mgt.License;
-import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
-import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 import java.util.List;
 
@@ -46,14 +43,6 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
-    public String getProviderTenantDomain() { return tenantDomain;}
-
-    @Override
-    public boolean isSharedWithAllTenants() {
-        return true;
-    }
-
-    @Override
     public void init() throws DeviceManagementException {
 
     }
@@ -69,44 +58,13 @@ public class TestDeviceManagementService implements DeviceManagementService {
     }
 
     @Override
-    public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
-            throws DeviceManagementException {
-
+    public ProvisioningConfig getProvisioningConfig() {
+        return new ProvisioningConfig(tenantDomain, false);
     }
 
     @Override
-    public Application[] getApplications(String domain, int pageNumber, int size)
-            throws ApplicationManagementException {
-        return new Application[0];
-    }
-
-    @Override
-    public void updateApplicationStatus(DeviceIdentifier deviceId, Application application, String status)
-            throws ApplicationManagementException {
-
-    }
-
-    @Override
-    public String getApplicationStatus(DeviceIdentifier deviceId, Application application)
-            throws ApplicationManagementException {
+    public PushNotificationConfig getPushNotificationConfig() {
         return null;
     }
 
-    @Override
-    public void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIdentifiers)
-            throws ApplicationManagementException {
-
-    }
-
-    @Override
-    public void installApplicationForUsers(Operation operation, List<String> userNameList)
-            throws ApplicationManagementException {
-
-    }
-
-    @Override
-    public void installApplicationForUserRoles(Operation operation, List<String> userRoleList)
-            throws ApplicationManagementException {
-
-    }
 }

@@ -43,8 +43,7 @@
                     </button>
                                            our {{deviceTypeLabel}} device
                 </p>
-                <img class="try-device-image"
-                     src="{{@app.context}}/public/cdmf.unit.device.type.{{deviceTypeName}}.type-view/images/thumb.png">
+                <img class="try-device-image" src="{{thumb}}">
             </div>
         </div>
     {{/each}}
@@ -55,8 +54,6 @@
 {{/zone}}
 {{#zone "bottomJs"}}
     <script id="device-listing" data-current-user="{{currentUser.username}}"
-        {{! /devicemgt/public/cdmf.unit.device.type.android}}
-            data-image-resource="{{@app.context}}/public/cdmf.unit.device.type."
             src="{{@unit.publicUri}}/templates/listing.hbs"
             type="text/x-handlebars-template"></script>
     <script type="text/javascript">

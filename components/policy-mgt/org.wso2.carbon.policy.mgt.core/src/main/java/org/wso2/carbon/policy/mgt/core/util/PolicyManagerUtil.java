@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
@@ -218,10 +219,19 @@ public class PolicyManagerUtil {
 
         if (monitoringFrequency == 0) {
             PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().
-                    getDeviceManagementConfig().getDeviceManagementConfigRepository().getPolicyConfiguration();
+                    getDeviceManagementConfig().getPolicyConfiguration();
             monitoringFrequency = policyConfiguration.getMonitoringFrequency();
         }
 
         return monitoringFrequency;
+    }
+
+
+    public static Map<Integer, DeviceGroup> convertDeviceGroupMap(List<DeviceGroup> deviceGroups) {
+        Map<Integer, DeviceGroup> groupMap = new HashMap<>();
+        for (DeviceGroup dg: deviceGroups){
+            groupMap.put(dg.getId(), dg);
+        }
+        return groupMap;
     }
 }

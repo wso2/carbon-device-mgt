@@ -118,4 +118,10 @@ public class EnrolmentInfo implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return owner.hashCode() ^ ownership.hashCode();
+    }
+
 }

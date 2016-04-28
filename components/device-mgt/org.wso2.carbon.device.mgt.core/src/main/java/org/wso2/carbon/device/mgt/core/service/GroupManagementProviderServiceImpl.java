@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -190,7 +191,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         return deviceGroupBuilder;
     }
 
-    @SuppressWarnings("Duplicates")
+
     private DeviceGroupBuilder getGroupBuilder(int groupId) throws GroupManagementException {
         DeviceGroupBuilder groupBroker;
         try {
@@ -208,6 +209,19 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             groupBroker.setRoles(this.getRoles(groupBroker.getGroupId()));
         }
         return groupBroker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DeviceGroup getGroup(int groupId) throws GroupManagementException {
+        DeviceGroupBuilder groupBroker = this.getGroupBuilder(groupId);
+        if (groupBroker != null) {
+            groupBroker.setUsers(this.getUsers(groupBroker.getGroupId()));
+            groupBroker.setRoles(this.getRoles(groupBroker.getGroupId()));
+        }
+        return groupBroker.getGroup();
     }
 
     /**
@@ -761,6 +775,30 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } catch (UserStoreException e) {
             throw new GroupManagementException("Error occurred while getting user realm.", e);
         }
+    }
+
+    @Override
+    public List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException {
+        DeviceManagementProviderService managementProviderService = new DeviceManagementProviderServiceImpl();
+        List<DeviceGroup> deviceGroups = new ArrayList<>();
+        try {
+            Device device = managementProviderService.getDevice(deviceIdentifier);
+            GroupManagementDAOFactory.openConnection();
+            List<DeviceGroupBuilder> builders = groupDAO.getGroups(device.getId(),
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            for (DeviceGroupBuilder d : builders){
+                deviceGroups.add(d.getGroup());
+            }
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while retrieving the device details.", e);
+        } catch (GroupManagementDAOException e) {
+            throw new GroupManagementException("Error occurred while retrieving device groups.", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening database connection.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+        return deviceGroups;
     }
 
     private DeviceGroupBuilder extractNewGroupFromRole(Map<Integer, DeviceGroup> groups, String role)

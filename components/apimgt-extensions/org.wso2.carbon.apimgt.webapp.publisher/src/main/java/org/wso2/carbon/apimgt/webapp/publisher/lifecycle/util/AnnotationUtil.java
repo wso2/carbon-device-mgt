@@ -24,8 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
+import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -45,17 +47,18 @@ public class AnnotationUtil {
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
+
     private static final String AUTH_TYPE = "Any";
     private static final String PROTOCOL_HTTP = "http";
     private static final String SERVER_HOST = "carbon.local.ip";
     private static final String HTTP_PORT = "httpPort";
-    public static final String DIR_WEB_INF_LIB = "/WEB-INF/lib";
-    public static final String STRING_ARR = "string_arr";
-    public static final String STRING = "string";
+    private static final String STRING_ARR = "string_arr";
+    private static final String STRING = "string";
 
     private StandardContext context;
     private Method[] pathClazzMethods;
     private Class<Path> pathClazz;
+    Class<API> apiClazz;
     private ClassLoader classLoader;
     private ServletContext servletContext;
 
@@ -68,6 +71,7 @@ public class AnnotationUtil {
 
     /**
      * Scan the context for classes with annotations
+     *
      * @return
      * @throws IOException
      */
@@ -89,6 +93,7 @@ public class AnnotationUtil {
 
     /**
      * Method identifies the URL templates and context by reading the annotations of a class
+     *
      * @param entityClasses
      * @return
      */
@@ -107,38 +112,23 @@ public class AnnotationUtil {
                                 APIResourceConfiguration apiResourceConfig = null;
                                 try {
                                     clazz = classLoader.loadClass(className);
-                                    Class<Path> apiClazz = (Class<Path>)
-                                            classLoader.loadClass(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
+
+                                    apiClazz = (Class<API>)
+                                            classLoader.loadClass(org.wso2.carbon.apimgt.annotations.api.API
+                                                    .class.getName());
+
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
 
                                     List<APIResource> resourceList;
-                                    apiResourceConfig = new APIResourceConfiguration();
 
                                     if (apiAnno != null) {
-
-                                        Method[] apiClazzMethods = apiClazz.getMethods();
 
                                         if (log.isDebugEnabled()) {
                                             log.debug("Application Context root = " + servletContext.getContextPath());
                                         }
 
                                         try {
-                                            for(int k=0;k<apiClazzMethods.length;k++){
-                                                switch (apiClazzMethods[k].getName()){
-                                                    case "name" :
-                                                        apiResourceConfig.setName(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                                                        break;
-                                                    case "version" :
-                                                        apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                                                        break;
-                                                    case "context" :
-                                                        apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                                                        break;
-                                                    case "tags" :
-                                                        apiResourceConfig.setTags(invokeMethod(apiClazzMethods[k], apiAnno));
-                                                        break;
-                                                }
-                                            }
+                                            apiResourceConfig = processAPIAnnotation(apiAnno);
                                             // All the apis should map to same root "/"
                                             String rootContext = servletContext.getContextPath();
                                             pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
@@ -177,7 +167,45 @@ public class AnnotationUtil {
         return apiResourceConfigs;
     }
 
-    private List<APIResource> getApiResources(String resourceRootContext, String apiRootContext, Method[] annotatedMethods) throws Throwable {
+    /**
+     * Iterate API annotation and build API Configuration
+     * @param apiAnno
+     * @return
+     * @throws Throwable
+     */
+    private APIResourceConfiguration processAPIAnnotation(Annotation apiAnno) throws Throwable {
+        Method[] apiClazzMethods = apiClazz.getMethods();
+        APIResourceConfiguration apiResourceConfig = new APIResourceConfiguration();
+        for (int k = 0; k < apiClazzMethods.length; k++) {
+            switch (apiClazzMethods[k].getName()) {
+                case "name":
+                    apiResourceConfig.setName(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                    break;
+                case "version":
+                    apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                    break;
+                case "context":
+                    apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
+                    break;
+                case "tags":
+                    apiResourceConfig.setTags(invokeMethod(apiClazzMethods[k], apiAnno));
+                    break;
+            }
+        }
+        return apiResourceConfig;
+    }
+
+
+    /**
+     * Get Resources for each API
+     * @param resourceRootContext
+     * @param apiRootContext
+     * @param annotatedMethods
+     * @return
+     * @throws Throwable
+     */
+    private List<APIResource> getApiResources(String resourceRootContext, String apiRootContext,
+                                              Method[] annotatedMethods) throws Throwable {
         List<APIResource> resourceList;
         resourceList = new ArrayList<APIResource>();
         for (Method method : annotatedMethods) {
@@ -195,31 +223,19 @@ public class AnnotationUtil {
                 resource.setAuthType(AUTH_TYPE);
 
                 Annotation[] annotations = method.getDeclaredAnnotations();
-                for(int i=0; i<annotations.length; i++){
+                for (int i = 0; i < annotations.length; i++) {
 
-                    if(annotations[i].annotationType().getName().equals(GET.class.getName())){
-                        resource.setHttpVerb(HttpMethod.GET);
-                    }
-                    if(annotations[i].annotationType().getName().equals(POST.class.getName())){
-                        resource.setHttpVerb(HttpMethod.POST);
-                    }
-                    if(annotations[i].annotationType().getName().equals(OPTIONS.class.getName())){
-                        resource.setHttpVerb(HttpMethod.OPTIONS);
-                    }
-                    if(annotations[i].annotationType().getName().equals(DELETE.class.getName())){
-                        resource.setHttpVerb(HttpMethod.DELETE);
-                    }
-                    if(annotations[i].annotationType().getName().equals(PUT.class.getName())){
-                        resource.setHttpVerb(HttpMethod.PUT);
-                    }
-                    if(annotations[i].annotationType().getName().equals(Consumes.class.getName())){
-                        Class<Consumes> consumesClass = (Class<Consumes>) classLoader.loadClass(Consumes.class.getName());
+                    processHTTPMethodAnnotation(resource, annotations[i]);
+                    if (annotations[i].annotationType().getName().equals(Consumes.class.getName())) {
+                        Class<Consumes> consumesClass = (Class<Consumes>) classLoader.loadClass(
+                                Consumes.class.getName());
                         Method[] consumesClassMethods = consumesClass.getMethods();
                         Annotation consumesAnno = method.getAnnotation(consumesClass);
                         resource.setConsumes(invokeMethod(consumesClassMethods[0], consumesAnno, STRING_ARR));
                     }
-                    if(annotations[i].annotationType().getName().equals(Produces.class.getName())){
-                        Class<Produces> producesClass = (Class<Produces>) classLoader.loadClass(Produces.class.getName());
+                    if (annotations[i].annotationType().getName().equals(Produces.class.getName())) {
+                        Class<Produces> producesClass = (Class<Produces>) classLoader.loadClass(
+                                Produces.class.getName());
                         Method[] producesClassMethods = producesClass.getMethods();
                         Annotation producesAnno = method.getAnnotation(producesClass);
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
@@ -231,12 +247,40 @@ public class AnnotationUtil {
         return resourceList;
     }
 
-    private String makeContextURLReady(String context){
-        if(context != null && !context.equalsIgnoreCase("")){
-            if(context.startsWith("/")){
+    /**
+     * Read Method annotations indicating HTTP Methods
+     * @param resource
+     * @param annotation
+     */
+    private void processHTTPMethodAnnotation(APIResource resource, Annotation annotation) {
+        if (annotation.annotationType().getName().equals(GET.class.getName())) {
+            resource.setHttpVerb(HttpMethod.GET);
+        }
+        if (annotation.annotationType().getName().equals(POST.class.getName())) {
+            resource.setHttpVerb(HttpMethod.POST);
+        }
+        if (annotation.annotationType().getName().equals(OPTIONS.class.getName())) {
+            resource.setHttpVerb(HttpMethod.OPTIONS);
+        }
+        if (annotation.annotationType().getName().equals(DELETE.class.getName())) {
+            resource.setHttpVerb(HttpMethod.DELETE);
+        }
+        if (annotation.annotationType().getName().equals(PUT.class.getName())) {
+            resource.setHttpVerb(HttpMethod.PUT);
+        }
+    }
+
+    /**
+     * Append '/' to the context and make it URL ready
+     * @param context
+     * @return
+     */
+    private String makeContextURLReady(String context) {
+        if (context != null && !context.equalsIgnoreCase("")) {
+            if (context.startsWith("/")) {
                 return context;
-            }else{
-                return "/"+context;
+            } else {
+                return "/" + context;
             }
         }
         return "";
@@ -244,6 +288,7 @@ public class AnnotationUtil {
 
     /**
      * When an annotation and method is passed, this method invokes that executes said method against the annotation
+     *
      * @param method
      * @param annotation
      * @param returnType
@@ -252,11 +297,11 @@ public class AnnotationUtil {
      */
     private String invokeMethod(Method method, Annotation annotation, String returnType) throws Throwable {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
-        switch (returnType){
+        switch (returnType) {
             case STRING:
                 return (String) methodHandler.invoke(annotation, method, null);
             case STRING_ARR:
-                return ((String[])methodHandler.invoke(annotation, method, null))[0];
+                return ((String[]) methodHandler.invoke(annotation, method, null))[0];
             default:
                 return null;
         }
@@ -267,6 +312,6 @@ public class AnnotationUtil {
      */
     private String[] invokeMethod(Method method, Annotation annotation) throws Throwable {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
-        return ((String[])methodHandler.invoke(annotation, method, null));
+        return ((String[]) methodHandler.invoke(annotation, method, null));
     }
 }

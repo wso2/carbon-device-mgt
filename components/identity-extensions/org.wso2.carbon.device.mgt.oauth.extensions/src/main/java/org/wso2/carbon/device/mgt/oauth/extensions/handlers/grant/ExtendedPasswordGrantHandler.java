@@ -42,12 +42,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 
 import javax.xml.namespace.QName;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
@@ -68,7 +63,7 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
     private static final String EMAIL_LOGIN = "EmailLogin";
     private static final String PRIMARY_LOGIN = "primary";
 
-    private Map<String,Map<String,String>> loginConfiguration = new ConcurrentHashMap<>();
+    private Map<String, Map<String, String>> loginConfiguration = new ConcurrentHashMap<>();
 
     private List<String> requiredHeaderClaimUris = new ArrayList<>();
 
@@ -103,7 +98,7 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
 
         boolean isValidated = super.validateGrant(tokReqMsgCtx);
 
-        if(isValidated){
+        if (isValidated) {
 
             int tenantId;
             tenantId = IdentityTenantUtil.getTenantIdOfUser(username);
@@ -120,20 +115,17 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
             List<ResponseHeader> respHeaders = new ArrayList<>();
 
             if (oAuth2AccessTokenReqDTO.getResourceOwnerUsername() != null) {
-
                 try {
-
                     if (requiredHeaderClaimUris != null && !requiredHeaderClaimUris.isEmpty()) {
                         // Get user's claim values from the default profile.
                         String userStoreDomain = tokReqMsgCtx.getAuthorizedUser().getUserStoreDomain();
 
-                        String endUsernameWithDomain = UserCoreUtil.addDomainToName
-                                (oAuth2AccessTokenReqDTO.getResourceOwnerUsername(),
-                                        userStoreDomain);
+                        String endUsernameWithDomain = UserCoreUtil.
+                                addDomainToName(oAuth2AccessTokenReqDTO.getResourceOwnerUsername(), userStoreDomain);
 
-                        Claim[] mapClaimValues = getUserClaimValues(endUsernameWithDomain,userStoreManager);
+                        Claim[] mapClaimValues = getUserClaimValues(endUsernameWithDomain, userStoreManager);
 
-                        if(mapClaimValues != null && mapClaimValues.length > 0){
+                        if (mapClaimValues != null && mapClaimValues.length > 0) {
                             ResponseHeader header;
                             for (String claimUri : requiredHeaderClaimUris) {
                                 for (Claim claim : mapClaimValues) {
@@ -146,26 +138,22 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
                                     }
                                 }
                             }
+                        } else if (log.isDebugEnabled()) {
+                            log.debug("No claim values for user : " + endUsernameWithDomain);
                         }
-                        else if(log.isDebugEnabled()){
-                            log.debug("No claim values for user : "+endUsernameWithDomain);
-                        }
-
                     }
                 } catch (Exception e) {
-                    throw new IdentityOAuth2Exception(e.getMessage(), e);
+                    throw new IdentityOAuth2Exception("Error occurred while retrieving user claims", e);
                 }
             }
-
-            tokReqMsgCtx.addProperty("RESPONSE_HEADERS", respHeaders.toArray(
-                    new ResponseHeader[respHeaders.size()]));
+            tokReqMsgCtx.addProperty("RESPONSE_HEADERS", respHeaders.toArray(new ResponseHeader[respHeaders.size()]));
         }
 
         return isValidated;
     }
 
     @Override
-    public boolean validateScope(OAuthTokenReqMessageContext tokReqMsgCtx){
+    public boolean validateScope(OAuthTokenReqMessageContext tokReqMsgCtx) {
         return OAuthExtUtils.setScopes(tokReqMsgCtx);
     }
 
@@ -183,7 +171,7 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
      *
      * @param userId - The username used to login.
      * @return <code>true</code> if secondary login name is used,
-     *         <code>false</code> if primary login name has been used
+     * <code>false</code> if primary login name has been used
      */
     private boolean isSecondaryLogin(String userId) {
 
@@ -191,17 +179,14 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
             Map<String, String> emailConf = loginConfiguration.get(EMAIL_LOGIN);
             if ("true".equalsIgnoreCase(emailConf.get(PRIMARY_LOGIN))) {
                 return !isUserLoggedInEmail(userId);
-            }
-            else if ("false".equalsIgnoreCase(emailConf.get(PRIMARY_LOGIN))) {
+            } else if ("false".equalsIgnoreCase(emailConf.get(PRIMARY_LOGIN))) {
                 return isUserLoggedInEmail(userId);
             }
-        }
-        else if (loginConfiguration.get(USERID_LOGIN) != null) {
+        } else if (loginConfiguration.get(USERID_LOGIN) != null) {
             Map<String, String> userIdConf = loginConfiguration.get(USERID_LOGIN);
             if ("true".equalsIgnoreCase(userIdConf.get(PRIMARY_LOGIN))) {
                 return isUserLoggedInEmail(userId);
-            }
-            else if ("false".equalsIgnoreCase(userIdConf.get(PRIMARY_LOGIN))) {
+            } else if ("false".equalsIgnoreCase(userIdConf.get(PRIMARY_LOGIN))) {
                 return !isUserLoggedInEmail(userId);
             }
         }
@@ -258,20 +243,22 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
             throws
             UserStoreException {
         Claim[] userClaims = userClaimsCache.getValueFromCache(authorizedUser);
-        if(userClaims != null){
+        if (userClaims != null) {
             return userClaims;
-        }else{
-            if(log.isDebugEnabled()){
+        } else {
+            if (log.isDebugEnabled()) {
                 log.debug("Cache miss for user claims. Username :" + authorizedUser);
             }
             userClaims = userStoreManager.getUserClaimValues(
                     authorizedUser, null);
-            userClaimsCache.addToCache(authorizedUser,userClaims);
+            userClaimsCache.addToCache(authorizedUser, userClaims);
             return userClaims;
         }
     }
 
-    // Read the required claim configuration from identity.xml
+    /**
+     * Read the required claim configuration from identity.xml
+     */
     private void parseRequiredHeaderClaimUris(OMElement requiredClaimUrisElem) {
         if (requiredClaimUrisElem == null) {
             return;
@@ -291,21 +278,22 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
     /**
      * Read the primary/secondary login configuration
      * <OAuth>
-     *	....
-     *	<LoginConfig>
-     *		<UserIdLogin  primary="true">
-     *			<ClaimUri></ClaimUri>
-     *		</UserIdLogin>
-     *		<EmailLogin  primary="false">
-     *			<ClaimUri>http://wso2.org/claims/emailaddress</ClaimUri>
-     *		</EmailLogin>
-     *	</LoginConfig>
-     *	.....
-     *   </OAuth>
+     * ....
+     * <LoginConfig>
+     * <UserIdLogin  primary="true">
+     * <ClaimUri></ClaimUri>
+     * </UserIdLogin>
+     * <EmailLogin  primary="false">
+     * <ClaimUri>http://wso2.org/claims/emailaddress</ClaimUri>
+     * </EmailLogin>
+     * </LoginConfig>
+     * .....
+     * </OAuth>
+     *
      * @param oauthConfigElem - The '<LoginConfig>' xml configuration element in the api-manager.xml
      */
     private void parseLoginConfig(OMElement oauthConfigElem) {
-        OMElement loginConfigElem =  oauthConfigElem.getFirstChildWithName(getQNameWithIdentityNS(LOGIN_CONFIG));
+        OMElement loginConfigElem = oauthConfigElem.getFirstChildWithName(getQNameWithIdentityNS(LOGIN_CONFIG));
         if (loginConfigElem != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Login configuration is set ");
@@ -313,7 +301,7 @@ public class ExtendedPasswordGrantHandler extends PasswordGrantHandler {
             // Primary/Secondary supported login mechanisms
             OMElement emailConfigElem = loginConfigElem.getFirstChildWithName(getQNameWithIdentityNS(EMAIL_LOGIN));
 
-            OMElement userIdConfigElem =  loginConfigElem.getFirstChildWithName(getQNameWithIdentityNS(USERID_LOGIN));
+            OMElement userIdConfigElem = loginConfigElem.getFirstChildWithName(getQNameWithIdentityNS(USERID_LOGIN));
 
             Map<String, String> emailConf = new HashMap<String, String>(2);
             emailConf.put(PRIMARY_LOGIN,

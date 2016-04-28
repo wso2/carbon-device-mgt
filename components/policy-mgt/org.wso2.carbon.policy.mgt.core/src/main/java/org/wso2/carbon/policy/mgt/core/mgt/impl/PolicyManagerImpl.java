@@ -24,11 +24,15 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.dao.*;
@@ -84,6 +88,10 @@ public class PolicyManagerImpl implements PolicyManager {
 
             if (policy.getDevices() != null) {
                 policyDAO.addPolicyToDevice(policy.getDevices(), policy);
+            }
+
+            if (policy.getDeviceGroups() != null && !policy.getDeviceGroups().isEmpty()) {
+                policyDAO.addDeviceGroupsToPolicy(policy);
             }
 
             if (policy.getPolicyCriterias() != null) {
@@ -164,8 +172,8 @@ public class PolicyManagerImpl implements PolicyManager {
             }
 
             // Check for the features to delete
-            for(ProfileFeature feature : existingProfileFeaturesList) {
-                if(!updateDFes.contains(feature.getFeatureCode())){
+            for (ProfileFeature feature : existingProfileFeaturesList) {
+                if (!updateDFes.contains(feature.getFeatureCode())) {
                     feturesToDelete.add(feature);
                 }
             }
@@ -191,9 +199,9 @@ public class PolicyManagerImpl implements PolicyManager {
                 featureDAO.addProfileFeatures(newFeaturesList, profileId);
             }
 
-            if(!feturesToDelete.isEmpty()){
+            if (!feturesToDelete.isEmpty()) {
                 for (ProfileFeature pf : feturesToDelete)
-                featureDAO.deleteProfileFeatures(pf.getId());
+                    featureDAO.deleteProfileFeatures(pf.getId());
             }
 
             policyDAO.deleteCriteriaAndDeviceRelatedConfigs(policy.getId());
@@ -209,6 +217,10 @@ public class PolicyManagerImpl implements PolicyManager {
 
             if (policy.getDevices() != null) {
                 policyDAO.addPolicyToDevice(policy.getDevices(), previousPolicy);
+            }
+
+            if (policy.getDeviceGroups() != null && !policy.getDeviceGroups().isEmpty()) {
+                policyDAO.addDeviceGroupsToPolicy(policy);
             }
 
             if (policy.getPolicyCriterias() != null) {
@@ -593,12 +605,21 @@ public class PolicyManagerImpl implements PolicyManager {
                 policy.setRoles(policyDAO.getPolicyAppliedRoles(policy.getId()));
                 policy.setUsers(policyDAO.getPolicyAppliedUsers(policy.getId()));
                 policy.setPolicyCriterias(policyDAO.getPolicyCriteria(policy.getId()));
+
+                List<DeviceGroupWrapper> deviceGroupWrappers = policyDAO.getDeviceGroupsOfPolicy(policy.getId());
+                if(!deviceGroupWrappers.isEmpty()){
+                    deviceGroupWrappers = this.getDeviceGroupNames(deviceGroupWrappers);
+                }
+                policy.setDeviceGroups(deviceGroupWrappers);
+
             }
             Collections.sort(policyList);
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting all the policies.", e);
         } catch (SQLException e) {
             throw new PolicyManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (GroupManagementException e) {
+            throw new PolicyManagementException("Error occurred while getting device groups.", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
@@ -988,6 +1009,16 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
+    }
+
+    private List<DeviceGroupWrapper> getDeviceGroupNames(List<DeviceGroupWrapper> groupWrappers) throws GroupManagementException {
+        GroupManagementProviderService groupManagementProviderService = new GroupManagementProviderServiceImpl();
+        for (DeviceGroupWrapper wrapper : groupWrappers) {
+            DeviceGroup deviceGroup = groupManagementProviderService.getGroup(wrapper.getId());
+            wrapper.setName(deviceGroup.getName());
+            wrapper.setOwner(deviceGroup.getOwner());
+        }
+        return groupWrappers;
     }
 
 }

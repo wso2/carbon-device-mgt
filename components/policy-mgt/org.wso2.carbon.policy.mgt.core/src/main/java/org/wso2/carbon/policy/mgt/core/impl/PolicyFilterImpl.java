@@ -21,12 +21,16 @@ package org.wso2.carbon.policy.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyFilter;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PolicyFilterImpl implements PolicyFilter {
 
@@ -60,6 +64,29 @@ public class PolicyFilterImpl implements PolicyFilter {
     }
 
     @Override
+    public List<Policy> filterDeviceGroupsPolicies(Map<Integer, DeviceGroup> groupMap, List<Policy> policies) {
+
+        List<Policy> temp = new ArrayList<Policy>();
+        Map<Integer, Policy> policyMap = new HashMap<>();
+        for (Policy policy : policies) {
+            List<DeviceGroupWrapper> wrappers = policy.getDeviceGroups();
+            if (PolicyManagementConstants.ANY.equalsIgnoreCase(wrappers.get(0).getName())) {
+                temp.add(policy);
+                policyMap.put(policy.getId(), policy);
+                continue;
+            } else {
+                for (DeviceGroupWrapper deviceGroupWrapper : wrappers) {
+                    if (groupMap.containsKey(deviceGroupWrapper.getId()) && policyMap.containsKey(policy.getId())) {
+                        temp.add(policy);
+                        policyMap.put(policy.getId(), policy);
+                    }
+                }
+            }
+        }
+        return temp;
+    }
+
+    @Override
     public List<Policy> filterRolesBasedPolicies(String roles[], List<Policy> policies) {
 
         if (log.isDebugEnabled()) {
@@ -68,7 +95,7 @@ public class PolicyFilterImpl implements PolicyFilter {
                 log.debug("Names of policy  went in to filterRolesBasedPolicies : " + policy.getPolicyName());
             }
             log.debug("Roles passed to match.");
-            for(String role : roles){
+            for (String role : roles) {
                 log.debug("Role name passed : " + role);
             }
         }
@@ -79,7 +106,7 @@ public class PolicyFilterImpl implements PolicyFilter {
             List<String> tempRoles = policy.getRoles();
             if (tempRoles.isEmpty()) {
 
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Roles list is empty.");
                 }
                 temp.add(policy);

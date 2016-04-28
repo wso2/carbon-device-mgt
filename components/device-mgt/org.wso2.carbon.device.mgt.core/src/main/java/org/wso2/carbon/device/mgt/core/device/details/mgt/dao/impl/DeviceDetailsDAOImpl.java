@@ -83,7 +83,9 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     public void addDeviceProperties(Map<String, String> propertyMap, int deviceId) throws DeviceDetailsMgtDAOException {
 
         if (propertyMap.isEmpty()) {
-            log.warn("Property map of device id :" + deviceId + " is empty.");
+            if(log.isDebugEnabled()) {
+                log.debug("Property map of device id :" + deviceId + " is empty.");
+            }
             return;
         }
         Connection conn;

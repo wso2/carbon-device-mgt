@@ -258,32 +258,34 @@ deviceModule = function () {
     };
 
     // Refactored methods
-    publicMethods.getOwnDevicesCount = function () {
+    publicMethods.getDevicesCount = function () {
         var carbonUser = session.get(constants.USER_SESSION_KEY);
-        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + carbonUser.username
-                  + "/count";
-        return serviceInvokers.XMLHttp.get(
-                url, function (responsePayload) {
-                    return responsePayload;
-                },
-                function (responsePayload) {
-                    log.error(responsePayload);
-                    return -1;
-                }
-        );
-    };
-
-    publicMethods.getAllDevicesCount = function () {
-        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/count";
-        return serviceInvokers.XMLHttp.get(
-                url, function (responsePayload) {
-                    return responsePayload;
-                },
-                function (responsePayload) {
-                    log.error(responsePayload);
-                    return -1;
-                }
-        );
+        if (carbonUser) {
+            var userModule = require("/app/modules/user.js").userModule;
+            var uiPermissions = userModule.getUIPermissions();
+            var url;
+            if (uiPermissions.LIST_DEVICES) {
+                url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/count";
+            } else if (uiPermissions.LIST_OWN_DEVICES) {
+                url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + carbonUser.username
+                      + "/count";
+            } else {
+                log.error("Access denied for user: " + carbonUser.username);
+                return -1;
+            }
+            return serviceInvokers.XMLHttp.get(
+                    url, function (responsePayload) {
+                        return responsePayload;
+                    },
+                    function (responsePayload) {
+                        log.error(responsePayload);
+                        return -1;
+                    }
+            );
+        } else {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
     };
 
     publicMethods.getDeviceTypes = function () {

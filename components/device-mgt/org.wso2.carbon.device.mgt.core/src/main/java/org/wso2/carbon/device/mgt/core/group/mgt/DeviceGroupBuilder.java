@@ -36,6 +36,7 @@ public class DeviceGroupBuilder extends DeviceGroup {
      * @param deviceGroup to decorate
      */
     public DeviceGroupBuilder(DeviceGroup deviceGroup) {
+        this.setId(deviceGroup.getId());
         this.setDescription(deviceGroup.getDescription());
         this.setName(deviceGroup.getName());
         this.setDateOfCreation(deviceGroup.getDateOfCreation());

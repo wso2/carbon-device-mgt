@@ -47,6 +47,14 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple.wso2</groupId>
+            <artifactId>json-simple</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -87,7 +95,24 @@
                             org.wso2.carbon.user.core.service,
                             org.wso2.carbon.identity.application.common.model,
                             org.wso2.carbon.identity.application.authentication.framework.model,
-                            org.wso2.carbon.user.core.tenant
+                            org.wso2.carbon.user.core.tenant,
+                            org.json.simple,
+                            javax.cache,
+                            javax.xml.namespace,
+                            org.apache.axiom.om,
+                            org.wso2.carbon.apimgt.api,
+                            org.wso2.carbon.apimgt.impl,
+                            org.wso2.carbon.apimgt.impl.dao,
+                            org.wso2.carbon.apimgt.impl.utils,
+                            org.wso2.carbon.identity.application.common.cache,
+                            org.wso2.carbon.identity.core.util,
+                            org.wso2.carbon.identity.oauth2.dto,
+                            org.wso2.carbon.identity.oauth2.token,
+                            org.wso2.carbon.identity.oauth2.token.handlers.grant,
+                            org.wso2.carbon.user.core,
+                            org.wso2.carbon.user.core.config,
+                            org.wso2.carbon.user.core.util,
+                            org.wso2.carbon.utils
                         </Import-Package>
                     </instructions>
                 </configuration>

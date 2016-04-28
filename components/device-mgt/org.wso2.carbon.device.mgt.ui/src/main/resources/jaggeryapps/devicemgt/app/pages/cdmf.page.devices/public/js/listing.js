@@ -61,10 +61,18 @@ function InitiateViewOption(url) {
 var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
 var assetContainer = "#ast-container";
 
+var deviceListing, currentUser, groupName, groupOwner;
+
 /*
  * DOM ready functions.
  */
 $(document).ready(function () {
+    deviceListing = $("#device-listing");
+    deviceListing.data("current-user");
+
+    groupName = getParameterByName("groupName");
+    groupOwner = getParameterByName("groupOwner");
+
     /* Adding selected class for selected devices */
     $(deviceCheckbox).each(function () {
         addDeviceSelectedClass(this);
@@ -88,8 +96,6 @@ $(document).ready(function () {
     $(".ast-container").on("click", ".claim-btn", function(e){
         e.stopPropagation();
         var deviceId = $(this).data("deviceid");
-        var deviceListing = $("#device-listing");
-        var currentUser = deviceListing.data("current-user");
         var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
         var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
         invokerUtil.put(serviceURL, deviceIdentifier, function(message){
@@ -161,10 +167,6 @@ function toTitleCase(str) {
 }
 
 function loadDevices(searchType, searchParam){
-    var deviceListing = $("#device-listing");
-    var imageResource = deviceListing.data("image-resource");
-    var currentUser = deviceListing.data("currentUser");
-
     var serviceURL;
     if ($.hasPermission("LIST_DEVICES")) {
         serviceURL = "/devicemgt_admin/devices";
@@ -304,6 +306,15 @@ function loadDevices(searchType, searchParam){
                             'data-click-event="remove-form" class="btn padding-reduce-on-grid-view"><span class="fw-stack">' +
                             '<i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
+
+                    if (!groupName || !groupOwner) {
+                        html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view group-device-link" ' +
+                                'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType + '" data-devicename="' +
+                                row.name + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                                '<i class="fw fw-grouping fw-stack-1x"></i></span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">Group</span></a>';
+                    }
+
                     html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-device-link" ' +
                             'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType + '" data-devicename="' + row.name + '">' +
                             '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
@@ -370,12 +381,6 @@ function loadDevices(searchType, searchParam){
     });
 }
 
-/*
- * Setting-up global variables.
- */
-var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
-var assetContainer = "#ast-container";
-
 function openCollapsedNav() {
     $('.wr-hidden-nav-toggle-btn').addClass('active');
     $('#hiddenNav').slideToggle('slideDown', function () {
@@ -386,14 +391,12 @@ function openCollapsedNav() {
 }
 
 function initPage() {
-    var deviceListing = $("#device-listing");
-    var currentUser = deviceListing.data("currentUser");
     var serviceURL;
     if ($.hasPermission("LIST_DEVICES")) {
         serviceURL = "/devicemgt_admin/devices/count";
     } else if ($.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
-        serviceURL = "/devicemgt_admin/devices/user/"+currentUser+"/count";
+        serviceURL = "/devicemgt_admin/devices/user/" + currentUser + "/count";
     }
     invokerUtil.get(serviceURL,
         function (data) {
@@ -442,8 +445,6 @@ $(document).ready(function () {
     $(".ast-container").on("click", ".claim-btn", function(e) {
         e.stopPropagation();
         var deviceId = $(this).data("deviceid");
-        var deviceListing = $("#device-listing");
-        var currentUser = deviceListing.data("current-user");
         var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
         var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
         invokerUtil.put(serviceURL, deviceIdentifier, function(message) {
@@ -516,72 +517,51 @@ function attachDeviceEvents() {
         $("a.group-device-link").click(function () {
             var deviceId = $(this).data("deviceid");
             var deviceType = $(this).data("devicetype");
-            var endPoint = "api/group/all";
-
             $(modalPopupContent).html($('#group-device-modal-content').html());
             $('#user-groups').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
             $("a#group-device-yes-link").hide();
             showPopup();
 
-            var getGroupsRequest = $.ajax({
-                                              url: endPoint,
-                                              method: "GET",
-                                              contentType: "application/json",
-                                              accept: "application/json"
-                                          });
+            var serviceURL;
+            if ($.hasPermission("LIST_ALL_GROUPS")) {
+                serviceURL = "/devicemgt_admin/groups/all";
+            } else if ($.hasPermission("LIST_GROUPS")) {
+                //Get authenticated users groups
+                serviceURL = "/devicemgt_admin/groups/user/" + currentUser;
+            }
 
-            getGroupsRequest.done(function (data, txtStatus, jqxhr) {
-                                      var groups = JSON.parse(data);
-                                      var status = jqxhr.status;
-                                      if (status == 200) {
-                                          groups = groups.data;
-                                          if (groups.length <= 0) {
-                                              $('#user-groups').html("There is no any groups available");
-                                              return;
-                                          }
-                                          var str = '<br /><select id="assign-group-selector" style="color:#3f3f3f;padding:5px;width:250px;">';
-                                          for (var group in groups) {
-                                              str += '<option value="' + groups[group].id + '">' + groups[group].name + '</option>';
-                                          }
-                                          str += '</select>';
-                                          $('#user-groups').html(str);
-                                          $("a#group-device-yes-link").show();
-                                          $("a#group-device-yes-link").click(function () {
-                                              var selectedGroupId = $('#assign-group-selector').val();
-                                              endPoint = "api/group/id/" + selectedGroupId + "/assign";
-                                              var device = {"deviceId": deviceId, "deviceType": deviceType};
-
-                                              var assignRequest = $.ajax({
-                                                                             url: endPoint,
-                                                                             method: "POST",
-                                                                             contentType: "application/json",
-                                                                             accept: "application/json",
-                                                                             data: JSON.stringify(device)
-                                                                         });
-
-                                              assignRequest.done(function (data, txtStatus, jqxhr) {
-                                                                     var status = jqxhr.status;
-                                                                     if (status == 200) {
-                                                                         $(modalPopupContent).html($('#group-associate-device-200-content').html());
-                                                                         setTimeout(function () {
-                                                                             hidePopup();
-                                                                             location.reload(false);
-                                                                         }, 2000);
-                                                                     } else {
-                                                                         displayDeviceErrors(jqXHR);
-                                                                     }
-                                                                 }
-                                              );
-                                              assignRequest.fail(function (jqXHR) {
-                                                  displayDeviceErrors(jqXHR);
-                                              });
-                                          });
-                                      }
-                                  }
-            );
-            getGroupsRequest.fail(function (jqXHR) {
+            invokerUtil.get(serviceURL, function (data) {
+                var groups = JSON.parse(data);
+                if (groups.length <= 0) {
+                    $('#user-groups').html("There is no any groups available");
+                    return;
+                }
+                var str = '<br /><select id="assign-group-selector" style="color:#3f3f3f;padding:5px;width:250px;">';
+                for (var i = 0; i < groups.length; i++) {
+                    str += '<option value="' + groups[i].owner + "/name/" + groups[i].name + '">' +
+                           groups[i].name + '</option>';
+                }
+                str += '</select>';
+                $('#user-groups').html(str);
+                $("a#group-device-yes-link").show();
+                $("a#group-device-yes-link").click(function () {
+                    var selectedGroup = $('#assign-group-selector').val();
+                    serviceURL = "/devicemgt_admin/groups/owner/" + selectedGroup + "/devices";
+                    var device = {"id": deviceId, "type": deviceType};
+                    invokerUtil.post(serviceURL, device, function (data) {
+                        $(modalPopupContent).html($('#group-associate-device-200-content').html());
+                        setTimeout(function () {
+                            hidePopup();
+                            location.reload(false);
+                        }, 2000);
+                    }, function (message) {
+                        displayDeviceErrors(jqXHR);
+                    });
+                });
+            }, function (message) {
                 displayDeviceErrors(jqXHR);
             });
+
             $("a#group-device-cancel-link").click(function () {
                 hidePopup();
             });

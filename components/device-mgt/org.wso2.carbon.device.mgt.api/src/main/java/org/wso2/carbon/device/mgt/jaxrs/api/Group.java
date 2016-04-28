@@ -21,15 +21,15 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyEixistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -132,6 +132,26 @@ public class Group {
                     .getGroups(startIndex, rowCount);
             if (paginationResult.getRecordsTotal() > 0) {
                 return Response.status(Response.Status.OK).entity(paginationResult).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (GroupManagementException e) {
+            log.error(e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @Path("/all")
+    @GET
+    @Produces("application/json")
+    public Response getAllGroups() {
+        try {
+            GroupManagementProviderService groupManagementProviderService = DeviceMgtAPIUtils
+                    .getGroupManagementProviderService();
+            PaginationResult paginationResult = groupManagementProviderService
+                    .getGroups(0, groupManagementProviderService.getGroupCount());
+            if (paginationResult.getRecordsTotal() > 0) {
+                return Response.status(Response.Status.OK).entity(paginationResult.getData()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -364,16 +384,18 @@ public class Group {
     }
 
     @GET
-    @Path("/owner/{owner}/name/{groupName}/devices/all")
+    @Path("/owner/{owner}/name/{groupName}/devices")
     @Produces("application/json")
-    public Response getDevices(@PathParam("groupName") String groupName,
-                               @PathParam("owner") String owner) {
+    public Response getDevices(@PathParam("groupName") String groupName, @PathParam("owner") String owner,
+                               @QueryParam("start") int startIdx, @QueryParam("length") int length) {
         try {
-            List<Device> devices = DeviceMgtAPIUtils.getGroupManagementProviderService().getDevices(
-                    groupName, owner);
-            Device[] deviceArray = new Device[devices.size()];
-            devices.toArray(deviceArray);
-            return Response.status(Response.Status.OK).entity(deviceArray).build();
+            PaginationResult paginationResult = DeviceMgtAPIUtils
+                    .getGroupManagementProviderService().getDevices(groupName, owner, startIdx, length);
+            if (paginationResult.getRecordsTotal() > 0) {
+                return Response.status(Response.Status.OK).entity(paginationResult).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -394,15 +416,12 @@ public class Group {
         }
     }
 
-    @PUT
-    @Path("/owner/{owner}/name/{groupName}/devices/{deviceType}/{deviceId}")
+    @POST
+    @Path("/owner/{owner}/name/{groupName}/devices")
     @Produces("application/json")
     public Response addDevice(@PathParam("groupName") String groupName,
-                              @PathParam("owner") String owner, @PathParam("deviceId") String deviceId,
-                              @PathParam("deviceType") String deviceType,
-                              @FormParam("userName") String userName) {
+                              @PathParam("owner") String owner, DeviceIdentifier deviceIdentifier) {
         try {
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier(deviceId, deviceType);
             boolean isAdded = DeviceMgtAPIUtils.getGroupManagementProviderService().addDevice(
                     deviceIdentifier, groupName, owner);
             if (isAdded) {

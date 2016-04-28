@@ -44,7 +44,6 @@ function onRequest(context) {
         if (groupName && groupOwner) {
             var groupModule = require("/app/modules/group.js").groupModule;
             deviceCount = groupModule.getGroupDeviceCount(groupName, groupOwner);
-            page.groupOwner = groupOwner;
         } else {
             deviceCount = deviceModule.getDevicesCount();
         }

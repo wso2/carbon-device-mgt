@@ -1,0 +1,83 @@
+<%
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+var uri = request.getRequestURI();
+var uriMatcher = new URIMatcher(String(uri));
+
+var log = new Log("api/device-api.jag");
+var constants = require("/app/modules/constants.js");
+var utility = require("/app/modules/utility.js").utility;
+var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
+
+var user = session.get(constants.USER_SESSION_KEY);
+var result;
+
+response.contentType = 'application/json';
+
+if (!user) {
+    response.sendRedirect("/devicemgt/login?#login-required");
+    exit();
+} else {
+    if (uriMatcher.match("/{context}/api/groups")) {
+        var url = request.getParameter("url");
+        var draw = request.getParameter("draw");
+        var length = request.getParameter("length");
+        var start = request.getParameter("start");
+        var search = request.getParameter("search[value]");
+        var groupName = request.getParameter("columns[1][search][value]");
+        var owner = request.getParameter("columns[2][search][value]");
+        var targetURL;
+
+        function appendQueryParam(url, queryParam, value) {
+            if (url.indexOf("?") > 0) {
+                return url + "&" + queryParam + "=" + value;
+            }
+            return url + "?" + queryParam + "=" + value;
+        }
+
+        targetURL = devicemgtProps.httpsURL + request.getParameter("url");
+        targetURL = appendQueryParam(targetURL, "start", start);
+        targetURL = appendQueryParam(targetURL, "length", length);
+
+        if (search && search !== "") {
+            targetURL = appendQueryParam(targetURL, "search", search);
+        }
+
+        if (groupName && groupName !== "") {
+            targetURL = appendQueryParam(targetURL, "group-name", groupName);
+        }
+
+        if (owner && owner !== "") {
+            targetURL = appendQueryParam(targetURL, "user", owner);
+        }
+
+        serviceInvokers.XMLHttp.get(
+                targetURL, function (responsePayload) {
+                    response.status = 200;
+                    result = responsePayload;
+                },
+                function (responsePayload) {
+                    response.status = responsePayload.status;
+                    result = responsePayload.responseText;
+                });
+    }
+}
+
+%>

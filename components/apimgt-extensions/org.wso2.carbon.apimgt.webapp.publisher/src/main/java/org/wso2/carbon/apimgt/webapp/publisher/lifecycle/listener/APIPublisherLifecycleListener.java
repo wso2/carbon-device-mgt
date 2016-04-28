@@ -24,8 +24,10 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.api.model.*;
-import org.wso2.carbon.apimgt.webapp.publisher.*;
+import org.wso2.carbon.apimgt.api.model.API;
+import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
+import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
+import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationUtil;
@@ -39,7 +41,6 @@ import java.util.Set;
 public class APIPublisherLifecycleListener implements LifecycleListener {
 
     private static final Log log = LogFactory.getLog(APIPublisherLifecycleListener.class);
-
     private static final String PARAM_MANAGED_API_ENABLED = "managed-api-enabled";
 
     @Override
@@ -55,6 +56,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                     AnnotationUtil annotationUtil = new AnnotationUtil(context);
                     Set<String> annotatedAPIClasses = annotationUtil.
                             scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
+
                     List<APIResourceConfiguration> apiDefinitions = annotationUtil.extractAPIInfo(servletContext,
                             annotatedAPIClasses);
 

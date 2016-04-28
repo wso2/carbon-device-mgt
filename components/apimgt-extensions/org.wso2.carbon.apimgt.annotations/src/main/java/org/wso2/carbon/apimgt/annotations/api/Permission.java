@@ -30,7 +30,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Permission {
 
+    /**
+     * Represents the scope name.
+     * @return Returns scope name.
+     */
     String scope();
+
+    /**
+     * Represents the associated permissions.
+     * @return Returns list of permissions.
+     */
     String[] permissions();
 
 }

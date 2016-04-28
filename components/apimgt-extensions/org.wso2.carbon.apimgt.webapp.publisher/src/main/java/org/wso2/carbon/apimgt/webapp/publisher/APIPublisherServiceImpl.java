@@ -107,8 +107,6 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         List<Scope> scopes = new ArrayList<>();
 
         for (URITemplate uriTemplate : api.getUriTemplates()) {
-            JsonObject authType = new JsonObject();
-            authType.addProperty("x-auth-type", "Application%20%26%20Application%20User");
             JsonObject response = new JsonObject();
             response.addProperty("200", "");
 
@@ -148,7 +146,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         swaggerDefinition.addProperty("swagger", "2.0");
         swaggerDefinition.add("info", info);
 
-        // adding scopes to definition
+        // adding scopes to swagger definition
         if (!api.getScopes().isEmpty()) {
             Gson gson = new Gson();
             JsonElement element = gson.toJsonTree(api.getScopes(), new TypeToken<Set<Scope>>() {
@@ -161,6 +159,9 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                 wso2Security.add("apim", apim);
                 swaggerDefinition.add("x-wso2-security", wso2Security);
             }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("API swagger definition: " + swaggerDefinition.toString());
         }
         return swaggerDefinition.toString();
     }
@@ -193,4 +194,5 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             log.debug("End of publishing the batch of APIs");
         }
     }
+
 }

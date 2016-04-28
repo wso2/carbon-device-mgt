@@ -125,7 +125,6 @@ public class AnnotationUtil {
                                                     .class.getName());
 
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
-
                                     List<APIResource> resourceList;
 
                                     if (apiAnno != null) {

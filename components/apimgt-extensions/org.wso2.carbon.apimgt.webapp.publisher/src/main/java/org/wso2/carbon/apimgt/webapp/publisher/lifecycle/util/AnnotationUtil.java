@@ -20,12 +20,19 @@ package org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util;
 
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
+import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
+import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionConfiguration;
+import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementException;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import java.io.IOException;
@@ -36,7 +43,9 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class AnnotationUtil {
 
@@ -68,6 +77,7 @@ public class AnnotationUtil {
 
     /**
      * Scan the context for classes with annotations
+     *
      * @return
      * @throws IOException
      */
@@ -89,6 +99,7 @@ public class AnnotationUtil {
 
     /**
      * Method identifies the URL templates and context by reading the annotations of a class
+     *
      * @param entityClasses
      * @return
      */
@@ -107,8 +118,8 @@ public class AnnotationUtil {
                                 APIResourceConfiguration apiResourceConfig = null;
                                 try {
                                     clazz = classLoader.loadClass(className);
-                                    Class<Path> apiClazz = (Class<Path>)
-                                            classLoader.loadClass(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
+                                    Class<API> apiClazz = (Class<API>)
+                                            classLoader.loadClass(API.class.getName());
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
 
                                     List<APIResource> resourceList;
@@ -123,18 +134,18 @@ public class AnnotationUtil {
                                         }
 
                                         try {
-                                            for(int k=0;k<apiClazzMethods.length;k++){
-                                                switch (apiClazzMethods[k].getName()){
-                                                    case "name" :
+                                            for (int k = 0; k < apiClazzMethods.length; k++) {
+                                                switch (apiClazzMethods[k].getName()) {
+                                                    case "name":
                                                         apiResourceConfig.setName(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
                                                         break;
-                                                    case "version" :
+                                                    case "version":
                                                         apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
                                                         break;
-                                                    case "context" :
+                                                    case "context":
                                                         apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
                                                         break;
-                                                    case "tags" :
+                                                    case "tags":
                                                         apiResourceConfig.setTags(invokeMethod(apiClazzMethods[k], apiAnno));
                                                         break;
                                                 }
@@ -195,34 +206,46 @@ public class AnnotationUtil {
                 resource.setAuthType(AUTH_TYPE);
 
                 Annotation[] annotations = method.getDeclaredAnnotations();
-                for(int i=0; i<annotations.length; i++){
+                for (int i = 0; i < annotations.length; i++) {
 
-                    if(annotations[i].annotationType().getName().equals(GET.class.getName())){
+                    if (annotations[i].annotationType().getName().equals(GET.class.getName())) {
                         resource.setHttpVerb(HttpMethod.GET);
                     }
-                    if(annotations[i].annotationType().getName().equals(POST.class.getName())){
+                    if (annotations[i].annotationType().getName().equals(POST.class.getName())) {
                         resource.setHttpVerb(HttpMethod.POST);
                     }
-                    if(annotations[i].annotationType().getName().equals(OPTIONS.class.getName())){
+                    if (annotations[i].annotationType().getName().equals(OPTIONS.class.getName())) {
                         resource.setHttpVerb(HttpMethod.OPTIONS);
                     }
-                    if(annotations[i].annotationType().getName().equals(DELETE.class.getName())){
+                    if (annotations[i].annotationType().getName().equals(DELETE.class.getName())) {
                         resource.setHttpVerb(HttpMethod.DELETE);
                     }
-                    if(annotations[i].annotationType().getName().equals(PUT.class.getName())){
+                    if (annotations[i].annotationType().getName().equals(PUT.class.getName())) {
                         resource.setHttpVerb(HttpMethod.PUT);
                     }
-                    if(annotations[i].annotationType().getName().equals(Consumes.class.getName())){
+                    if (annotations[i].annotationType().getName().equals(Consumes.class.getName())) {
                         Class<Consumes> consumesClass = (Class<Consumes>) classLoader.loadClass(Consumes.class.getName());
                         Method[] consumesClassMethods = consumesClass.getMethods();
                         Annotation consumesAnno = method.getAnnotation(consumesClass);
                         resource.setConsumes(invokeMethod(consumesClassMethods[0], consumesAnno, STRING_ARR));
                     }
-                    if(annotations[i].annotationType().getName().equals(Produces.class.getName())){
+                    if (annotations[i].annotationType().getName().equals(Produces.class.getName())) {
                         Class<Produces> producesClass = (Class<Produces>) classLoader.loadClass(Produces.class.getName());
                         Method[] producesClassMethods = producesClass.getMethods();
                         Annotation producesAnno = method.getAnnotation(producesClass);
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
+                    }
+                    if (annotations[i].annotationType().getName().equals(Permission.class.getName())) {
+                        PermissionConfiguration permissionConf = this.getPermission(method);
+                        if (permissionConf != null) {
+                            Scope scope = new Scope();
+                            scope.setKey(permissionConf.getScopeName());
+                            scope.setDescription(permissionConf.getScopeName());
+                            scope.setName(permissionConf.getScopeName());
+                            String roles = StringUtils.join(permissionConf.getPermissions(), ",");
+                            scope.setRoles(roles);
+                            resource.setScope(scope);
+                        }
                     }
                 }
                 resourceList.add(resource);
@@ -231,12 +254,12 @@ public class AnnotationUtil {
         return resourceList;
     }
 
-    private String makeContextURLReady(String context){
-        if(context != null && !context.equalsIgnoreCase("")){
-            if(context.startsWith("/")){
+    private String makeContextURLReady(String context) {
+        if (context != null && !context.equalsIgnoreCase("")) {
+            if (context.startsWith("/")) {
                 return context;
-            }else{
-                return "/"+context;
+            } else {
+                return "/" + context;
             }
         }
         return "";
@@ -244,6 +267,7 @@ public class AnnotationUtil {
 
     /**
      * When an annotation and method is passed, this method invokes that executes said method against the annotation
+     *
      * @param method
      * @param annotation
      * @param returnType
@@ -252,11 +276,11 @@ public class AnnotationUtil {
      */
     private String invokeMethod(Method method, Annotation annotation, String returnType) throws Throwable {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
-        switch (returnType){
+        switch (returnType) {
             case STRING:
                 return (String) methodHandler.invoke(annotation, method, null);
             case STRING_ARR:
-                return ((String[])methodHandler.invoke(annotation, method, null))[0];
+                return ((String[]) methodHandler.invoke(annotation, method, null))[0];
             default:
                 return null;
         }
@@ -267,6 +291,36 @@ public class AnnotationUtil {
      */
     private String[] invokeMethod(Method method, Annotation annotation) throws Throwable {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
-        return ((String[])methodHandler.invoke(annotation, method, null));
+        return ((String[]) methodHandler.invoke(annotation, method, null));
     }
+
+    private PermissionConfiguration getPermission(Method currentMethod) throws Throwable {
+        Class<Permission> permissionClass = (Class<Permission>) classLoader.loadClass(Permission.class.getName());
+        Annotation permissionAnnotation = currentMethod.getAnnotation(permissionClass);
+        if (permissionClass != null) {
+            Method[] permissionClassMethods = permissionClass.getMethods();
+            PermissionConfiguration permissionConf = new PermissionConfiguration();
+            for (Method method : permissionClassMethods) {
+                switch (method.getName()) {
+                    case "scope":
+                        permissionConf.setScopeName(invokeMethod(method, permissionAnnotation, STRING));
+                        break;
+                    case "permissions":
+                        String permissions[] = invokeMethod(method, permissionAnnotation);
+                        this.addPermission(permissions);
+                        permissionConf.setPermissions(permissions);
+                        break;
+                }
+            }
+            return permissionConf;
+        }
+        return null;
+    }
+
+    private void addPermission(String[] permissions) throws PermissionManagementException {
+        for (String permission : permissions) {
+            PermissionUtils.addPermission(permission);
+        }
+    }
+
 }

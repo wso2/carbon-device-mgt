@@ -24,35 +24,18 @@ import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.user.api.TenantManager;
-import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.*;
 
 public class APIPublisherUtil {
 
     private static final String DEFAULT_API_VERSION = "1.0.0";
-    public static final String API_VERSION_PARAM="{version}";
-    public static final String API_PUBLISH_ENVIRONEMENT = "Production and Sandbox";
+    private static final String API_VERSION_PARAM="{version}";
+    private static final String API_PUBLISH_ENVIRONMENT = "Production and Sandbox";
 
-    enum HTTPMethod {
-        GET, POST, DELETE, PUT, OPTIONS
-    }
-
-    private static List<HTTPMethod> httpMethods;
-
-    static {
-        httpMethods = new ArrayList<HTTPMethod>(5);
-        httpMethods.add(HTTPMethod.GET);
-        httpMethods.add(HTTPMethod.POST);
-        httpMethods.add(HTTPMethod.DELETE);
-        httpMethods.add(HTTPMethod.PUT);
-        httpMethods.add(HTTPMethod.OPTIONS);
-    }
 
     public static API getAPI(APIConfig config) throws APIManagementException {
         APIProvider provider = config.getProvider();
@@ -79,11 +62,10 @@ public class APIPublisherUtil {
         api.setStatus(APIStatus.CREATED);
         api.setTransports(config.getTransports());
         api.setContextTemplate(config.getContextTemplate());
-        api.setUriTemplates(config.getUriTemplates());
-        Set<String> environements = new HashSet<>();
-        environements.add(API_PUBLISH_ENVIRONEMENT);
-        api.setEnvironments(environements);
-        Set<Tier> tiers = new HashSet<Tier>();
+        Set<String> environments = new HashSet<>();
+        environments.add(API_PUBLISH_ENVIRONMENT);
+        api.setEnvironments(environments);
+        Set<Tier> tiers = new HashSet<>();
         tiers.add(new Tier(APIConstants.UNLIMITED_TIER));
         api.addAvailableTiers(tiers);
         if (config.isSharedWithAllTenants()) {
@@ -95,7 +77,8 @@ public class APIPublisherUtil {
         }
         api.setResponseCache(APIConstants.DISABLED);
 
-        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() + "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
+        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() +
+                "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
         api.setEndpointConfig(endpointConfig);
 
         if ("".equals(id.getVersion()) || (DEFAULT_API_VERSION.equals(id.getVersion()))) {
@@ -106,35 +89,31 @@ public class APIPublisherUtil {
             Set<String> tags = new HashSet<>(Arrays.asList(config.getTags()));
             api.addTags(tags);
         }
-        return api;
-    }
 
-    private static Set<URITemplate> getURITemplates(String endpoint, String authType) {
-        Set<URITemplate> uriTemplates = new LinkedHashSet<URITemplate>();
-        if (APIConstants.AUTH_NO_AUTHENTICATION.equals(authType)) {
-            for (HTTPMethod method : httpMethods) {
-                URITemplate template = new URITemplate();
-                template.setAuthType(APIConstants.AUTH_NO_AUTHENTICATION);
-                template.setHTTPVerb(method.toString());
-                template.setResourceURI(endpoint);
-                template.setUriTemplate("/*");
-                uriTemplates.add(template);
-            }
-        } else {
-            for (HTTPMethod method : httpMethods) {
-                URITemplate template = new URITemplate();
-                if (HTTPMethod.OPTIONS.equals(method)) {
-                    template.setAuthType(APIConstants.AUTH_NO_AUTHENTICATION);
-                } else {
-                    template.setAuthType(APIConstants.AUTH_APPLICATION_OR_USER_LEVEL_TOKEN);
+        // adding scopes to the api
+        Set<URITemplate> uriTemplates = config.getUriTemplates();
+        Map<String, Scope> apiScopes = new HashMap<>();
+
+        if (uriTemplates != null) {
+            // this creates distinct scopes list
+            for (URITemplate template : uriTemplates) {
+                Scope scope = template.getScope();
+                if (scope != null) {
+                    if (apiScopes.get(scope.getKey()) == null) {
+                        apiScopes.put(scope.getKey(), scope);
+                    } else {
+                        // this has to be done because of the use of pass by reference
+                        // where same object reference of scope should be available for both
+                        // api scope and uri template scope
+                        template.setScope(apiScopes.get(scope.getKey()));
+                    }
                 }
-                template.setHTTPVerb(method.toString());
-                template.setResourceURI(endpoint);
-                template.setUriTemplate("/*");
-                uriTemplates.add(template);
             }
+            Set<Scope> scopes = new HashSet<>(apiScopes.values());
+            api.setScopes(scopes);
+            api.setUriTemplates(uriTemplates);
         }
-        return uriTemplates;
+        return api;
     }
 
     public static String getServerBaseUrl() {
@@ -163,7 +142,8 @@ public class APIPublisherUtil {
     }
 
     /**
-     *  When an input is having '@',replace it with '-AT-' [This is required to persist API data in registry,as registry paths don't allow '@' sign.]
+     *  When an input is having '@',replace it with '-AT-'
+     *  [This is required to persist API data in registry,as registry paths don't allow '@' sign.]
      * @param input inputString
      * @return String modifiedString
      */

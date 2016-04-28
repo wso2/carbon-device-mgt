@@ -45,23 +45,23 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 
-	private static final String PERMISSION_CONFIG_PATH = "META-INF" + File.separator + "permissions.xml";
-	private static final Log log = LogFactory.getLog(WebAppDeploymentLifecycleListener.class);
+    private static final String PERMISSION_CONFIG_PATH = "META-INF" + File.separator + "permissions.xml";
+    private static final Log log = LogFactory.getLog(WebAppDeploymentLifecycleListener.class);
 
-	@Override
-	public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
-		if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
-			StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
-			ServletContext servletContext = context.getServletContext();
-			String contextPath = context.getServletContext().getContextPath();
-			try {
-				InputStream permissionStream = servletContext.getResourceAsStream(PERMISSION_CONFIG_PATH);
-				if (permissionStream != null) {
+    @Override
+    public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
+        if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
+            StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
+            ServletContext servletContext = context.getServletContext();
+            String contextPath = context.getServletContext().getContextPath();
+            try {
+                InputStream permissionStream = servletContext.getResourceAsStream(PERMISSION_CONFIG_PATH);
+                if (permissionStream != null) {
                 /* Un-marshaling Device Management configuration */
-					JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
-					Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-					PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
-							unmarshaller.unmarshal(permissionStream);
+                    JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
+                    Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
+                    PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
+                            unmarshaller.unmarshal(permissionStream);
                     List<Permission> permissions = permissionConfiguration.getPermissions();
                     String apiVersion = permissionConfiguration.getApiVersion();
                     if (permissionConfiguration != null && permissions != null) {
@@ -69,22 +69,22 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
                             // update the permission path to absolute permission path
                             permission.setPath(PermissionUtils.getAbsolutePermissionPath(permission.getPath()));
                             permission.setUrl(PermissionUtils.getAbsoluteContextPathOfAPI(contextPath, apiVersion,
-                                                                                           permission.getUrl()).toLowerCase());
+                                    permission.getUrl()).toLowerCase());
                             permission.setMethod(permission.getMethod().toUpperCase());
                             PermissionManagerServiceImpl.getInstance().addPermission(permission);
                         }
-					}
-				}
-			} catch (JAXBException e) {
+                    }
+                }
+            } catch (JAXBException e) {
                 log.error(
                         "Exception occurred while parsing the permission configuration of webapp : "
-                        + context.getServletContext().getContextPath(), e);
+                                + context.getServletContext().getContextPath(), e);
             } catch (PermissionManagementException e) {
                 log.error("Exception occurred while adding the permissions from webapp : "
-                          + servletContext.getContextPath(), e);
+                        + servletContext.getContextPath(), e);
             }
 
         }
-	}
+    }
 
 }

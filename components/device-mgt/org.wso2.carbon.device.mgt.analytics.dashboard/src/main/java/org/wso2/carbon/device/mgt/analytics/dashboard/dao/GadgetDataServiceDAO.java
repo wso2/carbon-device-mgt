@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
+import java.util.List;
 import java.util.Map;
 
 public interface GadgetDataServiceDAO {
@@ -86,5 +87,12 @@ public interface GadgetDataServiceDAO {
     @SuppressWarnings("unused")
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
             Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+
+    @SuppressWarnings("unused")
+    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceDAOException;
+
+    @SuppressWarnings("unused")
+    List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                            Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
 }

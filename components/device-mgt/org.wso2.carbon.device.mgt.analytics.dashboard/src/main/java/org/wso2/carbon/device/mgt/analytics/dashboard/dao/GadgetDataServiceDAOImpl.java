@@ -554,6 +554,109 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return paginationResult;
     }
 
+    public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceDAOException {
+        Connection con;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
+        List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
+        try {
+            con = this.getConnection();
+            String sql;
+            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+            // appending filters to support advanced filtering options
+            // [1] appending filter columns, if exist
+            if (filters != null && filters.size() > 0) {
+                for (String column : filters.keySet()) {
+                    sql = sql + " AND " + column + " = ?";
+                }
+            }
+            stmt = con.prepareStatement(sql);
+            // [2] appending filter column values, if exist
+            stmt.setInt(1, tenantId);
+            if (filters != null && filters.values().size() > 0) {
+                int i = 2;
+                for (Object value : filters.values()) {
+                    if (value instanceof Integer) {
+                        stmt.setInt(i, (Integer) value);
+                    } else if (value instanceof String) {
+                        stmt.setString(i, (String) value);
+                    }
+                    i++;
+                }
+            }
+            // executing query
+            rs = stmt.executeQuery();
+            // fetching query results
+            while (rs.next()) {
+                filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
+                filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
+                filteredDeviceWithDetails.put("connectivity-details", rs.getString("CONNECTIVITY_STATUS"));
+                filteredDevicesWithDetails.add(filteredDeviceWithDetails);
+            }
+        } catch (SQLException e) {
+            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return filteredDevicesWithDetails;
+    }
+
+    public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                                    Map<String, Object> filters) throws GadgetDataServiceDAOException {
+        Connection con;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
+        List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
+        try {
+            con = this.getConnection();
+            String sql;
+            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
+                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            // appending filters to support advanced filtering options
+            // [1] appending filter columns, if exist
+            if (filters != null && filters.size() > 0) {
+                for (String column : filters.keySet()) {
+                    sql = sql + " AND " + column + " = ?";
+                }
+            }
+            stmt = con.prepareStatement(sql);
+            // [2] appending filter column values, if exist
+            stmt.setInt(1, tenantId);
+            stmt.setString(2, nonCompliantFeatureCode);
+            if (filters != null && filters.values().size() > 0) {
+                int i = 3;
+                for (Object value : filters.values()) {
+                    if (value instanceof Integer) {
+                        stmt.setInt(i, (Integer) value);
+                    } else if (value instanceof String) {
+                        stmt.setString(i, (String) value);
+                    }
+                    i++;
+                }
+            }
+            // executing query
+            rs = stmt.executeQuery();
+            // fetching query results
+            while (rs.next()) {
+                filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
+                filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
+                filteredDeviceWithDetails.put("connectivity-details", rs.getString("CONNECTIVITY_STATUS"));
+                filteredDevicesWithDetails.add(filteredDeviceWithDetails);
+            }
+        } catch (SQLException e) {
+            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return filteredDevicesWithDetails;
+    }
+
     private Connection getConnection() throws SQLException {
         return GadgetDataServiceDAOFactory.getConnection();
     }

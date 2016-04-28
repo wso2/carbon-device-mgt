@@ -18,70 +18,71 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher.config;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.wso2.carbon.apimgt.api.model.Scope;
 
-@XmlRootElement(name = "Resource")
-public class APIResource{
+public class APIResource {
 
-	private String AuthType;
-	private String HttpVerb;
-	private String Uri;
-	private String UriTemplate;
-	private String consumes;
-	private String produces;
+    private String AuthType;
+    private String HttpVerb;
+    private String Uri;
+    private String UriTemplate;
+    private String consumes;
+    private String produces;
+    private Scope scope;
 
-	public String getAuthType() {
-		return AuthType;
-	}
+    public String getAuthType() {
+        return AuthType;
+    }
 
-	@XmlElement(name = "AuthType", required = true)
-	public void setAuthType(String authType) {
-		AuthType = authType;
-	}
+    public void setAuthType(String authType) {
+        AuthType = authType;
+    }
 
-	public String getHttpVerb() {
-		return HttpVerb;
-	}
+    public String getHttpVerb() {
+        return HttpVerb;
+    }
 
-	@XmlElement(name = "HttpVerb", required = true)
-	public void setHttpVerb(String httpVerb) {
-		HttpVerb = httpVerb;
-	}
+    public void setHttpVerb(String httpVerb) {
+        HttpVerb = httpVerb;
+    }
 
-	public String getUri() {
-		return Uri;
-	}
+    public String getUri() {
+        return Uri;
+    }
 
-	@XmlElement(name = "Uri", required = true)
-	public void setUri(String uri) {
-		Uri = uri;
-	}
+    public void setUri(String uri) {
+        Uri = uri;
+    }
 
-	public String getUriTemplate() {
-		return UriTemplate;
-	}
+    public String getUriTemplate() {
+        return UriTemplate;
+    }
 
-	@XmlElement(name = "UriTemplate", required = true)
-	public void setUriTemplate(String uriTemplate) {
-		UriTemplate = uriTemplate;
-	}
+    public void setUriTemplate(String uriTemplate) {
+        UriTemplate = uriTemplate;
+    }
 
-	public String getConsumes() {
-		return consumes;
-	}
+    public String getConsumes() {
+        return consumes;
+    }
 
-	@XmlElement(name = "Consumes", required = true)
-	public void setConsumes(String consumes) {
-		this.consumes = consumes;
-	}
+    public void setConsumes(String consumes) {
+        this.consumes = consumes;
+    }
 
-	public String getProduces() {
-		return produces;
-	}
+    public String getProduces() {
+        return produces;
+    }
 
-	@XmlElement(name = "Produces", required = true)
-	public void setProduces(String produces) {
-		this.produces = produces;
-	}
+    public void setProduces(String produces) {
+        this.produces = produces;
+    }
+
+    public Scope getScope() {
+        return scope;
+    }
+
+    public void setScope(Scope scope) {
+        this.scope = scope;
+    }
 }

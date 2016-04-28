@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.analytics.dashboard;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,9 +54,34 @@ public interface GadgetDataService {
     int getDeviceCount(Map<String, Object> filters);
 
     @SuppressWarnings("unused")
+    int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
     Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters);
 
     @SuppressWarnings("unused")
+    Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                                                       Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
     Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
+                                                                            Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
+    PaginationResult getDevicesWithDetails(Map<String, Object> filters, PaginationRequest paginationRequest);
+
+    @SuppressWarnings("unused")
+    PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                    Map<String, Object> filters, PaginationRequest paginationRequest);
+
+    @SuppressWarnings("unused")
+    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters);
+
+    @SuppressWarnings("unused")
+    List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                                                       Map<String, Object> filters);
 
 }

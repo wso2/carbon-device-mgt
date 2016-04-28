@@ -20,13 +20,18 @@ package org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util;
 
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
+import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionConfiguration;
+import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementException;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -38,7 +43,9 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class AnnotationUtil {
 
@@ -118,7 +125,6 @@ public class AnnotationUtil {
                                                     .class.getName());
 
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
-
                                     List<APIResource> resourceList;
 
                                     if (apiAnno != null) {
@@ -224,7 +230,6 @@ public class AnnotationUtil {
 
                 Annotation[] annotations = method.getDeclaredAnnotations();
                 for (int i = 0; i < annotations.length; i++) {
-
                     processHTTPMethodAnnotation(resource, annotations[i]);
                     if (annotations[i].annotationType().getName().equals(Consumes.class.getName())) {
                         Class<Consumes> consumesClass = (Class<Consumes>) classLoader.loadClass(
@@ -239,6 +244,18 @@ public class AnnotationUtil {
                         Method[] producesClassMethods = producesClass.getMethods();
                         Annotation producesAnno = method.getAnnotation(producesClass);
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
+                    }
+                    if (annotations[i].annotationType().getName().equals(Permission.class.getName())) {
+                        PermissionConfiguration permissionConf = this.getPermission(method);
+                        if (permissionConf != null) {
+                            Scope scope = new Scope();
+                            scope.setKey(permissionConf.getScopeName());
+                            scope.setDescription(permissionConf.getScopeName());
+                            scope.setName(permissionConf.getScopeName());
+                            String roles = StringUtils.join(permissionConf.getPermissions(), ",");
+                            scope.setRoles(roles);
+                            resource.setScope(scope);
+                        }
                     }
                 }
                 resourceList.add(resource);
@@ -314,4 +331,34 @@ public class AnnotationUtil {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
         return ((String[]) methodHandler.invoke(annotation, method, null));
     }
+
+    private PermissionConfiguration getPermission(Method currentMethod) throws Throwable {
+        Class<Permission> permissionClass = (Class<Permission>) classLoader.loadClass(Permission.class.getName());
+        Annotation permissionAnnotation = currentMethod.getAnnotation(permissionClass);
+        if (permissionClass != null) {
+            Method[] permissionClassMethods = permissionClass.getMethods();
+            PermissionConfiguration permissionConf = new PermissionConfiguration();
+            for (Method method : permissionClassMethods) {
+                switch (method.getName()) {
+                    case "scope":
+                        permissionConf.setScopeName(invokeMethod(method, permissionAnnotation, STRING));
+                        break;
+                    case "permissions":
+                        String permissions[] = invokeMethod(method, permissionAnnotation);
+                        this.addPermission(permissions);
+                        permissionConf.setPermissions(permissions);
+                        break;
+                }
+            }
+            return permissionConf;
+        }
+        return null;
+    }
+
+    private void addPermission(String[] permissions) throws PermissionManagementException {
+        for (String permission : permissions) {
+            PermissionUtils.addPermission(permission);
+        }
+    }
+
 }

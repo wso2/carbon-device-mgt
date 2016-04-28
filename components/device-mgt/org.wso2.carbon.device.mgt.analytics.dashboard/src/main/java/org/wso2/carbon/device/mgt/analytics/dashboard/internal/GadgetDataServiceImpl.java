@@ -236,4 +236,15 @@ class GadgetDataServiceImpl implements GadgetDataService {
         return featureNonCompliantDeviceCountsByOwnershipTypes;
     }
 
+    @Override
+    public PaginationResult getDevicesWithDetails(Map<String, Object> filters, PaginationRequest paginationRequest) {
+        return null;
+    }
+
+    @Override
+    public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                            Map<String, Object> filters, PaginationRequest paginationRequest) {
+        return null;
+    }
+
 }

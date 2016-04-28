@@ -69,4 +69,11 @@ public interface GadgetDataService {
     Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
                                                                             Map<String, Object> filters);
 
+    @SuppressWarnings("unused")
+    PaginationResult getDevicesWithDetails(Map<String, Object> filters, PaginationRequest paginationRequest);
+
+    @SuppressWarnings("unused")
+    PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                    Map<String, Object> filters, PaginationRequest paginationRequest);
+
 }

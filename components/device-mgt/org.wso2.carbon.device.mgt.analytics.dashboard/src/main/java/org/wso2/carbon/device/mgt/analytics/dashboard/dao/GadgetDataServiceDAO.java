@@ -81,10 +81,18 @@ public interface GadgetDataServiceDAO {
                                                     Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
     @SuppressWarnings("unused")
+    PaginationResult getDevicesWithDetails(Map<String, Object> filters,
+                                           PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+
+    @SuppressWarnings("unused")
+    PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+            Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+
+    @SuppressWarnings("unused")
     List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
     @SuppressWarnings("unused")
     List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                    Map<String, Object> filters) throws GadgetDataServiceDAOException;
+                                            Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
 }

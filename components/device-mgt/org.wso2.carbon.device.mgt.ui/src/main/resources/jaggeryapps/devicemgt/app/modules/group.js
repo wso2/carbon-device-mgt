@@ -54,7 +54,7 @@ var groupModule = {};
     };
 
     groupModule.getGroupDeviceCount = function (groupName, owner) {
-        endPoint = groupServiceEndpoint + "/" + owner + "/" + groupName + "/devices/count";
+        endPoint = groupServiceEndpoint + "/owner/" + owner + "/name/" + groupName + "/devices/count";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;

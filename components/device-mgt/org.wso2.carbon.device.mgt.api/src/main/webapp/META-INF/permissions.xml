@@ -959,9 +959,16 @@
     </Permission>
 
     <Permission>
-        <name>List All Groups</name>
+        <name>List All Groups with Pagination</name>
         <path>/device-mgt/admin/groups/list</path>
         <url>/groups</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>List All Groups</name>
+        <path>/device-mgt/admin/groups/list</path>
+        <url>/groups/all</url>
         <method>GET</method>
     </Permission>
 
@@ -1080,7 +1087,7 @@
     <Permission>
         <name>List Group Devices</name>
         <path>/device-mgt/user/groups/devices/list</path>
-        <url>/groups/owner/*/name/*/devices/all</url>
+        <url>/groups/owner/*/name/*/devices</url>
         <method>GET</method>
     </Permission>
 
@@ -1094,8 +1101,8 @@
     <Permission>
         <name>Add Device to Group</name>
         <path>/device-mgt/user/groups/devices/add</path>
-        <url>/groups/owner/*/name/*/devices/*/*</url>
-        <method>PUT</method>
+        <url>/groups/owner/*/name/*/devices</url>
+        <method>POST</method>
     </Permission>
 
     <Permission>

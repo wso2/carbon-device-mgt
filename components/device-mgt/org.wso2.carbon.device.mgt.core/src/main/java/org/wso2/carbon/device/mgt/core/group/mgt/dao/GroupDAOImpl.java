@@ -384,7 +384,7 @@ public class GroupDAOImpl implements GroupDAO {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT COUNT(gm.ID) AS DEVICE_COUNT FROM DM_DEVICE_GROUP_MAP gm, (SELECT ID " +
                          "FROM DM_GROUP WHERE GROUP_NAME = ? AND OWNER = ? AND TENANT_ID = ?) dg " +
-                         "WHERE gm.GROUP_ID = dg.ID AND dm.TENANT_ID = ?";
+                         "WHERE gm.GROUP_ID = dg.ID AND gm.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, groupName);
             stmt.setString(2, owner);

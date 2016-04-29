@@ -442,18 +442,6 @@ $(document).ready(function () {
         }
     });
 
-    $(".ast-container").on("click", ".claim-btn", function(e) {
-        e.stopPropagation();
-        var deviceId = $(this).data("deviceid");
-        var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
-        var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
-        invokerUtil.put(serviceURL, deviceIdentifier, function(message) {
-            console.log(message);
-        }, function(message){
-            console.log(message.content);
-        });
-    });
-
     /* for data tables*/
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -532,10 +520,6 @@ function attachDeviceEvents() {
 
             invokerUtil.get(serviceURL, function (data) {
                 var groups = JSON.parse(data);
-                if (groups.length <= 0) {
-                    $('#user-groups').html("There is no any groups available");
-                    return;
-                }
                 var str = '<br /><select id="assign-group-selector" style="color:#3f3f3f;padding:5px;width:250px;">';
                 for (var i = 0; i < groups.length; i++) {
                     str += '<option value="' + groups[i].owner + "/name/" + groups[i].name + '">' +
@@ -554,12 +538,19 @@ function attachDeviceEvents() {
                             hidePopup();
                             location.reload(false);
                         }, 2000);
-                    }, function (message) {
+                    }, function (jqXHR) {
                         displayDeviceErrors(jqXHR);
                     });
                 });
-            }, function (message) {
-                displayDeviceErrors(jqXHR);
+            }, function (jqXHR) {
+                if (jqXHR.status == 404) {
+                    $(modalPopupContent).html($('#group-404-content').html());
+                    $("a#cancel-link").click(function () {
+                        hidePopup();
+                    });
+                } else {
+                    displayDeviceErrors(jqXHR);
+                }
             });
 
             $("a#group-device-cancel-link").click(function () {
@@ -636,23 +627,23 @@ function attachDeviceEvents() {
 function displayDeviceErrors(jqXHR) {
     showPopup();
     if (jqXHR.status == 400) {
-        $(modalPopupContent).html($('#group-400-content').html());
-        $("a#group-400-link").click(function () {
+        $(modalPopupContent).html($('#device-400-content').html());
+        $("a#device-400-link").click(function () {
             hidePopup();
         });
     } else if (jqXHR.status == 403) {
-        $(modalPopupContent).html($('#group-403-content').html());
-        $("a#group-403-link").click(function () {
+        $(modalPopupContent).html($('#device-403-content').html());
+        $("a#device-403-link").click(function () {
             hidePopup();
         });
     } else if (jqXHR.status == 409) {
-        $(modalPopupContent).html($('#group-409-content').html());
-        $("a#group-409-link").click(function () {
+        $(modalPopupContent).html($('#device-409-content').html());
+        $("a#device-409-link").click(function () {
             hidePopup();
         });
     } else {
-        $(modalPopupContent).html($('#group-unexpected-error-content').html());
-        $("a#group-unexpected-error-link").click(function () {
+        $(modalPopupContent).html($('#device-unexpected-error-content').html());
+        $("a#device-unexpected-error-link").click(function () {
             hidePopup();
         });
         console.log("Error code: " + jqXHR.status);

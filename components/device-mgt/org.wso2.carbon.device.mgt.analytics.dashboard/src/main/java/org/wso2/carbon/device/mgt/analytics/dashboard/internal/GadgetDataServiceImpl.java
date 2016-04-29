@@ -270,12 +270,32 @@ class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) {
-        return null;
+        List<Map<String, Object>> devicesWithDetails = null;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            devicesWithDetails = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getDevicesWithDetails(filters);
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            return null;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return devicesWithDetails;
     }
 
     @Override
-    public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode, Map<String, Object> filters) {
-        return null;
+    public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                                                              Map<String, Object> filters) {
+        List<Map<String, Object>> featureNonCompliantDevicesWithDetails = null;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            featureNonCompliantDevicesWithDetails = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
+                getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filters);
+        } catch (GadgetDataServiceDAOException | SQLException e) {
+            return null;
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return featureNonCompliantDevicesWithDetails;
     }
 
 }

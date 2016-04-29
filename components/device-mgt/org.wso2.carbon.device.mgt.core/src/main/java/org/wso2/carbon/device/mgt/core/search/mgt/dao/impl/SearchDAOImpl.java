@@ -78,17 +78,14 @@ public class SearchDAOImpl implements SearchDAO {
                 deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
                 deviceInfo.setExternalAvailableMemory(rs.getDouble("EXTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setExternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-//                deviceInfo.setIMEI(rs.getString("IMEI"));
-//                deviceInfo.setIMSI(rs.getString("IMSI"));
                 deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setInternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-//                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
-//                deviceInfo.setOperator(rs.getString("OPERATOR"));
                 deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
                 deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
                 deviceInfo.setSsid(rs.getString("SSID"));
                 deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));
                 deviceInfo.setVendor(rs.getString("VENDOR"));
+                deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
 
                 DeviceLocation deviceLocation = new DeviceLocation();
                 deviceLocation.setLatitude(rs.getDouble("LATITUDE"));
@@ -100,6 +97,7 @@ public class SearchDAOImpl implements SearchDAO {
                 deviceLocation.setZip(rs.getString("ZIP"));
                 deviceLocation.setCountry(rs.getString("COUNTRY"));
                 deviceLocation.setDeviceId(rs.getInt("ID"));
+                deviceLocation.setUpdatedTime(new java.util.Date(rs.getLong("DL_UPDATED_TIMESTAMP")));
 
                 DeviceWrapper wrapper = new DeviceWrapper();
                 wrapper.setDevice(device);
@@ -160,17 +158,14 @@ public class SearchDAOImpl implements SearchDAO {
                 deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
                 deviceInfo.setExternalAvailableMemory(rs.getDouble("EXTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setExternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-//                deviceInfo.setIMEI(rs.getString("IMEI"));
-//                deviceInfo.setIMSI(rs.getString("IMSI"));
                 deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
                 deviceInfo.setInternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-//                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
-//                deviceInfo.setOperator(rs.getString("OPERATOR"));
                 deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
                 deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
                 deviceInfo.setSsid(rs.getString("SSID"));
                 deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));
                 deviceInfo.setVendor(rs.getString("VENDOR"));
+                deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
 
                 DeviceLocation deviceLocation = new DeviceLocation();
                 deviceLocation.setLatitude(rs.getDouble("LATITUDE"));
@@ -182,6 +177,7 @@ public class SearchDAOImpl implements SearchDAO {
                 deviceLocation.setZip(rs.getString("ZIP"));
                 deviceLocation.setCountry(rs.getString("COUNTRY"));
                 deviceLocation.setDeviceId(rs.getInt("ID"));
+                deviceLocation.setUpdatedTime(new java.util.Date(rs.getLong("DL_UPDATED_TIMESTAMP")));
 
                 DeviceWrapper wrapper = new DeviceWrapper();
                 wrapper.setDevice(device);

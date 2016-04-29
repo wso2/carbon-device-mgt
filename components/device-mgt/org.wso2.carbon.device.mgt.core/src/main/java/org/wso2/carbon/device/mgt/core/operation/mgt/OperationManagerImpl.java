@@ -613,7 +613,7 @@ public class OperationManagerImpl implements OperationManager {
     public Operation getOperation(int operationId) throws OperationManagementException {
         Operation operation;
         try {
-            OperationManagementDAOFactory.getConnection();
+            OperationManagementDAOFactory.openConnection();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.
                                                                          getOperation(operationId);
             if (dtoOperation == null) {

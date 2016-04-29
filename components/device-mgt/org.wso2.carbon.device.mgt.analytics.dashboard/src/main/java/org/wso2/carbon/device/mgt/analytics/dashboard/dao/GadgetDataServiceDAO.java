@@ -33,58 +33,68 @@ public interface GadgetDataServiceDAO {
      */
     int getTotalDeviceCount() throws GadgetDataServiceDAOException;
 
+    /**
+     * Method to get active device count from a particular tenant.
+     *
+     * @return active device count.
+     */
     int getActiveDeviceCount() throws GadgetDataServiceDAOException;
 
+    /**
+     * Method to get inactive device count from a particular tenant.
+     *
+     * @return inactive device count.
+     */
     int getInactiveDeviceCount() throws GadgetDataServiceDAOException;
 
+    /**
+     * Method to get removed device count from a particular tenant.
+     *
+     * @return removed device count.
+     */
     int getRemovedDeviceCount() throws GadgetDataServiceDAOException;
 
     /**
-     * Method to get non-compliant device count.
+     * Method to get non-compliant device count from a particular tenant.
      *
      * @return Non-compliant device count.
      */
-    @SuppressWarnings("unused")
     int getNonCompliantDeviceCount() throws GadgetDataServiceDAOException;
 
     /**
-     * Method to get unmonitored device count.
+     * Method to get unmonitored device count from a particular tenant.
      *
      * @return Unmonitored device count.
      */
-    @SuppressWarnings("unused")
     int getUnmonitoredDeviceCount() throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     int getDeviceCount(Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
                                           Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
                                                     Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters)
             throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
                                                     Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
+    PaginationResult getDevicesWithDetails(Map<String, Object> filters,
+                                           PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+
+    PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+            Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+
     List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
-    @SuppressWarnings("unused")
     List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                    Map<String, Object> filters) throws GadgetDataServiceDAOException;
+                                            Map<String, Object> filters) throws GadgetDataServiceDAOException;
 
 }

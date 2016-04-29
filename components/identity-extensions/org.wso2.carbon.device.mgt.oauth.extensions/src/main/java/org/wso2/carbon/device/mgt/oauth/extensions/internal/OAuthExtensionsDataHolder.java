@@ -22,6 +22,8 @@ import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
+import java.util.List;
+
 /**
  * This holds the OSGi service references required for oauth extensions bundle.
  */
@@ -30,6 +32,7 @@ public class OAuthExtensionsDataHolder {
     private RealmService realmService;
     private OAuth2TokenValidationService oAuth2TokenValidationService;
     private PermissionManagerService permissionManagerService;
+    private List<String> whitelistedScopes;
 
     private static OAuthExtensionsDataHolder thisInstance = new OAuthExtensionsDataHolder();
 
@@ -71,5 +74,13 @@ public class OAuthExtensionsDataHolder {
             throw new IllegalStateException("PermissionManager service is not initialized properly");
         }
         return permissionManagerService;
+    }
+
+    public List<String> getWhitelistedScopes() {
+        return whitelistedScopes;
+    }
+
+    public void setWhitelistedScopes(List<String> whitelistedScopes) {
+        this.whitelistedScopes = whitelistedScopes;
     }
 }

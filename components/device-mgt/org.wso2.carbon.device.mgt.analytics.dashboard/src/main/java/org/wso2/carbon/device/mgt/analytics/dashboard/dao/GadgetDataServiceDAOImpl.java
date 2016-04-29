@@ -411,7 +411,6 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
         List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
         int totalRecordsCount = 0;
         try {
@@ -448,7 +447,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
+            Map<String, Object> filteredDeviceWithDetails;
             while (rs.next()) {
+                filteredDeviceWithDetails = new HashMap<>();
                 filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
@@ -559,7 +560,6 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
         List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
         try {
             con = this.getConnection();
@@ -589,7 +589,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
+            Map<String, Object> filteredDeviceWithDetails;
             while (rs.next()) {
+                filteredDeviceWithDetails = new HashMap<>();
                 filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));

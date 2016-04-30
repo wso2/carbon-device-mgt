@@ -97,6 +97,7 @@ public class OperationDAOUtil {
         operation.setProperties(dtoOperation.getProperties());
         operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + dtoOperation.getId());
 
+
         return operation;
     }
 }

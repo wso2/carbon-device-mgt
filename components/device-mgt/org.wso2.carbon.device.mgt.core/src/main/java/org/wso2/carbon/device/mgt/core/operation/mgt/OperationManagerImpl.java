@@ -109,6 +109,12 @@ public class OperationManagerImpl implements OperationManager {
                             OperationDAOUtil.convertOperation(operation);
                     int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
                     for (EnrolmentInfo enrolmentInfo : enrolments) {
+                        if(operationDto.getControl() ==
+                                org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT){
+                            operationDAO.updateEnrollmentOperationsStatus(enrolmentInfo.getId(), operationDto.getCode(),
+                                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
+                                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
+                        }
                         operationMappingDAO.addOperationMapping(operationId, enrolmentInfo.getId());
                     }
                     OperationManagementDAOFactory.commitTransaction();

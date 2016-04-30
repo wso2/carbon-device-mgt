@@ -60,7 +60,7 @@ public class CertificateAuthenticator implements WebappAuthenticator {
             if (request.getHeader(MUTUAL_AUTH_HEADER) != null) {
                 X509Certificate[] clientCertificate = (X509Certificate[]) request.
                                                                         getAttribute(CLIENT_CERTIFICATE_ATTRIBUTE);
-                if (clientCertificate[0] != null) {
+                if (clientCertificate != null && clientCertificate[0] != null) {
                     CertificateResponse certificateResponse = AuthenticatorFrameworkDataHolder.getInstance().
                             getCertificateManagementService().verifyPEMSignature(clientCertificate[0]);
                     if (certificateResponse == null) {
@@ -86,6 +86,9 @@ public class CertificateAuthenticator implements WebappAuthenticator {
                                                       "but the serial number is missing in the database.");
                     }
 
+                } else {
+                    authenticationInfo.setStatus(Status.FAILURE);
+                    authenticationInfo.setMessage("No client certificate is present");
                 }
             } else if (request.getHeader(CERTIFICATE_VERIFICATION_HEADER) != null) {
 

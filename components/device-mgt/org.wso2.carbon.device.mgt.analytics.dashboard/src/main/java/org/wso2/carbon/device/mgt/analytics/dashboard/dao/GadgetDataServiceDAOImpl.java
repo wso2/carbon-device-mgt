@@ -485,7 +485,6 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
         List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
         int totalRecordsCount = 0;
         try {
@@ -499,7 +498,7 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 }
             }
             sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
+                  "WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -523,7 +522,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
+            Map<String, Object> filteredDeviceWithDetails;
             while (rs.next()) {
+                filteredDeviceWithDetails = new HashMap<>();
                 filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
@@ -612,13 +613,12 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
         List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
         try {
             con = this.getConnection();
             String sql;
             sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+                  "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -644,7 +644,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
+            Map<String, Object> filteredDeviceWithDetails;
             while (rs.next()) {
+                filteredDeviceWithDetails = new HashMap<>();
                 filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));

@@ -78,4 +78,8 @@ public class ConfigOperation extends Operation {
         return Type.CONFIG;
     }
 
+    public Control getControl(){
+        return Control.REPEAT;
+    }
+
 }

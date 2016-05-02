@@ -34,4 +34,8 @@ public class CommandOperation extends Operation {
         return Type.COMMAND;
     }
 
+    public Control getControl(){
+        return Control.NO_REPEAT;
+    }
+
 }

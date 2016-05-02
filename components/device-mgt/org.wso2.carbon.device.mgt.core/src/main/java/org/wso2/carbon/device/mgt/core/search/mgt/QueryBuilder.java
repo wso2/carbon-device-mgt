@@ -38,4 +38,6 @@ public interface QueryBuilder {
 
     List<String> processORProperties(List<Condition> conditions) throws InvalidOperatorException;
 
+    String processUpdatedDevices(long epochTime) throws InvalidOperatorException;
+
 }

@@ -28,4 +28,6 @@ import java.util.List;
 public interface Processor {
 
     List<DeviceWrapper> execute(SearchContext searchContext) throws SearchMgtException;
+
+    List<DeviceWrapper> getUpdatedDevices(long epochTime) throws SearchMgtException;
 }

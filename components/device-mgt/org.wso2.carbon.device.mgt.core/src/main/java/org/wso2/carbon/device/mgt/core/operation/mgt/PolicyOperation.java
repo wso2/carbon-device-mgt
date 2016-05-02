@@ -33,4 +33,8 @@ public class PolicyOperation extends Operation {
         this.profileOperations = profileOperations;
     }
 
+    public Control getControl(){
+        return Control.REPEAT;
+    }
+
 }

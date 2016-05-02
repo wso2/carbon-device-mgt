@@ -206,6 +206,20 @@
         <method>GET</method>
     </Permission>
 
+    <Permission>
+        <name>Modify user device</name>
+        <path>/device-mgt/user/devices/update</path>
+        <url>/devices/type/*/id/*</url>
+        <method>PUT</method>
+    </Permission>
+
+    <Permission>
+        <name>Remove user device</name>
+        <path>/device-mgt/user/devices/remove</path>
+        <url>/devices/type/*/id/*</url>
+        <method>DELETE</method>
+    </Permission>
+
     <!--<Permission>-->
         <!--<name>Get device</name>-->
         <!--<path>/device-mgt/devices/view</path>-->
@@ -239,6 +253,13 @@
         <name>List devices</name>
         <path>/device-mgt/admin/devices/list</path>
         <url>/devices/name/*/*</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>List All Own Devices</name>
+        <path>/device-mgt/user/devices/list</path>
+        <url>/devices/user/*</url>
         <method>GET</method>
     </Permission>
     <!-- End of Device related APIs -->
@@ -938,9 +959,16 @@
     </Permission>
 
     <Permission>
-        <name>List All Groups</name>
+        <name>List All Groups with Pagination</name>
         <path>/device-mgt/admin/groups/list</path>
         <url>/groups</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>List All Groups</name>
+        <path>/device-mgt/admin/groups/list</path>
+        <url>/groups/all</url>
         <method>GET</method>
     </Permission>
 
@@ -1059,7 +1087,7 @@
     <Permission>
         <name>List Group Devices</name>
         <path>/device-mgt/user/groups/devices/list</path>
-        <url>/groups/owner/*/name/*/devices/all</url>
+        <url>/groups/owner/*/name/*/devices</url>
         <method>GET</method>
     </Permission>
 
@@ -1073,8 +1101,8 @@
     <Permission>
         <name>Add Device to Group</name>
         <path>/device-mgt/user/groups/devices/add</path>
-        <url>/groups/owner/*/name/*/devices/*/*</url>
-        <method>PUT</method>
+        <url>/groups/owner/*/name/*/devices</url>
+        <method>POST</method>
     </Permission>
 
     <Permission>

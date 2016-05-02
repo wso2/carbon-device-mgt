@@ -100,61 +100,6 @@ deviceModule = function () {
     /*
      @Deprecated
      */
-    publicMethods.listDevicesForUser = function (username) {
-        var carbonUser = session.get(constants.USER_SESSION_KEY);
-        var utility = require('/app/modules/utility.js').utility;
-        if (!carbonUser) {
-            log.error("User object was not found in the session");
-            throw constants.ERRORS.USER_NOT_FOUND;
-        }
-        try {
-            utility.startTenantFlow(carbonUser);
-            var deviceManagementService = utility.getDeviceManagementService();
-            var devices = deviceManagementService.getDevicesOfUser(username);
-            var deviceList = [];
-            var i, device, propertiesList, deviceObject;
-            for (i = 0; i < devices.size(); i++) {
-                device = devices.get(i);
-                propertiesList = DeviceManagerUtil.convertDevicePropertiesToMap(device.getProperties());
-
-                deviceObject = {};
-                deviceObject[constants.DEVICE_IDENTIFIER] =
-                    privateMethods.validateAndReturn(device.getDeviceIdentifier());
-                deviceObject[constants.DEVICE_NAME] =
-                    privateMethods.validateAndReturn(device.getName());
-                deviceObject[constants.DEVICE_OWNERSHIP] =
-                    privateMethods.validateAndReturn(device.getEnrolmentInfo().getOwnership());
-                deviceObject[constants.DEVICE_OWNER] =
-                    privateMethods.validateAndReturn(device.getEnrolmentInfo().getOwner());
-                deviceObject[constants.DEVICE_TYPE] =
-                    privateMethods.validateAndReturn(device.getType());
-                deviceObject[constants.DEVICE_PROPERTIES] = {};
-                if (device.getType() == constants.PLATFORM_IOS) {
-                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_MODEL] =
-                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_PRODUCT));
-                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_VENDOR] = constants.VENDOR_APPLE;
-                } else {
-                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_MODEL] =
-                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_MODEL));
-                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_VENDOR] =
-                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_VENDOR));
-                }
-                deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_OS_VERSION] =
-                    privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_OS_VERSION));
-
-                deviceList.push(deviceObject);
-            }
-            return deviceList;
-        } catch (e) {
-            throw e;
-        } finally {
-            utility.endTenantFlow();
-        }
-    };
-
-    /*
-     @Deprecated
-     */
     /*
      Get the supported features by the device type
      */
@@ -298,8 +243,7 @@ deviceModule = function () {
                             deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
                             return deviceObject;
                         }
-                    }
-                    ,
+                    },
                     function (responsePayload) {
                         var response = {};
                         response["status"] = "error";
@@ -314,44 +258,42 @@ deviceModule = function () {
     };
 
     // Refactored methods
-    publicMethods.getOwnDevicesCount = function () {
+    publicMethods.getDevicesCount = function () {
         var carbonUser = session.get(constants.USER_SESSION_KEY);
-        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + carbonUser.username
-                  + "/count";
-        return serviceInvokers.XMLHttp.get(
-                url, function (responsePayload) {
-                    return responsePayload;
-                }
-                ,
-                function (responsePayload) {
-                    log.error(responsePayload);
-                    return -1;
-                }
-        );
+        if (carbonUser) {
+            var userModule = require("/app/modules/user.js").userModule;
+            var uiPermissions = userModule.getUIPermissions();
+            var url;
+            if (uiPermissions.LIST_DEVICES) {
+                url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/count";
+            } else if (uiPermissions.LIST_OWN_DEVICES) {
+                url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + carbonUser.username
+                      + "/count";
+            } else {
+                log.error("Access denied for user: " + carbonUser.username);
+                return -1;
+            }
+            return serviceInvokers.XMLHttp.get(
+                    url, function (responsePayload) {
+                        return responsePayload;
+                    },
+                    function (responsePayload) {
+                        log.error(responsePayload);
+                        return -1;
+                    }
+            );
+        } else {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
     };
-
-    publicMethods.getAllDevicesCount = function () {
-        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/count";
-        return serviceInvokers.XMLHttp.get(
-                url, function (responsePayload) {
-                    return responsePayload;
-                }
-                ,
-                function (responsePayload) {
-                    log.error(responsePayload);
-                    return -1;
-                }
-        );
-    };
-
 
     publicMethods.getDeviceTypes = function () {
         var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/types";
         return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return responsePayload;
-                }
-                ,
+                },
                 function (responsePayload) {
                     log.error(responsePayload);
                     return -1;
@@ -383,86 +325,20 @@ deviceModule = function () {
         return license;
     };
 
-    publicMethods.getOwnDevices = function () {
-        var listAllDevicesEndPoint = deviceCloudService + "/device/user/" + user.username + "/all";
-        var result = get(listAllDevicesEndPoint, {}, "json");
-        var devices = result.data;
-        var device;
-        for (var d in devices){
-            device = devices[d];
-            device.assetId = publicMethods.getAssetId(device.deviceType);
-        }
-        return result;
+    publicMethods.getDevices = function (userName) {
+        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + userName;
+        return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    for (var i = 0; i < responsePayload.length; i++) {
+                        responsePayload[i].thumb = utility.getDeviceThumb(responsePayload[i].type);
+                    }
+                    return responsePayload;
+                },
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return -1;
+                }
+        );
     };
-
-    publicMethods.getAllPermittedDevices = function () {
-        var groupModule = require("/app/modules/group.js").groupModule;
-
-        var result = publicMethods.getUnGroupedDevices();
-        var unGroupedDevices = result.data;
-        var user_groups = groupModule.getGroups().data;
-        var allDevices = [];
-        var deviceCount = unGroupedDevices.length;
-        for (var g in user_groups) {
-            var deviceInGroup = user_groups[g].devices;
-            deviceCount += deviceInGroup.length;
-            if (deviceInGroup && deviceInGroup.length == 0) {
-                delete user_groups[g]["devices"];
-            }
-            var device;
-            for (var d in deviceInGroup){
-                device = deviceInGroup[d];
-                device.assetId = publicMethods.getAssetId(device.type);
-            }
-            allDevices.push(user_groups[g]);
-        }
-        allDevices.push({id: 0, devices: unGroupedDevices});
-        result.data = allDevices;
-        result.device_count = deviceCount;
-        return result;
-    };
-
-    publicMethods.removeDevice = function (deviceType, deviceId) {
-        var carbonUser = session.get(constants.USER_SESSION_KEY);
-        if (!carbonUser) {
-            log.error("User object was not found in the session");
-            throw constants.ERRORS.USER_NOT_FOUND;
-        }
-        try {
-            utility.startTenantFlow(carbonUser);
-            var deviceManagementService = utility.getDeviceManagementService();
-            var deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setType(deviceType);
-            deviceIdentifier.setId(deviceId);
-            return deviceManagementService.disenrollDevice(deviceIdentifier);
-        } catch (e) {
-            throw e;
-        } finally {
-            utility.endTenantFlow();
-        }
-    };
-
-    publicMethods.updateDevice = function (deviceType, deviceId, deviceName) {
-        var carbonUser = session.get(constants.USER_SESSION_KEY);
-        if (!carbonUser) {
-            log.error("User object was not found in the session");
-            throw constants.ERRORS.USER_NOT_FOUND;
-        }
-        try {
-            utility.startTenantFlow(carbonUser);
-            var deviceManagementService = utility.getDeviceManagementService();
-            var deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setType(deviceType);
-            deviceIdentifier.setId(deviceId);
-            var device = deviceManagementService.getDevice(deviceIdentifier);
-            device.setName(deviceName);
-            return deviceManagementService.modifyEnrollment(device);
-        } catch (e) {
-            throw e;
-        } finally {
-            utility.endTenantFlow();
-        }
-    };
-
     return publicMethods;
 }();

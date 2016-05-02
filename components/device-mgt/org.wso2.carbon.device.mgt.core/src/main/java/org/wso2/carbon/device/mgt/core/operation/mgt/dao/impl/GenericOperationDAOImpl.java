@@ -106,6 +106,41 @@ public class GenericOperationDAOImpl implements OperationDAO {
     }
 
     @Override
+    public void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode, Operation.Status existingStatus,
+                                                 Operation.Status newStatus) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING AS EOM INNER JOIN DM_OPERATION DM " +
+                    "ON DM.ID = EOM.OPERATION_ID  WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? " +
+                    "AND EOM.STATUS = ?;";
+            stmt = connection.prepareStatement(query);
+            stmt.setInt(1, enrolmentId);
+            stmt.setString(2, operationCode);
+            stmt.setString(3, existingStatus.toString());
+            // This will return only one result always.
+            rs = stmt.executeQuery();
+            int id = 0;
+            while (rs.next()){
+                id = rs.getInt("ID");
+            }
+            if (id != 0){
+                stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS = ? WHERE ID = ?");
+                stmt.setString(1, newStatus.toString());
+                stmt.setInt(2, id);
+                stmt.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while update device mapping operation status " +
+                    "metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+    }
+
+    @Override
     public void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;

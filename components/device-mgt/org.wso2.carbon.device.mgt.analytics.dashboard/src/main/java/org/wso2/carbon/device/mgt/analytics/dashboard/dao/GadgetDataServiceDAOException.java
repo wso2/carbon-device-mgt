@@ -18,11 +18,11 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
-@SuppressWarnings("unused")
 /**
- * Custom exception class for data access related exceptions.
+ * Custom exception class for GadgetDataServiceDAO layer.
  */
 public class GadgetDataServiceDAOException extends Exception {
+
     private String errorMessage;
     private static final long serialVersionUID = 2021891706072918864L;
 
@@ -43,6 +43,7 @@ public class GadgetDataServiceDAOException extends Exception {
      * @param errorMessage Specific error message.
      * @param cause Cause of this exception.
      */
+    @SuppressWarnings("unused")
     public GadgetDataServiceDAOException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         setErrorMessage(errorMessage);
@@ -53,6 +54,7 @@ public class GadgetDataServiceDAOException extends Exception {
      *
      * @param errorMessage Specific error message.
      */
+    @SuppressWarnings("unused")
     public GadgetDataServiceDAOException(String errorMessage) {
         super(errorMessage);
         setErrorMessage(errorMessage);
@@ -63,10 +65,12 @@ public class GadgetDataServiceDAOException extends Exception {
      *
      * @param cause Cause of this exception.
      */
+    @SuppressWarnings("unused")
     public GadgetDataServiceDAOException(Throwable cause) {
         super(cause);
     }
 
+    @SuppressWarnings("unused")
     public String getErrorMessage() {
         return errorMessage;
     }
@@ -74,4 +78,5 @@ public class GadgetDataServiceDAOException extends Exception {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
 }

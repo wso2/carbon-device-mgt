@@ -38,11 +38,11 @@ if (!user) {
     if (uriMatcher.match("/{context}/api/operations/{deviceType}/stats")) {
         var deviceType = uriMatcher.elements().deviceType;
         var deviceId = request.getParameter("deviceId");
-        var monitor_operations = operationModule.getMonitorOperations(deviceType);
+        var monitorOperations = operationModule.getMonitorOperations(deviceType);
         var stats = [];
         result = {};
-        for (var op in monitor_operations) {
-            result = operationModule.handleGETOperation(deviceType, monitor_operations[op].operation, monitor_operations[op].name, deviceId);
+        for (var op in monitorOperations) {
+            result = operationModule.handleGETOperation(deviceType, monitorOperations[op].operation, monitorOperations[op].name, deviceId);
             stats.push(result.data);
         }
         result.data = stats;

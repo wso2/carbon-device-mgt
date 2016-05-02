@@ -18,6 +18,10 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard;
 
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,30 +30,61 @@ import java.util.Map;
 public interface GadgetDataService {
 
     @SuppressWarnings("unused")
-    int getTotalDeviceCount(Map<String, Object> filters);
+    int getTotalDeviceCount() throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    int getActiveDeviceCount();
+    int getActiveDeviceCount() throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    int getInactiveDeviceCount();
+    int getInactiveDeviceCount() throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    int getRemovedDeviceCount();
+    int getRemovedDeviceCount() throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    int getNonCompliantDeviceCount();
+    int getNonCompliantDeviceCount() throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    int getUnmonitoredDeviceCount();
+    int getUnmonitoredDeviceCount() throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    Map<String, Integer> getNonCompliantDeviceCountsByFeatures();
+    PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest)
+            throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters);
+    int getDeviceCount(Map<String, Object> filters) throws GadgetDataServiceException;
 
     @SuppressWarnings("unused")
-    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters);
+    int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
+                                          Map<String, Object> filters) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                                         Map<String, Object> filters) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
+                                                         Map<String, Object> filters) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    PaginationResult getDevicesWithDetails(Map<String, Object> filters,
+                                           PaginationRequest paginationRequest) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                    Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceException;
+
+    @SuppressWarnings("unused")
+    List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                                         Map<String, Object> filters) throws GadgetDataServiceException;
 
 }

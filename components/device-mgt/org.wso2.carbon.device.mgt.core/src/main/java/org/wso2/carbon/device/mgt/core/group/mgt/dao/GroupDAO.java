@@ -83,6 +83,14 @@ public interface GroupDAO {
     DeviceGroupBuilder getGroup(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
 
     /**
+     * Get the groups of device with device id provided
+     * @param deviceId
+     * @return
+     * @throws GroupManagementDAOException
+     */
+    List<DeviceGroupBuilder> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException;
+
+    /**
      * Get the list of Device Groups in tenant.
      *
      * @param startIndex for pagination.

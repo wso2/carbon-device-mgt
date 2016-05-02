@@ -753,17 +753,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
             throws DeviceManagementException {
 
-        try {
-            for (DeviceIdentifier deviceId : deviceIds) {
-                DeviceManagementService dms =
-                        getPluginRepository().getDeviceManagementService(deviceId.getType(), this.getTenantId());
-                dms.notifyOperationToDevices(operation, deviceIds);
-            }
-        } catch (DeviceManagementException deviceMgtEx) {
-            String errorMsg = "Error in notify operations to plugins for app installation:" +
-                              deviceMgtEx.getErrorMessage();
-            log.error(errorMsg, deviceMgtEx);
-            throw new DeviceManagementException(errorMsg, deviceMgtEx);
+        for (DeviceIdentifier deviceId : deviceIds) {
+            DeviceManagementService dms =
+                    getPluginRepository().getDeviceManagementService(deviceId.getType(), this.getTenantId());
+            //TODO FIX THIS WITH PUSH NOTIFICATIONS
+            //dms.notifyOperationToDevices(operation, deviceIds);
         }
 
     }
@@ -871,6 +865,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public Operation getOperation(int operationId) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperation(operationId);
+    }
+
+    @Override
+    public Operation getOperationByActivityId(String activity) throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityId(activity);
     }
 
     @Override

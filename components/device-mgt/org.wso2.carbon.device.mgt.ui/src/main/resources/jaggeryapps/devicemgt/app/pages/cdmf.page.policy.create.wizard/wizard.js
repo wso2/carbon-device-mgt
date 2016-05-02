@@ -16,11 +16,13 @@
  * under the License.
  */
 
-function onRequest(context){
+function onRequest(context) {
+    var utility = require("/app/modules/utility.js").utility;
     context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
-        if (arguments.length < 3)
+        if (arguments.length < 3) {
             throw new Error("Handlebars Helper equal needs 2 parameters");
-        if( lvalue!=rvalue ) {
+        }
+        if (lvalue != rvalue) {
             return options.inverse(this);
         } else {
             return options.fn(this);
@@ -28,5 +30,5 @@ function onRequest(context){
     });
     var deviceType = context.uriParams.deviceType;
 
-    return {"policyWizardUnitName" : "cdmf.unit.device.type." + deviceType + ".policy-wizard"};
+    return {"policyWizardUnitName": utility.getTenantedDeviceUnitName(deviceType, "policy-wizard")};
 }

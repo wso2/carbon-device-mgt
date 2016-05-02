@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.policy.mgt.common.Criterion;
+import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyDAO;
@@ -273,6 +274,64 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
+    public void addDeviceGroupsToPolicy(Policy policy) throws PolicyManagerDAOException {
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        List<DeviceGroupWrapper> deviceGroupWrappers = policy.getDeviceGroups();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+        try {
+            conn = this.getConnection();
+            String query = "INSERT INTO DM_DEVICE_GROUP_POLICY (DEVICE_GROUP_ID, POLICY_ID, TENANT_ID) VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(query);
+            for (DeviceGroupWrapper wrapper : deviceGroupWrappers) {
+                stmt.setInt(1, wrapper.getId());
+                stmt.setInt(2, policy.getId());
+                stmt.setInt(3, tenantId);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while adding the device group details to the policy.", e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public List<DeviceGroupWrapper> getDeviceGroupsOfPolicy(int policyId) throws PolicyManagerDAOException {
+
+        List<DeviceGroupWrapper> deviceGroupWrappers = new ArrayList<>();
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            conn = this.getConnection();
+            String query = "SELECT * FROM DM_DEVICE_GROUP_POLICY WHERE TENANT_ID = ? AND POLICY_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, tenantId);
+            stmt.setInt(2, policyId);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                DeviceGroupWrapper dgw = new DeviceGroupWrapper();
+                dgw.setId(resultSet.getInt("DEVICE_GROUP_ID"));
+                dgw.setTenantId(tenantId);
+                deviceGroupWrappers.add(dgw);
+            }
+
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while reading the device groups form database.", e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
+        return deviceGroupWrappers;
+    }
+
+    @Override
     public boolean updatePolicyPriorities(List<Policy> policies) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
@@ -442,7 +501,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_CRITERIA (TENANT_ID, NAME) VALUES (?, ?)";
-            stmt = conn.prepareStatement(query, new String[] {"id"});
+            stmt = conn.prepareStatement(query, new String[]{"id"});
             stmt.setInt(1, tenantId);
             stmt.setString(2, criteria.getName());
             stmt.executeUpdate();
@@ -622,7 +681,7 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY_CRITERIA (CRITERIA_ID, POLICY_ID) VALUES (?, ?)";
-            stmt = conn.prepareStatement(query, new String[] {"id"});
+            stmt = conn.prepareStatement(query, new String[]{"id"});
 
             List<PolicyCriterion> criteria = policy.getPolicyCriterias();
             for (PolicyCriterion criterion : criteria) {
@@ -1322,6 +1381,12 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
 
+
+            String deleteDeviceGroups = "DELETE FROM DM_DEVICE_GROUP_POLICY WHERE POLICY_ID = ?";
+            stmt = conn.prepareStatement(deleteDeviceGroups);
+            stmt.setInt(1, policyId);
+            stmt.executeUpdate();
+
             if (log.isDebugEnabled()) {
                 log.debug("Policy (" + policyId + ") related configs deleted from database.");
             }
@@ -1348,7 +1413,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             conn = this.getConnection();
             String query = "INSERT INTO DM_POLICY (NAME, PROFILE_ID, TENANT_ID, PRIORITY, COMPLIANCE, OWNERSHIP_TYPE," +
                     "UPDATED, ACTIVE, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(query, new String[] {"id"});
+            stmt = conn.prepareStatement(query, new String[]{"id"});
 
             stmt.setString(1, policy.getPolicyName());
             stmt.setInt(2, policy.getProfile().getProfileId());

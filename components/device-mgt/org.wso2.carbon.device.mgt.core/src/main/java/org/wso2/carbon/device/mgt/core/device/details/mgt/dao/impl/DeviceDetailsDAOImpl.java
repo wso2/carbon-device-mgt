@@ -50,8 +50,8 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
             stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_DETAIL (DEVICE_ID, DEVICE_MODEL, " +
                     "VENDOR, OS_VERSION, BATTERY_LEVEL, INTERNAL_TOTAL_MEMORY, INTERNAL_AVAILABLE_MEMORY, " +
                     "EXTERNAL_TOTAL_MEMORY, EXTERNAL_AVAILABLE_MEMORY,  CONNECTION_TYPE, " +
-                    "SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    "SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN, UPDATE_TIMESTAMP) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             stmt.setInt(1, deviceInfo.getDeviceId());
             stmt.setString(2, deviceInfo.getDeviceModel());
@@ -68,6 +68,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
             stmt.setDouble(13, deviceInfo.getTotalRAMMemory());
             stmt.setDouble(14, deviceInfo.getAvailableRAMMemory());
             stmt.setBoolean(15, deviceInfo.isPluggedIn());
+            stmt.setLong(16, System.currentTimeMillis());
 
             stmt.execute();
 
@@ -83,7 +84,9 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     public void addDeviceProperties(Map<String, String> propertyMap, int deviceId) throws DeviceDetailsMgtDAOException {
 
         if (propertyMap.isEmpty()) {
-            log.warn("Property map of device id :" + deviceId + " is empty.");
+            if(log.isDebugEnabled()) {
+                log.debug("Property map of device id :" + deviceId + " is empty.");
+            }
             return;
         }
         Connection conn;
@@ -142,6 +145,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
                 deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));
                 deviceInfo.setAvailableRAMMemory(rs.getDouble("AVAILABLE_RAM_MEMORY"));
                 deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
+                deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
             }
 
             deviceInfo.setDeviceId(deviceId);
@@ -224,7 +228,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_DEVICE_LOCATION (DEVICE_ID, LATITUDE, LONGITUDE, STREET1, " +
-                    "STREET2, CITY, ZIP, STATE, COUNTRY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    "STREET2, CITY, ZIP, STATE, COUNTRY, UPDATE_TIMESTAMP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             stmt.setInt(1, deviceLocation.getDeviceId());
             stmt.setDouble(2, deviceLocation.getLatitude());
             stmt.setDouble(3, deviceLocation.getLongitude());
@@ -234,6 +238,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
             stmt.setString(7, deviceLocation.getZip());
             stmt.setString(8, deviceLocation.getState());
             stmt.setString(9, deviceLocation.getCountry());
+            stmt.setLong(10, System.currentTimeMillis());
             stmt.execute();
         } catch (SQLException e) {
             throw new DeviceDetailsMgtDAOException("Error occurred while adding the device location to database.", e);
@@ -266,6 +271,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
                 location.setZip(rs.getString("ZIP"));
                 location.setState(rs.getString("STATE"));
                 location.setCountry(rs.getString("COUNTRY"));
+                location.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
             }
             location.setDeviceId(deviceId);
 

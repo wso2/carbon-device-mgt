@@ -67,8 +67,7 @@ policyModule = function () {
             policyObjectToView["priorityId"] = policyObjectFromRestEndpoint["priorityId"];
             policyObjectToView["name"] = policyObjectFromRestEndpoint["policyName"];
             policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"]["name"];
-            policyObjectToView["icon"] = devicemgtProps["httpsURL"] + devicemgtProps["appContext"] +
-                "public/cdmf.unit.device.type." + policyObjectToView["platform"] + ".type-view/images/thumb.png";
+            policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
             policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
             policyObjectToView["roles"] = privateMethods.
             getElementsInAString(policyObjectFromRestEndpoint["roles"]);

@@ -114,7 +114,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         for (Condition con : conditions) {
             if (Utils.checkDeviceDetailsColumns(con.getKey())) {
                 querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) +
-                        con.getOperator() + con.getValue();
+                        con.getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
             } else if (Utils.checkDeviceLocationColumns(con.getKey())) {
                 querySuffix = querySuffix + " AND DL." + Utils.getDeviceLocationColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();
@@ -132,7 +132,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         for (Condition con : conditions) {
             if (Utils.checkDeviceDetailsColumns(con.getKey())) {
                 querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) +
-                        con.getOperator() + con.getValue();
+                        con.getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
             } else if (Utils.checkDeviceLocationColumns(con.getKey())) {
                 querySuffix = querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();

@@ -37,7 +37,7 @@
             <div>
                 <span id="permission" data-permission="{{permissions.list}}"></span>
                 {{#if groupCount}}
-                    <div class="container-fluid">
+                    <div class="container-fluid" id="group-listing" data-current-user="{{currentUser.username}}">
                         <table class="table table-striped table-hover list-table display responsive nowrap data-table table-selectable grid-view"
                                id="group-grid">
                             <thead>
@@ -270,9 +270,6 @@
 {{/zone}}
 
 {{#zone "bottomJs"}}
-    <script id="group-listing" data-current-user="{{currentUser.username}}"
-            src="{{@page.publicUri}}/templates/listing.hbs"
-            type="text/x-handlebars-template"></script>
     {{#if groupCount}}
         {{js "js/listing.js"}}
     {{/if}}

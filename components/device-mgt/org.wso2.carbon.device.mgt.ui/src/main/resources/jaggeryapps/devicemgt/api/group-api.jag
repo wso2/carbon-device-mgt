@@ -80,4 +80,8 @@ if (!user) {
     }
 }
 
+if (result) {
+    print(result);
+}
+
 %>

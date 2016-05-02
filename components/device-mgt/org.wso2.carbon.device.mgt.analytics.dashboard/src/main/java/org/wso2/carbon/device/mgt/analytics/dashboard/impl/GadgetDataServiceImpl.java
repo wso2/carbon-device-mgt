@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.internal;
+package org.wso2.carbon.device.mgt.analytics.dashboard.impl;
 
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataServiceException;
@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * To be updated...
  */
-class GadgetDataServiceImpl implements GadgetDataService {
+public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public int getTotalDeviceCount() throws GadgetDataServiceException {

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.GadgetDataServiceDAOImpl;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;

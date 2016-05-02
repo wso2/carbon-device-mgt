@@ -16,9 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
+package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAO;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
@@ -32,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
+public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
 
     @Override
     public int getTotalDeviceCount() throws GadgetDataServiceDAOException {

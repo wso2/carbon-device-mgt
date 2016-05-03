@@ -72,8 +72,8 @@ public class DeviceTaskManagerServiceComponent {
     @SuppressWarnings("unused")
     protected void deactivate(ComponentContext componentContext) {
         try {
-            DeviceTaskManagerService taskManagerService = new DeviceTaskManagerServiceImpl();
-            taskManagerService.stopTask();
+//            DeviceTaskManagerService taskManagerService = new DeviceTaskManagerServiceImpl();
+//            taskManagerService.stopTask();
         } catch (Throwable e) {
             log.error("Error occurred while destroying the device details retrieving task manager service.", e);
         }

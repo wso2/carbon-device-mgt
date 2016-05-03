@@ -38,6 +38,7 @@ import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -186,8 +187,12 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
                 DeviceManagementDataHolder.getInstance().getGroupManagementProviderService()
                         .getGroups(deviceIdentifier);
         for (DeviceGroup group : authorizedGroups) {
-            if (groupsWithDevice.contains(group)) {
-                return true;
+            Iterator<DeviceGroup> groupsWithDeviceIterator = groupsWithDevice.iterator();
+            while (groupsWithDeviceIterator.hasNext()) {
+                DeviceGroup deviceGroup = groupsWithDeviceIterator.next();
+                if (deviceGroup.getId() == group.getId()) {
+                    return true;
+                }
             }
         }
         return false;

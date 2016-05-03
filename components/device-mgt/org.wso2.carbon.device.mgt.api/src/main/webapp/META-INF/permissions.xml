@@ -1036,6 +1036,13 @@
     </Permission>
 
     <Permission>
+        <name>Group Roles</name>
+        <path>/device-mgt/user/groups/roles</path>
+        <url>/groups/owner/*/name/*/share/roles</url>
+        <method>PUT</method>
+    </Permission>
+
+    <Permission>
         <name>Group Permissions</name>
         <path>/device-mgt/admin/groups/roles/permissions</path>
         <url>/groups/owner/*/name/*/share/roles/*/permissions</url>

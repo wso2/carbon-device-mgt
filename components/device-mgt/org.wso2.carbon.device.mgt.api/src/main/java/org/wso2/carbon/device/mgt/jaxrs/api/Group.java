@@ -22,14 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyEixistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -42,25 +43,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("NonJaxWsWebServices")
 public class Group {
-
-    private static final String DEFAULT_ADMIN_ROLE = "admin";
-    private static final String DEFAULT_OPERATOR_ROLE = "invoke-device-operations";
-    private static final String DEFAULT_STATS_MONITOR_ROLE = "view-statistics";
-    private static final String DEFAULT_VIEW_POLICIES = "view-policies";
-    private static final String DEFAULT_MANAGE_POLICIES = "mange-policies";
-    private static final String DEFAULT_VIEW_EVENTS = "view-events";
-    private static final String[] DEFAULT_ADMIN_PERMISSIONS = {"/permission/device-mgt/admin/groups",
-                                                               "/permission/device-mgt/user/groups"};
-    private static final String[] DEFAULT_OPERATOR_PERMISSIONS = {"/permission/device-mgt/user/groups/device_operation"};
-    private static final String[] DEFAULT_STATS_MONITOR_PERMISSIONS = {"/permission/device-mgt/user/groups/device_monitor"};
-    private static final String[] DEFAULT_MANAGE_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/add"};
-    private static final String[] DEFAULT_VIEW_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/view"};
-    private static final String[] DEFAULT_VIEW_EVENTS_PERMISSIONS = {"/permission/device-mgt/user/groups/device_events"};
 
     private static Log log = LogFactory.getLog(Group.class);
 
@@ -76,18 +64,18 @@ public class Group {
         group.setDateOfLastUpdate(new Date().getTime());
         try {
             GroupManagementProviderService groupManagementService = DeviceMgtAPIUtils.getGroupManagementProviderService();
-            groupManagementService.createGroup(group, DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
+            groupManagementService.createGroup(group, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE, DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);
             groupManagementService.addGroupSharingRole(owner, group.getName(), owner,
-                                                       DEFAULT_OPERATOR_ROLE,
-                                                       DEFAULT_OPERATOR_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_STATS_MONITOR_ROLE,
-                                                       DEFAULT_STATS_MONITOR_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_VIEW_POLICIES,
-                                                       DEFAULT_VIEW_POLICIES_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_MANAGE_POLICIES,
-                                                       DEFAULT_MANAGE_POLICIES_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_VIEW_EVENTS,
-                                                       DEFAULT_VIEW_EVENTS_PERMISSIONS);
+                                                       DeviceGroupConstants.Roles.DEFAULT_OPERATOR_ROLE,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_STATS_MONITOR_ROLE,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_STATS_MONITOR_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_VIEW_POLICIES,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_VIEW_POLICIES_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_MANAGE_POLICIES,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_MANAGE_POLICIES_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_VIEW_EVENTS,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_VIEW_EVENTS_PERMISSIONS);
             return Response.status(Response.Status.CREATED).build();
         } catch (GroupAlreadyEixistException e) {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
@@ -275,8 +263,10 @@ public class Group {
             if (isShared) {
                 return Response.status(Response.Status.OK).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Group not found").build();
             }
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -295,8 +285,10 @@ public class Group {
             if (isUnShared) {
                 return Response.status(Response.Status.OK).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Group not found").build();
             }
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -360,6 +352,34 @@ public class Group {
             String[] rolesArray = new String[roles.size()];
             roles.toArray(rolesArray);
             return Response.status(Response.Status.OK).entity(rolesArray).build();
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (GroupManagementException e) {
+            log.error(e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @PUT
+    @Path("/owner/{owner}/name/{groupName}/user/{userName}/share/roles")
+    @Produces("application/json")
+    public Response setRoles(@PathParam("groupName") String groupName,
+                             @PathParam("owner") String owner, @PathParam("userName") String userName,
+                             List<String> selectedRoles) {
+        try {
+            List<String> allRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(groupName, owner);
+            for (String role : allRoles) {
+                if (selectedRoles.contains(role)) {
+                    DeviceMgtAPIUtils.getGroupManagementProviderService()
+                            .shareGroup(userName, groupName, owner, role);
+                } else {
+                    DeviceMgtAPIUtils.getGroupManagementProviderService()
+                            .unshareGroup(userName, groupName, owner, role);
+                }
+            }
+            return Response.status(Response.Status.OK).build();
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -466,6 +486,8 @@ public class Group {
             String[] permissions = DeviceMgtAPIUtils.getGroupManagementProviderService()
                     .getPermissions(userName, groupName, owner);
             return Response.status(Response.Status.OK).entity(permissions).build();
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

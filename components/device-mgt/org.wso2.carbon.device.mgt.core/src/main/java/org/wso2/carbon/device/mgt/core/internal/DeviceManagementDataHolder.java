@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -47,6 +48,7 @@ public class DeviceManagementDataHolder {
     private ConfigurationContextService configurationContextService;
     private HashMap<String,Boolean> requireDeviceAuthorization = new HashMap<>();
     private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
+    private GroupManagementProviderService groupManagementProviderService;
 
     private TaskService taskService;
     //private EmailSenderService emailSenderService;
@@ -89,6 +91,15 @@ public class DeviceManagementDataHolder {
 
     public void setDeviceManagementProvider(DeviceManagementProviderService deviceManagerProvider) {
         this.deviceManagerProvider = deviceManagerProvider;
+    }
+
+    public GroupManagementProviderService getGroupManagementProviderService() {
+        return groupManagementProviderService;
+    }
+
+    public void setGroupManagementProviderService(
+            GroupManagementProviderService groupManagementProviderService) {
+        this.groupManagementProviderService = groupManagementProviderService;
     }
 
     public RegistryService getRegistryService() {

@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * you may obtain a copy of the License at
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.core.authorization;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -39,7 +38,6 @@ import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,18 +48,6 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
 
     private final static String EMM_ADMIN_PERMISSION = "/device-mgt/admin-device-access";
     private static Log log = LogFactory.getLog(DeviceAccessAuthorizationServiceImpl.class);
-
-    public static final class PermissionMethod {
-        private PermissionMethod() {
-            throw new AssertionError();
-        }
-
-        public static final String READ = "read";
-        public static final String WRITE = "write";
-        public static final String DELETE = "delete";
-        public static final String ACTION = "action";
-        public static final String UI_EXECUTE = "ui.execute";
-    }
 
     public DeviceAccessAuthorizationServiceImpl() {
         try {
@@ -88,7 +74,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
                 return false;
             }
             for (String groupPermission : groupPermissions) {
-                if (!checkGroupsPermission(username, tenantId, groupPermission)) {
+                if (!isAuthorizedViaGroup(username, deviceIdentifier, groupPermission)) {
                     //if at least one fails, authorization fails
                     return false;
                 }
@@ -96,8 +82,8 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             return true;
         } catch (GroupManagementException | UserStoreException e) {
             throw new DeviceAccessAuthorizationException("Unable to authorize the access to device : " +
-                                                                 deviceIdentifier.getId() + " for the user : " +
-                                                                 username, e);
+                                                         deviceIdentifier.getId() + " for the user : " +
+                                                         username, e);
         }
     }
 
@@ -139,7 +125,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
                     //check for group permissions
                     boolean isAuthorized = true;
                     for (String groupPermission : groupPermissions) {
-                        if (!checkGroupsPermission(username, tenantId, groupPermission)) {
+                        if (!isAuthorizedViaGroup(username, deviceIdentifier, groupPermission)) {
                             //if at least one failed, authorizations fails and break the loop
                             isAuthorized = false;
                             break;
@@ -152,8 +138,8 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
                     }
                 } catch (GroupManagementException | UserStoreException e) {
                     throw new DeviceAccessAuthorizationException("Unable to authorize the access to device : " +
-                                                                         deviceIdentifier.getId() + " for the user : " +
-                                                                         username, e);
+                                                                 deviceIdentifier.getId() + " for the user : " +
+                                                                 username, e);
                 }
             }
         }
@@ -191,25 +177,17 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         }
     }
 
-    private boolean checkGroupsPermission(String username, int tenantId, String groupPermission)
+    private boolean isAuthorizedViaGroup(String username, DeviceIdentifier deviceIdentifier, String groupPermission)
             throws GroupManagementException, UserStoreException {
-        List<DeviceGroup> groups =
-                DeviceManagementDataHolder.getInstance().getGroupManagementProviderService().getGroups(username,
-                                                                                                       groupPermission);
-        UserRealm userRealm = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
-        if (userRealm != null && userRealm.getAuthorizationManager() != null) {
-            Iterator<DeviceGroup> groupIterator = groups.iterator();
-            while (groupIterator.hasNext()) {
-                DeviceGroup deviceGroup = groupIterator.next();
-                Iterator<String> rolesIterator = deviceGroup.getRoles().iterator();
-                while (rolesIterator.hasNext()) {
-                    String role = rolesIterator.next();
-                    if (userRealm.getAuthorizationManager().isRoleAuthorized(
-                            "Internal/group-" + deviceGroup.getId() + "-" + role, groupPermission,
-                            CarbonConstants.UI_PERMISSION_ACTION)) {
-                        return true;
-                    }
-                }
+        List<DeviceGroup> authorizedGroups =
+                DeviceManagementDataHolder.getInstance().getGroupManagementProviderService()
+                        .getGroups(username, groupPermission);
+        List<DeviceGroup> groupsWithDevice =
+                DeviceManagementDataHolder.getInstance().getGroupManagementProviderService()
+                        .getGroups(deviceIdentifier);
+        for (DeviceGroup group : authorizedGroups) {
+            if (groupsWithDevice.contains(group)) {
+                return true;
             }
         }
         return false;
@@ -284,5 +262,17 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             }
         }
         return ownershipData;
+    }
+
+    public static final class PermissionMethod {
+        public static final String READ = "read";
+        public static final String WRITE = "write";
+        public static final String DELETE = "delete";
+        public static final String ACTION = "action";
+        public static final String UI_EXECUTE = "ui.execute";
+
+        private PermissionMethod() {
+            throw new AssertionError();
+        }
     }
 }

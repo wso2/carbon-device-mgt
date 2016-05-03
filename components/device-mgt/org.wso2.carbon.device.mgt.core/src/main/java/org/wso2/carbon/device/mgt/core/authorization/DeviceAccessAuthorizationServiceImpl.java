@@ -72,7 +72,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     }
 
     @Override
-    public boolean isUserAuthorized(DeviceIdentifier deviceIdentifier, String username, String permission)
+    public boolean isUserAuthorized(DeviceIdentifier deviceIdentifier, String username, String[] groupPermissions)
             throws DeviceAccessAuthorizationException {
         int tenantId = this.getTenantId();
         if (username == null || username.isEmpty()) {
@@ -84,10 +84,16 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         }
         //check for group permissions
         try {
-            if (permission == null || permission.isEmpty()) {
+            if (groupPermissions == null || groupPermissions.length == 0) {
                 return false;
             }
-            return checkGroupsPermission(username, tenantId, permission);
+            for (String groupPermission : groupPermissions) {
+                if (!checkGroupsPermission(username, tenantId, groupPermission)) {
+                    //if at least one fails, authorization fails
+                    return false;
+                }
+            }
+            return true;
         } catch (GroupManagementException | UserStoreException e) {
             throw new DeviceAccessAuthorizationException("Unable to authorize the access to device : " +
                                                                  deviceIdentifier.getId() + " for the user : " +
@@ -102,13 +108,19 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     }
 
     @Override
+    public boolean isUserAuthorized(DeviceIdentifier deviceIdentifier, String[] groupPermissions)
+            throws DeviceAccessAuthorizationException {
+        return isUserAuthorized(deviceIdentifier, this.getUserName(), groupPermissions);
+    }
+
+    @Override
     public boolean isUserAuthorized(DeviceIdentifier deviceIdentifier) throws DeviceAccessAuthorizationException {
         return isUserAuthorized(deviceIdentifier, this.getUserName(), null);
     }
 
     @Override
     public DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String username,
-                                                      String permission)
+                                                      String[] groupPermissions)
             throws DeviceAccessAuthorizationException {
         int tenantId = this.getTenantId();
         if (username == null || username.isEmpty()) {
@@ -121,11 +133,19 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
                 deviceAuthorizationResult.addAuthorizedDevice(deviceIdentifier);
             } else {
                 try {
-                    if (permission == null || permission.isEmpty()) {
+                    if (groupPermissions == null || groupPermissions.length == 0) {
                         return null;
                     }
                     //check for group permissions
-                    if (checkGroupsPermission(username, tenantId, permission)) {
+                    boolean isAuthorized = true;
+                    for (String groupPermission : groupPermissions) {
+                        if (!checkGroupsPermission(username, tenantId, groupPermission)) {
+                            //if at least one failed, authorizations fails and break the loop
+                            isAuthorized = false;
+                            break;
+                        }
+                    }
+                    if (isAuthorized) {
                         deviceAuthorizationResult.addAuthorizedDevice(deviceIdentifier);
                     } else {
                         deviceAuthorizationResult.addUnauthorizedDevice(deviceIdentifier);
@@ -152,6 +172,12 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         return isUserAuthorized(deviceIdentifiers, this.getUserName(), null);
     }
 
+    @Override
+    public DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String[] groupPermissions)
+            throws DeviceAccessAuthorizationException {
+        return isUserAuthorized(deviceIdentifiers, this.getUserName(), groupPermissions);
+    }
+
     private boolean isAdminOrDeviceOwner(String username, int tenantId, DeviceIdentifier deviceIdentifier)
             throws DeviceAccessAuthorizationException {
         try {
@@ -165,11 +191,11 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         }
     }
 
-    private boolean checkGroupsPermission(String username, int tenantId, String permission)
+    private boolean checkGroupsPermission(String username, int tenantId, String groupPermission)
             throws GroupManagementException, UserStoreException {
         List<DeviceGroup> groups =
                 DeviceManagementDataHolder.getInstance().getGroupManagementProviderService().getGroups(username,
-                                                                                                       permission);
+                                                                                                       groupPermission);
         UserRealm userRealm = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
         if (userRealm != null && userRealm.getAuthorizationManager() != null) {
             Iterator<DeviceGroup> groupIterator = groups.iterator();
@@ -179,7 +205,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
                 while (rolesIterator.hasNext()) {
                     String role = rolesIterator.next();
                     if (userRealm.getAuthorizationManager().isRoleAuthorized(
-                            "Internal/group-" + deviceGroup.getId() + "-" + role, permission,
+                            "Internal/group-" + deviceGroup.getId() + "-" + role, groupPermission,
                             CarbonConstants.UI_PERMISSION_ACTION)) {
                         return true;
                     }

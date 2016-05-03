@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
+import org.wso2.carbon.device.mgt.analytics.dashboard.impl.GadgetDataServiceImpl;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -39,6 +40,7 @@ import org.wso2.carbon.ndatasource.core.DataSourceService;
  * unbind="unsetDataSourceService"
  */
 public class GadgetDataServiceComponent {
+
     private static final Log log = LogFactory.getLog(GadgetDataServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
@@ -56,10 +58,10 @@ public class GadgetDataServiceComponent {
             componentContext.getBundleContext().
                     registerService(GadgetDataService.class.getName(), new GadgetDataServiceImpl(), null);
             if (log.isDebugEnabled()) {
-                log.debug("Device Management Dashboard Analytics Bundle has been started successfully");
+                log.debug("Device Management Dashboard Analytics Bundle has been started successfully.");
             }
         } catch (Throwable e) {
-            log.error("Error occurred while initializing the bundle", e);
+            log.error("Error occurred while initializing the bundle.", e);
         }
     }
 
@@ -70,11 +72,18 @@ public class GadgetDataServiceComponent {
         //do nothing
     }
 
-    public void setDataSourceService(DataSourceService dataSourceService){
-
+    public void setDataSourceService(DataSourceService dataSourceService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Binding org.wso2.carbon.ndatasource.core.DataSourceService...");
+        }
+        //do nothing
     }
 
-    public void unsetDataSourceService(DataSourceService dataSourceService){
-
+    public void unsetDataSourceService(DataSourceService dataSourceService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unbinding org.wso2.carbon.ndatasource.core.DataSourceService...");
+        }
+        //do nothing
     }
+
 }

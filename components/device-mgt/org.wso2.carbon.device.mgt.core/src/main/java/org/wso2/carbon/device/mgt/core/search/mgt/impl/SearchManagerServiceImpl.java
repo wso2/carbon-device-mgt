@@ -40,5 +40,10 @@ public class SearchManagerServiceImpl implements SearchManagerService {
     public List<DeviceWrapper> search(SearchContext searchContext) throws SearchMgtException {
         return processor.execute(searchContext);
     }
+
+    @Override
+    public List<DeviceWrapper> getUpdated(long epochTime) throws SearchMgtException {
+        return processor.getUpdatedDevices(epochTime);
+    }
 }
 

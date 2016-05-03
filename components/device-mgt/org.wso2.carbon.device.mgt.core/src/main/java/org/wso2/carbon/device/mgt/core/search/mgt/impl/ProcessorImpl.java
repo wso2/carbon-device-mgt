@@ -94,6 +94,28 @@ public class ProcessorImpl implements Processor {
         return aggregator.aggregate(deviceWrappers);
     }
 
+    @Override
+    public List<DeviceWrapper> getUpdatedDevices(long epochTime) throws SearchMgtException {
+
+        if((1 + (int)Math.floor(Math.log10(epochTime))) <=10 ) {
+            epochTime = epochTime * 1000;
+        }
+        QueryBuilder queryBuilder = new QueryBuilderImpl();
+        try {
+           String query =  queryBuilder.processUpdatedDevices(epochTime);
+            DeviceManagementDAOFactory.openConnection();
+            return searchDAO.searchDeviceDetailsTable(query);
+        } catch (InvalidOperatorException e) {
+            throw new SearchMgtException("Invalid operator was provided, so cannot execute the search.", e);
+        } catch (SQLException e) {
+            throw new SearchMgtException("Error occurred while managing database transactions.", e);
+        } catch (SearchDAOException e) {
+            throw new SearchMgtException("Error occurred while running the search operations for given time.", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
 
     private List<DeviceWrapper> processANDSearch(List<List<DeviceWrapper>> deLists) {
 

@@ -88,6 +88,7 @@
                             org.wso2.carbon.device.mgt.*
                             org.wso2.carbon.identity.application.common.model,
                             org.wso2.carbon.identity.oauth.callback,
+                            org.wso2.carbon.identity.oauth.common,
                             org.wso2.carbon.identity.oauth2,
                             org.wso2.carbon.identity.oauth2.model,
                             org.wso2.carbon.identity.oauth2.validators,

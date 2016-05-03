@@ -93,62 +93,91 @@ public class SearchDevice extends BaseDeviceManagementTest {
 
     }
 
-//    @Test
-//    public void doValidLocationSearch()  throws Exception{
-//
-//        SearchContext context = new SearchContext();
-//        List<Condition> conditions = new ArrayList<>();
-//
-//        Condition cond = new Condition();
-//        cond.setKey("LOCATION");
-//        cond.setOperator("=");
-//        cond.setValue("Karan");
-//        cond.setState(Condition.State.AND);
-//        conditions.add(cond);
-//
-//        context.setConditions(conditions);
-//
-//        SearchManagerService service = new SearchManagerServiceImpl();
-//        List<DeviceWrapper> deviceWrappers = service.search(context);
-//
-//        Gson gson = new Gson();
-//        String bbbb = gson.toJson(deviceWrappers);
-//        log.info("Valid Search " + bbbb);
-//
-//
-//        for (DeviceWrapper dw : deviceWrappers) {
-//            log.debug(dw.getDevice().getDescription());
-//            log.debug(dw.getDevice().getDeviceIdentifier());
-//        }
-//    }
-//
-//    @Test
-//    public void doInvalidLocationSearch()  throws Exception{
-//
-//        SearchContext context = new SearchContext();
-//        List<Condition> conditions = new ArrayList<>();
-//
-//        Condition cond = new Condition();
-//        cond.setKey("LOCATION");
-//        cond.setOperator("=");
-//        cond.setValue("Colombo");
-//        cond.setState(Condition.State.AND);
-//        conditions.add(cond);
-//
-//        context.setConditions(conditions);
-//
-//        SearchManagerService service = new SearchManagerServiceImpl();
-//        List<DeviceWrapper> deviceWrappers = service.search(context);
-//
-//        Gson gson = new Gson();
-//        String bbbb = gson.toJson(deviceWrappers);
-//        log.info("Invalid Search " + bbbb);
-//
-//
-//        for (DeviceWrapper dw : deviceWrappers) {
-//            log.debug(dw.getDevice().getDescription());
-//            log.debug(dw.getDevice().getDeviceIdentifier());
-//        }
-//    }
+    @Test
+    public void doValidLocationSearch()  throws Exception{
+
+        SearchContext context = new SearchContext();
+        List<Condition> conditions = new ArrayList<>();
+
+        Condition cond = new Condition();
+        cond.setKey("LOCATION");
+        cond.setOperator("=");
+        cond.setValue("Karan");
+        cond.setState(Condition.State.AND);
+        conditions.add(cond);
+
+        context.setConditions(conditions);
+
+        SearchManagerService service = new SearchManagerServiceImpl();
+        List<DeviceWrapper> deviceWrappers = service.search(context);
+
+        Gson gson = new Gson();
+        String bbbb = gson.toJson(deviceWrappers);
+        log.info("Valid Search " + bbbb);
+
+
+        for (DeviceWrapper dw : deviceWrappers) {
+            log.debug(dw.getDevice().getDescription());
+            log.debug(dw.getDevice().getDeviceIdentifier());
+        }
+    }
+
+    @Test
+    public void doInvalidLocationSearch()  throws Exception{
+
+        SearchContext context = new SearchContext();
+        List<Condition> conditions = new ArrayList<>();
+
+        Condition cond = new Condition();
+        cond.setKey("LOCATION");
+        cond.setOperator("=");
+        cond.setValue("Colombo");
+        cond.setState(Condition.State.AND);
+        conditions.add(cond);
+
+        context.setConditions(conditions);
+
+        SearchManagerService service = new SearchManagerServiceImpl();
+        List<DeviceWrapper> deviceWrappers = service.search(context);
+
+        Gson gson = new Gson();
+        String bbbb = gson.toJson(deviceWrappers);
+        log.info("Invalid Search " + bbbb);
+
+
+        for (DeviceWrapper dw : deviceWrappers) {
+            log.debug(dw.getDevice().getDescription());
+            log.debug(dw.getDevice().getDeviceIdentifier());
+        }
+    }
+
+    @Test
+    public void doStringSearch()  throws Exception{
+
+        SearchContext context = new SearchContext();
+        List<Condition> conditions = new ArrayList<>();
+
+        Condition cond = new Condition();
+        cond.setKey("deviceModel");
+        cond.setOperator("=");
+        cond.setValue("SM-T520");
+        cond.setState(Condition.State.AND);
+        conditions.add(cond);
+
+        context.setConditions(conditions);
+
+        SearchManagerService service = new SearchManagerServiceImpl();
+        List<DeviceWrapper> deviceWrappers = service.search(context);
+
+        Gson gson = new Gson();
+        String bbbb = gson.toJson(deviceWrappers);
+        log.info("Invalid Search " + bbbb);
+
+
+        for (DeviceWrapper dw : deviceWrappers) {
+            log.debug(dw.getDevice().getDescription());
+            log.debug(dw.getDevice().getDeviceIdentifier());
+        }
+    }
 }
 

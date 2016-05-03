@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.device.mgt.core.dto.operation.mgt;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Properties;
 
@@ -30,7 +28,11 @@ public class Operation implements Serializable {
 	}
 
     public enum Status {
-        IN_PROGRESS, PENDING, COMPLETED, ERROR
+        IN_PROGRESS, PENDING, COMPLETED, ERROR, REPEATED
+    }
+
+    public enum Control {
+        REPEAT, NO_REPEAT, PAUSE_SEQUENCE, STOP_SEQUENCE
     }
 
     private String code;
@@ -38,6 +40,7 @@ public class Operation implements Serializable {
     private Type type;
     private int id;
     private Status status;
+    private Control control;
     private String receivedTimeStamp;
     private String createdTimeStamp;
     private boolean isEnabled;
@@ -82,6 +85,14 @@ public class Operation implements Serializable {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Control getControl() {
+        return control;
+    }
+
+    public void setControl(Control control) {
+        this.control = control;
     }
 
     public String getReceivedTimeStamp() {

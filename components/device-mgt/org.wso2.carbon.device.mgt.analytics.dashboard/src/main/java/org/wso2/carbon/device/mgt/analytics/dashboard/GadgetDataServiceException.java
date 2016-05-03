@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
+package org.wso2.carbon.device.mgt.analytics.dashboard;
 
 /**
- * Custom exception class for GadgetDataServiceDAO layer.
+ * Custom exception class for GadgetDataService layer.
  */
-public class GadgetDataServiceDAOException extends Exception {
+public class GadgetDataServiceException extends Exception {
 
     private String errorMessage;
     private static final long serialVersionUID = 2021891706072918864L;
@@ -32,7 +32,7 @@ public class GadgetDataServiceDAOException extends Exception {
      * @param errorMessage specific error message.
      * @param nestedException Nested exception.
      */
-    public GadgetDataServiceDAOException(String errorMessage, Exception nestedException) {
+    public GadgetDataServiceException(String errorMessage, Exception nestedException) {
         super(errorMessage, nestedException);
         setErrorMessage(errorMessage);
     }
@@ -44,7 +44,7 @@ public class GadgetDataServiceDAOException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public GadgetDataServiceDAOException(String errorMessage, Throwable cause) {
+    public GadgetDataServiceException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         setErrorMessage(errorMessage);
     }
@@ -55,7 +55,7 @@ public class GadgetDataServiceDAOException extends Exception {
      * @param errorMessage Specific error message.
      */
     @SuppressWarnings("unused")
-    public GadgetDataServiceDAOException(String errorMessage) {
+    public GadgetDataServiceException(String errorMessage) {
         super(errorMessage);
         setErrorMessage(errorMessage);
     }
@@ -66,7 +66,7 @@ public class GadgetDataServiceDAOException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public GadgetDataServiceDAOException(Throwable cause) {
+    public GadgetDataServiceException(Throwable cause) {
         super(cause);
     }
 

@@ -27,5 +27,7 @@ import java.util.List;
 public interface SearchManagerService {
 
     List<DeviceWrapper> search(SearchContext searchContext) throws SearchMgtException;
+
+    List<DeviceWrapper> getUpdated(long epochTime) throws SearchMgtException;
 }
 

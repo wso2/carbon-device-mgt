@@ -868,6 +868,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public Operation getOperationByActivityId(String activity) throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityId(activity);
+    }
+
+    @Override
     public List<Device> getDevicesOfUser(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;

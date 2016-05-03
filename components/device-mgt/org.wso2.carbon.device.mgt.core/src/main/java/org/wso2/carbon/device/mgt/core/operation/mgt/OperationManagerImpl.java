@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -88,7 +89,8 @@ public class OperationManagerImpl implements OperationManager {
                 authorizedDeviceList = deviceIds;
             } else {
                 authorizedDeviceList = DeviceManagementDataHolder.getInstance().
-                        getDeviceAccessAuthorizationService().isUserAuthorized(deviceIds).getAuthorizedDevices();
+                        getDeviceAccessAuthorizationService().isUserAuthorized(deviceIds, DeviceGroupConstants.
+                        Permissions.DEFAULT_OPERATOR_PERMISSIONS).getAuthorizedDevices();
             }
             if (authorizedDeviceList.size() > 0) {
                 try {
@@ -146,7 +148,7 @@ public class OperationManagerImpl implements OperationManager {
         List<Operation> operations = new ArrayList<>();
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
-                    isUserAuthorized(deviceId);
+                    isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
             if (isUserAuthorized) {
                 try {
                     try {
@@ -202,7 +204,7 @@ public class OperationManagerImpl implements OperationManager {
         List<Operation> operations = new ArrayList<>();
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
-                    isUserAuthorized(deviceId);
+                    isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
             if (isUserAuthorized) {
                 try {
                     try {
@@ -266,7 +268,7 @@ public class OperationManagerImpl implements OperationManager {
         List<org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> dtoOperationList = new ArrayList<>();
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
-                    isUserAuthorized(deviceId);
+                    isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
             if (isUserAuthorized) {
                 try {
                     try {
@@ -330,7 +332,7 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId;
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
-                    isUserAuthorized(deviceId);
+                    isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
             if (isUserAuthorized) {
                 try {
                     try {
@@ -400,7 +402,7 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId;
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
-                    isUserAuthorized(deviceId);
+                    isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
             if (isUserAuthorized) {
                 try {
                     try {
@@ -480,7 +482,7 @@ public class OperationManagerImpl implements OperationManager {
         }
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
-                    isUserAuthorized(deviceId);
+                    isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
             if (isUserAuthorized) {
                 try {
                     try {
@@ -554,7 +556,7 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId;
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
-                    isUserAuthorized(deviceId);
+                    isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
             if (isUserAuthorized) {
                 try {
                     try {

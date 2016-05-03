@@ -41,6 +41,7 @@ import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 
 import java.sql.SQLException;
@@ -379,7 +380,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public boolean shareGroup(String username, String groupName, String owner, String sharingRole)
-            throws GroupManagementException {
+            throws GroupManagementException, UserDoesNotExistException {
         int groupId = getGroupId(groupName, owner);
         return modifyGroupShare(username, groupId, sharingRole, true);
     }
@@ -389,14 +390,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public boolean unshareGroup(String username, String groupName, String owner, String sharingRole)
-            throws GroupManagementException {
+            throws GroupManagementException, UserDoesNotExistException {
         int groupId = getGroupId(groupName, owner);
         return modifyGroupShare(username, groupId, sharingRole, false);
     }
 
     private boolean modifyGroupShare(String username, int groupId, String sharingRole,
                                      boolean isAddNew)
-            throws GroupManagementException {
+            throws GroupManagementException, UserDoesNotExistException {
         if (groupId == -1) {
             return false;
         }
@@ -407,14 +408,21 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             userStoreManager =
                     DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
                             tenantId).getUserStoreManager();
+            if (!userStoreManager.isExistingUser(username)) {
+                throw new UserDoesNotExistException("User not exists with name " + username);
+            }
             roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
-            if (isAddNew) {
+            List<String> currentRoles = getRoles(username, groupId);
+            if (isAddNew && !currentRoles.contains(sharingRole)) {
                 userStoreManager.updateRoleListOfUser(username, null, roles);
-            } else {
+            } else if (!isAddNew && currentRoles.contains(sharingRole)) {
                 userStoreManager.updateRoleListOfUser(username, roles, null);
             }
             return true;
         } catch (UserStoreException e) {
+            if (e instanceof UserDoesNotExistException) {
+                throw (UserDoesNotExistException) e;
+            }
             throw new GroupManagementException("User store error in adding user " + username + " to group name:" +
                                                groupId, e);
         }
@@ -532,18 +540,23 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      * {@inheritDoc}
      */
     @Override
-    public List<String> getRoles(String username, String groupName, String owner) throws GroupManagementException {
+    public List<String> getRoles(String username, String groupName, String owner)
+            throws GroupManagementException, UserDoesNotExistException {
         int groupId = getGroupId(groupName, owner);
         return getRoles(username, groupId);
     }
 
-    private List<String> getRoles(String username, int groupId) throws GroupManagementException {
+    private List<String> getRoles(String username, int groupId)
+            throws GroupManagementException, UserDoesNotExistException {
         UserStoreManager userStoreManager;
         List<String> groupRoleList = new ArrayList<>();
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userStoreManager = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
+            if (!userStoreManager.isExistingUser(username)) {
+                throw new UserDoesNotExistException("User not exists with name " + username);
+            }
             String[] roleList = userStoreManager.getRoleListOfUser(username);
             for (String role : roleList) {
                 if (role != null && role.contains("Internal/group-" + groupId)) {
@@ -553,6 +566,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             }
             return groupRoleList;
         } catch (UserStoreException e) {
+            if (e instanceof UserDoesNotExistException) {
+                throw (UserDoesNotExistException) e;
+            }
             throw new GroupManagementException("Error occurred while getting user store manager.", e);
         }
     }
@@ -723,7 +739,8 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      * {@inheritDoc}
      */
     @Override
-    public String[] getPermissions(String username, String groupName, String owner) throws GroupManagementException {
+    public String[] getPermissions(String username, String groupName, String owner)
+            throws GroupManagementException, UserDoesNotExistException {
         UserRealm userRealm;
         int groupId = getGroupId(groupName, owner);
         List<String> roles = getRoles(username, groupId);

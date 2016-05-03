@@ -81,8 +81,12 @@
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Select user to manage group sharing</h3>
-                                <div id="user-names">Loading...</div>
+                                <h3>Enter user name to manage group sharing</h3>
+                                <div id="user-names">
+                                    <br />
+                                    <input type="text" id="share-user-selector" style="color:#3f3f3f;padding:5px;width:250px;">
+                                    </input>
+                                </div>
                                 <div class="buttons">
                                     <a href="#" id="share-group-next-link" class="btn-operations">
                                         &nbsp;&nbsp;&nbsp;&nbsp;Next&nbsp;&nbsp;&nbsp;&nbsp;
@@ -225,6 +229,22 @@
 
                                 <div class="buttons">
                                     <a href="#" id="group-403-link" class="btn-operations">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="group-404-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3 id="group-404-message">Not found.</h3>
+
+                                <div class="buttons">
+                                    <a href="#" id="group-404-link" class="btn-operations">
                                         &nbsp;&nbsp;&nbsp;&nbsp;Ok&nbsp;&nbsp;&nbsp;&nbsp;
                                     </a>
                                 </div>

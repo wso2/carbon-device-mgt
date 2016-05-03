@@ -195,6 +195,7 @@ public class DeviceManagementServiceComponent {
 
         /* Registering Group Management Service */
         GroupManagementProviderService groupManagementProvider = new GroupManagementProviderServiceImpl();
+        DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(groupManagementProvider);
         bundleContext.registerService(GroupManagementProviderService.class.getName(), groupManagementProvider, null);
 
 	    /* Registering Tenant Configuration Management Service */

@@ -50,7 +50,6 @@ var invokerUtil = function () {
             accept: acceptType,
             success: successCallback
         };
-        console.log(data);
         var paramValue = {};
         paramValue.actionMethod = methoad;
         paramValue.actionUrl = url;

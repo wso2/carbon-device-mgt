@@ -22,9 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyEixistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
@@ -48,20 +48,6 @@ import java.util.List;
 @SuppressWarnings("NonJaxWsWebServices")
 public class Group {
 
-    private static final String DEFAULT_ADMIN_ROLE = "admin";
-    private static final String DEFAULT_OPERATOR_ROLE = "invoke-device-operations";
-    private static final String DEFAULT_STATS_MONITOR_ROLE = "view-statistics";
-    private static final String DEFAULT_VIEW_POLICIES = "view-policies";
-    private static final String DEFAULT_MANAGE_POLICIES = "mange-policies";
-    private static final String DEFAULT_VIEW_EVENTS = "view-events";
-    private static final String[] DEFAULT_ADMIN_PERMISSIONS = {"/permission/device-mgt/admin/groups",
-                                                               "/permission/device-mgt/user/groups"};
-    private static final String[] DEFAULT_OPERATOR_PERMISSIONS = {"/permission/device-mgt/user/groups/device_operation"};
-    private static final String[] DEFAULT_STATS_MONITOR_PERMISSIONS = {"/permission/device-mgt/user/groups/device_monitor"};
-    private static final String[] DEFAULT_MANAGE_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/add"};
-    private static final String[] DEFAULT_VIEW_POLICIES_PERMISSIONS = {"/permission/device-mgt/user/groups/device_policies/view"};
-    private static final String[] DEFAULT_VIEW_EVENTS_PERMISSIONS = {"/permission/device-mgt/user/groups/device_events"};
-
     private static Log log = LogFactory.getLog(Group.class);
 
     @POST
@@ -76,18 +62,18 @@ public class Group {
         group.setDateOfLastUpdate(new Date().getTime());
         try {
             GroupManagementProviderService groupManagementService = DeviceMgtAPIUtils.getGroupManagementProviderService();
-            groupManagementService.createGroup(group, DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
+            groupManagementService.createGroup(group, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE, DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);
             groupManagementService.addGroupSharingRole(owner, group.getName(), owner,
-                                                       DEFAULT_OPERATOR_ROLE,
-                                                       DEFAULT_OPERATOR_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_STATS_MONITOR_ROLE,
-                                                       DEFAULT_STATS_MONITOR_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_VIEW_POLICIES,
-                                                       DEFAULT_VIEW_POLICIES_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_MANAGE_POLICIES,
-                                                       DEFAULT_MANAGE_POLICIES_PERMISSIONS);
-            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DEFAULT_VIEW_EVENTS,
-                                                       DEFAULT_VIEW_EVENTS_PERMISSIONS);
+                                                       DeviceGroupConstants.Roles.DEFAULT_OPERATOR_ROLE,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_STATS_MONITOR_ROLE,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_STATS_MONITOR_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_VIEW_POLICIES,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_VIEW_POLICIES_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_MANAGE_POLICIES,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_MANAGE_POLICIES_PERMISSIONS);
+            groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_VIEW_EVENTS,
+                                                       DeviceGroupConstants.Permissions.DEFAULT_VIEW_EVENTS_PERMISSIONS);
             return Response.status(Response.Status.CREATED).build();
         } catch (GroupAlreadyEixistException e) {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();

@@ -22,6 +22,7 @@ package org.wso2.carbon.device.mgt.common.device.details;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +52,7 @@ public class DeviceInfo implements Serializable {
     private Double totalRAMMemory;
     private Double availableRAMMemory;
     private boolean pluggedIn;
+    private Date updatedTime;
 
     private Map<String, String> deviceDetailsMap = new HashMap<>();
 
@@ -288,6 +290,17 @@ public class DeviceInfo implements Serializable {
 
     public void setPluggedIn(boolean pluggedIn) {
         this.pluggedIn = pluggedIn;
+    }
+
+    public Date getUpdatedTime() {
+        if(updatedTime.equals(null)){
+            updatedTime = new Date();
+        }
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
     }
 
     public void setDeviceDetailsMap(Map<String, String> deviceDetailsMap) {

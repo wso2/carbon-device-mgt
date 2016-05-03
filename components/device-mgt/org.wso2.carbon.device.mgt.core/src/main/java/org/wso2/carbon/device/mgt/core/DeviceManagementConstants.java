@@ -75,4 +75,9 @@ public final class DeviceManagementConstants {
         public static final String DOWNLOAD_URL = "download-url";
     }
 
+    public static final class OperationAttributes {
+        private OperationAttributes() {throw new AssertionError(); }
+        public static final String ACTIVITY = "ACTIVITY_";
+    }
+
 }

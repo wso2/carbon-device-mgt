@@ -22,6 +22,7 @@ package org.wso2.carbon.device.mgt.common.device.details;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class DeviceLocation implements Serializable {
 
@@ -39,6 +40,7 @@ public class DeviceLocation implements Serializable {
     private String state;
     private String zip;
     private String country;
+    private Date updatedTime;
 
     public int getDeviceId() {
         return deviceId;
@@ -118,6 +120,17 @@ public class DeviceLocation implements Serializable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public Date getUpdatedTime() {
+        if(updatedTime.equals(null)){
+            updatedTime = new Date();
+        }
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
     }
 }
 

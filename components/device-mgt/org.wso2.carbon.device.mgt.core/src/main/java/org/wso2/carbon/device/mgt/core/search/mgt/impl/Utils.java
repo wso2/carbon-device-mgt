@@ -60,6 +60,41 @@ public class Utils {
 
     }
 
+    public static boolean checkColumnType(String column) {
+
+        boolean bool = false;
+
+        switch (column) {
+            case  "deviceModel":
+                bool = true;
+                break;
+            case  "vendor":
+                bool = true;
+                break;
+            case  "osVersion":
+                bool = true;
+                break;
+            case  "connectionType":
+                bool = true;
+                break;
+            case  "ssid":
+                bool = true;
+                break;
+            default: bool =false;
+                break;
+        }
+
+        return bool;
+    }
+
+    public static String getConvertedValue(String column, String value) {
+
+        if(checkColumnType(column)){
+            return  "\'" + value + "\'";
+        } else  return value;
+
+    }
+
     public static Map<String, String> getDeviceDetailsColumnNames() {
         return genericColumnsMap;
     }

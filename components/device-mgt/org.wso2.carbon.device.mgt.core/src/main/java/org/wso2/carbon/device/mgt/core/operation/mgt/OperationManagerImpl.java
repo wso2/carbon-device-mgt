@@ -109,6 +109,12 @@ public class OperationManagerImpl implements OperationManager {
                             OperationDAOUtil.convertOperation(operation);
                     int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
                     for (EnrolmentInfo enrolmentInfo : enrolments) {
+                        if(operationDto.getControl() ==
+                                org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT){
+                            operationDAO.updateEnrollmentOperationsStatus(enrolmentInfo.getId(), operationDto.getCode(),
+                                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
+                                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
+                        }
                         operationMappingDAO.addOperationMapping(operationId, enrolmentInfo.getId());
                     }
                     OperationManagementDAOFactory.commitTransaction();
@@ -613,7 +619,7 @@ public class OperationManagerImpl implements OperationManager {
     public Operation getOperation(int operationId) throws OperationManagementException {
         Operation operation;
         try {
-            OperationManagementDAOFactory.getConnection();
+            OperationManagementDAOFactory.openConnection();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.
                                                                          getOperation(operationId);
             if (dtoOperation == null) {
@@ -646,6 +652,17 @@ public class OperationManagerImpl implements OperationManager {
             OperationManagementDAOFactory.closeConnection();
         }
         return operation;
+    }
+
+    @Override
+    public Operation getOperationByActivityId(String activity) throws OperationManagementException {
+        // This parses the operation id from activity id (ex : ACTIVITY_23) and converts to the integer.
+        int operationId = Integer.parseInt(
+                activity.replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, ""));
+        if(operationId == 0){
+            throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
+        }
+        return this.getOperation(operationId);
     }
 
     private OperationDAO lookupOperationDAO(Operation operation) {

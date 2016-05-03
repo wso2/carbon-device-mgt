@@ -29,7 +29,7 @@
         Ex - Multiple Receiver Groups with two receivers each
                  {tcp://localhost:7612/,tcp://localhost:7613},{tcp://localhost:7712/,tcp://localhost:7713/}
     -->
-    <Enabled>true</Enabled>
+    <Enabled>false</Enabled>
     <ReceiverServerUrl>tcp://localhost:7611</ReceiverServerUrl>
     <AdminUsername>admin</AdminUsername>
     <AdminPassword>admin</AdminPassword>

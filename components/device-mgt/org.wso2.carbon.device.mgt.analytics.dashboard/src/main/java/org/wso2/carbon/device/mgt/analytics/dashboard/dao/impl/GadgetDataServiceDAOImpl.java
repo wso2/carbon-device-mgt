@@ -16,11 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
+package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAO;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
@@ -34,9 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(GadgetDataServiceDAOImpl.class);
+public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
 
     @Override
     public int getTotalDeviceCount() throws GadgetDataServiceDAOException {
@@ -72,7 +71,15 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     @Override
-    public PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest) throws GadgetDataServiceDAOException {
+    public int getUnmonitoredDeviceCount() throws GadgetDataServiceDAOException {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("POLICY_ID", -1);
+        return this.getDeviceCount(filters);
+    }
+
+    @Override
+    public PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest)
+                                                                  throws GadgetDataServiceDAOException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -82,7 +89,7 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         try {
             con = this.getConnection();
             String sql = "SELECT FEATURE_CODE, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
-                    "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC LIMIT ?, ?";
+                "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC LIMIT ?, ?";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, paginationRequest.getStartIndex());
@@ -112,7 +119,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 totalRecordsCount = rs.getInt("NON_COMPLIANT_FEATURE_COUNT");
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting non compliant device counts by features.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -120,13 +128,6 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         paginationResult.setData(filteredNonCompliantDeviceCountsByFeatures);
         paginationResult.setRecordsTotal(totalRecordsCount);
         return paginationResult;
-    }
-
-    @Override
-    public int getUnmonitoredDeviceCount() throws GadgetDataServiceDAOException {
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("POLICY_ID", -1);
-        return this.getDeviceCount(filters);
     }
 
     public int getDeviceCount(Map<String, Object> filters) throws GadgetDataServiceDAOException {
@@ -166,7 +167,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered device count.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -211,7 +213,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered device count, " +
+                    "non compliant by a particular feature.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -257,7 +261,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceCountsByPlatforms.put(rs.getString("PLATFORM"), rs.getInt("DEVICE_COUNT"));
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered set of device counts by platforms.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -304,7 +309,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceCountsByPlatforms.put(rs.getString("PLATFORM"), rs.getInt("DEVICE_COUNT"));
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a set of feature non-compliant device counts by platforms.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -350,7 +356,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceCountsByOwnershipTypes.put(rs.getString("OWNERSHIP"), rs.getInt("DEVICE_COUNT"));
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered set of device counts by ownership types.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -398,7 +405,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceCountsByOwnershipTypes.put(rs.getString("OWNERSHIP"), rs.getInt("DEVICE_COUNT"));
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered set of feature " +
+                    "non-compliant device counts by ownership types.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -469,7 +478,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered set of devices " +
+                    "with details when pagination is enabled.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -485,7 +496,6 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
         List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
         int totalRecordsCount = 0;
         try {
@@ -499,7 +509,7 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 }
             }
             sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
+                  "WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -523,7 +533,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
+            Map<String, Object> filteredDeviceWithDetails;
             while (rs.next()) {
+                filteredDeviceWithDetails = new HashMap<>();
                 filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
@@ -545,7 +557,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered set of feature non-compliant devices " +
+                    "with details when pagination is enabled.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -599,7 +613,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting a filtered set of devices with details.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -612,13 +627,12 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Map<String, Object> filteredDeviceWithDetails = new HashMap<>();
         List<Map<String, Object>> filteredDevicesWithDetails = new ArrayList<>();
         try {
             con = this.getConnection();
             String sql;
             sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+                  "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -644,7 +658,9 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
+            Map<String, Object> filteredDeviceWithDetails;
             while (rs.next()) {
+                filteredDeviceWithDetails = new HashMap<>();
                 filteredDeviceWithDetails.put("device-id", rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.put("platform", rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.put("ownership", rs.getString("OWNERSHIP"));
@@ -652,7 +668,8 @@ class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
         } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred while executing a selection query to the database", e);
+            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
+                "execute relevant SQL queries for getting filtered set of feature non-compliant devices with details.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

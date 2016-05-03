@@ -31,7 +31,11 @@ public class Operation implements Serializable {
 	}
 
     public enum Status {
-        IN_PROGRESS, PENDING, COMPLETED, ERROR
+        IN_PROGRESS, PENDING, COMPLETED, ERROR, REPEATED
+    }
+
+    public enum Control {
+        REPEAT, NO_REPEAT, PAUSE_SEQUENCE, STOP_SEQUENCE
     }
 
     private String code;
@@ -39,11 +43,13 @@ public class Operation implements Serializable {
     private Type type;
     private int id;
     private Status status;
+    private Control control;
     private String receivedTimeStamp;
     private String createdTimeStamp;
     private boolean isEnabled;
     private Object payLoad;
     private String operationResponse;
+    private String activityId;
 
     @Override
     public boolean equals(Object o) {
@@ -87,6 +93,11 @@ public class Operation implements Serializable {
         if (status != operation.status) {
             return false;
         }
+
+        if(control != operation.control){
+            return false;
+        }
+
         if (type != operation.type) {
             return false;
         }
@@ -151,6 +162,14 @@ public class Operation implements Serializable {
         this.status = status;
     }
 
+    public Control getControl() {
+        return control;
+    }
+
+    public void setControl(Control control) {
+        this.control = control;
+    }
+
     public String getReceivedTimeStamp() {
         return receivedTimeStamp;
     }
@@ -191,6 +210,14 @@ public class Operation implements Serializable {
         this.operationResponse = operationResponse;
     }
 
+    public String getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
+    }
+
     @Override
     public String toString() {
         return "Operation{" +
@@ -198,6 +225,7 @@ public class Operation implements Serializable {
                 ", type=" + type +
                 ", id=" + id +
                 ", status=" + status +
+                ", control=" + control +
                 ", receivedTimeStamp='" + receivedTimeStamp + '\'' +
                 ", createdTimeStamp='" + createdTimeStamp + '\'' +
                 ", isEnabled=" + isEnabled +

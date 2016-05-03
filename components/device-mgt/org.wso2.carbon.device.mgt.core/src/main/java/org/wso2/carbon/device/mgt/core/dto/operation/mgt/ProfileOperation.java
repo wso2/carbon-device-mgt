@@ -26,4 +26,9 @@ public class ProfileOperation extends ConfigOperation implements Serializable {
         return Type.PROFILE;
     }
 
+
+    public Control getControl(){
+        return Control.REPEAT;
+    }
+
 }

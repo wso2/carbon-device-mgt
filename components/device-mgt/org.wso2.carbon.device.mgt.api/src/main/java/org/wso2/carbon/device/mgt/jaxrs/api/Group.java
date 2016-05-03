@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -42,6 +43,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -261,8 +263,10 @@ public class Group {
             if (isShared) {
                 return Response.status(Response.Status.OK).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Group not found").build();
             }
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -281,8 +285,10 @@ public class Group {
             if (isUnShared) {
                 return Response.status(Response.Status.OK).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Group not found").build();
             }
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -346,6 +352,34 @@ public class Group {
             String[] rolesArray = new String[roles.size()];
             roles.toArray(rolesArray);
             return Response.status(Response.Status.OK).entity(rolesArray).build();
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (GroupManagementException e) {
+            log.error(e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @PUT
+    @Path("/owner/{owner}/name/{groupName}/user/{userName}/share/roles")
+    @Produces("application/json")
+    public Response setRoles(@PathParam("groupName") String groupName,
+                             @PathParam("owner") String owner, @PathParam("userName") String userName,
+                             List<String> selectedRoles) {
+        try {
+            List<String> allRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(groupName, owner);
+            for (String role : allRoles) {
+                if (selectedRoles.contains(role)) {
+                    DeviceMgtAPIUtils.getGroupManagementProviderService()
+                            .shareGroup(userName, groupName, owner, role);
+                } else {
+                    DeviceMgtAPIUtils.getGroupManagementProviderService()
+                            .unshareGroup(userName, groupName, owner, role);
+                }
+            }
+            return Response.status(Response.Status.OK).build();
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -452,6 +486,8 @@ public class Group {
             String[] permissions = DeviceMgtAPIUtils.getGroupManagementProviderService()
                     .getPermissions(userName, groupName, owner);
             return Response.status(Response.Status.OK).entity(permissions).build();
+        } catch (UserDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

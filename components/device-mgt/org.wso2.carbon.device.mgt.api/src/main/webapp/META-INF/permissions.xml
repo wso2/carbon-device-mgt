@@ -1038,7 +1038,7 @@
     <Permission>
         <name>Group Roles</name>
         <path>/device-mgt/user/groups/roles</path>
-        <url>/groups/owner/*/name/*/share/roles</url>
+        <url>/groups/owner/*/name/*/user/*/share/roles</url>
         <method>PUT</method>
     </Permission>
 

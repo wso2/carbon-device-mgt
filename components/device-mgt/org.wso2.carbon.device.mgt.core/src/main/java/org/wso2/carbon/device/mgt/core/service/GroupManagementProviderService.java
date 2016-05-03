@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyEixistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
+import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import java.util.List;
 
@@ -148,10 +149,10 @@ public interface GroupManagementProviderService {
      * @param owner       of the group
      * @param sharingRole to be shared
      * @return is group shared
-     * @throws GroupManagementException
+     * @throws GroupManagementException UserDoesNotExistException
      */
     boolean shareGroup(String username, String groupName, String owner, String sharingRole)
-            throws GroupManagementException;
+            throws GroupManagementException, UserDoesNotExistException;
 
     /**
      * Un share existing group sharing with user specified by role
@@ -161,10 +162,10 @@ public interface GroupManagementProviderService {
      * @param owner       of the group
      * @param sharingRole to be un shared
      * @return is group un shared
-     * @throws GroupManagementException
+     * @throws GroupManagementException UserDoesNotExistException
      */
     boolean unshareGroup(String userName, String groupName, String owner, String sharingRole)
-            throws GroupManagementException;
+            throws GroupManagementException, UserDoesNotExistException;
 
     /**
      * Add new sharing role for device group
@@ -208,9 +209,10 @@ public interface GroupManagementProviderService {
      * @param groupName of the group
      * @param owner     of the group
      * @return list of roles
-     * @throws GroupManagementException
+     * @throws GroupManagementException UserDoesNotExistException
      */
-    List<String> getRoles(String userName, String groupName, String owner) throws GroupManagementException;
+    List<String> getRoles(String userName, String groupName, String owner)
+            throws GroupManagementException, UserDoesNotExistException;
 
     /**
      * Get device group users
@@ -284,9 +286,10 @@ public interface GroupManagementProviderService {
      * @param groupName of the group.
      * @param owner     of the group.
      * @return array of permissions.
-     * @throws GroupManagementException
+     * @throws GroupManagementException UserDoesNotExistException
      */
-    String[] getPermissions(String username, String groupName, String owner) throws GroupManagementException;
+    String[] getPermissions(String username, String groupName, String owner)
+            throws GroupManagementException, UserDoesNotExistException;
 
     /**
      * Get device groups of user with permission.

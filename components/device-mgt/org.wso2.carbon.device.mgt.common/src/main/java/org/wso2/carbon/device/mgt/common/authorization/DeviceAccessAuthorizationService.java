@@ -28,7 +28,6 @@ import java.util.List;
  * accessing the device information and performing MDM operations on devices.
  */
 public interface DeviceAccessAuthorizationService {
-
     /**
      * This method will check whether the currently logged-in user has the access to the device identified by the given
      * DeviceIdentifier.
@@ -40,28 +39,54 @@ public interface DeviceAccessAuthorizationService {
     boolean isUserAuthorized(DeviceIdentifier deviceIdentifier) throws DeviceAccessAuthorizationException;
 
     /**
+     * This method will check whether the currently logged-in user has the access to the device identified by the given
+     * DeviceIdentifier.
+     *
+     * @param deviceIdentifier - DeviceIdentifier of the device to be checked.
+     * @param groupPermissions - Group Permissions.
+     * @return Boolean authorization result.
+     * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
+     */
+    boolean isUserAuthorized(DeviceIdentifier deviceIdentifier, String[] groupPermissions)
+            throws DeviceAccessAuthorizationException;
+
+    /**
      * This method will check whether the currently logged-in user has the access to the devices identified by the given
      * DeviceIdentifier list.
      *
      * @param deviceIdentifiers - List of DeviceIdentifiers to be checked for authorization.
-     * @return DeviceAuthorizationResult - Authorization result including the list of authorized devices &
-     * unauthorized devices.
+     * @return DeviceAuthorizationResult - Authorization result including the list of authorized devices & unauthorized
+     * devices.
      * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
      */
     DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers) throws
-                                                                                 DeviceAccessAuthorizationException;
+                                                                                         DeviceAccessAuthorizationException;
+
+    /**
+     * This method will check whether the currently logged-in user has the access to the devices identified by the given
+     * DeviceIdentifier list.
+     *
+     * @param deviceIdentifiers - List of DeviceIdentifiers to be checked for authorization.
+     * @param groupPermissions  - Group Permissions
+     * @return DeviceAuthorizationResult - Authorization result including the list of authorized devices & unauthorized
+     * devices.
+     * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
+     */
+    DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String[] groupPermissions)
+            throws DeviceAccessAuthorizationException;
 
     /**
      * This method will check whether the given user has the access to the device identified by the given
      * DeviceIdentifier.
      *
      * @param deviceIdentifier - DeviceIdentifier of the device to be checked.
-     * @param username - Username of the user to be checked for authorization.
-     * @param permission       - Permission
+     * @param username         - Username of the user to be checked for authorization.
+     * @param groupPermissions - Group Permissions
      * @return Boolean authorization result.
      * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
      */
-     boolean isUserAuthorized(DeviceIdentifier deviceIdentifier, String username, String permission) throws DeviceAccessAuthorizationException;
+    boolean isUserAuthorized(DeviceIdentifier deviceIdentifier, String username, String[] groupPermissions)
+            throws DeviceAccessAuthorizationException;
 
     /**
      * This method will check whether the given user has the access to the devices identified by the given
@@ -69,20 +94,21 @@ public interface DeviceAccessAuthorizationService {
      *
      * @param deviceIdentifiers - List of DeviceIdentifiers to be checked for authorization.
      * @param username          - User name
-     * @param permission        - Permission
-     * @return DeviceAuthorizationResult - Authorization result including the list of authorized devices &
-     * unauthorized devices.
+     * @param groupPermissions  - Group Permissions
+     * @return DeviceAuthorizationResult - Authorization result including the list of authorized devices & unauthorized
+     * devices.
      * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
      */
-    DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String username, String permission) throws
-                                                                                         DeviceAccessAuthorizationException;
+    DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String username,
+                                               String[] groupPermissions) throws
+                                                                          DeviceAccessAuthorizationException;
 
     /**
      * This method will check whether the given user has the access to the device identified by the given
      * DeviceIdentifier.
      *
      * @param deviceIdentifier - DeviceIdentifier of the device to be checked.
-     * @param username - Username of the user to be checked for authorization.
+     * @param username         - Username of the user to be checked for authorization.
      * @return Boolean authorization result.
      * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
      */
@@ -94,12 +120,11 @@ public interface DeviceAccessAuthorizationService {
      * DeviceIdentifier list.
      *
      * @param deviceIdentifiers - List of DeviceIdentifiers to be checked for authorization.
-     * @param username - Username of the user to be checked for authorization.
-     * @return DeviceAuthorizationResult - Authorization result including the list of authorized devices &
-     * unauthorized devices.
+     * @param username          - Username of the user to be checked for authorization.
+     * @return DeviceAuthorizationResult - Authorization result including the list of authorized devices & unauthorized
+     * devices.
      * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
      */
     DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String username) throws
-                                                                                 DeviceAccessAuthorizationException;
-
+                                                                                                          DeviceAccessAuthorizationException;
 }

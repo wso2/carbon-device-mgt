@@ -41,7 +41,6 @@
         <module>org.wso2.carbon.device.mgt.analytics.dashboard</module>
         <module>org.wso2.carbon.device.mgt.api</module>
         <module>org.wso2.carbon.device.mgt.analytics.data.publisher</module>
-        <module>org.wso2.carbon.device.mgt.etc</module>
     </modules>
 
 </project>

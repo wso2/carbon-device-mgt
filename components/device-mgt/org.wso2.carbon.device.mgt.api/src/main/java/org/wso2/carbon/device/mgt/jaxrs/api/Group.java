@@ -114,10 +114,10 @@ public class Group {
 
     @GET
     @Produces("application/json")
-    public Response getGroups(@QueryParam("start") int startIndex, @PathParam("rowCount") int rowCount) {
+    public Response getGroups(@QueryParam("start") int startIndex, @PathParam("length") int length) {
         try {
             PaginationResult paginationResult = DeviceMgtAPIUtils.getGroupManagementProviderService()
-                    .getGroups(startIndex, rowCount);
+                    .getGroups(startIndex, length);
             if (paginationResult.getRecordsTotal() > 0) {
                 return Response.status(Response.Status.OK).entity(paginationResult).build();
             } else {
@@ -153,10 +153,10 @@ public class Group {
     @GET
     @Produces("application/json")
     public Response getGroups(@PathParam("user") String userName, @QueryParam("start") int startIndex,
-                              @QueryParam("rowCount") int rowCount) {
+                              @QueryParam("length") int length) {
         try {
             PaginationResult paginationResult = DeviceMgtAPIUtils.getGroupManagementProviderService()
-                    .getGroups(userName, startIndex, rowCount);
+                    .getGroups(userName, startIndex, length);
             if (paginationResult.getRecordsTotal() > 0) {
                 return Response.status(Response.Status.OK).entity(paginationResult).build();
             } else {

@@ -17,10 +17,45 @@
  */
 package org.wso2.carbon.device.mgt.common.group.mgt;
 
+
 /**
  * Holds Device Group constants and expose to external access
  */
 public class DeviceGroupConstants {
+    public enum RolePermissions {
+        DEFAULT_ADMIN_ROLE(Roles.DEFAULT_ADMIN_ROLE),
+        DEFAULT_OPERATOR_ROLE(Roles.DEFAULT_OPERATOR_ROLE),
+        DEFAULT_STATS_MONITOR_ROLE(Roles.DEFAULT_STATS_MONITOR_ROLE),
+        DEFAULT_VIEW_POLICIES(Roles.DEFAULT_VIEW_POLICIES),
+        DEFAULT_MANAGE_POLICIES(Roles.DEFAULT_MANAGE_POLICIES),
+        DEFAULT_VIEW_EVENTS(Roles.DEFAULT_VIEW_EVENTS);
+
+        private String value;
+        private String[] permissions;
+
+        RolePermissions(String value) {
+            this.value = value;
+        }
+
+        static {
+            DEFAULT_ADMIN_ROLE.permissions = Permissions.DEFAULT_ADMIN_PERMISSIONS;
+            DEFAULT_OPERATOR_ROLE.permissions = Permissions.DEFAULT_OPERATOR_PERMISSIONS;
+            DEFAULT_STATS_MONITOR_ROLE.permissions = Permissions.DEFAULT_STATS_MONITOR_PERMISSIONS;
+            DEFAULT_VIEW_POLICIES.permissions = Permissions.DEFAULT_MANAGE_POLICIES_PERMISSIONS;
+            DEFAULT_MANAGE_POLICIES.permissions = Permissions.DEFAULT_VIEW_POLICIES_PERMISSIONS;
+            DEFAULT_VIEW_EVENTS.permissions = Permissions.DEFAULT_VIEW_EVENTS_PERMISSIONS;
+        }
+
+        @Override
+        public String toString(){
+            return this.value;
+        }
+
+        public String[] getPermissions(){
+            return permissions;
+        }
+    }
+
     public static class Roles {
         public static final String DEFAULT_ADMIN_ROLE = "admin";
         public static final String DEFAULT_OPERATOR_ROLE = "invoke-device-operations";

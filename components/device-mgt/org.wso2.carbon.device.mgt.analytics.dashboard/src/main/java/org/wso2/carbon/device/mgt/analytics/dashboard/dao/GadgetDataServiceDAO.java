@@ -19,7 +19,6 @@
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.sql.SQLException;
@@ -70,7 +69,7 @@ public interface GadgetDataServiceDAO {
      */
     int getUnmonitoredDeviceCount() throws SQLException;
 
-    PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest)
+    PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
             throws InvalidParameterException, SQLException;
 
     int getDeviceCount(Map<String, Object> filters) throws SQLException;
@@ -89,10 +88,10 @@ public interface GadgetDataServiceDAO {
                                           Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
     PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                  PaginationRequest paginationRequest) throws InvalidParameterException, SQLException;
+                                      int startIndex, int resultCount) throws InvalidParameterException, SQLException;
 
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                    Map<String, Object> filters, PaginationRequest paginationRequest)
+                                    Map<String, Object> filters, int startIndex, int resultCount)
                                             throws InvalidParameterException, SQLException;
 
     List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws SQLException;

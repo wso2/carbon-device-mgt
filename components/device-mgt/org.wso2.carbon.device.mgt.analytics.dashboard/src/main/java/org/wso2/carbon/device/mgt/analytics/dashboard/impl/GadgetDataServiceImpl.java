@@ -107,13 +107,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest)
+    public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
                                                             throws SQLException, InvalidParameterException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getNonCompliantDeviceCountsByFeatures(paginationRequest);
+                getNonCompliantDeviceCountsByFeatures(startIndex, resultCount);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -202,12 +202,12 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                        PaginationRequest paginationRequest) throws InvalidParameterException, SQLException {
+                                     int startIndex, int resultCount) throws InvalidParameterException, SQLException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getDevicesWithDetails(filters, paginationRequest);
+                getDevicesWithDetails(filters, startIndex, resultCount);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -216,13 +216,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                            Map<String, Object> filters, PaginationRequest paginationRequest)
+                                                Map<String, Object> filters, int startIndex, int resultCount)
                                                                     throws InvalidParameterException, SQLException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                    getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filters, paginationRequest);
+                    getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filters, startIndex, resultCount);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }

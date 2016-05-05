@@ -22,7 +22,6 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAO;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -78,21 +77,17 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     @Override
-    public PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest)
+    public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
                                                                   throws InvalidParameterException, SQLException {
 
-        if (paginationRequest == null) {
-            throw new InvalidParameterException("PaginationRequest object should not be null.");
+        if (startIndex < 0) {
+            throw new InvalidParameterException("Start index (startIndex) should be " +
+                "equal to 0 or greater than that.");
         }
 
-        if (paginationRequest.getStartIndex() < 0) {
-            throw new InvalidParameterException("startIndex of PaginationRequest object " +
-                "should be equal to 0 or greater than that.");
-        }
-
-        if (paginationRequest.getRowCount() < 5) {
-            throw new InvalidParameterException("rowCount of PaginationRequest object " +
-                "should be equal to 5 or greater than that.");
+        if (resultCount < 5) {
+            throw new InvalidParameterException("Result count (resultCount) should be " +
+                "equal to 5 or greater than that.");
         }
 
         Connection con;
@@ -107,8 +102,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC LIMIT ?, ?";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setInt(2, paginationRequest.getStartIndex());
-            stmt.setInt(3, paginationRequest.getRowCount());
+            stmt.setInt(2, startIndex);
+            stmt.setInt(3, resultCount);
 
             // executing query
             rs = stmt.executeQuery();
@@ -281,7 +276,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                                         Map<String, Object> filters) throws InvalidParameterException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("nonCompliantFeatureCode should not be either null or empty.");
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                "should not be either null or empty.");
         }
 
         Connection con;
@@ -376,7 +372,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                                           Map<String, Object> filters) throws InvalidParameterException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("nonCompliantFeatureCode should not be either null or empty.");
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                    "should not be either null or empty.");
         }
 
         Connection con;
@@ -424,20 +421,16 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                  PaginationRequest paginationRequest) throws InvalidParameterException, SQLException {
+                                      int startIndex, int resultCount) throws InvalidParameterException, SQLException {
 
-        if (paginationRequest == null) {
-            throw new InvalidParameterException("PaginationRequest object should not be null.");
+        if (startIndex < 0) {
+            throw new InvalidParameterException("Start index (startIndex) should be " +
+                "equal to 0 or greater than that.");
         }
 
-        if (paginationRequest.getStartIndex() < 0) {
-            throw new InvalidParameterException("startIndex of PaginationRequest object " +
-                "should be equal to 0 or greater than that.");
-        }
-
-        if (paginationRequest.getRowCount() < 5) {
-            throw new InvalidParameterException("rowCount of PaginationRequest object " +
-                "should be equal to 5 or greater than that.");
+        if (resultCount < 5) {
+            throw new InvalidParameterException("Result count (resultCount) should be " +
+                "equal to 5 or greater than that.");
         }
 
         Connection con;
@@ -471,11 +464,11 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                     }
                     i++;
                 }
-                stmt.setInt(i, paginationRequest.getStartIndex());
-                stmt.setInt(++i, paginationRequest.getRowCount());
+                stmt.setInt(i, startIndex);
+                stmt.setInt(++i, resultCount);
             } else {
-                stmt.setInt(2, paginationRequest.getStartIndex());
-                stmt.setInt(3, paginationRequest.getRowCount());
+                stmt.setInt(2, startIndex);
+                stmt.setInt(3, resultCount);
             }
             // executing query
             rs = stmt.executeQuery();
@@ -511,25 +504,22 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                            Map<String, Object> filters, PaginationRequest paginationRequest)
-                                                                      throws InvalidParameterException, SQLException {
+                                            Map<String, Object> filters, int startIndex, int resultCount)
+                                                                throws InvalidParameterException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("nonCompliantFeatureCode should not be either null or empty.");
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                "should not be either null or empty.");
         }
 
-        if (paginationRequest == null) {
-            throw new InvalidParameterException("PaginationRequest object should not be null.");
+        if (startIndex < 0) {
+            throw new InvalidParameterException("Start index (startIndex) should be " +
+                "equal to 0 or greater than that.");
         }
 
-        if (paginationRequest.getStartIndex() < 0) {
-            throw new InvalidParameterException("startIndex of PaginationRequest object " +
-                    "should be equal to 0 or greater than that.");
-        }
-
-        if (paginationRequest.getRowCount() < 5) {
-            throw new InvalidParameterException("rowCount of PaginationRequest object " +
-                    "should be equal to 5 or greater than that.");
+        if (resultCount < 5) {
+            throw new InvalidParameterException("Result count (resultCount) should be " +
+                "equal to 5 or greater than that.");
         }
 
         Connection con;
@@ -564,11 +554,11 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                     }
                     i++;
                 }
-                stmt.setInt(i, paginationRequest.getStartIndex());
-                stmt.setInt(++i, paginationRequest.getRowCount());
+                stmt.setInt(i, startIndex);
+                stmt.setInt(++i, resultCount);
             } else {
-                stmt.setInt(3, paginationRequest.getStartIndex());
-                stmt.setInt(4, paginationRequest.getRowCount());
+                stmt.setInt(3, startIndex);
+                stmt.setInt(4, resultCount);
             }
             // executing query
             rs = stmt.executeQuery();
@@ -658,7 +648,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                                         Map<String, Object> filters) throws InvalidParameterException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("nonCompliantFeatureCode should not be either null or empty.");
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                "should not be either null or empty.");
         }
 
         Connection con;

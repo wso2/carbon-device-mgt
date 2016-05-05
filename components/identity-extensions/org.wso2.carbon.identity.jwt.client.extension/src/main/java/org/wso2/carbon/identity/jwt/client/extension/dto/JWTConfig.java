@@ -1,5 +1,7 @@
 package org.wso2.carbon.identity.jwt.client.extension.dto;
 
+import org.wso2.carbon.core.util.Utils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -142,6 +144,6 @@ public class JWTConfig {
 	}
 
 	public String getTokenEndpoint() {
-		return tokenEndpoint;
+		return Utils.replaceSystemProperty(tokenEndpoint);
 	}
 }

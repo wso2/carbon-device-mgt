@@ -68,7 +68,7 @@ var deviceListing, currentUser, groupName, groupOwner;
  */
 $(document).ready(function () {
     deviceListing = $("#device-listing");
-    deviceListing.data("current-user");
+    currentUser = deviceListing.data("current-user");
 
     groupName = getParameterByName("groupName");
     groupOwner = getParameterByName("groupOwner");
@@ -168,7 +168,9 @@ function toTitleCase(str) {
 
 function loadDevices(searchType, searchParam){
     var serviceURL;
-    if ($.hasPermission("LIST_DEVICES")) {
+    if (groupName && groupOwner && $.hasPermission("LIST_OWN_DEVICES")) {
+        serviceURL = "/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/devices";
+    } else if ($.hasPermission("LIST_DEVICES")) {
         serviceURL = "/devicemgt_admin/devices";
     } else if ($.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
@@ -390,32 +392,6 @@ function openCollapsedNav() {
     });
 }
 
-function initPage() {
-    var serviceURL;
-    if ($.hasPermission("LIST_DEVICES")) {
-        serviceURL = "/devicemgt_admin/devices/count";
-    } else if ($.hasPermission("LIST_OWN_DEVICES")) {
-        //Get authenticated users devices
-        serviceURL = "/devicemgt_admin/devices/user/" + currentUser + "/count";
-    }
-    invokerUtil.get(serviceURL,
-        function (data) {
-            if (data) {
-                data = JSON.parse(data);
-                if (Number(data) > 0) {
-                    loadDevices();
-                } else {
-                    $("#loading-content").remove();
-                    $("#device-listing-status-msg").text("No enrolled devices found.");
-                    $("#device-listing-status").removeClass(' hidden');
-                }
-            }
-        }, function (message) {
-            initPage();
-        }
-    );
-}
-
 /*
  * DOM ready functions.
  */
@@ -432,7 +408,7 @@ $(document).ready(function () {
         }
     }
 
-    initPage();
+    loadDevices();
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
@@ -515,7 +491,7 @@ function attachDeviceEvents() {
                 serviceURL = "/devicemgt_admin/groups/all";
             } else if ($.hasPermission("LIST_GROUPS")) {
                 //Get authenticated users groups
-                serviceURL = "/devicemgt_admin/groups/user/" + currentUser;
+                serviceURL = "/devicemgt_admin/groups/user/" + currentUser + "/all";
             }
 
             invokerUtil.get(serviceURL, function (data) {

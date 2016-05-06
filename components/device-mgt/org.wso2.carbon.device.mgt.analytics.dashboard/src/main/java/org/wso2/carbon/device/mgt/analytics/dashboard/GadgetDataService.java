@@ -18,9 +18,10 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard;
 
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -30,61 +31,62 @@ import java.util.Map;
 public interface GadgetDataService {
 
     @SuppressWarnings("unused")
-    int getTotalDeviceCount() throws GadgetDataServiceException;
+    int getTotalDeviceCount() throws SQLException;
 
     @SuppressWarnings("unused")
-    int getActiveDeviceCount() throws GadgetDataServiceException;
+    int getActiveDeviceCount() throws SQLException;
 
     @SuppressWarnings("unused")
-    int getInactiveDeviceCount() throws GadgetDataServiceException;
+    int getInactiveDeviceCount() throws SQLException;
 
     @SuppressWarnings("unused")
-    int getRemovedDeviceCount() throws GadgetDataServiceException;
+    int getRemovedDeviceCount() throws SQLException;
 
     @SuppressWarnings("unused")
-    int getNonCompliantDeviceCount() throws GadgetDataServiceException;
+    int getNonCompliantDeviceCount() throws SQLException;
 
     @SuppressWarnings("unused")
-    int getUnmonitoredDeviceCount() throws GadgetDataServiceException;
+    int getUnmonitoredDeviceCount() throws SQLException;
 
     @SuppressWarnings("unused")
-    PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest)
-            throws GadgetDataServiceException;
+    PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
+                                                           throws InvalidParameterException, SQLException;
 
     @SuppressWarnings("unused")
-    int getDeviceCount(Map<String, Object> filters) throws GadgetDataServiceException;
+    int getDeviceCount(Map<String, Object> filters) throws SQLException;
 
     @SuppressWarnings("unused")
     int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
-                                          Map<String, Object> filters) throws GadgetDataServiceException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
     @SuppressWarnings("unused")
-    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws GadgetDataServiceException;
+    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws SQLException;
 
     @SuppressWarnings("unused")
     Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                                         Map<String, Object> filters) throws GadgetDataServiceException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
     @SuppressWarnings("unused")
-    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws GadgetDataServiceException;
+    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws SQLException;
 
     @SuppressWarnings("unused")
     Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                                         Map<String, Object> filters) throws GadgetDataServiceException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
     @SuppressWarnings("unused")
     PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                           PaginationRequest paginationRequest) throws GadgetDataServiceException;
+                                      int startIndex, int resultCount) throws InvalidParameterException, SQLException;
 
     @SuppressWarnings("unused")
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                    Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceException;
+                                       Map<String, Object> filters, int startIndex, int resultCount)
+                                                            throws InvalidParameterException, SQLException;
 
     @SuppressWarnings("unused")
-    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceException;
+    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws SQLException;
 
     @SuppressWarnings("unused")
     List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                         Map<String, Object> filters) throws GadgetDataServiceException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
 }

@@ -20,9 +20,8 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAO;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOException;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -38,48 +37,59 @@ import java.util.Map;
 public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
 
     @Override
-    public int getTotalDeviceCount() throws GadgetDataServiceDAOException {
+    public int getTotalDeviceCount() throws SQLException {
         return this.getDeviceCount(null);
     }
 
     @Override
-    public int getActiveDeviceCount() throws GadgetDataServiceDAOException {
+    public int getActiveDeviceCount() throws SQLException {
         Map<String, Object> filters = new HashMap<>();
         filters.put("CONNECTIVITY_STATUS", "ACTIVE");
         return this.getDeviceCount(filters);
     }
 
     @Override
-    public int getInactiveDeviceCount() throws GadgetDataServiceDAOException {
+    public int getInactiveDeviceCount() throws SQLException {
         Map<String, Object> filters = new HashMap<>();
         filters.put("CONNECTIVITY_STATUS", "INACTIVE");
         return this.getDeviceCount(filters);
     }
 
     @Override
-    public int getRemovedDeviceCount() throws GadgetDataServiceDAOException {
+    public int getRemovedDeviceCount() throws SQLException {
         Map<String, Object> filters = new HashMap<>();
         filters.put("CONNECTIVITY_STATUS", "REMOVED");
         return this.getDeviceCount(filters);
     }
 
     @Override
-    public int getNonCompliantDeviceCount() throws GadgetDataServiceDAOException {
+    public int getNonCompliantDeviceCount() throws SQLException {
         Map<String, Object> filters = new HashMap<>();
         filters.put("IS_COMPLIANT", 0);
         return this.getDeviceCount(filters);
     }
 
     @Override
-    public int getUnmonitoredDeviceCount() throws GadgetDataServiceDAOException {
+    public int getUnmonitoredDeviceCount() throws SQLException {
         Map<String, Object> filters = new HashMap<>();
         filters.put("POLICY_ID", -1);
         return this.getDeviceCount(filters);
     }
 
     @Override
-    public PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest)
-                                                                  throws GadgetDataServiceDAOException {
+    public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
+                                                                  throws InvalidParameterException, SQLException {
+
+        if (startIndex < 0) {
+            throw new InvalidParameterException("Start index (startIndex) should be " +
+                "equal to 0 or greater than that.");
+        }
+
+        if (resultCount < 5) {
+            throw new InvalidParameterException("Result count (resultCount) should be " +
+                "equal to 5 or greater than that.");
+        }
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -92,8 +102,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC LIMIT ?, ?";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setInt(2, paginationRequest.getStartIndex());
-            stmt.setInt(3, paginationRequest.getRowCount());
+            stmt.setInt(2, startIndex);
+            stmt.setInt(3, resultCount);
 
             // executing query
             rs = stmt.executeQuery();
@@ -118,9 +128,6 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("NON_COMPLIANT_FEATURE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting non compliant device counts by features.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -130,7 +137,7 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return paginationResult;
     }
 
-    public int getDeviceCount(Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public int getDeviceCount(Map<String, Object> filters) throws SQLException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -166,16 +173,19 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered device count.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return filteredDeviceCount;
     }
 
-    public int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, Map<String, Object> filters)
+                                                 throws InvalidParameterException, SQLException {
+
+        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+            throw new InvalidParameterException("nonCompliantFeatureCode should not be either null or empty.");
+        }
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -212,17 +222,13 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered device count, " +
-                    "non compliant by a particular feature.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return filteredDeviceCount;
     }
 
-    public Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws SQLException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -260,16 +266,20 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 filteredDeviceCountsByPlatforms.put(rs.getString("PLATFORM"), rs.getInt("DEVICE_COUNT"));
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered set of device counts by platforms.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return filteredDeviceCountsByPlatforms;
     }
 
-    public Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode, Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                        Map<String, Object> filters) throws InvalidParameterException, SQLException {
+
+        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                "should not be either null or empty.");
+        }
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -308,16 +318,13 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 filteredDeviceCountsByPlatforms.put(rs.getString("PLATFORM"), rs.getInt("DEVICE_COUNT"));
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a set of feature non-compliant device counts by platforms.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return filteredDeviceCountsByPlatforms;
     }
 
-    public Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws SQLException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -355,9 +362,6 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 filteredDeviceCountsByOwnershipTypes.put(rs.getString("OWNERSHIP"), rs.getInt("DEVICE_COUNT"));
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered set of device counts by ownership types.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -365,7 +369,13 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                Map<String, Object> filters) throws GadgetDataServiceDAOException {
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException {
+
+        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                    "should not be either null or empty.");
+        }
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -404,10 +414,6 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 filteredDeviceCountsByOwnershipTypes.put(rs.getString("OWNERSHIP"), rs.getInt("DEVICE_COUNT"));
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered set of feature " +
-                    "non-compliant device counts by ownership types.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -415,7 +421,18 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                        PaginationRequest paginationRequest) throws GadgetDataServiceDAOException {
+                                      int startIndex, int resultCount) throws InvalidParameterException, SQLException {
+
+        if (startIndex < 0) {
+            throw new InvalidParameterException("Start index (startIndex) should be " +
+                "equal to 0 or greater than that.");
+        }
+
+        if (resultCount < 5) {
+            throw new InvalidParameterException("Result count (resultCount) should be " +
+                "equal to 5 or greater than that.");
+        }
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -447,11 +464,11 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                     }
                     i++;
                 }
-                stmt.setInt(i, paginationRequest.getStartIndex());
-                stmt.setInt(++i, paginationRequest.getRowCount());
+                stmt.setInt(i, startIndex);
+                stmt.setInt(++i, resultCount);
             } else {
-                stmt.setInt(2, paginationRequest.getStartIndex());
-                stmt.setInt(3, paginationRequest.getRowCount());
+                stmt.setInt(2, startIndex);
+                stmt.setInt(3, resultCount);
             }
             // executing query
             rs = stmt.executeQuery();
@@ -477,10 +494,6 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered set of devices " +
-                    "with details when pagination is enabled.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -491,7 +504,24 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-        Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceDAOException {
+                                            Map<String, Object> filters, int startIndex, int resultCount)
+                                                                throws InvalidParameterException, SQLException {
+
+        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                "should not be either null or empty.");
+        }
+
+        if (startIndex < 0) {
+            throw new InvalidParameterException("Start index (startIndex) should be " +
+                "equal to 0 or greater than that.");
+        }
+
+        if (resultCount < 5) {
+            throw new InvalidParameterException("Result count (resultCount) should be " +
+                "equal to 5 or greater than that.");
+        }
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -524,11 +554,11 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                     }
                     i++;
                 }
-                stmt.setInt(i, paginationRequest.getStartIndex());
-                stmt.setInt(++i, paginationRequest.getRowCount());
+                stmt.setInt(i, startIndex);
+                stmt.setInt(++i, resultCount);
             } else {
-                stmt.setInt(3, paginationRequest.getStartIndex());
-                stmt.setInt(4, paginationRequest.getRowCount());
+                stmt.setInt(3, startIndex);
+                stmt.setInt(4, resultCount);
             }
             // executing query
             rs = stmt.executeQuery();
@@ -556,10 +586,6 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered set of feature non-compliant devices " +
-                    "with details when pagination is enabled.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -569,7 +595,7 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return paginationResult;
     }
 
-    public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceDAOException {
+    public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws SQLException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -612,9 +638,6 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceWithDetails.put("connectivity-details", rs.getString("CONNECTIVITY_STATUS"));
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting a filtered set of devices with details.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -622,7 +645,13 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                    Map<String, Object> filters) throws GadgetDataServiceDAOException {
+                                        Map<String, Object> filters) throws InvalidParameterException, SQLException {
+
+        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
+                "should not be either null or empty.");
+        }
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -667,9 +696,6 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
                 filteredDeviceWithDetails.put("connectivity-details", rs.getString("CONNECTIVITY_STATUS"));
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
-        } catch (SQLException e) {
-            throw new GadgetDataServiceDAOException("Error occurred @ GadgetDataServiceDAO layer while trying to " +
-                "execute relevant SQL queries for getting filtered set of feature non-compliant devices with details.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

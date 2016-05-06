@@ -16,12 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard;
+package org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception;
 
 /**
- * Custom exception class for GadgetDataService layer.
+ * Custom exception class for catching invalid parameter issues,
+ * relevant to Gadget Data Service DAO layer.
  */
-public class GadgetDataServiceException extends Exception {
+public class InvalidParameterException extends Exception {
 
     private String errorMessage;
     private static final long serialVersionUID = 2021891706072918864L;
@@ -32,7 +33,8 @@ public class GadgetDataServiceException extends Exception {
      * @param errorMessage specific error message.
      * @param nestedException Nested exception.
      */
-    public GadgetDataServiceException(String errorMessage, Exception nestedException) {
+    @SuppressWarnings("unused")
+    public InvalidParameterException(String errorMessage, Exception nestedException) {
         super(errorMessage, nestedException);
         setErrorMessage(errorMessage);
     }
@@ -44,7 +46,7 @@ public class GadgetDataServiceException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public GadgetDataServiceException(String errorMessage, Throwable cause) {
+    public InvalidParameterException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         setErrorMessage(errorMessage);
     }
@@ -54,8 +56,7 @@ public class GadgetDataServiceException extends Exception {
      *
      * @param errorMessage Specific error message.
      */
-    @SuppressWarnings("unused")
-    public GadgetDataServiceException(String errorMessage) {
+    public InvalidParameterException(String errorMessage) {
         super(errorMessage);
         setErrorMessage(errorMessage);
     }
@@ -66,7 +67,7 @@ public class GadgetDataServiceException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public GadgetDataServiceException(Throwable cause) {
+    public InvalidParameterException(Throwable cause) {
         super(cause);
     }
 

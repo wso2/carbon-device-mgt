@@ -18,9 +18,10 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -31,70 +32,71 @@ public interface GadgetDataServiceDAO {
      *
      * @return Total filtered device count.
      */
-    int getTotalDeviceCount() throws GadgetDataServiceDAOException;
+    int getTotalDeviceCount() throws SQLException;
 
     /**
      * Method to get active device count from a particular tenant.
      *
      * @return active device count.
      */
-    int getActiveDeviceCount() throws GadgetDataServiceDAOException;
+    int getActiveDeviceCount() throws SQLException;
 
     /**
      * Method to get inactive device count from a particular tenant.
      *
      * @return inactive device count.
      */
-    int getInactiveDeviceCount() throws GadgetDataServiceDAOException;
+    int getInactiveDeviceCount() throws SQLException;
 
     /**
      * Method to get removed device count from a particular tenant.
      *
      * @return removed device count.
      */
-    int getRemovedDeviceCount() throws GadgetDataServiceDAOException;
+    int getRemovedDeviceCount() throws SQLException;
 
     /**
      * Method to get non-compliant device count from a particular tenant.
      *
      * @return Non-compliant device count.
      */
-    int getNonCompliantDeviceCount() throws GadgetDataServiceDAOException;
+    int getNonCompliantDeviceCount() throws SQLException;
 
     /**
      * Method to get unmonitored device count from a particular tenant.
      *
      * @return Unmonitored device count.
      */
-    int getUnmonitoredDeviceCount() throws GadgetDataServiceDAOException;
+    int getUnmonitoredDeviceCount() throws SQLException;
 
-    PaginationResult getNonCompliantDeviceCountsByFeatures(PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+    PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
+            throws InvalidParameterException, SQLException;
 
-    int getDeviceCount(Map<String, Object> filters) throws GadgetDataServiceDAOException;
+    int getDeviceCount(Map<String, Object> filters) throws SQLException;
 
     int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
-                                          Map<String, Object> filters) throws GadgetDataServiceDAOException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
-    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws GadgetDataServiceDAOException;
+    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws SQLException;
 
     Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                                    Map<String, Object> filters) throws GadgetDataServiceDAOException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
-    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters)
-            throws GadgetDataServiceDAOException;
+    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws SQLException;
 
     Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                                    Map<String, Object> filters) throws GadgetDataServiceDAOException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
     PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                           PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+                                      int startIndex, int resultCount) throws InvalidParameterException, SQLException;
 
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-            Map<String, Object> filters, PaginationRequest paginationRequest) throws GadgetDataServiceDAOException;
+                                    Map<String, Object> filters, int startIndex, int resultCount)
+                                            throws InvalidParameterException, SQLException;
 
-    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws GadgetDataServiceDAOException;
+    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws SQLException;
 
     List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                            Map<String, Object> filters) throws GadgetDataServiceDAOException;
+                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
 
 }

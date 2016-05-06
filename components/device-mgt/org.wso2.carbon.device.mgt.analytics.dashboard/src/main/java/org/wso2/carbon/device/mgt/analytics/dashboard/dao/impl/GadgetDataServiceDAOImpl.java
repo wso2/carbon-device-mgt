@@ -21,7 +21,8 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAO;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.*;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -29,65 +30,84 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
 
     @Override
     public int getTotalDeviceCount() throws SQLException {
-        return this.getDeviceCount(null);
+        try {
+            return this.getDeviceCount(null);
+        } catch (InvalidParameterValueException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public int getActiveDeviceCount() throws SQLException {
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("CONNECTIVITY_STATUS", "ACTIVE");
-        return this.getDeviceCount(filters);
+        FilterSet filterSet = new FilterSet();
+        filterSet.setConnectivityStatus(ConnectivityStatus.active.toString());
+        try {
+            return this.getDeviceCount(filterSet);
+        } catch (InvalidParameterValueException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public int getInactiveDeviceCount() throws SQLException {
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("CONNECTIVITY_STATUS", "INACTIVE");
-        return this.getDeviceCount(filters);
+        FilterSet filterSet = new FilterSet();
+        filterSet.setConnectivityStatus(ConnectivityStatus.inactive.toString());
+        try {
+            return this.getDeviceCount(filterSet);
+        } catch (InvalidParameterValueException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public int getRemovedDeviceCount() throws SQLException {
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("CONNECTIVITY_STATUS", "REMOVED");
-        return this.getDeviceCount(filters);
+        FilterSet filterSet = new FilterSet();
+        filterSet.setConnectivityStatus(ConnectivityStatus.removed.toString());
+        try {
+            return this.getDeviceCount(filterSet);
+        } catch (InvalidParameterValueException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public int getNonCompliantDeviceCount() throws SQLException {
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("IS_COMPLIANT", 0);
-        return this.getDeviceCount(filters);
+        FilterSet filterSet = new FilterSet();
+        filterSet.setPotentialVulnerability(PotentialVulnerability.non_compliant.toString());
+        try {
+            return this.getDeviceCount(filterSet);
+        } catch (InvalidParameterValueException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public int getUnmonitoredDeviceCount() throws SQLException {
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("POLICY_ID", -1);
-        return this.getDeviceCount(filters);
+        FilterSet filterSet = new FilterSet();
+        filterSet.setPotentialVulnerability(PotentialVulnerability.unmonitored.toString());
+        try {
+            return this.getDeviceCount(filterSet);
+        } catch (InvalidParameterValueException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                                  throws InvalidParameterException, SQLException {
+                                                                  throws InvalidParameterValueException, SQLException {
 
         if (startIndex < 0) {
-            throw new InvalidParameterException("Start index (startIndex) should be " +
-                "equal to 0 or greater than that.");
+            throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
         }
 
         if (resultCount < 5) {
-            throw new InvalidParameterException("Result count (resultCount) should be " +
-                "equal to 5 or greater than that.");
+            throw new InvalidParameterValueException("Result count should be equal to 5 or greater than that.");
         }
 
         Connection con;
@@ -137,7 +157,10 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return paginationResult;
     }
 
-    public int getDeviceCount(Map<String, Object> filters) throws SQLException {
+    public int getDeviceCount(FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -179,12 +202,14 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return filteredDeviceCount;
     }
 
-    public int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, Map<String, Object> filters)
-                                                 throws InvalidParameterException, SQLException {
+    public int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, FilterSet filterSet)
+                                                        throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("nonCompliantFeatureCode should not be either null or empty.");
+            throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
         Connection con;
         PreparedStatement stmt = null;
@@ -193,7 +218,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         int filteredDeviceCount = 0;
         try {
             con = this.getConnection();
-            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
+                "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns
             if (filters != null && filters.size() > 0) {
@@ -228,7 +254,11 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return filteredDeviceCount;
     }
 
-    public Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws SQLException {
+    public Map<String, Integer> getDeviceCountsByPlatforms(FilterSet filterSet)
+                                                           throws InvalidParameterValueException, SQLException {
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -273,12 +303,13 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                        Map<String, Object> filters) throws InvalidParameterException, SQLException {
+                                        FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
-                "should not be either null or empty.");
+            throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
         Connection con;
         PreparedStatement stmt = null;
@@ -324,7 +355,11 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return filteredDeviceCountsByPlatforms;
     }
 
-    public Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws SQLException {
+    public Map<String, Integer> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
+                                                                throws InvalidParameterValueException, SQLException {
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -369,12 +404,13 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                          Map<String, Object> filters) throws InvalidParameterException, SQLException {
+                                            FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
-                    "should not be either null or empty.");
+            throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
         Connection con;
         PreparedStatement stmt = null;
@@ -420,18 +456,18 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return filteredDeviceCountsByOwnershipTypes;
     }
 
-    public PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                      int startIndex, int resultCount) throws InvalidParameterException, SQLException {
+    public PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
+                                                                throws InvalidParameterValueException, SQLException {
 
         if (startIndex < 0) {
-            throw new InvalidParameterException("Start index (startIndex) should be " +
-                "equal to 0 or greater than that.");
+            throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
         }
 
         if (resultCount < 5) {
-            throw new InvalidParameterException("Result count (resultCount) should be " +
-                "equal to 5 or greater than that.");
+            throw new InvalidParameterValueException("Result count should be equal to 5 or greater than that.");
         }
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
         Connection con;
         PreparedStatement stmt = null;
@@ -504,23 +540,22 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                            Map<String, Object> filters, int startIndex, int resultCount)
-                                                                throws InvalidParameterException, SQLException {
+                                                        FilterSet filterSet, int startIndex, int resultCount)
+                                                                throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
-                "should not be either null or empty.");
+            throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
 
         if (startIndex < 0) {
-            throw new InvalidParameterException("Start index (startIndex) should be " +
-                "equal to 0 or greater than that.");
+            throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
         }
 
         if (resultCount < 5) {
-            throw new InvalidParameterException("Result count (resultCount) should be " +
-                "equal to 5 or greater than that.");
+            throw new InvalidParameterValueException("Result count should be equal to 5 or greater than that.");
         }
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
         Connection con;
         PreparedStatement stmt = null;
@@ -595,7 +630,11 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return paginationResult;
     }
 
-    public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws SQLException {
+    public List<Map<String, Object>> getDevicesWithDetails(FilterSet filterSet)
+                                            throws InvalidParameterValueException, SQLException {
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
+
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -645,12 +684,13 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
     }
 
     public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                        Map<String, Object> filters) throws InvalidParameterException, SQLException {
+                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
-            throw new InvalidParameterException("Non-compliant feature code (nonCompliantFeatureCode) " +
-                "should not be either null or empty.");
+            throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
+
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
         Connection con;
         PreparedStatement stmt = null;
@@ -700,6 +740,67 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return filteredDevicesWithDetails;
+    }
+
+    private Map<String, Object> extractDatabaseFiltersFromBean(FilterSet filterSet)
+                                                        throws InvalidParameterValueException {
+        if (filterSet == null) {
+            return null;
+        }
+
+        Map<String, Object> filters = new LinkedHashMap<>();
+
+        String connectivityStatus = filterSet.getConnectivityStatus();
+        if (connectivityStatus != null) {
+            if (ConnectivityStatus.active.toString().equals(connectivityStatus) ||
+                    ConnectivityStatus.inactive.toString().equals(connectivityStatus) ||
+                        ConnectivityStatus.removed.toString().equals(connectivityStatus)) {
+                filters.put("CONNECTIVITY_STATUS", connectivityStatus.toUpperCase());
+            } else {
+                throw new InvalidParameterValueException("Invalid use of value for platform. " +
+                    "Value of platform could only be either android, ios or windows.");
+            }
+        }
+
+        String potentialVulnerability = filterSet.getPotentialVulnerability();
+        if (potentialVulnerability != null) {
+            if (PotentialVulnerability.non_compliant.toString().equals(potentialVulnerability) ||
+                    PotentialVulnerability.unmonitored.toString().equals(potentialVulnerability)) {
+                if (PotentialVulnerability.non_compliant.toString().equals(potentialVulnerability)) {
+                    filters.put("IS_COMPLIANT", 0);
+                } else {
+                    filters.put("POLICY_ID", -1);
+                }
+            } else {
+                throw new InvalidParameterValueException("Invalid use of value for potential vulnerability. " +
+                    "Value of potential vulnerability could only be non_compliant or unmonitored.");
+            }
+        }
+
+        String platform = filterSet.getPlatform();
+        if (platform != null) {
+            if (Platform.android.toString().equals(platform) ||
+                    Platform.ios.toString().equals(platform) ||
+                        Platform.windows.toString().equals(platform)) {
+                filters.put("PLATFORM", platform);
+            } else {
+                throw new InvalidParameterValueException("Invalid use of value for platform. " +
+                    "Value of platform could only be either android, ios or windows.");
+            }
+        }
+
+        String ownership = filterSet.getOwnership();
+        if (ownership != null) {
+            if (Ownership.byod.toString().equals(ownership) ||
+                    Ownership.cope.toString().equals(ownership)) {
+                filters.put("OWNERSHIP", ownership.toUpperCase());
+            } else {
+                throw new InvalidParameterValueException("Invalid use of value for ownership. " +
+                    "Value of ownership could only be either BYOD or COPE.");
+            }
+        }
+
+        return filters;
     }
 
     private Connection getConnection() throws SQLException {

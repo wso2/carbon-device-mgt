@@ -64,7 +64,8 @@
                         </Private-Package>
                         <Export-Package>
                             org.wso2.carbon.device.mgt.analytics.dashboard,
-                            org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception
+                            org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception,
+                            org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean
                         </Export-Package>
                         <Import-Package>
                             org.osgi.framework,

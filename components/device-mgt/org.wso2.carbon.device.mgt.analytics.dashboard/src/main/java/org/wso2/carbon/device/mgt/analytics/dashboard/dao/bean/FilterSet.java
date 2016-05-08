@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean;
 
 public class FilterSet {
+
     private String connectivityStatus;
     private String potentialVulnerability;
     private String platform;
@@ -44,6 +45,7 @@ public class FilterSet {
         return platform;
     }
 
+    @SuppressWarnings("unused")
     public void setPlatform(String platform) {
         this.platform = platform;
     }
@@ -52,7 +54,9 @@ public class FilterSet {
         return ownership;
     }
 
+    @SuppressWarnings("unused")
     public void setOwnership(String ownership) {
         this.ownership = ownership;
     }
+
 }

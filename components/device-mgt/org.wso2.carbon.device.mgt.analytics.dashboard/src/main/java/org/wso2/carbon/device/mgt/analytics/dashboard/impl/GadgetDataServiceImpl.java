@@ -20,13 +20,12 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.impl;
 
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.*;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * To be updated...
@@ -34,8 +33,34 @@ import java.util.Map;
 public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
-    public int getTotalDeviceCount() throws SQLException {
-        int totalDeviceCount;
+    public DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+        DeviceCountByGroupEntry filteredDeviceCount;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            filteredDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getDeviceCount(filterSet);
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return filteredDeviceCount;
+    }
+
+    @Override
+    public DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, FilterSet filterSet)
+                                                                  throws InvalidParameterValueException, SQLException {
+        DeviceCountByGroupEntry featureNonCompliantDeviceCount;
+        try {
+            GadgetDataServiceDAOFactory.openConnection();
+            featureNonCompliantDeviceCount = GadgetDataServiceDAOFactory.
+                    getGadgetDataServiceDAO().getFeatureNonCompliantDeviceCount(nonCompliantFeatureCode, filterSet);
+        } finally {
+            GadgetDataServiceDAOFactory.closeConnection();
+        }
+        return featureNonCompliantDeviceCount;
+    }
+
+    @Override
+    public DeviceCountByGroupEntry getTotalDeviceCount() throws SQLException {
+        DeviceCountByGroupEntry totalDeviceCount;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             totalDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getTotalDeviceCount();
@@ -46,69 +71,34 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public int getActiveDeviceCount() throws SQLException {
-        int activeDeviceCount;
+    public List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws SQLException {
+        List<DeviceCountByGroupEntry> deviceCountsByConnectivityStatuses;
         try {
             GadgetDataServiceDAOFactory.openConnection();
-            activeDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getActiveDeviceCount();
+            deviceCountsByConnectivityStatuses = GadgetDataServiceDAOFactory.
+                    getGadgetDataServiceDAO().getDeviceCountsByConnectivityStatuses();
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
-        return activeDeviceCount;
+        return deviceCountsByConnectivityStatuses;
     }
 
     @Override
-    public int getInactiveDeviceCount() throws SQLException {
-        int inactiveDeviceCount;
+    public List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws SQLException {
+        List<DeviceCountByGroupEntry> deviceCountsByPotentialVulnerabilities;
         try {
             GadgetDataServiceDAOFactory.openConnection();
-            inactiveDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getInactiveDeviceCount();
+            deviceCountsByPotentialVulnerabilities = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
+                getDeviceCountsByPotentialVulnerabilities();
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
-        return inactiveDeviceCount;
-    }
-
-    @Override
-    public int getRemovedDeviceCount() throws SQLException {
-        int removedDeviceCount;
-        try {
-            GadgetDataServiceDAOFactory.openConnection();
-            removedDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getRemovedDeviceCount();
-        } finally {
-            GadgetDataServiceDAOFactory.closeConnection();
-        }
-        return removedDeviceCount;
-    }
-
-    @Override
-    public int getNonCompliantDeviceCount() throws SQLException {
-        int nonCompliantDeviceCount;
-        try {
-            GadgetDataServiceDAOFactory.openConnection();
-            nonCompliantDeviceCount = GadgetDataServiceDAOFactory.
-                getGadgetDataServiceDAO().getNonCompliantDeviceCount();
-        } finally {
-            GadgetDataServiceDAOFactory.closeConnection();
-        }
-        return nonCompliantDeviceCount;
-    }
-
-    @Override
-    public int getUnmonitoredDeviceCount() throws SQLException {
-        int unmonitoredDeviceCount;
-        try {
-            GadgetDataServiceDAOFactory.openConnection();
-            unmonitoredDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getUnmonitoredDeviceCount();
-        } finally {
-            GadgetDataServiceDAOFactory.closeConnection();
-        }
-        return unmonitoredDeviceCount;
+        return deviceCountsByPotentialVulnerabilities;
     }
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                            throws SQLException, InvalidParameterException {
+                                                                  throws SQLException, InvalidParameterValueException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
@@ -121,38 +111,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public int getDeviceCount(Map<String, Object> filters) throws SQLException {
-        int deviceCount;
-        try {
-            GadgetDataServiceDAOFactory.openConnection();
-            deviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getDeviceCount(filters);
-        } finally {
-            GadgetDataServiceDAOFactory.closeConnection();
-        }
-        return deviceCount;
-    }
-
-    @Override
-    public int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, Map<String, Object> filters)
-                                                                    throws SQLException, InvalidParameterException {
-        int featureNonCompliantDeviceCount;
-        try {
-            GadgetDataServiceDAOFactory.openConnection();
-            featureNonCompliantDeviceCount = GadgetDataServiceDAOFactory.
-                getGadgetDataServiceDAO().getFeatureNonCompliantDeviceCount(nonCompliantFeatureCode, filters);
-        } finally {
-            GadgetDataServiceDAOFactory.closeConnection();
-        }
-        return featureNonCompliantDeviceCount;
-    }
-
-    @Override
-    public Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws SQLException {
-        Map<String, Integer> deviceCountsByPlatforms;
+    public List<DeviceCountByGroupEntry> getDeviceCountsByPlatforms(FilterSet filterSet)
+                                                                  throws InvalidParameterValueException, SQLException {
+        List<DeviceCountByGroupEntry> deviceCountsByPlatforms;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             deviceCountsByPlatforms = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getDeviceCountsByPlatforms(filters);
+                getDeviceCountsByPlatforms(filterSet);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -160,13 +125,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                         Map<String, Object> filters) throws SQLException, InvalidParameterException {
-        Map<String, Integer> featureNonCompliantDeviceCountsByPlatforms;
+    public List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+        List<DeviceCountByGroupEntry> featureNonCompliantDeviceCountsByPlatforms;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             featureNonCompliantDeviceCountsByPlatforms = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getFeatureNonCompliantDeviceCountsByPlatforms(nonCompliantFeatureCode, filters);
+                getFeatureNonCompliantDeviceCountsByPlatforms(nonCompliantFeatureCode, filterSet);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -174,12 +139,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws SQLException {
-        Map<String, Integer> deviceCountsByOwnershipTypes;
+    public List<DeviceCountByGroupEntry> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
+                                                                 throws InvalidParameterValueException, SQLException {
+        List<DeviceCountByGroupEntry> deviceCountsByOwnershipTypes;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             deviceCountsByOwnershipTypes = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getDeviceCountsByOwnershipTypes(filters);
+                getDeviceCountsByOwnershipTypes(filterSet);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -187,13 +153,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                         Map<String, Object> filters) throws SQLException, InvalidParameterException {
-        Map<String, Integer> featureNonCompliantDeviceCountsByOwnershipTypes;
+    public List<DeviceCountByGroupEntry>
+        getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
+                                            FilterSet filterSet) throws SQLException, InvalidParameterValueException {
+        List<DeviceCountByGroupEntry> featureNonCompliantDeviceCountsByOwnershipTypes;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             featureNonCompliantDeviceCountsByOwnershipTypes = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getFeatureNonCompliantDeviceCountsByOwnershipTypes(nonCompliantFeatureCode, filters);
+                getFeatureNonCompliantDeviceCountsByOwnershipTypes(nonCompliantFeatureCode, filterSet);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -201,13 +168,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                     int startIndex, int resultCount) throws InvalidParameterException, SQLException {
+    public PaginationResult getDevicesWithDetails(FilterSet filterSet,
+                                int startIndex, int resultCount) throws InvalidParameterValueException, SQLException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getDevicesWithDetails(filters, startIndex, resultCount);
+                getDevicesWithDetails(filterSet, startIndex, resultCount);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -216,13 +183,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                Map<String, Object> filters, int startIndex, int resultCount)
-                                                                    throws InvalidParameterException, SQLException {
+                                                        FilterSet filterSet, int startIndex, int resultCount)
+                                                                 throws InvalidParameterValueException, SQLException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                    getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filters, startIndex, resultCount);
+                getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filterSet, startIndex, resultCount);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -230,11 +197,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws SQLException {
-        List<Map<String, Object>> devicesWithDetails;
+    public List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
+                                                           throws InvalidParameterValueException, SQLException {
+        List<DetailedDeviceEntry> devicesWithDetails;
         try {
             GadgetDataServiceDAOFactory.openConnection();
-            devicesWithDetails = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getDevicesWithDetails(filters);
+            devicesWithDetails = GadgetDataServiceDAOFactory.
+                    getGadgetDataServiceDAO().getDevicesWithDetails(filterSet);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -242,13 +211,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                         Map<String, Object> filters) throws SQLException, InvalidParameterException {
-        List<Map<String, Object>> featureNonCompliantDevicesWithDetails;
+    public List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                            FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+        List<DetailedDeviceEntry> featureNonCompliantDevicesWithDetails;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             featureNonCompliantDevicesWithDetails = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
-                getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filters);
+                getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filterSet);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }

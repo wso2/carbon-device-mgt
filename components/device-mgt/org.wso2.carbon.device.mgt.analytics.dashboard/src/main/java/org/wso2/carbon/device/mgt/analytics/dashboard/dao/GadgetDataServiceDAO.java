@@ -18,85 +18,56 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.*;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public interface GadgetDataServiceDAO {
 
-    /**
-     * Method to get total filtered device count from a particular tenant.
-     *
-     * @return Total filtered device count.
-     */
-    int getTotalDeviceCount() throws SQLException;
+    DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet) throws InvalidParameterValueException, SQLException;
+
+    DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
+                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException;
 
     /**
-     * Method to get active device count from a particular tenant.
+     * Method to get total device count from a particular tenant.
      *
-     * @return active device count.
+     * @return Total device count.
      */
-    int getActiveDeviceCount() throws SQLException;
+    DeviceCountByGroupEntry getTotalDeviceCount() throws SQLException;
 
-    /**
-     * Method to get inactive device count from a particular tenant.
-     *
-     * @return inactive device count.
-     */
-    int getInactiveDeviceCount() throws SQLException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws SQLException;
 
-    /**
-     * Method to get removed device count from a particular tenant.
-     *
-     * @return removed device count.
-     */
-    int getRemovedDeviceCount() throws SQLException;
-
-    /**
-     * Method to get non-compliant device count from a particular tenant.
-     *
-     * @return Non-compliant device count.
-     */
-    int getNonCompliantDeviceCount() throws SQLException;
-
-    /**
-     * Method to get unmonitored device count from a particular tenant.
-     *
-     * @return Unmonitored device count.
-     */
-    int getUnmonitoredDeviceCount() throws SQLException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws SQLException;
 
     PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-            throws InvalidParameterException, SQLException;
+                                          throws InvalidParameterValueException, SQLException;
 
-    int getDeviceCount(Map<String, Object> filters) throws SQLException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByPlatforms(FilterSet filterSet)
+                                          throws InvalidParameterValueException, SQLException;
 
-    int getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
-                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
+    List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                          FilterSet filterSet) throws InvalidParameterValueException, SQLException;
 
-    Map<String, Integer> getDeviceCountsByPlatforms(Map<String, Object> filters) throws SQLException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
+                                          throws InvalidParameterValueException, SQLException;
 
-    Map<String, Integer> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
+    List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
+                                          FilterSet filterSet) throws InvalidParameterValueException, SQLException;
 
-    Map<String, Integer> getDeviceCountsByOwnershipTypes(Map<String, Object> filters) throws SQLException;
-
-    Map<String, Integer> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
-
-    PaginationResult getDevicesWithDetails(Map<String, Object> filters,
-                                      int startIndex, int resultCount) throws InvalidParameterException, SQLException;
+    PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
+                                          throws InvalidParameterValueException, SQLException;
 
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                    Map<String, Object> filters, int startIndex, int resultCount)
-                                            throws InvalidParameterException, SQLException;
+         FilterSet filterSet, int startIndex, int resultCount) throws InvalidParameterValueException, SQLException;
 
-    List<Map<String, Object>> getDevicesWithDetails(Map<String, Object> filters) throws SQLException;
+    List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
+                                          throws InvalidParameterValueException, SQLException;
 
-    List<Map<String, Object>> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                          Map<String, Object> filters) throws InvalidParameterException, SQLException;
+    List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
+                                          FilterSet filterSet) throws InvalidParameterValueException, SQLException;
 
 }

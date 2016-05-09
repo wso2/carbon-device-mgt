@@ -21,7 +21,9 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAO;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.*;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
@@ -30,7 +32,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
 
@@ -280,7 +285,7 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
             }
             // fetching total records count
             sql = "SELECT COUNT(FEATURE_CODE) AS NON_COMPLIANT_FEATURE_COUNT FROM " +
-                "(SELECT DISTINCT FEATURE_CODE FROM DEVICES_VIEW_2 WHERE TENANT_ID = ?)";
+                "(SELECT DISTINCT FEATURE_CODE FROM DEVICES_VIEW_2 WHERE TENANT_ID = ?) NON_COMPLIANT_FEATURE_CODE";
 
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);

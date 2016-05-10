@@ -15,13 +15,13 @@
         </a>
     </li>
     <li>
-        <a href="{{@app.context}}/devices">
-            Devices
+        <a href="{{@app.context}}/groups">
+            Groups
         </a>
     </li>
     <li>
-        <a href="{{@app.context}}/device/{{deviceType}}?id={{deviceId}}">
-            {{deviceName}}
+        <a href="{{@app.context}}/devices?groupOwner={{groupOwner}}&groupName={{groupName}}">
+            {{groupName}}
         </a>
     </li>
     <li>
@@ -36,14 +36,16 @@
         <div class=" margin-top-double">
             <div class="row padding-top-double padding-bottom-double margin-bottom-double">
                 <div class="col-lg-3  margin-top-double">
-                    <h1 class="grey ">{{deviceName}} Analytics</h1>
+                    <h1 class="grey ">{{groupName}} Analytics</h1>
                 </div>
-                {{unit "cdmf.unit.analytics.date-range-picker"}}
+                {{unit "cdmf.unit.analytics.date-range-picker" deviceTypes=deviceTypes}}
             </div>
             <hr>
             <div class="clear"></div>
             <div id="div-chart">
-                {{unit deviceAnalyticsViewUnitName}}
+                {{#each deviceTypes}}
+                    {{unit deviceAnalyticsViewUnitName devices=devices}}
+                {{/each}}
             </div>
         </div>
     </div>

@@ -28,9 +28,26 @@ var DateRange = convertDate(startDate) + " to " + convertDate(endDate);
 
 $(document).ready(function () {
     initDate();
-
+    var configObject = {
+        startOfWeek: 'monday',
+        separator: ' to ',
+        format: 'YYYY-MM-DD HH:mm',
+        autoClose: false,
+        time: {
+            enabled: true
+        },
+        shortcuts: 'hide',
+        endDate: currentDay,
+        maxDays: 2,
+        getValue: function () {
+            return this.value;
+        },
+        setValue: function (s) {
+            this.value = s;
+        }
+    };
     $('#date-range').html(DateRange);
-    $('#date-range').dateRangePicker()
+    $('#date-range').dateRangePicker(configObject)
             .bind('datepicker-apply', function (event, dateRange) {
                       $(this).addClass('active');
                       $(this).siblings().removeClass('active');
@@ -83,8 +100,11 @@ function setDateTime(from, to) {
     from += tzOffset;
     to += tzOffset;
 
-    // the relevant import units needs to implement this.
-    drawGraph(parseInt(from / 1000), parseInt(to / 1000));
+    // Implement drawGraph_<device type name> method in your UI unit for analytics.
+    var deviceTypes = $("#device-type-details").data("devicetypes");
+    for (var i = 0; i < deviceTypes.length; i++){
+        window["drawGraph_" + deviceTypes](parseInt(from / 1000), parseInt(to / 1000));
+    }
 }
 
 function convertDate(date) {

@@ -346,3 +346,16 @@ input.hour-range, input.minute-range {
 #dateRangePickerContainer {
     float: right;
 }
+
+.date-range {
+    border: 1px solid #ccc;
+}
+
+#dateRangePickerContainer button.active {
+    background-color: #e6e6e6 !important;
+}
+
+#dateRangePickerContainer .btn-default:hover {
+    background-color: #b2b2b2;
+    border-color: #000000;
+}

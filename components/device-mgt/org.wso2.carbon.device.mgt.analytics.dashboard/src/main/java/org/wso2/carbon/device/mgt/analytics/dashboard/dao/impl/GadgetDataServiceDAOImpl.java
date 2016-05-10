@@ -56,6 +56,7 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         return deviceCountByGroupEntry;
     }
 
+    @Override
     public DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet)
                                                   throws InvalidParameterValueException, SQLException {
 

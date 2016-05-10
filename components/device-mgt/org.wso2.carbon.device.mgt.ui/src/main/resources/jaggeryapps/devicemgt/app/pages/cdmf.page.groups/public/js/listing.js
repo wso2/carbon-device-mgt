@@ -142,7 +142,7 @@ function loadGroups() {
                            '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>' +
                            '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
 
-                    html += '<a href="analytics?groupName=' + row.name + '&groupOwner=' + row.owner + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                    html += '<a href="group/' + row.owner + '/' + row.name + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
                             '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
 

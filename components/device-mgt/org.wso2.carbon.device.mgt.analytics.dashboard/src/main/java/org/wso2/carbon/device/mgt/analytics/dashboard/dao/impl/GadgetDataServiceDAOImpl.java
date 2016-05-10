@@ -62,8 +62,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         int filteredDeviceCount = this.getFilteredDeviceCount(filterSet);
 
         DeviceCountByGroupEntry deviceCountByGroupEntry = new DeviceCountByGroupEntry();
-        deviceCountByGroupEntry.setGroup("non-specific");
-        deviceCountByGroupEntry.setDisplayNameForGroup("Non-specific");
+        deviceCountByGroupEntry.setGroup("filtered");
+        deviceCountByGroupEntry.setDisplayNameForGroup("Filtered");
         deviceCountByGroupEntry.setDeviceCount(filteredDeviceCount);
 
         return deviceCountByGroupEntry;
@@ -166,8 +166,8 @@ public class GadgetDataServiceDAOImpl implements GadgetDataServiceDAO {
         }
 
         DeviceCountByGroupEntry deviceCountByGroupEntry = new DeviceCountByGroupEntry();
-        deviceCountByGroupEntry.setGroup("feature-non-compliant");
-        deviceCountByGroupEntry.setDisplayNameForGroup("Feature-non-compliant");
+        deviceCountByGroupEntry.setGroup("feature-non-compliant-and-filtered");
+        deviceCountByGroupEntry.setDisplayNameForGroup("Feature-non-compliant-and-filtered");
         deviceCountByGroupEntry.setDeviceCount(filteredDeviceCount);
 
         return deviceCountByGroupEntry;

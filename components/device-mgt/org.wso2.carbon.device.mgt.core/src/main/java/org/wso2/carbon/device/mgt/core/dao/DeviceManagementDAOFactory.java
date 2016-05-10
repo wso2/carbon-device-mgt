@@ -97,7 +97,7 @@ public class DeviceManagementDAOFactory {
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static DeviceDAO getDeviceDAO() {
-        if(databaseEngine != null) {
+        if (databaseEngine != null) {
             switch (databaseEngine) {
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
                     return new OracleDeviceDAOImpl();
@@ -112,7 +112,7 @@ public class DeviceManagementDAOFactory {
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
         }
-        throw new RuntimeException("Database engine has not initialized properly.");
+        throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
     public static DeviceTypeDAO getDeviceTypeDAO() {

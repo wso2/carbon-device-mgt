@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.GenericGadgetDataServiceDAOImpl;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.MSSQLGadgetDataServiceDAOImpl;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.OracleGadgetDataServiceDAOImpl;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.PostgreSQLGadgetDataServiceDAOImpl;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
@@ -52,7 +53,7 @@ public class GadgetDataServiceDAOFactory {
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
                     return new GenericGadgetDataServiceDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
-                    // to be added
+                    return new MSSQLGadgetDataServiceDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
                     return new PostgreSQLGadgetDataServiceDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:

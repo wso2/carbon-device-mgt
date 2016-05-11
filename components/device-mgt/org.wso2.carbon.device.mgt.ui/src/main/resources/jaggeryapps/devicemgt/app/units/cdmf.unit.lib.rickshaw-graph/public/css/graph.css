@@ -232,6 +232,13 @@
     position: relative;
     left: 40px;
     height: 30px;
+    width: 97%;
+    top: 20px;
+    text-align: right;
+}
+
+.chartWrapper {
+    padding-top: 50px;
 }
 
 /*detail*/

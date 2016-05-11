@@ -25,6 +25,8 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherServiceImpl;
+import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherStartupHandler;
+import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -84,6 +86,7 @@ public class APIPublisherServiceComponent {
         APIPublisherService publisher = new APIPublisherServiceImpl();
         APIPublisherDataHolder.getInstance().setApiPublisherService(publisher);
         bundleContext.registerService(APIPublisherService.class, publisher, null);
+        bundleContext.registerService(ServerStartupObserver.class, new APIPublisherStartupHandler(), null);
     }
 
     protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {

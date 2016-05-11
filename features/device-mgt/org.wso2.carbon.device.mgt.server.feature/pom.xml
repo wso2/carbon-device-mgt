@@ -120,6 +120,10 @@
                                 <bundleDef>
                                     org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${carbon.identity.version}
                                 </bundleDef>
+                                <!-- Below should be bundled with the email verification -->
+                                <bundleDef>
+                                    org.apache.axiom.om
+                                </bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>

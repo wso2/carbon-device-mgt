@@ -43,7 +43,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -114,7 +113,7 @@ public class Group {
 
     @GET
     @Produces("application/json")
-    public Response getGroups(@QueryParam("start") int startIndex, @PathParam("length") int length) {
+    public Response getGroups(@QueryParam("start") int startIndex, @QueryParam("length") int length) {
         try {
             PaginationResult paginationResult = DeviceMgtAPIUtils.getGroupManagementProviderService()
                     .getGroups(startIndex, length);
@@ -318,8 +317,7 @@ public class Group {
     @Produces("application/json")
     public Response addSharing(@QueryParam("shareUser") String shareUser, @PathParam("groupName") String groupName,
                                @PathParam("owner") String owner,
-                               @PathParam("roleName") String roleName,
-                               @FormParam("permissions") String[] permissions) {
+                               @PathParam("roleName") String roleName, String[] permissions) {
 
         try {
             boolean isAdded = DeviceMgtAPIUtils.getGroupManagementProviderService().addGroupSharingRole(

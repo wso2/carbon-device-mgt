@@ -16,14 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
+package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
 public final class GadgetDataServiceDAOConstants {
 
     public static class PotentialVulnerability {
 
         // These constants do not hold actual database values
-        // These are just logical values defined and used @ Gadget Data Service DAO Implementation layer
+        // These are just abstract values defined and used @ Gadget Data Service DAO Implementation layer
         public static final String NON_COMPLIANT = "NON_COMPLIANT";
         public static final String UNMONITORED = "UNMONITORED";
 

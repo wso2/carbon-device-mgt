@@ -16,41 +16,17 @@
  * under the License.
  */
 
-#rangeSliderWrapper {
-    margin-top: 25px;
-}
+function onRequest(context) {
+    var deviceTypes = context.unit.params.deviceTypes;
+    var deviceType = context.uriParams.deviceType;
 
-#chart {
-    display: inline-block;
-}
-
-#legend {
-    display: inline-block;
-    position: relative;
-    left: 8px;
-}
-
-#legend_container {
-    position: absolute;
-    right: 0;
-    bottom: 26px;
-    width: 0;
-}
-
-#chart_container {
-    float: left;
-    position: relative;
-}
-
-.ast-container {
-    padding-bottom: 30px;
-}
-
-.container {
-    width: auto;
-}
-
-.shrink {
-    margin-right: 20px;
-    margin-left: 20px;
+    var deviceTypesList = [];
+    if (deviceTypes) {
+        for (var i = 0; i < deviceTypes.length; i++) {
+            deviceTypesList.push(deviceTypes[i].type);
+        }
+    } else if (deviceType) {
+        deviceTypesList.push(deviceType);
+    }
+    return {"deviceTypes": stringify(deviceTypesList)};
 }

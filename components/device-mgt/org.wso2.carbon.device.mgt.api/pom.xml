@@ -43,11 +43,9 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
-                <version>2.3.2</version>
             </plugin>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.2</version>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/*cxf*.jar</packagingExcludes>
                     <warName>devicemgt_admin</warName>
@@ -88,7 +86,6 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>client</id>
             <build>
@@ -205,6 +202,11 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

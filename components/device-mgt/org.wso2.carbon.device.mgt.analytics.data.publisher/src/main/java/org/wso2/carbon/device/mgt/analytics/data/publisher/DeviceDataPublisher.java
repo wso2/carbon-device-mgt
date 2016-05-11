@@ -83,7 +83,7 @@ public class DeviceDataPublisher {
      *
      */
     public DataPublisher getDataPublisher() throws DataPublisherConfigurationException {
-        String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
         //Get LoadBalancingDataPublisher which has been registered for the tenant.
         DataPublisher dataPublisher = getDataPublisher(tenantDomain);
         //If a LoadBalancingDataPublisher had not been registered for the tenant.

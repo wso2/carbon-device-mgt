@@ -298,8 +298,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                        FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+    public List<DeviceCountByGroupEntry>
+                         getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -413,7 +414,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     @Override
     public List<DeviceCountByGroupEntry>
                         getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                            FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -472,7 +473,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
-                                            throws InvalidParameterValueException, SQLException {
+                                                           throws InvalidParameterValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
@@ -526,7 +527,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -585,7 +586,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     protected Map<String, Object> extractDatabaseFiltersFromBean(FilterSet filterSet)
-                                                        throws InvalidParameterValueException {
+                                                                 throws InvalidParameterValueException {
         if (filterSet == null) {
             return null;
         }

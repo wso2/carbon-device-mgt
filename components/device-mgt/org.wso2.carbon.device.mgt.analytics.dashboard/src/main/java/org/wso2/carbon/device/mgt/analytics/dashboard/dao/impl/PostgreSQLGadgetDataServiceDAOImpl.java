@@ -39,7 +39,7 @@ public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServic
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-            throws InvalidParameterValueException, SQLException {
+                                                           throws InvalidParameterValueException, SQLException {
 
         if (startIndex < 0) {
             throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
@@ -99,7 +99,7 @@ public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServic
 
     @Override
     public PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
-            throws InvalidParameterValueException, SQLException {
+                                                           throws InvalidParameterValueException, SQLException {
 
         if (startIndex < 0) {
             throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
@@ -185,7 +185,7 @@ public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServic
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
                                                         FilterSet filterSet, int startIndex, int resultCount)
-                                                                throws InvalidParameterValueException, SQLException {
+                                                                  throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");

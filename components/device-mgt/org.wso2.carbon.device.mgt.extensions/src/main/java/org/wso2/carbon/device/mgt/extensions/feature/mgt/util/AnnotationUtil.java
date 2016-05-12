@@ -147,7 +147,8 @@ public class AnnotationUtil {
                 Map<String, Object> apiParams = new HashMap<>();
                 for (int i = 0; i < annotations.length; i++) {
                     Annotation currentAnnotation = annotations[i];
-                    feature = processHttpMethodAnnotation(feature, currentAnnotation);
+                    String method = processHttpMethodAnnotation(feature, currentAnnotation);
+                    apiParams.put("method", method);
                     if (currentAnnotation.annotationType().getName().equals(Path.class.getName())) {
                         String uri = getPathAnnotationValue(currentMethod);
                         apiParams.put("uri", uri);
@@ -203,20 +204,21 @@ public class AnnotationUtil {
      * @param currentAnnotation
      * @return
      */
-    private Feature processHttpMethodAnnotation(Feature feature, Annotation currentAnnotation) {
+    private String processHttpMethodAnnotation(Feature feature, Annotation currentAnnotation) {
         //Extracting method with which feature is exposed
+        String method = null;
         if (currentAnnotation.annotationType().getName().equals(GET.class.getName())) {
-            feature.setMethod(HttpMethod.GET);
+            method = HttpMethod.GET;
         } else if (currentAnnotation.annotationType().getName().equals(POST.class.getName())) {
-            feature.setMethod(HttpMethod.POST);
+            method = HttpMethod.POST;
         } else if (currentAnnotation.annotationType().getName().equals(OPTIONS.class.getName())) {
-            feature.setMethod(HttpMethod.OPTIONS);
+            method = HttpMethod.OPTIONS;
         } else if (currentAnnotation.annotationType().getName().equals(DELETE.class.getName())) {
-            feature.setMethod(HttpMethod.DELETE);
+            method = HttpMethod.DELETE;
         } else if (currentAnnotation.annotationType().getName().equals(PUT.class.getName())) {
-            feature.setMethod(HttpMethod.PUT);
+            method = HttpMethod.PUT;
         }
-        return feature;
+        return method;
     }
 
     /**
@@ -231,18 +233,15 @@ public class AnnotationUtil {
         Annotation featureAnno = currentMethod.getAnnotation(featureAnnotationClazz);
         for (int k = 0; k < featureAnnoMethods.length; k++) {
             switch (featureAnnoMethods[k].getName()) {
-            case "name":
-                feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                break;
-            case "code":
-                feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                break;
-            case "description":
-                feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                break;
-            case "type":
-                feature.setType(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                break;
+                case "name":
+                    feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                    break;
+                case "code":
+                    feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                    break;
+                case "description":
+                    feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                    break;
             }
         }
         return feature;

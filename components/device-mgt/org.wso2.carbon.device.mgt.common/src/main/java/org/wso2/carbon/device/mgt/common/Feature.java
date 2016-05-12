@@ -28,8 +28,6 @@ public class Feature implements Serializable {
     private String name;
     private String description;
     private String deviceType;
-    private String method;
-    private String type;
     private List<MetadataEntry> metadataEntries;
 
     @XmlElement
@@ -83,24 +81,6 @@ public class Feature implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @XmlElement
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @XmlElement
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
     }
 
     public static class MetadataEntry implements Serializable {

@@ -58,10 +58,14 @@
                         <Bundle-Description>Device Management Dashboard Analytics Bundle</Bundle-Description>
                         <Private-Package>
                             org.wso2.carbon.device.mgt.analytics.dashboard.dao,
+                            org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl,
+                            org.wso2.carbon.device.mgt.analytics.dashboard.impl,
                             org.wso2.carbon.device.mgt.analytics.dashboard.internal
                         </Private-Package>
                         <Export-Package>
-                            org.wso2.carbon.device.mgt.analytics.dashboard
+                            org.wso2.carbon.device.mgt.analytics.dashboard,
+                            org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception,
+                            org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean
                         </Export-Package>
                         <Import-Package>
                             org.osgi.framework,

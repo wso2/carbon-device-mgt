@@ -1,0 +1,52 @@
+{{#zone "topCss"}}
+    {{css "css/analytics.css"}}
+{{/zone}}
+
+{{unit "cdmf.unit.ui.title" pageTitle="Analytics"}}
+{{unit "cdmf.unit.ui.content.title" pageHeader=title}}
+{{unit "cdmf.unit.lib.service-invoker-utility"}}
+{{unit "cdmf.unit.lib.handlebars"}}
+{{unit "cdmf.unit.lib.rickshaw-graph"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/groups">
+            Groups
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/devices?groupOwner={{groupOwner}}&groupName={{groupName}}">
+            {{groupName}}
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            Analytics
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    <div class="container container-bg  white-bg">
+        <div class=" margin-top-double">
+            <div class="row padding-top-double padding-bottom-double margin-bottom-double">
+                <div class="col-lg-3  margin-top-double">
+                    <h1 class="grey ">{{groupName}} Analytics</h1>
+                </div>
+                {{unit "cdmf.unit.analytics.date-range-picker" deviceTypes=deviceTypes}}
+            </div>
+            <hr>
+            <div class="clear"></div>
+            <div id="div-chart">
+                {{#each deviceTypes}}
+                    {{unit deviceAnalyticsViewUnitName devices=devices}}
+                {{/each}}
+            </div>
+        </div>
+    </div>
+{{/zone}}

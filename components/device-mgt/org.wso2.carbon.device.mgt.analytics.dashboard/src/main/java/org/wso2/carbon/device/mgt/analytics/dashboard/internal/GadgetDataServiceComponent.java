@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
+import org.wso2.carbon.device.mgt.analytics.dashboard.impl.GadgetDataServiceImpl;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -71,14 +72,14 @@ public class GadgetDataServiceComponent {
         //do nothing
     }
 
-    public void setDataSourceService(DataSourceService dataSourceService) {
+    protected void setDataSourceService(DataSourceService dataSourceService) {
         if (log.isDebugEnabled()) {
             log.debug("Binding org.wso2.carbon.ndatasource.core.DataSourceService...");
         }
         //do nothing
     }
 
-    public void unsetDataSourceService(DataSourceService dataSourceService) {
+    protected void unsetDataSourceService(DataSourceService dataSourceService) {
         if (log.isDebugEnabled()) {
             log.debug("Unbinding org.wso2.carbon.ndatasource.core.DataSourceService...");
         }

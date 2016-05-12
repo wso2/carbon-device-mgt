@@ -20,7 +20,13 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.GenericGadgetDataServiceDAOImpl;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.MSSQLGadgetDataServiceDAOImpl;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.OracleGadgetDataServiceDAOImpl;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl.PostgreSQLGadgetDataServiceDAOImpl;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
+import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
@@ -40,7 +46,23 @@ public class GadgetDataServiceDAOFactory {
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<>();
 
     public static GadgetDataServiceDAO getGadgetDataServiceDAO() {
-        return new GadgetDataServiceDAOImpl();
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
+                    return new GenericGadgetDataServiceDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new GenericGadgetDataServiceDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+                    return new MSSQLGadgetDataServiceDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                    return new PostgreSQLGadgetDataServiceDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                    return new OracleGadgetDataServiceDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
     public static void init(DataSourceConfig config) {

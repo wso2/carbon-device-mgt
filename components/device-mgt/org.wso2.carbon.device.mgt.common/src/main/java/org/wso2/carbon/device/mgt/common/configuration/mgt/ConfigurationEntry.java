@@ -18,36 +18,46 @@
 
 package org.wso2.carbon.device.mgt.common.configuration.mgt;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Represents an individual configuration entry.
  */
+@ApiModel(value = "ConfigurationEntry", description = "This class carries all information related to Tenant Configuration" +
+        "Settings")
 public class ConfigurationEntry {
 
-	private String name;
-	private String contentType;
-	private Object value;
+    @ApiModelProperty(name = "name", value = "Name of the configuration", required = true)
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    @ApiModelProperty(name = "contentType", value = "Type of the configuration", required = true)
+    private String contentType;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @ApiModelProperty(name = "value", value = "Value of the configuration", required = true)
+    private Object value;
 
-	public String getContentType() {
-		return contentType;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Object getValue() {
-		return value;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public void setValue(Object value) {
-		this.value = value;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
 }

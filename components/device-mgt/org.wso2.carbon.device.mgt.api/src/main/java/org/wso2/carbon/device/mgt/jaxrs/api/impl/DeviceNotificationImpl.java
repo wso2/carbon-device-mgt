@@ -38,7 +38,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * DeviceNotificationImpl management REST-API implementation.
+ * DeviceNotification management REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
 @SuppressWarnings("NonJaxWsWebServices")

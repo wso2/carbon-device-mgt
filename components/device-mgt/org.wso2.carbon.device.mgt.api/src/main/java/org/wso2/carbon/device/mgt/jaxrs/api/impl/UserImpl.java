@@ -63,7 +63,7 @@ import java.util.Random;
 import java.util.TreeSet;
 
 /**
- * This class represents the JAX-RS services of UserImpl related functionality.
+ * This class represents the JAX-RS services of User related functionality.
  */
 @SuppressWarnings("NonJaxWsWebServices")
 public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
@@ -88,13 +88,13 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
             if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
                 // if user already exists
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + userWrapper.getUsername() +
+                    log.debug("User by username: " + userWrapper.getUsername() +
                             " already exists. Therefore, request made to add user was refused.");
                 }
                 // returning response with bad request state
                 responsePayload.setStatusCode(HttpStatus.SC_CONFLICT);
                 responsePayload.
-                        setMessageFromServer("UserImpl by username: " + userWrapper.getUsername() +
+                        setMessageFromServer("User by username: " + userWrapper.getUsername() +
                                 " already exists. Therefore, request made to add user was refused.");
                 return Response.status(Response.Status.CONFLICT).entity(responsePayload).build();
             } else {
@@ -109,11 +109,11 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                 inviteNewlyAddedUserToEnrollDevice(userWrapper.getUsername(), initialUserPassword);
                 // Outputting debug message upon successful addition of user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + userWrapper.getUsername() + " was successfully added.");
+                    log.debug("User by username: " + userWrapper.getUsername() + " was successfully added.");
                 }
                 // returning response with success state
                 responsePayload.setStatusCode(HttpStatus.SC_CREATED);
-                responsePayload.setMessageFromServer("UserImpl by username: " + userWrapper.getUsername() +
+                responsePayload.setMessageFromServer("User by username: " + userWrapper.getUsername() +
                         " was successfully added.");
                 return Response.status(Response.Status.CREATED).entity(responsePayload).build();
             }
@@ -127,7 +127,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
     /**
      * Method to get user information from emm-user-store.
      *
-     * @param username UserImpl-name of the user
+     * @param username User-name of the user
      * @return {Response} Status of the request wrapped inside Response object.
      */
     @Override
@@ -146,21 +146,21 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                 user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
                 // Outputting debug message upon successful retrieval of user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + username + " was found.");
+                    log.debug("User by username: " + username + " was found.");
                 }
                 responsePayload.setStatusCode(HttpStatus.SC_OK);
-                responsePayload.setMessageFromServer("UserImpl information was retrieved successfully.");
+                responsePayload.setMessageFromServer("User information was retrieved successfully.");
                 responsePayload.setResponseContent(user);
                 return Response.status(Response.Status.OK).entity(responsePayload).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + username + " does not exist.");
+                    log.debug("User by username: " + username + " does not exist.");
                 }
                 // returning response with bad request state
                 responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
                 responsePayload.setMessageFromServer(
-                        "UserImpl by username: " + username + " does not exist.");
+                        "User by username: " + username + " does not exist.");
                 return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
             }
         } catch (UserStoreException | MDMAPIException e) {
@@ -193,7 +193,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                     byte[] decodedBytes = Base64.decodeBase64(userWrapper.getPassword());
                     userStoreManager.updateCredentialByAdmin(userWrapper.getUsername(),
                             new String(decodedBytes, "UTF-8"));
-                    log.debug("UserImpl credential of username: " + userWrapper.getUsername() + " has been changed");
+                    log.debug("User credential of username: " + userWrapper.getUsername() + " has been changed");
                 }
                 List<String> listofFilteredRoles = getFilteredRoles(userStoreManager, userWrapper.getUsername());
                 final String[] existingRoles = listofFilteredRoles.toArray(new String[listofFilteredRoles.size()]);
@@ -223,22 +223,22 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                 userStoreManager.setUserClaimValues(userWrapper.getUsername(), defaultUserClaims, null);
                 // Outputting debug message upon successful addition of user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + userWrapper.getUsername() + " was successfully updated.");
+                    log.debug("User by username: " + userWrapper.getUsername() + " was successfully updated.");
                 }
                 // returning response with success state
                 responsePayload.setStatusCode(HttpStatus.SC_CREATED);
-                responsePayload.setMessageFromServer("UserImpl by username: " + userWrapper.getUsername() +
+                responsePayload.setMessageFromServer("User by username: " + userWrapper.getUsername() +
                         " was successfully updated.");
                 return Response.status(Response.Status.CREATED).entity(responsePayload).build();
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + userWrapper.getUsername() +
+                    log.debug("User by username: " + userWrapper.getUsername() +
                             " doesn't exists. Therefore, request made to update user was refused.");
                 }
                 // returning response with bad request state
                 responsePayload.setStatusCode(HttpStatus.SC_CONFLICT);
                 responsePayload.
-                        setMessageFromServer("UserImpl by username: " + userWrapper.getUsername() +
+                        setMessageFromServer("User by username: " + userWrapper.getUsername() +
                                 " doesn't  exists. Therefore, request made to update user was refused.");
                 return Response.status(Response.Status.CONFLICT).entity(responsePayload).build();
             }
@@ -254,7 +254,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
      * generate an initial user password for a user.
      * This will be the password used by a user for his initial login to the system.
      *
-     * @return {string} Initial UserImpl Password
+     * @return {string} Initial User Password
      */
     private String generateInitialUserPassword() {
         int passwordLength = 6;
@@ -313,22 +313,22 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                 userStoreManager.deleteUser(username);
                 // Outputting debug message upon successful removal of user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + username + " was successfully removed.");
+                    log.debug("User by username: " + username + " was successfully removed.");
                 }
                 // returning response with success state
                 responsePayload.setStatusCode(HttpStatus.SC_OK);
                 responsePayload.setMessageFromServer(
-                        "UserImpl by username: " + username + " was successfully removed.");
+                        "User by username: " + username + " was successfully removed.");
                 return Response.status(Response.Status.OK).entity(responsePayload).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + username + " does not exist for removal.");
+                    log.debug("User by username: " + username + " does not exist for removal.");
                 }
                 // returning response with bad request state
                 responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
                 responsePayload.setMessageFromServer(
-                        "UserImpl by username: " + username + " does not exist for removal.");
+                        "User by username: " + username + " does not exist for removal.");
                 return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
             }
         } catch (UserStoreException | MDMAPIException e) {
@@ -341,7 +341,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
     /**
      * get all the roles except for the internal/xxx and application/xxx
      *
-     * @param userStoreManager UserImpl Store Manager associated with the currently logged in user
+     * @param userStoreManager User Store Manager associated with the currently logged in user
      * @param username         Username of the currently logged in user
      * @return the list of filtered roles
      */
@@ -354,7 +354,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
         }
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roleListOfUser) {
-            if (!(role.startsWith("Internal/") || role.startsWith("AuthenticationImpl/"))) {
+            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
                 filteredRoles.add(role);
             }
         }
@@ -379,22 +379,22 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                 responsePayload.setResponseContent(Collections.singletonList(getFilteredRoles(userStoreManager, username)));
                 // Outputting debug message upon successful removal of user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + username + " was successfully removed.");
+                    log.debug("User by username: " + username + " was successfully removed.");
                 }
                 // returning response with success state
                 responsePayload.setStatusCode(HttpStatus.SC_OK);
                 responsePayload.setMessageFromServer(
-                        "UserImpl roles obtained for user " + username);
+                        "User roles obtained for user " + username);
                 return Response.status(Response.Status.OK).entity(responsePayload).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
                 if (log.isDebugEnabled()) {
-                    log.debug("UserImpl by username: " + username + " does not exist for role retrieval.");
+                    log.debug("User by username: " + username + " does not exist for role retrieval.");
                 }
                 // returning response with bad request state
                 responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
                 responsePayload.setMessageFromServer(
-                        "UserImpl by username: " + username + " does not exist for role retrieval.");
+                        "User by username: " + username + " does not exist for role retrieval.");
                 return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
             }
         } catch (UserStoreException | MDMAPIException e) {
@@ -673,7 +673,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
             }
             return Response.status(Response.Status.OK).entity(dmService.getDevicesOfUser(username)).build();
         } catch (DeviceManagementException e) {
-            String msg = "DeviceImpl management error";
+            String msg = "Device management error";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

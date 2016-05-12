@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * General Tenant ConfigurationImpl REST-API implementation.
+ * General Tenant Configuration REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
 @SuppressWarnings("NonJaxWsWebServices")

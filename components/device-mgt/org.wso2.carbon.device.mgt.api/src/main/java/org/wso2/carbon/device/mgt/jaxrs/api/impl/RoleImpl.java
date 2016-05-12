@@ -107,7 +107,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
         // removing all internal roles and roles created for Service-providers
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("AuthenticationImpl/"))) {
+            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
                 filteredRoles.add(role);
             }
         }
@@ -145,7 +145,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
         // removing all internal roles and roles created for Service-providers
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("AuthenticationImpl/"))) {
+            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
                 filteredRoles.add(role);
             }
         }
@@ -255,7 +255,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
     }
 
     /**
-     * API is used to persist a new RoleImpl
+     * API is used to persist a new Role
      *
      * @param roleWrapper for role
      * @return response
@@ -288,7 +288,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
     }
 
     /**
-     * API is used to update a role RoleImpl
+     * API is used to update a role Role
      *
      * @param roleWrapper for role
      * @return response
@@ -441,7 +441,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
         // removing all internal roles and roles created for Service-providers
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("AuthenticationImpl/"))) {
+            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
                 filteredRoles.add(role);
             }
         }

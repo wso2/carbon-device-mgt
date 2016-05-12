@@ -292,7 +292,7 @@ public class GroupImpl implements Group {
             if (isShared) {
                 return Response.status(Response.Status.OK).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("GroupImpl not found").build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Group not found").build();
             }
         } catch (UserDoesNotExistException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
@@ -315,7 +315,7 @@ public class GroupImpl implements Group {
             if (isUnShared) {
                 return Response.status(Response.Status.OK).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("GroupImpl not found").build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Group not found").build();
             }
         } catch (UserDoesNotExistException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();

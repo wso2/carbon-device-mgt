@@ -35,7 +35,7 @@ import java.util.Properties;
 public class MDMIOSOperationUtil {
 
 	/**
-	 * This method is used to create Install AuthenticationImpl operation.
+	 * This method is used to create Install Authentication operation.
 	 *
 	 * @param application MobileApp application
 	 * @return operation

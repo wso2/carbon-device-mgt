@@ -39,7 +39,7 @@ public class CredentialManagementResponseBuilder {
 
     /**
      * Builds the response to change the password of a user
-     * @param credentials - UserImpl credentials
+     * @param credentials - User credentials
      * @return Response Object
      */
     public static Response buildChangePasswordResponse(UserCredentialWrapper credentials) {
@@ -73,7 +73,7 @@ public class CredentialManagementResponseBuilder {
 
     /**
      * Builds the response to reset the password of a user
-     * @param credentials - UserImpl credentials
+     * @param credentials - User credentials
      * @return Response Object
      */
     public static Response buildResetPasswordResponse(UserCredentialWrapper credentials) {

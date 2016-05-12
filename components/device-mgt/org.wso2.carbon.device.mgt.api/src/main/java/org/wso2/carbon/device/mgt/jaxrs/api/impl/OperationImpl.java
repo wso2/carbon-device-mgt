@@ -51,7 +51,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * OperationImpl related REST-API implementation.
+ * Operation related REST-API implementation.
  */
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({"application/json", "application/xml"})
@@ -131,7 +131,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
             int operationId = dmService.addOperation(operationContext.getOperation(), operationContext.getDevices());
             if (operationId > 0) {
                 responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-                responseMsg.setMessageFromServer("OperationImpl has added successfully.");
+                responseMsg.setMessageFromServer("Operation has added successfully.");
             }
             return Response.status(Response.Status.CREATED).entity(responseMsg).build();
         } catch (OperationManagementException e) {
@@ -184,7 +184,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
                 appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
             }
             responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("AuthenticationImpl installation request has been sent to the device.");
+            responseMsg.setMessageFromServer("Authentication installation request has been sent to the device.");
             return Response.status(Response.Status.CREATED).entity(responseMsg).build();
         } catch (ApplicationManagementException | MDMAPIException e) {
             String msg = "Error occurred while saving the operation";
@@ -216,7 +216,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
                 appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
             }
             responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("AuthenticationImpl removal request has been sent to the device.");
+            responseMsg.setMessageFromServer("Authentication removal request has been sent to the device.");
             return Response.status(Response.Status.CREATED).entity(responseMsg).build();
         } catch (ApplicationManagementException | MDMAPIException e) {
             String msg = "Error occurred while saving the operation";

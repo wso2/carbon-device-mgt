@@ -43,7 +43,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * DeviceImpl related operations
+ * Device related operations
  */
 @SuppressWarnings("NonJaxWsWebServices")
 public class DeviceImpl implements Device{
@@ -53,7 +53,7 @@ public class DeviceImpl implements Device{
      * Get all devices. We have to use accept all the necessary query parameters sent by datatable.
      * Hence had to put lot of query params here.
      *
-     * @return DeviceImpl List
+     * @return Device List
      */
     @GET
     public Response getAllDevices(@QueryParam("type") String type, @QueryParam("user") String user,
@@ -103,7 +103,7 @@ public class DeviceImpl implements Device{
     /**
      * Fetch device details for a given device type and device Id.
      *
-     * @return DeviceImpl wrapped inside Response
+     * @return Device wrapped inside Response
      */
     @GET
     @Path("view")
@@ -137,8 +137,8 @@ public class DeviceImpl implements Device{
     /**
      * Fetch device details of a given user.
      *
-     * @param user         UserImpl Name
-     * @return DeviceImpl
+     * @param user         User Name
+     * @return Device
      */
     @GET
     @Path("user/{user}")
@@ -160,8 +160,8 @@ public class DeviceImpl implements Device{
     /**
      * Fetch device count of a given user.
      *
-     * @param user UserImpl Name
-     * @return DeviceImpl
+     * @param user User Name
+     * @return Device
      */
     @GET
     @Path("user/{user}/count")
@@ -197,7 +197,7 @@ public class DeviceImpl implements Device{
     /**
      * Get the list of devices that matches with the given name.
      *
-     * @param deviceName   DeviceImpl name
+     * @param deviceName   Device name
      * @param tenantDomain Callee tenant domain
      * @return list of devices.
      */

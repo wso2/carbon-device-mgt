@@ -45,7 +45,7 @@ public class ProfileImpl implements Profile{
 			profile = pap.addProfile(profile);
             return Response.status(Response.Status.OK).entity(profile).build();
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception";
+            String msg = "Policy Management related exception";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -59,10 +59,10 @@ public class ProfileImpl implements Profile{
 		try {
 			PolicyAdministratorPoint pap = policyManagementService.getPAP();
 			pap.updateProfile(profile);
-			responseMsg.setMessageFromServer("ProfileImpl has been updated successfully.");
+			responseMsg.setMessageFromServer("Profile has been updated successfully.");
             return Response.status(Response.Status.OK).entity(responseMsg).build();
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception";
+            String msg = "Policy Management related exception";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -76,10 +76,10 @@ public class ProfileImpl implements Profile{
 			PolicyAdministratorPoint pap = policyManagementService.getPAP();
 			org.wso2.carbon.policy.mgt.common.Profile profile = pap.getProfile(profileId);
 			pap.deleteProfile(profile);
-			responseMsg.setMessageFromServer("ProfileImpl has been deleted successfully.");
+			responseMsg.setMessageFromServer("Profile has been deleted successfully.");
             return Response.status(Response.Status.OK).entity(responseMsg).build();
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception";
+            String msg = "Policy Management related exception";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

@@ -33,7 +33,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.android.WebApplication;
 public class MDMAndroidOperationUtil {
 
 	/**
-	 * This method is used to create Install AuthenticationImpl operation.
+	 * This method is used to create Install Authentication operation.
 	 *
 	 * @param application MobileApp application
 	 * @return operation
@@ -76,7 +76,7 @@ public class MDMAndroidOperationUtil {
 	}
 
 	/**
-	 * This method is used to create Uninstall AuthenticationImpl operation.
+	 * This method is used to create Uninstall Authentication operation.
 	 * @param application MobileApp application
 	 * @return operation
 	 * @throws MDMAPIException

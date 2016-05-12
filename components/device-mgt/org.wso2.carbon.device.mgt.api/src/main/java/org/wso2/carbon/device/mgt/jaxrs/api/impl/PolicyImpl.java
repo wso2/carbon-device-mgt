@@ -101,10 +101,10 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             PolicyAdministratorPoint pap = policyManagementService.getPAP();
             pap.addPolicy(policy);
             responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("PolicyImpl has been added successfully.");
+            responseMsg.setMessageFromServer("Policy has been added successfully.");
             return Response.status(Response.Status.CREATED).entity(responseMsg).build();
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception";
+            String msg = "Policy Management related exception";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -120,7 +120,7 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policies = policyAdministratorPoint.getPolicies();
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception";
+            String msg = "Policy Management related exception";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -142,14 +142,14 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policy = policyAdministratorPoint.getPolicy(policyId);
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception";
+            String msg = "Policy Management related exception";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         if (policy == null){
             ResponsePayload responsePayload = new ResponsePayload();
             responsePayload.setStatusCode(HttpStatus.SC_NOT_FOUND);
-            responsePayload.setMessageFromServer("PolicyImpl for ID " + policyId + " not found.");
+            responsePayload.setMessageFromServer("Policy for ID " + policyId + " not found.");
             return Response.status(Response.Status.NOT_FOUND).entity(responsePayload).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
@@ -169,7 +169,7 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             Integer count = policyAdministratorPoint.getPolicyCount();
             return Response.status(Response.Status.OK).entity(count).build();
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception";
+            String msg = "Policy Management related exception";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -198,10 +198,10 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             PolicyAdministratorPoint pap = policyManagementService.getPAP();
             pap.updatePolicy(policy);
             responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("PolicyImpl has been updated successfully.");
+            responseMsg.setMessageFromServer("Policy has been updated successfully.");
             return Response.status(Response.Status.CREATED).entity(responseMsg).build();
         } catch (PolicyManagementException e) {
-            String msg = "PolicyImpl Management related exception in policy update.";
+            String msg = "Policy Management related exception in policy update.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -235,11 +235,11 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
         ResponsePayload responsePayload = new ResponsePayload();
         if (policiesUpdated) {
             responsePayload.setStatusCode(HttpStatus.SC_OK);
-            responsePayload.setMessageFromServer("PolicyImpl Priorities successfully updated.");
+            responsePayload.setMessageFromServer("Policy Priorities successfully updated.");
             return Response.status(Response.Status.OK).entity(responsePayload).build();
         } else {
             responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
-            responsePayload.setMessageFromServer("PolicyImpl priorities did not update. Bad Request.");
+            responsePayload.setMessageFromServer("Policy priorities did not update. Bad Request.");
             return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
         }
     }
@@ -272,7 +272,7 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             return Response.status(Response.Status.OK).entity(responsePayload).build();
         } else {
             responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
-            responsePayload.setMessageFromServer("PolicyImpl does not exist.");
+            responsePayload.setMessageFromServer("Policy does not exist.");
             return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
         }
     }
@@ -358,13 +358,13 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
 
 
         } catch (PolicyMonitoringTaskException e) {
-            String msg = "PolicyImpl Management related exception.";
+            String msg = "Policy Management related exception.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("PolicyImpl monitoring service started successfully.");
+        responsePayload.setMessageFromServer("Policy monitoring service started successfully.");
         return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 
@@ -379,13 +379,13 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             taskScheduleService.updateTask(monitoringFrequency);
 
         } catch (PolicyMonitoringTaskException e) {
-            String msg = "PolicyImpl Management related exception.";
+            String msg = "Policy Management related exception.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("PolicyImpl monitoring service updated successfully.");
+        responsePayload.setMessageFromServer("Policy monitoring service updated successfully.");
         return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 
@@ -400,13 +400,13 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             taskScheduleService.stopTask();
 
         } catch (PolicyMonitoringTaskException e) {
-            String msg = "PolicyImpl Management related exception.";
+            String msg = "Policy Management related exception.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         ResponsePayload responsePayload = new ResponsePayload();
         responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("PolicyImpl monitoring service stopped successfully.");
+        responsePayload.setMessageFromServer("Policy monitoring service stopped successfully.");
         return Response.status(Response.Status.OK).entity(responsePayload).build();
     }
 

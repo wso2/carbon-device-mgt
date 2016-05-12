@@ -43,9 +43,9 @@ public class FeatureImpl implements Feature{
     private static Log log = LogFactory.getLog(FeatureImpl.class);
 
     /**
-     * Get all features for Mobile DeviceImpl Type
+     * Get all features for Mobile Device Type
      *
-     * @return FeatureImpl
+     * @return Feature
      */
     @GET
     @Path("/{type}")

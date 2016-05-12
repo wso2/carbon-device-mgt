@@ -45,7 +45,7 @@ public class LicenseImpl implements License {
     /**
      * This method returns the license text related to a given device type and language code.
      *
-     * @param deviceType   DeviceImpl type, ex: android, ios
+     * @param deviceType   Device type, ex: android, ios
      * @param languageCode Language code, ex: en_US
      * @return Returns the license text
      */
@@ -63,7 +63,7 @@ public class LicenseImpl implements License {
                 return Response.status(HttpStatus.SC_NOT_FOUND).build();
             }
             responsePayload = ResponsePayload.statusCode(HttpStatus.SC_OK).
-                    messageFromServer("LicenseImpl for '" + deviceType + "' was retrieved successfully").
+                    messageFromServer("License for '" + deviceType + "' was retrieved successfully").
                     responseContent(license.getText()).
                     build();
         } catch (DeviceManagementException e) {
@@ -77,8 +77,8 @@ public class LicenseImpl implements License {
     /**
      * This method is used to add license to a specific device type.
      *
-     * @param deviceType DeviceImpl type, ex: android, ios
-     * @param license LicenseImpl object
+     * @param deviceType Device type, ex: android, ios
+     * @param license License object
      * @return Returns the acknowledgement for the action
      */
     @POST
@@ -90,7 +90,7 @@ public class LicenseImpl implements License {
         try {
             DeviceMgtAPIUtils.getDeviceManagementService().addLicense(deviceType, license);
             responsePayload = ResponsePayload.statusCode(HttpStatus.SC_OK).
-                    messageFromServer("LicenseImpl added successfully for '" + deviceType + "' device type").
+                    messageFromServer("License added successfully for '" + deviceType + "' device type").
                     build();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while adding license for '" + deviceType + "' device type";

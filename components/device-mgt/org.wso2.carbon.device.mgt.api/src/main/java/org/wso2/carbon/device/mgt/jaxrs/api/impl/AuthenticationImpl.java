@@ -16,31 +16,21 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jaxrs.api;
+package org.wso2.carbon.device.mgt.jaxrs.api.impl;
 
-import io.swagger.annotations.Api;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 
 /**
- * General Tenant ConfigurationImpl REST-API implementation.
- * All end points support JSON, XMl with content negotiation.
+ * AuthenticationImpl related REST-API implementation.
  */
-@Api(value = "Configuration", description = "General Tenant Configuration implementation")
-@SuppressWarnings("NonJaxWsWebServices")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })
-public interface Configuration {
+public class AuthenticationImpl {
 
-    @POST
-    Response saveTenantConfiguration(TenantConfiguration configuration);
-
-    @GET
-    Response getConfiguration();
-
-    @PUT
-    Response updateConfiguration(TenantConfiguration configuration);
-
+    private static Log log = LogFactory.getLog(AuthenticationImpl.class);
 }
+

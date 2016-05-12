@@ -24,7 +24,7 @@ import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import java.io.Serializable;
 
 /**
- * This class represents the Appstore Application information.
+ * This class represents the Appstore AuthenticationImpl information.
  */
 public class AppStoreApplication implements Serializable {
 

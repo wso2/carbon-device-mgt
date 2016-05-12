@@ -39,7 +39,7 @@ public class CredentialManagementResponseBuilder {
 
     /**
      * Builds the response to change the password of a user
-     * @param credentials - User credentials
+     * @param credentials - UserImpl credentials
      * @return Response Object
      */
     public static Response buildChangePasswordResponse(UserCredentialWrapper credentials) {
@@ -52,7 +52,7 @@ public class CredentialManagementResponseBuilder {
             userStoreManager.updateCredential(credentials.getUsername(), new String(
                     decodedNewPassword, "UTF-8"), new String(decodedOldPassword, "UTF-8"));
             responsePayload.setStatusCode(HttpStatus.SC_CREATED);
-            responsePayload.setMessageFromServer("User password by username: " + credentials.getUsername() +
+            responsePayload.setMessageFromServer("UserImpl password by username: " + credentials.getUsername() +
                     " was successfully changed.");
             return Response.status(Response.Status.CREATED).entity(responsePayload).build();
         } catch (UserStoreException e) {
@@ -73,7 +73,7 @@ public class CredentialManagementResponseBuilder {
 
     /**
      * Builds the response to reset the password of a user
-     * @param credentials - User credentials
+     * @param credentials - UserImpl credentials
      * @return Response Object
      */
     public static Response buildResetPasswordResponse(UserCredentialWrapper credentials) {
@@ -84,7 +84,7 @@ public class CredentialManagementResponseBuilder {
             userStoreManager.updateCredentialByAdmin(credentials.getUsername(), new String(
                     decodedNewPassword, "UTF-8"));
             responsePayload.setStatusCode(HttpStatus.SC_CREATED);
-            responsePayload.setMessageFromServer("User password by username: " + credentials.getUsername() +
+            responsePayload.setMessageFromServer("UserImpl password by username: " + credentials.getUsername() +
                     " was successfully changed.");
             return Response.status(Response.Status.CREATED).entity(responsePayload).build();
         } catch (UserStoreException e) {

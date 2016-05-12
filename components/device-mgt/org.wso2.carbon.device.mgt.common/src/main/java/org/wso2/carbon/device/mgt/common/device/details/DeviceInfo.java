@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.device.mgt.common.device.details;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.io.Serializable;
@@ -26,34 +28,60 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@ApiModel(value = "DeviceInfo", description = "This class carries all information related to the device information " +
+                                              "provided by a device.")
 public class DeviceInfo implements Serializable {
 
     private static final long serialVersionUID = 1998101733L;
 
+    @ApiModelProperty(name = "deviceId", value = "Device Id.", required = true)
     private int deviceId;
+    @ApiModelProperty(name = "deviceType", value = "Type of the device.", required = true)
     private String deviceType;
+    @ApiModelProperty(name = "deviceId", value = "Device identifier.", required = true)
     private DeviceIdentifier deviceIdentifier;
-
+    @ApiModelProperty(name = "IMEI", value = "IMEI number of the device.", required = true)
     private String IMEI;
+    @ApiModelProperty(name = "IMSI", value = "IMSI number of the device.", required = true)
     private String IMSI;
+    @ApiModelProperty(name = "deviceModel", value = "Model of the device.", required = true)
     private String deviceModel;
+    @ApiModelProperty(name = "vendor", value = "Vendor of the device.", required = true)
     private String vendor;
+    @ApiModelProperty(name = "osVersion", value = "Operating system version.", required = true)
     private String osVersion;
+    @ApiModelProperty(name = "batteryLevel", value = "Battery level of the device.", required = true)
     private Double batteryLevel;
+    @ApiModelProperty(name = "internalTotalMemory", value = "Total internal memory of the device.", required = true)
     private Double internalTotalMemory;
+    @ApiModelProperty(name = "internalAvailableMemory", value = "Total available memory of the device.",
+                      required = true)
     private Double internalAvailableMemory;
+    @ApiModelProperty(name = "externalTotalMemory", value = "Total external memory of the device.", required = true)
     private Double externalTotalMemory;
+    @ApiModelProperty(name = "externalAvailableMemory", value = "Total external memory avilable of the device.",
+                      required = true)
     private Double externalAvailableMemory;
+    @ApiModelProperty(name = "operator", value = "Mobile operator of the device.", required = true)
     private String operator;
+    @ApiModelProperty(name = "connectionType", value = "How the device is connected to the network.", required = true)
     private String connectionType;
+    @ApiModelProperty(name = "mobileSignalStrength", value = "Current mobile signal strength.", required = true)
     private Double mobileSignalStrength;
+    @ApiModelProperty(name = "ssid", value = "ssid of the connected WiFi.", required = true)
     private String ssid;
+    @ApiModelProperty(name = "cpuUsage", value = "Current total cpu usage.", required = true)
     private Double cpuUsage;
+    @ApiModelProperty(name = "totalRAMMemory", value = "Total Ram memory size.", required = true)
     private Double totalRAMMemory;
+    @ApiModelProperty(name = "availableRAMMemory", value = "Available total memory of RAM.", required = true)
     private Double availableRAMMemory;
+    @ApiModelProperty(name = "pluggedIn", value = "Whether the device is plugged into power or not.",
+                      required = true)
     private boolean pluggedIn;
+    @ApiModelProperty(name = "updatedTime", value = "Device updated time.", required = true)
     private Date updatedTime;
-
+    @ApiModelProperty(name = "deviceDetailsMap", value = ".", required = true)
     private Map<String, String> deviceDetailsMap = new HashMap<>();
 
     public int getDeviceId() {

@@ -19,14 +19,23 @@
 
 package org.wso2.carbon.device.mgt.common.device.details;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
+@ApiModel(value = "DeviceWrapper", description = "This contains device details including, " +
+                                                 "location and device meta information.")
 public class DeviceWrapper {
 
+    @ApiModelProperty(name = "device", value = "Device's basic information", required = true)
     private Device device;
+    @ApiModelProperty(name = "deviceIdentifier", value = "Device identifier used to identify a device.",
+                      required = true)
     private DeviceIdentifier deviceIdentifier;
+    @ApiModelProperty(name = "deviceInfo", value = "Device's runtime information", required = true)
     private DeviceInfo deviceInfo;
+    @ApiModelProperty(name = "deviceLocation", value = "Device's current location", required = true)
     private DeviceLocation deviceLocation;
 
     public Device getDevice() {

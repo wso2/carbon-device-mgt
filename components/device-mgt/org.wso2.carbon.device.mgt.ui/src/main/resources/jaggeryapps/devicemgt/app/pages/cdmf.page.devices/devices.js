@@ -54,12 +54,16 @@ function onRequest(context) {
             var deviceTypes = [];
             if (data) {
                 for (var i = 0; i < data.length; i++) {
-                    var deviceType = utility.getDeviceTypeConfig(data[i].name).deviceType;
+                    var config = utility.getDeviceTypeConfig(data[i].name);
+                    if (!config){
+                        continue;
+                    }
+                    var deviceType = config.deviceType;
                     deviceTypes.push({
                         "type": data[i].name,
                         "category": deviceType.category,
-                                         "label": deviceType.label,
-                                         "thumb": utility.getDeviceThumb(data[i].name)
+                        "label": deviceType.label,
+                        "thumb": utility.getDeviceThumb(data[i].name)
                     });
                 }
             }

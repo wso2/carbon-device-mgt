@@ -112,8 +112,7 @@ public interface User {
             value = "Deleting a User",
             notes = "In a situation where an employee leaves the organization you will need to remove the"
                     + " user details from WSO2 EMM. In such situations you can use this REST API "
-                    + "to remove a user",
-            response = ResponsePayload.class)
+                    + "to remove a user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User by username: 'username' was successfully removed"),
             @ApiResponse(code = 400, message = "User by username: 'username' does not exist for removal"),
@@ -150,7 +149,8 @@ public interface User {
             value = "Getting Details of Users",
             notes = "If you wish to get the details of all the user registered with WSO2 EMM, you can do so "
                     + "using the REST API",
-            response = ResponsePayload.class)
+            response = UserWrapper.class,
+            responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "All users were successfully retrieved"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users")
@@ -275,10 +275,9 @@ public interface User {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Changing the User Password",
-            notes = "A user is able to change the password to secure their EMM profile via this REST API",
-            response = UserCredentialWrapper.class)
+            notes = "A user is able to change the password to secure their EMM profile via this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "UserImpl password by username: 'Username' was "
+            @ApiResponse(code = 201, message = "UserImpl password by username: 'Username' was "
                     + "successfully changed"),
             @ApiResponse(code = 400, message = "Old password does not match"),
             @ApiResponse(code = 400, message = "Could not change the password of the user: 'Username'. The"
@@ -301,10 +300,9 @@ public interface User {
             notes = "In a situation where you need to block a user from accessing their EMM profile, "
                     + "the EMM administrator is able to reset the password. This will change the user's "
                     + "password and the user will not be able to able to login to the account as he/she is "
-                    + "not aware of the new password.",
-            response = UserCredentialWrapper.class)
+                    + "not aware of the new password.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "UserImpl password by username: 'Username' was "
+            @ApiResponse(code = 201, message = "UserImpl password by username: 'Username' was "
                     + "successfully changed"),
             @ApiResponse(code = 400, message = "Old password does not match"),
             @ApiResponse(code = 400, message = "Could not change the password of the user: 'Username'. The"

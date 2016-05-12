@@ -46,10 +46,9 @@ public interface Configuration {
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "POST",
             value = "Configuring general platform settings",
-            notes = "Configure the general platform settings using this REST API",
-            response = ResponsePayload.class)
+            notes = "Configure the general platform settings using this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Tenant configuration saved successfully"),
+            @ApiResponse(code = 201, message = "Tenant configuration saved successfully"),
             @ApiResponse(code = 500, message = "Error occurred while saving the tenant configuration")
             })
     Response saveTenantConfiguration(@ApiParam(name = "configuration", value = "The required properties to "
@@ -76,10 +75,9 @@ public interface Configuration {
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "PUT",
             value = "Updating General Platform Configurations",
-            notes = "Update the notification frequency using this REST API",
-            response = ResponsePayload.class)
+            notes = "Update the notification frequency using this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Tenant configuration updated successfully"),
+            @ApiResponse(code = 201, message = "Tenant configuration updated successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating the tenant configuration")
             })
     Response updateConfiguration(@ApiParam(name = "configuration", value = "The required properties to update"

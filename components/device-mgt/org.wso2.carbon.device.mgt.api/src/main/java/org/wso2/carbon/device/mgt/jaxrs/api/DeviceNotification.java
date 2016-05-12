@@ -89,10 +89,9 @@ public interface DeviceNotification {
             httpMethod = "PUT",
             value = "Updating the Device Notification Status",
             notes = "When a user has read the the device notification the device notification status must "
-                    + "change from NEW to CHECKED. Update the device notification status using this REST API",
-            response = ResponsePayload.class)
+                    + "change from NEW to CHECKED. Update the device notification status using this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Notification status updated successfully"),
+            @ApiResponse(code = 201, message = "Notification status updated successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating notification status")
             })
     Response updateNotificationStatus( @ApiParam(name = "id", value = "Provide the ID of the notification"
@@ -107,10 +106,9 @@ public interface DeviceNotification {
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "POST",
             value = "Sending a Device Notification",
-            notes = "Notify users on device operation failures and other information using this REST API",
-            response = ResponsePayload.class)
+            notes = "Notify users on device operation failures and other information using this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "NNotification has added successfully"),
+            @ApiResponse(code = 201, message = "NNotification has added successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating notification status")
             })
     Response addNotification(Notification notification);

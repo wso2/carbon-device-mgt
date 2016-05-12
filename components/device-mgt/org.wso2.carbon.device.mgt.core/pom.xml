@@ -83,6 +83,8 @@
                             org.apache.catalina.core,
                             org.apache.commons.collections,
                             org.wso2.carbon.email.sender.*,
+                            io.swagger.annotations.*,
+                            *;resolution:=optional,
                             org.wso2.carbon,
                             org.wso2.carbon.base
                         </Import-Package>

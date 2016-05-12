@@ -17,11 +17,19 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
+
+@ApiModel(value = "DeviceIdentifier", description = "This contains device details that is used to identify a device " +
+                                                    "uniquely.")
 public class DeviceIdentifier implements Serializable{
 
+    @ApiModelProperty(name = "id", value = "Identity of the device.", required = true)
     private String id;
+    @ApiModelProperty(name = "type", value = "Type of the device.", required = true)
     private String type;
 
     public DeviceIdentifier() {}

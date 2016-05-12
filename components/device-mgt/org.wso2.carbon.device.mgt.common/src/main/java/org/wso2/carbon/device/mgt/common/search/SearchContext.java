@@ -19,10 +19,17 @@
 
 package org.wso2.carbon.device.mgt.common.search;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
+
+@ApiModel(value = "SearchContext", description = "Search details when carrying out a search contain in this class.")
 public class SearchContext {
 
+    @ApiModelProperty(name = "conditions", value = "Contains the advance search parameters.",
+                      required = true)
     private List<Condition> conditions;
 //    private int start;
 //    private int end;

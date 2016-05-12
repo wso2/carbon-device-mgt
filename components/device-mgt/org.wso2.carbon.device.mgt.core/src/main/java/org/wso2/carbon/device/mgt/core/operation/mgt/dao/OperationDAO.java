@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
 import java.util.List;
@@ -32,6 +33,8 @@ public interface OperationDAO {
     void deleteOperation(int operationId) throws OperationManagementDAOException;
 
     Operation getOperation(int operationId) throws OperationManagementDAOException;
+
+    Operation getOperationFromEnrollment(int enrollmentOpMappingId) throws OperationManagementDAOException;
 
     Operation getOperationByDeviceAndId(int enrolmentId, int operationId) throws OperationManagementDAOException;
 
@@ -57,5 +60,9 @@ public interface OperationDAO {
 
     void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException;
+
+    List<OperationResponse> getOperationResponses(int enrolmentId, int operationId) throws OperationManagementDAOException;
+
+    int getEnrolmentIdFromMappingId(int enrollmentOpMappingId) throws OperationManagementDAOException;
 
 }

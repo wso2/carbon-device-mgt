@@ -18,12 +18,17 @@
 
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Properties;
 
 @XmlRootElement
+@ApiModel(value = "Operation", description = "This class carries all information related to a operations that can be " +
+                                             "applied on a device.")
 public class Operation implements Serializable {
 
 	public enum Type {
@@ -38,17 +43,51 @@ public class Operation implements Serializable {
         REPEAT, NO_REPEAT, PAUSE_SEQUENCE, STOP_SEQUENCE
     }
 
+    @ApiModelProperty(name = "code", value = "The code of the operation that you carried out. For example the code of" +
+                                             "  the operation carried out to device info operation is DEVICE_INFO.",
+                      required = true)
     private String code;
+    @ApiModelProperty(name = "properties", value = "Properties  of an operation containing meta information.",
+                      required = true)
     private Properties properties;
+    @ApiModelProperty(name = "type", value = "The operation type that was carried out on the device. " +
+                                             "The operations types can be one of the following: COMMAND, PROFILE",
+                      required = true)
     private Type type;
+    @ApiModelProperty(name = "id", value = "The operations carried out on a device is recorded in a database table. " +
+                                           "The ID of the operation in the database table is given as the ID " +
+                                           "in the output.",
+                      required = true)
     private int id;
+    @ApiModelProperty(name = "status", value = "The status of the operation that has been carried out on a device. The" +
+                                           " operation status can be any one of the following:\n" +
+                                           "IN-PROGRESS - The operation is processing on the EMM server" +
+                                           " side and has not yet been delivered to the device.\n" +
+                                           "PENDING - The operation is delivered to the device but the response " +
+                                           "from the device is pending.\n" +
+                                           "COMPLETED - The operation is delivered to the device and the server has " +
+                                           "received a response back from the device.\n" +
+                                           "ERROR - An error has occurred while carrying out the operation.",
+                      required = true)
     private Status status;
+    @ApiModelProperty(name = "control", value = "How the operation should be executed.", required = true)
     private Control control;
+    @ApiModelProperty(name = "receivedTimeStamp", value = "The time WSO2 EMM received the response from the device.",
+                      required = true)
     private String receivedTimeStamp;
+    @ApiModelProperty(name = "createdTimeStamp", value = "The time when the operation was requested to be carried out.",
+                      required = true)
     private String createdTimeStamp;
+    @ApiModelProperty(name = "isEnabled", value = "If the assigned value is true it indicates that a policy is " +
+                                                  "enforced on the device. If the assigned value is false it indicates" +
+                                                  " that a policy is not enforced on a device.", required = true)
     private boolean isEnabled;
+    @ApiModelProperty(name = "payLoad", value = "Payload of the operation to be sent to the device", required = true)
     private Object payLoad;
+    @ApiModelProperty(name = "operationResponse", value = "Response received from the device", required = true)
     private String operationResponse;
+    @ApiModelProperty(name = "activityId", value = "The identifier used to identify the operation uniquely.",
+                      required = true)
     private String activityId;
 
     @Override

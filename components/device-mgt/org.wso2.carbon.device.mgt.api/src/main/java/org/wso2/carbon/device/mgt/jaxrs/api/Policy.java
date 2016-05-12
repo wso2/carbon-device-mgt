@@ -97,7 +97,8 @@ public interface Policy {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of a Policy.",
-            notes = "Retrieve the details of a selected policy in WSO2 EMM.")
+            notes = "Retrieve the details of a selected policy in WSO2 EMM.",
+            response = org.wso2.carbon.policy.mgt.common.Policy.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Fetched policy details."),
                             @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
                                                                "fetching the policies.") })
@@ -254,7 +255,8 @@ public interface Policy {
             value = "Getting Policy Enforced Details of a Device.",
             notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the EMM " +
                     "filters the policies based on the Platform (device type), filters based on the device ownership" +
-                    " type , filters based on the user role or name and finally the policy is enforced on the device.")
+                    " type , filters based on the user role or name and finally the policy is enforced on the device.",
+            response = org.wso2.carbon.policy.mgt.common.Policy.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Fetched current policy."),
                             @ApiResponse(code = 500, message = "Error occurred while getting the current policy.") })
     Response getDeviceActivePolicy(@ApiParam(name = "type", value = "Define the device type as the value for {type}." +

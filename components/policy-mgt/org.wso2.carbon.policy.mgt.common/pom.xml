@@ -54,7 +54,7 @@
                         <Bundle-Description>Policy Management Common Bundle</Bundle-Description>
                         <Import-Package>
                             javax.xml.bind.annotation,
-                            io.swagger.annotations.*;resolution:=optional
+                            io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.dto.*,
                             javax.xml.bind.*,

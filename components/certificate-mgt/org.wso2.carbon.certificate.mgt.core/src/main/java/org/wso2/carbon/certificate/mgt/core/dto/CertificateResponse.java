@@ -18,19 +18,42 @@
 
 package org.wso2.carbon.certificate.mgt.core.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigInteger;
 
+@ApiModel(value = "CertificateResponse", description = "This class carries all information related to certificates")
 public class CertificateResponse {
 
+    @ApiModelProperty(name = "certificate", value = "The certificate in bytes", required = true)
     byte[] certificate;
+
+    @ApiModelProperty(name = "serialNumber", value = "It is the unique ID that is used to identify a certificate", required = true)
     String serialNumber;
+
+    @ApiModelProperty(name = "tenantId", value = "The ID of the tenant who adds the certificate", required = true)
     int tenantId;
+
+    @ApiModelProperty(name = "commonName", value = "In mutual SSL the common name refers to the serial number of the Android device.", required = true)
     String commonName;
+
+    @ApiModelProperty(name = "notAfter", value = "The expiration date of the certificate that is inherent to the certificate", required = true)
     long notAfter;
+
+    @ApiModelProperty(name = "notBefore", value = "The date from when the certificate is valid", required = true)
     long notBefore;
+
+    @ApiModelProperty(name = "certificateserial", value = "The serial number of the certificate", required = true)
     BigInteger certificateserial;
+
+    @ApiModelProperty(name = "issuer", value = "The identity of the authority that signs the SSL certificate", required = true)
     String issuer;
+
+    @ApiModelProperty(name = "subject", value = "The identity of the certificate", required = true)
     String subject;
+
+    @ApiModelProperty(name = "certificateVersion", value = "The version of the certificate", required = true)
     int certificateVersion;
 
     public long getNotAfter() {

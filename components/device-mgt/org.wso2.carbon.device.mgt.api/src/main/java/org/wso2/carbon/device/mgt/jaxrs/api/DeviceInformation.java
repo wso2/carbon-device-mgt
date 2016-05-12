@@ -19,10 +19,18 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -34,10 +42,41 @@ public interface DeviceInformation {
 
     @GET
     @Path("{type}/{id}")
-    Response getDeviceInfo(@PathParam("type") String type, @PathParam("id") String id);
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get device information",
+            notes = "This will return device information such as CPU usage, memory usage etc.",
+            response = DeviceInfo.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+            })
+    Response getDeviceInfo(@ApiParam(name = "type", value = "Provide the device type, such as ios, android "
+                                    + "or windows", required = true) @PathParam("type") String type,
+                           @ApiParam(name = "id", value = "Provide the device identifier", required = true)
+                                    @PathParam("id") String id);
 
     @GET
     @Path("location/{type}/{id}")
-    Response getDeviceLocation(@PathParam("type") String type, @PathParam("id") String id);
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get the device location",
+            notes = "This will return the device location including latitude and longitude as well the "
+                    + "physical address",
+            response = DeviceLocation.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+            })
+    Response getDeviceLocation(@ApiParam(name = "type", value = "Provide the device type, such as ios, "
+                                    + "android or windows", required = true) @PathParam("type") String type,
+                               @ApiParam(name = "id", value = "Provide the device identifier",
+                                       required = true) @PathParam("id") String id);
 
 }

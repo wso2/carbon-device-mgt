@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.context.DeviceOperationContext;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
@@ -155,4 +156,19 @@ public interface Operation {
                                                                            "{tenantDomain}. The default tenant domain " +
                                                                            "of WSO2 EMM is carbon.super.",
                                             required = true) @PathParam("tenantDomain") String tenantDomain);
+
+
+    @GET
+    @Path("activity/{id}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "POST",
+            value = "Retrieving the operation details.",
+            notes = "This will return the operation details including the responses from the devices")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Activity details provided successfully.."),
+            @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.") })
+    Response getActivity(@ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
+            required = true) @PathParam("id") String id)
+            throws MDMAPIException;
 }

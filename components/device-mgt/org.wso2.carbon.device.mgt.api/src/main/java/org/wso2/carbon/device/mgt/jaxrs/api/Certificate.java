@@ -56,8 +56,7 @@ public interface Certificate {
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "POST",
             value = "Adding an SSL Certificate",
-            notes = "Add a new SSL certificate to the client end database",
-            response = MediaType.class)
+            notes = "Add a new SSL certificate to the client end database")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Added successfully"),
             @ApiResponse(code = 500, message = "Error occurred while saving the certificate")

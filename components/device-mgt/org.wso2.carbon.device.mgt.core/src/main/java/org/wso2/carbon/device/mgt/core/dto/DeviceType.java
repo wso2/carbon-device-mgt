@@ -18,12 +18,19 @@
 
 package org.wso2.carbon.device.mgt.core.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
+@ApiModel(value = "DeviceType", description = "This class carries all information related device types")
 public class DeviceType implements Serializable {
 
     private static final long serialVersionUID = 7927802716452548282L;
+
+    @ApiModelProperty(name = "id", value = "Device type id", required = true)
     private int id;
+    @ApiModelProperty(name = "name", value = "Device type name", required = true)
     private String name;
 
     public DeviceType() {

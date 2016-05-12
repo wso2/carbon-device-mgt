@@ -72,14 +72,14 @@ public class GadgetDataServiceComponent {
         //do nothing
     }
 
-    public void setDataSourceService(DataSourceService dataSourceService) {
+    protected void setDataSourceService(DataSourceService dataSourceService) {
         if (log.isDebugEnabled()) {
             log.debug("Binding org.wso2.carbon.ndatasource.core.DataSourceService...");
         }
         //do nothing
     }
 
-    public void unsetDataSourceService(DataSourceService dataSourceService) {
+    protected void unsetDataSourceService(DataSourceService dataSourceService) {
         if (log.isDebugEnabled()) {
             log.debug("Unbinding org.wso2.carbon.ndatasource.core.DataSourceService...");
         }

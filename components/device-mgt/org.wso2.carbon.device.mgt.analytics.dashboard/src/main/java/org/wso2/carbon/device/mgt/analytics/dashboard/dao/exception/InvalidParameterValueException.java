@@ -22,7 +22,7 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception;
  * Custom exception class for catching invalid parameter issues,
  * relevant to Gadget Data Service DAO layer.
  */
-public class InvalidParameterException extends Exception {
+public class InvalidParameterValueException extends Exception {
 
     private String errorMessage;
     private static final long serialVersionUID = 2021891706072918864L;
@@ -34,7 +34,7 @@ public class InvalidParameterException extends Exception {
      * @param nestedException Nested exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterException(String errorMessage, Exception nestedException) {
+    public InvalidParameterValueException(String errorMessage, Exception nestedException) {
         super(errorMessage, nestedException);
         setErrorMessage(errorMessage);
     }
@@ -46,7 +46,7 @@ public class InvalidParameterException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterException(String errorMessage, Throwable cause) {
+    public InvalidParameterValueException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         setErrorMessage(errorMessage);
     }
@@ -56,7 +56,7 @@ public class InvalidParameterException extends Exception {
      *
      * @param errorMessage Specific error message.
      */
-    public InvalidParameterException(String errorMessage) {
+    public InvalidParameterValueException(String errorMessage) {
         super(errorMessage);
         setErrorMessage(errorMessage);
     }
@@ -67,7 +67,7 @@ public class InvalidParameterException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterException(Throwable cause) {
+    public InvalidParameterValueException(Throwable cause) {
         super(cause);
     }
 

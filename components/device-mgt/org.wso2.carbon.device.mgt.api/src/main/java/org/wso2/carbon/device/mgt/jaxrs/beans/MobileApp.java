@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 import java.util.Properties;
 
 /**
- * This class represents the generic mobile Application information
+ * This class represents the generic mobile AuthenticationImpl information
  * which is used by AppM.
  */
 public class MobileApp {

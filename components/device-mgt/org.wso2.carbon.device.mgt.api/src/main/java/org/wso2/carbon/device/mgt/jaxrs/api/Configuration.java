@@ -18,96 +18,29 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
+import io.swagger.annotations.Api;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.MDMAppConstants;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * General Tenant Configuration REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
-
+@Api(value = "Configuration", description = "General Tenant Configuration implementation")
 @SuppressWarnings("NonJaxWsWebServices")
-@Produces({"application/json", "application/xml"})
+@Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })
-public class Configuration {
+public interface Configuration {
 
-	private static Log log = LogFactory.getLog(Configuration.class);
+    @POST
+    Response saveTenantConfiguration(TenantConfiguration configuration);
 
-	@POST
-    public Response saveTenantConfiguration(TenantConfiguration configuration) {
-        ResponsePayload responseMsg = new ResponsePayload();
-        try {
-            DeviceMgtAPIUtils.getTenantConfigurationManagementService().saveConfiguration(configuration,
-                                                                                          MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
-            //Schedule the task service
-            DeviceMgtAPIUtils.scheduleTaskService(DeviceMgtAPIUtils.getNotifierFrequency(configuration));
-            responseMsg.setMessageFromServer("Tenant configuration saved successfully.");
-			responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (ConfigurationManagementException e) {
-            String msg = "Error occurred while saving the tenant configuration.";
-			log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @GET
+    Response getConfiguration();
 
-	@GET
-    public Response getConfiguration() {
-        String msg;
-        try {
-            TenantConfiguration tenantConfiguration = DeviceMgtAPIUtils.getTenantConfigurationManagementService().
-                    getConfiguration(MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
-			ConfigurationEntry configurationEntry = new ConfigurationEntry();
-			configurationEntry.setContentType("text");
-			configurationEntry.setName("notifierFrequency");
-			configurationEntry.setValue(PolicyManagerUtil.getMonitoringFequency());
-			List<ConfigurationEntry> configList = tenantConfiguration.getConfiguration();
-			if (configList == null) {
-                configList = new ArrayList<>();
-            }
-            configList.add(configurationEntry);
-            tenantConfiguration.setConfiguration(configList);
-            return Response.status(Response.Status.OK).entity(tenantConfiguration).build();
-        } catch (ConfigurationManagementException e) {
-            msg = "Error occurred while retrieving the tenant configuration.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-	@PUT
-    public Response updateConfiguration(TenantConfiguration configuration) {
-        ResponsePayload responseMsg = new ResponsePayload();
-        try {
-            DeviceMgtAPIUtils.getTenantConfigurationManagementService().saveConfiguration(configuration,
-                                                                                          MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
-            //Schedule the task service
-            DeviceMgtAPIUtils.scheduleTaskService(DeviceMgtAPIUtils.getNotifierFrequency(configuration));
-            responseMsg.setMessageFromServer("Tenant configuration updated successfully.");
-			responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (ConfigurationManagementException e) {
-            String msg = "Error occurred while updating the tenant configuration.";
-			log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @PUT
+    Response updateConfiguration(TenantConfiguration configuration);
 
 }

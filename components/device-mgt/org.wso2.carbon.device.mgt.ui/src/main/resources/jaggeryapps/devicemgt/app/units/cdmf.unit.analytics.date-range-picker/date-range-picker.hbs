@@ -1,0 +1,31 @@
+{{#zone "topCss"}}
+    {{css "css/daterangepicker.css"}}
+{{/zone}}
+<span id="device-type-details" data-devicetypes="{{deviceTypes}}"></span>
+<div id="rangeSliderWrapper" class="pull-right col-lg-9">
+    <div id="dateRangePickerContainer">
+        <div class="btn-group" role="group">
+            <button id="hour-btn" type="button"
+                    class="btn btn-default date-range">Hour
+            </button>
+            <button id="h12-btn" type="button"
+                    class="btn btn-default date-range">12 Hours
+            </button>
+            <button id="h24-btn" type="button"
+                    class="btn btn-default date-range">24 Hours
+            </button>
+            <button id="h48-btn" type="button"
+                    class="btn btn-default date-range">48 Hours
+            </button>
+            <button id="date-range" type="button"
+                    class="btn btn-default date-range last-child"
+                    data-toggle="popup"
+                    title="Click to set custom date range"></button>
+        </div>
+    </div>
+</div>
+{{#zone "bottomJs"}}
+    {{js "js/moment.js"}}
+    {{js "js/jquery.daterangepicker.js"}}
+    {{js "js/date-picker.js"}}
+{{/zone}}

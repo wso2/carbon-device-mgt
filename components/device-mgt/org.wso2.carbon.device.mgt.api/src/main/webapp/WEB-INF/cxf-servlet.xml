@@ -163,23 +163,23 @@
         </jaxrs:providers>
     </jaxrs:server>
 -->
-    <bean id="operationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Operation"/>
-    <bean id="deviceServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Device"/>
-    <bean id="groupServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Group"/>
-    <bean id="userServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.User"/>
-    <bean id="roleServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Role"/>
-    <bean id="featureServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Feature"/>
-    <bean id="configurationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Configuration"/>
-    <bean id="notificationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.DeviceNotification"/>
-    <bean id="licenseServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.License"/>
-    <bean id="certificateServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Certificate"/>
-    <bean id="informationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.DeviceInformation"/>
-    <bean id="searchingServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.DeviceSearch"/>
+    <bean id="operationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.OperationImpl"/>
+    <bean id="deviceServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceImpl"/>
+    <bean id="groupServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.GroupImpl"/>
+    <bean id="userServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.UserImpl"/>
+    <bean id="roleServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.RoleImpl"/>
+    <bean id="featureServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.FeatureImpl"/>
+    <bean id="configurationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.ConfigurationImpl"/>
+    <bean id="notificationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceNotificationImpl"/>
+    <bean id="licenseServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.LicenseImpl"/>
+    <bean id="certificateServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.CertificateImpl"/>
+    <bean id="informationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceInformationImpl"/>
+    <bean id="searchingServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceSearchImpl"/>
     <!--
-    <bean id="authenticationServiceBean" class="Authentication"/>
+    <bean id="authenticationServiceBean" class="AuthenticationImpl"/>
     -->
-    <bean id="policyServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Policy"/>
-    <bean id="profileServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.Profile"/>
+    <bean id="policyServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.PolicyImpl"/>
+    <bean id="profileServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.ProfileImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
     <bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.api.common.ErrorHandler"/>
 

@@ -78,7 +78,7 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
             }
             // fetching total records count
             sql = "SELECT COUNT(FEATURE_CODE) AS NON_COMPLIANT_FEATURE_COUNT FROM " +
-                    "(SELECT DISTINCT FEATURE_CODE FROM DEVICES_VIEW_2 WHERE TENANT_ID = ?) NON_COMPLIANT_FEATURE_CODE";
+                "(SELECT DISTINCT FEATURE_CODE FROM DEVICES_VIEW_2 WHERE TENANT_ID = ?) NON_COMPLIANT_FEATURE_CODE";
 
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -128,8 +128,8 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT DEVICE_ID, PLATFORM, OWNERSHIP, " +
-                "CONNECTIVITY_STATUS FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " + advancedSqlFiltering +
+            sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, " +
+                "OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " + advancedSqlFiltering +
                     "ORDER BY DEVICE_ID ASC) rs) WHERE offset >= ? AND ROWNUM <= ?";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
@@ -157,6 +157,7 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
@@ -219,8 +220,8 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT DEVICE_ID, PLATFORM, OWNERSHIP, " +
-                "CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+            sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, " +
+                "OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
                     advancedSqlFiltering + "ORDER BY DEVICE_ID ASC) rs) WHERE offset >= ? AND ROWNUM <= ?";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
@@ -249,6 +250,7 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));

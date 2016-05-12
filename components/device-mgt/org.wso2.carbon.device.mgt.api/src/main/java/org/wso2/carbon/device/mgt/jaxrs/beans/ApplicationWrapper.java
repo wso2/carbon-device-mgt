@@ -18,14 +18,23 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import java.util.List;
 
+
+@ApiModel(value = "ApplicationWrapper", description = "Application details together with user, " +
+                                                      "role or devices the application is associated with.")
 public class ApplicationWrapper {
 
+    @ApiModelProperty(name = "userNameList", value = "List of user names.", required = true )
 	private List<String> userNameList;
+    @ApiModelProperty(name = "roleNameList", value = "List of role names.", required = true )
 	private List<String> roleNameList;
+    @ApiModelProperty(name = "deviceIdentifiers", value = "List of device identifiers.", required = true )
 	private List<DeviceIdentifier> deviceIdentifiers;
+    @ApiModelProperty(name = "application", value = "Details of the mobile application.", required = true )
 	private MobileApp application;
 
 	public MobileApp getApplication() {

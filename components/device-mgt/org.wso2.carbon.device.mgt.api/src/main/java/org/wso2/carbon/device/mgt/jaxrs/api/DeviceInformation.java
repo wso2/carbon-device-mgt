@@ -36,7 +36,8 @@ import javax.ws.rs.core.Response;
 /**
  * Device information related operations.
  */
-@Api(value = "DeviceInfo")
+
+@Api(value = "DeviceInformation", description = "Device information related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface DeviceInformation {
 

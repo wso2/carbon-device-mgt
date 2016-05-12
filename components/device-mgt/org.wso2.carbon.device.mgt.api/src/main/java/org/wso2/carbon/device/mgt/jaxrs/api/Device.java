@@ -29,7 +29,8 @@ import javax.ws.rs.core.Response;
 /**
  * Device related operations such as get all the available devices, etc.
  */
-@Api(value = "Devices")
+
+@Api(value = "Device", description = "Device related operations such as get all the available devices, etc.")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface Device {
 

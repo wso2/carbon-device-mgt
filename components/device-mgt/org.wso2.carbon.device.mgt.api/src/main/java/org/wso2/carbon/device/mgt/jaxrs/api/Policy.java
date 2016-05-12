@@ -38,7 +38,8 @@ import java.util.List;
 /**
  *
  */
-@Api(value = "Policy")
+
+@Api(value = "Policy", description = "Policy management related operations can be found here.")
 public interface Policy {
 
     @POST

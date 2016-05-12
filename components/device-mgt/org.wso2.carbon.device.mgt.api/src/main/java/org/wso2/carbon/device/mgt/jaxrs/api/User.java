@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * This represents the JAX-RS services of User related functionality.
  */
-@Api(value = "User")
+@Api(value = "User", description = "User management related operations can be found here.")
 public interface User {
 
     @POST

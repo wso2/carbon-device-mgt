@@ -18,16 +18,26 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value = "UserWrapper", description = "User details and the roles of the user.")
 public class UserWrapper {
 
     private String username;
     /*
         Base64 encoded password
      */
+
+    @ApiModelProperty(name = "password", value = "Base64 encoded password.", required = true )
     private String password;
+    @ApiModelProperty(name = "firstname", value = "The first name of the user.", required = true )
     private String firstname;
+    @ApiModelProperty(name = "lastname", value = "The last name of the user.", required = true )
     private String lastname;
+    @ApiModelProperty(name = "emailAddress", value = "The email address of the user.", required = true )
     private String emailAddress;
+    @ApiModelProperty(name = "roles", value = "List of roles.", required = true )
     private String[] roles;
 
     public String getUsername() {

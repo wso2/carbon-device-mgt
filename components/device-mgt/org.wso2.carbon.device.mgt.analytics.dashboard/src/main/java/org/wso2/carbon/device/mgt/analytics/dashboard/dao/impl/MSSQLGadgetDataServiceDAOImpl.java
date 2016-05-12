@@ -128,8 +128,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_1 " +
-                "WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC " +
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                "DEVICES_VIEW_1 WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC " +
                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
@@ -157,6 +157,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
@@ -219,8 +220,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                "WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering +
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                "DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering +
                     "ORDER BY DEVICE_ID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
@@ -249,6 +250,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));

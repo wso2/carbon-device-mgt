@@ -16,19 +16,21 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jaxrs.api;
+package org.wso2.carbon.device.mgt.jaxrs.api.impl;
 
-import io.swagger.annotations.Api;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
 /**
- * Authentication related REST-API interface.
+ * Authentication related REST-API implementation.
  */
-@Api(value = "Authentication")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })
-public interface Authentication {
+public class AuthenticationImpl {
 
+    private static Log log = LogFactory.getLog(AuthenticationImpl.class);
 }
+

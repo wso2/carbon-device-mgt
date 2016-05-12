@@ -73,7 +73,7 @@ public class JWTClientUtil {
 
 	private static final Log log = LogFactory.getLog(JWTClientUtil.class);
 	private static final String HTTPS_PROTOCOL = "https";
-	private static final String TENANT_JWT_CONFIG_LOCATION = "/jwt-config/jwt.properties";
+	private static final String TENANT_JWT_CONFIG_LOCATION = File.separator + "jwt-config" + File.separator + "jwt.properties";
 	private static final String JWT_CONFIG_FILE_NAME = "jwt.properties";
 	private static final String SUPERTENANT_JWT_CONFIG_LOCATION =
 			CarbonUtils.getEtcCarbonConfigDirPath() + File.separator + JWT_CONFIG_FILE_NAME;

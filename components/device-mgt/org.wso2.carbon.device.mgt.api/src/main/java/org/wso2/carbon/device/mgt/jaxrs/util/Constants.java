@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.util;
 
 /**
- * Holds the constants used by Device Management Admin web application.
+ * Holds the constants used by DeviceImpl Management Admin web application.
  */
 public class Constants {
 

@@ -18,203 +18,141 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
-import org.wso2.carbon.device.mgt.jaxrs.api.context.DeviceOperationContext;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.MDMIOSOperationUtil;
-import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.MobileApp;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.Platform;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.MDMAndroidOperationUtil;
+import org.wso2.carbon.device.mgt.jaxrs.api.context.DeviceOperationContext;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
- * Operation related REST-API implementation.
+ *
  */
-@SuppressWarnings("NonJaxWsWebServices")
-@Produces({"application/json", "application/xml"})
-@Consumes({"application/json", "application/xml"})
-public class Operation {
-
-    private static Log log = LogFactory.getLog(Operation.class);
+@Api(value = "Operation")
+public interface Operation {
 
     /* @deprecated */
     @GET
-    public Response getAllOperations() {
-        List<? extends org.wso2.carbon.device.mgt.common.operation.mgt.Operation> operations;
-        DeviceManagementProviderService dmService;
-        try {
-            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            operations = dmService.getOperations(null);
-        } catch (OperationManagementException e) {
-            String msg = "Error occurred while fetching the operations for the device.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.OK).entity(operations).build();
-    }
+    Response getAllOperations();
 
     @GET
     @Path("paginate/{type}/{id}")
-    public Response getDeviceOperations(
-            @PathParam("type") String type, @PathParam("id") String id, @QueryParam("start") int startIdx,
-            @QueryParam("length") int length, @QueryParam("search") String search) {
-        PaginationResult operations;
-        DeviceManagementProviderService dmService;
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        PaginationRequest paginationRequest = new PaginationRequest(startIdx, length);
-        try {
-            deviceIdentifier.setType(type);
-            deviceIdentifier.setId(id);
-            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            operations = dmService.getOperations(deviceIdentifier, paginationRequest);
-        } catch (OperationManagementException e) {
-            String msg = "Error occurred while fetching the operations for the device.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.OK).entity(operations).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Pagination Details for Operations on a Device.",
+            notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
+                    " the operations carried out on a device it is not feasible to show all the details on one page" +
+                    " therefore the details are paginated." +
+                    " Example: You carry out 21 operations via a given device. When you wish to see the operations " +
+                    "carried out, the details of the 21 operations will be broken down into 3 pages with 10 operation" +
+                    " details per page.",
+            response = org.wso2.carbon.device.mgt.common.operation.mgt.Operation.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Operations on a device."),
+                            @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
+                                                               "device.") })
+    Response getDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
+                                                                  "Example: ios, android or windows.",
+                                           required = true) @PathParam("type") String type,
+                                 @ApiParam(name = "id", value = "Define the device ID",
+                                           required = true) @PathParam("id") String id,
+                                 @ApiParam(name = "start", value = "Provide the starting pagination index. Example 10",
+                                           required = true) @QueryParam("start") int startIdx,
+                                 @ApiParam(name = "length", value = "Provide how many device details you require from" +
+                                                                    " the starting pagination index. For example if " +
+                                                                    "you require the device details from the 10th " +
+                                                                    "pagination index to the 15th, " +
+                                                                    "you must define 10 as the value for start and 5 " +
+                                                                    "as the value for length.",
+                                           required = true) @QueryParam("length") int length,
+                                 @QueryParam("search") String search);
 
     @GET
     @Path("{type}/{id}")
-    public Response getDeviceOperations(@PathParam("type") String type, @PathParam("id") String id) {
-        List<? extends org.wso2.carbon.device.mgt.common.operation.mgt.Operation> operations;
-        DeviceManagementProviderService dmService;
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        try {
-            deviceIdentifier.setType(type);
-            deviceIdentifier.setId(id);
-            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            operations = dmService.getOperations(deviceIdentifier);
-        } catch (OperationManagementException e) {
-            String msg = "Error occurred while fetching the operations for the device.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.OK).entity(operations).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Device Operation Details.",
+            responseContainer = "List",
+            notes = "Get the details of operations carried out on a selected device.",
+            response = org.wso2.carbon.device.mgt.common.operation.mgt.Operation.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Operations on a device."),
+                            @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
+                                                               "device.") })
+    Response getDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
+                                                                  "Example: ios, android or windows.",
+                                           required = true) @PathParam("type") String type,
+                                 @ApiParam(name = "id", value = "Define the device ID",
+                                           required = true) @PathParam("id") String id);
 
     /* @deprecated */
     @POST
-    public Response addOperation(DeviceOperationContext operationContext) {
-        DeviceManagementProviderService dmService;
-        ResponsePayload responseMsg = new ResponsePayload();
-        try {
-            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            int operationId = dmService.addOperation(operationContext.getOperation(), operationContext.getDevices());
-            if (operationId > 0) {
-                responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-                responseMsg.setMessageFromServer("Operation has added successfully.");
-            }
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (OperationManagementException e) {
-            String msg = "Error occurred while saving the operation";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response addOperation(DeviceOperationContext operationContext);
 
     @GET
     @Path("{type}/{id}/apps")
-    public Response getInstalledApps(@PathParam("type") String type, @PathParam("id") String id) {
-        List<Application> applications;
-        ApplicationManagementProviderService appManagerConnector;
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        try {
-            deviceIdentifier.setType(type);
-            deviceIdentifier.setId(id);
-            appManagerConnector = DeviceMgtAPIUtils.getAppManagementService();
-            applications = appManagerConnector.getApplicationListForDevice(deviceIdentifier);
-        } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while fetching the apps of the device.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.CREATED).entity(applications).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Installed Application Details of a Device.",
+            responseContainer = "List",
+            notes = "Get the list of applications that a device has subscribed.",
+            response = Application.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of installed application details of a device."),
+                            @ApiResponse(code = 500, message = "Error occurred while fetching the apps of the device" +
+                                                               ".") })
+    Response getInstalledApps(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
+                                                               "Example: ios, android or windows.",
+                                        required = true) @PathParam("type") String type,
+                              @ApiParam(name = "id", value = "Define the device ID",
+                                        required = true) @PathParam("id") String id);
 
     @POST
     @Path("installApp/{tenantDomain}")
-    public Response installApplication(ApplicationWrapper applicationWrapper,
-                                       @PathParam("tenantDomain") String tenantDomain) {
-        ResponsePayload responseMsg = new ResponsePayload();
-        ApplicationManager appManagerConnector;
-        org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation = null;
-        try {
-            appManagerConnector = DeviceMgtAPIUtils.getAppManagementService();
-            MobileApp mobileApp = applicationWrapper.getApplication();
-
-            if (applicationWrapper.getDeviceIdentifiers() != null) {
-                for (DeviceIdentifier deviceIdentifier : applicationWrapper.getDeviceIdentifiers()) {
-                    if (deviceIdentifier.getType().equals(Platform.android.toString())) {
-                        operation = MDMAndroidOperationUtil.createInstallAppOperation(mobileApp);
-                    } else if (deviceIdentifier.getType().equals(Platform.ios.toString())) {
-                        operation = MDMIOSOperationUtil.createInstallAppOperation(mobileApp);
-                    }
-                }
-                appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
-            }
-            responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("Application installation request has been sent to the device.");
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (ApplicationManagementException | MDMAPIException e) {
-            String msg = "Error occurred while saving the operation";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "POST",
+            value = "Installing an Application on a Device.",
+            notes = "Install a selected application on a device.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Operation was successfully added to the queue."),
+                            @ApiResponse(code = 500, message = "Error occurred while saving the operation.") })
+    Response installApplication(@ApiParam(name = "applicationWrapper", value = "Details about the application and the" +
+                                                                               " users and roles it should be " +
+                                                                               "installed on.",
+                                          required = true) ApplicationWrapper applicationWrapper,
+                                @ApiParam(name = "tenantDomain", value = "Provide the tenant domain as the value for " +
+                                                                         "{tenantDomain}. The default tenant domain " +
+                                                                         "of WSO2 EMM is carbon.super.",
+                                          required = true) @PathParam("tenantDomain") String tenantDomain);
 
     @POST
     @Path("uninstallApp/{tenantDomain}")
-    public Response uninstallApplication(ApplicationWrapper applicationWrapper,
-                                         @PathParam("tenantDomain") String tenantDomain) {
-        ResponsePayload responseMsg = new ResponsePayload();
-        ApplicationManager appManagerConnector;
-        org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation = null;
-        try {
-            appManagerConnector = DeviceMgtAPIUtils.getAppManagementService();
-            MobileApp mobileApp = applicationWrapper.getApplication();
-
-            if (applicationWrapper.getDeviceIdentifiers() != null) {
-                for (DeviceIdentifier deviceIdentifier : applicationWrapper.getDeviceIdentifiers()) {
-                    if (deviceIdentifier.getType().equals(Platform.android.toString())) {
-                        operation = MDMAndroidOperationUtil.createAppUninstallOperation(mobileApp);
-                    } else if (deviceIdentifier.getType().equals(Platform.ios.toString())) {
-                        operation = MDMIOSOperationUtil.createAppUninstallOperation(mobileApp);
-                    }
-                }
-                appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
-            }
-            responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("Application removal request has been sent to the device.");
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (ApplicationManagementException | MDMAPIException e) {
-            String msg = "Error occurred while saving the operation";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "POST",
+            value = "Uninstalling an Application from a Device.",
+            notes = "Uninstall a selected application from a device.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Operation was successfully added to the queue."),
+                            @ApiResponse(code = 500, message = "Error occurred while saving the operation.") })
+    Response uninstallApplication(@ApiParam(name = "applicationWrapper", value = "Details about the application and" +
+                                                                                 " the users and roles it should be " +
+                                                                                 "uninstalled.",
+                                            required = true) ApplicationWrapper applicationWrapper,
+                                  @ApiParam(name = "tenantDomain", value = "Provide the tenant domain as the value for " +
+                                                                           "{tenantDomain}. The default tenant domain " +
+                                                                           "of WSO2 EMM is carbon.super.",
+                                            required = true) @PathParam("tenantDomain") String tenantDomain);
 }

@@ -293,6 +293,19 @@ public class CertificateGenerator {
         return lookUpCertificate;
     }
 
+    public CertificateResponse verifyCertificateDN(String distinguishedName) throws KeystoreException {
+        CertificateResponse lookUpCertificate = null;
+        KeyStoreReader keyStoreReader = new KeyStoreReader();
+        if (distinguishedName != null && !distinguishedName.isEmpty()) {
+            String[] dnSplits = distinguishedName.split("/CN=");
+            if (dnSplits != null) {
+                String commonNameExtracted = dnSplits[dnSplits.length-1];
+                lookUpCertificate = keyStoreReader.getCertificateBySerial(commonNameExtracted);
+            }
+        }
+        return lookUpCertificate;
+    }
+
     public static String getCommonName(X509Certificate requestCertificate) {
         String distinguishedName = requestCertificate.getSubjectDN().getName();
         if (distinguishedName != null && !distinguishedName.isEmpty()) {

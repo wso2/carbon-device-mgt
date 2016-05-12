@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.common;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 import java.util.List;
+import io.swagger.annotations.*;
 
 public class Feature implements Serializable {
 

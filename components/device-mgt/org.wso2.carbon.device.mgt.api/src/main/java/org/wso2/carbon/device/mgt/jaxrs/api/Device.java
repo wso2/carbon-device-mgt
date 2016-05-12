@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -43,22 +44,37 @@ public interface Device {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Returns the set of devices that matches a given device type, user, role, "
-                    + "enrollment status, ownership type",
-            notes = "Returns 500 if the operation fails",
-            response = Device.class,
+            value = "Returns device list",
+            notes = "Returns the set of devices that matches a given device type, user, role, "
+            + "enrollment status, ownership type",
+            response = org.wso2.carbon.device.mgt.common.Device.class,
             responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Devices"),
-            @ApiResponse(code = 500, message = "Server Error") })
-    Response getAllDevices(
-            @ApiParam(name = "type", value = "Provide the device type, such as ios, android or windows", required = true) @QueryParam("type") String type,
-            @ApiParam(name = "user", value = "Get the details of the devices registered to a user by providing the user name", required = true) @QueryParam("user") String user,
-            @ApiParam(name = "role", value = "Get the details of the devices registered to a specific role by providing the role name", required = true) @QueryParam("role") String role,
-            @ApiParam(name = "status", value = "Provide the device status details, such as active or inactive", required = true) @QueryParam("status") EnrolmentInfo.Status status,
-            @ApiParam(name = "start", value = "Provide the starting pagination index", required = true) @QueryParam("start") int startIdx,
-            @ApiParam(name = "length", value = "Provide how many device details you require from the starting pagination index", required = true) @QueryParam("length") int length,
-            @ApiParam(name = "device-name", value = "Provide the name of a registered device and receive the specified device details", required = true) @QueryParam("device-name") String deviceName,
-            @ApiParam(name = "ownership", value = "Provide the device ownership type and receive the specific device details", required = true) @QueryParam("ownership") EnrolmentInfo.OwnerShip ownership);
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of Devices"),
+            @ApiResponse(code = 500, message = "Error occurred while fetching the device list")
+            })
+    Response getAllDevices(@ApiParam(name = "type", value = "Provide the device type, such as ios, android or"
+                                + " windows", required = true) @QueryParam("type") String type,
+                           @ApiParam(name = "user", value = "Get the details of the devices registered to a "
+                                + "user by providing the user name", required = true) @QueryParam("user")
+                                   String user,
+                           @ApiParam(name = "role", value = "Get the details of the devices registered to a "
+                                + "specific role by providing the role name", required = true)
+                                @QueryParam("role") String role,
+                           @ApiParam(name = "status", value = "Provide the device status details, such as "
+                                + "active or inactive", required = true) @QueryParam("status")
+                                EnrolmentInfo.Status status,
+                           @ApiParam(name = "start", value = "Provide the starting pagination index",
+                                required = true) @QueryParam("start") int startIdx,
+                           @ApiParam(name = "length", value = "Provide how many device details you require "
+                                + "from the starting pagination index", required = true)
+                                @QueryParam("length") int length,
+                           @ApiParam(name = "device-name", value = "Provide the name of a registered device "
+                                + "and receive the specified device details", required = true)
+                                @QueryParam("device-name") String deviceName,
+                           @ApiParam(name = "ownership", value = "Provide the device ownership type and "
+                                + "receive the specific device details", required = true)
+                                @QueryParam("ownership") EnrolmentInfo.OwnerShip ownership);
 
     /**
      * Fetch device details for a given device type and device Id.
@@ -66,14 +82,6 @@ public interface Device {
      * @return Device wrapped inside Response
      */
     @GET
-    @ApiOperation(
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Fetch device details for a given device type and device Id",
-            notes = "Returns 500 if the operation fails",
-            response = Device.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Matching Device"),
-            @ApiResponse(code = 500, message = "Server Error") })
     @Path("view")
     @Produces({ MediaType.APPLICATION_JSON })
     Response getDevice(@QueryParam("type") String type, @QueryParam("id") String id);
@@ -104,14 +112,16 @@ public interface Device {
      * @return device count
      */
     @GET
+    @Path("count")
     @ApiOperation(
             httpMethod = "GET",
-            value = "Returns the current device count",
-            notes = "Returns 500 if the operation fails",
+            value = "Getting the Device Count",
+            notes = "Get the number of devices that are registered with WSO2 EMM.",
             response = Integer.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Device count"),
-            @ApiResponse(code = 500, message = "Server Error") })
-    @Path("count")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Device count"),
+            @ApiResponse(code = 500, message = "Error occurred while fetching the device count")
+            })
     Response getDeviceCount();
 
     /**
@@ -123,8 +133,21 @@ public interface Device {
      */
     @GET
     @Path("name/{name}/{tenantDomain}")
-    Response getDevicesByName(@PathParam("name") String deviceName,
-                              @PathParam("tenantDomain") String tenantDomain);
+    @ApiOperation(
+            httpMethod = "GET",
+            value = "Get the device details of a specific device via the REST API",
+            notes = "Get the device details of a specific device",
+            response = DeviceType.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of devices"),
+            @ApiResponse(code = 500, message = "Error occurred while fetching the devices list of device name")
+            })
+    Response getDevicesByName(@ApiParam(name = "name", value = "The name of the device or windows",
+                                    required = true) @PathParam("name") String deviceName,
+                              @ApiParam(name = "tenantDomain", value = "Tenant domain name. The default "
+                                    + "tenant domain of WSO2 EMM is carbon.super", required = true)
+                                    @PathParam("tenantDomain") String tenantDomain);
 
     /**
      * Get the list of available device types.
@@ -133,6 +156,16 @@ public interface Device {
      */
     @GET
     @Path("types")
+    @ApiOperation(
+            httpMethod = "GET",
+            value = "Getting Details of the Devices Supported via WSO2 EMM",
+            notes = "You are able to register Android, iOS and Windows devices with WSO2 EMM. This API will "
+            + "retrieve the device type details that can register with the EMM",
+            response = DeviceType.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of devices based on the type"),
+            @ApiResponse(code = 500, message = "Error occurred while fetching the list of device types") })
     Response getDeviceTypes();
 
     /**

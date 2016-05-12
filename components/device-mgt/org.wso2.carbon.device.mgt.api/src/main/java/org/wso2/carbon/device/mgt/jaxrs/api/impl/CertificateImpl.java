@@ -53,7 +53,7 @@ import java.util.List;
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({"application/json", "application/xml"})
 @Consumes({ "application/json", "application/xml" })
-public class CertificateImpl implements Certificate{
+public class CertificateImpl implements Certificate {
 
     private static Log log = LogFactory.getLog(OperationImpl.class);
 

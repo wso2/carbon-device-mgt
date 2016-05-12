@@ -83,6 +83,7 @@
                             javax.xml.bind,
                             org.wso2.carbon.utils.*,
                             org.wso2.carbon.device.mgt.common.*,
+                            io.swagger.annotations.*,
                             org.wso2.carbon.device.mgt.core.*,
                             org.bouncycastle.pkcs.jcajce
                         </Import-Package>

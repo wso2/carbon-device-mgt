@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.device.mgt.common.configuration.mgt;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -30,10 +33,16 @@ import java.util.List;
  */
 @XmlRootElement(name = "tenantConfiguration")
 @XmlAccessorType(XmlAccessType.NONE)
+
+@ApiModel(value = "TenantConfiguration",
+        description = "This class carries all information related to a Tenant configuration")
 public class TenantConfiguration implements Serializable {
 
     @XmlElement(name = "type")
+    @ApiModelProperty(name = "type", value = "type of device", required = true)
     private String type;
+
+    @ApiModelProperty(name = "configuration", value = "List of Configuration Entries", required = true)
     @XmlElement(name = "configuration")
     private List<ConfigurationEntry> configuration;
 

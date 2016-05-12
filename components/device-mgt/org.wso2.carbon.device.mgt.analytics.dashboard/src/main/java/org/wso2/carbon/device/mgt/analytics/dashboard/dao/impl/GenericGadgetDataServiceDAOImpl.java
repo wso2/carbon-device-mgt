@@ -39,7 +39,7 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                    throws InvalidParameterValueException, SQLException {
+                                                           throws InvalidParameterValueException, SQLException {
 
         if (startIndex < 0) {
             throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
@@ -99,7 +99,7 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
 
     @Override
     public PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
-            throws InvalidParameterValueException, SQLException {
+                                                           throws InvalidParameterValueException, SQLException {
 
         if (startIndex < 0) {
             throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
@@ -127,8 +127,8 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_1 " +
-                "WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                "DEVICES_VIEW_1 WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -155,6 +155,7 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
@@ -217,8 +218,8 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                "WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering +
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                "DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering +
                     "ORDER BY DEVICE_ID ASC LIMIT ?, ?";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
@@ -247,6 +248,7 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));

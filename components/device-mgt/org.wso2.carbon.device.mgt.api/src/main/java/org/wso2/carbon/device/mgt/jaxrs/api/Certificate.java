@@ -18,43 +18,29 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
-import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
-import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
+import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentCertificate;
-import org.wso2.carbon.device.mgt.jaxrs.exception.Message;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * All the certificate related tasks such as saving certificates, can be done through this endpoint.
  */
+@Api(value = "Certificate", description = "certificate related tasks such as saving certificates")
 @SuppressWarnings("NonJaxWsWebServices")
-@Produces({"application/json", "application/xml"})
+@Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })
-public class Certificate {
-
-    private static Log log = LogFactory.getLog(Operation.class);
+public interface Certificate {
 
     /**
      * Save a list of certificates and relevant information in the database.
@@ -65,30 +51,21 @@ public class Certificate {
      */
     @POST
     @Path("saveCertificate")
-    public Response saveCertificate(@HeaderParam("Accept") String acceptHeader,
-                                    EnrollmentCertificate[] enrollmentCertificates) {
-        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
-        CertificateManagementService certificateService;
-        List<org.wso2.carbon.certificate.mgt.core.bean.Certificate> certificates = new ArrayList<>();
-        org.wso2.carbon.certificate.mgt.core.bean.Certificate certificate;
-        certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
-        try {
-            for (EnrollmentCertificate enrollmentCertificate : enrollmentCertificates) {
-                certificate = new org.wso2.carbon.certificate.mgt.core.bean.Certificate();
-                certificate.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-                certificate.setSerial(enrollmentCertificate.getSerial());
-                certificate.setCertificate(certificateService.pemToX509Certificate(enrollmentCertificate.getPem()));
-                certificates.add(certificate);
-            }
-            certificateService.saveCertificate(certificates);
-            return Response.status(Response.Status.CREATED).entity("Added successfully.").
-                    type(responseMediaType).build();
-        } catch (KeystoreException e) {
-            String msg = "Error occurred while converting PEM file to X509Certificate.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "POST",
+            value = "Adding an SSL Certificate",
+            notes = "Add a new SSL certificate to the client end database",
+            response = MediaType.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Added successfully"),
+            @ApiResponse(code = 500, message = "Error occurred while saving the certificate")
+            })
+    Response saveCertificate(@HeaderParam("Accept") String acceptHeader,
+                             @ApiParam(name = "enrollmentCertificates", value = "certificate with serial, "
+                                     + "pem and tenant id", required = true) EnrollmentCertificate[]
+                                     enrollmentCertificates);
 
     /**
      * Get a certificate when the serial number is given.
@@ -98,31 +75,22 @@ public class Certificate {
      */
     @GET
     @Path("{serialNumber}")
-    public Response getCertificate(@HeaderParam("Accept") String acceptHeader,
-                                   @PathParam("serialNumber") String serialNumber) {
-        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
-        Message message = new Message();
-
-        if (serialNumber == null || serialNumber.isEmpty()) {
-            message.setErrorMessage("Invalid serial number");
-            message.setDiscription("Serial number is missing or invalid.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
-        }
-
-        CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
-        CertificateResponse certificateResponse;
-        try {
-            certificateResponse = certificateService.getCertificateBySerial(serialNumber);
-            if(certificateResponse != null) {
-                certificateResponse.setCertificate(null); //avoid sending byte array in response.
-            }
-            return Response.status(Response.Status.OK).entity(certificateResponse).type(responseMediaType).build();
-        } catch (KeystoreException e) {
-            String msg = "Error occurred while converting PEM file to X509Certificate";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Details of an SSL Certificate",
+            notes = "Get the client side SSL certificate details",
+            response = CertificateResponse.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Notification status updated successfully"),
+            @ApiResponse(code = 500, message = "Error occurred while converting PEM file to X509Certificate")
+            })
+    Response getCertificate(@HeaderParam("Accept") String acceptHeader,
+                            @ApiParam(name = "serialNumber", value = "Provide the serial number of the "
+                            + "certificate that you wish to get the details of", required = true)
+                            @PathParam("serialNumber") String serialNumber);
 
     /**
      * Get all certificates in a paginated manner.
@@ -134,61 +102,46 @@ public class Certificate {
      */
     @GET
     @Path("paginate")
-    public Response getAllCertificates(@HeaderParam("Accept") String acceptHeader,
-                                       @QueryParam("start") int startIndex,
-                                       @QueryParam("length") int length)
-            throws MDMAPIException {
-        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
-        Message message = new Message();
-
-        if (startIndex < 0) {
-            message.setErrorMessage("Invalid start index.");
-            message.setDiscription("Start index cannot be less that 0.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
-        } else if (length <= 0) {
-            message.setErrorMessage("Invalid length value.");
-            message.setDiscription("Length should be a positive integer.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
-        }
-
-        CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
-        PaginationRequest paginationRequest = new PaginationRequest(startIndex, length);
-        try {
-            PaginationResult certificates = certificateService.getAllCertificates(paginationRequest);
-            return Response.status(Response.Status.OK).entity(certificates).type(responseMediaType).build();
-        } catch (CertificateManagementDAOException e) {
-            String msg = "Error occurred while fetching all certificates.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting the Certificate Details in a Paginated Manner",
+            notes = "You will have many certificates used for mutual SSL. In a situation where you wish to "
+                    + "view all the certificate details, it is not feasible to show all the details on one "
+                    + "page therefore the details are paginated",
+            response = PaginationResult.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Invalid start index"),
+            @ApiResponse(code = 400, message = "Invalid length value"),
+            @ApiResponse(code = 500, message = "Error occurred while fetching all certificates")
+            })
+    Response getAllCertificates(@HeaderParam("Accept") String acceptHeader,
+                                @ApiParam(name = "start",
+                                    value = "Provide the starting pagination index as the value", required = true)
+                                    @QueryParam("start") int startIndex,
+                                @ApiParam(name = "length", value = "Provide how many certificate details you"
+                                    + " require from the starting pagination index as the value",
+                                    required = true) @QueryParam("length") int length) throws MDMAPIException;
 
     @DELETE
     @Path("{serialNumber}")
-    public Response removeCertificate(@HeaderParam("Accept") String acceptHeader,
-                                       @PathParam("serialNumber") String serialNumber) throws MDMAPIException {
-        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
-        Message message = new Message();
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "DELETE",
+            value = "Deleting an SSL Certificate",
+            notes = "Delete an SSL certificate that's on the client end",
+            response = boolean.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Invalid start index"),
+            @ApiResponse(code = 500, message = "Error when deleting the certificate"
+            ) })
+    Response removeCertificate(@HeaderParam("Accept") String acceptHeader,
+                               @ApiParam(name = "serialNumber", value = "Provide the serial number of the "
+                                    + "certificate that you wish to delete", required = true)
+                                    @PathParam("serialNumber") String serialNumber) throws MDMAPIException;
 
-        if (serialNumber == null || serialNumber.isEmpty()) {
-            message.setErrorMessage("Invalid serial number");
-            message.setDiscription("Serial number is missing or invalid.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(responseMediaType).build();
-        }
-
-        CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
-        boolean deleted;
-        try {
-            deleted = certificateService.removeCertificate(serialNumber);
-            if(deleted){
-                return Response.status(Response.Status.OK).entity(deleted).type(responseMediaType).build();
-            } else {
-                return Response.status(Response.Status.GONE).entity(deleted).type(responseMediaType).build();
-            }
-        } catch (CertificateManagementDAOException e) {
-            String msg = "Error occurred while converting PEM file to X509Certificate";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
-        }
-    }
 }

@@ -56,6 +56,8 @@ public interface CertificateManagementService {
 
     public CertificateResponse verifyPEMSignature(X509Certificate requestCertificate) throws KeystoreException;
 
+    public CertificateResponse verifySubjectDN(String requestDN) throws KeystoreException;
+
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException;
 
     String extractChallengeToken(X509Certificate certificate);

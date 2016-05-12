@@ -53,11 +53,11 @@ public class Profile {
         this.tenantId = tenantId;
     }
 
-/*    public List<Feature> getFeaturesList() {
+/*    public List<FeatureImpl> getFeaturesList() {
         return featuresList;
     }
 
-    public void setFeaturesList(List<Feature> featuresList) {
+    public void setFeaturesList(List<FeatureImpl> featuresList) {
         this.featuresList = featuresList;
     }*/
     @XmlElement

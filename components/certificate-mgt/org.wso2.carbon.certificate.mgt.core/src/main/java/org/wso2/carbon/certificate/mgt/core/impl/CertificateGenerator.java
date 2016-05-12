@@ -39,13 +39,19 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
-import org.jscep.message.*;
+import org.jscep.message.PkcsPkiEnvelopeDecoder;
+import org.jscep.message.PkiMessageDecoder;
+import org.jscep.message.PkiMessage;
+import org.jscep.message.CertRep;
+import org.jscep.message.PkcsPkiEnvelopeEncoder;
+import org.jscep.message.PkiMessageEncoder;
+import org.jscep.message.MessageEncodingException;
+import org.jscep.message.MessageDecodingException;
 import org.jscep.transaction.FailInfo;
 import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
@@ -65,7 +71,6 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
-import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.*;
@@ -276,7 +281,7 @@ public class CertificateGenerator {
 
     public boolean verifySignature(String headerSignature) throws KeystoreException {
         Certificate certificate = extractCertificateFromSignature(headerSignature);
-        return  (certificate != null);
+        return (certificate != null);
     }
 
     public CertificateResponse verifyPEMSignature(X509Certificate requestCertificate) throws KeystoreException {
@@ -288,9 +293,22 @@ public class CertificateGenerator {
         return lookUpCertificate;
     }
 
+    public CertificateResponse verifyCertificateDN(String distinguishedName) throws KeystoreException {
+        CertificateResponse lookUpCertificate = null;
+        KeyStoreReader keyStoreReader = new KeyStoreReader();
+        if (distinguishedName != null && !distinguishedName.isEmpty()) {
+            String[] dnSplits = distinguishedName.split("/CN=");
+            if (dnSplits != null) {
+                String commonNameExtracted = dnSplits[dnSplits.length-1];
+                lookUpCertificate = keyStoreReader.getCertificateBySerial(commonNameExtracted);
+            }
+        }
+        return lookUpCertificate;
+    }
+
     public static String getCommonName(X509Certificate requestCertificate) {
         String distinguishedName = requestCertificate.getSubjectDN().getName();
-        if(distinguishedName != null && !distinguishedName.isEmpty()) {
+        if (distinguishedName != null && !distinguishedName.isEmpty()) {
             String[] dnSplits = distinguishedName.split(",");
             for (String dnSplit : dnSplits) {
                 if (dnSplit.contains("CN=")) {
@@ -350,12 +368,12 @@ public class CertificateGenerator {
                 X509Certificate reqCert = (X509Certificate) certificateFactory.
                         generateCertificate(byteArrayInputStream);
 
-                if(reqCert != null && reqCert.getSerialNumber() != null) {
+                if (reqCert != null && reqCert.getSerialNumber() != null) {
                     Certificate lookUpCertificate = keyStoreReader.getCertificateByAlias(
                             reqCert.getSerialNumber().toString());
 
                     if (lookUpCertificate != null && (lookUpCertificate instanceof X509Certificate)) {
-                        return (X509Certificate)lookUpCertificate;
+                        return (X509Certificate) lookUpCertificate;
                     }
                 }
 
@@ -378,8 +396,8 @@ public class CertificateGenerator {
     }
 
     public X509Certificate generateCertificateFromCSR(PrivateKey privateKey,
-                                                             PKCS10CertificationRequest request,
-                                                             String issueSubject)
+                                                      PKCS10CertificationRequest request,
+                                                      String issueSubject)
             throws KeystoreException {
 
         CommonUtil commonUtil = new CommonUtil();
@@ -411,10 +429,10 @@ public class CertificateGenerator {
             certificateBuilder.addExtension(X509Extension.keyUsage, true, new KeyUsage(
                     KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
 
-            if(attributes != null) {
+            if (attributes != null) {
                 ASN1Encodable extractedValue = getChallengePassword(attributes);
 
-                if(extractedValue != null) {
+                if (extractedValue != null) {
                     certificateBuilder.addExtension(PKCSObjectIdentifiers.pkcs_9_at_challengePassword, true,
                             extractedValue);
                 }
@@ -453,7 +471,7 @@ public class CertificateGenerator {
 
         for (Attribute attribute : attributes) {
             if (PKCSObjectIdentifiers.pkcs_9_at_challengePassword.equals(attribute.getAttrType())) {
-                if(attribute.getAttrValues() != null && attribute.getAttrValues().size() > 0) {
+                if (attribute.getAttrValues() != null && attribute.getAttrValues().size() > 0) {
                     return attribute.getAttrValues().getObjectAt(0);
                 }
             }
@@ -610,11 +628,10 @@ public class CertificateGenerator {
             log.error(errorMsg, e);
             CertificateManagementDAOFactory.rollbackTransaction();
             throw new KeystoreException(errorMsg, e);
-        }finally {
+        } finally {
             CertificateManagementDAOFactory.closeConnection();
         }
     }
-
 
 
     public String extractChallengeToken(X509Certificate certificate) {

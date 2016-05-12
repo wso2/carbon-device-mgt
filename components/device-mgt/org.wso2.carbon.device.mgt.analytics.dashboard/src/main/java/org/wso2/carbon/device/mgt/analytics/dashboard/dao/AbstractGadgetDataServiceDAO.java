@@ -298,8 +298,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                        FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+    public List<DeviceCountByGroupEntry>
+                         getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
+                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -413,7 +414,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     @Override
     public List<DeviceCountByGroupEntry>
                         getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                            FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -472,7 +473,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
-                                            throws InvalidParameterValueException, SQLException {
+                                                           throws InvalidParameterValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
@@ -484,7 +485,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         try {
             con = this.getConnection();
             String sql;
-            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                "DEVICES_VIEW_1 WHERE TENANT_ID = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -513,6 +515,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
@@ -526,7 +529,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -542,8 +545,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         try {
             con = this.getConnection();
             String sql;
-            sql = "SELECT DEVICE_ID, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM DEVICES_VIEW_2 " +
-                  "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                "DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -573,6 +576,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             while (rs.next()) {
                 filteredDeviceWithDetails = new DetailedDeviceEntry();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
+                filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
                 filteredDeviceWithDetails.setOwnershipType(rs.getString("OWNERSHIP"));
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
@@ -585,7 +589,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     protected Map<String, Object> extractDatabaseFiltersFromBean(FilterSet filterSet)
-                                                        throws InvalidParameterValueException {
+                                                                 throws InvalidParameterValueException {
         if (filterSet == null) {
             return null;
         }

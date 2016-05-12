@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO {
+public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO {
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
@@ -58,7 +58,8 @@ public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServic
         try {
             con = this.getConnection();
             String sql = "SELECT FEATURE_CODE, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
-                "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC OFFSET ? LIMIT ?";
+                "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC " +
+                    "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, startIndex);
@@ -128,7 +129,8 @@ public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServic
                 }
             }
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                "DEVICES_VIEW_1 WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC OFFSET ? LIMIT ?";
+                "DEVICES_VIEW_1 WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC " +
+                    "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -186,7 +188,7 @@ public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServic
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
                                                         FilterSet filterSet, int startIndex, int resultCount)
-                                                                  throws InvalidParameterValueException, SQLException {
+                                                                 throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -220,7 +222,7 @@ public class PostgreSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServic
             }
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
                 "DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering +
-                    "ORDER BY DEVICE_ID ASC OFFSET ? LIMIT ?";
+                    "ORDER BY DEVICE_ID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);

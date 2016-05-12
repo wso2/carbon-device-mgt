@@ -80,18 +80,13 @@ utility = function () {
     };
 
     publicMethods.getDeviceTypeConfig = function (deviceType) {
-        var JFile = Packages.java.io.File;
-        var sep = JFile.separator;
-
-        var systemProcess = require('process');
-        var parent = 'file:///' + (systemProcess.getProperty('jaggery.home') || systemProcess.getProperty('carbon.home')).replace(/[\\]/g, '/').replace(/^[\/]/g, '');
-
+        var unitName = publicMethods.getTenantedDeviceUnitName(deviceType, "type-view");
+        
         if (deviceType in deviceTypeConfigMap) {
             return deviceTypeConfigMap[deviceType];
         }
         var deviceTypeConfig;
-        var deviceTypeConfigFile = new File(parent + sep + "repository" + sep + "conf" + sep
-                                            + "device-types" + sep + deviceType + ".json");
+        var deviceTypeConfigFile = new File("/app/units/" + unitName + "/private/config.json");
         if (deviceTypeConfigFile.isExists()) {
             try {
                 deviceTypeConfigFile.open("r");

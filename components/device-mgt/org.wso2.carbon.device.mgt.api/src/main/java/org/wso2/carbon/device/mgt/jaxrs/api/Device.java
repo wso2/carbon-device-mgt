@@ -36,7 +36,7 @@ public interface Device {
      * Get all devices. We have to use accept all the necessary query parameters sent by datatable.
      * Hence had to put lot of query params here.
      *
-     * @return DeviceImpl List
+     * @return Device List
      */
     @GET
     @ApiOperation(
@@ -63,7 +63,7 @@ public interface Device {
     /**
      * Fetch device details for a given device type and device Id.
      *
-     * @return DeviceImpl wrapped inside Response
+     * @return Device wrapped inside Response
      */
     @GET
     @ApiOperation(
@@ -81,8 +81,8 @@ public interface Device {
     /**
      * Fetch device details of a given user.
      *
-     * @param user         UserImpl Name
-     * @return DeviceImpl
+     * @param user         User Name
+     * @return Device
      */
     @GET
     @Path("user/{user}")
@@ -91,8 +91,8 @@ public interface Device {
     /**
      * Fetch device count of a given user.
      *
-     * @param user UserImpl Name
-     * @return DeviceImpl
+     * @param user User Name
+     * @return Device
      */
     @GET
     @Path("user/{user}/count")
@@ -117,7 +117,7 @@ public interface Device {
     /**
      * Get the list of devices that matches with the given name.
      *
-     * @param deviceName   DeviceImpl name
+     * @param deviceName   Device name
      * @param tenantDomain Callee tenant domain
      * @return list of devices.
      */

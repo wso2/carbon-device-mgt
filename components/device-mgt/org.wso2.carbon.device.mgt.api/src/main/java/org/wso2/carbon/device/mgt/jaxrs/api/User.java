@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * This represents the JAX-RS services of UserImpl related functionality.
+ * This represents the JAX-RS services of User related functionality.
  */
 @Api(value = "User")
 public interface User {

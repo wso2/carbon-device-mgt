@@ -37,9 +37,9 @@ import javax.ws.rs.core.Response;
 public interface Feature {
 
     /**
-     * Get all features for Mobile DeviceImpl Type
+     * Get all features for Mobile Device Type
      *
-     * @return FeatureImpl
+     * @return Feature
      */
     @GET
     @Path("/{type}")

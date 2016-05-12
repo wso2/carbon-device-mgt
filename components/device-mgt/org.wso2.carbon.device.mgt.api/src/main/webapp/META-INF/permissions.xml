@@ -2,19 +2,19 @@
 <!--
   ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
-  ~ WSO2 Inc. licenses this file to you under the Apache LicenseImpl,
-  ~ Version 2.0 (the "LicenseImpl"); you may not use this file except
-  ~ in compliance with the LicenseImpl.
-  ~ You may obtain a copy of the LicenseImpl at
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
   ~
   ~ http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing,
-  ~ software distributed under the LicenseImpl is distributed on an
+  ~ software distributed under the License is distributed on an
   ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~ KIND, either express or implied. See the LicenseImpl for the
+  ~ KIND, either express or implied. See the License for the
   ~ specific language governing permissions and limitations
-  ~ under the LicenseImpl.
+  ~ under the License.
   -->
 
 <!-- This file contains the list of permissions that are associated with URL end points
@@ -29,7 +29,7 @@
 -->
 <PermissionConfiguration>
     <APIVersion></APIVersion>
-    <!-- DeviceImpl related APIs -->
+    <!-- Device related APIs -->
 
     <Permission>
         <name>Device Management</name>
@@ -262,7 +262,7 @@
         <url>/devices/user/*</url>
         <method>GET</method>
     </Permission>
-    <!-- End of DeviceImpl related APIs -->
+    <!-- End of Device related APIs -->
 
     <!-- Notification related APIs -->
     <Permission>
@@ -373,7 +373,7 @@
     </Permission>
 
     <!--<Permission>-->
-        <!--<name>Get Applications For DeviceImpl Type</name>-->
+        <!--<name>Get Applications For Device Type</name>-->
         <!--<path>/device-mgt/operations/application/view</path>-->
         <!--<url>/operations/*</url>-->
         <!--<method>GET</method>-->
@@ -381,7 +381,7 @@
     <!--</Permission>-->
     <!-- End of Operations related APIs -->
 
-    <!-- FeatureImpl related APIs -->
+    <!-- Feature related APIs -->
     <Permission>
         <name>List policies</name>
         <path>/device-mgt/admin/policies/list</path>
@@ -410,9 +410,9 @@
         <method>GET</method>
         
     </Permission>
-    <!-- End of FeatureImpl related APIs -->
+    <!-- End of Feature related APIs -->
 
-    <!-- RoleImpl related APIs -->
+    <!-- Role related APIs -->
     <Permission>
         <name>List roles</name>
         <path>/device-mgt/admin/roles/list</path>
@@ -504,9 +504,9 @@
         <url>/roles/count</url>
         <method>GET</method>
     </Permission>
-    <!-- End of RoleImpl related APIs -->
+    <!-- End of Role related APIs -->
 
-    <!-- UserImpl related APIs -->
+    <!-- User related APIs -->
     <Permission>
         <name>List users</name>
         <path>/device-mgt/admin/users/list</path>
@@ -660,9 +660,9 @@
         <url>/users/authorize</url>
         <method>POST</method>
     </Permission>
-    <!-- End of UserImpl related APIs -->
+    <!-- End of User related APIs -->
 
-    <!-- PolicyImpl related APIs -->
+    <!-- Policy related APIs -->
     <Permission>
         <name>Add Policy</name>
         <path>/device-mgt/admin/policies/add</path>
@@ -816,9 +816,9 @@
         <url>/policies/*/*</url>
         <method>GET</method>
     </Permission>
-    <!-- End of PolicyImpl related APIs -->
+    <!-- End of Policy related APIs -->
 
-    <!-- ProfileImpl related APIs -->
+    <!-- Profile related APIs -->
     <Permission>
         <name>Add policy</name>
         <path>/device-mgt/admin/policies/add</path>
@@ -839,7 +839,7 @@
         <url>/profiles/*</url>
         <method>DELETE</method>
     </Permission>
-    <!-- End of ProfileImpl related APIs -->
+    <!-- End of Profile related APIs -->
 
     <!--Start of the device search and information -->
 
@@ -860,7 +860,7 @@
     <!--End of the device search and information -->
 
 
-    <!-- LicenseImpl related APIs -->
+    <!-- License related APIs -->
     <!--<Permission>-->
     <!--<name>Get license</name>-->
     <!--<path>/device-mgt/license/view</path>-->
@@ -875,9 +875,9 @@
     <!--<method>POST</method>-->
     <!---->
     <!--</Permission>-->
-    <!-- End of LicenseImpl related APIs -->
+    <!-- End of License related APIs -->
 
-    <!-- ConfigurationImpl related APIs -->
+    <!-- Configuration related APIs -->
     <Permission>
         <name>View configuration</name>
         <path>/device-mgt/admin/platform-configs/view</path>
@@ -899,9 +899,9 @@
         <method>PUT</method>
     </Permission>
 
-    <!-- End of ConfigurationImpl related APIs -->
+    <!-- End of Configuration related APIs -->
 
-    <!-- CertificateImpl related APIs -->
+    <!-- Certificate related APIs -->
     <Permission>
         <name>Save certificate in the database</name>
         <path>/device-mgt/android/certificate/save</path>
@@ -920,7 +920,7 @@
         <url>/certificates/*</url>
         <method>DELETE</method>
     </Permission>
-    <!-- End of CertificateImpl related APIs -->
+    <!-- End of Certificate related APIs -->
 
     <!-- Group related APIs -->
     <Permission>

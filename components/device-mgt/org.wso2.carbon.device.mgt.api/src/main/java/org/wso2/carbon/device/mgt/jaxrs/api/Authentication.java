@@ -24,7 +24,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
 /**
- * AuthenticationImpl related REST-API interface.
+ * Authentication related REST-API interface.
  */
 @Api(value = "Authentication")
 @Produces({ "application/json", "application/xml" })

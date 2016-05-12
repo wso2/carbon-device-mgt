@@ -31,7 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- * DeviceNotificationImpl management REST-API implementation.
+ * DeviceNotification management REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
 @Api(value = "DeviceNotification")

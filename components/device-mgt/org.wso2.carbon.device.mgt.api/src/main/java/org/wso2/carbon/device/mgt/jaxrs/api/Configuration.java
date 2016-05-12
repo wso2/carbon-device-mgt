@@ -25,7 +25,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 /**
- * General Tenant ConfigurationImpl REST-API implementation.
+ * General Tenant Configuration REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
 @Api(value = "Configuration", description = "General Tenant Configuration implementation")

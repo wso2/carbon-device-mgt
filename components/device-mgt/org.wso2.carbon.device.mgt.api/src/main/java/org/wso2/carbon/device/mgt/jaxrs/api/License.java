@@ -34,7 +34,7 @@ public interface License {
     /**
      * This method returns the license text related to a given device type and language code.
      *
-     * @param deviceType   DeviceImpl type, ex: android, ios
+     * @param deviceType   Device type, ex: android, ios
      * @param languageCode Language code, ex: en_US
      * @return Returns the license text
      */
@@ -47,8 +47,8 @@ public interface License {
     /**
      * This method is used to add license to a specific device type.
      *
-     * @param deviceType DeviceImpl type, ex: android, ios
-     * @param license LicenseImpl object
+     * @param deviceType Device type, ex: android, ios
+     * @param license License object
      * @return Returns the acknowledgement for the action
      */
     @POST

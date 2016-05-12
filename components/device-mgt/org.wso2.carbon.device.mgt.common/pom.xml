@@ -48,6 +48,10 @@
                         <Export-Package>
                             org.wso2.carbon.device.mgt.common.*
                         </Export-Package>
+                        <Import-Package>
+                            javax.xml.bind.annotation,
+                            io.swagger.annotations.*;resolution:=optional
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -16,28 +16,21 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jaxrs.api;
+package org.wso2.carbon.device.mgt.jaxrs.api.impl;
 
-import io.swagger.annotations.Api;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 
 /**
- * Device information related operations.
+ * Authentication related REST-API implementation.
  */
-@Api(value = "DeviceInfo")
-@SuppressWarnings("NonJaxWsWebServices")
-public interface DeviceInformation {
+@Produces({ "application/json", "application/xml" })
+@Consumes({ "application/json", "application/xml" })
+public class AuthenticationImpl {
 
-    @GET
-    @Path("{type}/{id}")
-    Response getDeviceInfo(@PathParam("type") String type, @PathParam("id") String id);
-
-    @GET
-    @Path("location/{type}/{id}")
-    Response getDeviceLocation(@PathParam("type") String type, @PathParam("id") String id);
-
+    private static Log log = LogFactory.getLog(AuthenticationImpl.class);
 }
+

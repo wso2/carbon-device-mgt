@@ -87,7 +87,7 @@ public class DeviceMgtAPIUtils {
         DeviceManagementProviderService deviceManagementProviderService =
                 (DeviceManagementProviderService) ctx.getOSGiService(DeviceManagementProviderService.class, null);
         if (deviceManagementProviderService == null) {
-            String msg = "Device Management provider service has not initialized.";
+            String msg = "DeviceImpl Management provider service has not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }
@@ -99,7 +99,7 @@ public class DeviceMgtAPIUtils {
         GroupManagementProviderService groupManagementProviderService =
                 (GroupManagementProviderService) ctx.getOSGiService(GroupManagementProviderService.class, null);
         if (groupManagementProviderService == null) {
-            String msg = "Group Management service has not initialized.";
+            String msg = "GroupImpl Management service has not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }
@@ -213,7 +213,7 @@ public class DeviceMgtAPIUtils {
         ApplicationManagementProviderService applicationManagementProviderService =
                 (ApplicationManagementProviderService) ctx.getOSGiService(ApplicationManagementProviderService.class, null);
         if (applicationManagementProviderService == null) {
-            String msg = "Application management service has not initialized.";
+            String msg = "AuthenticationImpl management service has not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }
@@ -226,7 +226,7 @@ public class DeviceMgtAPIUtils {
         policyManagementService =
                 (PolicyManagerService) ctx.getOSGiService(PolicyManagerService.class, null);
         if (policyManagementService == null) {
-            String msg = "Policy Management service not initialized.";
+            String msg = "PolicyImpl Management service not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }
@@ -274,7 +274,7 @@ public class DeviceMgtAPIUtils {
                 ctx.getOSGiService(CertificateManagementService.class, null);
 
         if (certificateManagementService == null) {
-            String msg = "Certificate Management service not initialized.";
+            String msg = "CertificateImpl Management service not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }
@@ -299,7 +299,7 @@ public class DeviceMgtAPIUtils {
         DeviceInformationManager deviceInformationManager =
                 (DeviceInformationManager) ctx.getOSGiService(DeviceInformationManager.class, null);
         if (deviceInformationManager == null) {
-            String msg = "Device information Manager service has not initialized.";
+            String msg = "DeviceImpl information Manager service has not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }
@@ -313,7 +313,7 @@ public class DeviceMgtAPIUtils {
         SearchManagerService searchManagerService =
                 (SearchManagerService) ctx.getOSGiService(SearchManagerService.class, null);
         if (searchManagerService == null) {
-            String msg = "Device search manager service has not initialized.";
+            String msg = "DeviceImpl search manager service has not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }

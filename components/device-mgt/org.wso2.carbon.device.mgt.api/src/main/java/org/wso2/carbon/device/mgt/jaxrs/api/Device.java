@@ -18,36 +18,19 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementAdminService;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
- * Device related operations
+ * Device related operations such as get all the available devices, etc.
  */
+@Api(value = "Devices")
 @SuppressWarnings("NonJaxWsWebServices")
-public class Device {
-    private static Log log = LogFactory.getLog(Device.class);
+public interface Device {
 
     /**
      * Get all devices. We have to use accept all the necessary query parameters sent by datatable.
@@ -56,49 +39,26 @@ public class Device {
      * @return Device List
      */
     @GET
-    public Response getAllDevices(@QueryParam("type") String type, @QueryParam("user") String user,
-                                  @QueryParam("role") String role, @QueryParam("status") EnrolmentInfo.Status status,
-                                  @QueryParam("start") int startIdx, @QueryParam("length") int length,
-                                  @QueryParam("device-name") String deviceName,
-                                  @QueryParam("ownership") EnrolmentInfo.OwnerShip ownership) {
-        try {
-            DeviceManagementProviderService service = DeviceMgtAPIUtils.getDeviceManagementService();
-            //Length > 0 means this is a pagination request.
-            if (length > 0) {
-                PaginationRequest paginationRequest = new PaginationRequest(startIdx, length);
-                paginationRequest.setDeviceName(deviceName);
-                paginationRequest.setOwner(user);
-                if (ownership != null) {
-                    paginationRequest.setOwnership(ownership.toString());
-                }
-                if (status != null) {
-                    paginationRequest.setStatus(status.toString());
-                }
-                paginationRequest.setDeviceType(type);
-                return Response.status(Response.Status.OK).entity(service.getAllDevices(paginationRequest)).build();
-            }
-
-            List<org.wso2.carbon.device.mgt.common.Device> allDevices;
-            if ((type != null) && !type.isEmpty()) {
-                allDevices = service.getAllDevices(type);
-            } else if ((user != null) && !user.isEmpty()) {
-                allDevices = service.getDevicesOfUser(user);
-            } else if ((role != null) && !role.isEmpty()) {
-                allDevices = service.getAllDevicesOfRole(role);
-            } else if (status != null) {
-                allDevices = service.getDevicesByStatus(status);
-            } else if (deviceName != null) {
-                allDevices = service.getDevicesByName(deviceName);
-            } else {
-                allDevices = service.getAllDevices();
-            }
-            return Response.status(Response.Status.OK).entity(allDevices).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the device list.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Returns the set of devices that matches a given device type, user, role, "
+                    + "enrollment status, ownership type",
+            notes = "Returns 500 if the operation fails",
+            response = Device.class,
+            responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Devices"),
+            @ApiResponse(code = 500, message = "Server Error") })
+    Response getAllDevices(
+            @ApiParam(name = "type", value = "Provide the device type, such as ios, android or windows", required = true) @QueryParam("type") String type,
+            @ApiParam(name = "user", value = "Get the details of the devices registered to a user by providing the user name", required = true) @QueryParam("user") String user,
+            @ApiParam(name = "role", value = "Get the details of the devices registered to a specific role by providing the role name", required = true) @QueryParam("role") String role,
+            @ApiParam(name = "status", value = "Provide the device status details, such as active or inactive", required = true) @QueryParam("status") EnrolmentInfo.Status status,
+            @ApiParam(name = "start", value = "Provide the starting pagination index", required = true) @QueryParam("start") int startIdx,
+            @ApiParam(name = "length", value = "Provide how many device details you require from the starting pagination index", required = true) @QueryParam("length") int length,
+            @ApiParam(name = "device-name", value = "Provide the name of a registered device and receive the specified device details", required = true) @QueryParam("device-name") String deviceName,
+            @ApiParam(name = "ownership", value = "Provide the device ownership type and receive the specific device details", required = true) @QueryParam("ownership") EnrolmentInfo.OwnerShip ownership);
 
     /**
      * Fetch device details for a given device type and device Id.
@@ -106,33 +66,17 @@ public class Device {
      * @return Device wrapped inside Response
      */
     @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Fetch device details for a given device type and device Id",
+            notes = "Returns 500 if the operation fails",
+            response = Device.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Matching Device"),
+            @ApiResponse(code = 500, message = "Server Error") })
     @Path("view")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response getDevice(@QueryParam("type") String type,
-                              @QueryParam("id") String id) {
-        DeviceIdentifier deviceIdentifier = DeviceMgtAPIUtils.instantiateDeviceIdentifier(type, id);
-        DeviceManagementProviderService deviceManagementProviderService = DeviceMgtAPIUtils.getDeviceManagementService();
-        org.wso2.carbon.device.mgt.common.Device device;
-        try {
-            device = deviceManagementProviderService.getDevice(deviceIdentifier);
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the device information.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        if (device == null) {
-            responsePayload.setStatusCode(HttpStatus.SC_NOT_FOUND);
-            responsePayload.setMessageFromServer("Requested device by type: " +
-                    type + " and id: " + id + " does not exist.");
-            return Response.status(Response.Status.NOT_FOUND).entity(responsePayload).build();
-        } else {
-            responsePayload.setStatusCode(HttpStatus.SC_OK);
-            responsePayload.setMessageFromServer("Sending Requested device by type: " + type + " and id: " + id + ".");
-            responsePayload.setResponseContent(device);
-            return Response.status(Response.Status.OK).entity(responsePayload).build();
-        }
-    }
+    @Produces({ MediaType.APPLICATION_JSON })
+    Response getDevice(@QueryParam("type") String type, @QueryParam("id") String id);
 
     /**
      * Fetch device details of a given user.
@@ -142,20 +86,7 @@ public class Device {
      */
     @GET
     @Path("user/{user}")
-    public Response getDevice(@PathParam("user") String user) {
-        List<org.wso2.carbon.device.mgt.common.Device> devices;
-        try {
-            devices = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(user);
-            if (devices == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            return Response.status(Response.Status.OK).entity(devices).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices list of given user.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response getDevice(@PathParam("user") String user);
 
     /**
      * Fetch device count of a given user.
@@ -165,16 +96,7 @@ public class Device {
      */
     @GET
     @Path("user/{user}/count")
-    public Response getDeviceCount(@PathParam("user") String user) {
-        try {
-            Integer count = DeviceMgtAPIUtils.getDeviceManagementService().getDeviceCount(user);
-            return Response.status(Response.Status.OK).entity(count).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices list of given user.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response getDeviceCount(@PathParam("user") String user);
 
     /**
      * Get current device count
@@ -182,17 +104,15 @@ public class Device {
      * @return device count
      */
     @GET
+    @ApiOperation(
+            httpMethod = "GET",
+            value = "Returns the current device count",
+            notes = "Returns 500 if the operation fails",
+            response = Integer.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Device count"),
+            @ApiResponse(code = 500, message = "Server Error") })
     @Path("count")
-    public Response getDeviceCount() {
-        try {
-            Integer count = DeviceMgtAPIUtils.getDeviceManagementService().getDeviceCount();
-            return Response.status(Response.Status.OK).entity(count).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the device count.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response getDeviceCount();
 
     /**
      * Get the list of devices that matches with the given name.
@@ -203,37 +123,17 @@ public class Device {
      */
     @GET
     @Path("name/{name}/{tenantDomain}")
-    public Response getDevicesByName(@PathParam("name") String deviceName,
-                                     @PathParam("tenantDomain") String tenantDomain) {
-        List<org.wso2.carbon.device.mgt.common.Device> devices;
-        try {
-            devices = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesByName(deviceName);
-            return Response.status(Response.Status.OK).entity(devices).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices list of device name.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response getDevicesByName(@PathParam("name") String deviceName,
+                              @PathParam("tenantDomain") String tenantDomain);
 
-	/**
-	 * Get the list of available device types.
-	 *
-	 * @return list of device types.
-	 */
-	@GET
-	@Path("types")
-    public Response getDeviceTypes() {
-        List<DeviceType> deviceTypes;
-        try {
-            deviceTypes = DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes();
-            return Response.status(Response.Status.OK).entity(deviceTypes).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the list of device types.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    /**
+     * Get the list of available device types.
+     *
+     * @return list of device types.
+     */
+    @GET
+    @Path("types")
+    Response getDeviceTypes();
 
     /**
      * Update device.
@@ -242,24 +142,8 @@ public class Device {
      */
     @PUT
     @Path("type/{type}/id/{deviceId}")
-    public Response updateDevice(@PathParam("type") String deviceType, @PathParam("deviceId") String deviceId,
-                                 org.wso2.carbon.device.mgt.common.Device updatedDevice) {
-        try {
-            DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setType(deviceType);
-            deviceIdentifier.setId(deviceId);
-            org.wso2.carbon.device.mgt.common.Device device = deviceManagementService.getDevice(deviceIdentifier);
-            device.setName(updatedDevice.getName());
-            device.setDescription(updatedDevice.getDescription());
-            Boolean response = deviceManagementService.modifyEnrollment(device);
-            return Response.status(Response.Status.OK).entity(response).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the list of device types.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response updateDevice(@PathParam("type") String deviceType, @PathParam("deviceId") String deviceId,
+                          org.wso2.carbon.device.mgt.common.Device updatedDevice);
 
     /**
      * disenroll device.
@@ -268,18 +152,6 @@ public class Device {
      */
     @DELETE
     @Path("type/{type}/id/{deviceId}")
-    public Response disenrollDevice(@PathParam("type") String deviceType, @PathParam("deviceId") String deviceId) {
-        try {
-            DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setType(deviceType);
-            deviceIdentifier.setId(deviceId);
-            Boolean response = deviceManagementService.disenrollDevice(deviceIdentifier);
-            return Response.status(Response.Status.OK).entity(response).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the list of device types.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response disenrollDevice(@PathParam("type") String deviceType, @PathParam("deviceId") String deviceId);
+
 }

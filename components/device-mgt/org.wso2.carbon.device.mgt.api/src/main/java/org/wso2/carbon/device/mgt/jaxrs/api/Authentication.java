@@ -18,19 +18,17 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import io.swagger.annotations.Api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
 /**
- * Authentication related REST-API implementation.
+ * Authentication related REST-API interface.
  */
+@Api(value = "Authentication")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })
-public class Authentication {
+public interface Authentication {
 
-    private static Log log = LogFactory.getLog(Authentication.class);
 }
-

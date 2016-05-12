@@ -52,7 +52,7 @@ public class CredentialManagementResponseBuilder {
             userStoreManager.updateCredential(credentials.getUsername(), new String(
                     decodedNewPassword, "UTF-8"), new String(decodedOldPassword, "UTF-8"));
             responsePayload.setStatusCode(HttpStatus.SC_CREATED);
-            responsePayload.setMessageFromServer("User password by username: " + credentials.getUsername() +
+            responsePayload.setMessageFromServer("UserImpl password by username: " + credentials.getUsername() +
                     " was successfully changed.");
             return Response.status(Response.Status.CREATED).entity(responsePayload).build();
         } catch (UserStoreException e) {
@@ -84,7 +84,7 @@ public class CredentialManagementResponseBuilder {
             userStoreManager.updateCredentialByAdmin(credentials.getUsername(), new String(
                     decodedNewPassword, "UTF-8"));
             responsePayload.setStatusCode(HttpStatus.SC_CREATED);
-            responsePayload.setMessageFromServer("User password by username: " + credentials.getUsername() +
+            responsePayload.setMessageFromServer("UserImpl password by username: " + credentials.getUsername() +
                     " was successfully changed.");
             return Response.status(Response.Status.CREATED).entity(responsePayload).build();
         } catch (UserStoreException e) {

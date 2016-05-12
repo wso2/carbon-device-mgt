@@ -18,13 +18,8 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
+import io.swagger.annotations.Api;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
-import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -34,76 +29,30 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * DeviceNotification management REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
+@Api(value = "DeviceNotification")
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({"application/json", "application/xml"})
 @Consumes({ "application/json", "application/xml" })
-public class DeviceNotification {
+public interface DeviceNotification {
 
-	private static Log log = LogFactory.getLog(Configuration.class);
+    @GET
+    Response getNotifications();
 
-	@GET
-    public Response getNotifications() {
-        String msg;
-        try {
-            List<Notification> notifications = DeviceMgtAPIUtils.getNotificationManagementService().getAllNotifications();
-            return Response.status(Response.Status.OK).entity(notifications).build();
-        } catch (NotificationManagementException e) {
-            msg = "Error occurred while retrieving the notification list.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @GET
+    @Path("{status}")
+    Response getNotificationsByStatus(@PathParam("status") Notification.Status status);
 
-	@GET
-	@Path("{status}")
-    public Response getNotificationsByStatus(@PathParam("status") Notification.Status status) {
-        String msg;
-        try {
-            List<Notification> notifications = DeviceMgtAPIUtils.getNotificationManagementService().getNotificationsByStatus(status);
-            return Response.status(Response.Status.OK).entity(notifications).build();
-        } catch (NotificationManagementException e) {
-            msg = "Error occurred while retrieving the notification list.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @PUT
+    @Path("{id}/{status}")
+    Response updateNotificationStatus(@PathParam("id") int id,
+                                             @PathParam("status") Notification.Status status);
 
-	@PUT
-	@Path("{id}/{status}")
-    public Response updateNotificationStatus(@PathParam("id") int id,
-                                             @PathParam("status") Notification.Status status) {
-        ResponsePayload responseMsg = new ResponsePayload();
-        try {
-            DeviceMgtAPIUtils.getNotificationManagementService().updateNotificationStatus(id, status);
-            responseMsg.setMessageFromServer("Notification status updated successfully.");
-			responseMsg.setStatusCode(HttpStatus.SC_ACCEPTED);
-            return Response.status(Response.Status.ACCEPTED).entity(responseMsg).build();
-        } catch (NotificationManagementException e) {
-            String msg = "Error occurred while updating notification status.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-	@POST
-    public Response addNotification(Notification notification) {
-        ResponsePayload responseMsg = new ResponsePayload();
-        try {
-            DeviceMgtAPIUtils.getNotificationManagementService().addNotification(notification);
-            responseMsg.setMessageFromServer("Notification has added successfully.");
-			responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (NotificationManagementException e) {
-            String msg = "Error occurred while updating notification status.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @POST
+    Response addNotification(Notification notification);
 
 }

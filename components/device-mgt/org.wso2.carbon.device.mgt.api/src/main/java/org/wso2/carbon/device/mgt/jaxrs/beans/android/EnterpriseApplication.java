@@ -24,7 +24,7 @@ import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import java.io.Serializable;
 
 /**
- * This class represents the Enterprise Application information.
+ * This class represents the Enterprise AuthenticationImpl information.
  */
 public class EnterpriseApplication implements Serializable {
 

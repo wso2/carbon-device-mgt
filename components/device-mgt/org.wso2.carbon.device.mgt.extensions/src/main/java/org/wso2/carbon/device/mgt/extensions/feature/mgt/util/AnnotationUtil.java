@@ -64,6 +64,7 @@ public class AnnotationUtil {
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
+    private static final String METHOD = "method";
     private Class<org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature>
             featureAnnotationClazz;
     private ClassLoader classLoader;
@@ -147,8 +148,7 @@ public class AnnotationUtil {
                 Map<String, Object> apiParams = new HashMap<>();
                 for (int i = 0; i < annotations.length; i++) {
                     Annotation currentAnnotation = annotations[i];
-                    String method = processHttpMethodAnnotation(feature, currentAnnotation);
-                    apiParams.put("method", method);
+                    processHttpMethodAnnotation(apiParams, currentAnnotation);
                     if (currentAnnotation.annotationType().getName().equals(Path.class.getName())) {
                         String uri = getPathAnnotationValue(currentMethod);
                         apiParams.put("uri", uri);
@@ -200,25 +200,20 @@ public class AnnotationUtil {
 
     /**
      * Read Method annotations indicating HTTP Methods
-     * @param feature
-     * @param currentAnnotation
-     * @return
      */
-    private String processHttpMethodAnnotation(Feature feature, Annotation currentAnnotation) {
+    private void processHttpMethodAnnotation(Map<String, Object> apiParams, Annotation currentAnnotation) {
         //Extracting method with which feature is exposed
-        String method = null;
         if (currentAnnotation.annotationType().getName().equals(GET.class.getName())) {
-            method = HttpMethod.GET;
+            apiParams.put(METHOD, HttpMethod.GET);
         } else if (currentAnnotation.annotationType().getName().equals(POST.class.getName())) {
-            method = HttpMethod.POST;
+            apiParams.put(METHOD, HttpMethod.POST);
         } else if (currentAnnotation.annotationType().getName().equals(OPTIONS.class.getName())) {
-            method = HttpMethod.OPTIONS;
+            apiParams.put(METHOD, HttpMethod.OPTIONS);
         } else if (currentAnnotation.annotationType().getName().equals(DELETE.class.getName())) {
-            method = HttpMethod.DELETE;
+            apiParams.put(METHOD, HttpMethod.DELETE);
         } else if (currentAnnotation.annotationType().getName().equals(PUT.class.getName())) {
-            method = HttpMethod.PUT;
+            apiParams.put(METHOD, HttpMethod.PUT);
         }
-        return method;
     }
 
     /**
@@ -233,15 +228,15 @@ public class AnnotationUtil {
         Annotation featureAnno = currentMethod.getAnnotation(featureAnnotationClazz);
         for (int k = 0; k < featureAnnoMethods.length; k++) {
             switch (featureAnnoMethods[k].getName()) {
-                case "name":
-                    feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                    break;
-                case "code":
-                    feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                    break;
-                case "description":
-                    feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                    break;
+            case "name":
+                feature.setName(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                break;
+            case "code":
+                feature.setCode(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                break;
+            case "description":
+                feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
+                break;
             }
         }
         return feature;

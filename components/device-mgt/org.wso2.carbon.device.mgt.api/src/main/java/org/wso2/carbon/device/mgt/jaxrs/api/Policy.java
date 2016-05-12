@@ -39,6 +39,7 @@ import java.util.List;
  *
  */
 @Api(value = "Policy")
+@Path("/policies")
 public interface Policy {
 
     @POST

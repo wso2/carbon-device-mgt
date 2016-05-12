@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response;
  * All end points support JSON, XMl with content negotiation.
  */
 @Api(value = "Configuration", description = "General Tenant Configuration implementation")
+@Path("/configuration")
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })

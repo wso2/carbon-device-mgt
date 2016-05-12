@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -35,6 +36,7 @@ import javax.ws.rs.core.Response;
  * Device search related operations such as getting device information.
  */
 @Api(value = "DeviceSearch")
+@Path("/search")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface DeviceSearch {
 
@@ -50,6 +52,6 @@ public interface DeviceSearch {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 500, message = "Error occurred while searching the device information")
             })
-    Response getDeviceInfo(@ApiParam(name = "enrollmentCertificates", value = "List of search conditions",
+    Response getFilteredDeviceInfo(@ApiParam(name = "enrollmentCertificates", value = "List of search conditions",
                                     required = true) SearchContext searchContext);
 }

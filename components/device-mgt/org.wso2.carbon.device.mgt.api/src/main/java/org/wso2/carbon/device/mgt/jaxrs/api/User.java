@@ -45,6 +45,7 @@ import java.util.List;
  * This represents the JAX-RS services of User related functionality.
  */
 @Api(value = "User")
+@Path("/users")
 public interface User {
 
     @POST
@@ -139,7 +140,7 @@ public interface User {
             @ApiResponse(code = 400, message = "User by username: 'username' does not exist for role retrieval"),
             @ApiResponse(code = 500, message = "Exception in trying to retrieve roles for user by username: 'username'")
             })
-    Response getRoles(@ApiParam(name = "username", value = "Provide the user name of the user you wish to get"
+    Response getRolesOfUser(@ApiParam(name = "username", value = "Provide the user name of the user you wish to get"
                             + " the role details", required = true) @QueryParam("username") String username);
 
     @GET
@@ -264,7 +265,7 @@ public interface User {
     @PUT
     @Path("{roleName}/users")
     @Produces({MediaType.APPLICATION_JSON})
-    Response updateRoles(@PathParam("username") String username, List<String> userList);
+    Response updateRoles(@PathParam("roleName") String roleName, List<String> userList);
 
     @POST
     @Path("change-password")

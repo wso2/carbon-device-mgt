@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
  *
  */
 @Api(value = "Operation")
+@Path("/operations")
 public interface Operation {
 
     /* @deprecated */
@@ -49,7 +50,7 @@ public interface Operation {
             consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "GET",
-            value = "Getting Pagination Details for Operations on a Device.",
+            value = "Getting Paginated Details for Operations on a Device.",
             notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
                     " the operations carried out on a device it is not feasible to show all the details on one page" +
                     " therefore the details are paginated." +
@@ -89,7 +90,7 @@ public interface Operation {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Operations on a device."),
                             @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
                                                                "device.") })
-    Response getDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
+    Response getAllDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
                                                                   "Example: ios, android or windows.",
                                            required = true) @PathParam("type") String type,
                                  @ApiParam(name = "id", value = "Define the device ID",

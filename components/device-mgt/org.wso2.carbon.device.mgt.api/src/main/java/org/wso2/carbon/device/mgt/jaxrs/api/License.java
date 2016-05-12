@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
  * This class represents license related operations.
  */
 @Api(value = "License")
+@Path("/license")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface License {
 

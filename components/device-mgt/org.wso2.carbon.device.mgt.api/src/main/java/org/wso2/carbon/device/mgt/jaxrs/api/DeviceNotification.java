@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
  */
 @Api(value = "DeviceNotification")
 @SuppressWarnings("NonJaxWsWebServices")
+@Path("/notifications")
 @Produces({"application/json", "application/xml"})
 @Consumes({ "application/json", "application/xml" })
 public interface DeviceNotification {

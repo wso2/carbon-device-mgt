@@ -39,7 +39,7 @@ import java.util.List;
 /**
  *
  */
-@Api(value = "Role")
+@Api(value = "Role", description = "Role management related operations can be found here.")
 public interface Role {
 
     @GET

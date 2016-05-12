@@ -34,7 +34,9 @@ import javax.ws.rs.core.Response;
  * General Tenant Configuration REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
-@Api(value = "Configuration", description = "General Tenant Configuration implementation")
+@Api(value = "Configuration", description = "General Tenant Configuration management capabilities are exposed " +
+                                            "through " +
+                                            "this API")
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })

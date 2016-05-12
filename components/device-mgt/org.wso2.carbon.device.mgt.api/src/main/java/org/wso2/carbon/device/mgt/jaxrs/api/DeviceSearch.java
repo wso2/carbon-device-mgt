@@ -34,7 +34,8 @@ import javax.ws.rs.core.Response;
 /**
  * Device search related operations such as getting device information.
  */
-@Api(value = "DeviceSearch")
+
+@Api(value = "DeviceSearch", description = "Device searching related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface DeviceSearch {
 

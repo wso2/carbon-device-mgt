@@ -31,7 +31,8 @@ import javax.ws.rs.core.Response;
 /**
  * Features
  */
-@Api(value = "Feature")
+
+@Api(value = "Feature", description = "Feature management related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({"application/json", "application/xml"})
 @Consumes({"application/json", "application/xml"})

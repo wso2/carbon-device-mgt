@@ -36,7 +36,8 @@ import javax.ws.rs.core.Response;
 /**
  *
  */
-@Api(value = "Operation")
+
+@Api(value = "Operation", description = "Operation management related operations can be found here.")
 public interface Operation {
 
     /* @deprecated */

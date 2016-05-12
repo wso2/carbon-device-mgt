@@ -36,7 +36,8 @@ import javax.ws.rs.core.Response;
 /**
  * All the certificate related tasks such as saving certificates, can be done through this endpoint.
  */
-@Api(value = "Certificate", description = "Certificate related tasks such as saving certificates")
+@Api(value = "Certificate", description = "Certificate related tasks such as saving certificates, " +
+                                          "can be done through this API")
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })

@@ -53,4 +53,12 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 </project>

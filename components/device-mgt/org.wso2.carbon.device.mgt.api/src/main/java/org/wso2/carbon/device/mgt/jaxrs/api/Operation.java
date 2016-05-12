@@ -18,8 +18,11 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import io.swagger.annotations.Api;
+import io.swagger.annotations.*;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.jaxrs.api.context.DeviceOperationContext;
+import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 
 import javax.ws.rs.GET;
@@ -27,6 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -41,13 +45,55 @@ public interface Operation {
 
     @GET
     @Path("paginate/{type}/{id}")
-    Response getDeviceOperations(@PathParam("type") String type, @PathParam("id") String id,
-                                 @QueryParam("start") int startIdx, @QueryParam("length") int length,
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Pagination Details for Operations on a Device.",
+            notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
+                    " the operations carried out on a device it is not feasible to show all the details on one page" +
+                    " therefore the details are paginated." +
+                    " Example: You carry out 21 operations via a given device. When you wish to see the operations " +
+                    "carried out, the details of the 21 operations will be broken down into 3 pages with 10 operation" +
+                    " details per page.",
+            response = org.wso2.carbon.device.mgt.common.operation.mgt.Operation.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Operations on a device."),
+                            @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
+                                                               "device.") })
+    Response getDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
+                                                                  "Example: ios, android or windows.",
+                                           required = true) @PathParam("type") String type,
+                                 @ApiParam(name = "id", value = "Define the device ID",
+                                           required = true) @PathParam("id") String id,
+                                 @ApiParam(name = "start", value = "Provide the starting pagination index. Example 10",
+                                           required = true) @QueryParam("start") int startIdx,
+                                 @ApiParam(name = "length", value = "Provide how many device details you require from" +
+                                                                    " the starting pagination index. For example if " +
+                                                                    "you require the device details from the 10th " +
+                                                                    "pagination index to the 15th, " +
+                                                                    "you must define 10 as the value for start and 5 " +
+                                                                    "as the value for length.",
+                                           required = true) @QueryParam("length") int length,
                                  @QueryParam("search") String search);
 
     @GET
     @Path("{type}/{id}")
-    Response getDeviceOperations(@PathParam("type") String type, @PathParam("id") String id);
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Device Operation Details.",
+            responseContainer = "List",
+            notes = "Get the details of operations carried out on a selected device.",
+            response = org.wso2.carbon.device.mgt.common.operation.mgt.Operation.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Operations on a device."),
+                            @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
+                                                               "device.") })
+    Response getDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
+                                                                  "Example: ios, android or windows.",
+                                           required = true) @PathParam("type") String type,
+                                 @ApiParam(name = "id", value = "Define the device ID",
+                                           required = true) @PathParam("id") String id);
 
     /* @deprecated */
     @POST
@@ -55,15 +101,58 @@ public interface Operation {
 
     @GET
     @Path("{type}/{id}/apps")
-    Response getInstalledApps(@PathParam("type") String type, @PathParam("id") String id);
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Installed Application Details of a Device.",
+            responseContainer = "List",
+            notes = "Get the list of applications that a device has subscribed.",
+            response = Application.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "List of installed application details of a device."),
+                            @ApiResponse(code = 500, message = "Error occurred while fetching the apps of the device" +
+                                                               ".") })
+    Response getInstalledApps(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
+                                                               "Example: ios, android or windows.",
+                                        required = true) @PathParam("type") String type,
+                              @ApiParam(name = "id", value = "Define the device ID",
+                                        required = true) @PathParam("id") String id);
 
     @POST
     @Path("installApp/{tenantDomain}")
-    Response installApplication(ApplicationWrapper applicationWrapper,
-                                @PathParam("tenantDomain") String tenantDomain);
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "POST",
+            value = "Installing an Application on a Device.",
+            notes = "Install a selected application on a device.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Operation was successfully added to the queue."),
+                            @ApiResponse(code = 500, message = "Error occurred while saving the operation.") })
+    Response installApplication(@ApiParam(name = "applicationWrapper", value = "Details about the application and the" +
+                                                                               " users and roles it should be " +
+                                                                               "installed on.",
+                                          required = true) ApplicationWrapper applicationWrapper,
+                                @ApiParam(name = "tenantDomain", value = "Provide the tenant domain as the value for " +
+                                                                         "{tenantDomain}. The default tenant domain " +
+                                                                         "of WSO2 EMM is carbon.super.",
+                                          required = true) @PathParam("tenantDomain") String tenantDomain);
 
     @POST
     @Path("uninstallApp/{tenantDomain}")
-    Response uninstallApplication(ApplicationWrapper applicationWrapper,
-                                  @PathParam("tenantDomain") String tenantDomain);
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "POST",
+            value = "Uninstalling an Application from a Device.",
+            notes = "Uninstall a selected application from a device.")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Operation was successfully added to the queue."),
+                            @ApiResponse(code = 500, message = "Error occurred while saving the operation.") })
+    Response uninstallApplication(@ApiParam(name = "applicationWrapper", value = "Details about the application and" +
+                                                                                 " the users and roles it should be " +
+                                                                                 "uninstalled.",
+                                            required = true) ApplicationWrapper applicationWrapper,
+                                  @ApiParam(name = "tenantDomain", value = "Provide the tenant domain as the value for " +
+                                                                           "{tenantDomain}. The default tenant domain " +
+                                                                           "of WSO2 EMM is carbon.super.",
+                                            required = true) @PathParam("tenantDomain") String tenantDomain);
 }

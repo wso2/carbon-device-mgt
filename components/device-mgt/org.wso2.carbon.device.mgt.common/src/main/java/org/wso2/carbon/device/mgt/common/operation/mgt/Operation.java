@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.common.operation.mgt;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Properties;
 
 @XmlRootElement
@@ -50,6 +51,7 @@ public class Operation implements Serializable {
     private Object payLoad;
     private String operationResponse;
     private String activityId;
+    private List<OperationResponse> responses;
 
     @Override
     public boolean equals(Object o) {
@@ -216,6 +218,14 @@ public class Operation implements Serializable {
 
     public void setActivityId(String activityId) {
         this.activityId = activityId;
+    }
+
+    public List<OperationResponse> getResponses() {
+        return responses;
+    }
+
+    public void setResponses(List<OperationResponse> responses) {
+        this.responses = responses;
     }
 
     @Override

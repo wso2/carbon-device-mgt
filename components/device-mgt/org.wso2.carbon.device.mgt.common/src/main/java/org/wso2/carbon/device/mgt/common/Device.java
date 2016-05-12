@@ -17,19 +17,38 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.List;
 
+@ApiModel(value = "Device", description = "This class carries all information related to a managed device.")
 public class Device implements Serializable{
 
 	private static final long serialVersionUID = 1998101711L;
 
+    @ApiModelProperty(name = "id", value = "ID of the device in the WSO2 EMM device information database.",
+                      required = true)
 	private int id;
+    @ApiModelProperty(name = "name", value = "The device name that can be set on the device by the device user.",
+                      required = true)
     private String name;
+    @ApiModelProperty(name = "type", value = "The OS type of the device.", required = true)
 	private String type;
+    @ApiModelProperty(name = "description", value = "Additional information on the device.", required = true)
 	private String description;
+    @ApiModelProperty(name = "deviceIdentifier", value = "This is a 64-bit number (as a hex string) that is randomly" +
+                                                         " generated when the user first sets up the device and should" +
+                                                         " remain constant for the lifetime of the user's device." +
+                                                         " The value may change if a factory reset is performed on " +
+                                                         "the device.",
+                      required = true)
 	private String deviceIdentifier;
+    @ApiModelProperty(name = "enrolmentInfo", value = "This defines the device registration related information. " +
+                                                      "It is mandatory to define this information.", required = true)
     private EnrolmentInfo enrolmentInfo;
+    @ApiModelProperty(name = "features", value = "List of features.", required = true)
     private List<Feature> features;
     private List<Device.Property> properties;
 

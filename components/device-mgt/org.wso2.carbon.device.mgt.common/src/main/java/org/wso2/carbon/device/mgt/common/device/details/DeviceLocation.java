@@ -19,27 +19,41 @@
 
 package org.wso2.carbon.device.mgt.common.device.details;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@ApiModel(value = "DeviceLocation", description = "This class carries all information related to the device location " +
+                                                  "details provided by a device.")
 public class DeviceLocation implements Serializable {
 
     private static final long serialVersionUID = 1998101722L;
 
+    @ApiModelProperty(name = "deviceId", value = "Device id", required = true)
     private int deviceId;
+    @ApiModelProperty(name = "deviceIdentifier", value = "Device identifier used to identify a device uniquely.",
+                      required = true)
     private DeviceIdentifier deviceIdentifier;
+    @ApiModelProperty(name = "latitude", value = "Device GPS latitude.", required = true)
     private Double latitude;
+    @ApiModelProperty(name = "longitude", value = "Device GPS longitude.", required = true)
     private Double longitude;
-
+    @ApiModelProperty(name = "street1", value = "First line of the address.", required = true)
     private String street1;
+    @ApiModelProperty(name = "street2", value = "Second part of the address.", required = true)
     private String street2;
-
+    @ApiModelProperty(name = "city", value = "City of the device location.", required = true)
     private String city;
+    @ApiModelProperty(name = "state", value = "State of the device address.", required = true)
     private String state;
+    @ApiModelProperty(name = "zip", value = "Zip code of the device address.", required = true)
     private String zip;
+    @ApiModelProperty(name = "country", value = "Country of the device address.", required = true)
     private String country;
+    @ApiModelProperty(name = "updatedTime", value = "Update time of the device.", required = true)
     private Date updatedTime;
 
     public int getDeviceId() {

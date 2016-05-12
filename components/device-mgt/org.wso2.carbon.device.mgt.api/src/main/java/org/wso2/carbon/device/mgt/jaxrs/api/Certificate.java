@@ -19,16 +19,25 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
+import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentCertificate;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * All the certificate related tasks such as saving certificates, can be done through this endpoint.
  */
-@Api(value = "Certificate", description = "certificate related tasks such as saving certificates")
+@Api(value = "Certificate", description = "Certificate related tasks such as saving certificates, " +
+                                          "can be done through this API")
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })
@@ -43,8 +52,20 @@ public interface Certificate {
      */
     @POST
     @Path("saveCertificate")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "POST",
+            value = "Adding an SSL Certificate",
+            notes = "Add a new SSL certificate to the client end database")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Added successfully"),
+            @ApiResponse(code = 500, message = "Error occurred while saving the certificate")
+            })
     Response saveCertificate(@HeaderParam("Accept") String acceptHeader,
-                             EnrollmentCertificate[] enrollmentCertificates);
+                             @ApiParam(name = "enrollmentCertificates", value = "certificate with serial, "
+                                     + "pem and tenant id", required = true) EnrollmentCertificate[]
+                                     enrollmentCertificates);
 
     /**
      * Get a certificate when the serial number is given.
@@ -54,7 +75,21 @@ public interface Certificate {
      */
     @GET
     @Path("{serialNumber}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting Details of an SSL Certificate",
+            notes = "Get the client side SSL certificate details",
+            response = CertificateResponse.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Notification status updated successfully"),
+            @ApiResponse(code = 500, message = "Error occurred while converting PEM file to X509Certificate")
+            })
     Response getCertificate(@HeaderParam("Accept") String acceptHeader,
+                            @ApiParam(name = "serialNumber", value = "Provide the serial number of the "
+                            + "certificate that you wish to get the details of", required = true)
                             @PathParam("serialNumber") String serialNumber);
 
     /**
@@ -67,13 +102,46 @@ public interface Certificate {
      */
     @GET
     @Path("paginate")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Getting the Certificate Details in a Paginated Manner",
+            notes = "You will have many certificates used for mutual SSL. In a situation where you wish to "
+                    + "view all the certificate details, it is not feasible to show all the details on one "
+                    + "page therefore the details are paginated",
+            response = PaginationResult.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Invalid start index"),
+            @ApiResponse(code = 400, message = "Invalid length value"),
+            @ApiResponse(code = 500, message = "Error occurred while fetching all certificates")
+            })
     Response getAllCertificates(@HeaderParam("Accept") String acceptHeader,
-                                @QueryParam("start") int startIndex, @QueryParam("length") int length)
-            throws MDMAPIException;
+                                @ApiParam(name = "start",
+                                    value = "Provide the starting pagination index as the value", required = true)
+                                    @QueryParam("start") int startIndex,
+                                @ApiParam(name = "length", value = "Provide how many certificate details you"
+                                    + " require from the starting pagination index as the value",
+                                    required = true) @QueryParam("length") int length) throws MDMAPIException;
 
     @DELETE
     @Path("{serialNumber}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "DELETE",
+            value = "Deleting an SSL Certificate",
+            notes = "Delete an SSL certificate that's on the client end",
+            response = boolean.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Invalid start index"),
+            @ApiResponse(code = 500, message = "Error when deleting the certificate"
+            ) })
     Response removeCertificate(@HeaderParam("Accept") String acceptHeader,
-                               @PathParam("serialNumber") String serialNumber) throws MDMAPIException;
+                               @ApiParam(name = "serialNumber", value = "Provide the serial number of the "
+                                    + "certificate that you wish to delete", required = true)
+                                    @PathParam("serialNumber") String serialNumber) throws MDMAPIException;
 
 }

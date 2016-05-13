@@ -18,413 +18,242 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
-import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
-import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("NonJaxWsWebServices")
-public class Policy {
-    private static Log log = LogFactory.getLog(Policy.class);
+@Path("/policies")
+@Api(value = "Policy", description = "Policy management related operations can be found here.")
+public interface Policy {
 
     @POST
     @Path("inactive-policy")
-    public Response addPolicy(PolicyWrapper policyWrapper) {
-
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        ResponsePayload responseMsg = new ResponsePayload();
-        org.wso2.carbon.policy.mgt.common.Policy policy = new org.wso2.carbon.policy.mgt.common.Policy();
-        policy.setPolicyName(policyWrapper.getPolicyName());
-        policy.setProfileId(policyWrapper.getProfileId());
-	    policy.setDescription(policyWrapper.getDescription());
-        policy.setProfile(DeviceMgtUtil.convertProfile(policyWrapper.getProfile()));
-        policy.setOwnershipType(policyWrapper.getOwnershipType());
-        policy.setRoles(policyWrapper.getRoles());
-        policy.setUsers(policyWrapper.getUsers());
-        policy.setTenantId(policyWrapper.getTenantId());
-        policy.setCompliance(policyWrapper.getCompliance());
-
-        return addPolicy(policyManagementService, responseMsg, policy);
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Adding a Policy.",
+            notes = "Add a policy using this REST API command. When adding a policy you will have the option of " +
+                    "saving the policy or saving and publishing the policy. Using the REST API command given below " +
+                    "you are able to save a created Policy and this policy will be in the inactive state")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created the policy."),
+            @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
+                    "adding the policy")})
+    Response addPolicy(@ApiParam(name = "policyWrapper", value = "Policy details related to the operation.",
+            required = true) PolicyWrapper policyWrapper);
 
     @POST
     @Path("active-policy")
-    public Response addActivePolicy(PolicyWrapper policyWrapper) {
-
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        ResponsePayload responseMsg = new ResponsePayload();
-        org.wso2.carbon.policy.mgt.common.Policy policy = new org.wso2.carbon.policy.mgt.common.Policy();
-        policy.setPolicyName(policyWrapper.getPolicyName());
-        policy.setProfileId(policyWrapper.getProfileId());
-	    policy.setDescription(policyWrapper.getDescription());
-        policy.setProfile(DeviceMgtUtil.convertProfile(policyWrapper.getProfile()));
-        policy.setOwnershipType(policyWrapper.getOwnershipType());
-        policy.setRoles(policyWrapper.getRoles());
-        policy.setUsers(policyWrapper.getUsers());
-        policy.setTenantId(policyWrapper.getTenantId());
-        policy.setCompliance(policyWrapper.getCompliance());
-        policy.setActive(true);
-
-        return addPolicy(policyManagementService, responseMsg, policy);
-    }
-
-    private Response addPolicy(PolicyManagerService policyManagementService, ResponsePayload responseMsg,
-                               org.wso2.carbon.policy.mgt.common.Policy policy) {
-        try {
-            PolicyAdministratorPoint pap = policyManagementService.getPAP();
-            pap.addPolicy(policy);
-            responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("Policy has been added successfully.");
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (PolicyManagementException e) {
-            String msg = "Policy Management related exception";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Adding an Active Policy.",
+            notes = "Add a policy that is in the active state using the REST API command. When adding a policy you " +
+                    "will have the option of saving the policy or saving and publishing the policy. Using the REST " +
+                    "API command given below you are able to save and publish a created policy and this policy will " +
+                    "be in the active state.")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created the policy."),
+            @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
+                    "adding the policy")})
+    Response addActivePolicy(@ApiParam(name = "policyWrapper", value = "Policy details related to the operation.",
+            required = true) PolicyWrapper policyWrapper);
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAllPolicies() {
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        List<org.wso2.carbon.policy.mgt.common.Policy> policies;
-        try {
-            PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
-            policies = policyAdministratorPoint.getPolicies();
-        } catch (PolicyManagementException e) {
-            String msg = "Policy Management related exception";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Sending all retrieved device policies.");
-        responsePayload.setResponseContent(policies);
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of Policies.",
+            responseContainer = "List",
+            notes = "Retrieve the details of all the policies that you have created in WSO2 EMM.",
+            response = org.wso2.carbon.policy.mgt.common.Policy.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched all policies.",
+            response = org.wso2.carbon.policy.mgt.common.Policy.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
+                    "fetching the policies.")})
+    Response getAllPolicies();
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path("{id}")
-    public Response getPolicy(@PathParam("id") int policyId) {
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        final org.wso2.carbon.policy.mgt.common.Policy policy;
-        try {
-            PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
-            policy = policyAdministratorPoint.getPolicy(policyId);
-        } catch (PolicyManagementException e) {
-            String msg = "Policy Management related exception";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        if (policy == null){
-            ResponsePayload responsePayload = new ResponsePayload();
-            responsePayload.setStatusCode(HttpStatus.SC_NOT_FOUND);
-            responsePayload.setMessageFromServer("Policy for ID " + policyId + " not found.");
-            return Response.status(Response.Status.NOT_FOUND).entity(responsePayload).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Sending all retrieved device policies.");
-        responsePayload.setResponseContent(policy);
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of a Policy.",
+            notes = "Retrieve the details of a selected policy in WSO2 EMM.",
+            response = org.wso2.carbon.policy.mgt.common.Policy.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched policy details."),
+            @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
+                    "fetching the policies.")})
+    Response getPolicy(@ApiParam(name = "id", value = "Policy ID value to identify a policy uniquely.",
+            required = true) @PathParam("id") int policyId);
 
     @GET
     @Path("count")
-    public Response getPolicyCount() {
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        try {
-            PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
-            Integer count = policyAdministratorPoint.getPolicyCount();
-            return Response.status(Response.Status.OK).entity(count).build();
-        } catch (PolicyManagementException e) {
-            String msg = "Policy Management related exception";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting the Policy Count.",
+            notes = "Get the number of policies that are created in WSO2 EMM.",
+            response = int.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched the policy count."),
+            @ApiResponse(code = 500, message = "Error while Fetching the policy count.")})
+    Response getPolicyCount();
 
     @PUT
     @Path("{id}")
-    public Response updatePolicy(PolicyWrapper policyWrapper, @PathParam("id") int policyId) {
-
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        ResponsePayload responseMsg = new ResponsePayload();
-        org.wso2.carbon.policy.mgt.common.Policy policy = new org.wso2.carbon.policy.mgt.common.Policy();
-        policy.setPolicyName(policyWrapper.getPolicyName());
-        policy.setId(policyId);
-        policy.setProfileId(policyWrapper.getProfileId());
-        policy.setDescription(policyWrapper.getDescription());
-        policy.setProfile(DeviceMgtUtil.convertProfile(policyWrapper.getProfile()));
-        policy.setOwnershipType(policyWrapper.getOwnershipType());
-        policy.setRoles(policyWrapper.getRoles());
-        policy.setUsers(policyWrapper.getUsers());
-        policy.setTenantId(policyWrapper.getTenantId());
-        policy.setCompliance(policyWrapper.getCompliance());
-
-        try {
-            PolicyAdministratorPoint pap = policyManagementService.getPAP();
-            pap.updatePolicy(policy);
-            responseMsg.setStatusCode(HttpStatus.SC_CREATED);
-            responseMsg.setMessageFromServer("Policy has been updated successfully.");
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
-        } catch (PolicyManagementException e) {
-            String msg = "Policy Management related exception in policy update.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Updating a Policy.",
+            notes = "If you wish to make changes to an existing policy, you can do so by updating the policy using " +
+                    "this API")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Policy has been updated successfully."),
+            @ApiResponse(code = 500, message = "Policy Management related exception in policy " +
+                    "update")})
+    Response updatePolicy(@ApiParam(name = "policyWrapper", value = "Policy details related to the operation.",
+            required = true) PolicyWrapper policyWrapper,
+                          @ApiParam(name = "id", value = "Policy ID value to identify a policy uniquely.",
+                                  required = true) @PathParam("id") int policyId);
 
     @PUT
     @Path("priorities")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response updatePolicyPriorities(List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies) {
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        List<org.wso2.carbon.policy.mgt.common.Policy> policiesToUpdate =
-                new ArrayList<>(priorityUpdatedPolicies.size());
-        int i;
-        for (i = 0; i < priorityUpdatedPolicies.size(); i++) {
-            org.wso2.carbon.policy.mgt.common.Policy policyObj = new org.wso2.carbon.policy.mgt.common.Policy();
-            policyObj.setId(priorityUpdatedPolicies.get(i).getId());
-            policyObj.setPriorityId(priorityUpdatedPolicies.get(i).getPriority());
-            policiesToUpdate.add(policyObj);
-        }
-        boolean policiesUpdated;
-        try {
-            PolicyAdministratorPoint pap = policyManagementService.getPAP();
-            policiesUpdated = pap.updatePolicyPriorities(policiesToUpdate);
-        } catch (PolicyManagementException e) {
-            String msg = "Exception in updating policy priorities.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        if (policiesUpdated) {
-            responsePayload.setStatusCode(HttpStatus.SC_OK);
-            responsePayload.setMessageFromServer("Policy Priorities successfully updated.");
-            return Response.status(Response.Status.OK).entity(responsePayload).build();
-        } else {
-            responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
-            responsePayload.setMessageFromServer("Policy priorities did not update. Bad Request.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Updating the Policy Priority.",
+            notes = "If you wish to make changes to the existing policy priority order, " +
+                    "you can do so by updating the priority order using this API")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policy Priorities successfully updated."),
+            @ApiResponse(code = 400, message = "Policy priorities did not update."),
+            @ApiResponse(code = 500, message = "Error in updating policy priorities.")})
+    Response updatePolicyPriorities(@ApiParam(name = "priorityUpdatedPolicies",
+            value = "List of policy update details..",
+            required = true) List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
     @POST
     @Path("bulk-remove")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response bulkRemovePolicy(List<Integer> policyIds) {
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        boolean policyDeleted = true;
-        try {
-            PolicyAdministratorPoint pap = policyManagementService.getPAP();
-	        for(int i : policyIds) {
-		        org.wso2.carbon.policy.mgt.common.Policy policy = pap.getPolicy(i);
-		        if(!pap.deletePolicy(policy)){
-			        policyDeleted = false;
-		        }
-	        }
-        } catch (PolicyManagementException e) {
-            String msg = "Exception in deleting policies.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        if (policyDeleted) {
-            responsePayload.setStatusCode(HttpStatus.SC_OK);
-            responsePayload.setMessageFromServer("Policies have been successfully deleted.");
-            return Response.status(Response.Status.OK).entity(responsePayload).build();
-        } else {
-            responsePayload.setStatusCode(HttpStatus.SC_BAD_REQUEST);
-            responsePayload.setMessageFromServer("Policy does not exist.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
-        }
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Removing Multiple Policies.",
+            notes = "In situations where you need to delete more than one policy you can do so using this API.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully deleted."),
+            @ApiResponse(code = 400, message = "Policy does not exist."),
+            @ApiResponse(code = 500, message = "Error in deleting policies.")})
+    Response bulkRemovePolicy(@ApiParam(name = "policyIds", value = "Policy ID list to be deleted.",
+            required = true) List<Integer> policyIds);
 
     @PUT
     @Produces("application/json")
     @Path("activate")
-    public Response activatePolicy(List<Integer> policyIds) {
-        try {
-            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-            PolicyAdministratorPoint pap = policyManagementService.getPAP();
-	        for(int i : policyIds) {
-		        pap.activatePolicy(i);
-	        }
-        } catch (PolicyManagementException e) {
-            String msg = "Exception in activating policies.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Selected policies have been successfully activated.");
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Activating Policies.",
+            notes = "Using the REST API command you are able to publish a policy in order to bring a policy that is " +
+                    "in the inactive state to the active state.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully activated."),
+            @ApiResponse(code = 500, message = "Error in activating policies.")})
+    Response activatePolicy(@ApiParam(name = "policyIds", value = "Policy ID list to be activated.",
+            required = true) List<Integer> policyIds);
 
     @PUT
     @Produces("application/json")
     @Path("inactivate")
-    public Response inactivatePolicy(List<Integer> policyIds) throws MDMAPIException {
-
-        try {
-            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-            PolicyAdministratorPoint pap = policyManagementService.getPAP();
-	        for(int i : policyIds) {
-		        pap.inactivatePolicy(i);
-	        }
-        } catch (PolicyManagementException e) {
-            String msg = "Exception in inactivating policies.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Selected policies have been successfully inactivated.");
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Deactivating Policies.",
+            notes = "Using the REST API command you are able to unpublish a policy in order to bring a policy that " +
+                    "is in the active state to the inactive state.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully deactivated."),
+            @ApiResponse(code = 500, message = "Error in deactivating policies.")})
+    Response inactivatePolicy(@ApiParam(name = "policyIds", value = "Policy ID list to be deactivated.",
+            required = true) List<Integer> policyIds) throws MDMAPIException;
 
     @PUT
     @Produces("application/json")
     @Path("apply-changes")
-    public Response applyChanges() {
-
-        try {
-            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-            PolicyAdministratorPoint pap = policyManagementService.getPAP();
-            pap.publishChanges();
-
-
-        } catch (PolicyManagementException e) {
-            String msg = "Exception in applying changes.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Changes have been successfully updated.");
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Applying Changes on Policies.",
+            notes = "Policies in the active state will be applied to new device that register with WSO2 EMM based on" +
+                    " the policy enforcement criteria . In a situation where you need to make changes to existing" +
+                    " policies (removing, activating, deactivating and updating) or add new policies, the existing" +
+                    " devices will not receive these changes immediately. Once all the required changes are made" +
+                    " you need to apply the changes to push the policy changes to the existing devices.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Changes have been successfully updated."),
+            @ApiResponse(code = 500, message = "Error in updating policies.")})
+    Response applyChanges();
 
     @GET
     @Path("start-task/{milliseconds}")
-    public Response startTaskService(@PathParam("milliseconds") int monitoringFrequency) {
-
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        try {
-            TaskScheduleService taskScheduleService = policyManagementService.getTaskScheduleService();
-            taskScheduleService.startTask(monitoringFrequency);
-
-
-        } catch (PolicyMonitoringTaskException e) {
-            String msg = "Policy Management related exception.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Policy monitoring service started successfully.");
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Starting Policy Monitoring.",
+            notes = "WSO2 EMM monitors the devices to identify any devices that have not complied to an enforced " +
+                    "policy. The policy monitoring task begins at the point WSO2 EMM has a a published policy. " +
+                    "It will monitor the device based on the policy monitoring frequency that you define in " +
+                    "milliseconds.Using this REST API to start the policy monitoring task is optional as " +
+                    "WSO2 EMM uses an OSGI call to start the monitoring task")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policy monitoring service started successfully."),
+            @ApiResponse(code = 500, message = "Policy Management related exception when starting " +
+                    "monitoring service.")})
+    Response startTaskService(@ApiParam(name = "milliseconds", value = "Policy monitoring frequency in milliseconds.",
+            required = true) @PathParam("milliseconds") int monitoringFrequency);
 
     @GET
     @Path("update-task/{milliseconds}")
-    public Response updateTaskService(@PathParam("milliseconds") int monitoringFrequency) {
-
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        try {
-            TaskScheduleService taskScheduleService = policyManagementService.getTaskScheduleService();
-            taskScheduleService.updateTask(monitoringFrequency);
-
-        } catch (PolicyMonitoringTaskException e) {
-            String msg = "Policy Management related exception.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Policy monitoring service updated successfully.");
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    Response updateTaskService(@PathParam("milliseconds") int monitoringFrequency);
 
     @GET
     @Path("stop-task")
-    public Response stopTaskService() {
-
-        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        try {
-            TaskScheduleService taskScheduleService = policyManagementService.getTaskScheduleService();
-            taskScheduleService.stopTask();
-
-        } catch (PolicyMonitoringTaskException e) {
-            String msg = "Policy Management related exception.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.setStatusCode(HttpStatus.SC_OK);
-        responsePayload.setMessageFromServer("Policy monitoring service stopped successfully.");
-        return Response.status(Response.Status.OK).entity(responsePayload).build();
-    }
+    Response stopTaskService();
 
     @GET
     @Path("{type}/{id}")
-    public Response getComplianceDataOfDevice(@PathParam("type") String type, @PathParam("id") String id) {
-        try {
-            DeviceIdentifier deviceIdentifier = DeviceMgtAPIUtils.instantiateDeviceIdentifier(type, id);
-            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-            ComplianceData complianceData = policyManagementService.getDeviceCompliance(deviceIdentifier);
-            return Response.status(Response.Status.OK).entity(complianceData).build();
-        } catch (PolicyComplianceException e) {
-            String msg = "Error occurred while getting the compliance data.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    Response getComplianceDataOfDevice(@PathParam("type") String type, @PathParam("id") String id);
 
-	@GET
-	@Path("{type}/{id}/active-policy")
-    public Response getDeviceActivePolicy(@PathParam("type") String type,
-                                          @PathParam("id") String id) {
-        try {
-            DeviceIdentifier deviceIdentifier = DeviceMgtAPIUtils.instantiateDeviceIdentifier(type, id);
-            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-            org.wso2.carbon.policy.mgt.common.Policy policy = policyManagementService
-                    .getAppliedPolicyToDevice(deviceIdentifier);
-            return Response.status(Response.Status.OK).entity(policy).build();
-        } catch (PolicyManagementException e) {
-            String msg = "Error occurred while getting the current policy.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+    @GET
+    @Path("{type}/{id}/active-policy")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Policy Enforced Details of a Device.",
+            notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the EMM " +
+                    "filters the policies based on the Platform (device type), filters based on the device ownership" +
+                    " type , filters based on the user role or name and finally the policy is enforced on the device.",
+            response = org.wso2.carbon.policy.mgt.common.Policy.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched current policy."),
+            @ApiResponse(code = 500, message = "Error occurred while getting the current policy.")})
+    Response getDeviceActivePolicy(@ApiParam(name = "type", value = "Define the device type as the value for {type}." +
+            " Example: ios, android, windows..",
+            required = true) @PathParam("type") String type,
+                                   @ApiParam(name = "id", value = "Define the device ID as the value for {id}.",
+                                           required = true) @PathParam("id") String id);
 }

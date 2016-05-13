@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean;
 public class DetailedDeviceEntry {
 
     private int deviceId;
+    private String deviceIdentification;
     private String platform;
     private String ownershipType;
     private String connectivityStatus;
@@ -32,6 +33,15 @@ public class DetailedDeviceEntry {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
+    }
+
+    @SuppressWarnings("unused")
+    public String getDeviceIdentification() {
+        return deviceIdentification;
+    }
+
+    public void setDeviceIdentification(String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
     }
 
     @SuppressWarnings("unused")

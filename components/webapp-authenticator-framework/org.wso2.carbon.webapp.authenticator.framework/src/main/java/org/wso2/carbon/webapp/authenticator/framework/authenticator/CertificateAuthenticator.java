@@ -28,6 +28,7 @@ public class CertificateAuthenticator implements WebappAuthenticator {
     private static final Log log = LogFactory.getLog(CertificateAuthenticator.class);
     private static final String CERTIFICATE_AUTHENTICATOR = "CertificateAuth";
     private static final String MUTUAL_AUTH_HEADER = "mutual-auth-header";
+    private static final String PROXY_MUTUAL_AUTH_HEADER = "proxy-mutual-auth-header";
     private static final String CERTIFICATE_VERIFICATION_HEADER = "certificate-verification-header";
     private static final String CLIENT_CERTIFICATE_ATTRIBUTE = "javax.servlet.request.X509Certificate";
 
@@ -38,8 +39,8 @@ public class CertificateAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
-        if (request.getHeader(CERTIFICATE_VERIFICATION_HEADER) != null || request.getHeader(MUTUAL_AUTH_HEADER) !=
-                                                                         null) {
+        if (request.getHeader(CERTIFICATE_VERIFICATION_HEADER) != null || request.getHeader(MUTUAL_AUTH_HEADER) != null
+                || request.getHeader(PROXY_MUTUAL_AUTH_HEADER) != null) {
             return true;
         }
         return false;
@@ -56,35 +57,20 @@ public class CertificateAuthenticator implements WebappAuthenticator {
 
         String certVerificationHeader = request.getContext().findParameter(CERTIFICATE_VERIFICATION_HEADER);
         try {
-
-            if (request.getHeader(MUTUAL_AUTH_HEADER) != null) {
+            // When there is a load balancer terminating mutual SSL, it should pass this header along and
+            // as the value of this header, the client certificate subject dn should be passed.
+            if (request.getHeader(PROXY_MUTUAL_AUTH_HEADER) != null) {
+                CertificateResponse certificateResponse = AuthenticatorFrameworkDataHolder.getInstance().
+                        getCertificateManagementService().verifySubjectDN(request.getHeader(PROXY_MUTUAL_AUTH_HEADER));
+                authenticationInfo = checkCertificateResponse(certificateResponse);
+            }
+            else if (request.getHeader(MUTUAL_AUTH_HEADER) != null) {
                 X509Certificate[] clientCertificate = (X509Certificate[]) request.
                                                                         getAttribute(CLIENT_CERTIFICATE_ATTRIBUTE);
                 if (clientCertificate != null && clientCertificate[0] != null) {
                     CertificateResponse certificateResponse = AuthenticatorFrameworkDataHolder.getInstance().
                             getCertificateManagementService().verifyPEMSignature(clientCertificate[0]);
-                    if (certificateResponse == null) {
-                        authenticationInfo.setStatus(Status.FAILURE);
-                        authenticationInfo.setMessage("Certificate sent doesn't match any certificate in the store." +
-                                                      " Unauthorized access attempt.");
-                    } else if (certificateResponse.getCommonName() != null && !certificateResponse.getCommonName().
-                            isEmpty()) {
-                        authenticationInfo.setTenantId(certificateResponse.getTenantId());
-                        authenticationInfo.setStatus(Status.CONTINUE);
-                        authenticationInfo.setUsername(certificateResponse.getCommonName());
-                        try {
-                            authenticationInfo.setTenantDomain(Utils.
-                                                                            getTenantDomain(
-                                                                                    certificateResponse.getTenantId()));
-                        } catch (AuthenticationException e) {
-                            authenticationInfo.setStatus(Status.FAILURE);
-                            authenticationInfo.setMessage("Could not identify tenant domain.");
-                        }
-                    } else {
-                        authenticationInfo.setStatus(Status.FAILURE);
-                        authenticationInfo.setMessage("A matching certificate is found, " +
-                                                      "but the serial number is missing in the database.");
-                    }
+                    authenticationInfo = checkCertificateResponse(certificateResponse);
 
                 } else {
                     authenticationInfo.setStatus(Status.FAILURE);
@@ -129,6 +115,33 @@ public class CertificateAuthenticator implements WebappAuthenticator {
             log.error("KeystoreException occurred ", e);
         } catch (SCEPException e) {
             log.error("SCEPException occurred ", e);
+        }
+        return authenticationInfo;
+    }
+
+    private AuthenticationInfo checkCertificateResponse(CertificateResponse certificateResponse) {
+        AuthenticationInfo authenticationInfo = new AuthenticationInfo();
+        if (certificateResponse == null) {
+            authenticationInfo.setStatus(Status.FAILURE);
+            authenticationInfo.setMessage("Certificate sent doesn't match any certificate in the store." +
+                                          " Unauthorized access attempt.");
+        } else if (certificateResponse.getCommonName() != null && !certificateResponse.getCommonName().
+                isEmpty()) {
+            authenticationInfo.setTenantId(certificateResponse.getTenantId());
+            authenticationInfo.setStatus(Status.CONTINUE);
+            authenticationInfo.setUsername(certificateResponse.getCommonName());
+            try {
+                authenticationInfo.setTenantDomain(Utils.
+                                                                getTenantDomain(
+                                                                        certificateResponse.getTenantId()));
+            } catch (AuthenticationException e) {
+                authenticationInfo.setStatus(Status.FAILURE);
+                authenticationInfo.setMessage("Could not identify tenant domain.");
+            }
+        } else {
+            authenticationInfo.setStatus(Status.FAILURE);
+            authenticationInfo.setMessage("A matching certificate is found, " +
+                                          "but the serial number is missing in the database.");
         }
         return authenticationInfo;
     }

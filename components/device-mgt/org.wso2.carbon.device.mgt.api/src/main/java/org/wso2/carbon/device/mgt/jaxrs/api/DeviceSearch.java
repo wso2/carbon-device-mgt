@@ -16,40 +16,37 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
-import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
-import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
+/**
+ * Device search related operations such as getting device information.
+ */
+@Path("/search")
+@Api(value = "DeviceSearch", description = "Device searching related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
-public class DeviceSearch {
-
-    private static Log log = LogFactory.getLog(DeviceSearch.class);
+public interface DeviceSearch {
 
     @GET
-    public Response getDeviceInfo(SearchContext searchContext) {
-        SearchManagerService searchManagerService;
-        List<DeviceWrapper> devices;
-        try {
-            searchManagerService = DeviceMgtAPIUtils.getSearchManagerService();
-            devices = searchManagerService.search(searchContext);
-
-        } catch (SearchMgtException e) {
-            String msg = "Error occurred while searching the device information.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.OK).entity(devices).build();
-    }
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Advanced Search for Devices via the Console",
+            notes = "Carry out an advanced search via the EMM console",
+            response = DeviceWrapper.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = DeviceWrapper.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "Error occurred while searching the device information")
+            })
+    Response getFilteredDeviceInfo(@ApiParam(name = "enrollmentCertificates", value = "List of search conditions",
+                                    required = true) SearchContext searchContext);
 }
-

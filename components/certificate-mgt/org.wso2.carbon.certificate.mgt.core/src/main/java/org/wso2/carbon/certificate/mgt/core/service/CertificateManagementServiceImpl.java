@@ -108,6 +108,10 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         return certificateGenerator.verifyPEMSignature(requestCertificate);
     }
 
+    @Override public CertificateResponse verifySubjectDN(String requestDN) throws KeystoreException {
+        return certificateGenerator.verifyCertificateDN(requestDN);
+    }
+
     public X509Certificate extractCertificateFromSignature(String headerSignature) throws KeystoreException {
         return certificateGenerator.extractCertificateFromSignature(headerSignature);
     }

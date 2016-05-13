@@ -20,16 +20,28 @@ package org.wso2.carbon.device.mgt.common;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 import java.util.List;
+import io.swagger.annotations.*;
 
+@ApiModel(value = "Feature", description = "This class carries all information related to a devices enrollment" +
+                                                 " status.")
 public class Feature implements Serializable {
 
+    @ApiModelProperty(name = "id", value = "Feature Id.", required = true )
     private int id;
+    @ApiModelProperty(name = "code", value = "The code of the feature. For example the code to lock a device" +
+                                             " is DEVICE_LOCK.", required = true )
     private String code;
+    @ApiModelProperty(name = "name", value = "A name that describes a feature.", required = true )
     private String name;
+    @ApiModelProperty(name = "description", value = "Provides a description of the features..", required = true )
     private String description;
+    @ApiModelProperty(name = "deviceType", value = "Provide the device type for the respective feature. " +
+                                                   "Features allow you to perform operations on any device type, " +
+                                                   "such as android, iOS or windows..", required = true )
     private String deviceType;
     private String method;
     private String type;
+    @ApiModelProperty(name = "metadataEntries", value = "Properties related to features.", required = true )
     private List<MetadataEntry> metadataEntries;
 
     @XmlElement

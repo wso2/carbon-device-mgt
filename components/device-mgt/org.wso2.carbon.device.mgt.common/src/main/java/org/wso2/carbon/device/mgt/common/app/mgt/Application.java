@@ -18,25 +18,40 @@
  */
 package org.wso2.carbon.device.mgt.common.app.mgt;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.Properties;
 
+@ApiModel(value = "Application", description = "This class carries all information related application")
 public class Application implements Serializable {
 
     private static final long serialVersionUID = 1998101711L;
 
+    @ApiModelProperty(name = "id", value = "The ID given to the application when it is stored in the EMM database", required = true)
     private int id;
+    @ApiModelProperty(name = "platform", value = "The mobile device platform. It can be android, ios or windows", required = true)
     private String platform;
+    @ApiModelProperty(name = "category", value = "The application category", required = true)
     private String category;
+    @ApiModelProperty(name = "name", value = "The application's name", required = true)
     private String name;
-    private String locationUrl;
-    private String imageUrl;
-    private String version;
-    private String type;
-    private Properties appProperties;
-    private String applicationIdentifier;
 
+    private String locationUrl;
+    @ApiModelProperty(name = "imageUrl", value = "The icon url of the application", required = true)
+    private String imageUrl;
+    @ApiModelProperty(name = "version", value = "The application's version", required = true)
+    private String version;
+    @ApiModelProperty(name = "type", value = "The application type", required = true)
+    private String type;
+    @ApiModelProperty(name = "appProperties", value = "The properties of the application", required = true)
+    private Properties appProperties;
+    @ApiModelProperty(name = "applicationIdentifier", value = "The application identifier", required = true)
+    private String applicationIdentifier;
+    @ApiModelProperty(name = "memoryUsage", value = "AMount of memory used by the application", required = true)
     private int memoryUsage;
+
 
     public String getType() {
         return type;

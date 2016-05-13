@@ -18,21 +18,52 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.Device;
 import java.util.List;
 
+@ApiModel(value = "PolicyWrapper", description = "This class carries all information related to Policy "
+        + "Wrappers")
 public class PolicyWrapper {
 
+    @ApiModelProperty(name = "id", value = "The policy ID", required = true)
     private int id;
+    @ApiModelProperty(name = "profile", value = "Contains the details of the profile that is included in the"
+            + " policy", required = true)
     private Profile profile;
+    @ApiModelProperty(name = "policyName", value = "The name of the policy", required = true)
     private String policyName;
+    @ApiModelProperty(name = "description", value = "Gives a description on the policy", required = true)
     private String description;
+    @ApiModelProperty(name = "compliance", value = "Provides the non-compliance rules. WSO2 EMM provides the"
+            + " following non-compliance rules:\n"
+            + "Enforce - Forcefully enforce the policies on the devices\n"
+            + "Warning - If the device does not adhere to the given policies a warning message will be sent\n"
+            + "Monitor - If the device does not adhere to the given policies the server is notified of the "
+            + "violation unknown to the user and the administrator can take the necessary actions with regard"
+            + " to the reported", required = true)
     private String compliance;
+    @ApiModelProperty(name = "roles", value = "The roles to whom the policy is applied on", required = true)
     private List<String> roles;
+    @ApiModelProperty(name = "ownershipType", value = "The policy ownership type. It can be any of the "
+            + "following values:\n"
+            + "ANY - The policy will be applied on the BYOD and COPE device types\n"
+            + "BYOD (Bring Your Own Device) - The policy will only be applied on the BYOD device type\n"
+            + "COPE (Corporate-Owned, Personally-Enabled) - The policy will only be applied on the COPE "
+            + "device type", required = true)
     private String ownershipType;
+    @ApiModelProperty(name = "devices", value = "Lists out the devices the policy is enforced on",
+            required = true)
     private List<Device> devices;
+    @ApiModelProperty(name = "users", value = "Lists out the users on whose devices the policy is enforced",
+            required = true)
     private List<String> users;
+    @ApiModelProperty(name = "tenantId", value = "The ID of the tenant that created the policy",
+            required = true)
     private int tenantId;
+    @ApiModelProperty(name = "profileId", value = "The ID of each profile that is in the selected policy",
+            required = true)
     private int profileId;
 
     public int getId() {

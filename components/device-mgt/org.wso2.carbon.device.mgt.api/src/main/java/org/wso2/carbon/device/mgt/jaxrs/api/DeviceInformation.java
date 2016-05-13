@@ -18,14 +18,9 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,8 +31,8 @@ import javax.ws.rs.core.Response;
 /**
  * Device information related operations.
  */
-@Api(value = "DeviceInfo")
 @Path("/information")
+@Api(value = "DeviceInformation", description = "Device information related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface DeviceInformation {
 

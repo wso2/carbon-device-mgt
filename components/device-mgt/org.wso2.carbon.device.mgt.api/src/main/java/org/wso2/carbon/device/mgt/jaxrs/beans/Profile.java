@@ -18,15 +18,16 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
-
-
+import io.swagger.annotations.ApiModel;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.sql.Timestamp;
 import java.util.List;
 
 @XmlRootElement
+@ApiModel(value = "Profile", description = "testttt")
 public class Profile {
 
     private int profileId;

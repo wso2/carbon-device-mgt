@@ -27,8 +27,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Api(value = "Role")
 @Path("/roles")
+@Api(value = "Role", description = "Role management related operations can be found here.")
 public interface Role {
 
     @GET
@@ -192,7 +192,7 @@ public interface Role {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting the Role Count.",
-            response = Integer.class,
+            response = int.class,
             notes = "Get the number of roles in WSO2 EMM.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Retrieved the role count."),
                             @ApiResponse(code = 500, message = "Error occurred while retrieving the role count.") })

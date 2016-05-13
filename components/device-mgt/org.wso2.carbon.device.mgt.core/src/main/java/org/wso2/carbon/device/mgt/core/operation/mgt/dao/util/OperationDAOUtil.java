@@ -95,7 +95,7 @@ public class OperationDAOUtil {
         operation.setReceivedTimeStamp(dtoOperation.getReceivedTimeStamp());
         operation.setEnabled(dtoOperation.isEnabled());
         operation.setProperties(dtoOperation.getProperties());
-        operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + dtoOperation.getId());
+        operation.setActivityId(dtoOperation.getActivityId());
 
 
         return operation;

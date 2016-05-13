@@ -29,8 +29,8 @@ import javax.ws.rs.core.Response;
 /**
  * Device related operations such as get all the available devices, etc.
  */
-@Api(value = "Devices", description = "")
 @Path("/devices")
+@Api(value = "Device", description = "Device related operations such as get all the available devices, etc.")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface Device {
 
@@ -119,7 +119,7 @@ public interface Device {
             httpMethod = "GET",
             value = "Getting the Device Count",
             notes = "Get the number of devices that are registered with WSO2 EMM.",
-            response = Integer.class)
+            response = int.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Device count"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the device count")

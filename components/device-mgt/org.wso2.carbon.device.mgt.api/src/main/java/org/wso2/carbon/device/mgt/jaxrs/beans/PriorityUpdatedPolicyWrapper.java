@@ -18,9 +18,17 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value = "PriorityUpdatedPolicyWrapper", description = "This class carries all information related "
+        + "to Priority Updated Policy Wrapper ")
 public class PriorityUpdatedPolicyWrapper {
 
+    @ApiModelProperty(name = "id", value = "Define the ID of the policy", required = true)
     private int id;
+    @ApiModelProperty(name = "priority", value = "Define the priority of the order, where 1 indicates the "
+            + "highest priority", required = true)
     private int priority;
 
     public int getId() {

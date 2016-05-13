@@ -19,15 +19,30 @@
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import com.google.gson.Gson;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
+@ApiModel(value = "ProfileFeature", description = "This class carries all information related to profile "
+        + "features")
 public class ProfileFeature implements Serializable {
 
+    @ApiModelProperty(name = "id", value = "Define the ID", required = true)
     private int id;
+    @ApiModelProperty(name = "featureCode", value = "Provide the code that defines the policy you wish to add",
+            required = true)
     private String featureCode;
+    @ApiModelProperty(name = "profileId", value = "Define the ID of the profile", required = true)
     private int profileId;
+    @ApiModelProperty(name = "deviceTypeId", value = "The ID used to define the type of the device platform",
+            required = true)
     private int deviceTypeId;
+    @ApiModelProperty(name = "content", value = "The list of parameters that define the policy",
+            required = true)
     private Object content;
+    @ApiModelProperty(name = "payLoad", value = "The payload which is submitted to each feature",
+            required = true)
     private String payLoad;
 
     public int getId() {

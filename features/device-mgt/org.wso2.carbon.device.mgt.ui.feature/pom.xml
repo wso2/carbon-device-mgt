@@ -57,7 +57,7 @@
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>
-                                        ${project.build.directory}/maven-shared-archive-resources/jaggeryapps/devicemgt-cdmf
+                                        ${project.build.directory}/maven-shared-archive-resources
                                     </outputDirectory>
                                     <includes>**/*</includes>
                                 </artifactItem>

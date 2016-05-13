@@ -65,7 +65,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
     @Override
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getRoles() {
+    public Response getAllRoles() {
         List<String> filteredRoles;
         try {
             filteredRoles = getRolesFromUserStore();
@@ -89,7 +89,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
     @GET
     @Path("{userStore}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getRoles(@PathParam("userStore") String userStore) {
+    public Response getRolesOfUserStore(@PathParam("userStore") String userStore) {
         String[] roles;
         try {
             AbstractUserStoreManager abstractUserStoreManager =

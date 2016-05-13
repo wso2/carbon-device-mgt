@@ -103,7 +103,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
     @Override
     @GET
     @Path("{type}/{id}")
-    public Response getDeviceOperations(@PathParam("type") String type, @PathParam("id") String id) {
+    public Response getAllDeviceOperations(@PathParam("type") String type, @PathParam("id") String id) {
         List<? extends org.wso2.carbon.device.mgt.common.operation.mgt.Operation> operations;
         DeviceManagementProviderService dmService;
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();

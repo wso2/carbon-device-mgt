@@ -18,13 +18,8 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -34,9 +29,9 @@ import javax.ws.rs.core.Response;
  * General Tenant Configuration REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
+@Path("/configuration")
 @Api(value = "Configuration", description = "General Tenant Configuration management capabilities are exposed " +
-                                            "through " +
-                                            "this API")
+                                            "through this API")
 @SuppressWarnings("NonJaxWsWebServices")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })

@@ -19,9 +19,17 @@
 
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value = "OperationResponse", description = "This class carries all information related to operation"
+        + " responses")
 public class OperationResponse {
 
+    @ApiModelProperty(name = "response", value = "Operation response return from the device", required = true)
     private String response;
+    @ApiModelProperty(name = "recievedTimeStamp", value = "Time that the operation response received",
+            required = true)
     private String recievedTimeStamp;
 
     public String getResponse() {

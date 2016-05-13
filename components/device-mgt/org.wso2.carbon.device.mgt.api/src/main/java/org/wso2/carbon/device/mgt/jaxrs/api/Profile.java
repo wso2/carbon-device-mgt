@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
  * These end points provide profile related operations.
  */
 @Api(value = "Profile")
+@Path("/profiles")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface Profile {
 

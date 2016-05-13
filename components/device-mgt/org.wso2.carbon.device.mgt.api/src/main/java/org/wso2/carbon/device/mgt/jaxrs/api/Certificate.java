@@ -18,15 +18,10 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentCertificate;
 
 import javax.ws.rs.*;
@@ -39,6 +34,7 @@ import javax.ws.rs.core.Response;
 @Api(value = "Certificate", description = "Certificate related tasks such as saving certificates, " +
                                           "can be done through this API")
 @SuppressWarnings("NonJaxWsWebServices")
+@Path("/certificates")
 @Produces({ "application/json", "application/xml" })
 @Consumes({ "application/json", "application/xml" })
 public interface Certificate {
@@ -83,7 +79,7 @@ public interface Certificate {
             notes = "Get the client side SSL certificate details",
             response = CertificateResponse.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 200, message = "OK", response = CertificateResponse.class),
             @ApiResponse(code = 400, message = "Notification status updated successfully"),
             @ApiResponse(code = 500, message = "Error occurred while converting PEM file to X509Certificate")
             })
@@ -112,7 +108,7 @@ public interface Certificate {
                     + "page therefore the details are paginated",
             response = PaginationResult.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 200, message = "OK", response = PaginationResult.class),
             @ApiResponse(code = 400, message = "Invalid start index"),
             @ApiResponse(code = 400, message = "Invalid length value"),
             @ApiResponse(code = 500, message = "Error occurred while fetching all certificates")

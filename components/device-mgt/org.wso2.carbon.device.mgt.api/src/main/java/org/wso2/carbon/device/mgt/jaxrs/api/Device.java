@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 /**
  * Device related operations such as get all the available devices, etc.
  */
-
+@Path("/devices")
 @Api(value = "Device", description = "Device related operations such as get all the available devices, etc.")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface Device {
@@ -41,6 +41,7 @@ public interface Device {
      * @return Device List
      */
     @GET
+    @Path("devices")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
@@ -95,7 +96,7 @@ public interface Device {
      */
     @GET
     @Path("user/{user}")
-    Response getDevice(@PathParam("user") String user);
+    Response getDeviceOfUser(@PathParam("user") String user);
 
     /**
      * Fetch device count of a given user.
@@ -105,7 +106,7 @@ public interface Device {
      */
     @GET
     @Path("user/{user}/count")
-    Response getDeviceCount(@PathParam("user") String user);
+    Response getDeviceCountOfUser(@PathParam("user") String user);
 
     /**
      * Get current device count
@@ -118,7 +119,7 @@ public interface Device {
             httpMethod = "GET",
             value = "Getting the Device Count",
             notes = "Get the number of devices that are registered with WSO2 EMM.",
-            response = Integer.class)
+            response = int.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Device count"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the device count")

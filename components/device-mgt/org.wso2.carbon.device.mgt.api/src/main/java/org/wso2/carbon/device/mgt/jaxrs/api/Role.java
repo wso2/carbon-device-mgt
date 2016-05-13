@@ -19,26 +19,15 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleWrapper;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-/**
- *
- */
+@Path("/roles")
 @Api(value = "Role", description = "Role management related operations can be found here.")
 public interface Role {
 
@@ -54,7 +43,7 @@ public interface Role {
             response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of available roles"),
                             @ApiResponse(code = 500, message = "Error occurred while fetching the role list.") })
-    Response getRoles();
+    Response getAllRoles();
 
     @GET
     @Path("{userStore}")
@@ -69,7 +58,7 @@ public interface Role {
             response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of available roles"),
                             @ApiResponse(code = 500, message = "Error occurred while fetching the role list.") })
-    Response getRoles(@ApiParam(name = "userStore", value = "Provide the name of the UserStore you wish to get the" +
+    Response getRolesOfUserStore(@ApiParam(name = "userStore", value = "Provide the name of the UserStore you wish to get the" +
                                                             " details from ",
                                  required = true) @PathParam("userStore") String userStore);
 
@@ -203,9 +192,10 @@ public interface Role {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting the Role Count.",
-            response = Integer.class,
+            response = int.class,
             notes = "Get the number of roles in WSO2 EMM.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Retrieved the role count."),
                             @ApiResponse(code = 500, message = "Error occurred while retrieving the role count.") })
     Response getRoleCount();
+
 }

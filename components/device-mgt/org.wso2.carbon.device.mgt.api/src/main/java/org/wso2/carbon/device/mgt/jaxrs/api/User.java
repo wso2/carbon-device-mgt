@@ -18,25 +18,12 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.apache.axis2.databinding.types.soapencoding.Integer;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -44,6 +31,7 @@ import java.util.List;
 /**
  * This represents the JAX-RS services of User related functionality.
  */
+@Path("/users")
 @Api(value = "User", description = "User management related operations can be found here.")
 public interface User {
 
@@ -138,7 +126,7 @@ public interface User {
             @ApiResponse(code = 400, message = "User by username: 'username' does not exist for role retrieval"),
             @ApiResponse(code = 500, message = "Exception in trying to retrieve roles for user by username: 'username'")
             })
-    Response getRoles(@ApiParam(name = "username", value = "Provide the user name of the user you wish to get"
+    Response getRolesOfUser(@ApiParam(name = "username", value = "Provide the user name of the user you wish to get"
                             + " the role details", required = true) @QueryParam("username") String username);
 
     @GET
@@ -253,7 +241,7 @@ public interface User {
             httpMethod = "GET",
             value = "Getting the User Count",
             notes = "Get the number of users in WSO2 EMM",
-            response = Integer.class)
+            response = int.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users that exist"
@@ -264,7 +252,7 @@ public interface User {
     @PUT
     @Path("{roleName}/users")
     @Produces({MediaType.APPLICATION_JSON})
-    Response updateRoles(@PathParam("username") String username, List<String> userList);
+    Response updateRoles(@PathParam("roleName") String roleName, List<String> userList);
 
     @POST
     @Path("change-password")

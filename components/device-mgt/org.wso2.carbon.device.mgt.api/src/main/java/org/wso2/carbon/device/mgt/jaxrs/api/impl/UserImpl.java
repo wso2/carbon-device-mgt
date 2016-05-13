@@ -371,7 +371,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
     @GET
     @Path("roles")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getRoles(@QueryParam("username") String username) {
+    public Response getRolesOfUser(@QueryParam("username") String username) {
         ResponsePayload responsePayload = new ResponsePayload();
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
@@ -716,7 +716,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
     @PUT
     @Path("{roleName}/users")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response updateRoles(@PathParam("username") String username, List<String> userList) {
+    public Response updateRoles(@PathParam("roleName") String username, List<String> userList) {
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (log.isDebugEnabled()) {

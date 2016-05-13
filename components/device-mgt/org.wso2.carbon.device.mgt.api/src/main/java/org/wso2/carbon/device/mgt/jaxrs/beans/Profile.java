@@ -20,6 +20,8 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,14 +29,26 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @XmlRootElement
+@ApiModel(value = "Profile", description = "This class carries all information related to policy profiles")
 public class Profile {
 
+    @ApiModelProperty(name = "profileId", value = "The ID of each profile that is in the selected policy",
+            required = true)
     private int profileId;
+    @ApiModelProperty(name = "profileName", value = "The name of the profile", required = true)
     private String profileName;
+    @ApiModelProperty(name = "tenantId", value = "The ID of the tenant that added the policy", required = true)
     private int tenantId;
+    @ApiModelProperty(name = "deviceType", value = "Contains the device type details the policy was created "
+            + "for", required = true)
     private DeviceType deviceType;
+    @ApiModelProperty(name = "createdDate", value = "The date the policy was created", required = true)
     private Timestamp createdDate;
+    @ApiModelProperty(name = "updatedDate", value = "The date the changes made to the policy was published to"
+            + " the devices registered with the EMM", required = true)
     private Timestamp updatedDate;
+    @ApiModelProperty(name = "profileFeaturesList", value = "Contains the features specific to each profile "
+            + "in the policy", required = true)
     private List<ProfileFeature> profileFeaturesList;     // Features included in the policies.
 
     public DeviceType getDeviceType() {

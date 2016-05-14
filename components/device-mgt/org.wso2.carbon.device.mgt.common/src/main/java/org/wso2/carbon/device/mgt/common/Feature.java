@@ -39,8 +39,7 @@ public class Feature implements Serializable {
                                                    "Features allow you to perform operations on any device type, " +
                                                    "such as android, iOS or windows..", required = true )
     private String deviceType;
-    private String method;
-    private String type;
+    
     @ApiModelProperty(name = "metadataEntries", value = "Properties related to features.", required = true )
     private List<MetadataEntry> metadataEntries;
 
@@ -95,24 +94,6 @@ public class Feature implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @XmlElement
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @XmlElement
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
     }
 
     public static class MetadataEntry implements Serializable {

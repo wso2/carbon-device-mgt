@@ -40,14 +40,11 @@ var operationModule = function () {
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
         var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/features/" + deviceType;
         var featuresList = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-            var features = responsePayload;
-            var featureList = [];
-            var feature;
-            for (var i = 0; i < features.length; i++) {
-                feature = {};
-                if (features[i].type != operationType) {
-                    continue;
-                } else if (features[i].type == 'monitor') {
+                var features = responsePayload;
+                var featureList = [];
+                var feature;
+                for (var i = 0; i < features.length; i++) {
+                    feature = {};
                     var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
                     if (analyticStreams) {
                         for (var stream in analyticStreams) {
@@ -57,23 +54,22 @@ var operationModule = function () {
                             }
                         }
                     }
-                }
-                feature["operation"] = features[i].code;
-                feature["name"] = features[i].name;
-                feature["method"] = features[i].method;
-                feature["description"] = features[i].description;
-                feature["deviceType"] = deviceType;
-                feature["params"] = [];
-                var metaData = features[i].metadataEntries;
-                if (metaData) {
-                    for (var j = 0; j < metaData.length; j++) {
-                        feature["params"].push(metaData[j].value);
+
+                    feature["operation"] = features[i].code;
+                    feature["name"] = features[i].name;
+                    feature["description"] = features[i].description;
+                    feature["deviceType"] = deviceType;
+                    feature["params"] = [];
+                    var metaData = features[i].metadataEntries;
+                    if (metaData) {
+                        for (var j = 0; j < metaData.length; j++) {
+                            feature["params"].push(metaData[j].value);
+                        }
+                        featureList.push(feature);
                     }
-                    featureList.push(feature);
                 }
-            }
-            return featureList;
-        }, function (responsePayload) {
+                return featureList;
+            }, function (responsePayload) {
                 var response = {};
                 response["status"] = "error";
                 return response;

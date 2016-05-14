@@ -32,6 +32,8 @@ import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementException;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.deviceType.DTConfiguration;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -47,9 +49,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class AnnotationUtil {
+public class AnnotationProcessor {
 
-    private static final Log log = LogFactory.getLog(AnnotationUtil.class);
+    private static final Log log = LogFactory.getLog(AnnotationProcessor.class);
 
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
@@ -70,7 +72,7 @@ public class AnnotationUtil {
     private ServletContext servletContext;
 
 
-    public AnnotationUtil(final StandardContext context) {
+    public AnnotationProcessor(final StandardContext context) {
         this.context = context;
         servletContext = context.getServletContext();
         classLoader = servletContext.getClassLoader();
@@ -175,6 +177,7 @@ public class AnnotationUtil {
 
     /**
      * Iterate API annotation and build API Configuration
+     *
      * @param apiAnno
      * @return
      * @throws Throwable
@@ -204,6 +207,7 @@ public class AnnotationUtil {
 
     /**
      * Get Resources for each API
+     *
      * @param resourceRootContext
      * @param apiRootContext
      * @param annotatedMethods
@@ -221,8 +225,11 @@ public class AnnotationUtil {
                 APIResource resource = new APIResource();
                 resource.setUriTemplate(makeContextURLReady(apiRootContext + subCtx));
 
-                String serverIP = System.getProperty(SERVER_HOST);
-                String httpServerPort = System.getProperty(HTTP_PORT);
+                DTConfiguration deviceTypeConfig = DeviceConfigurationManager.getInstance().
+                        getDeviceManagementConfig().getDTDeploymentConfiguration();
+
+                String serverIP = deviceTypeConfig.getDtHostAddress();
+                String httpServerPort = deviceTypeConfig.getDtHostPort();
 
                 resource.setUri(PROTOCOL_HTTP + "://" + serverIP + ":" + httpServerPort + makeContextURLReady(
                         resourceRootContext) + makeContextURLReady(subCtx));
@@ -266,6 +273,7 @@ public class AnnotationUtil {
 
     /**
      * Read Method annotations indicating HTTP Methods
+     *
      * @param resource
      * @param annotation
      */
@@ -289,6 +297,7 @@ public class AnnotationUtil {
 
     /**
      * Append '/' to the context and make it URL ready
+     *
      * @param context
      * @return
      */

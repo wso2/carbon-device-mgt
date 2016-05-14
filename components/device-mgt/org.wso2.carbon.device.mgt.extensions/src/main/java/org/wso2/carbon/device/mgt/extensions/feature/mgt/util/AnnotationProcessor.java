@@ -55,9 +55,9 @@ import java.util.Set;
 /**
  * This has the utility function to extract feature information.
  */
-public class AnnotationUtil {
+public class AnnotationProcessor {
 
-    private static final Log log = LogFactory.getLog(AnnotationUtil.class);
+    private static final Log log = LogFactory.getLog(AnnotationProcessor.class);
 
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
@@ -71,7 +71,7 @@ public class AnnotationUtil {
     private ServletContext servletContext;
 
 
-    public AnnotationUtil(final StandardContext context) {
+    public AnnotationProcessor(final StandardContext context) {
         servletContext = context.getServletContext();
         classLoader = servletContext.getClassLoader();
     }

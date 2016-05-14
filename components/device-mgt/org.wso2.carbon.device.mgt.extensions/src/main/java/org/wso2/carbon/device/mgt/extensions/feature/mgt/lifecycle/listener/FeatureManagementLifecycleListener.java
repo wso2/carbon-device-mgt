@@ -55,7 +55,7 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
 
             String profile = System.getProperty(DeviceManagementConstants.Common.PROPERTY_PROFILE);
 
-            if ((profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DT_GOVERN) ||
+            if ((profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DT_WORKER) ||
                     profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DEFAULT)) && isManagedApi) {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);

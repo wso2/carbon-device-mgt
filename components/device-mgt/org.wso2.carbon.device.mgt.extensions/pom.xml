@@ -90,6 +90,10 @@
             <groupId>commons-lang.wso2</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -110,6 +114,7 @@
                         <Import-Package>
                             org.wso2.carbon.governance.api.*,
                             javax.xml.namespace;resolution:=optional,
+                            org.wso2.carbon.device.mgt.core.*,
                             org.wso2.carbon.context,
                             org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.common.license.mgt,

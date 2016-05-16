@@ -254,7 +254,7 @@ $(document).ready(function () {
                     if (data.errorMessage) {
                         $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
                         $(errorMsgWrapper).removeClass("hidden");
-                    } else if (data["status"] == 201) {
+                    } else if (data["statusCode"] == 201) {
                         // Clearing user input fields.
                         $("input#username").val("");
                         $("input#firstname").val("");
@@ -265,17 +265,17 @@ $(document).ready(function () {
                         $("#user-create-form").addClass("hidden");
                         $("#user-created-msg").removeClass("hidden");
                         generateQRCode("#user-created-msg .qr-code");
-                    } else if (data["status"] == 409) {
+                    } else if (data["statusCode"] == 409) {
                         $(errorMsg).text(data["messageFromServer"]);
                         $(errorMsgWrapper).removeClass("hidden");
-                    } else if (data["status"] == 500) {
+                    } else if (data["statusCode"] == 500) {
                         $(errorMsg).text("An unexpected error occurred at backend server. Please try again later.");
                         $(errorMsgWrapper).removeClass("hidden");
                     }
                 }, function (data) {
-                    if (data["status"] == 409) {
+                        if (data["statusCode"] == 409) {
                         $(errorMsg).text("User : " + username + " already exists. Pick another username.");
-                    } else if (data["status"] == 500) {
+                        } else if (data["statusCode"] == 500) {
                         $(errorMsg).text("An unexpected error occurred at backend server. Please try again later.");
                     } else {
                         $(errorMsg).text(data.errorMessage);

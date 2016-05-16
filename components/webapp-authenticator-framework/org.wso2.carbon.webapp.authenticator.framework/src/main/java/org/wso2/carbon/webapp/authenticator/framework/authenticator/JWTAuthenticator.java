@@ -86,7 +86,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
             SignedJWT jwsObject = SignedJWT.parse(authorizationHeader);
             String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
-            int tenantId = jwsObject.getJWTClaimsSet().getIntegerClaim(SIGNED_JWT_AUTH_TENANT_ID);
+            int tenantId = Integer.parseInt(jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_TENANT_ID));
             PublicKey publicKey =  publicKeyHolder.get(tenantDomain);
             if (publicKey == null) {
                 loadTenantRegistry(tenantId);
@@ -97,7 +97,8 @@ public class JWTAuthenticator implements WebappAuthenticator {
 
             //Get the filesystem keystore default primary certificate
             JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
-            if (jwsObject.verify(verifier)) {
+            //https://wso2.org/jira/browse/APIMANAGER-4504 need to change this to jwsObject.verify(verifier)
+            if (username != null && !username.isEmpty() && tenantDomain != null && !tenantDomain.isEmpty()) {
                 username = MultitenantUtils.getTenantAwareUsername(username);
                 if (tenantId == -1) {
                     log.error("tenantDomain is not valid. username : " + username + ", tenantDomain " +

@@ -31,7 +31,6 @@ import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationProcessor;
-import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -43,6 +42,9 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
     private static final Log log = LogFactory.getLog(APIPublisherLifecycleListener.class);
     private static final String PARAM_MANAGED_API_ENABLED = "managed-api-enabled";
+    public static final String PROPERTY_PROFILE = "profile";
+    public static final String PROFILE_DT_WORKER = "dtWorker";
+    public static final String PROFILE_DEFAULT = "default";
 
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
@@ -52,10 +54,10 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
 
-            String profile = System.getProperty(DeviceManagementConstants.Common.PROPERTY_PROFILE);
+            String profile = System.getProperty(PROPERTY_PROFILE);
 
-            if ((profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DT_WORKER) ||
-                    profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DEFAULT)) && isManagedApi) {
+            if ((profile.equalsIgnoreCase(PROFILE_DT_WORKER) ||
+                    profile.equalsIgnoreCase(PROFILE_DEFAULT)) && isManagedApi) {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
                     Set<String> annotatedAPIClasses = annotationProcessor.

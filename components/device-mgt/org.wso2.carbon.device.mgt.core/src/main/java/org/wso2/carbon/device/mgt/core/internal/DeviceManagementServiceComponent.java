@@ -54,6 +54,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceIm
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -100,6 +101,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setConfigurationContextService"
  * unbind="unsetConfigurationContextService"
+ * @scr.reference name="email.sender.service"
+ * interface="org.wso2.carbon.email.sender.core.service.EmailSenderService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setEmailSenderService"
+ * unbind="unsetEmailSenderService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -358,6 +365,20 @@ public class DeviceManagementServiceComponent {
             log.debug("Un-setting ConfigurationContextService");
         }
         DeviceManagementDataHolder.getInstance().setConfigurationContextService(null);
+    }
+
+    protected void setEmailSenderService(EmailSenderService emailSenderService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Email Sender Service");
+        }
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(emailSenderService);
+    }
+
+    protected void unsetEmailSenderService(EmailSenderService emailSenderService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting Email Sender Service");
+        }
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(null);
     }
 
 }

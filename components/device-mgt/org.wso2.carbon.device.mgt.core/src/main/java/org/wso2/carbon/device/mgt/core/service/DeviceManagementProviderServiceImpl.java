@@ -47,6 +47,9 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.email.sender.core.ContentProviderInfo;
+import org.wso2.carbon.email.sender.core.EmailContext;
+import org.wso2.carbon.email.sender.core.EmailSendingFailedException;
 import org.wso2.carbon.email.sender.core.TypedValue;
 import org.wso2.carbon.user.api.UserStoreException;
 
@@ -540,14 +543,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
-//        try {
-//            EmailContext ctx =
-//                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-enrollment", params),
-//                            metaInfo.getRecipients()).build();
-////            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
-//        } catch (EmailSendingFailedException e) {
-//            throw new DeviceManagementException("Error occurred while sending enrollment invitation", e);
-//        }
+        try {
+            EmailContext ctx =
+                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-enrollment", params),
+                                                         metaInfo.getRecipients()).build();
+            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
+        } catch (EmailSendingFailedException e) {
+            throw new DeviceManagementException("Error occurred while sending enrollment invitation", e);
+        }
     }
 
     @Override
@@ -565,14 +568,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
-//        try {
-//            EmailContext ctx =
-//                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-registration", params),
-//                            metaInfo.getRecipients()).build();
-//            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
-//        } catch (EmailSendingFailedException e) {
-//            throw new DeviceManagementException("Error occurred while sending user registration notification", e);
-//        }
+        try {
+            EmailContext ctx =
+                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-registration", params),
+                                                         metaInfo.getRecipients()).build();
+            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
+        } catch (EmailSendingFailedException e) {
+            throw new DeviceManagementException("Error occurred while sending user registration notification", e);
+        }
     }
 
     @Override

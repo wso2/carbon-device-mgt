@@ -24,7 +24,6 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.GenericFeatureManager;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.util.AnnotationProcessor;
@@ -44,6 +43,9 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
 
     private static final Log log = LogFactory.getLog(FeatureManagementLifecycleListener.class);
     private static final String UNLIMITED = "Unlimited";
+    public static final String PROPERTY_PROFILE = "profile";
+    public static final String PROFILE_DT_WORKER = "dtWorker";
+    public static final String PROFILE_DEFAULT = "default";
 
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
@@ -53,10 +55,10 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
 
-            String profile = System.getProperty(DeviceManagementConstants.Common.PROPERTY_PROFILE);
+            String profile = System.getProperty(PROPERTY_PROFILE);
 
-            if ((profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DT_WORKER) ||
-                    profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DEFAULT)) && isManagedApi) {
+            if ((profile.equalsIgnoreCase(PROFILE_DT_WORKER) ||
+                    profile.equalsIgnoreCase(PROFILE_DEFAULT)) && isManagedApi) {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
                     Set<String> annotatedAPIClasses = annotationProcessor.scanStandardContext(DeviceType.class.getName());

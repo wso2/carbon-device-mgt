@@ -65,7 +65,7 @@ public class EmailSenderServiceComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing email sender core bundle");
             }
-            /* Initializing email sende configuration */
+            /* Initializing email sender configuration */
             EmailSenderConfig.init();
 
             /* Setting up default email templates */

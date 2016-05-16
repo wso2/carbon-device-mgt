@@ -26,11 +26,9 @@ import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
-import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
+import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.utils.CarbonUtils;
-import org.wso2.carbon.utils.ConfigurationContextService;
-import org.wso2.carbon.utils.NetworkUtils;
+import org.wso2.carbon.core.util.Utils;
 
 import javax.servlet.ServletContext;
 import java.util.*;
@@ -96,7 +94,7 @@ public class APIPublisherUtil {
         }
         api.setResponseCache(APIConstants.DISABLED);
 
-        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() +
+        String endpointConfig = "{\"production_endpoints\":{\"url\":\"" + config.getEndpoint() +
                 "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
 
         api.setEndpointConfig(endpointConfig);
@@ -143,24 +141,8 @@ public class APIPublisherUtil {
     }
 
     public static String getServerBaseUrl() {
-        // Hostname
-        String hostName = "localhost";
-        try {
-            hostName = NetworkUtils.getMgtHostName();
-        } catch (Exception ignored) {
-        }
-        // HTTPS port
-        String mgtConsoleTransport = CarbonUtils.getManagementTransport();
-        ConfigurationContextService configContextService =
-                APIPublisherDataHolder.getInstance().getConfigurationContextService();
-        int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
-        int httpsProxyPort =
-                CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
-                        mgtConsoleTransport);
-        if (httpsProxyPort > 0) {
-            port = httpsProxyPort;
-        }
-        return "https://" + hostName + ":" + port;
+        WebappPublisherConfig webappPublisherConfig = WebappPublisherConfig.getInstance();
+        return Utils.replaceSystemProperty(webappPublisherConfig.getHost());
     }
 
     public static String getApiEndpointUrl(String context) {

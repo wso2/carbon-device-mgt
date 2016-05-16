@@ -47,10 +47,10 @@ import java.util.StringTokenizer;
  */
 public class JWTAuthenticator implements WebappAuthenticator {
 
-	private static final Log log = LogFactory.getLog(JWTAuthenticator.class);
-	public static final String SIGNED_JWT_AUTH_USERNAME = "Username";
-	private static final String JWT_AUTHENTICATOR = "JWT";
-	private static final String JWT_ASSERTION_HEADER = "X-JWT-Assertion";
+    private static final Log log = LogFactory.getLog(JWTAuthenticator.class);
+    public static final String SIGNED_JWT_AUTH_USERNAME = "http://wso2.org/claims/enduser";
+    private static final String JWT_AUTHENTICATOR = "JWT";
+    private static final String JWT_ASSERTION_HEADER = "X-JWT-Assertion";
 
     @Override
     public void init() {
@@ -59,46 +59,45 @@ public class JWTAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
-	    String authorizationHeader = request.getHeader(JWTAuthenticator.JWT_ASSERTION_HEADER);
-	    if((authorizationHeader != null) && !authorizationHeader.isEmpty()){
-		    return true;
-	    }
-	    return false;
+        String authorizationHeader = request.getHeader(JWTAuthenticator.JWT_ASSERTION_HEADER);
+        if ((authorizationHeader != null) && !authorizationHeader.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
     @Override
-	public AuthenticationInfo authenticate(Request request, Response response) {
-		String requestUri = request.getRequestURI();
-	    AuthenticationInfo authenticationInfo = new AuthenticationInfo();
-		if (requestUri == null || "".equals(requestUri)) {
-			authenticationInfo.setStatus(Status.CONTINUE);
-		}
-		StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
-		String context = tokenizer.nextToken();
-		if (context == null || "".equals(context)) {
+    public AuthenticationInfo authenticate(Request request, Response response) {
+        String requestUri = request.getRequestURI();
+        AuthenticationInfo authenticationInfo = new AuthenticationInfo();
+        if (requestUri == null || "".equals(requestUri)) {
             authenticationInfo.setStatus(Status.CONTINUE);
-		}
+        }
+        StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
+        String context = tokenizer.nextToken();
+        if (context == null || "".equals(context)) {
+            authenticationInfo.setStatus(Status.CONTINUE);
+        }
 
-		//Get the filesystem keystore default primary certificate
-		KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(MultitenantConstants.SUPER_TENANT_ID);
-		try {
-			keyStoreManager.getDefaultPrimaryCertificate();
-			String authorizationHeader = request.getHeader(HTTPConstants.HEADER_AUTHORIZATION);
-			String headerData = decodeAuthorizationHeader(authorizationHeader);
-			JWSVerifier verifier =
-					new RSASSAVerifier((RSAPublicKey) keyStoreManager.getDefaultPublicKey());
-			SignedJWT jwsObject = SignedJWT.parse(headerData);
-			if (jwsObject.verify(verifier)) {
-				String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
-				String tenantDomain = MultitenantUtils.getTenantDomain(username);
-				username = MultitenantUtils.getTenantAwareUsername(username);
-				TenantManager tenantManager = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
+        //Get the filesystem keystore default primary certificate
+        KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(MultitenantConstants.SUPER_TENANT_ID);
+        try {
+            keyStoreManager.getDefaultPrimaryCertificate();
+            String authorizationHeader = request.getHeader(JWT_ASSERTION_HEADER);
+            JWSVerifier verifier =
+                    new RSASSAVerifier((RSAPublicKey) keyStoreManager.getDefaultPublicKey());
+            SignedJWT jwsObject = SignedJWT.parse(authorizationHeader);
+            if (jwsObject.verify(verifier)) {
+                String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
+                String tenantDomain = MultitenantUtils.getTenantDomain(username);
+                username = MultitenantUtils.getTenantAwareUsername(username);
+                TenantManager tenantManager = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
                         getTenantManager();
-				int tenantId = tenantManager.getTenantId(tenantDomain);
-				if (tenantId == -1) {
-					log.error("tenantDomain is not valid. username : " + username + ", tenantDomain " +
-					          ": " + tenantDomain);
-				} else {
+                int tenantId = tenantManager.getTenantId(tenantDomain);
+                if (tenantId == -1) {
+                    log.error("tenantDomain is not valid. username : " + username + ", tenantDomain " +
+                            ": " + tenantDomain);
+                } else {
                     UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
                             getTenantUserRealm(tenantId).getUserStoreManager();
                     if (userStore.isExistingUser(username)) {
@@ -108,41 +107,43 @@ public class JWTAuthenticator implements WebappAuthenticator {
                         authenticationInfo.setStatus(Status.CONTINUE);
                     }
                 }
-    		}
-		} catch (UserStoreException e) {
-			log.error("Error occurred while obtaining the user.", e);
-		} catch (ParseException e) {
-			log.error("Error occurred while parsing the JWT header.", e);
-		} catch (JOSEException e) {
-			log.error("Error occurred while verifying the JWT header.", e);
-		} catch (Exception e) {
-			log.error("Error occurred while verifying the JWT header.", e);
-		}
-		return authenticationInfo;
-	}
+            } else {
+                authenticationInfo.setStatus(Status.FAILURE);
+            }
+        } catch (UserStoreException e) {
+            log.error("Error occurred while obtaining the user.", e);
+        } catch (ParseException e) {
+            log.error("Error occurred while parsing the JWT header.", e);
+        } catch (JOSEException e) {
+            log.error("Error occurred while verifying the JWT header.", e);
+        } catch (Exception e) {
+            log.error("Error occurred while verifying the JWT header.", e);
+        }
+        return authenticationInfo;
+    }
 
-	private String decodeAuthorizationHeader(String authorizationHeader) {
+    private String decodeAuthorizationHeader(String authorizationHeader) {
 
-		if(authorizationHeader == null) {
-			return null;
-		}
+        if (authorizationHeader == null) {
+            return null;
+        }
 
-		String[] splitValues = authorizationHeader.trim().split(" ");
-		byte[] decodedBytes = Base64Utils.decode(splitValues[1].trim());
-		if (decodedBytes != null) {
-			return new String(decodedBytes);
-		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("Error decoding authorization header.");
-			}
-			return null;
-		}
-	}
+        String[] splitValues = authorizationHeader.trim().split(" ");
+        byte[] decodedBytes = Base64Utils.decode(splitValues[1].trim());
+        if (decodedBytes != null) {
+            return new String(decodedBytes);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Error decoding authorization header.");
+            }
+            return null;
+        }
+    }
 
-	@Override
-	public String getName() {
-		return JWTAuthenticator.JWT_AUTHENTICATOR;
-	}
+    @Override
+    public String getName() {
+        return JWTAuthenticator.JWT_AUTHENTICATOR;
+    }
 
     @Override
     public void setProperties(Properties properties) {

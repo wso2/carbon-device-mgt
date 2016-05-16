@@ -65,7 +65,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
     @Override
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getRoles() {
+    public Response getAllRoles() {
         List<String> filteredRoles;
         try {
             filteredRoles = getRolesFromUserStore();
@@ -89,7 +89,7 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
     @GET
     @Path("{userStore}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getRoles(@PathParam("userStore") String userStore) {
+    public Response getRolesOfUserStore(@PathParam("userStore") String userStore) {
         String[] roles;
         try {
             AbstractUserStoreManager abstractUserStoreManager =
@@ -438,10 +438,10 @@ public class RoleImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Role {
             String msg = "Error occurred while retrieving the list of user roles.";
             throw new MDMAPIException(msg, e);
         }
-        // removing all internal roles and roles created for Service-providers
+        // removing all internal roles, roles created for Service-providers and application related roles.
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
+            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/") || role.startsWith("Application/"))) {
                 filteredRoles.add(role);
             }
         }

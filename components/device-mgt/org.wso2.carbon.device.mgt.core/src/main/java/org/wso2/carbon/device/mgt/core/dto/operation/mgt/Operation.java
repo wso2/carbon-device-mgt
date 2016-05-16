@@ -46,6 +46,7 @@ public class Operation implements Serializable {
     private boolean isEnabled;
     private Object payLoad;
     private Object operationResponse;
+    private String activityId;
 
     public String getCode() {
         return code;
@@ -133,6 +134,14 @@ public class Operation implements Serializable {
 
     public void setOperationResponse(Object operationResponse) {
         this.operationResponse = operationResponse;
+    }
+
+    public String getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
     }
 
 }

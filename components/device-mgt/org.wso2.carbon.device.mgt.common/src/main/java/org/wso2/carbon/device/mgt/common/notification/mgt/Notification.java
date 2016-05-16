@@ -18,11 +18,15 @@
 
 package org.wso2.carbon.device.mgt.common.notification.mgt;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 /**
  * DTO of Notification object which is used to communicate Operation notifications to MDM core.
  */
+
+@ApiModel(value = "Notification", description = "This is used to communicate Operation notifications to MDM.")
 public class Notification {
 
 	public enum Status{
@@ -33,10 +37,20 @@ public class Notification {
 		ALERT,
 	}
 
+    @ApiModelProperty(name = "notificationId", value = "Defines the notification ID.", required = true )
 	private int notificationId;
+    @ApiModelProperty(name = "deviceIdentifier", value = "Defines the device identification properties.",
+                      required = true )
 	private DeviceIdentifier deviceIdentifier;
+    @ApiModelProperty(name = "description", value = "Provides the message you want to send to the user.",
+                      required = true )
 	private String description;
+    @ApiModelProperty(name = "operationId", value = "Provides the operationID.", required = true )
 	private int operationId;
+    @ApiModelProperty(name = "status", value = "Provides the status of the message." +
+                                               "The following values can be assigned for the status.\n" +
+                                               "NEW: The message is in the unread state.\n" +
+                                               "CHECKED: The message is in the read state.", required = true )
 	private Status status;
 
 	public Status getStatus() {

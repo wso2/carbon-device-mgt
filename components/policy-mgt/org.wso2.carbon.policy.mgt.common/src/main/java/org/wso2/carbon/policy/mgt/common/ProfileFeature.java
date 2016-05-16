@@ -18,16 +18,29 @@
 
 package org.wso2.carbon.policy.mgt.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
+@ApiModel(value = "ProfileFeature", description = "This class carries all information related to profile "
+        + "features")
 public class ProfileFeature implements Serializable {
 
     private static final long serialVersionUID = 19981018L;
 
+    @ApiModelProperty(name = "id", value = "Define the ID", required = true)
     private int id;
+    @ApiModelProperty(name = "featureCode", value = "Provide the code that defines the policy you wish to add",
+            required = true)
     private String featureCode;
+    @ApiModelProperty(name = "profileId", value = "Define the ID of the profile", required = true)
     private int profileId;
+    @ApiModelProperty(name = "deviceTypeId", value = "The ID used to define the type of the device platform",
+            required = true)
     private int deviceTypeId;
+    @ApiModelProperty(name = "content", value = "The list of parameters that define the policy",
+            required = true)
     private Object content;
 
     public int getId() {

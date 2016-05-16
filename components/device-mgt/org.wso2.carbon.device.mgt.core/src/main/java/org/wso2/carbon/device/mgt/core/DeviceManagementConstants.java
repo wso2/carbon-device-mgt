@@ -28,6 +28,9 @@ public final class DeviceManagementConstants {
 
         public static final String PROPERTY_SETUP = "setup";
         public static final String DEFAULT_LICENSE_CONFIG_XML_NAME = "license-config.xml";
+        public static final String PROPERTY_PROFILE = "profile";
+        public static final String PROFILE_DT_WORKER = "dtWorker";
+        public static final String PROFILE_DEFAULT = "default";
     }
 
 	public static final class AppManagement {

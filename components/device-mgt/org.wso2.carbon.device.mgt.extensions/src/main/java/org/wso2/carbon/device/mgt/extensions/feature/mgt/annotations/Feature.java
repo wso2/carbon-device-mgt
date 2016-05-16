@@ -32,5 +32,4 @@ public @interface Feature {
 
     String description();
 
-    String type();
 }

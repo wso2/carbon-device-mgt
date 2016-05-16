@@ -18,43 +18,59 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
+@ApiModel(value = "RoleWrapper", description = "Role details including permission and the users in the roles are " +
+        "wrapped here.")
 public class RoleWrapper {
-	private String roleName;
-	private String[] permissions;
-	private String[] users;
-	private UIPermissionNode permissionList;
 
-	public String getRoleName() {
-		return roleName;
-	}
+    @ApiModelProperty(name = "roleName", value = "The name of the role.", required = true)
+    private String roleName;
+    @ApiModelProperty(name = "permissions", value = "Lists out all the permissions associated with roles.",
+            required = true, dataType = "List[java.lang.String]")
+    private String[] permissions;
+    @ApiModelProperty(name = "users", value = "The list of users assigned to the selected role.",
+            required = true, dataType = "List[java.lang.String]")
+    private String[] users;
+    @ApiModelProperty(name = "permissionList", value = "This contain the following, " +
+            "\n resourcePath\tThe path related to the API.\n " +
+            "displayName\tThe name of the permission that is shown " +
+            "in the UI.\n" +
+            "nodeList\tLists out the nested permissions.",
+            required = true)
+    private UIPermissionNode permissionList;
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
+    public String getRoleName() {
+        return roleName;
+    }
 
-	public String[] getPermissions() {
-		return permissions;
-	}
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 
-	public void setPermissions(String[] permissions) {
-		this.permissions = permissions;
-	}
+    public String[] getPermissions() {
+        return permissions;
+    }
 
-	public String[] getUsers() {
-		return users;
-	}
+    public void setPermissions(String[] permissions) {
+        this.permissions = permissions;
+    }
 
-	public void setUsers(String[] users) {
-		this.users = users;
-	}
+    public String[] getUsers() {
+        return users;
+    }
 
-	public UIPermissionNode getPermissionList() {
-		return permissionList;
-	}
+    public void setUsers(String[] users) {
+        this.users = users;
+    }
 
-	public void setPermissionList(UIPermissionNode permissionList) {
-		this.permissionList = permissionList;
-	}
+    public UIPermissionNode getPermissionList() {
+        return permissionList;
+    }
+
+    public void setPermissionList(UIPermissionNode permissionList) {
+        this.permissionList = permissionList;
+    }
 }

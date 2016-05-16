@@ -142,7 +142,7 @@ public class DeviceImpl implements Device{
      */
     @GET
     @Path("user/{user}")
-    public Response getDevice(@PathParam("user") String user) {
+    public Response getDeviceOfUser(@PathParam("user") String user) {
         List<org.wso2.carbon.device.mgt.common.Device> devices;
         try {
             devices = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(user);
@@ -165,7 +165,7 @@ public class DeviceImpl implements Device{
      */
     @GET
     @Path("user/{user}/count")
-    public Response getDeviceCount(@PathParam("user") String user) {
+    public Response getDeviceCountOfUser(@PathParam("user") String user) {
         try {
             Integer count = DeviceMgtAPIUtils.getDeviceManagementService().getDeviceCount(user);
             return Response.status(Response.Status.OK).entity(count).build();

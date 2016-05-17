@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
@@ -55,9 +56,8 @@ import java.io.IOException;
  */
 public class EmailSenderServiceComponent {
 
-    private static Log log = LogFactory.getLog(EmailSenderServiceComponent.class);
-
     private static final String EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH = "/email-templates";
+    private static Log log = LogFactory.getLog(EmailSenderServiceComponent.class);
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
@@ -77,6 +77,8 @@ public class EmailSenderServiceComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Email sender core bundle has been successfully initialized");
             }
+            componentContext.getBundleContext().registerService(Axis2ConfigurationContextObserver.class.getName(),
+                                                                new EmailSenderAxis2ConfigContextObserver(), null);
         } catch (Throwable e) {
             log.error("Error occurred while initializing email sender core bundle", e);
         }

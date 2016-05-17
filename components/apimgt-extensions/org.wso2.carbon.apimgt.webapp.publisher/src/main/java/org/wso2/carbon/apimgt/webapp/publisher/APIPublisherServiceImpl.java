@@ -78,7 +78,10 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                                 + api.getId().getVersion() + "'");
                     }
                 } else {
-                    api.setStatus(provider.getAPI(api.getId()).getStatus());
+                    if  (provider.getAPI(api.getId()).getStatus() == APIStatus.CREATED) {
+                        provider.changeLifeCycleStatus(api.getId(), PUBLISH_ACTION);
+                    }
+                    api.setStatus(APIStatus.PUBLISHED);
                     provider.updateAPI(api);
                     if (log.isDebugEnabled()) {
                         log.debug("An API already exists with the name '" + api.getId().getApiName() +

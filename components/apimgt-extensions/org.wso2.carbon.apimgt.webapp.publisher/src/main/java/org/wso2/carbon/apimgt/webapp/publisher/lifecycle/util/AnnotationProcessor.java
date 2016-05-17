@@ -28,12 +28,11 @@ import org.scannotation.WarUrlFinder;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.apimgt.api.model.Scope;
+import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementException;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.deviceType.DTConfiguration;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -225,13 +224,7 @@ public class AnnotationProcessor {
                 APIResource resource = new APIResource();
                 resource.setUriTemplate(makeContextURLReady(apiRootContext + subCtx));
 
-                DTConfiguration deviceTypeConfig = DeviceConfigurationManager.getInstance().
-                        getDeviceManagementConfig().getDTDeploymentConfiguration();
-
-                String serverIP = deviceTypeConfig.getDtHostAddress();
-                String httpServerPort = deviceTypeConfig.getDtHostPort();
-
-                resource.setUri(PROTOCOL_HTTP + "://" + serverIP + ":" + httpServerPort + makeContextURLReady(
+                resource.setUri(APIPublisherUtil.getServerBaseUrl() + makeContextURLReady(
                         resourceRootContext) + makeContextURLReady(subCtx));
                 resource.setAuthType(AUTH_TYPE);
 

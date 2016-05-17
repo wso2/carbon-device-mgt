@@ -1,0 +1,2 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.apimgt.webapp.publisher_${feature.version}/conf/webapp-publisher-config.xml,target:${installFolder}/../../conf/etc/webapp-publisher-config.xml,overwrite:true);\

@@ -47,6 +47,7 @@ public class OAuthExtUtils {
     private static final String DEFAULT_SCOPE_NAME = "default";
     private static final String UI_EXECUTE = "ui.execute";
     private static final String REST_API_SCOPE_CACHE = "REST_API_SCOPE_CACHE";
+    private static final int START_INDEX = 0;
 
     /**
      * This method is used to get the tenant id when given tenant domain.
@@ -258,6 +259,14 @@ public class OAuthExtUtils {
             log.error("Error occurred while initializing user store.", e);
         }
         return authorizedScopes;
+    }
+
+    public static String extractUserName(String username) {
+        if (username == null || username.isEmpty()) {
+            return null;
+        }
+        String trimmedName = username.trim();
+        return trimmedName.substring(START_INDEX, trimmedName.lastIndexOf('@'));
     }
 
 }

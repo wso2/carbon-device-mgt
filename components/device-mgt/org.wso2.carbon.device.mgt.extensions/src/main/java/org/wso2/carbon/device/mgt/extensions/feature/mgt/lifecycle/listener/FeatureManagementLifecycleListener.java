@@ -24,9 +24,10 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.GenericFeatureManager;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
-import org.wso2.carbon.device.mgt.extensions.feature.mgt.util.AnnotationUtil;
+import org.wso2.carbon.device.mgt.extensions.feature.mgt.util.AnnotationProcessor;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -51,11 +52,15 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
             ServletContext servletContext = context.getServletContext();
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
-            if (isManagedApi) {
+
+            String profile = System.getProperty(DeviceManagementConstants.Common.PROPERTY_PROFILE);
+
+            if ((profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DT_WORKER) ||
+                    profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DEFAULT)) && isManagedApi) {
                 try {
-                    AnnotationUtil annotationUtil = new AnnotationUtil(context);
-                    Set<String> annotatedAPIClasses = annotationUtil.scanStandardContext(DeviceType.class.getName());
-                    Map<String, List<Feature>> features = annotationUtil.extractFeatures(annotatedAPIClasses);
+                    AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
+                    Set<String> annotatedAPIClasses = annotationProcessor.scanStandardContext(DeviceType.class.getName());
+                    Map<String, List<Feature>> features = annotationProcessor.extractFeatures(annotatedAPIClasses);
                     if (features != null && !features.isEmpty()) {
                         GenericFeatureManager.getInstance().addFeatures(features);
                     }

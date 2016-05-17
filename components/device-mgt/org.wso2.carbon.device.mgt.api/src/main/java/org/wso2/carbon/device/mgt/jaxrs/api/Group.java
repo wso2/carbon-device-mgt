@@ -35,10 +35,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-/**
- *
- */
-@Api(value = "Group")
+@Path("/groups")
+@Api(value = "Group", description = "Group related operations such as get all the available groups, etc.")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface Group {
 
@@ -59,7 +57,7 @@ public interface Group {
 
     @GET
     @Produces("application/json")
-    Response getGroups(@QueryParam("start") int startIndex, @PathParam("length") int length);
+    Response getGroups(@QueryParam("start") int startIndex, @QueryParam("length") int length);
 
     @Path("/all")
     @GET
@@ -119,8 +117,7 @@ public interface Group {
     @PUT
     @Produces("application/json")
     Response addSharing(@QueryParam("shareUser") String shareUser, @PathParam("groupName") String groupName,
-                        @PathParam("owner") String owner, @PathParam("roleName") String roleName,
-                        @FormParam("permissions") String[] permissions);
+                        @PathParam("owner") String owner, @PathParam("roleName") String roleName, String[] permissions);
 
     @DELETE
     @Path("/owner/{owner}/name/{groupName}/share/roles/{roleName}/permissions")

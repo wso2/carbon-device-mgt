@@ -30,7 +30,8 @@ import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
-import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationUtil;
+import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationProcessor;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -51,13 +52,16 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
 
-            if (isManagedApi) {
+            String profile = System.getProperty(DeviceManagementConstants.Common.PROPERTY_PROFILE);
+
+            if ((profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DT_WORKER) ||
+                    profile.equalsIgnoreCase(DeviceManagementConstants.Common.PROFILE_DEFAULT)) && isManagedApi) {
                 try {
-                    AnnotationUtil annotationUtil = new AnnotationUtil(context);
-                    Set<String> annotatedAPIClasses = annotationUtil.
+                    AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
+                    Set<String> annotatedAPIClasses = annotationProcessor.
                             scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
 
-                    List<APIResourceConfiguration> apiDefinitions = annotationUtil.extractAPIInfo(servletContext,
+                    List<APIResourceConfiguration> apiDefinitions = annotationProcessor.extractAPIInfo(servletContext,
                             annotatedAPIClasses);
 
                     for (APIResourceConfiguration apiDefinition : apiDefinitions) {

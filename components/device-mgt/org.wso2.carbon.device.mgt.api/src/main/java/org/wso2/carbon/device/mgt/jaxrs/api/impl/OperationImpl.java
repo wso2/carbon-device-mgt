@@ -103,7 +103,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
     @Override
     @GET
     @Path("{type}/{id}")
-    public Response getDeviceOperations(@PathParam("type") String type, @PathParam("id") String id) {
+    public Response getAllDeviceOperations(@PathParam("type") String type, @PathParam("id") String id) {
         List<? extends org.wso2.carbon.device.mgt.common.operation.mgt.Operation> operations;
         DeviceManagementProviderService dmService;
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
@@ -223,5 +223,23 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
+    }
+
+    @Override
+    @GET
+    @Path("activity/{id}")
+    public Response getActivity(@PathParam("id") String id)
+            throws MDMAPIException {
+        org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation;
+        DeviceManagementProviderService dmService;
+        try {
+            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
+            operation = dmService.getOperationByActivityId(id);
+        } catch (OperationManagementException e) {
+            String msg = "Error occurred while fetching the activity for the supplied id.";
+            log.error(msg, e);
+            throw new MDMAPIException(msg, e);
+        }
+         return Response.status(Response.Status.OK).entity(operation).build();
     }
 }

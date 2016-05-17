@@ -66,4 +66,17 @@ var groupModule = {};
         );
     };
 
+    groupModule.getGroupDevices = function (groupName, owner) {
+        endPoint = groupServiceEndpoint + "/owner/" + owner + "/name/" + groupName + "/devices";
+        return serviceInvokers.XMLHttp.get(
+                endPoint, function (responsePayload) {
+                    return responsePayload;
+                },
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return responsePayload;
+                }
+        );
+    };
+
 }(groupModule));

@@ -55,22 +55,23 @@ import java.util.Set;
 /**
  * This has the utility function to extract feature information.
  */
-public class AnnotationUtil {
+public class AnnotationProcessor {
 
-    private static final Log log = LogFactory.getLog(AnnotationUtil.class);
+    private static final Log log = LogFactory.getLog(AnnotationProcessor.class);
 
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
+    private static final String METHOD = "method";
     private Class<org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature>
             featureAnnotationClazz;
     private ClassLoader classLoader;
     private ServletContext servletContext;
 
 
-    public AnnotationUtil(final StandardContext context) {
+    public AnnotationProcessor(final StandardContext context) {
         servletContext = context.getServletContext();
         classLoader = servletContext.getClassLoader();
     }
@@ -147,7 +148,7 @@ public class AnnotationUtil {
                 Map<String, Object> apiParams = new HashMap<>();
                 for (int i = 0; i < annotations.length; i++) {
                     Annotation currentAnnotation = annotations[i];
-                    feature = processHttpMethodAnnotation(feature, currentAnnotation);
+                    processHttpMethodAnnotation(apiParams, currentAnnotation);
                     if (currentAnnotation.annotationType().getName().equals(Path.class.getName())) {
                         String uri = getPathAnnotationValue(currentMethod);
                         apiParams.put("uri", uri);
@@ -199,24 +200,20 @@ public class AnnotationUtil {
 
     /**
      * Read Method annotations indicating HTTP Methods
-     * @param feature
-     * @param currentAnnotation
-     * @return
      */
-    private Feature processHttpMethodAnnotation(Feature feature, Annotation currentAnnotation) {
+    private void processHttpMethodAnnotation(Map<String, Object> apiParams, Annotation currentAnnotation) {
         //Extracting method with which feature is exposed
         if (currentAnnotation.annotationType().getName().equals(GET.class.getName())) {
-            feature.setMethod(HttpMethod.GET);
+            apiParams.put(METHOD, HttpMethod.GET);
         } else if (currentAnnotation.annotationType().getName().equals(POST.class.getName())) {
-            feature.setMethod(HttpMethod.POST);
+            apiParams.put(METHOD, HttpMethod.POST);
         } else if (currentAnnotation.annotationType().getName().equals(OPTIONS.class.getName())) {
-            feature.setMethod(HttpMethod.OPTIONS);
+            apiParams.put(METHOD, HttpMethod.OPTIONS);
         } else if (currentAnnotation.annotationType().getName().equals(DELETE.class.getName())) {
-            feature.setMethod(HttpMethod.DELETE);
+            apiParams.put(METHOD, HttpMethod.DELETE);
         } else if (currentAnnotation.annotationType().getName().equals(PUT.class.getName())) {
-            feature.setMethod(HttpMethod.PUT);
+            apiParams.put(METHOD, HttpMethod.PUT);
         }
-        return feature;
     }
 
     /**
@@ -239,9 +236,6 @@ public class AnnotationUtil {
                 break;
             case "description":
                 feature.setDescription(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
-                break;
-            case "type":
-                feature.setType(invokeMethod(featureAnnoMethods[k], featureAnno, STRING));
                 break;
             }
         }

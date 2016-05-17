@@ -40,10 +40,11 @@ import javax.ws.rs.core.Response;
  * DeviceNotification management REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
-@Api(value = "DeviceNotification")
+@Api(value = "DeviceNotification", description = "Device notification related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
+@Path("/notifications")
 @Produces({"application/json", "application/xml"})
-@Consumes({ "application/json", "application/xml" })
+@Consumes({"application/json", "application/xml"})
 public interface DeviceNotification {
 
     @GET
@@ -57,9 +58,10 @@ public interface DeviceNotification {
             response = Notification.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of Notifications"),
+            @ApiResponse(code = 200, message = "List of Notifications", response = Notification.class,
+                    responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the notification list")
-            })
+    })
     Response getNotifications();
 
     @GET
@@ -74,12 +76,13 @@ public interface DeviceNotification {
             response = Notification.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of Notifications"),
+            @ApiResponse(code = 200, message = "List of Notifications", response = Notification.class,
+                    responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the notification list")
-            })
+    })
     Response getNotificationsByStatus(@ApiParam(name = "status", value = "Provide the notification status as"
-                                            + " the value for {status}", required = true)
-                                            @PathParam("status") Notification.Status status);
+            + " the value for {status}", required = true)
+                                      @PathParam("status") Notification.Status status);
 
     @PUT
     @Path("{id}/{status}")
@@ -89,17 +92,16 @@ public interface DeviceNotification {
             httpMethod = "PUT",
             value = "Updating the Device Notification Status",
             notes = "When a user has read the the device notification the device notification status must "
-                    + "change from NEW to CHECKED. Update the device notification status using this REST API",
-            response = ResponsePayload.class)
+                    + "change from NEW to CHECKED. Update the device notification status using this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Notification status updated successfully"),
+            @ApiResponse(code = 201, message = "Notification status updated successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating notification status")
-            })
-    Response updateNotificationStatus( @ApiParam(name = "id", value = "Provide the ID of the notification"
-                                            + " you wish you update", required = true) @PathParam("id") int id,
-                                       @ApiParam(name = "status", value = "Provide the notification status as"
-                                            + " the value", required = true) @PathParam("status")
-                                            Notification.Status status);
+    })
+    Response updateNotificationStatus(@ApiParam(name = "id", value = "Provide the ID of the notification"
+            + " you wish you update", required = true) @PathParam("id") int id,
+                                      @ApiParam(name = "status", value = "Provide the notification status as"
+                                              + " the value", required = true) @PathParam("status")
+                                      Notification.Status status);
 
     @POST
     @ApiOperation(
@@ -107,12 +109,11 @@ public interface DeviceNotification {
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "POST",
             value = "Sending a Device Notification",
-            notes = "Notify users on device operation failures and other information using this REST API",
-            response = ResponsePayload.class)
+            notes = "Notify users on device operation failures and other information using this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "NNotification has added successfully"),
+            @ApiResponse(code = 201, message = "NNotification has added successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating notification status")
-            })
+    })
     Response addNotification(Notification notification);
 
 }

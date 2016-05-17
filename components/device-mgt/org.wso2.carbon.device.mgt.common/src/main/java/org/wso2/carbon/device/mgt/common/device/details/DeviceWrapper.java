@@ -25,13 +25,13 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 @ApiModel(value = "DeviceWrapper", description = "This contains device details including, " +
-                                                 "location and device meta information.")
+        "location and device meta information.")
 public class DeviceWrapper {
 
     @ApiModelProperty(name = "device", value = "Device's basic information", required = true)
     private Device device;
     @ApiModelProperty(name = "deviceIdentifier", value = "Device identifier used to identify a device.",
-                      required = true)
+            required = true)
     private DeviceIdentifier deviceIdentifier;
     @ApiModelProperty(name = "deviceInfo", value = "Device's runtime information", required = true)
     private DeviceInfo deviceInfo;

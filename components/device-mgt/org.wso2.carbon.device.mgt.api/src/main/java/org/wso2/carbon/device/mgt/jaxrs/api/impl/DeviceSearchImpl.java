@@ -38,7 +38,7 @@ public class DeviceSearchImpl implements DeviceSearch {
     private static Log log = LogFactory.getLog(DeviceSearchImpl.class);
 
     @GET
-    public Response getDeviceInfo(SearchContext searchContext) {
+    public Response getFilteredDeviceInfo(SearchContext searchContext) {
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
         try {

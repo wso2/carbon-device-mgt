@@ -18,18 +18,30 @@
 
 package org.wso2.carbon.device.mgt.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * This class holds necessary data to represent a paginated result.
  */
+@ApiModel(value = "PaginationResult", description = "This class carries all information related Pagination Result")
 public class PaginationResult implements Serializable {
 
     private static final long serialVersionUID = 1998101711L;
+
+    @ApiModelProperty(name = "recordsTotal", value = "The total number of records that are given before filtering", required = true)
     private int recordsTotal;
+
+    @ApiModelProperty(name = "recordsFiltered", value = "The total number of records that are given after filtering", required = true)
     private int recordsFiltered;
+
+    @ApiModelProperty(name = "draw", value = "The draw counter that this object is a response to, from the draw parameter sent as part of the data request", required = true)
     private int draw;
+
+    @ApiModelProperty(name = "data", value = "The details of the SSL certificate", required = true)
     private List<?> data;
 
     public int getRecordsTotal() {

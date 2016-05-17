@@ -129,7 +129,7 @@ utility = function () {
             log.error("User object was not found in the session");
             throw constants.ERRORS.USER_NOT_FOUND;
         }
-        var unitName = user.domain + "cdmf.unit.device.type." + deviceType + "." + unitPostfix;
+        var unitName = user.domain + ".cdmf.unit.device.type." + deviceType + "." + unitPostfix;
         if (new File("/app/units/" + unitName).isExists()) {
             return unitName;
         }

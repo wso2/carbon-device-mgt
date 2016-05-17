@@ -29,12 +29,17 @@
     <fileSets>
         <fileSet>
             <directory>${basedir}/src/main/resources/jaggeryapps/devicemgt</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/jaggeryapps/devicemgt-cdmf/</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
         </fileSet>
         <fileSet>
             <directory>${basedir}/src/main/resources/jaggeryapps/uuf-template-app</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/jaggeryapps/devicemgt-cdmf/</outputDirectory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/resources/jaggery-modules</directory>
+            <outputDirectory>/jaggery-modules/</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
         </fileSet>
     </fileSets>

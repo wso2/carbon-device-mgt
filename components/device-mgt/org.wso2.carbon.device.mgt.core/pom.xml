@@ -83,8 +83,7 @@
                             org.apache.catalina.core,
                             org.apache.commons.collections,
                             org.wso2.carbon.email.sender.*,
-                            io.swagger.annotations.*,
-                            *;resolution:=optional,
+                            io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon,
                             org.wso2.carbon.base
                         </Import-Package>
@@ -245,6 +244,12 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>1.7.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

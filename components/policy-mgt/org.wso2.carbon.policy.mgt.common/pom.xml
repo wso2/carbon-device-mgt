@@ -53,6 +53,8 @@
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Policy Management Common Bundle</Bundle-Description>
                         <Import-Package>
+                            javax.xml.bind.annotation,
+                            io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.dto.*,
                             javax.xml.bind.*,
@@ -90,6 +92,11 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

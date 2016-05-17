@@ -33,6 +33,7 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
@@ -193,7 +194,8 @@ public class JWTClientUtil {
 		tenantRegistryLoader.loadTenantRegistry(tenantId);
 	}
 
-	public static String generateSignedJWTAssertion(String username, JWTConfig jwtConfig) throws JWTClientException {
+	public static String generateSignedJWTAssertion(String username, JWTConfig jwtConfig, boolean isDefaultJWTClient)
+			throws JWTClientException {
 		try {
 			String subject = username;
 			long currentTimeMillis = System.currentTimeMillis();
@@ -227,15 +229,27 @@ public class JWTClientUtil {
 			String privateKeyAlias = jwtConfig.getPrivateKeyAlias();
 			String privateKeyPassword = jwtConfig.getPrivateKeyPassword();
 			KeyStore keyStore;
-			RSAPrivateKey rsaPrivateKey;
+			RSAPrivateKey rsaPrivateKey = null;
 			if (keyStorePath != null && !keyStorePath.isEmpty()) {
 				String keyStorePassword = jwtConfig.getKeyStorePassword();
 				keyStore = loadKeyStore(new File(keyStorePath), keyStorePassword, "JKS");
 				rsaPrivateKey = (RSAPrivateKey) keyStore.getKey(privateKeyAlias, privateKeyPassword.toCharArray());
 			} else {
 				int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-				KeyStoreManager tenantKeyStoreManager = KeyStoreManager.getInstance(tenantId);
-				rsaPrivateKey = (RSAPrivateKey) tenantKeyStoreManager.getDefaultPrivateKey();
+				JWTClientUtil.loadTenantRegistry(tenantId);
+				if (!(MultitenantConstants.SUPER_TENANT_ID == tenantId) && !isDefaultJWTClient) {
+					KeyStoreManager tenantKeyStoreManager = KeyStoreManager.getInstance(tenantId);
+					String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+					String ksName = tenantDomain.trim().replace('.', '-');
+					String jksName = ksName + ".jks";
+					rsaPrivateKey = (RSAPrivateKey) tenantKeyStoreManager.getPrivateKey(jksName, tenantDomain);
+				} else {
+					PrivilegedCarbonContext.startTenantFlow();
+					PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+					KeyStoreManager tenantKeyStoreManager = KeyStoreManager.getInstance(MultitenantConstants.SUPER_TENANT_ID);
+					rsaPrivateKey = (RSAPrivateKey) tenantKeyStoreManager.getDefaultPrivateKey();
+					PrivilegedCarbonContext.endTenantFlow();
+				}
 			}
 			JWSSigner signer = new RSASSASigner(rsaPrivateKey);
 			SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claimsSet);

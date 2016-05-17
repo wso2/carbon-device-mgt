@@ -65,7 +65,8 @@ public class EmailSenderAxis2ConfigContextObserver implements Axis2Configuration
 
     private void setupEmailTemplates() throws EmailSenderConfigurationFailedException {
         File templateDir =
-                new File(CarbonUtils.getCarbonRepository() + "resources" + File.separator + "email-templates");
+                new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "resources"
+                         + File.separator + "email-templates");
         if (!templateDir.exists()) {
             if (log.isDebugEnabled()) {
                 log.debug("The directory that is expected to use as the container for all email templates is not " +

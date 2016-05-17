@@ -84,8 +84,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
         try {
             keyStoreManager.getDefaultPrimaryCertificate();
             String authorizationHeader = request.getHeader(JWT_ASSERTION_HEADER);
-            JWSVerifier verifier =
-                    new RSASSAVerifier((RSAPublicKey) keyStoreManager.getDefaultPublicKey());
+            JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) keyStoreManager.getDefaultPublicKey());
             SignedJWT jwsObject = SignedJWT.parse(authorizationHeader);
             if (jwsObject.verify(verifier)) {
                 String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);

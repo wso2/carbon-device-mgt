@@ -190,7 +190,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
                                                         FilterSet filterSet, int startIndex, int resultCount)
                                                                  throws InvalidParameterValueException, SQLException {
 
-        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+        if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
 

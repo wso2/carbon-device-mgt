@@ -116,7 +116,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     public DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
                                              FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
-        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+        if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
 
@@ -302,7 +302,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                          getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
                                              FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
-        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+        if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
 
@@ -416,7 +416,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                         getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
                                              FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
-        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+        if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
 
@@ -531,7 +531,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     public List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
                                              FilterSet filterSet) throws InvalidParameterValueException, SQLException {
 
-        if (nonCompliantFeatureCode == null || "".equals(nonCompliantFeatureCode)) {
+        if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
 

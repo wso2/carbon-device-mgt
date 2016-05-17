@@ -21,6 +21,11 @@ package org.wso2.carbon.device.mgt.jaxrs.api.impl;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
@@ -97,6 +102,22 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
 
     private Response addPolicy(PolicyManagerService policyManagementService, ResponsePayload responseMsg,
                                org.wso2.carbon.policy.mgt.common.Policy policy) {
+        List<Device> devices = policy.getDevices();
+        if (devices != null && devices.size() == 1) {
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService();
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier(devices.get(0).getDeviceIdentifier(), devices.get(0).getType());
+            PrivilegedCarbonContext threadLocalCarbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            String username = threadLocalCarbonContext.getUsername();
+            try {
+                if (!deviceAccessAuthorizationService.isUserAuthorized(deviceIdentifier, username)) {
+                    return Response.status(Response.Status.UNAUTHORIZED).build();
+                }
+            } catch (DeviceAccessAuthorizationException e) {
+                String msg = "Device access authorization exception";
+                log.error(msg, e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            }
+        }
         try {
             PolicyAdministratorPoint pap = policyManagementService.getPAP();
             pap.addPolicy(policy);

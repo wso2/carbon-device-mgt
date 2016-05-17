@@ -16,14 +16,17 @@
  * under the License.
  */
 
-function onRequest(context){
+function onRequest(context) {
     context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
-        if (arguments.length < 3)
+        if (arguments.length < 3) {
             throw new Error("Handlebars Helper equal needs 2 parameters");
-        if( lvalue!=rvalue ) {
+        }
+        if (lvalue != rvalue) {
             return options.inverse(this);
         } else {
             return options.fn(this);
         }
     });
+    var userModule = require("/app/modules/user.js").userModule;
+    return {permissions: userModule.getUIPermissions()};
 }

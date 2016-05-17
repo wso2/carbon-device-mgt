@@ -668,6 +668,9 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/roles/add")) {
             permissions["ADD_ROLE"] = true;
         }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/add")) {
+            permissions["ADD_ADMIN_POLICY"] = true;
+        }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/add")) {
             permissions["ADD_POLICY"] = true;
         }

@@ -669,6 +669,12 @@
         <url>/policies/inactive-policy</url>
         <method>POST</method>
     </Permission>
+    <Permission>
+        <name>Add Policy</name>
+        <path>/device-mgt/user/policies/add</path>
+        <url>/policies/inactive-policy</url>
+        <method>POST</method>
+    </Permission>
 
     <Permission>
         <name>List policies</name>
@@ -704,6 +710,12 @@
         <url>/policies/active-policy</url>
         <method>POST</method>
     </Permission>
+    <Permission>
+        <name>Add Policy</name>
+        <path>/device-mgt/user/policies/add</path>
+        <url>/policies/inactive-policy</url>
+        <method>POST</method>
+    </Permission>
 
     <Permission>
         <name>Remove policy</name>
@@ -722,6 +734,20 @@
     <Permission>
         <name>List policies</name>
         <path>/device-mgt/admin/policies/list</path>
+        <url>/policies/*</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>List user policies</name>
+        <path>/device-mgt/user/policies/list</path>
+        <url>/policies</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>List user policies</name>
+        <path>/device-mgt/user/policies/list</path>
         <url>/policies/*</url>
         <method>GET</method>
     </Permission>

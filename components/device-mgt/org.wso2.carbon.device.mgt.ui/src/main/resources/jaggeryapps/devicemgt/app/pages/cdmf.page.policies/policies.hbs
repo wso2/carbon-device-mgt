@@ -16,6 +16,7 @@
 {{/zone}}
 
 {{#zone "navbarActions"}}
+    {{#if permissions.ADD_ADMIN_POLICY}}
     <li>
         <a href="{{@app.context}}/policy/add" class="cu-btn">
             <span class="icon fw-stack">
@@ -25,7 +26,9 @@
             Add Policy
         </a>
     </li>
-    <li>
+    {{/if}}
+    {{#if permissions.CHANGE_POLICY_PRIORITY}}
+        <li>
         <a href="{{@app.context}}/policy/priority" class="cu-btn">
             <span class="icon fw-stack">
                 <i class="fw fw-throttling-policy fw-stack-1x"></i>
@@ -34,6 +37,7 @@
             Policy Priority
         </a>
     </li>
+    {{/if}}
     <li>
         <a href="#" class="cu-btn" id="appbar-btn-apply-changes">
             <span class="icon fw-stack">

@@ -26,13 +26,17 @@ var onFail;
         var properties;
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
-        if(context.input.samlToken){
+        if (context.input.samlToken) {
             properties = {samlToken: context.input.samlToken};
             apiWrapperUtil.setupAccessTokenPair(constants.GRANT_TYPE_SAML, properties);
-        }else{
+        } else {
             properties = {username: context.input.username, password: context.input.password};
             apiWrapperUtil.setupAccessTokenPair(constants.GRANT_TYPE_PASSWORD, properties);
         }
+        var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+        var carbonServer = require("carbon").server;
+        (new carbonServer.Server({url: devicemgtProps["httpsURL"]}))
+                .login(context.input.username, context.input.password);
     };
 
     onFail = function (error) {

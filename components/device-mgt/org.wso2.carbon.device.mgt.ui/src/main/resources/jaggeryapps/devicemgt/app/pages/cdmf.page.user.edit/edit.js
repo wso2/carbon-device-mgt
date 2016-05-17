@@ -18,8 +18,9 @@
 
 function onRequest(context) {
     var userModule = require("/app/modules/user.js").userModule;
-    var username = request.getParameter("username");
-    var user = userModule.getUser(username)["content"];
+    var userName = request.getParameter("username");
+    var user = userModule.getUser(userName)["content"];
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     if (user) {
         var title;
         if (user.firstname || user.lastname) {
@@ -27,6 +28,33 @@ function onRequest(context) {
         } else {
             title = user.username;
         }
-        return {"user": user, "title": title};
+        var page = {"user": user, "title": title};
+
+        var userStore = "PRIMARY";
+        if (userName.indexOf("/") > -1) {
+            userStore = userName.substr(0, userName.indexOf('/'));
+        }
+        var response = userModule.getUser(userName);
+
+        if (response["status"] == "success") {
+            page["editUser"] = response["content"];
+        }
+
+        response = userModule.getRolesByUsername(userName);
+        if (response["status"] == "success") {
+            page["usersRoles"] = response["content"];
+        }
+        response = userModule.getRolesByUserStore(userStore);
+        if (response["status"] == "success") {
+            page["userRoles"] = response["content"];
+        }
+
     }
+    page["usernameJSRegEx"] = devicemgtProps.userValidationConfig.usernameJSRegEx;
+    page["usernameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.usernameRegExViolationErrorMsg;
+    page["firstnameJSRegEx"] = devicemgtProps.userValidationConfig.firstnameJSRegEx;
+    page["firstnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.firstnameRegExViolationErrorMsg;
+    page["lastnameJSRegEx"] = devicemgtProps.userValidationConfig.lastnameJSRegEx;
+    page["lastnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.lastnameRegExViolationErrorMsg;
+    return page;
 }

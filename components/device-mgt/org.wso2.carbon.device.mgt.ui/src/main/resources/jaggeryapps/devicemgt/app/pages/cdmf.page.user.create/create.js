@@ -26,16 +26,17 @@ function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
     var response = userModule.getRolesByUserStore("PRIMARY");
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-    context["charLimit"] = devicemgtProps.usernameLength;
+    var page = {};
+    page["charLimit"] = devicemgtProps.usernameLength;
     if (response["status"] == "success") {
-        context["roles"] = response["content"];
+        page["roles"] = response["content"];
     }
-    context["usernameJSRegEx"] = devicemgtProps.userValidationConfig.usernameJSRegEx;
-    context["usernameHelpText"] = devicemgtProps.userValidationConfig.usernameHelpMsg;
-    context["usernameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.usernameRegExViolationErrorMsg;
-    context["firstnameJSRegEx"] = devicemgtProps.userValidationConfig.firstnameJSRegEx;
-    context["firstnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.firstnameRegExViolationErrorMsg;
-    context["lastnameJSRegEx"] = devicemgtProps.userValidationConfig.lastnameJSRegEx;
-    context["lastnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.lastnameRegExViolationErrorMsg;
-    return context;
+    page["usernameJSRegEx"] = devicemgtProps.userValidationConfig.usernameJSRegEx;
+    page["usernameHelpMsg"] = devicemgtProps.userValidationConfig.usernameHelpMsg;
+    page["usernameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.usernameRegExViolationErrorMsg;
+    page["firstnameJSRegEx"] = devicemgtProps.userValidationConfig.firstnameJSRegEx;
+    page["firstnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.firstnameRegExViolationErrorMsg;
+    page["lastnameJSRegEx"] = devicemgtProps.userValidationConfig.lastnameJSRegEx;
+    page["lastnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.lastnameRegExViolationErrorMsg;
+    return page;
 }

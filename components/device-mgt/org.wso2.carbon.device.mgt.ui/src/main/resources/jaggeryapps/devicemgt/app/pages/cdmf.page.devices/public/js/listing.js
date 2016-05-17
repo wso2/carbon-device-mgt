@@ -252,7 +252,7 @@ function loadDevices(searchType, searchParam){
             { targets: 1, data: 'name', className: 'fade-edge' , render: function ( name, type, row, meta ) {
                 var model = getPropertyValue(row.properties, 'DEVICE_MODEL');
                 var vendor = getPropertyValue(row.properties, 'VENDOR');
-                var html = '<h4>Device ' + name + '</h4>';
+                var html = '<h4>' + name + '</h4>';
                 if (model) {
                     html += '<div>(' + vendor + '-' + model + ')</div>';
                 }

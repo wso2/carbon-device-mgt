@@ -17,16 +17,28 @@
  */
 
 /**
+ * Checks if provided input is valid against RegEx input.
+ *
+ * @param regExp Regular expression
+ * @param inputString Input string to check
+ * @returns {boolean} Returns true if input matches RegEx
+ */
+function inputIsValid(regExp, inputString) {
+    regExp = new RegExp(regExp);
+    return regExp.test(inputString);
+}
+
+/**
  * Sorting function of users
  * listed on User Management page in WSO2 Devicemgt Console.
  */
 $(function () {
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({
-        beforeStop: function () {
-            var sortedIDs = $(this).sortable('toArray');
-        }
-    });
+                                 beforeStop: function () {
+                                     var sortedIDs = $(this).sortable('toArray');
+                                 }
+                             });
     $(sortableElem).disableSelection();
 });
 
@@ -96,20 +108,20 @@ $("a.invite-user-link").click(function () {
 
     $("a#invite-user-yes-link").click(function () {
         invokerUtil.post(
-            inviteUserAPI,
-            usernameList,
-            function () {
-                $(modalPopupContent).html($('#invite-user-success-content').html());
-                $("a#invite-user-success-link").click(function () {
-                    hidePopup();
-                });
-            },
-            function () {
-                $(modalPopupContent).html($('#invite-user-error-content').html());
-                $("a#invite-user-error-link").click(function () {
-                    hidePopup();
-                });
-            }
+                inviteUserAPI,
+                usernameList,
+                function () {
+                    $(modalPopupContent).html($('#invite-user-success-content').html());
+                    $("a#invite-user-success-link").click(function () {
+                        hidePopup();
+                    });
+                },
+                function () {
+                    $(modalPopupContent).html($('#invite-user-error-content').html());
+                    $("a#invite-user-error-link").click(function () {
+                        hidePopup();
+                    });
+                }
         );
     });
 
@@ -132,25 +144,25 @@ function removeUser(uname, uid) {
 
     $("a#remove-user-yes-link").click(function () {
         invokerUtil.delete(
-            removeUserAPI,
-            function () {
-                $("#" + userid).remove();
-                // get new user-list-count
-                var newUserListCount = $(".user-list > span").length;
-                // update user-listing-status-msg with new user-count
-                $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
-                // update modal-content with success message
-                $(modalPopupContent).html($('#remove-user-success-content').html());
-                $("a#remove-user-success-link").click(function () {
-                    hidePopup();
-                });
-            },
-            function () {
-                $(modalPopupContent).html($('#remove-user-error-content').html());
-                $("a#remove-user-error-link").click(function () {
-                    hidePopup();
-                });
-            }
+                removeUserAPI,
+                function () {
+                    $("#" + userid).remove();
+                    // get new user-list-count
+                    var newUserListCount = $(".user-list > span").length;
+                    // update user-listing-status-msg with new user-count
+                    $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
+                    // update modal-content with success message
+                    $(modalPopupContent).html($('#remove-user-success-content').html());
+                    $("a#remove-user-success-link").click(function () {
+                        hidePopup();
+                    });
+                },
+                function () {
+                    $(modalPopupContent).html($('#remove-user-error-content').html());
+                    $("a#remove-user-error-link").click(function () {
+                        hidePopup();
+                    });
+                }
         );
     });
 
@@ -194,25 +206,25 @@ function resetPassword(uname) {
             resetPasswordFormData.newPassword = window.btoa(unescape(encodeURIComponent(confirmedPassword)));
 
             invokerUtil.post(
-                resetPasswordServiceURL,
-                resetPasswordFormData,
-                function (data) {   // The success callback
-                    data = JSON.parse(data);
-                    if (data.status == 201) {
-                        $(modalPopupContent).html($('#reset-password-success-content').html());
-                        $("a#reset-password-success-link").click(function () {
-                            hidePopup();
-                        });
+                    resetPasswordServiceURL,
+                    resetPasswordFormData,
+                    function (data) {   // The success callback
+                        data = JSON.parse(data);
+                        if (data.statusCode == 201) {
+                            $(modalPopupContent).html($('#reset-password-success-content').html());
+                            $("a#reset-password-success-link").click(function () {
+                                hidePopup();
+                            });
+                        }
+                    }, function (data) {    // The error callback
+                        if (data.statusCode == 400) {
+                            $(errorMsg).text("Old password does not match with the provided value.");
+                            $(errorMsgWrapper).removeClass("hidden");
+                        } else {
+                            $(errorMsg).text("An unexpected error occurred. Please try again later.");
+                            $(errorMsgWrapper).removeClass("hidden");
+                        }
                     }
-                }, function (data) {    // The error callback
-                        if (data.status == 400) {
-                        $(errorMsg).text("Old password does not match with the provided value.");
-                        $(errorMsgWrapper).removeClass("hidden");
-                    } else {
-                        $(errorMsg).text("An unexpected error occurred. Please try again later.");
-                        $(errorMsgWrapper).removeClass("hidden");
-                    }
-                }
             );
         }
     });
@@ -302,8 +314,7 @@ function loadUsers(searchParam) {
                         successCallback,
                         function (message) {
                             $('#ast-container').addClass('hidden');
-                            $('#user-listing-status-msg').
-                                text('Invalid search query. Try again with a valid search query');
+                            $('#user-listing-status-msg').text('Invalid search query. Try again with a valid search query');
                         }
         );
     });

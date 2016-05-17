@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
@@ -111,7 +112,8 @@ public class APIPublisherUtil {
         // adding scopes to the api
         Set<URITemplate> uriTemplates = config.getUriTemplates();
         Map<String, Scope> apiScopes = new HashMap<>();
-
+        Scope existingScope;
+        String existingPermissions;
         if (uriTemplates != null) {
             // this creates distinct scopes list
             for (URITemplate template : uriTemplates) {
@@ -119,6 +121,12 @@ public class APIPublisherUtil {
                 if (scope != null) {
                     if (apiScopes.get(scope.getKey()) == null) {
                         apiScopes.put(scope.getKey(), scope);
+                    } else {
+                        existingScope = apiScopes.get(scope.getKey());
+                        existingPermissions = existingScope.getRoles();
+                        existingPermissions = getDistinctPermissions(existingPermissions + "," + scope.getRoles());
+                        existingScope.setRoles(existingPermissions);
+                        apiScopes.put(scope.getKey(), existingScope);
                     }
                 }
             }
@@ -298,6 +306,11 @@ public class APIPublisherUtil {
         apiConfig.setUriTemplates(uriTemplates);
 
         return apiConfig;
+    }
+
+    private static String getDistinctPermissions(String permissions) {
+        String[] unique = new HashSet<String>(Arrays.asList(permissions.split(","))).toArray(new String[0]);
+        return StringUtils.join(unique, ",");
     }
 
 }

@@ -117,7 +117,10 @@
                             org.apache.axiom.soap.impl.builder,
                             org.apache.axiom.om,
                             org.apache.axiom.om.impl.builder,
-                            org.apache.axiom.om.util
+                            org.apache.axiom.om.util,
+                            org.wso2.carbon.registry.core.*,
+                            org.wso2.carbon.registry.common.*;version="${carbon.registry.imp.pkg.version.range}",
+                            org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
                         </Import-Package>
                     </instructions>
                 </configuration>
@@ -213,6 +216,14 @@
         <dependency>
             <groupId>commons-pool.wso2</groupId>
             <artifactId>commons-pool</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.core</artifactId>
         </dependency>
     </dependencies>
 

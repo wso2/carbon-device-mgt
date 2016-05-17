@@ -24,17 +24,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
+import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.CredentialManagementResponseBuilder;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.TreeSet;
 
 /**
  * This class represents the JAX-RS services of User related functionality.
@@ -195,31 +194,23 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                             new String(decodedBytes, "UTF-8"));
                     log.debug("User credential of username: " + userWrapper.getUsername() + " has been changed");
                 }
-                List<String> listofFilteredRoles = getFilteredRoles(userStoreManager, userWrapper.getUsername());
-                final String[] existingRoles = listofFilteredRoles.toArray(new String[listofFilteredRoles.size()]);
+                List<String> currentRoles = getFilteredRoles(userStoreManager, userWrapper.getUsername());
+                List<String> newRoles = Arrays.asList(userWrapper.getRoles());
 
-                /*
-                    Use the Set theory to find the roles to delete and roles to add
-                    The difference of roles in existingRolesSet and newRolesSet needed to be deleted
-                    new roles to add = newRolesSet - The intersection of roles in existingRolesSet and newRolesSet
-				 */
-                final TreeSet<String> existingRolesSet = new TreeSet<>();
-                Collections.addAll(existingRolesSet, existingRoles);
-                final TreeSet<String> newRolesSet = new TreeSet<>();
-                Collections.addAll(newRolesSet, userWrapper.getRoles());
-                existingRolesSet.removeAll(newRolesSet);
-                // Now we have the roles to delete
-                String[] rolesToDelete = existingRolesSet.toArray(new String[existingRolesSet.size()]);
-                List<String> roles = new ArrayList<>(Arrays.asList(rolesToDelete));
-                roles.remove(ROLE_EVERYONE);
-                rolesToDelete = new String[0];
-                // Clearing and re-initializing the set
-                existingRolesSet.clear();
-                Collections.addAll(existingRolesSet, existingRoles);
-                newRolesSet.removeAll(existingRolesSet);
-                // Now we have the roles to add
-                String[] rolesToAdd = newRolesSet.toArray(new String[newRolesSet.size()]);
-                userStoreManager.updateRoleListOfUser(userWrapper.getUsername(), rolesToDelete, rolesToAdd);
+                List<String> rolesToAdd = new ArrayList<>(newRoles);
+                List<String> rolesToDelete = new ArrayList<>();
+
+                for (String role : currentRoles) {
+                    if (newRoles.contains(role)) {
+                        rolesToAdd.remove(role);
+                    } else {
+                        rolesToDelete.add(role);
+                    }
+                }
+                rolesToDelete.remove(ROLE_EVERYONE);
+                userStoreManager.updateRoleListOfUser(userWrapper.getUsername(),
+                                                      rolesToDelete.toArray(new String[rolesToDelete.size()]),
+                                                      rolesToAdd.toArray(new String[rolesToAdd.size()]));
                 userStoreManager.setUserClaimValues(userWrapper.getUsername(), defaultUserClaims, null);
                 // Outputting debug message upon successful addition of user
                 if (log.isDebugEnabled()) {

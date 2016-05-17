@@ -20,7 +20,26 @@ function onRequest(context) {
     var userModule = require("/app/modules/user.js").userModule;
     var username = request.getParameter("username");
     var user = userModule.getUser(username)["content"];
-    if (user) {
-        return {"username": user.username};
+    var userModule = require("/app/modules/user.js")["userModule"];
+
+    var userName = request.getParameter("username");
+
+    var user, userRoles, devices;
+
+    if (userName) {
+        var response = userModule.getUser(userName);
+
+        if (response["status"] == "success") {
+            user = response["content"];
+            user.domain = response["userDomain"];
+        }
+
+        response = userModule.getRolesByUsername(userName);
+        if (response["status"] == "success") {
+            userRoles = response["content"];
+        }
+        var deviceModule = require("/app/modules/device.js").deviceModule;
+        devices = deviceModule.getDevices(userName);
     }
+    return {"user": user, "userRoles": userRoles, "devices": devices};
 }

@@ -52,10 +52,17 @@ public class JWTClient {
 
 	private static Log log = LogFactory.getLog(JWTClient.class);
 	private JWTConfig jwtConfig;
+	private boolean isDefaultJWTClient;
 
 	public JWTClient(JWTConfig jwtConfig) {
 		this.jwtConfig = jwtConfig;
 	}
+
+	public JWTClient(JWTConfig jwtConfig, boolean isDefaultJWTClient) {
+		this.jwtConfig = jwtConfig;
+		this.isDefaultJWTClient = isDefaultJWTClient;
+	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -64,7 +71,7 @@ public class JWTClient {
 			throws JWTClientException {
 		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, JWTConstants.JWT_GRANT_TYPE));
-		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig);
+		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
 		if (assertion == null) {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}

@@ -12,10 +12,14 @@
                             <div id="role-create-error-msg" class="alert alert-danger hidden" role="alert">
                                 <i class="icon fw fw-error"></i><span></span>
                             </div>
-                            <label class="wr-input-label">Domain</label>
+                            <label class="wr-input-label">Domain *</label>
                             <div class="wr-input-control">
-                                <input type="text" id="domain" class="form-control" placeholder=""
-                                       value="PRIMARY"/>
+                                <select id="domain" class="form-control select">
+                                    <option>PRIMARY</option>
+                                    {{#each userStores}}
+                                        <option>{{this}}</option>
+                                    {{/each}}
+                                </select>
                             </div>
                             <label class="wr-input-label">
                                 Role Name *

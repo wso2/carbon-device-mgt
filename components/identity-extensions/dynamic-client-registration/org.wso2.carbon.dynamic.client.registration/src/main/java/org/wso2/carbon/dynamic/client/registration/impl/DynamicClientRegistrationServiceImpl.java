@@ -82,7 +82,9 @@ public class DynamicClientRegistrationServiceImpl implements DynamicClientRegist
         oAuthApplicationInfo.addParameter(TOKEN_SCOPE, Arrays.toString(tokenScopes));
         OAuthApplicationInfo info;
         try {
-            info = this.createOAuthApplication(profile);
+            synchronized (DynamicClientRegistrationServiceImpl.class) {
+                info = this.createOAuthApplication(profile);
+            }
         } catch (DynamicClientRegistrationException | IdentityException e) {
             throw new DynamicClientRegistrationException("Can not create OAuth application  : " + applicationName, e);
         }

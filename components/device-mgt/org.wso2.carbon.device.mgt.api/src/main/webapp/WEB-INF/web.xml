@@ -70,6 +70,16 @@
         <param-value>true</param-value>
     </context-param-->
 
+    <!--publish to apim-->
+    <context-param>
+        <param-name>managed-api-enabled</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>managed-api-owner</param-name>
+        <param-value>admin</param-value>
+    </context-param>
+
     <!-- Below configuration is used to redirect http requests to https -->
     <security-constraint>
         <web-resource-collection>

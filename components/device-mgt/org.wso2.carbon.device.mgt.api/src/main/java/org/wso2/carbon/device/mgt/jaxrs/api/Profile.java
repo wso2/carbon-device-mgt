@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.Api;
+import org.wso2.carbon.apimgt.annotations.api.*;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -29,20 +30,26 @@ import javax.ws.rs.core.Response;
 /**
  * These end points provide profile related operations.
  */
+@API(name = "Profile", version = "1.0.0", context = "/devicemgt_admin/profiles", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Api(value = "Profile")
 @Path("/profiles")
 @SuppressWarnings("NonJaxWsWebServices")
 public interface Profile {
 
     @POST
+    @Permission(scope = "profile", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response addProfile(org.wso2.carbon.policy.mgt.common.Profile profile);
 
     @POST
     @Path("{id}")
+    @Permission(scope = "profile", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
     Response updateProfile(org.wso2.carbon.policy.mgt.common.Profile profile,
                            @PathParam("id") String profileId);
 
     @DELETE
     @Path("{id}")
+    @Permission(scope = "profile", permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
     Response deleteProfile(@PathParam("id") int profileId);
 }

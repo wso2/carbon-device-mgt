@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthorizationService {
 
-    private final static String EMM_ADMIN_PERMISSION = "/device-mgt/admin-device-access";
+    private final static String CDM_ADMIN_PERMISSION = "/device-mgt/admin";
     private static Log log = LogFactory.getLog(DeviceAccessAuthorizationServiceImpl.class);
 
     public DeviceAccessAuthorizationServiceImpl() {
@@ -221,7 +221,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         if (userRealm != null && userRealm.getAuthorizationManager() != null) {
             return userRealm.getAuthorizationManager()
                     .isUserAuthorized(removeTenantDomain(username),
-                                      PermissionUtils.getAbsolutePermissionPath(EMM_ADMIN_PERMISSION),
+                                      PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION),
                                       PermissionMethod.UI_EXECUTE);
         }
         return false;
@@ -249,7 +249,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
 
     private boolean addAdminPermissionToRegistry() throws PermissionManagementException {
         Permission permission = new Permission();
-        permission.setPath(PermissionUtils.getAbsolutePermissionPath(EMM_ADMIN_PERMISSION));
+        permission.setPath(PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION));
         return PermissionUtils.putPermission(permission);
     }
 

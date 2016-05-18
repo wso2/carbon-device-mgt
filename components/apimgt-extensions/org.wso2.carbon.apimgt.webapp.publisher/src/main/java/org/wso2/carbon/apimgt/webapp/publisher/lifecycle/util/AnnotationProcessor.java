@@ -28,12 +28,11 @@ import org.scannotation.WarUrlFinder;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.apimgt.api.model.Scope;
+import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementException;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.deviceType.DTConfiguration;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -137,7 +136,6 @@ public class AnnotationProcessor {
 
                                         try {
                                             apiResourceConfig = processAPIAnnotation(apiAnno);
-                                            // All the apis should map to same root "/"
                                             String rootContext = servletContext.getContextPath();
                                             pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
                                             pathClazzMethods = pathClazz.getMethods();
@@ -147,7 +145,11 @@ public class AnnotationProcessor {
                                             if (rootContectAnno != null) {
                                                 subContext = invokeMethod(pathClazzMethods[0], rootContectAnno, STRING);
                                                 if (subContext != null && !subContext.isEmpty()) {
-                                                    rootContext = rootContext + "/" + subContext;
+                                                    if (subContext.trim().startsWith("/")) {
+                                                        rootContext = rootContext + subContext;
+                                                    } else {
+                                                        rootContext = rootContext + "/" + subContext;
+                                                    }
                                                 } else {
                                                     subContext = "";
                                                 }
@@ -157,7 +159,7 @@ public class AnnotationProcessor {
                                             }
 
                                             Method[] annotatedMethods = clazz.getDeclaredMethods();
-                                            resourceList = getApiResources(rootContext, subContext, annotatedMethods);
+                                            resourceList = getApiResources(rootContext, annotatedMethods);
                                             apiResourceConfig.setResources(resourceList);
                                         } catch (Throwable throwable) {
                                             log.error("Error encountered while scanning for annotations", throwable);
@@ -209,33 +211,30 @@ public class AnnotationProcessor {
      * Get Resources for each API
      *
      * @param resourceRootContext
-     * @param apiRootContext
      * @param annotatedMethods
      * @return
      * @throws Throwable
      */
-    private List<APIResource> getApiResources(String resourceRootContext, String apiRootContext,
-                                              Method[] annotatedMethods) throws Throwable {
-        List<APIResource> resourceList;
-        resourceList = new ArrayList<APIResource>();
+    private List<APIResource> getApiResources(String resourceRootContext, Method[] annotatedMethods) throws Throwable {
+        List<APIResource> resourceList = new ArrayList<>();
+        String subCtx = null;
         for (Method method : annotatedMethods) {
-            Annotation methodContextAnno = method.getAnnotation(pathClazz);
-            if (methodContextAnno != null) {
-                String subCtx = invokeMethod(pathClazzMethods[0], methodContextAnno, STRING);
-                APIResource resource = new APIResource();
-                resource.setUriTemplate(makeContextURLReady(apiRootContext + subCtx));
+            Annotation[] annotations = method.getDeclaredAnnotations();
+            APIResource resource = new APIResource();
 
-                DTConfiguration deviceTypeConfig = DeviceConfigurationManager.getInstance().
-                        getDeviceManagementConfig().getDTDeploymentConfiguration();
+            if (isHttpMethodAvailable(annotations)) {
+                Annotation methodContextAnno = method.getAnnotation(pathClazz);
+                if (methodContextAnno != null) {
+                    subCtx = invokeMethod(pathClazzMethods[0], methodContextAnno, STRING);
+                } else {
+                    subCtx = "/*";
+                }
+                resource.setUriTemplate(makeContextURLReady(subCtx));
 
-                String serverIP = deviceTypeConfig.getDtHostAddress();
-                String httpServerPort = deviceTypeConfig.getDtHostPort();
-
-                resource.setUri(PROTOCOL_HTTP + "://" + serverIP + ":" + httpServerPort + makeContextURLReady(
-                        resourceRootContext) + makeContextURLReady(subCtx));
+                resource.setUri(APIPublisherUtil.getServerBaseUrl() + makeContextURLReady(resourceRootContext) +
+                        makeContextURLReady(subCtx));
                 resource.setAuthType(AUTH_TYPE);
 
-                Annotation[] annotations = method.getDeclaredAnnotations();
                 for (int i = 0; i < annotations.length; i++) {
                     processHTTPMethodAnnotation(resource, annotations[i]);
                     if (annotations[i].annotationType().getName().equals(Consumes.class.getName())) {
@@ -293,6 +292,23 @@ public class AnnotationProcessor {
         if (annotation.annotationType().getName().equals(PUT.class.getName())) {
             resource.setHttpVerb(HttpMethod.PUT);
         }
+    }
+
+    private boolean isHttpMethodAvailable(Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().getName().equals(GET.class.getName())) {
+                return true;
+            } else if (annotation.annotationType().getName().equals(POST.class.getName())) {
+                return true;
+            } else if (annotation.annotationType().getName().equals(OPTIONS.class.getName())) {
+                return true;
+            } else if (annotation.annotationType().getName().equals(DELETE.class.getName())) {
+                return true;
+            } else if (annotation.annotationType().getName().equals(PUT.class.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

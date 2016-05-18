@@ -175,25 +175,6 @@ public class GroupImpl implements Group {
     }
 
     @Override
-    @Path("/user/{user}/all")
-    @GET
-    @Produces("application/json")
-    public Response getGroups(@PathParam("user") String userName) {
-        try {
-            List<DeviceGroup> deviceGroups = DeviceMgtAPIUtils.getGroupManagementProviderService()
-                    .getGroups(userName);
-            if (deviceGroups.size() > 0) {
-                return Response.status(Response.Status.OK).entity(deviceGroups).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-        } catch (GroupManagementException e) {
-            log.error(e.getMessage(), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-
-    @Override
     @Path("/owner/{owner}/name/{groupName}")
     @GET
     @Produces("application/json")

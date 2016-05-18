@@ -113,7 +113,12 @@
                             org.wso2.carbon.user.core,
                             org.wso2.carbon.user.core.config,
                             org.wso2.carbon.user.core.util,
-                            org.wso2.carbon.utils
+                            org.wso2.carbon.utils,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.identity.oauth.cache,
+                            org.wso2.carbon.identity.oauth.config,
+                            org.wso2.carbon.identity.oauth2.dao,
+                            org.wso2.carbon.utils.multitenancy
                         </Import-Package>
                     </instructions>
                 </configuration>

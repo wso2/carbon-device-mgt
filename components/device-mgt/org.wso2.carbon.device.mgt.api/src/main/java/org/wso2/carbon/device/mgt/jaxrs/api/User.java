@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
 import org.apache.axis2.databinding.types.soapencoding.Integer;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
 
@@ -31,6 +32,9 @@ import java.util.List;
 /**
  * This represents the JAX-RS services of User related functionality.
  */
+@API(name = "User", version = "1.0.0", context = "/devicemgt_admin/users", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Path("/users")
 @Api(value = "User", description = "User management related operations can be found here.")
 public interface User {
@@ -48,6 +52,7 @@ public interface User {
             @ApiResponse(code = 201, message = "Created"),
             @ApiResponse(code = 500, message = "Exception in trying to add user by username: 'username'")
             })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/add"})
     Response addUser(@ApiParam(name = "userWrapper", value = "Includes the required properties to add a user"
                             + " as the <JSON_PAYLOAD> value", required = true) UserWrapper userWrapper);
 
@@ -66,6 +71,7 @@ public interface User {
             @ApiResponse(code = 400, message = "User by username: 'username' does not exist"),
             @ApiResponse(code = 500, message = "Exception in trying to retrieve user by username: 'username'")
             })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getUser(@ApiParam(name = "username", value = "Provide the name of the user you wish to get the"
                             + " details of as the value", required = true)
                             @QueryParam("username") String username);
@@ -86,6 +92,7 @@ public interface User {
                     + "request made to update user was refused"),
             @ApiResponse(code = 500, message = "Exception in trying to update user by username: 'username'")
             })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/update"})
     Response updateUser(@ApiParam(name = "userWrapper", value = "Provide the name of the user you wish to get"
                                 + " the details of as the value", required = true) UserWrapper userWrapper,
                         @ApiParam(name = "username", value = "Provide the name of the user you wish to get "
@@ -106,6 +113,7 @@ public interface User {
             @ApiResponse(code = 400, message = "User by username: 'username' does not exist for removal"),
             @ApiResponse(code = 500, message = "Exception in trying to remove user by username: 'username'")
             })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/remove"})
     Response removeUser(@ApiParam(name = "username", value = "Provide the name of the user you wish to delete"
                                 + " as the value for {username}", required = true)
                                 @QueryParam("username") String username);
@@ -126,6 +134,7 @@ public interface User {
             @ApiResponse(code = 400, message = "User by username: 'username' does not exist for role retrieval"),
             @ApiResponse(code = 500, message = "Exception in trying to retrieve roles for user by username: 'username'")
             })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getRolesOfUser(@ApiParam(name = "username", value = "Provide the user name of the user you wish to get"
                             + " the role details", required = true) @QueryParam("username") String username);
 
@@ -143,11 +152,13 @@ public interface User {
             @ApiResponse(code = 201, message = "All users were successfully retrieved"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users")
             })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getAllUsers();
 
     @GET
     @Path("{filter}")
     @Produces({MediaType.APPLICATION_JSON})
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getMatchingUsers(@PathParam("filter") String filter);
 
     @GET
@@ -167,6 +178,7 @@ public interface User {
                     + " user count: 'count'"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users")
             })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getAllUsersByUsername(@ApiParam(name = "username", value = "Provide any user detail of the user"
                                         + " as the value for {username} to retrieve the user details, such "
                                         + "as email address, first name or last name", required = true)
@@ -190,6 +202,7 @@ public interface User {
                     + " user count: 'count'"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users")
             })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getAllUserNamesByUsername(@ApiParam(name = "username", value = "Provide a character or a few "
                                             + "character in the user name as the value for {username}",
                                             required = true) @QueryParam("username") String userName);
@@ -207,6 +220,7 @@ public interface User {
             @ApiResponse(code = 200, message = "Email invitation was successfully sent to user"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users")
             })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/users/invite"})
     Response inviteExistingUsersToEnrollDevice(@ApiParam(name = "usernames", value = "List of the users to be"
                                                     + " invited as the <JSON_PAYLOAD>", required = true)
                                                     List<String> usernames);
@@ -226,6 +240,9 @@ public interface User {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 500, message = "Device management error")
             })
+    @Permission(scope = "user-view", permissions = {
+            "/permission/admin/device-mgt/user/devices/list",
+            "/permission/admin/device-mgt/admin/devices/list"})
     Response getAllDeviceOfUser(@ApiParam(name = "username", value = "Provide the name of the user you wish "
                                     + "to get the details", required = true) @QueryParam("username")
                                     String username,
@@ -247,11 +264,13 @@ public interface User {
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users that exist"
                     + " within the current tenant")
             })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getUserCount();
 
     @PUT
     @Path("{roleName}/users")
     @Produces({MediaType.APPLICATION_JSON})
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/update"})
     Response updateRoles(@PathParam("roleName") String roleName, List<String> userList);
 
     @POST
@@ -272,6 +291,7 @@ public interface User {
                     + " Character Encoding is not supported"),
             @ApiResponse(code = 500, message = "Internal Server Error")
             })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
     Response resetPassword(@ApiParam(name = "credentials", value = "Include the required properties to change"
                                 + " the user password as <JSON_PAYLOAD> value", required = true)
                                 UserCredentialWrapper credentials);
@@ -297,6 +317,7 @@ public interface User {
                     + " Character Encoding is not supported"),
             @ApiResponse(code = 500, message = "Internal Server Error")
             })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/users/password-reset"})
     Response resetPasswordByAdmin(@ApiParam(name = "credentials", value = "Include the required properties "
                                         + "to change a user password as <JSON_PAYLOAD> value",
                                         required = true) UserCredentialWrapper credentials);

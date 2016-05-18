@@ -19,6 +19,8 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
@@ -31,6 +33,9 @@ import javax.ws.rs.core.Response;
 /**
  * All the certificate related tasks such as saving certificates, can be done through this endpoint.
  */
+@API(name = "Certificate", version = "1.0.0", context = "/devicemgt_admin/certificates", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Api(value = "Certificate", description = "Certificate related tasks such as saving certificates, " +
                                           "can be done through this API")
 @SuppressWarnings("NonJaxWsWebServices")
@@ -58,6 +63,7 @@ public interface Certificate {
             @ApiResponse(code = 200, message = "Added successfully"),
             @ApiResponse(code = 500, message = "Error occurred while saving the certificate")
             })
+    @Permission(scope = "certificate-modify", permissions = {"/permission/admin/device-mgt/certificate/save"})
     Response saveCertificate(@HeaderParam("Accept") String acceptHeader,
                              @ApiParam(name = "enrollmentCertificates", value = "certificate with serial, "
                                      + "pem and tenant id", required = true) EnrollmentCertificate[]
@@ -83,6 +89,7 @@ public interface Certificate {
             @ApiResponse(code = 400, message = "Notification status updated successfully"),
             @ApiResponse(code = 500, message = "Error occurred while converting PEM file to X509Certificate")
             })
+    @Permission(scope = "certificate-view", permissions = {"/permission/admin/device-mgt/certificate/view"})
     Response getCertificate(@HeaderParam("Accept") String acceptHeader,
                             @ApiParam(name = "serialNumber", value = "Provide the serial number of the "
                             + "certificate that you wish to get the details of", required = true)
@@ -113,6 +120,7 @@ public interface Certificate {
             @ApiResponse(code = 400, message = "Invalid length value"),
             @ApiResponse(code = 500, message = "Error occurred while fetching all certificates")
             })
+    @Permission(scope = "certificate-view", permissions = {"/permission/admin/device-mgt/certificate/view"})
     Response getAllCertificates(@HeaderParam("Accept") String acceptHeader,
                                 @ApiParam(name = "start",
                                     value = "Provide the starting pagination index as the value", required = true)
@@ -135,6 +143,7 @@ public interface Certificate {
             @ApiResponse(code = 400, message = "Invalid start index"),
             @ApiResponse(code = 500, message = "Error when deleting the certificate"
             ) })
+    @Permission(scope = "certificate-modify", permissions = {"/permission/admin/device-mgt/certificate/remove"})
     Response removeCertificate(@HeaderParam("Accept") String acceptHeader,
                                @ApiParam(name = "serialNumber", value = "Provide the serial number of the "
                                     + "certificate that you wish to delete", required = true)

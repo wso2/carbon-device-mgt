@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.context.DeviceOperationContext;
@@ -31,12 +32,18 @@ import javax.ws.rs.core.Response;
 /**
  *
  */
+@API(name = "Operation", version = "1.0.0", context = "/devicemgt_admin/operations", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Path("/operations")
 @Api(value = "Operation", description = "Operation management related operations can be found here.")
 public interface Operation {
 
     /* @deprecated */
     @GET
+    @Permission(scope = "operation-view", permissions = {
+            "/permission/admin/device-mgt/admin/devices/view",
+            "/permission/admin/device-mgt/user/devices/view"})
     Response getAllOperations();
 
     @GET
@@ -56,6 +63,9 @@ public interface Operation {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "List of Operations on a device."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
                     "device.")})
+    @Permission(scope = "operation-view", permissions = {
+            "/permission/admin/device-mgt/admin/devices/view",
+            "/permission/admin/device-mgt/user/devices/view"})
     Response getDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
             "Example: ios, android or windows.",
             required = true) @PathParam("type") String type,
@@ -85,6 +95,9 @@ public interface Operation {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "List of Operations on a device."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
                     "device.")})
+    @Permission(scope = "operation-view", permissions = {
+            "/permission/admin/device-mgt/admin/devices/view",
+            "/permission/admin/device-mgt/user/devices/view"})
     Response getAllDeviceOperations(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
             "Example: ios, android or windows.",
             required = true) @PathParam("type") String type,
@@ -93,6 +106,8 @@ public interface Operation {
 
     /* @deprecated */
     @POST
+    @Permission(scope = "operation-modify", permissions = {
+            "/permission/admin/device-mgt/admin/devices/add"})
     Response addOperation(DeviceOperationContext operationContext);
 
     @GET
@@ -108,6 +123,9 @@ public interface Operation {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "List of installed application details of a device.", response = Application.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the apps of the device" +
                     ".")})
+    @Permission(scope = "operation-view", permissions = {
+            "/permission/admin/device-mgt/admin/devices/view",
+            "/permission/admin/device-mgt/user/devices/view"})
     Response getInstalledApps(@ApiParam(name = "type", value = "Define the device type as the value for {type}. " +
             "Example: ios, android or windows.",
             required = true) @PathParam("type") String type,
@@ -116,6 +134,8 @@ public interface Operation {
 
     @POST
     @Path("installApp/{tenantDomain}")
+    @Permission(scope = "operation-install",
+            permissions = {"/permission/admin/device-mgt/admin/operations/applications/install-applications"})
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
@@ -143,6 +163,8 @@ public interface Operation {
             notes = "Uninstall a selected application from a device.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Operation was successfully added to the queue."),
             @ApiResponse(code = 500, message = "Error occurred while saving the operation.")})
+    @Permission(scope = "operation-uninstall",
+            permissions = {"/permission/admin/device-mgt/admin/operations/applications/uninstall-applications"})
     Response uninstallApplication(@ApiParam(name = "applicationWrapper", value = "Details about the application and" +
             " the users and roles it should be " +
             "uninstalled.",
@@ -163,6 +185,7 @@ public interface Operation {
             notes = "This will return the operation details including the responses from the devices")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Activity details provided successfully.."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")})
+    @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
     Response getActivity(@ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
             required = true) @PathParam("id") String id)
             throws MDMAPIException;

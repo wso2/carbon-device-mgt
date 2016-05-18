@@ -25,6 +25,8 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
+import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
+import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -67,6 +69,17 @@ import java.util.Properties;
  * policy="dynamic"
  * bind="setOAuth2ValidationService"
  * unbind="unsetOAuth2ValidationService"
+ * @scr.reference name="tenant.indexloader"
+ * interface="org.wso2.carbon.registry.indexing.service.TenantIndexingLoader"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setTenantIndexLoader"
+ * unbind="unsetTenantIndexLoader"
+ * @scr.reference name="tenant.registryloader"
+ * interface="org.wso2.carbon.registry.core.service.TenantRegistryLoader"
+ * cardinality="1..1" policy="dynamic"
+ * bind="setTenantRegistryLoader"
+ * unbind="unsetTenantRegistryLoader"
  */
 public class WebappAuthenticatorFrameworkServiceComponent {
 
@@ -182,5 +195,21 @@ public class WebappAuthenticatorFrameworkServiceComponent {
             log.debug("Unsetting OAuth2TokenValidationService Service");
         }
         AuthenticatorFrameworkDataHolder.getInstance().setOAuth2TokenValidationService(null);
+    }
+
+    protected void setTenantIndexLoader(TenantIndexingLoader tenantIndexLoader) {
+        AuthenticatorFrameworkDataHolder.getInstance().setTenantIndexingLoader(tenantIndexLoader);
+    }
+
+    protected void unsetTenantIndexLoader(TenantIndexingLoader tenantIndexLoader) {
+        AuthenticatorFrameworkDataHolder.getInstance().setTenantIndexingLoader(null);
+    }
+
+    protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader) {
+        AuthenticatorFrameworkDataHolder.getInstance().setTenantRegistryLoader(tenantRegistryLoader);
+    }
+
+    protected void unsetTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader) {
+        AuthenticatorFrameworkDataHolder.getInstance().setTenantRegistryLoader(null);
     }
 }

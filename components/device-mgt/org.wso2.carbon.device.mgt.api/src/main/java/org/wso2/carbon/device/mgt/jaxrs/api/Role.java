@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleWrapper;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
@@ -27,6 +28,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@API(name = "Role", version = "1.0.0", context = "/devicemgt_admin/roles", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Path("/roles")
 @Api(value = "Role", description = "Role management related operations can be found here.")
 public interface Role {
@@ -43,6 +47,11 @@ public interface Role {
             response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of available roles"),
                             @ApiResponse(code = 500, message = "Error occurred while fetching the role list.") })
+    @Permission(scope = "roles-view", permissions = {
+            "/permission/admin/device-mgt/admin/roles/list",
+            "/permission/admin/device-mgt/admin/users/view",
+            "/permission/admin/device-mgt/admin/policies/add",
+            "/permission/admin/device-mgt/admin/policies/update"})
     Response getAllRoles();
 
     @GET
@@ -58,6 +67,9 @@ public interface Role {
             response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of available roles"),
                             @ApiResponse(code = 500, message = "Error occurred while fetching the role list.") })
+    @Permission(scope = "roles-view", permissions = {
+            "/permission/admin/device-mgt/admin/users/add",
+            "/permission/admin/device-mgt/admin/roles/list"})
     Response getRolesOfUserStore(@ApiParam(name = "userStore", value = "Provide the name of the UserStore you wish to get the" +
                                                             " details from ",
                                  required = true) @PathParam("userStore") String userStore);
@@ -79,6 +91,9 @@ public interface Role {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of matching roles"),
                             @ApiResponse(code = 500, message = "Error occurred while fetching the matching role list" +
                                                                ".") })
+    @Permission(scope = "roles-view", permissions = {
+            "/permission/admin/device-mgt/admin/users/add",
+            "/permission/admin/device-mgt/admin/roles/list"})
     Response getMatchingRoles(@ApiParam(name = "filter", value = "Provide a character or a few characters in the" +
                                                                  " role name.",
                                         required = true) @QueryParam("filter") String filter);
@@ -99,6 +114,7 @@ public interface Role {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Permission details of a role"),
                             @ApiResponse(code = 500, message = "Error occurred while fetching the permission " +
                                                                "details of a role.") })
+    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getPermissions(@ApiParam(name = "rolename", value = "Provide the name of the role you wish to get the " +
                                                                   "permission details.",
                                        required = true) @QueryParam("rolename") String roleName);
@@ -115,6 +131,7 @@ public interface Role {
             response = RoleWrapper.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Details of a role."),
                             @ApiResponse(code = 500, message = "Error occurred while retrieving the user role.") })
+    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getRole(@ApiParam(name = "rolename", value = "Provide the name of the role you wish to get the " +
                                                           "details.",
                                required = true) @QueryParam("rolename") String roleName);
@@ -129,6 +146,7 @@ public interface Role {
             notes = "You are able to add a new role to WSO2 EMM using the REST API.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Added the role."),
                             @ApiResponse(code = 500, message = "Error occurred while adding the user role.") })
+    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
     Response addRole(@ApiParam(name = "roleWrapper", value = "Role and permission details.",
                                required = true) RoleWrapper roleWrapper);
 
@@ -144,6 +162,7 @@ public interface Role {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Updated the role."),
                             @ApiResponse(code = 500, message = "Error occurred while updating the user role details" +
                                                                ".") })
+    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
     Response updateRole(@ApiParam(name = "rolename", value = "Provide the name of the role you wish to update.",
                                   required = true) @QueryParam("rolename") String roleName,
                         @ApiParam(name = "roleWrapper", value = "Role and permission details.",
@@ -161,6 +180,7 @@ public interface Role {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Deleted the role."),
                             @ApiResponse(code = 500, message = "Error occurred while deleting the user role details" +
                                                                ".") })
+    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
     Response deleteRole(@ApiParam(name = "rolename", value = "Provide the name of the role you wish to delete.",
                                   required = true) @QueryParam("rolename") String roleName);
 
@@ -180,6 +200,7 @@ public interface Role {
                     "role using this API.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Added Users to a Role."),
                             @ApiResponse(code = 500, message = "Error occurred while saving the users of the role.") })
+    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
     Response updateUsers(@ApiParam(name = "rolename", value = "Provide the name of the role you wish to update.",
                                    required = true) @QueryParam("rolename") String roleName,
                          @ApiParam(name = "userList", value = "Provide the names of the users you will to update.",
@@ -196,6 +217,7 @@ public interface Role {
             notes = "Get the number of roles in WSO2 EMM.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Retrieved the role count."),
                             @ApiResponse(code = 500, message = "Error occurred while retrieving the role count.") })
+    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getRoleCount();
 
 }

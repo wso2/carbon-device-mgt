@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
@@ -26,11 +27,9 @@ import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
-import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
+import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.utils.CarbonUtils;
-import org.wso2.carbon.utils.ConfigurationContextService;
-import org.wso2.carbon.utils.NetworkUtils;
+import org.wso2.carbon.core.util.Utils;
 
 import javax.servlet.ServletContext;
 import java.util.*;
@@ -96,7 +95,7 @@ public class APIPublisherUtil {
         }
         api.setResponseCache(APIConstants.DISABLED);
 
-        String endpointConfig = "{\"production_endpoints\":{\"url\":\" " + config.getEndpoint() +
+        String endpointConfig = "{\"production_endpoints\":{\"url\":\"" + config.getEndpoint() +
                 "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
 
         api.setEndpointConfig(endpointConfig);
@@ -113,7 +112,8 @@ public class APIPublisherUtil {
         // adding scopes to the api
         Set<URITemplate> uriTemplates = config.getUriTemplates();
         Map<String, Scope> apiScopes = new HashMap<>();
-
+        Scope existingScope;
+        String existingPermissions;
         if (uriTemplates != null) {
             // this creates distinct scopes list
             for (URITemplate template : uriTemplates) {
@@ -121,6 +121,12 @@ public class APIPublisherUtil {
                 if (scope != null) {
                     if (apiScopes.get(scope.getKey()) == null) {
                         apiScopes.put(scope.getKey(), scope);
+                    } else {
+                        existingScope = apiScopes.get(scope.getKey());
+                        existingPermissions = existingScope.getRoles();
+                        existingPermissions = getDistinctPermissions(existingPermissions + "," + scope.getRoles());
+                        existingScope.setRoles(existingPermissions);
+                        apiScopes.put(scope.getKey(), existingScope);
                     }
                 }
             }
@@ -132,7 +138,7 @@ public class APIPublisherUtil {
             // api scope and uri template scope
             for (Scope scope : scopes) {
                 for (URITemplate template : uriTemplates) {
-                    if (scope.getKey().equals(template.getScope().getKey())) {
+                    if (template.getScope() != null && scope.getKey().equals(template.getScope().getKey())) {
                         template.setScope(scope);
                     }
                 }
@@ -143,24 +149,8 @@ public class APIPublisherUtil {
     }
 
     public static String getServerBaseUrl() {
-        // Hostname
-        String hostName = "localhost";
-        try {
-            hostName = NetworkUtils.getMgtHostName();
-        } catch (Exception ignored) {
-        }
-        // HTTPS port
-        String mgtConsoleTransport = CarbonUtils.getManagementTransport();
-        ConfigurationContextService configContextService =
-                APIPublisherDataHolder.getInstance().getConfigurationContextService();
-        int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
-        int httpsProxyPort =
-                CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
-                        mgtConsoleTransport);
-        if (httpsProxyPort > 0) {
-            port = httpsProxyPort;
-        }
-        return "https://" + hostName + ":" + port;
+        WebappPublisherConfig webappPublisherConfig = WebappPublisherConfig.getInstance();
+        return Utils.replaceSystemProperty(webappPublisherConfig.getHost());
     }
 
     public static String getApiEndpointUrl(String context) {
@@ -262,7 +252,7 @@ public class APIPublisherUtil {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-endpoint' attribute is not configured");
             }
-            String endpointContext = servletContext.getContextPath();
+            String endpointContext = apiDef.getContext();
             endpoint = APIPublisherUtil.getApiEndpointUrl(endpointContext);
         }
         apiConfig.setEndpoint(endpoint);
@@ -316,6 +306,11 @@ public class APIPublisherUtil {
         apiConfig.setUriTemplates(uriTemplates);
 
         return apiConfig;
+    }
+
+    private static String getDistinctPermissions(String permissions) {
+        String[] unique = new HashSet<String>(Arrays.asList(permissions.split(","))).toArray(new String[0]);
+        return StringUtils.join(unique, ",");
     }
 
 }

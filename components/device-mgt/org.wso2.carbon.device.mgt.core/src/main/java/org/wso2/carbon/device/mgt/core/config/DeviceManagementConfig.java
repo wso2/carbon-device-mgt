@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
-import org.wso2.carbon.device.mgt.core.config.deviceType.DTConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
@@ -39,7 +38,7 @@ public final class DeviceManagementConfig {
     private IdentityConfigurations identityConfigurations;
     private PolicyConfiguration policyConfiguration;
     private List<String> pushNotificationProviders;
-    private DTConfiguration dTDepyloymentConfiguration;
+
 
     @XmlElement(name = "ManagementRepository", required = true)
     public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
@@ -77,16 +76,6 @@ public final class DeviceManagementConfig {
     public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
         this.taskConfiguration = taskConfiguration;
     }
-
-    @XmlElement(name = "DTDeploymentConfiguration", required = true)
-    public DTConfiguration getDTDeploymentConfiguration() {
-        return dTDepyloymentConfiguration;
-    }
-
-    public void setDTDeploymentConfiguration(DTConfiguration dTDeploymentConfiguration) {
-        this.dTDepyloymentConfiguration = dTDeploymentConfiguration;
-    }
-
 
     @XmlElementWrapper(name = "PushNotificationProviders", required = true)
     @XmlElement(name = "Provider", required = true)

@@ -157,6 +157,16 @@
             <artifactId>org.wso2.carbon.apimgt.application.extension</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

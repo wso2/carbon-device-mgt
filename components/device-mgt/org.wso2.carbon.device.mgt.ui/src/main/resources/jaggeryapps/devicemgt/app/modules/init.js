@@ -29,6 +29,6 @@ var utility = require("/app/modules/utility.js")["utility"];
 
 var permissions = {
     '/permission/admin/device-mgt/user': ['ui.execute'],
-    '/permission/admin/device-mgt/api/application': ['ui.execute']
+    '/permission/admin/manage/api/subscribe': ['ui.execute']
 };
 userModule.addRole("internal/devicemgt-user", ["admin"], permissions);

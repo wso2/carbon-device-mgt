@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
  * DeviceNotification management REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
-@API(name = "Device Notification", version = "1.0.0", context = "/notifications", tags = {"devicemgt_admin"})
+@API(name = "Device Notification", version = "1.0.0", context = "/devicemgt_admin/notifications", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Api(value = "DeviceNotification", description = "Device notification related operations can be found here.")

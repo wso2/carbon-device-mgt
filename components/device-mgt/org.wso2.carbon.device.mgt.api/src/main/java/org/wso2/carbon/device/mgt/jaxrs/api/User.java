@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * This represents the JAX-RS services of User related functionality.
  */
-@API(name = "User", version = "1.0.0", context = "/users", tags = {"devicemgt_admin"})
+@API(name = "User", version = "1.0.0", context = "/devicemgt_admin/users", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/users")

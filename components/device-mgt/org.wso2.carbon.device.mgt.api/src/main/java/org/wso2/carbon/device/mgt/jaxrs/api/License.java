@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 /**
  * This class represents license related operations.
  */
-@API(name = "License", version = "1.0.0", context = "/license", tags = {"devicemgt_admin"})
+@API(name = "License", version = "1.0.0", context = "/devicemgt_admin/license", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Api(value = "License")

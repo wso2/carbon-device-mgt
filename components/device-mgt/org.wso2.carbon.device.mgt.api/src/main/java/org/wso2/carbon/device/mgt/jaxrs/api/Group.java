@@ -37,7 +37,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "Group", version = "1.0.0", context = "/groups", tags = {"devicemgt_admin"})
+@API(name = "Group", version = "1.0.0", context = "/devicemgt_admin/groups", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/groups")

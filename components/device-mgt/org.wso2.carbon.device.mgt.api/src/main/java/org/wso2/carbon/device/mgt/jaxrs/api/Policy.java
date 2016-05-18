@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "Policy", version = "1.0.0", context = "/policies", tags = {"devicemgt_admin"})
+@API(name = "Policy", version = "1.0.0", context = "/devicemgt_admin/policies", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/policies")

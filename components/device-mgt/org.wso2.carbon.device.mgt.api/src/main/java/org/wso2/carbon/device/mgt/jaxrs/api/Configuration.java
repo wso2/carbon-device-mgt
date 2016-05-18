@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
  * General Tenant Configuration REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
-@API(name = "Configuration", version = "1.0.0", context = "/configuration", tags = {"devicemgt_admin"})
+@API(name = "Configuration", version = "1.0.0", context = "/devicemgt_admin/configuration", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/configuration")

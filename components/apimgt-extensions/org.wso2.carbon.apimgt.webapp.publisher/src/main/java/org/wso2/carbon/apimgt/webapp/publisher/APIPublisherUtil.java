@@ -138,7 +138,7 @@ public class APIPublisherUtil {
             // api scope and uri template scope
             for (Scope scope : scopes) {
                 for (URITemplate template : uriTemplates) {
-                    if (scope.getKey().equals(template.getScope().getKey())) {
+                    if (template.getScope() != null && scope.getKey().equals(template.getScope().getKey())) {
                         template.setScope(scope);
                     }
                 }
@@ -252,7 +252,7 @@ public class APIPublisherUtil {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-endpoint' attribute is not configured");
             }
-            String endpointContext = servletContext.getContextPath();
+            String endpointContext = apiDef.getContext();
             endpoint = APIPublisherUtil.getApiEndpointUrl(endpointContext);
         }
         apiConfig.setEndpoint(endpoint);

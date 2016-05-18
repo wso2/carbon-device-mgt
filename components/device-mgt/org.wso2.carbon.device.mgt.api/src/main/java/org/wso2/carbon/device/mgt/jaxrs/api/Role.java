@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "Role", version = "1.0.0", context = "/roles", tags = {"devicemgt_admin"})
+@API(name = "Role", version = "1.0.0", context = "/devicemgt_admin/roles", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/roles")

@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
 /**
  * These end points provide profile related operations.
  */
-@API(name = "Profile", version = "1.0.0", context = "/profiles", tags = {"devicemgt_admin"})
+@API(name = "Profile", version = "1.0.0", context = "/devicemgt_admin/profiles", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Api(value = "Profile")

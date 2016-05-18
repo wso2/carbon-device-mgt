@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 /**
  *
  */
-@API(name = "Operation", version = "1.0.0", context = "/operations", tags = {"devicemgt_admin"})
+@API(name = "Operation", version = "1.0.0", context = "/devicemgt_admin/operations", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/operations")

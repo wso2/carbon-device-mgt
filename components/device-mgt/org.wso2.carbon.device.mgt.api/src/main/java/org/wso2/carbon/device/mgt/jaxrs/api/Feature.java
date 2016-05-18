@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 /**
  * Features
  */
-@API(name = "Device Search", version = "1.0.0", context = "/features", tags = {"devicemgt_admin"})
+@API(name = "Device Search", version = "1.0.0", context = "/devicemgt_admin/features", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Api(value = "Feature", description = "Feature management related operations can be found here.")

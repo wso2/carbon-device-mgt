@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response;
 /**
  * All the certificate related tasks such as saving certificates, can be done through this endpoint.
  */
-@API(name = "Certificate", version = "1.0.0", context = "/certificates", tags = {"devicemgt_admin"})
+@API(name = "Certificate", version = "1.0.0", context = "/devicemgt_admin/certificates", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Api(value = "Certificate", description = "Certificate related tasks such as saving certificates, " +

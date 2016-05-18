@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 /**
  * Device search related operations such as getting device information.
  */
-@API(name = "Device Search", version = "1.0.0", context = "/search", tags = {"devicemgt_admin"})
+@API(name = "Device Search", version = "1.0.0", context = "/devicemgt_admin/search", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/search")

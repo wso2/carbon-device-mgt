@@ -159,7 +159,7 @@ public class AnnotationProcessor {
                                             }
 
                                             Method[] annotatedMethods = clazz.getDeclaredMethods();
-                                            resourceList = getApiResources(rootContext, subContext, annotatedMethods);
+                                            resourceList = getApiResources(rootContext, annotatedMethods);
                                             apiResourceConfig.setResources(resourceList);
                                         } catch (Throwable throwable) {
                                             log.error("Error encountered while scanning for annotations", throwable);
@@ -211,13 +211,11 @@ public class AnnotationProcessor {
      * Get Resources for each API
      *
      * @param resourceRootContext
-     * @param apiRootContext
      * @param annotatedMethods
      * @return
      * @throws Throwable
      */
-    private List<APIResource> getApiResources(String resourceRootContext, String apiRootContext,
-                                              Method[] annotatedMethods) throws Throwable {
+    private List<APIResource> getApiResources(String resourceRootContext, Method[] annotatedMethods) throws Throwable {
         List<APIResource> resourceList = new ArrayList<>();
         String subCtx = null;
         for (Method method : annotatedMethods) {
@@ -228,8 +226,10 @@ public class AnnotationProcessor {
                 Annotation methodContextAnno = method.getAnnotation(pathClazz);
                 if (methodContextAnno != null) {
                     subCtx = invokeMethod(pathClazzMethods[0], methodContextAnno, STRING);
+                } else {
+                    subCtx = "/*";
                 }
-                resource.setUriTemplate(makeContextURLReady(apiRootContext) + makeContextURLReady(subCtx));
+                resource.setUriTemplate(makeContextURLReady(subCtx));
 
                 resource.setUri(APIPublisherUtil.getServerBaseUrl() + makeContextURLReady(resourceRootContext) +
                         makeContextURLReady(subCtx));
@@ -266,7 +266,6 @@ public class AnnotationProcessor {
                 }
                 resourceList.add(resource);
             }
-            subCtx = null;
         }
         return resourceList;
     }

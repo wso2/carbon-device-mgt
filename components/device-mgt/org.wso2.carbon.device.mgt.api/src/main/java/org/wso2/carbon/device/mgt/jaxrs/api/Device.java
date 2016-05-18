@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
 /**
  * Device related operations such as get all the available devices, etc.
  */
-@API(name = "Configuration", version = "1.0.0", context = "/devices", tags = {"devicemgt_admin"})
+@API(name = "Device", version = "1.0.0", context = "/devicemgt_admin/devices", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Path("/devices")

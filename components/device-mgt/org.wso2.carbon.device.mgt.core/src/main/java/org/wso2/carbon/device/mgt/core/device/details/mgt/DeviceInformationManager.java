@@ -23,6 +23,8 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 
+import java.util.List;
+
 /**
  * This class will manage the storing of device details related generic information such as cpu/memory utilization, battery level,
  * plugged in to a power source or operation on battery.
@@ -46,6 +48,14 @@ public interface DeviceInformationManager {
      * @throws DeviceDetailsMgtException
      */
     DeviceInfo getDeviceInfo(DeviceIdentifier deviceIdentifier) throws DeviceDetailsMgtException;
+
+    /**
+     * This method will return device information for the supplied devices list.
+     * @param deviceIdentifiers
+     * @return List of device info objects
+     * @throws DeviceDetailsMgtException
+     */
+    List<DeviceInfo> getDevicesInfo(List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException;
 
     /**
      * This method will manage storing the device location as latitude, longitude, address, zip, country etc..

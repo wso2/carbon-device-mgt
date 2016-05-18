@@ -20,14 +20,17 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.*;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Device information related operations.
@@ -59,6 +62,26 @@ public interface DeviceInformation {
                                     + "or windows", required = true) @PathParam("type") String type,
                            @ApiParam(name = "id", value = "Provide the device identifier", required = true)
                                     @PathParam("id") String id);
+
+
+    @POST
+    @Path("{list}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Get devices information from the supplied device identifies",
+            notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
+                    "identifiers.",
+            response = DeviceInfo.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+    Response  getDevicesInfo(@ApiParam(name = "deviceIdentifiers", value = "List of device identifiers",
+            required = true) List<DeviceIdentifier> deviceIdentifiers);
 
     @GET
     @Path("location/{type}/{id}")

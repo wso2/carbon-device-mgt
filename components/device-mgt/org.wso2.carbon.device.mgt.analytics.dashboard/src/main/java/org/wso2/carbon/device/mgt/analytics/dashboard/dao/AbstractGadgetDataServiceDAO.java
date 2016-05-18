@@ -22,6 +22,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -37,7 +38,7 @@ import java.util.Map;
 public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceDAO {
 
     @Override
-    public DeviceCountByGroupEntry getTotalDeviceCount() throws SQLException {
+    public DeviceCountByGroupEntry getTotalDeviceCount() throws DataAccessLayerException {
         int totalDeviceCount;
         try {
             totalDeviceCount = this.getFilteredDeviceCount(null);
@@ -55,7 +56,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet)
-                                                  throws InvalidParameterValueException, SQLException {
+                                                  throws InvalidParameterValueException, DataAccessLayerException {
 
         int filteredDeviceCount = this.getFilteredDeviceCount(filterSet);
 
@@ -67,7 +68,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         return deviceCountByGroupEntry;
     }
 
-    private int getFilteredDeviceCount(FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+    private int getFilteredDeviceCount(FilterSet filterSet)
+            throws InvalidParameterValueException, DataAccessLayerException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
@@ -78,7 +80,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         int filteredDeviceCount = 0;
         try {
             con = this.getConnection();
-            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.DatabaseView.
+                DEVICES_VIEW_1 + " WHERE TENANT_ID = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns
             if (filters != null && filters.size() > 0) {
@@ -106,6 +109,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             while (rs.next()) {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -114,7 +120,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
-                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                 FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
 
         if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -129,8 +135,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         int filteredDeviceCount = 0;
         try {
             con = this.getConnection();
-            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
-                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.DatabaseView.
+                DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns
             if (filters != null && filters.size() > 0) {
@@ -159,6 +165,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             while (rs.next()) {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -172,7 +181,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws SQLException {
+    public List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws DataAccessLayerException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -180,8 +189,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         List<DeviceCountByGroupEntry> deviceCountsByConnectivityStatuses = new ArrayList<>();
         try {
             con = this.getConnection();
-            String sql = "SELECT CONNECTIVITY_STATUS, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 " +
-                "WHERE TENANT_ID = ? GROUP BY CONNECTIVITY_STATUS";
+            String sql = "SELECT CONNECTIVITY_STATUS, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 +
+                    " WHERE TENANT_ID = ? GROUP BY CONNECTIVITY_STATUS";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -196,6 +206,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 deviceCountByConnectivityStatus.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 deviceCountsByConnectivityStatuses.add(deviceCountByConnectivityStatus);
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -203,7 +216,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws SQLException {
+    public List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws DataAccessLayerException {
         // getting non-compliant device count
         DeviceCountByGroupEntry nonCompliantDeviceCount = new DeviceCountByGroupEntry();
         nonCompliantDeviceCount.setGroup(GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT);
@@ -223,7 +236,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         return deviceCountsByPotentialVulnerabilities;
     }
 
-    private int getNonCompliantDeviceCount() throws SQLException {
+    private int getNonCompliantDeviceCount() throws DataAccessLayerException {
         FilterSet filterSet = new FilterSet();
         filterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT);
         try {
@@ -233,7 +246,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         }
     }
 
-    private int getUnmonitoredDeviceCount() throws SQLException {
+    private int getUnmonitoredDeviceCount() throws DataAccessLayerException {
         FilterSet filterSet = new FilterSet();
         filterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.PotentialVulnerability.UNMONITORED);
         try {
@@ -245,7 +258,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DeviceCountByGroupEntry> getDeviceCountsByPlatforms(FilterSet filterSet)
-                                                           throws InvalidParameterValueException, SQLException {
+                                                     throws InvalidParameterValueException, DataAccessLayerException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
@@ -264,8 +277,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " +
-                advancedSqlFiltering + "GROUP BY PLATFORM";
+            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? " + advancedSqlFiltering + "GROUP BY PLATFORM";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -291,6 +304,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByPlatform.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByPlatforms.add(filteredDeviceCountByPlatform);
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -300,7 +316,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     @Override
     public List<DeviceCountByGroupEntry>
                          getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                 FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
 
         if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -323,8 +339,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? " +
-                "AND FEATURE_CODE = ? " + advancedSqlFiltering + "GROUP BY PLATFORM";
+            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                    advancedSqlFiltering + "GROUP BY PLATFORM";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -351,6 +368,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByPlatform.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByPlatforms.add(filteredDeviceCountByPlatform);
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -359,7 +379,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DeviceCountByGroupEntry> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
-                                                                throws InvalidParameterValueException, SQLException {
+                                                     throws InvalidParameterValueException, DataAccessLayerException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
@@ -378,8 +398,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " +
-                advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? " +
+                    advancedSqlFiltering + "GROUP BY OWNERSHIP";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -405,6 +426,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByOwnershipType.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByOwnershipTypes.add(filteredDeviceCountByOwnershipType);
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -413,8 +437,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DeviceCountByGroupEntry>
-                        getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                  getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
+                                 FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
 
         if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -437,8 +461,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? " +
-                "AND FEATURE_CODE = ? " + advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                    advancedSqlFiltering + "GROUP BY OWNERSHIP";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -465,6 +490,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByOwnershipType.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByOwnershipTypes.add(filteredDeviceCountByOwnershipType);
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -473,7 +501,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
-                                                           throws InvalidParameterValueException, SQLException {
+                                     throws InvalidParameterValueException, DataAccessLayerException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
 
@@ -486,7 +514,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             con = this.getConnection();
             String sql;
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                "DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -521,6 +549,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -529,7 +560,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                 FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
 
         if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -546,7 +577,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             con = this.getConnection();
             String sql;
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                "DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 +
+                    " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -582,6 +614,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -604,7 +639,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         String potentialVulnerability = filterSet.getPotentialVulnerability();
         if (potentialVulnerability != null) {
             if (GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT.equals(potentialVulnerability) ||
-                    GadgetDataServiceDAOConstants.PotentialVulnerability.UNMONITORED.equals(potentialVulnerability)) {
+                GadgetDataServiceDAOConstants.PotentialVulnerability.UNMONITORED.equals(potentialVulnerability)) {
                 if (GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT.equals(potentialVulnerability)) {
                     filters.put("IS_COMPLIANT", 0);
                 } else {

@@ -35,6 +35,10 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDA
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
@@ -95,6 +99,43 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+    }
+
+    @Override
+    public List<DeviceInfo> getDevicesInfo(List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException {
+
+        List<DeviceInfo> deviceInfos = new ArrayList<>();
+
+        Map<String, DeviceIdentifier> identifierMap = new HashMap<>();
+        for (DeviceIdentifier identifier : deviceIdentifiers) {
+            identifierMap.put(identifier.getId(), identifier);
+        }
+        try {
+            List<Integer> deviceIds = new ArrayList<>();
+            List<Device> devices = DeviceManagementDataHolder.getInstance().
+                    getDeviceManagementProvider().getAllDevices();
+            for (Device device : devices) {
+                if (identifierMap.containsKey(device.getDeviceIdentifier()) &&
+                        device.getType().equals(identifierMap.get(device.getDeviceIdentifier()))) {
+                    deviceIds.add(device.getId());
+                }
+            }
+            DeviceManagementDAOFactory.openConnection();
+            for(Integer id : deviceIds) {
+                DeviceInfo deviceInfo = deviceDetailsDAO.getDeviceInformation(id);
+                deviceInfo.setDeviceDetailsMap(deviceDetailsDAO.getDeviceProperties(id));
+                deviceInfos.add(deviceInfo);
+            }
+        } catch (SQLException e) {
+            throw new DeviceDetailsMgtException("SQL error occurred while retrieving devices from database.", e);
+        } catch (DeviceManagementException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving the devices.", e);
+        } catch (DeviceDetailsMgtDAOException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving devices details.", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceInfos;
     }
 
     @Override

@@ -20,9 +20,11 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.AbstractGadgetDataServiceDAO;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOConstants;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
@@ -39,7 +41,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                           throws InvalidParameterValueException, SQLException {
+                                                     throws InvalidParameterValueException, DataAccessLayerException {
 
         if (startIndex < 0) {
             throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
@@ -57,8 +59,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
         int totalRecordsCount = 0;
         try {
             con = this.getConnection();
-            String sql = "SELECT FEATURE_CODE, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
-                "WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC " +
+            String sql = "SELECT FEATURE_CODE, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC " +
                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -78,7 +80,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             }
             // fetching total records count
             sql = "SELECT COUNT(FEATURE_CODE) AS NON_COMPLIANT_FEATURE_COUNT FROM " +
-                "(SELECT DISTINCT FEATURE_CODE FROM DEVICES_VIEW_2 WHERE TENANT_ID = ?) NON_COMPLIANT_FEATURE_CODE";
+                "(SELECT DISTINCT FEATURE_CODE FROM " + GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 +
+                    " WHERE TENANT_ID = ?) NON_COMPLIANT_FEATURE_CODE";
 
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -89,6 +92,9 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("NON_COMPLIANT_FEATURE_COUNT");
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -100,7 +106,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
 
     @Override
     public PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
-                                                           throws InvalidParameterValueException, SQLException {
+                                                  throws InvalidParameterValueException, DataAccessLayerException {
 
         if (startIndex < 0) {
             throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
@@ -129,8 +135,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
                 }
             }
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                "DEVICES_VIEW_1 WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC " +
-                    "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? " +
+                    advancedSqlFiltering + "ORDER BY DEVICE_ID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -165,7 +171,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             }
 
             // fetching total records count
-            sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+            sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ?";
 
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -176,6 +183,9 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -187,8 +197,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
 
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                        FilterSet filterSet, int startIndex, int resultCount)
-                                                                 throws InvalidParameterValueException, SQLException {
+                                                      FilterSet filterSet, int startIndex, int resultCount)
+                                                      throws InvalidParameterValueException, DataAccessLayerException {
 
         if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -221,8 +231,9 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
                 }
             }
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                "DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering +
-                    "ORDER BY DEVICE_ID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                    advancedSqlFiltering + "ORDER BY DEVICE_ID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -258,8 +269,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             }
 
             // fetching total records count
-            sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
-                "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
 
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -271,6 +282,9 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in either getting database connection, " +
+                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

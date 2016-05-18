@@ -19,10 +19,11 @@
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception;
 
 /**
- * Custom exception class for catching invalid parameter issues,
+ * Custom exception class for communicating data access layer issues
  * relevant to Gadget Data Service DAO layer.
+ * (In this particular instance, SQL exceptions related to database access).
  */
-public class InvalidParameterValueException extends Exception {
+public class DataAccessLayerException extends Exception {
 
     private String errorMessage;
     private static final long serialVersionUID = 2021891706072918864L;
@@ -33,7 +34,7 @@ public class InvalidParameterValueException extends Exception {
      * @param nestedException Nested exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterValueException(String errorMessage, Exception nestedException) {
+    public DataAccessLayerException(String errorMessage, Exception nestedException) {
         super(errorMessage, nestedException);
         setErrorMessage(errorMessage);
     }
@@ -44,7 +45,7 @@ public class InvalidParameterValueException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterValueException(String errorMessage, Throwable cause) {
+    public DataAccessLayerException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         setErrorMessage(errorMessage);
     }
@@ -53,7 +54,7 @@ public class InvalidParameterValueException extends Exception {
      * Constructs a new exception with the specific error message.
      * @param errorMessage Specific error message.
      */
-    public InvalidParameterValueException(String errorMessage) {
+    public DataAccessLayerException(String errorMessage) {
         super(errorMessage);
         setErrorMessage(errorMessage);
     }
@@ -63,7 +64,7 @@ public class InvalidParameterValueException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterValueException(Throwable cause) {
+    public DataAccessLayerException(Throwable cause) {
         super(cause);
     }
 

@@ -20,7 +20,10 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.impl;
 
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOFactory;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.*;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
@@ -33,11 +36,14 @@ import java.util.List;
 public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
-    public DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+    public DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet)
+                                                  throws InvalidParameterValueException, DataAccessLayerException {
         DeviceCountByGroupEntry filteredDeviceCount;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             filteredDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getDeviceCount(filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -45,13 +51,15 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, FilterSet filterSet)
-                                                                  throws InvalidParameterValueException, SQLException {
+    public DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
+                             FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
         DeviceCountByGroupEntry featureNonCompliantDeviceCount;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             featureNonCompliantDeviceCount = GadgetDataServiceDAOFactory.
-                    getGadgetDataServiceDAO().getFeatureNonCompliantDeviceCount(nonCompliantFeatureCode, filterSet);
+                getGadgetDataServiceDAO().getFeatureNonCompliantDeviceCount(nonCompliantFeatureCode, filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -59,11 +67,13 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public DeviceCountByGroupEntry getTotalDeviceCount() throws SQLException {
+    public DeviceCountByGroupEntry getTotalDeviceCount() throws DataAccessLayerException {
         DeviceCountByGroupEntry totalDeviceCount;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             totalDeviceCount = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().getTotalDeviceCount();
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -71,12 +81,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws SQLException {
+    public List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws DataAccessLayerException {
         List<DeviceCountByGroupEntry> deviceCountsByConnectivityStatuses;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             deviceCountsByConnectivityStatuses = GadgetDataServiceDAOFactory.
-                    getGadgetDataServiceDAO().getDeviceCountsByConnectivityStatuses();
+                getGadgetDataServiceDAO().getDeviceCountsByConnectivityStatuses();
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -84,12 +96,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     }
 
     @Override
-    public List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws SQLException {
+    public List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws DataAccessLayerException {
         List<DeviceCountByGroupEntry> deviceCountsByPotentialVulnerabilities;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             deviceCountsByPotentialVulnerabilities = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getDeviceCountsByPotentialVulnerabilities();
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -98,12 +112,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                                  throws SQLException, InvalidParameterValueException {
+                                                     throws InvalidParameterValueException, DataAccessLayerException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getNonCompliantDeviceCountsByFeatures(startIndex, resultCount);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -112,12 +128,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public List<DeviceCountByGroupEntry> getDeviceCountsByPlatforms(FilterSet filterSet)
-                                                                  throws InvalidParameterValueException, SQLException {
+                                                     throws InvalidParameterValueException, DataAccessLayerException {
         List<DeviceCountByGroupEntry> deviceCountsByPlatforms;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             deviceCountsByPlatforms = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getDeviceCountsByPlatforms(filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -126,12 +144,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                             FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                 FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
         List<DeviceCountByGroupEntry> featureNonCompliantDeviceCountsByPlatforms;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             featureNonCompliantDeviceCountsByPlatforms = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getFeatureNonCompliantDeviceCountsByPlatforms(nonCompliantFeatureCode, filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -140,12 +160,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public List<DeviceCountByGroupEntry> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
-                                                                 throws InvalidParameterValueException, SQLException {
+                                                      throws InvalidParameterValueException, DataAccessLayerException {
         List<DeviceCountByGroupEntry> deviceCountsByOwnershipTypes;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             deviceCountsByOwnershipTypes = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getDeviceCountsByOwnershipTypes(filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -155,12 +177,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
     @Override
     public List<DeviceCountByGroupEntry>
         getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                            FilterSet filterSet) throws SQLException, InvalidParameterValueException {
+                                 FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
         List<DeviceCountByGroupEntry> featureNonCompliantDeviceCountsByOwnershipTypes;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             featureNonCompliantDeviceCountsByOwnershipTypes = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getFeatureNonCompliantDeviceCountsByOwnershipTypes(nonCompliantFeatureCode, filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -169,12 +193,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public PaginationResult getDevicesWithDetails(FilterSet filterSet,
-                                int startIndex, int resultCount) throws InvalidParameterValueException, SQLException {
+                     int startIndex, int resultCount) throws InvalidParameterValueException, DataAccessLayerException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getDevicesWithDetails(filterSet, startIndex, resultCount);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -183,13 +209,15 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                        FilterSet filterSet, int startIndex, int resultCount)
-                                                                 throws InvalidParameterValueException, SQLException {
+                                                      FilterSet filterSet, int startIndex, int resultCount)
+                                                      throws InvalidParameterValueException, DataAccessLayerException {
         PaginationResult paginationResult;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             paginationResult = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filterSet, startIndex, resultCount);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -198,12 +226,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
-                                                           throws InvalidParameterValueException, SQLException {
+                                                      throws InvalidParameterValueException, DataAccessLayerException {
         List<DetailedDeviceEntry> devicesWithDetails;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             devicesWithDetails = GadgetDataServiceDAOFactory.
-                    getGadgetDataServiceDAO().getDevicesWithDetails(filterSet);
+                getGadgetDataServiceDAO().getDevicesWithDetails(filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }
@@ -212,12 +242,14 @@ public class GadgetDataServiceImpl implements GadgetDataService {
 
     @Override
     public List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                            FilterSet filterSet) throws InvalidParameterValueException, SQLException {
+                                 FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException {
         List<DetailedDeviceEntry> featureNonCompliantDevicesWithDetails;
         try {
             GadgetDataServiceDAOFactory.openConnection();
             featureNonCompliantDevicesWithDetails = GadgetDataServiceDAOFactory.getGadgetDataServiceDAO().
                 getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filterSet);
+        } catch (SQLException e) {
+            throw new DataAccessLayerException("Error in opening database connection.", e);
         } finally {
             GadgetDataServiceDAOFactory.closeConnection();
         }

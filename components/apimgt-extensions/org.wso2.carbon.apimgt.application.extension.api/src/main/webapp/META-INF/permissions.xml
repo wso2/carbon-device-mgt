@@ -30,21 +30,21 @@
     <!-- Device related APIs -->
     <Permission>
         <name>Register tenant specific application</name>
-        <path>/device-mgt</path>
+        <path>/device-mgt/admin</path>
         <url>/register/tenants/*</url>
         <method>POST</method>
         <scope>super_admin_user</scope>
     </Permission>
     <Permission>
         <name>Register application</name>
-        <path>/device-mgt/api/application/add</path>
+        <path>/device-mgt/user/api/application</path>
         <url>/register</url>
         <method>POST</method>
         <scope>application_user</scope>
     </Permission>
     <Permission>
         <name>Delete application</name>
-        <path>/device-mgt/api/application/remove</path>
+        <path>/device-mgt/user/api/application</path>
         <url>/unregister</url>
         <method>DELETE</method>
         <scope>application_user</scope>

@@ -80,13 +80,13 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
 
     @Override
     public void updateApplicationStatus(DeviceIdentifier deviceId, Application application,
-            String status) throws ApplicationManagementException {
+                                        String status) throws ApplicationManagementException {
 
     }
 
     @Override
     public String getApplicationStatus(DeviceIdentifier deviceId,
-            Application application) throws ApplicationManagementException {
+                                       Application application) throws ApplicationManagementException {
         return null;
     }
 
@@ -94,17 +94,19 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     public void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIds)
             throws ApplicationManagementException {
         try {
-            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(operation, deviceIds);
+            //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+            String type = null;
+            if (deviceIds.size() > 0) {
+                type = deviceIds.get(0).getType();
+            }
+            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
+                    deviceIds);
             DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().notifyOperationToDevices
                     (operation, deviceIds);
-        } catch (OperationManagementException opeEx) {
-            String errorMsg = "Error in add operation at app installation:" + opeEx.getErrorMessage();
-            log.error(errorMsg, opeEx);
-            throw new ApplicationManagementException(errorMsg, opeEx);
-        }catch (DeviceManagementException deviceEx){
-            String errorMsg = "Error in notify operation at app installation:" + deviceEx.getErrorMessage();
-            log.error(errorMsg, deviceEx);
-            throw new ApplicationManagementException(errorMsg, deviceEx);
+        } catch (OperationManagementException e) {
+            throw new ApplicationManagementException("Error in add operation at app installation", e);
+        } catch (DeviceManagementException e) {
+            throw new ApplicationManagementException("Error in notify operation at app installation", e);
         }
     }
 
@@ -119,7 +121,6 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             DeviceIdentifier deviceIdentifier;
 
 
-
             for (String user : userNameList) {
                 userName = user;
                 deviceList = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevicesOfUser
@@ -132,18 +133,20 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                     deviceIdentifierList.add(deviceIdentifier);
                 }
             }
+            //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+            String type = null;
+            if (deviceIdentifierList.size() > 0) {
+                type = deviceIdentifierList.get(0).getType();
+            }
             DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                    .addOperation(operation, deviceIdentifierList);
+                    .addOperation(type, operation, deviceIdentifierList);
 
-        } catch (DeviceManagementException devEx) {
-            String errorMsg = "Error in get devices for user: "+userName+ " in app installation:" + devEx.getErrorMessage();
-            log.error(errorMsg, devEx);
-            throw new ApplicationManagementException(errorMsg, devEx);
+        } catch (DeviceManagementException e) {
+            throw new ApplicationManagementException("Error in get devices for user: " + userName +
+                    " in app installation", e);
 
-        } catch (OperationManagementException opeEx) {
-            String errorMsg = "Error in add operation at app installation:" + opeEx.getErrorMessage();
-            log.error(errorMsg, opeEx);
-            throw new ApplicationManagementException(errorMsg, opeEx);
+        } catch (OperationManagementException e) {
+            throw new ApplicationManagementException("Error in add operation at app installation", e);
 
         }
     }
@@ -170,19 +173,20 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                     deviceIdentifierList.add(deviceIdentifier);
                 }
             }
-            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                    .addOperation(operation, deviceIdentifierList);
+            //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+            String type = null;
+            if (deviceIdentifierList.size() > 0) {
+                type = deviceIdentifierList.get(0).getType();
+            }
+            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
+                    deviceIdentifierList);
 
-        } catch (DeviceManagementException devEx) {
-            String errorMsg = "Error in get devices for user role "+userRole+ " in app installation:"
-                    + devEx.getErrorMessage();
-            log.error(errorMsg, devEx);
-            throw new ApplicationManagementException(errorMsg, devEx);
+        } catch (DeviceManagementException e) {
+            throw new ApplicationManagementException("Error in get devices for user role " + userRole +
+                    " in app installation", e);
 
-        } catch (OperationManagementException opeEx) {
-            String errorMsg = "Error in add operation at app installation:" + opeEx.getErrorMessage();
-            log.error(errorMsg, opeEx);
-            throw new ApplicationManagementException(errorMsg, opeEx);
+        } catch (OperationManagementException e) {
+            throw new ApplicationManagementException("Error in add operation at app installation", e);
 
         }
     }

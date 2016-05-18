@@ -30,6 +30,8 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagement
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
@@ -49,6 +51,8 @@ import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManageme
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationConfigRepository;
+import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -153,15 +157,26 @@ public class DeviceManagementServiceComponent {
             NotificationManagementDAOFactory.init(dsConfig);
 
             OperationManagementDAOFactory.init(dsConfig);
-            /*Initialize Operation Manager*/
+
+            /* Initialize Operation Manager */
             this.initOperationsManager();
+
+            PushNotificationProviderRepository pushNotificationRepo = new PushNotificationProviderRepository();
+            List<String> pushNotificationProviders = config.getPushNotificationProviders();
+            if (pushNotificationProviders != null) {
+                for (String pushNoteProvider : pushNotificationProviders) {
+                    pushNotificationRepo.addProvider(pushNoteProvider);
+                }
+            }
+            DeviceManagementDataHolder.getInstance().setPushNotificationProviderRepository(pushNotificationRepo);
+
             /* If -Dsetup option enabled then create device management database schema */
             String setupOption =
                     System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
             if (setupOption != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("-Dsetup is enabled. Device management repository schema initialization is about to " +
-                              "begin");
+                            "begin");
                 }
                 this.setupDeviceManagementSchema(dsConfig);
             }

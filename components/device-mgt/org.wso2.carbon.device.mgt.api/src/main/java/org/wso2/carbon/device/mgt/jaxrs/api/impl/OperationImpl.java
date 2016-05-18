@@ -128,7 +128,14 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
         ResponsePayload responseMsg = new ResponsePayload();
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            int operationId = dmService.addOperation(operationContext.getOperation(), operationContext.getDevices());
+
+            //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+            String type = null;
+            List<DeviceIdentifier> deviceIdentifiers = operationContext.getDevices();
+            if (deviceIdentifiers.size() > 0) {
+                type = deviceIdentifiers.get(0).getType();
+            }
+            int operationId = dmService.addOperation(type, operationContext.getOperation(), operationContext.getDevices());
             if (operationId > 0) {
                 responseMsg.setStatusCode(HttpStatus.SC_CREATED);
                 responseMsg.setMessageFromServer("Operation has added successfully.");

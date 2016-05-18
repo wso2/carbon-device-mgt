@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -36,7 +37,7 @@ import java.util.List;
  * Proxy class for all Device Management related operations that take the corresponding plugin type in
  * and resolve the appropriate plugin implementation
  */
-public interface DeviceManagementProviderService extends OperationManager {
+public interface DeviceManagementProviderService {
 
     List<Device> getAllDevices(String deviceType) throws DeviceManagementException;
 
@@ -212,6 +213,35 @@ public interface DeviceManagementProviderService extends OperationManager {
     boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                       EnrolmentInfo.Status status) throws DeviceManagementException;
 
-    void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
+    void notifyOperationToDevices(Operation operation,
+                                  List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
+
+    int addOperation(String type, Operation operation,
+                     List<DeviceIdentifier> devices) throws OperationManagementException;
+
+    List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
+
+    PaginationResult getOperations(DeviceIdentifier deviceId,
+                                   PaginationRequest request) throws OperationManagementException;
+
+    List<? extends Operation> getPendingOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException;
+
+    Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
+
+    void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
+
+    void deleteOperation(String type, int operationId) throws OperationManagementException;
+
+    Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
+            throws OperationManagementException;
+
+    List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
+                                                             Operation.Status status)
+            throws OperationManagementException, DeviceManagementException;
+
+    Operation getOperation(String type, int operationId) throws OperationManagementException;
+
+    Operation getOperationByActivityId(String activity) throws OperationManagementException;
 
 }

@@ -51,6 +51,10 @@
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-api</artifactId>
         </dependency>
@@ -91,8 +95,21 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
         </dependency>
     </dependencies>
 

@@ -96,7 +96,13 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             }
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
             deviceIdentifiers.add(deviceIdentifier);
-            PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(
+
+            //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+            String type = null;
+            if (deviceIdentifiers.size() > 0) {
+                type = deviceIdentifiers.get(0).getType();
+            }
+            PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(type,
                     PolicyManagerUtil.transformPolicy(policy), deviceIdentifiers);
             return policy;
         } catch (PolicyEvaluationException e) {

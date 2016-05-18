@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
+import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.email.sender.core.service.EmailSenderService;
@@ -53,6 +54,7 @@ public class DeviceManagementDataHolder {
     private GroupManagementProviderService groupManagementProviderService;
     private TaskService taskService;
     private EmailSenderService emailSenderService;
+    private PushNotificationProviderRepository pushNotificationProviderRepository;
 
     private DeviceManagementDataHolder() {}
 
@@ -194,6 +196,15 @@ public class DeviceManagementDataHolder {
 
     public void setEmailSenderService(EmailSenderService emailSenderService) {
         this.emailSenderService = emailSenderService;
+    }
+
+    public void setPushNotificationProviderRepository(
+            PushNotificationProviderRepository pushNotificationProviderRepository) {
+        this.pushNotificationProviderRepository = pushNotificationProviderRepository;
+    }
+
+    public PushNotificationProviderRepository getPushNotificationProviderRepository() {
+        return pushNotificationProviderRepository;
     }
 
 }

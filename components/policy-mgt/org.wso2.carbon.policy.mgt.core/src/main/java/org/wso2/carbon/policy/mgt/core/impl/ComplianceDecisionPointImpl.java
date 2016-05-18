@@ -160,8 +160,14 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
                 }
                 policyOperation.setProfileOperations(profileOperationList);
                 policyOperation.setPayLoad(policyOperation.getProfileOperations());
+
+                //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+                String type = null;
+                if (deviceIdentifiers.size() > 0) {
+                    type = deviceIdentifiers.get(0).getType();
+                }
                 PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                        addOperation(policyOperation, deviceIdentifiers);
+                        addOperation(type, policyOperation, deviceIdentifiers);
 
             }
 

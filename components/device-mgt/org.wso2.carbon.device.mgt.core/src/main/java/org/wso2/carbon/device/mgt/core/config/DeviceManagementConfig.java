@@ -22,18 +22,23 @@ import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * Represents Device Mgt configuration.
  */
 @XmlRootElement(name = "DeviceMgtConfiguration")
+@SuppressWarnings("unused")
 public final class DeviceManagementConfig {
 
     private DeviceManagementConfigRepository deviceManagementConfigRepository;
     private TaskConfiguration taskConfiguration;
     private IdentityConfigurations identityConfigurations;
     private PolicyConfiguration policyConfiguration;
+    private List<String> pushNotificationProviders;
+
 
     @XmlElement(name = "ManagementRepository", required = true)
     public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
@@ -72,15 +77,15 @@ public final class DeviceManagementConfig {
         this.taskConfiguration = taskConfiguration;
     }
 
-//    @XmlElementWrapper(name = "PushNotificationProviders", required = true)
-//    @XmlElement(name = "Provider", required = true)
-//    public List<String> getPushNotificationProviders() {
-//        return pushNotificationProviders;
-//    }
-//
-//    public void setPushNotificationProviders(List<String> pushNotificationProviders) {
-//        this.pushNotificationProviders = pushNotificationProviders;
-//    }
+    @XmlElementWrapper(name = "PushNotificationProviders", required = true)
+    @XmlElement(name = "Provider", required = true)
+    public List<String> getPushNotificationProviders() {
+        return pushNotificationProviders;
+    }
+
+    public void setPushNotificationProviders(List<String> pushNotificationProviders) {
+        this.pushNotificationProviders = pushNotificationProviders;
+    }
 
 }
 

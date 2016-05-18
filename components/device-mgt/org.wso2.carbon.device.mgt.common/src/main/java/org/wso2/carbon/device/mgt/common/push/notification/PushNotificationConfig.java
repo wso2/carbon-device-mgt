@@ -18,24 +18,32 @@
  */
 package org.wso2.carbon.device.mgt.common.push.notification;
 
-import java.util.Set;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Map;
 
+@XmlRootElement(name = "PushNotificationProviderConfiguration")
 public class PushNotificationConfig {
 
     private String type;
-    private Set<String> properties;
+    Map<String, String> properties;
 
-    public PushNotificationConfig(String type, Set<String> properties) {
+    public PushNotificationConfig(String type, Map<String, String> properties) {
         this.type = type;
         this.properties = properties;
     }
 
+    @XmlElement(name = "Type", required = true)
     public String getType() {
         return type;
     }
 
-    public Set<String> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
+    }
+
+    public String getProperty(String name) {
+        return properties.get(name);
     }
 
 }

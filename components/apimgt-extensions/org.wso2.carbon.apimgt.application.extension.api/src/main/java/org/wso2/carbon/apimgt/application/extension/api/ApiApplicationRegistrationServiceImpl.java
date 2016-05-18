@@ -59,6 +59,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             }
             String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
                     .getRealmConfiguration().getAdminUserName();
+            username = username + "@" + APIUtil.getTenantDomainOftheUser();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
@@ -81,7 +82,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
     @POST
     public Response register(RegistrationProfile registrationProfile) {
         try {
-            String username = APIUtil.getAuthenticatedUser();
+            String username = APIUtil.getAuthenticatedUser() + "@" + APIUtil.getTenantDomainOftheUser();
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             if (registrationProfile.isMappingAnExistingOAuthApp()) {
                 JSONObject jsonStringObject = new JSONObject();
@@ -116,7 +117,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
     @DELETE
     public Response unregister(@QueryParam("applicationName") String applicationName) {
         try {
-            String username = APIUtil.getAuthenticatedUser();
+            String username = APIUtil.getAuthenticatedUser() + "@" + APIUtil.getTenantDomainOftheUser();
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             apiManagementProviderService.removeAPIApplication(applicationName, username);
             return Response.status(Response.Status.ACCEPTED).build();

@@ -19,19 +19,18 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * Features
  */
+@API(name = "Device Search", version = "1.0.0", context = "/features", tags = {"devicemgt_admin"})
 
+// Below Api is for swagger annotations
 @Api(value = "Feature", description = "Feature management related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
 @Path("/features")
@@ -59,6 +58,8 @@ public interface Feature {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Features"),
                             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of features" +
                                                                ".") })
+    @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/view",
+            "/permission/admin/device-mgt/user/devices/view"})
     Response getFeatures(@ApiParam(name = "type", value = "Provide the device type, such as ios, android or windows",
                                    required = true) @PathParam("type") String type);
 

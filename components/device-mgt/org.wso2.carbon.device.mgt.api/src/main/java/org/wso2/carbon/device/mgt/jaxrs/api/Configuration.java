@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 
 import javax.ws.rs.*;
@@ -29,6 +30,9 @@ import javax.ws.rs.core.Response;
  * General Tenant Configuration REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
+@API(name = "Configuration", version = "1.0.0", context = "/configuration", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Path("/configuration")
 @Api(value = "Configuration", description = "General Tenant Configuration management capabilities are exposed " +
                                             "through this API")
@@ -48,6 +52,7 @@ public interface Configuration {
             @ApiResponse(code = 201, message = "Tenant configuration saved successfully"),
             @ApiResponse(code = 500, message = "Error occurred while saving the tenant configuration")
             })
+    @Permission(scope = "configuration-modify", permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"})
     Response saveTenantConfiguration(@ApiParam(name = "configuration", value = "The required properties to "
                                     + "update the platform configurations the as the <JSON_PAYLOAD> value",
                                     required = true) TenantConfiguration configuration);
@@ -64,6 +69,7 @@ public interface Configuration {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the tenant configuration")
             })
+    @Permission(scope = "configuration-view", permissions = {"/permission/admin/device-mgt/admin/platform-configs/view"})
     Response getConfiguration();
 
     @PUT
@@ -77,6 +83,7 @@ public interface Configuration {
             @ApiResponse(code = 201, message = "Tenant configuration updated successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating the tenant configuration")
             })
+    @Permission(scope = "configuration-modify", permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"})
     Response updateConfiguration(@ApiParam(name = "configuration", value = "The required properties to update"
                                 + " the platform configurations the as the <JSON_PAYLOAD> value",
                                 required = true) TenantConfiguration configuration);

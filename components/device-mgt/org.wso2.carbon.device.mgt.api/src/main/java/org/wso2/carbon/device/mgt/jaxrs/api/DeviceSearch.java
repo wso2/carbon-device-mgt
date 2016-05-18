@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 
@@ -30,6 +31,9 @@ import javax.ws.rs.core.Response;
 /**
  * Device search related operations such as getting device information.
  */
+@API(name = "Device Search", version = "1.0.0", context = "/search", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Path("/search")
 @Api(value = "DeviceSearch", description = "Device searching related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
@@ -47,6 +51,7 @@ public interface DeviceSearch {
             @ApiResponse(code = 200, message = "OK", response = DeviceWrapper.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while searching the device information")
             })
+    @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getFilteredDeviceInfo(@ApiParam(name = "enrollmentCertificates", value = "List of search conditions",
                                     required = true) SearchContext searchContext);
 }

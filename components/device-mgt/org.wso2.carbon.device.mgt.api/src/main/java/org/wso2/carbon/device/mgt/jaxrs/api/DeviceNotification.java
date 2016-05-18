@@ -18,21 +18,11 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -40,6 +30,9 @@ import javax.ws.rs.core.Response;
  * DeviceNotification management REST-API implementation.
  * All end points support JSON, XMl with content negotiation.
  */
+@API(name = "Device Notification", version = "1.0.0", context = "/notifications", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Api(value = "DeviceNotification", description = "Device notification related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
 @Path("/notifications")
@@ -62,6 +55,9 @@ public interface DeviceNotification {
                     responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the notification list")
     })
+    @Permission(scope = "device-notification-view", permissions = {
+            "/permission/admin/device-mgt/admin/notifications/view",
+            "/permission/admin/device-mgt/user/notifications/view"})
     Response getNotifications();
 
     @GET
@@ -80,6 +76,9 @@ public interface DeviceNotification {
                     responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the notification list")
     })
+    @Permission(scope = "device-notification-view", permissions = {
+            "/permission/admin/device-mgt/admin/notifications/view",
+            "/permission/admin/device-mgt/user/notifications/view"})
     Response getNotificationsByStatus(@ApiParam(name = "status", value = "Provide the notification status as"
             + " the value for {status}", required = true)
                                       @PathParam("status") Notification.Status status);
@@ -97,6 +96,8 @@ public interface DeviceNotification {
             @ApiResponse(code = 201, message = "Notification status updated successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating notification status")
     })
+    @Permission(scope = "device-notification-modify",
+            permissions = {"/permission/admin/device-mgt/admin/notifications/modify"})
     Response updateNotificationStatus(@ApiParam(name = "id", value = "Provide the ID of the notification"
             + " you wish you update", required = true) @PathParam("id") int id,
                                       @ApiParam(name = "status", value = "Provide the notification status as"
@@ -114,6 +115,8 @@ public interface DeviceNotification {
             @ApiResponse(code = 201, message = "NNotification has added successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating notification status")
     })
+    @Permission(scope = "device-notification-modify",
+            permissions = {"/permission/admin/device-mgt/admin/notifications/modify"})
     Response addNotification(Notification notification);
 
 }

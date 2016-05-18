@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -29,6 +30,9 @@ import javax.ws.rs.core.Response;
 /**
  * Device related operations such as get all the available devices, etc.
  */
+@API(name = "Configuration", version = "1.0.0", context = "/devices", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Path("/devices")
 @Api(value = "Device", description = "Device related operations such as get all the available devices, etc.")
 @SuppressWarnings("NonJaxWsWebServices")
@@ -55,6 +59,7 @@ public interface Device {
             @ApiResponse(code = 200, message = "List of Devices"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the device list")
             })
+    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getAllDevices(@ApiParam(name = "type", value = "Provide the device type, such as ios, android or"
                                 + " windows", required = true) @QueryParam("type") String type,
                            @ApiParam(name = "user", value = "Get the details of the devices registered to a "
@@ -86,6 +91,9 @@ public interface Device {
     @GET
     @Path("view")
     @Produces({ MediaType.APPLICATION_JSON })
+    @Permission(scope = "device-view", permissions = {
+            "/permission/admin/device-mgt/admin/devices/view",
+            "/permission/admin/device-mgt/user/devices/view"})
     Response getDevice(@QueryParam("type") String type, @QueryParam("id") String id);
 
     /**
@@ -96,6 +104,9 @@ public interface Device {
      */
     @GET
     @Path("user/{user}")
+    @Permission(scope = "device-view-own", permissions = {
+            "/permission/admin/device-mgt/user/devices/list",
+            "/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceOfUser(@PathParam("user") String user);
 
     /**
@@ -106,6 +117,9 @@ public interface Device {
      */
     @GET
     @Path("user/{user}/count")
+    @Permission(scope = "device-count-own", permissions = {
+            "/permission/admin/device-mgt/user/devices/list",
+            "/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceCountOfUser(@PathParam("user") String user);
 
     /**
@@ -124,6 +138,7 @@ public interface Device {
             @ApiResponse(code = 200, message = "Device count"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the device count")
             })
+    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceCount();
 
     /**
@@ -135,6 +150,7 @@ public interface Device {
      */
     @GET
     @Path("name/{name}/{tenantDomain}")
+
     @ApiOperation(
             httpMethod = "GET",
             value = "Get the device details of a specific device via the REST API",
@@ -145,11 +161,12 @@ public interface Device {
             @ApiResponse(code = 200, message = "List of devices"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the devices list of device name")
             })
-    Response getDevicesByName(@ApiParam(name = "name", value = "The name of the device or windows",
-                                    required = true) @PathParam("name") String deviceName,
+    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+    Response getDevicesByName(@ApiParam(name = "name", value = "The name of the device or windows", required = true)
+                              @PathParam("name") String deviceName,
                               @ApiParam(name = "tenantDomain", value = "Tenant domain name. The default "
                                     + "tenant domain of WSO2 EMM is carbon.super", required = true)
-                                    @PathParam("tenantDomain") String tenantDomain);
+                              @PathParam("tenantDomain") String tenantDomain);
 
     /**
      * Get the list of available device types.
@@ -168,6 +185,7 @@ public interface Device {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of devices based on the type"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the list of device types") })
+    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceTypes();
 
     /**
@@ -177,6 +195,8 @@ public interface Device {
      */
     @PUT
     @Path("type/{type}/id/{deviceId}")
+    @Permission(scope = "device-modify", permissions = {
+            "/permission/admin/device-mgt/user/devices/modify", "/permission/admin/device-mgt/admin/devices/modify"})
     Response updateDevice(@PathParam("type") String deviceType, @PathParam("deviceId") String deviceId,
                           org.wso2.carbon.device.mgt.common.Device updatedDevice);
 
@@ -187,6 +207,8 @@ public interface Device {
      */
     @DELETE
     @Path("type/{type}/id/{deviceId}")
+    @Permission(scope = "device-modify", permissions = {
+            "/permission/admin/device-mgt/user/devices/modify", "/permission/admin/device-mgt/admin/devices/modify"})
     Response disenrollDevice(@PathParam("type") String deviceType, @PathParam("deviceId") String deviceId);
 
 }

@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
@@ -28,6 +29,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@API(name = "Policy", version = "1.0.0", context = "/policies", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Path("/policies")
 @Api(value = "Policy", description = "Policy management related operations can be found here.")
 public interface Policy {
@@ -45,6 +49,7 @@ public interface Policy {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Created the policy."),
             @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
                     "adding the policy")})
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response addPolicy(@ApiParam(name = "policyWrapper", value = "Policy details related to the operation.",
             required = true) PolicyWrapper policyWrapper);
 
@@ -62,6 +67,7 @@ public interface Policy {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Created the policy."),
             @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
                     "adding the policy")})
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response addActivePolicy(@ApiParam(name = "policyWrapper", value = "Policy details related to the operation.",
             required = true) PolicyWrapper policyWrapper);
 
@@ -79,6 +85,7 @@ public interface Policy {
             response = org.wso2.carbon.policy.mgt.common.Policy.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
                     "fetching the policies.")})
+    @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getAllPolicies();
 
     @GET
@@ -94,6 +101,7 @@ public interface Policy {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched policy details."),
             @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
                     "fetching the policies.")})
+    @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicy(@ApiParam(name = "id", value = "Policy ID value to identify a policy uniquely.",
             required = true) @PathParam("id") int policyId);
 
@@ -108,6 +116,7 @@ public interface Policy {
             response = int.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched the policy count."),
             @ApiResponse(code = 500, message = "Error while Fetching the policy count.")})
+    @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicyCount();
 
     @PUT
@@ -122,6 +131,7 @@ public interface Policy {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Policy has been updated successfully."),
             @ApiResponse(code = 500, message = "Policy Management related exception in policy " +
                     "update")})
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
     Response updatePolicy(@ApiParam(name = "policyWrapper", value = "Policy details related to the operation.",
             required = true) PolicyWrapper policyWrapper,
                           @ApiParam(name = "id", value = "Policy ID value to identify a policy uniquely.",
@@ -141,6 +151,7 @@ public interface Policy {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Policy Priorities successfully updated."),
             @ApiResponse(code = 400, message = "Policy priorities did not update."),
             @ApiResponse(code = 500, message = "Error in updating policy priorities.")})
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
     Response updatePolicyPriorities(@ApiParam(name = "priorityUpdatedPolicies",
             value = "List of policy update details..",
             required = true) List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
@@ -158,6 +169,7 @@ public interface Policy {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully deleted."),
             @ApiResponse(code = 400, message = "Policy does not exist."),
             @ApiResponse(code = 500, message = "Error in deleting policies.")})
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
     Response bulkRemovePolicy(@ApiParam(name = "policyIds", value = "Policy ID list to be deleted.",
             required = true) List<Integer> policyIds);
 
@@ -173,6 +185,9 @@ public interface Policy {
                     "in the inactive state to the active state.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully activated."),
             @ApiResponse(code = 500, message = "Error in activating policies.")})
+    @Permission(scope = "policy-modify", permissions = {
+            "/permission/admin/device-mgt/admin/policies/update",
+            "/permission/admin/device-mgt/admin/policies/add"})
     Response activatePolicy(@ApiParam(name = "policyIds", value = "Policy ID list to be activated.",
             required = true) List<Integer> policyIds);
 
@@ -188,6 +203,9 @@ public interface Policy {
                     "is in the active state to the inactive state.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully deactivated."),
             @ApiResponse(code = 500, message = "Error in deactivating policies.")})
+    @Permission(scope = "policy-modify", permissions = {
+            "/permission/admin/device-mgt/admin/policies/update",
+            "/permission/admin/device-mgt/admin/policies/add"})
     Response inactivatePolicy(@ApiParam(name = "policyIds", value = "Policy ID list to be deactivated.",
             required = true) List<Integer> policyIds) throws MDMAPIException;
 
@@ -206,6 +224,7 @@ public interface Policy {
                     " you need to apply the changes to push the policy changes to the existing devices.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Changes have been successfully updated."),
             @ApiResponse(code = 500, message = "Error in updating policies.")})
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
     Response applyChanges();
 
     @GET
@@ -223,23 +242,28 @@ public interface Policy {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Policy monitoring service started successfully."),
             @ApiResponse(code = 500, message = "Policy Management related exception when starting " +
                     "monitoring service.")})
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response startTaskService(@ApiParam(name = "milliseconds", value = "Policy monitoring frequency in milliseconds.",
             required = true) @PathParam("milliseconds") int monitoringFrequency);
 
     @GET
     @Path("update-task/{milliseconds}")
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response updateTaskService(@PathParam("milliseconds") int monitoringFrequency);
 
     @GET
     @Path("stop-task")
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response stopTaskService();
 
     @GET
     @Path("{type}/{id}")
+    @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getComplianceDataOfDevice(@PathParam("type") String type, @PathParam("id") String id);
 
     @GET
     @Path("{type}/{id}/active-policy")
+    @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,

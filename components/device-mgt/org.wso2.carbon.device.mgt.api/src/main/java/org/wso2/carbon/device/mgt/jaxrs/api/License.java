@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.Api;
+import org.wso2.carbon.apimgt.annotations.api.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -27,6 +28,9 @@ import javax.ws.rs.core.Response;
 /**
  * This class represents license related operations.
  */
+@API(name = "License", version = "1.0.0", context = "/license", tags = {"devicemgt_admin"})
+
+// Below Api is for swagger annotations
 @Api(value = "License")
 @Path("/license")
 @SuppressWarnings("NonJaxWsWebServices")
@@ -42,6 +46,8 @@ public interface License {
     @GET
     @Path("{deviceType}/{languageCode}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @Permission(scope = "license-view", permissions = {"/permission/admin/device-mgt/admin/device/view",
+            "/permission/admin/device-mgt/user/devices/view"})
     Response getLicense(@PathParam("deviceType") String deviceType,
                         @PathParam("languageCode") String languageCode);
 
@@ -54,6 +60,7 @@ public interface License {
      */
     @POST
     @Path("{deviceType}")
+    @Permission(scope = "license-add", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
     Response addLicense(@PathParam("deviceType") String deviceType,
                         org.wso2.carbon.device.mgt.common.license.mgt.License license);
 }

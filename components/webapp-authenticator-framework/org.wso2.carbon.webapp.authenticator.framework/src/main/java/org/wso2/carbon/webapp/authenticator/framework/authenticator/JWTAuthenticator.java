@@ -98,7 +98,6 @@ public class JWTAuthenticator implements WebappAuthenticator {
 
             //Get the filesystem keystore default primary certificate
             JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
-            //https://wso2.org/jira/browse/APIMANAGER-4504 need to change this to jwsObject.verify(verifier)
             if (jwsObject.verify(verifier)) {
                 username = MultitenantUtils.getTenantAwareUsername(username);
                 if (tenantId == -1) {

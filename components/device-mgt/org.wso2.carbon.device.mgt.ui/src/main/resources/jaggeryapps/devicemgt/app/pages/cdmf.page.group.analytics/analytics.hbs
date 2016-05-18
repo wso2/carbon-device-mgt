@@ -34,19 +34,34 @@
 {{#zone "content"}}
     <div class="container container-bg  white-bg">
         <div class=" margin-top-double">
-            <div class="row padding-top-double padding-bottom-double margin-bottom-double">
-                <div class="col-lg-3  margin-top-double">
-                    <h1 class="grey ">{{groupName}} Analytics</h1>
+            {{#if deviceTypes}}
+                <div class="row padding-top-double padding-bottom-double margin-bottom-double">
+                    {{unit "cdmf.unit.analytics.date-range-picker" deviceTypes=deviceTypes}}
                 </div>
-                {{unit "cdmf.unit.analytics.date-range-picker" deviceTypes=deviceTypes}}
-            </div>
-            <hr>
-            <div class="clear"></div>
-            <div id="div-chart">
-                {{#each deviceTypes}}
-                    {{unit deviceAnalyticsViewUnitName devices=devices}}
-                {{/each}}
-            </div>
+                <hr>
+                <div class="clear"></div>
+                <div id="div-chart">
+                    {{#each deviceTypes}}
+                        {{unit deviceAnalyticsViewUnitName devices=devices}}
+                    {{/each}}
+                </div>
+            {{else}}
+                <div id="ast-container" class="ast-container list-view">
+                    <div class="ctrl-info-panel col-centered text-center wr-login">
+                        <h2>You don't have any device assigned to this group to view analytics.</h2>
+                        <br/>
+                        <p class="text-center">
+                            <a href="{{@app.context}}/devices" class="wr-btn">
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Assign from My Devices
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            {{/if}}
         </div>
     </div>
 {{/zone}}

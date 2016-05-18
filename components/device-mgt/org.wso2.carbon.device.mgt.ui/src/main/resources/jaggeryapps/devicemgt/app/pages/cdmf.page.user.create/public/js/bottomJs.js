@@ -264,7 +264,6 @@ $(document).ready(function () {
                             // Refreshing with success message
                             $("#user-create-form").addClass("hidden");
                             $("#user-created-msg").removeClass("hidden");
-                            generateQRCode("#user-created-msg .qr-code");
                         } else if (data["statusCode"] == 409) {
                             $(errorMsg).text(data["messageFromServer"]);
                             $(errorMsgWrapper).removeClass("hidden");
@@ -273,6 +272,7 @@ $(document).ready(function () {
                             $(errorMsgWrapper).removeClass("hidden");
                         }
                     }, function (data) {
+                        data = JSON.parse(data.responseText);
                         if (data["statusCode"] == 409) {
                             $(errorMsg).text("User : " + username + " already exists. Pick another username.");
                         } else if (data["statusCode"] == 500) {

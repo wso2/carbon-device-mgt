@@ -31,13 +31,14 @@ import java.util.List;
  * Represents Device Mgt configuration.
  */
 @XmlRootElement(name = "DeviceMgtConfiguration")
+@SuppressWarnings("unused")
 public final class DeviceManagementConfig {
 
     private DeviceManagementConfigRepository deviceManagementConfigRepository;
     private TaskConfiguration taskConfiguration;
     private IdentityConfigurations identityConfigurations;
     private PolicyConfiguration policyConfiguration;
-    //private List<String> pushNotificationProviders;
+    private List<String> pushNotificationProviders;
     private DTConfiguration dTDepyloymentConfiguration;
 
     @XmlElement(name = "ManagementRepository", required = true)
@@ -86,15 +87,16 @@ public final class DeviceManagementConfig {
         this.dTDepyloymentConfiguration = dTDeploymentConfiguration;
     }
 
-//    @XmlElementWrapper(name = "PushNotificationProviders", required = true)
-//    @XmlElement(name = "Provider", required = true)
-//    public List<String> getPushNotificationProviders() {
-//        return pushNotificationProviders;
-//    }
-//
-//    public void setPushNotificationProviders(List<String> pushNotificationProviders) {
-//        this.pushNotificationProviders = pushNotificationProviders;
-//    }
+
+    @XmlElementWrapper(name = "PushNotificationProviders", required = true)
+    @XmlElement(name = "Provider", required = true)
+    public List<String> getPushNotificationProviders() {
+        return pushNotificationProviders;
+    }
+
+    public void setPushNotificationProviders(List<String> pushNotificationProviders) {
+        this.pushNotificationProviders = pushNotificationProviders;
+    }
 
 }
 

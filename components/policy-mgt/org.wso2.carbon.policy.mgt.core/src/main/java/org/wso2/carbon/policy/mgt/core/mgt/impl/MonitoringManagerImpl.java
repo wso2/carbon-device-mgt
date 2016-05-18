@@ -402,8 +402,13 @@ public class MonitoringManagerImpl implements MonitoringManager {
 //	    appListOperation.setType(Operation.Type.COMMAND);
 //	    appListOperation.setCode(OPERATION_APP_LIST);
 
+        //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+        String type = null;
+        if (deviceIdentifiers.size() > 0) {
+            type = deviceIdentifiers.get(0).getType();
+        }
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-        service.addOperation(monitoringOperation, deviceIdentifiers);
+        service.addOperation(type, monitoringOperation, deviceIdentifiers);
 //	    service.addOperation(infoOperation, deviceIdentifiers);
 //	    service.addOperation(appListOperation, deviceIdentifiers);
     }

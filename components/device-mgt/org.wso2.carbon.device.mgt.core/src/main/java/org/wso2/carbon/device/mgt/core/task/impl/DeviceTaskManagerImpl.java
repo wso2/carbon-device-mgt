@@ -95,7 +95,13 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
                     operation.setEnabled(true);
                     operation.setType(Operation.Type.COMMAND);
                     operation.setCode(str);
-                    deviceManagementProviderService.addOperation(operation, DeviceManagerUtil.convertDevices(devices));
+                    //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
+                    String type = null;
+                    if (devices.size() > 0) {
+                        type = devices.get(0).getType();
+                    }
+                    deviceManagementProviderService.addOperation(type, operation,
+                            DeviceManagerUtil.convertDevices(devices));
                 }
             } else {
                 if (log.isDebugEnabled()) {

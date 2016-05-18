@@ -117,12 +117,8 @@ $(document).ready(function () {
                     $("#permissionList li input").click(function() {
                         var parentInput = $(this).parents("ul:eq(1) > li").find('input:eq(0)');
                         if(parentInput && parentInput.is(':checked')){
-                            $(modalPopupContent).html($('#child-deselect-error-content').html());
-                            showPopup();
-                            $("a#child-deselect-error-link").click(function () {
-                                hidePopup();
-                            });
-                            return false;
+                            parentInput.prop('checked', false);
+                            return true;
                         }
                     });
                     $('#permissionList').tree_view();

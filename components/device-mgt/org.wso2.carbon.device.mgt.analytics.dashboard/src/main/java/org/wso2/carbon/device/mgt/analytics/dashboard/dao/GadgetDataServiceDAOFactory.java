@@ -90,7 +90,11 @@ public class GadgetDataServiceDAOFactory {
                 "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
                     "transaction is already active is a sign of improper transaction handling.");
         }
-        conn = dataSource.getConnection();
+        try {
+            conn = dataSource.getConnection();
+        } catch (SQLException e) {
+
+        }
         currentConnection.set(conn);
     }
 
@@ -109,7 +113,7 @@ public class GadgetDataServiceDAOFactory {
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
                 "This might have ideally been caused by not properly initiating the transaction via " +
-                "'beginTransaction'/'openConnection' methods.");
+                    "'beginTransaction'/'openConnection' methods.");
         }
         try {
             conn.close();
@@ -130,7 +134,7 @@ public class GadgetDataServiceDAOFactory {
         DataSource dataSource = null;
         if (config == null) {
             throw new RuntimeException(
-                "Device Management Repository data source configuration " + "is null and " +
+                "Device Management Repository data source configuration is null and " +
                     "thus, is not initialized.");
         }
         JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();

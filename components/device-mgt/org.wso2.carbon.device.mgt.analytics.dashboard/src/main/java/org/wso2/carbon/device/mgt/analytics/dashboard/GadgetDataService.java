@@ -18,11 +18,13 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard;
 
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.*;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -31,56 +33,57 @@ import java.util.List;
 public interface GadgetDataService {
 
     @SuppressWarnings("unused")
-    DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet) throws InvalidParameterValueException, SQLException;
+    DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet)
+                            throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
-                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException;
+                            FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
-    DeviceCountByGroupEntry getTotalDeviceCount() throws SQLException;
+    DeviceCountByGroupEntry getTotalDeviceCount() throws DataAccessLayerException;
 
     @SuppressWarnings("unused")
-    List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws SQLException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws DataAccessLayerException;
 
     @SuppressWarnings("unused")
-    List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws SQLException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws DataAccessLayerException;
 
     @SuppressWarnings("unused")
     PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                           throws InvalidParameterValueException, SQLException;
+                                                       throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getDeviceCountsByPlatforms(FilterSet filterSet)
-                                          throws InvalidParameterValueException, SQLException;
+                                                       throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                          FilterSet filterSet) throws InvalidParameterValueException, SQLException;
+                                  FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
-                                          throws InvalidParameterValueException, SQLException;
+                                                       throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                          FilterSet filterSet) throws InvalidParameterValueException, SQLException;
+                                  FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
-                                                   throws InvalidParameterValueException, SQLException;
+                                                       throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
                                                    FilterSet filterSet, int startIndex, int resultCount)
-                                                               throws InvalidParameterValueException, SQLException;
+                                                       throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
-                                                    throws InvalidParameterValueException, SQLException;
+                                                       throws InvalidParameterValueException, DataAccessLayerException;
 
     @SuppressWarnings("unused")
     List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                          FilterSet filterSet) throws InvalidParameterValueException, SQLException;
+                                  FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
 
 }

@@ -877,6 +877,13 @@
     </Permission>
 
     <Permission>
+        <name>Device Information</name>
+        <path>/device-mgt/admin/information/list</path>
+        <url>/information/list</url>
+        <method>POST</method>
+    </Permission>
+
+    <Permission>
         <name>Device Search</name>
         <path>/device-mgt/admin/search</path>
         <url>/information/*</url>

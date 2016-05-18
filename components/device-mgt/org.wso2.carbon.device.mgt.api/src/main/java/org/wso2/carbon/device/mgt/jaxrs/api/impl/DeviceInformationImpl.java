@@ -30,9 +30,11 @@ import org.wso2.carbon.device.mgt.jaxrs.api.DeviceInformation;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @SuppressWarnings("NonJaxWsWebServices")
 public class DeviceInformationImpl implements DeviceInformation {
@@ -56,6 +58,23 @@ public class DeviceInformationImpl implements DeviceInformation {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(deviceInfo).build();
+    }
+
+
+    @POST
+    @Path("list")
+    public Response getDevicesInfo(List<DeviceIdentifier> deviceIdentifiers) {
+        DeviceInformationManager informationManager;
+        List<DeviceInfo> deviceInfos;
+        try {
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceInfos = informationManager.getDevicesInfo(deviceIdentifiers);
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device information.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceInfos).build();
     }
 
 

@@ -16,14 +16,55 @@
  * under the License.
  */
 
-function onRequest(context){
+function onRequest(context) {
     context.handlebars.registerHelper('equal', function (lvalue, rvalue, options) {
-        if (arguments.length < 3)
+        if (arguments.length < 3) {
             throw new Error("Handlebars Helper equal needs 2 parameters");
-        if( lvalue!=rvalue ) {
+        }
+        if (lvalue != rvalue) {
             return options.inverse(this);
         } else {
             return options.fn(this);
         }
     });
+    var page = {};
+    var policyModule = require("/app/modules/policy.js")["policyModule"];
+    var userModule = require("/app/modules/user.js")["userModule"];
+    var response = policyModule.getAllPolicies();
+    if (response["status"] == "success") {
+        var policyListToView = response["content"];
+        page["policyListToView"] = policyListToView;
+        var policyCount = policyListToView.length;
+        if (policyCount == 0) {
+            page["policyListingStatusMsg"] = "No policy is available to be displayed.";
+            page["saveNewPrioritiesButtonEnabled"] = false;
+            page["noPolicy"] = true;
+        } else if (policyCount == 1) {
+            page["saveNewPrioritiesButtonEnabled"] = false;
+            page["noPolicy"] = false;
+            page["isUpdated"] = response["updated"];
+        } else {
+            page["saveNewPrioritiesButtonEnabled"] = true;
+            page["noPolicy"] = false;
+            page["isUpdated"] = response["updated"];
+        }
+    } else {
+        // here, response["status"] == "error"
+        page["policyListToView"] = [];
+        page["policyListingStatusMsg"] = "An unexpected error occurred @ backend. Please try again later.";
+        page["saveNewPrioritiesButtonEnabled"] = false;
+        page["noPolicy"] = true;
+    }
+
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/delete")) {
+        page["removePermitted"] = true;
+    }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/remove")) {
+        page["removePermitted"] = true;
+    }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/update")) {
+        page["editPermitted"] = true;
+    }
+    page.permissions = userModule.getUIPermissions();
+    return page;
 }

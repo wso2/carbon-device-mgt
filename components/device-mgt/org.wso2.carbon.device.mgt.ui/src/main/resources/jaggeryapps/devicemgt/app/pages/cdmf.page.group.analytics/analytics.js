@@ -21,31 +21,35 @@ function onRequest(context) {
     var groupModule = require("/app/modules/group.js").groupModule;
     var groupName = context.uriParams.name;
     var groupOwner = context.uriParams.owner;
-    var deviceTypes = [];
     var devices = groupModule.getGroupDevices(groupName, groupOwner).data;
-
-    for (var i = 0; i < devices.length; i++) {
-        var hasDeviceType = false;
-        for (var j = 0; j < deviceTypes.length; j++) {
-            if (deviceTypes[j].type === devices[i].type) {
-                deviceTypes[j].devices.push(devices[i]);
-                hasDeviceType = true;
-                break;
-            }
-        }
-        if (!hasDeviceType) {
-            var deviceType = {};
-            deviceType.type = devices[i].type;
-            deviceType.devices = [];
-            deviceType.devices.push(devices[i]);
-            deviceType.deviceAnalyticsViewUnitName = utility.getTenantedDeviceUnitName(deviceType.type, "analytics-view");
-            deviceTypes.push(deviceType);
-        }
-    }
-
-    return {
+    var page = {
         "groupName": groupName,
         "groupOwner": groupOwner,
-        "deviceTypes": deviceTypes
+        "title": groupName + " Analytics"
     };
+    if (devices) {
+        var deviceTypes = [];
+        for (var i = 0; i < devices.length; i++) {
+            var hasDeviceType = false;
+            for (var j = 0; j < deviceTypes.length; j++) {
+                if (deviceTypes[j].type === devices[i].type) {
+                    deviceTypes[j].devices.push(devices[i]);
+                    hasDeviceType = true;
+                    break;
+                }
+            }
+            if (!hasDeviceType) {
+                var deviceType = {};
+                deviceType.type = devices[i].type;
+                deviceType.devices = [];
+                deviceType.devices.push(devices[i]);
+                deviceType.deviceAnalyticsViewUnitName = utility.getTenantedDeviceUnitName(deviceType.type, "analytics-view");
+                deviceTypes.push(deviceType);
+            }
+        }
+        page.deviceTypes = deviceTypes;
+        page.devices = devices;
+    }
+
+    return page;
 }

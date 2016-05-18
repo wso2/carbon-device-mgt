@@ -21,22 +21,11 @@ package org.wso2.carbon.email.sender.core.internal;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.email.sender.core.EmailSenderConfigurationFailedException;
-import org.wso2.carbon.registry.api.Collection;
-import org.wso2.carbon.registry.api.Registry;
-import org.wso2.carbon.registry.api.RegistryException;
-import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
-import org.wso2.carbon.utils.CarbonUtils;
 
-import java.io.File;
-import java.io.FilenameFilter;
+class EmailSenderAxis2ConfigContextObserver implements Axis2ConfigurationContextObserver {
 
-public class EmailSenderAxis2ConfigContextObserver implements Axis2ConfigurationContextObserver {
-
-    private static final String EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH = "email-templates";
     private static final Log log = LogFactory.getLog(EmailSenderAxis2ConfigContextObserver.class);
 
     @Override
@@ -47,7 +36,7 @@ public class EmailSenderAxis2ConfigContextObserver implements Axis2Configuration
     @Override
     public void createdConfigurationContext(ConfigurationContext configurationContext) {
         try {
-            this.setupEmailTemplates();
+            EmailUtils.setupEmailTemplates();
         } catch (EmailSenderConfigurationFailedException e) {
             log.error("Error occurred while setting up email templates", e);
         }
@@ -61,52 +50,6 @@ public class EmailSenderAxis2ConfigContextObserver implements Axis2Configuration
     @Override
     public void terminatedConfigurationContext(ConfigurationContext configurationContext) {
 
-    }
-
-    private void setupEmailTemplates() throws EmailSenderConfigurationFailedException {
-        File templateDir =
-                new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "resources"
-                         + File.separator + "email-templates");
-        if (!templateDir.exists()) {
-            if (log.isDebugEnabled()) {
-                log.debug("The directory that is expected to use as the container for all email templates is not " +
-                        "available. Therefore, no template is uploaded to the registry");
-            }
-        }
-        if (templateDir.canRead()) {
-            File[] templates = templateDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    name = name.toLowerCase();
-                    return name.endsWith(".vm");
-                }
-            });
-            try {
-                Registry registry =
-                        CarbonContext.getThreadLocalCarbonContext().getRegistry(RegistryType.SYSTEM_CONFIGURATION);
-                if (!registry.resourceExists(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH)) {
-                    Collection collection = registry.newCollection();
-                    registry.put(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH, collection);
-                    for (File template : templates) {
-                        Resource resource = registry.newResource();
-                        resource.setContent(template);
-                        registry.put(EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName(), resource);
-                    }
-                } else {
-                    for (File template : templates) {
-                        if (!registry.resourceExists(
-                                EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName())) {
-                            Resource resource = registry.newResource();
-                            resource.setContent(template);
-                            registry.put(
-                                    EMAIL_TEMPLATE_DIR_RELATIVE_REGISTRY_PATH + "/" + template.getName(), resource);
-                        }
-                    }
-                }
-            } catch (RegistryException e) {
-                throw new EmailSenderConfigurationFailedException("Error occurred while setting up email templates", e);
-            }
-        }
     }
 
 }

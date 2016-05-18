@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * This class provides utility functions used by REST-API.
@@ -56,5 +57,17 @@ public class APIUtil {
             throw new IllegalStateException(msg);
         }
         return apiManagementProviderService;
+    }
+
+    public static RealmService getRealmService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        RealmService realmService =
+                (RealmService) ctx.getOSGiService(RealmService.class, null);
+        if (realmService == null) {
+            String msg = "Device Management service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return realmService;
     }
 }

@@ -27,7 +27,7 @@ import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.api.RegistryException;
 
-import java.io.*;
+import java.io.InputStream;
 
 public class RegistryBasedResourceLoader extends ResourceLoader {
 
@@ -46,12 +46,12 @@ public class RegistryBasedResourceLoader extends ResourceLoader {
             if (registry == null) {
                 throw new IllegalStateException("No valid registry instance is attached to the current carbon context");
             }
-            if (!registry.resourceExists(EMAIL_CONFIG_BASE_LOCATION + "/" + name + ".vm")) {
+            if (!registry.resourceExists(EMAIL_CONFIG_BASE_LOCATION + "/" + name)) {
                 throw new ResourceNotFoundException("Resource '" + name + "' does not exist");
             }
             org.wso2.carbon.registry.api.Resource resource =
-                    registry.get(EMAIL_CONFIG_BASE_LOCATION + "/" + name + ".vm");
-
+                    registry.get(EMAIL_CONFIG_BASE_LOCATION + "/" + name);
+            resource.setMediaType("text/plain");
             return resource.getContentStream();
         } catch (RegistryException e) {
             throw new ResourceNotFoundException("Error occurred while retrieving resource", e);

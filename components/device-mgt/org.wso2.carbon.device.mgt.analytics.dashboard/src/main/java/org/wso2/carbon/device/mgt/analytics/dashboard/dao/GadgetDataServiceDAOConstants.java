@@ -20,6 +20,17 @@ package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
 public final class GadgetDataServiceDAOConstants {
 
+    public static class DatabaseView {
+
+        public static final String DEVICES_VIEW_1 = "DEVICES_WITH_POLICY_COMPLIANCE_STATUS";
+        public static final String DEVICES_VIEW_2 = "DEVICES_WITH_NON_COMPLIANT_FEATURES";
+
+        private DatabaseView() {
+            throw new AssertionError();
+        }
+
+    }
+
     public static class PotentialVulnerability {
 
         // These constants do not hold actual database values

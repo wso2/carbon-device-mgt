@@ -80,7 +80,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         int filteredDeviceCount = 0;
         try {
             con = this.getConnection();
-            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.DatabaseView.
+                DEVICES_VIEW_1 + " WHERE TENANT_ID = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns
             if (filters != null && filters.size() > 0) {
@@ -134,8 +135,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         int filteredDeviceCount = 0;
         try {
             con = this.getConnection();
-            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 " +
-                    "WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.DatabaseView.
+                DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns
             if (filters != null && filters.size() > 0) {
@@ -188,8 +189,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         List<DeviceCountByGroupEntry> deviceCountsByConnectivityStatuses = new ArrayList<>();
         try {
             con = this.getConnection();
-            String sql = "SELECT CONNECTIVITY_STATUS, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 " +
-                "WHERE TENANT_ID = ? GROUP BY CONNECTIVITY_STATUS";
+            String sql = "SELECT CONNECTIVITY_STATUS, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 +
+                    " WHERE TENANT_ID = ? GROUP BY CONNECTIVITY_STATUS";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -275,8 +277,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " +
-                advancedSqlFiltering + "GROUP BY PLATFORM";
+            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? " + advancedSqlFiltering + "GROUP BY PLATFORM";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -337,8 +339,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? " +
-                "AND FEATURE_CODE = ? " + advancedSqlFiltering + "GROUP BY PLATFORM";
+            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                    advancedSqlFiltering + "GROUP BY PLATFORM";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -395,8 +398,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_1 WHERE TENANT_ID = ? " +
-                advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? " +
+                    advancedSqlFiltering + "GROUP BY OWNERSHIP";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -457,8 +461,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM DEVICES_VIEW_2 WHERE TENANT_ID = ? " +
-                "AND FEATURE_CODE = ? " + advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                    advancedSqlFiltering + "GROUP BY OWNERSHIP";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -509,7 +514,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             con = this.getConnection();
             String sql;
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                "DEVICES_VIEW_1 WHERE TENANT_ID = ?";
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -572,7 +577,8 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             con = this.getConnection();
             String sql;
             sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                "DEVICES_VIEW_2 WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 +
+                    " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
@@ -633,7 +639,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         String potentialVulnerability = filterSet.getPotentialVulnerability();
         if (potentialVulnerability != null) {
             if (GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT.equals(potentialVulnerability) ||
-                    GadgetDataServiceDAOConstants.PotentialVulnerability.UNMONITORED.equals(potentialVulnerability)) {
+                GadgetDataServiceDAOConstants.PotentialVulnerability.UNMONITORED.equals(potentialVulnerability)) {
                 if (GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT.equals(potentialVulnerability)) {
                     filters.put("IS_COMPLIANT", 0);
                 } else {

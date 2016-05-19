@@ -46,7 +46,15 @@ function onRequest(context) {
         }
         response = userModule.getRolesByUserStore(userStore);
         if (response["status"] == "success") {
-            page["userRoles"] = response["content"];
+            var roleVals = response["content"];
+            var filteredRoles = [];
+            var prefix  = "Application";
+            for (i = 0; i < roleVals.length; i++) {
+                if(roleVals[i].indexOf(prefix) < 0){
+                    filteredRoles.push(roleVals[i]);
+                }
+            }
+            page["userRoles"] = filteredRoles;
         }
 
     }

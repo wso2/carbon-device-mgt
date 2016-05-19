@@ -43,12 +43,14 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
                                                      throws InvalidParameterValueException, DataAccessLayerException {
 
-        if (startIndex < 0) {
-            throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
+        if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
+            throw new InvalidParameterValueException("Start index should be equal to " +
+                GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX + " or greater than that.");
         }
 
-        if (resultCount < 5) {
-            throw new InvalidParameterValueException("Result count should be equal to 5 or greater than that.");
+        if (resultCount < GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT) {
+            throw new InvalidParameterValueException("Result count should be equal to " +
+                GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT + " or greater than that.");
         }
 
         Connection con;
@@ -108,12 +110,14 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
     public PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
                                                   throws InvalidParameterValueException, DataAccessLayerException {
 
-        if (startIndex < 0) {
-            throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
+        if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
+            throw new InvalidParameterValueException("Start index should be equal to " +
+                GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX + " or greater than that.");
         }
 
-        if (resultCount < 5) {
-            throw new InvalidParameterValueException("Result count should be equal to 5 or greater than that.");
+        if (resultCount < GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT) {
+            throw new InvalidParameterValueException("Result count should be equal to " +
+                GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT + " or greater than that.");
         }
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
@@ -204,12 +208,14 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
         }
 
-        if (startIndex < 0) {
-            throw new InvalidParameterValueException("Start index should be equal to 0 or greater than that.");
+        if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
+            throw new InvalidParameterValueException("Start index should be equal to " +
+                GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX + " or greater than that.");
         }
 
-        if (resultCount < 5) {
-            throw new InvalidParameterValueException("Result count should be equal to 5 or greater than that.");
+        if (resultCount < GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT) {
+            throw new InvalidParameterValueException("Result count should be equal to " +
+                GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT + " or greater than that.");
         }
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);

@@ -28,60 +28,219 @@ import org.wso2.carbon.device.mgt.common.PaginationResult;
 import java.util.List;
 
 /**
- * To be updated...
+ * This interface exposes useful service layer functions to retrieve data
+ * required by high level dashboard APIs.
  */
 public interface GadgetDataService {
 
+    /**
+     * This method is used to get a count of devices based on a defined filter set.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return An object of type DeviceCountByGroupEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet)
                             throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get a count of devices non-compliant upon on a particular feature
+     * and a defined filter set.
+     * @param nonCompliantFeatureCode Code name of the non-compliant feature.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return An object of type DeviceCountByGroupEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
                             FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get total count of devices currently enrolled under a particular tenant.
+     * @return An object of type DeviceCountByGroupEntry.
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     DeviceCountByGroupEntry getTotalDeviceCount() throws DataAccessLayerException;
 
+    /**
+     * This method is used to get device counts classified by connectivity statuses.
+     * @return A list of objects of type DeviceCountByGroupEntry.
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws DataAccessLayerException;
 
+    /**
+     * This method is used to get device counts classified by potential vulnerabilities.
+     * @return A list of objects of type DeviceCountByGroupEntry.
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws DataAccessLayerException;
 
+    /**
+     * This method is used to get non-compliant device counts classified by individual features.
+     * @param startIndex Starting index of the data set to be retrieved.
+     * @param resultCount Total count of the result set retrieved.
+     * @return An object of type PaginationResult.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
                                                        throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get device counts classified by platforms.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return An object of type DeviceCountByGroupEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getDeviceCountsByPlatforms(FilterSet filterSet)
                                                        throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get device counts non-compliant upon a particular feature classified by platforms.
+     * @param nonCompliantFeatureCode Code name of the non-compliant feature.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return A list of objects of type DeviceCountByGroupEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
                                   FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get device counts classified by ownership types.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return A list of objects of type DeviceCountByGroupEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
                                                        throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get device counts non-compliant upon a particular feature classified by ownership types.
+     * @param nonCompliantFeatureCode Code name of the non-compliant feature.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return A list of objects of type DeviceCountByGroupEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
                                   FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get a paginated list of devices with details, based on a defined filter set.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @param startIndex Starting index of the data set to be retrieved.
+     * @param resultCount Total count of the result set retrieved.
+     * @return An object of type PaginationResult.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
                                                        throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get a paginated list of non-compliant devices with details, upon a particular feature.
+     * @param nonCompliantFeatureCode Code name of the non-compliant feature.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @param startIndex Starting index of the data set to be retrieved.
+     * @param resultCount Total count of the result set retrieved.
+     * @return An object of type PaginationResult.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
                                                    FilterSet filterSet, int startIndex, int resultCount)
                                                        throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get a list of devices with details, based on a defined filter set.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return A list of objects of type DetailedDeviceEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
                                                        throws InvalidParameterValueException, DataAccessLayerException;
 
+    /**
+     * This method is used to get a list of non-compliant devices with details, upon a particular feature.
+     * @param nonCompliantFeatureCode Code name of the non-compliant feature.
+     * @param filterSet An abstract representation of possible filtering options.
+     *                  if this value is simply "null" or no values are set for the defined filtering options,
+     *                  this method would return total device count in the system
+     *                  wrapped with in the defined return format.
+     * @return A list of objects of type DetailedDeviceEntry.
+     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws DataAccessLayerException This can occur due to errors connecting to database,
+     *                                  executing SQL query and retrieving data.
+     */
     @SuppressWarnings("unused")
     List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
                                   FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;

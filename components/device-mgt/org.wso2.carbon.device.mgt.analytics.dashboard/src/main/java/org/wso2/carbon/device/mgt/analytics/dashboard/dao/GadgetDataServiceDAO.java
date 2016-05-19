@@ -29,18 +29,6 @@ import java.util.List;
 
 public interface GadgetDataServiceDAO {
 
-    /**
-     * This method is used to get device count based on a defined filter set.
-     * @param filterSet An abstract representation of possible filtering options.
-     *                  if this value is simply "null" or no values are set for the defined filtering options,
-     *                  this method would return total device count in the system
-     *                  wrapped with in the defined return format.
-     * @return An object of type DeviceCountByGroupEntry.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
-     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
-     * @throws DataAccessLayerException This can occur due to errors connecting to database,
-     *                                  executing SQL query and retrieving data.
-     */
     DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet)
                                            throws InvalidParameterValueException, DataAccessLayerException;
 

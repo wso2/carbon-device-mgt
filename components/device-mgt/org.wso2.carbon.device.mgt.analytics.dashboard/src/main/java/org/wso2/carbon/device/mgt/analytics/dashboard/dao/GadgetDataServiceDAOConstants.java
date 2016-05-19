@@ -31,6 +31,18 @@ public final class GadgetDataServiceDAOConstants {
 
     }
 
+    public static class Pagination {
+
+        // Minimum acceptable values for start index and result count
+        public static final int MIN_START_INDEX = 0;
+        public static final int MIN_RESULT_COUNT = 5;
+
+        private Pagination() {
+            throw new AssertionError();
+        }
+
+    }
+
     public static class PotentialVulnerability {
 
         // These constants do not hold actual database values

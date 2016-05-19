@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * To be updated...
+ * Implementation class of GadgetDataService.
  */
 public class GadgetDataServiceImpl implements GadgetDataService {
 

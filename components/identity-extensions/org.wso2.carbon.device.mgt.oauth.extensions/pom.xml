@@ -85,7 +85,7 @@
                             org.osgi.service.component,
                             org.wso2.carbon.device.mgt.common.permission.mgt,
                             org.wso2.carbon.device.mgt.oauth.extensions.*,
-                            org.wso2.carbon.device.mgt.*
+                            org.wso2.carbon.device.mgt.*,
                             org.wso2.carbon.identity.application.common.model,
                             org.wso2.carbon.identity.oauth.callback,
                             org.wso2.carbon.identity.oauth.common,
@@ -118,7 +118,8 @@
                             org.wso2.carbon.identity.oauth.cache,
                             org.wso2.carbon.identity.oauth.config,
                             org.wso2.carbon.identity.oauth2.dao,
-                            org.wso2.carbon.utils.multitenancy
+                            org.wso2.carbon.utils.multitenancy,
+                            org.wso2.carbon.base
                         </Import-Package>
                     </instructions>
                 </configuration>

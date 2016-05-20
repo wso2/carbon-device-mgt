@@ -186,7 +186,11 @@ public interface Operation {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Activity details provided successfully.."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")})
     @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
-    Response getActivity(@ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
+    Response getActivity(
+            @ApiParam(name = "type", value = "Provide device {type} upon which the activity was performed",
+            required = true) @PathParam("type") String type,
+            @ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
             required = true) @PathParam("id") String id)
             throws MDMAPIException;
+
 }

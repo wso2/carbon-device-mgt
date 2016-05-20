@@ -25,9 +25,17 @@ import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.core.ServerStartupObserver;
 
+import java.util.Stack;
+
 public class APIPublisherStartupHandler implements ServerStartupObserver {
 
     private static final Log log = LogFactory.getLog(APIPublisherStartupHandler.class);
+    private static int retryTime = 2000;
+    private static final int CONNECTION_RETRY_FACTOR = 2;
+    private static Stack<API> failedAPIsStack = new Stack<>();
+    private static Stack<API> currentAPIsStack;
+
+    private APIPublisherService publisher;
 
     @Override
     public void completingServerStartup() {
@@ -36,32 +44,45 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
 
     @Override
     public void completedServerStartup() {
-        // adding temporary due to a bug in the platform
+        APIPublisherDataHolder.getInstance().setServerStarted(true);
+        currentAPIsStack = APIPublisherDataHolder.getInstance().getUnpublishedApis();
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    log.error("Error occurred while sleeping", e);
-                }
-                APIPublisherDataHolder.getInstance().setServerStarted(true);
-                log.info("Server has just started, hence started publishing unpublished APIs");
                 if (log.isDebugEnabled()) {
+                    log.debug("Server has just started, hence started publishing unpublished APIs");
                     log.debug("Total number of unpublished APIs: "
                             + APIPublisherDataHolder.getInstance().getUnpublishedApis().size());
                 }
-                APIPublisherService publisher = APIPublisherDataHolder.getInstance().getApiPublisherService();
-                while (!APIPublisherDataHolder.getInstance().getUnpublishedApis().isEmpty()) {
-                    API api = APIPublisherDataHolder.getInstance().getUnpublishedApis().pop();
+                publisher = APIPublisherDataHolder.getInstance().getApiPublisherService();
+                while (!failedAPIsStack.isEmpty() || !currentAPIsStack.isEmpty()) {
                     try {
-                        publisher.publishAPI(api);
-                    } catch (java.lang.Exception e) {
-                        log.error("Error occurred while publishing API '" + api.getId().getApiName(), e);
+                        retryTime = retryTime * CONNECTION_RETRY_FACTOR;
+                        Thread.sleep(retryTime);
+                    } catch (InterruptedException te) {
+                        log.error("Error occurred while sleeping", te);
+                    }
+                    if (!APIPublisherDataHolder.getInstance().getUnpublishedApis().isEmpty()) {
+                        publishAPIs(currentAPIsStack, failedAPIsStack);
+                    } else {
+                        publishAPIs(failedAPIsStack, currentAPIsStack);
                     }
                 }
             }
         });
         t.start();
     }
+
+    private void publishAPIs(Stack<API> apis, Stack<API> failedStack) {
+        while (!apis.isEmpty()) {
+            API api = apis.pop();
+            try {
+                publisher.publishAPI(api);
+            } catch (Exception e) {
+                log.error("Error occurred while publishing API '" + api.getId().getApiName() + "'");
+                failedStack.push(api);
+            }
+        }
+    }
+
 }

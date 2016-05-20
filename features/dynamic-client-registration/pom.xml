@@ -23,14 +23,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>carbon-devicemgt</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>dynamic-client-registration-feature</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Dynamic Client Registration Feature</name>
     <url>http://wso2.org</url>

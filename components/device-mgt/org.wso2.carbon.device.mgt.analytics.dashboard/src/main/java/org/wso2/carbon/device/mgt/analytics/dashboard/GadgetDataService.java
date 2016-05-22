@@ -18,11 +18,11 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard;
 
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DetailedDeviceEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroupEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.FilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.exception.DataAccessLayerException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.util.List;

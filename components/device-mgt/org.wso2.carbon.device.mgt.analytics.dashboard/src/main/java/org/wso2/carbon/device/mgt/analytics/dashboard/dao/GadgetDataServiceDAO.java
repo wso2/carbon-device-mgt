@@ -18,55 +18,55 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DetailedDeviceEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroupEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.FilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface GadgetDataServiceDAO {
 
     DeviceCountByGroupEntry getDeviceCount(FilterSet filterSet)
-                                           throws InvalidParameterValueException, DataAccessLayerException;
+                                           throws InvalidParameterValueException, SQLException;
 
-    DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode,
-                                  FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
+    DeviceCountByGroupEntry getFeatureNonCompliantDeviceCount(String nonCompliantFeatureCode, FilterSet filterSet)
+                                           throws InvalidParameterValueException, SQLException;
 
-    DeviceCountByGroupEntry getTotalDeviceCount() throws DataAccessLayerException;
+    DeviceCountByGroupEntry getTotalDeviceCount() throws SQLException;
 
-    List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws DataAccessLayerException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByConnectivityStatuses() throws SQLException;
 
-    List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws DataAccessLayerException;
+    List<DeviceCountByGroupEntry> getDeviceCountsByPotentialVulnerabilities() throws SQLException;
 
     PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                          throws InvalidParameterValueException, DataAccessLayerException;
+                                           throws InvalidParameterValueException, SQLException;
 
     List<DeviceCountByGroupEntry> getDeviceCountsByPlatforms(FilterSet filterSet)
-                                          throws InvalidParameterValueException, DataAccessLayerException;
+                                           throws InvalidParameterValueException, SQLException;
 
     List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByPlatforms(String nonCompliantFeatureCode,
-                                  FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
+                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException;
 
     List<DeviceCountByGroupEntry> getDeviceCountsByOwnershipTypes(FilterSet filterSet)
-                                          throws InvalidParameterValueException, DataAccessLayerException;
+                                           throws InvalidParameterValueException, SQLException;
 
     List<DeviceCountByGroupEntry> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String nonCompliantFeatureCode,
-                                  FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
+                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException;
 
     PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
-                                           throws InvalidParameterValueException, DataAccessLayerException;
+                                           throws InvalidParameterValueException, SQLException;
 
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                 FilterSet filterSet, int startIndex, int resultCount)
-                                                       throws InvalidParameterValueException, DataAccessLayerException;
+                                           FilterSet filterSet, int startIndex, int resultCount)
+                                                throws InvalidParameterValueException, SQLException;
 
     List<DetailedDeviceEntry> getDevicesWithDetails(FilterSet filterSet)
-                                           throws InvalidParameterValueException, DataAccessLayerException;
+                                           throws InvalidParameterValueException, SQLException;
 
     List<DetailedDeviceEntry> getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                  FilterSet filterSet) throws InvalidParameterValueException, DataAccessLayerException;
+                                           FilterSet filterSet) throws InvalidParameterValueException, SQLException;
 
 }

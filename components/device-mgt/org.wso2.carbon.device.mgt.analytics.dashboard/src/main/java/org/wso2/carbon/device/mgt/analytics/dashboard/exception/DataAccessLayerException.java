@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception;
+package org.wso2.carbon.device.mgt.analytics.dashboard.exception;
 
 /**
  * Custom exception class for communicating data access layer issues

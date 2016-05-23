@@ -19,13 +19,12 @@
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DetailedDeviceEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroupEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.FilterSet;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.AbstractGadgetDataServiceDAO;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOConstants;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -41,7 +40,7 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                     throws InvalidParameterValueException, DataAccessLayerException {
+                                                     throws InvalidParameterValueException, SQLException {
 
         if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
             throw new InvalidParameterValueException("Start index should be equal to " +
@@ -94,9 +93,6 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("NON_COMPLIANT_FEATURE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new DataAccessLayerException("Error in either getting database connection, " +
-                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -108,7 +104,7 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
 
     @Override
     public PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
-                                                  throws InvalidParameterValueException, DataAccessLayerException {
+                                                            throws InvalidParameterValueException, SQLException {
 
         if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
             throw new InvalidParameterValueException("Start index should be equal to " +
@@ -187,9 +183,6 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new DataAccessLayerException("Error in either getting database connection, " +
-                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -202,7 +195,7 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
                                                    FilterSet filterSet, int startIndex, int resultCount)
-                                                      throws InvalidParameterValueException, DataAccessLayerException {
+                                                       throws InvalidParameterValueException, SQLException {
 
         if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
             throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
@@ -288,9 +281,6 @@ public class GenericGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDA
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new DataAccessLayerException("Error in either getting database connection, " +
-                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

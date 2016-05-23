@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.api.impl;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.context.DeviceOperationContext;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.MDMIOSOperationUtil;
@@ -135,12 +136,12 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
             if (deviceIdentifiers.size() > 0) {
                 type = deviceIdentifiers.get(0).getType();
             }
-            int operationId = dmService.addOperation(type, operationContext.getOperation(), operationContext.getDevices());
-            if (operationId > 0) {
+            Activity activity = dmService.addOperation(type, operationContext.getOperation(), operationContext.getDevices());
+            if (activity != null) {
                 responseMsg.setStatusCode(HttpStatus.SC_CREATED);
                 responseMsg.setMessageFromServer("Operation has added successfully.");
             }
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
+            return Response.status(Response.Status.CREATED).entity(activity).build();
         } catch (OperationManagementException e) {
             String msg = "Error occurred while saving the operation";
             log.error(msg, e);
@@ -176,6 +177,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
         ResponsePayload responseMsg = new ResponsePayload();
         ApplicationManager appManagerConnector;
         org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation = null;
+        Activity activity = null;
         try {
             appManagerConnector = DeviceMgtAPIUtils.getAppManagementService();
             MobileApp mobileApp = applicationWrapper.getApplication();
@@ -188,11 +190,11 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
                         operation = MDMIOSOperationUtil.createInstallAppOperation(mobileApp);
                     }
                 }
-                appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
+                activity = appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
             }
             responseMsg.setStatusCode(HttpStatus.SC_CREATED);
             responseMsg.setMessageFromServer("Authentication installation request has been sent to the device.");
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
+            return Response.status(Response.Status.CREATED).entity(activity).build();
         } catch (ApplicationManagementException | MDMAPIException e) {
             String msg = "Error occurred while saving the operation";
             log.error(msg, e);
@@ -208,6 +210,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
         ResponsePayload responseMsg = new ResponsePayload();
         ApplicationManager appManagerConnector;
         org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation = null;
+        Activity activity = null;
         try {
             appManagerConnector = DeviceMgtAPIUtils.getAppManagementService();
             MobileApp mobileApp = applicationWrapper.getApplication();
@@ -220,11 +223,11 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
                         operation = MDMIOSOperationUtil.createAppUninstallOperation(mobileApp);
                     }
                 }
-                appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
+                activity = appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
             }
             responseMsg.setStatusCode(HttpStatus.SC_CREATED);
             responseMsg.setMessageFromServer("Authentication removal request has been sent to the device.");
-            return Response.status(Response.Status.CREATED).entity(responseMsg).build();
+            return Response.status(Response.Status.CREATED).entity(activity).build();
         } catch (ApplicationManagementException | MDMAPIException e) {
             String msg = "Error occurred while saving the operation";
             log.error(msg, e);
@@ -235,13 +238,13 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
     @Override
     @GET
     @Path("activity/{id}")
-    public Response getActivity(@PathParam("type") String type, @PathParam("id") String id)
+    public Response getActivity( @PathParam("id") String id)
             throws MDMAPIException {
         org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            operation = dmService.getOperationByActivityId(type, id);
+            operation = dmService.getOperationByActivityId(id);
         } catch (OperationManagementException e) {
             String msg = "Error occurred while fetching the activity for the supplied id.";
             log.error(msg, e);

@@ -23,16 +23,15 @@ var util = function () {
     var String = Packages.java.lang.String;
     var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
     var carbon = require('carbon');
-    var realmService = carbon.server.osgiService('org.wso2.carbon.user.core.service.RealmService');
-    var adminUserName = realmService.getBootstrapRealmConfiguration().getAdminUserName();
     var constants = require("/app/modules/constants.js");
+    var adminUser = devicemgtProps["adminUser"];
 
     module.getDyanmicCredentials = function (owner) {
         var payload = {
             "callbackUrl": devicemgtProps.callBackUrl,
             "clientName": "devicemgt",
             "tokenScope": "admin",
-            "owner": adminUserName,
+            "owner": adminUser,
             "applicationType": "webapp",
             "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer",
             "saasApp" :true
@@ -47,6 +46,7 @@ var util = function () {
             var data = parse(xhr.responseText);
             clientData.clientId = data.client_id;
             clientData.clientSecret = data.client_secret;
+
         } else if (xhr.status == 400) {
             throw "Invalid client meta data";
         } else {
@@ -137,6 +137,7 @@ var util = function () {
         }
         return tokenPair;
     };
+
     module.refreshToken = function (tokenPair, clientData, scope) {
         var xhr = new XMLHttpRequest();
         var tokenEndpoint = devicemgtProps.idPServer + "/oauth2/token";
@@ -163,5 +164,37 @@ var util = function () {
         }
         return tokenPair;
     };
+
+    module.getTokenWithJWTGrantType =  function (clientData) {
+        var jwtService = carbon.server.osgiService('org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService');
+        var jwtClient = jwtService.getJWTClient();
+        var jwtToken = jwtClient.getAccessToken(clientData.clientId, clientData.clientSecret, adminUser, null);
+        return jwtToken;
+    };
+
+    module.getTenantBasedAppCredentials = function (token) {
+        var tenantDomain = "carbon.super";
+        var applicationName = "webapp_" + tenantDomain;
+        var xhr = new XMLHttpRequest();
+        var endpoint = devicemgtProps["adminService"] + "/register/tenants/" + tenantDomain + "?applicationName=" +
+            applicationName;
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>APIM App Register endpoint: " + endpoint);
+        xhr.open("POST", endpoint, false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Authorization", "X-JWT-Assertion " + token.accessToken);
+        xhr.send();
+        var clientData = {};
+        if (xhr.status == 201) {
+            var data = parse(xhr.responseText);
+            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>lllllllllllllllllll: " + stringify(data));
+            //clientData.clientId = data.client_id;
+            //clientData.clientSecret = data.client_secret;
+
+        } else if (xhr.status == 400) {
+            throw "Invalid client meta data";
+        } else {
+            throw "Error in obtaining client id and secret from APIM";
+        }
+    }
     return module;
 }();

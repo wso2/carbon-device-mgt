@@ -21,6 +21,7 @@ var apiWrapperUtil = function () {
     var tokenUtil = require("/app/modules/util.js").util;
     var constants = require("/app/modules/constants.js");
     var constants = require("/app/modules/constants.js");
+    var log = new Log("/app/modules/api-wrapper-util.js");
 
     module.refreshToken = function () {
         var tokenPair = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
@@ -31,6 +32,10 @@ var apiWrapperUtil = function () {
     module.setupAccessTokenPair = function (type, properties) {
         var tokenPair;
         var clientData = tokenUtil.getDyanmicCredentials(properties);
+        log.info(">>>>>>>>>>>>>>>>>>>>");
+        var jwtToken = tokenUtil.getTokenWithJWTGrantType(clientData);
+        tokenUtil.getTenantBasedAppCredentials(jwtToken);
+        log.info("*******************");
         var encodedClientKeys = tokenUtil.encode(clientData.clientId + ":" + clientData.clientSecret);
         session.put(constants.ENCODED_CLIENT_KEYS_IDENTIFIER, encodedClientKeys);
         if (type == constants.GRANT_TYPE_PASSWORD) {

@@ -2,7 +2,7 @@
   "appContext" : "/devicemgt/",
   "webAgentContext" : "/devicemgt-web-agent/",
   "apiContext" : "api",
-  "httpsURL" : "%https.ip%",
+  "httpsURL" : "https://localhost:8243",
   "httpURL" : "%http.ip%",
   "enrollmentDir": "/emm-web-agent/enrollment",
   "iOSConfigRoot" : "%https.ip%/ios-enrollment/",

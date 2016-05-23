@@ -18,11 +18,11 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard;
 
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DetailedDeviceEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroupEntry;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.FilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.exception.DataAccessLayerException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.exception.InvalidParameterValueException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.util.List;
@@ -58,7 +58,8 @@ public interface GadgetDataService {
      *                  this method would return total device count in the system
      *                  wrapped with in the defined return format.
      * @return An object of type DeviceCountByGroupEntry.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     * @throws InvalidParameterValueException This can occur if nonCompliantFeatureCode is set to null or empty.
+     *                                        This can also occur if potentialVulnerability value of filterSet
      *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
@@ -99,8 +100,8 @@ public interface GadgetDataService {
      * @param startIndex Starting index of the data set to be retrieved.
      * @param resultCount Total count of the result set retrieved.
      * @return An object of type PaginationResult.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
-     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws InvalidParameterValueException This can occur if startIndex or resultCount is set to values
+     *                                        lesser than their minimums.
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
      */
@@ -115,8 +116,8 @@ public interface GadgetDataService {
      *                  this method would return total device count in the system
      *                  wrapped with in the defined return format.
      * @return An object of type DeviceCountByGroupEntry.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
-     *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     * @throws InvalidParameterValueException This can occur if startIndex or resultCount is set to values
+     *                                        lesser than their minimums.
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
      */
@@ -148,7 +149,8 @@ public interface GadgetDataService {
      *                  this method would return total device count in the system
      *                  wrapped with in the defined return format.
      * @return A list of objects of type DeviceCountByGroupEntry.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     * @throws InvalidParameterValueException This can occur if nonCompliantFeatureCode is set to null or empty.
+     *                                        This can also occur if potentialVulnerability value of filterSet
      *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
@@ -183,7 +185,8 @@ public interface GadgetDataService {
      * @param startIndex Starting index of the data set to be retrieved.
      * @param resultCount Total count of the result set retrieved.
      * @return An object of type PaginationResult.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     * @throws InvalidParameterValueException This can occur if nonCompliantFeatureCode is set to null or empty.
+     *                                        This can also occur if potentialVulnerability value of filterSet
      *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
@@ -202,8 +205,10 @@ public interface GadgetDataService {
      * @param startIndex Starting index of the data set to be retrieved.
      * @param resultCount Total count of the result set retrieved.
      * @return An object of type PaginationResult.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     * @throws InvalidParameterValueException This can occur if potentialVulnerability value of filterSet
      *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     *                                        This can also occur if startIndex or resultCount is set to values
+     *                                        lesser than their minimums.
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
      */
@@ -219,8 +224,11 @@ public interface GadgetDataService {
      *                  this method would return total device count in the system
      *                  wrapped with in the defined return format.
      * @return A list of objects of type DetailedDeviceEntry.
-     * @throws InvalidParameterValueException This can occur if and only if potentialVulnerability value of filterSet
+     * @throws InvalidParameterValueException This can occur if nonCompliantFeatureCode is set to null or empty.
+     *                                        This can occur if potentialVulnerability value of filterSet
      *                                        is set with some value other than "NON_COMPLIANT" or "UNMONITORED".
+     *                                        This can also occur if startIndex or resultCount is set to values
+     *                                        lesser than their minimums.
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
      */

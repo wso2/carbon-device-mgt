@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentCertificate;
+import org.wso2.carbon.device.mgt.jaxrs.exception.BadRequestException;
 import org.wso2.carbon.device.mgt.jaxrs.exception.Message;
 
 import javax.ws.rs.Consumes;
@@ -65,7 +66,6 @@ public class CertificateImpl implements Certificate {
      * @return Status of the data persist operation.
      */
     @POST
-    @Path("saveCertificate")
     public Response saveCertificate(@HeaderParam("Accept") String acceptHeader,
                                     EnrollmentCertificate[] enrollmentCertificates) {
         MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
@@ -97,7 +97,6 @@ public class CertificateImpl implements Certificate {
      * @param serialNumber serial of the certificate needed.
      * @return certificate response.
      */
-    @GET
     @Path("{serialNumber}")
     public Response getCertificate(@HeaderParam("Accept") String acceptHeader,
                                    @PathParam("serialNumber") String serialNumber) {
@@ -111,14 +110,11 @@ public class CertificateImpl implements Certificate {
         }
 
         CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
-        CertificateResponse certificateResponse;
+        List<CertificateResponse> certificateResponse;
         try {
-            certificateResponse = certificateService.getCertificateBySerial(serialNumber);
-            if(certificateResponse != null) {
-                certificateResponse.setCertificate(null); //avoid sending byte array in response.
-            }
+            certificateResponse = certificateService.searchCertificates(serialNumber);
             return Response.status(Response.Status.OK).entity(certificateResponse).type(responseMediaType).build();
-        } catch (KeystoreException e) {
+        } catch (CertificateManagementDAOException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
@@ -161,6 +157,28 @@ public class CertificateImpl implements Certificate {
             String msg = "Error occurred while fetching all certificates.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).type(responseMediaType).build();
+        }
+    }
+
+    /**
+     * Get all certificates
+     *
+     * @return certificate details in an array.
+     * @throws MDMAPIException
+     */
+    @GET
+    public Response getAllCertificates(@HeaderParam("Accept") String acceptHeader)
+            throws MDMAPIException {
+        MediaType responseMediaType = DeviceMgtAPIUtils.getResponseMediaType(acceptHeader);
+
+        CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
+        try {
+            List<CertificateResponse> certificates = certificateService.getCertificates();
+            return Response.status(Response.Status.OK).entity(certificates).type(responseMediaType).build();
+        } catch (CertificateManagementDAOException e) {
+            String msg = "Error occurred while fetching all certificates.";
+            log.error(msg, e);
+            throw new MDMAPIException(msg, e);
         }
     }
 

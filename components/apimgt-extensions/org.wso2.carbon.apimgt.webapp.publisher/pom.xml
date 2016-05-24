@@ -103,6 +103,10 @@
             <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.lcm</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -150,6 +154,7 @@
                             org.wso2.carbon.registry.core.*
                         </Import-Package>
                         <Embed-Dependency>
+                            javax.ws.rs-api,
                             scribe;scope=compile|runtime;inline=false;
                         </Embed-Dependency>
                         <DynamicImport-Package>*</DynamicImport-Package>

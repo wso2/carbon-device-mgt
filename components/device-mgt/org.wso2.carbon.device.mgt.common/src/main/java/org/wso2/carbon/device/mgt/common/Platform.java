@@ -20,5 +20,5 @@
 package org.wso2.carbon.device.mgt.common;
 
 public enum Platform {
-    android, ios, windows;
+    ANDROID, IOS, WINDOWS;
 }

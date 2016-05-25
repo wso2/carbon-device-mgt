@@ -16,39 +16,17 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jaxrs.beans.android;
+package org.wso2.carbon.device.mgt.jaxrs.common;
 
-import com.google.gson.Gson;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 
-import java.io.Serializable;
+@Produces({ "application/json" })
+public class ErrorHandler implements ExceptionMapper<Throwable> {
 
-/**
- * This class represents the Appstore AuthenticationImpl information.
- */
-public class AppStoreApplication implements Serializable {
-
-	private String type;
-	private String appIdentifier;
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getAppIdentifier() {
-		return appIdentifier;
-	}
-
-	public void setAppIdentifier(String appIdentifier) {
-		this.appIdentifier = appIdentifier;
-	}
-
-	public String toJSON() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
-	}
+    public Response toResponse(Throwable e) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
 
 }

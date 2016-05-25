@@ -26,20 +26,18 @@
 
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
-            <ref bean="operationServiceBean"/>
-            <ref bean="featureServiceBean"/>
-            <ref bean="deviceServiceBean"/>
-            <ref bean="groupServiceBean"/>
-            <ref bean="userServiceBean"/>
-            <ref bean="roleServiceBean"/>
-            <ref bean="policyServiceBean"/>
-            <ref bean="profileServiceBean"/>
-            <ref bean="configurationServiceBean"/>
-            <ref bean="licenseServiceBean"/>
-            <ref bean="certificateServiceBean"/>
-            <ref bean="notificationServiceBean"/>
-            <ref bean="informationServiceBean"/>
-            <ref bean="searchingServiceBean"/>
+            <ref bean="deviceManagementService"/>
+            <ref bean="deviceManagementAdminService"/>
+            <ref bean="deviceTypeManagementService"/>
+            <ref bean="activityProviderService"/>
+            <ref bean="notificationManagementService"/>
+            <ref bean="policyManagementService"/>
+            <ref bean="roleManagementService"/>
+            <ref bean="userManagementService"/>
+            <ref bean="userManagementAdminService"/>
+            <ref bean="groupManagementService"/>
+            <ref bean="groupManagementAdminService"/>
+            <ref bean="applicationManagementAdminService"/>
             <ref bean="dashboardServiceBean"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
@@ -65,22 +63,20 @@
         <property name="scan" value="true"/>
     </bean>
 
-    <bean id="operationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.OperationImpl"/>
-    <bean id="deviceServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceImpl"/>
-    <bean id="groupServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.GroupImpl"/>
-    <bean id="userServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.UserImpl"/>
-    <bean id="roleServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.RoleImpl"/>
-    <bean id="featureServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.FeatureImpl"/>
-    <bean id="configurationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.ConfigurationImpl"/>
-    <bean id="notificationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceNotificationImpl"/>
-    <bean id="licenseServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.LicenseImpl"/>
-    <bean id="certificateServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.CertificateImpl"/>
-    <bean id="informationServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceInformationImpl"/>
-    <bean id="searchingServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceSearchImpl"/>
-    <bean id="policyServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.PolicyImpl"/>
-    <bean id="profileServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.ProfileImpl"/>
-    <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.DashboardImpl"/>
+    <bean id="deviceManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceManagementServiceImpl"/>
+    <bean id="deviceTypeManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceImpl"/>
+    <bean id="activityProviderService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.ActivityProviderServiceImpl"/>
+    <bean id="notificationManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.NotificationManagementServiceImpl"/>
+    <bean id="policyManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.PolicyManagementServiceImpl"/>
+    <bean id="roleManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.RoleManagementServiceImpl"/>
+    <bean id="userManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.UserManagementServiceImpl"/>
+    <bean id="groupManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.GroupManagementServiceImpl"/>
+    <bean id="deviceManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceManagementAdminServiceImpl"/>
+    <bean id="applicationManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.ApplicationManagementAdminServiceImpl"/>
+    <bean id="groupManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.GroupManagementAdminServiceImpl"/>
+    <bean id="userManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.UserManagementAdminServiceImpl"/>
+    <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DashboardImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
-    <bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.api.common.ErrorHandler"/>
+    <bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>
 
 </beans>

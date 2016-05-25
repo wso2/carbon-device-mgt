@@ -1,0 +1,2 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.certificate.mgt.api_${feature.version}/webapps/certificate-mgt.war,target:${installFolder}/../../deployment/server/webapps/certificate-mgt.war,overwrite:true);\

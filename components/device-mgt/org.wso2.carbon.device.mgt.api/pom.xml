@@ -46,7 +46,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/*cxf*.jar</packagingExcludes>
-                    <warName>devicemgt_admin</warName>
+                    <warName>api#device-mgt#v2.1</warName>
                 </configuration>
             </plugin>
         </plugins>

@@ -16,39 +16,27 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.jaxrs.beans.android;
+package org.wso2.carbon.device.mgt.jaxrs.common;
 
-import com.google.gson.Gson;
 
-import java.io.Serializable;
+public class ErrorMessage {
 
-/**
- * This class represents the Appstore AuthenticationImpl information.
- */
-public class AppStoreApplication implements Serializable {
+    private String errorMessage;
+    private String errorCode;
 
-	private String type;
-	private String appIdentifier;
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getErrorCode() {
+        return errorCode;
+    }
 
-	public String getAppIdentifier() {
-		return appIdentifier;
-	}
-
-	public void setAppIdentifier(String appIdentifier) {
-		this.appIdentifier = appIdentifier;
-	}
-
-	public String toJSON() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
-	}
-
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
 }

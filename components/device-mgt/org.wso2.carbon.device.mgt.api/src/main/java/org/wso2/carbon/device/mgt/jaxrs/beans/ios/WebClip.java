@@ -19,7 +19,6 @@
 package org.wso2.carbon.device.mgt.jaxrs.beans.ios;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 
 public class WebClip {
 
@@ -69,7 +68,7 @@ public class WebClip {
         this.isRemovable = isRemovable;
     }
 
-    public String toJSON() throws MDMAPIException {
+    public String toJSON() {
         Gson gson = new Gson();
         return gson.toJson(this);
     }

@@ -24,11 +24,10 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.List;
@@ -77,7 +76,7 @@ public interface DeviceManagementProviderService {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      *                                   configuration.
      */
-    TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException;
+    PlatformConfiguration getConfiguration(String deviceType) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by an user with paging information.
@@ -186,9 +185,9 @@ public interface DeviceManagementProviderService {
 
     boolean enrollDevice(Device device) throws DeviceManagementException;
 
-    TenantConfiguration getConfiguration() throws DeviceManagementException;
+    PlatformConfiguration getConfiguration() throws DeviceManagementException;
 
-    boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException;
+    boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException;
 
     boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 

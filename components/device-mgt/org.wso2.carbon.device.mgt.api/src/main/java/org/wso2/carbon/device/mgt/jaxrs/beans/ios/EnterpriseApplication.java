@@ -19,7 +19,6 @@
 package org.wso2.carbon.device.mgt.jaxrs.beans.ios;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 
 import java.io.Serializable;
 
@@ -76,7 +75,7 @@ public class EnterpriseApplication implements Serializable {
         this.bundleId = bundleId;
     }
 
-    public String toJSON() throws MDMAPIException {
+    public String toJSON() {
         Gson gson = new Gson();
         return gson.toJson(this);
     }

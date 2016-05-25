@@ -18,10 +18,9 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard.bean;
 
-public class FilterSet {
+public class BasicFilterSet {
 
     private String connectivityStatus;
-    private String potentialVulnerability;
     private String platform;
     private String ownership;
 
@@ -31,14 +30,6 @@ public class FilterSet {
 
     public void setConnectivityStatus(String connectivityStatus) {
         this.connectivityStatus = connectivityStatus;
-    }
-
-    public String getPotentialVulnerability() {
-        return potentialVulnerability;
-    }
-
-    public void setPotentialVulnerability(String potentialVulnerability) {
-        this.potentialVulnerability = potentialVulnerability;
     }
 
     public String getPlatform() {

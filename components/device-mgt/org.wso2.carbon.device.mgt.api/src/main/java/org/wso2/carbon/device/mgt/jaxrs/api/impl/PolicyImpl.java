@@ -25,7 +25,10 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
@@ -33,6 +36,7 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
+import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
@@ -447,9 +451,9 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
         }
     }
 
-	@Override
+    @Override
     @GET
-	@Path("{type}/{id}/active-policy")
+    @Path("{type}/{id}/active-policy")
     public Response getDeviceActivePolicy(@PathParam("type") String type, @PathParam("id") String id) {
         try {
             DeviceIdentifier deviceIdentifier = DeviceMgtAPIUtils.instantiateDeviceIdentifier(type, id);
@@ -463,4 +467,35 @@ public class PolicyImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Policy {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
+
+    @GET
+    @Path("/device-group/{user}")
+    public Response getDeviceGroupsRelatedToPolicies(@PathParam("user") String userName) {
+        try {
+            List<DeviceGroupWrapper> groupWrappers = new ArrayList<>();
+            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
+            List<DeviceGroup> deviceGroups = service.getGroups(userName);
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            for (DeviceGroup dg : deviceGroups) {
+                DeviceGroupWrapper gw = new DeviceGroupWrapper();
+                gw.setId(dg.getId());
+                gw.setOwner(dg.getOwner());
+                gw.setName(dg.getName());
+                gw.setTenantId(tenantId);
+                groupWrappers.add(gw);
+            }
+
+            ResponsePayload responsePayload = new ResponsePayload();
+            responsePayload.setStatusCode(HttpStatus.SC_OK);
+            responsePayload.setMessageFromServer("Sending all retrieved device groups.");
+            responsePayload.setResponseContent(groupWrappers);
+            return Response.status(HttpStatus.SC_OK).entity(groupWrappers).build();
+
+        } catch (GroupManagementException e) {
+            String error = "Error occurred while getting the groups related to users for policy.";
+            log.error(error, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
 }

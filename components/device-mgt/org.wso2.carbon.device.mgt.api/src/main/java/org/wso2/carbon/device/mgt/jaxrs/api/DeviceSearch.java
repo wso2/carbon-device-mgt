@@ -24,7 +24,9 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -50,8 +52,25 @@ public interface DeviceSearch {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = DeviceWrapper.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while searching the device information")
-            })
+    })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getFilteredDeviceInfo(@ApiParam(name = "enrollmentCertificates", value = "List of search conditions",
-                                    required = true) SearchContext searchContext);
+    Response getDeviceInfo(@ApiParam(name = "enrollmentCertificates", value = "List of search conditions",
+            required = true) SearchContext searchContext);
+
+    @GET
+    @Path("after/{time}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get devices information since a specified time.",
+            notes = "Get devices information of devices updated since a specified time.",
+            response = DeviceWrapper.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = DeviceWrapper.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "Error occurred while fetching the device information")
+    })
+    @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/update-since-list"})
+    Response getUpdatedDevices(@ApiParam(name = "time", value = "Time since the updated devices should be " +
+            "fetched.", required = true)@PathParam("time") String time);
 }

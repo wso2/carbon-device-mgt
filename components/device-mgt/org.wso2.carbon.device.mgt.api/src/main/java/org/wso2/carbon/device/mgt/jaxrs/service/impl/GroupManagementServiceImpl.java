@@ -21,12 +21,27 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupManagementServiceImpl implements GroupManagementService {
+
+    private static final Log log = LogFactory.getLog(GroupManagementServiceImpl.class);
 
     @Override
     public Response getGroups(@QueryParam("offset") int offset, @QueryParam("limit") int limit) {
@@ -95,6 +110,29 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     public Response removeDeviceFromGroup(@PathParam("groupName") String groupName, @QueryParam("type") String type,
                                           @QueryParam("id") String id) {
         return null;  
+    }
+
+    @Override
+    public Response getGroupsByUser(@QueryParam("user") String user) {
+        try {
+            List<DeviceGroupWrapper> groupWrappers = new ArrayList<>();
+            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
+            List<DeviceGroup> deviceGroups = service.getGroups(user);
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            for (DeviceGroup dg : deviceGroups) {
+                DeviceGroupWrapper gw = new DeviceGroupWrapper();
+                gw.setId(dg.getId());
+                gw.setOwner(dg.getOwner());
+                gw.setName(dg.getName());
+                gw.setTenantId(tenantId);
+                groupWrappers.add(gw);
+            }
+            return Response.status(Response.Status.OK).entity(groupWrappers).build();
+        } catch (GroupManagementException e) {
+            String error = "Error occurred while getting the groups related to users for policy.";
+            log.error(error, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
     }
 
 }

@@ -97,4 +97,7 @@ public interface GroupManagementService {
     Response removeDeviceFromGroup(@PathParam("groupName") String groupName, @QueryParam("type") String type,
                                    @QueryParam("id") String id);
 
+    @GET
+    Response getGroupsByUser(@QueryParam("user") String user);
+
 }

@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -43,9 +44,9 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     }
 
     @Override
-    public int addOperation(Operation operation,
-                            List<DeviceIdentifier> devices) throws OperationManagementException {
-        int operationId = this.operationManager.addOperation(operation, devices);
+    public Activity addOperation(Operation operation,
+                                 List<DeviceIdentifier> devices) throws OperationManagementException {
+        Activity activity = this.operationManager.addOperation(operation, devices);
         for (DeviceIdentifier deviceId : devices) {
             try {
                 this.notificationProvider.execute(new NotificationContext(deviceId));
@@ -53,7 +54,7 @@ public class PushNotificationBasedOperationManager implements OperationManager {
                 throw new OperationManagementException("Error occurred while sending push notification to device", e);
             }
         }
-        return operationId;
+        return activity;
     }
 
     @Override

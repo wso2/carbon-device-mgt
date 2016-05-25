@@ -39,6 +39,7 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 import java.util.List;
 
 @Path("/devices")
@@ -64,6 +65,23 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
+    }
+
+    @Override
+    public Response getDevices(@HeaderParam("If-Modified-Since") Date timestamp,
+                               @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+        SearchManagerService searchManagerService;
+        List<DeviceWrapper> devices;
+        try {
+            searchManagerService = DeviceMgtAPIUtils.getSearchManagerService();
+            devices = searchManagerService.getUpdated(timestamp.getTime());
+
+        } catch (SearchMgtException e) {
+            String msg = "Error occurred while retrieving the updated device information after the given time.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(devices).build();
     }
 
     @GET

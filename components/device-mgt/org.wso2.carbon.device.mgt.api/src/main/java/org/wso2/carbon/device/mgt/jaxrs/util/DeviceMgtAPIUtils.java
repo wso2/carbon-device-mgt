@@ -22,12 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.context.CarbonContext;
-<<<<<<< 67e5a5a23ac4a48544acc129220857ffe71ffb79:components/device-mgt/org.wso2.carbon.device.mgt.api/src/main/java/org/wso2/carbon/device/mgt/jaxrs/api/util/DeviceMgtAPIUtils.java
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
-import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
-=======
->>>>>>> Making all CDM-F REST APIs compatible with the REST API specifications:components/device-mgt/org.wso2.carbon.device.mgt.api/src/main/java/org/wso2/carbon/device/mgt/jaxrs/util/DeviceMgtAPIUtils.java
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;

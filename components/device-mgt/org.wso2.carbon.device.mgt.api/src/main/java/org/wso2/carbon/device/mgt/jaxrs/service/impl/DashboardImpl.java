@@ -28,7 +28,7 @@ import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceWithDetails;
 import org.wso2.carbon.device.mgt.analytics.dashboard.bean.ExtendedFilterSet;
 import org.wso2.carbon.device.mgt.analytics.dashboard.exception.*;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DashboardGadgetDataWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DashboardPaginationGadgetDataWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.Dashboard;

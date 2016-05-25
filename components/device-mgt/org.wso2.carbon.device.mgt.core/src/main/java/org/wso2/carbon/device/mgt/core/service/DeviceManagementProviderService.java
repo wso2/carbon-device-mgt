@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -216,8 +217,8 @@ public interface DeviceManagementProviderService {
     void notifyOperationToDevices(Operation operation,
                                   List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
 
-    int addOperation(String type, Operation operation,
-                     List<DeviceIdentifier> devices) throws OperationManagementException;
+    Activity addOperation(String type, Operation operation,
+                          List<DeviceIdentifier> devices) throws OperationManagementException;
 
     List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 

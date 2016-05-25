@@ -38,7 +38,7 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while adding the
      *                                      operation
      */
-    int addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException;
+    Activity addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of all operations to a device.

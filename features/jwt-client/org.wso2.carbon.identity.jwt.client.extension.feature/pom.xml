@@ -102,6 +102,9 @@
                                 <bundleDef>
                                     org.wso2.orbit.com.nimbusds:nimbus-jose-jwt:${nimbus.orbit.version}
                                 </bundleDef>
+                                <bundleDef>
+                                    net.minidev:json-smart:${json.smart.version}
+                                </bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}

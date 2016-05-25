@@ -249,4 +249,5 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
         }
          return Response.status(Response.Status.OK).entity(operation).build();
     }
+
 }

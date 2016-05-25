@@ -19,13 +19,13 @@
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao.impl;
 
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceWithDetails;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroup;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.BasicFilterSet;
+import org.wso2.carbon.device.mgt.analytics.dashboard.bean.ExtendedFilterSet;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.AbstractGadgetDataServiceDAO;
 import org.wso2.carbon.device.mgt.analytics.dashboard.dao.GadgetDataServiceDAOConstants;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DetailedDeviceEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.DeviceCountByGroupEntry;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean.FilterSet;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.DataAccessLayerException;
-import org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception.InvalidParameterValueException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.exception.*;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -41,15 +41,15 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
 
     @Override
     public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
-                                                     throws InvalidParameterValueException, DataAccessLayerException {
+                            throws InvalidStartIndexValueException, InvalidResultCountValueException, SQLException {
 
         if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
-            throw new InvalidParameterValueException("Start index should be equal to " +
+            throw new InvalidStartIndexValueException("Start index should be equal to " +
                 GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX + " or greater than that.");
         }
 
         if (resultCount < GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT) {
-            throw new InvalidParameterValueException("Result count should be equal to " +
+            throw new InvalidResultCountValueException("Result count should be equal to " +
                 GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT + " or greater than that.");
         }
 
@@ -57,7 +57,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        List<DeviceCountByGroupEntry> filteredNonCompliantDeviceCountsByFeatures = new ArrayList<>();
+        List<DeviceCountByGroup> filteredNonCompliantDeviceCountsByFeatures = new ArrayList<>();
         int totalRecordsCount = 0;
         try {
             con = this.getConnection();
@@ -72,9 +72,9 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
-            DeviceCountByGroupEntry filteredNonCompliantDeviceCountByFeature;
+            DeviceCountByGroup filteredNonCompliantDeviceCountByFeature;
             while (rs.next()) {
-                filteredNonCompliantDeviceCountByFeature = new DeviceCountByGroupEntry();
+                filteredNonCompliantDeviceCountByFeature = new DeviceCountByGroup();
                 filteredNonCompliantDeviceCountByFeature.setGroup(rs.getString("FEATURE_CODE"));
                 filteredNonCompliantDeviceCountByFeature.setDisplayNameForGroup(rs.getString("FEATURE_CODE"));
                 filteredNonCompliantDeviceCountByFeature.setDeviceCount(rs.getInt("DEVICE_COUNT"));
@@ -94,9 +94,6 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("NON_COMPLIANT_FEATURE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new DataAccessLayerException("Error in either getting database connection, " +
-                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -107,26 +104,29 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
     }
 
     @Override
-    public PaginationResult getDevicesWithDetails(FilterSet filterSet, int startIndex, int resultCount)
-                                                  throws InvalidParameterValueException, DataAccessLayerException {
+    public PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount)
+                                                  throws InvalidPotentialVulnerabilityValueException,
+                                                  InvalidStartIndexValueException,
+                                                  InvalidResultCountValueException,
+                                                  SQLException {
 
         if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
-            throw new InvalidParameterValueException("Start index should be equal to " +
+            throw new InvalidStartIndexValueException("Start index should be equal to " +
                 GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX + " or greater than that.");
         }
 
         if (resultCount < GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT) {
-            throw new InvalidParameterValueException("Result count should be equal to " +
+            throw new InvalidResultCountValueException("Result count should be equal to " +
                 GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT + " or greater than that.");
         }
 
-        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
 
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        List<DetailedDeviceEntry> filteredDevicesWithDetails = new ArrayList<>();
+        List<DeviceWithDetails> filteredDevicesWithDetails = new ArrayList<>();
         int totalRecordsCount = 0;
         try {
             con = this.getConnection();
@@ -163,9 +163,9 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
-            DetailedDeviceEntry filteredDeviceWithDetails;
+            DeviceWithDetails filteredDeviceWithDetails;
             while (rs.next()) {
-                filteredDeviceWithDetails = new DetailedDeviceEntry();
+                filteredDeviceWithDetails = new DeviceWithDetails();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
@@ -187,9 +187,6 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new DataAccessLayerException("Error in either getting database connection, " +
-                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -200,31 +197,32 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
     }
 
     @Override
-    public PaginationResult getFeatureNonCompliantDevicesWithDetails(String nonCompliantFeatureCode,
-                                                      FilterSet filterSet, int startIndex, int resultCount)
-                                                      throws InvalidParameterValueException, DataAccessLayerException {
+    public PaginationResult getFeatureNonCompliantDevicesWithDetails(String featureCode,
+                                      BasicFilterSet basicFilterSet, int startIndex, int resultCount)
+                                      throws InvalidFeatureCodeValueException, InvalidStartIndexValueException,
+                                      InvalidResultCountValueException, SQLException {
 
-        if (nonCompliantFeatureCode == null || nonCompliantFeatureCode.isEmpty()) {
-            throw new InvalidParameterValueException("Non-compliant feature code should not be either null or empty.");
+        if (featureCode == null || featureCode.isEmpty()) {
+            throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
         }
 
         if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
-            throw new InvalidParameterValueException("Start index should be equal to " +
+            throw new InvalidStartIndexValueException("Start index should be equal to " +
                 GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX + " or greater than that.");
         }
 
         if (resultCount < GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT) {
-            throw new InvalidParameterValueException("Result count should be equal to " +
+            throw new InvalidResultCountValueException("Result count should be equal to " +
                 GadgetDataServiceDAOConstants.Pagination.MIN_RESULT_COUNT + " or greater than that.");
         }
 
-        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(filterSet);
+        Map<String, Object> filters = this.extractDatabaseFiltersFromBean(basicFilterSet);
 
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        List<DetailedDeviceEntry> filteredDevicesWithDetails = new ArrayList<>();
+        List<DeviceWithDetails> filteredDevicesWithDetails = new ArrayList<>();
         int totalRecordsCount = 0;
         try {
             con = this.getConnection();
@@ -243,7 +241,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
-            stmt.setString(2, nonCompliantFeatureCode);
+            stmt.setString(2, featureCode);
             if (filters != null && filters.values().size() > 0) {
                 int i = 3;
                 for (Object value : filters.values()) {
@@ -263,9 +261,9 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
-            DetailedDeviceEntry filteredDeviceWithDetails;
+            DeviceWithDetails filteredDeviceWithDetails;
             while (rs.next()) {
-                filteredDeviceWithDetails = new DetailedDeviceEntry();
+                filteredDeviceWithDetails = new DeviceWithDetails();
                 filteredDeviceWithDetails.setDeviceId(rs.getInt("DEVICE_ID"));
                 filteredDeviceWithDetails.setDeviceIdentification(rs.getString("DEVICE_IDENTIFICATION"));
                 filteredDeviceWithDetails.setPlatform(rs.getString("PLATFORM"));
@@ -280,7 +278,7 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
 
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setString(2, nonCompliantFeatureCode);
+            stmt.setString(2, featureCode);
 
             // executing query
             rs = stmt.executeQuery();
@@ -288,9 +286,6 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
             while (rs.next()) {
                 totalRecordsCount = rs.getInt("DEVICE_COUNT");
             }
-        } catch (SQLException e) {
-            throw new DataAccessLayerException("Error in either getting database connection, " +
-                "running SQL query or fetching results.", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

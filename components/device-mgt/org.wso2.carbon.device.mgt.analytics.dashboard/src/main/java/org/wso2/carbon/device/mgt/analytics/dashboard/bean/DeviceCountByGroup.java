@@ -16,9 +16,9 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean;
+package org.wso2.carbon.device.mgt.analytics.dashboard.bean;
 
-public class DeviceCountByGroupEntry {
+public class DeviceCountByGroup {
 
     private String group;
     private String displayNameForGroup;

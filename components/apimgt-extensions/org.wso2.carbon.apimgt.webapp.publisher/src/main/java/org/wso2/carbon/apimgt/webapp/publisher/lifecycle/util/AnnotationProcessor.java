@@ -55,6 +55,7 @@ public class AnnotationProcessor {
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
+    private static final String WILD_CARD = "/*";
 
     private static final String AUTH_TYPE = "Any";
     private static final String PROTOCOL_HTTP = "http";
@@ -227,7 +228,7 @@ public class AnnotationProcessor {
                 if (methodContextAnno != null) {
                     subCtx = invokeMethod(pathClazzMethods[0], methodContextAnno, STRING);
                 } else {
-                    subCtx = "/*";
+                    subCtx = WILD_CARD;
                 }
                 resource.setUriTemplate(makeContextURLReady(subCtx));
 

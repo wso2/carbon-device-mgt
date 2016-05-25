@@ -16,13 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception;
+package org.wso2.carbon.device.mgt.analytics.dashboard.exception;
 
 /**
- * Custom exception class for catching invalid parameter issues,
+ * Custom exception class for catching invalid parameter values,
  * relevant to Gadget Data Service DAO layer.
  */
-public class InvalidParameterValueException extends Exception {
+public class InvalidFeatureCodeValueException extends Exception {
 
     private String errorMessage;
     private static final long serialVersionUID = 2021891706072918864L;
@@ -33,7 +33,7 @@ public class InvalidParameterValueException extends Exception {
      * @param nestedException Nested exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterValueException(String errorMessage, Exception nestedException) {
+    public InvalidFeatureCodeValueException(String errorMessage, Exception nestedException) {
         super(errorMessage, nestedException);
         setErrorMessage(errorMessage);
     }
@@ -44,7 +44,7 @@ public class InvalidParameterValueException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterValueException(String errorMessage, Throwable cause) {
+    public InvalidFeatureCodeValueException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         setErrorMessage(errorMessage);
     }
@@ -53,7 +53,7 @@ public class InvalidParameterValueException extends Exception {
      * Constructs a new exception with the specific error message.
      * @param errorMessage Specific error message.
      */
-    public InvalidParameterValueException(String errorMessage) {
+    public InvalidFeatureCodeValueException(String errorMessage) {
         super(errorMessage);
         setErrorMessage(errorMessage);
     }
@@ -63,7 +63,7 @@ public class InvalidParameterValueException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public InvalidParameterValueException(Throwable cause) {
+    public InvalidFeatureCodeValueException(Throwable cause) {
         super(cause);
     }
 
@@ -77,3 +77,4 @@ public class InvalidParameterValueException extends Exception {
     }
 
 }
+

@@ -16,9 +16,9 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao.bean;
+package org.wso2.carbon.device.mgt.analytics.dashboard.bean;
 
-public class DetailedDeviceEntry {
+public class DeviceWithDetails {
 
     private int deviceId;
     private String deviceIdentification;

@@ -16,14 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.analytics.dashboard.dao.exception;
+package org.wso2.carbon.device.mgt.analytics.dashboard.exception;
 
 /**
- * Custom exception class for communicating data access layer issues
+ * Custom exception class for catching invalid parameter values,
  * relevant to Gadget Data Service DAO layer.
- * (In this particular instance, SQL exceptions related to database access).
  */
-public class DataAccessLayerException extends Exception {
+public class InvalidStartIndexValueException extends Exception {
 
     private String errorMessage;
     private static final long serialVersionUID = 2021891706072918864L;
@@ -34,7 +33,7 @@ public class DataAccessLayerException extends Exception {
      * @param nestedException Nested exception.
      */
     @SuppressWarnings("unused")
-    public DataAccessLayerException(String errorMessage, Exception nestedException) {
+    public InvalidStartIndexValueException(String errorMessage, Exception nestedException) {
         super(errorMessage, nestedException);
         setErrorMessage(errorMessage);
     }
@@ -45,7 +44,7 @@ public class DataAccessLayerException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public DataAccessLayerException(String errorMessage, Throwable cause) {
+    public InvalidStartIndexValueException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         setErrorMessage(errorMessage);
     }
@@ -54,7 +53,7 @@ public class DataAccessLayerException extends Exception {
      * Constructs a new exception with the specific error message.
      * @param errorMessage Specific error message.
      */
-    public DataAccessLayerException(String errorMessage) {
+    public InvalidStartIndexValueException(String errorMessage) {
         super(errorMessage);
         setErrorMessage(errorMessage);
     }
@@ -64,7 +63,7 @@ public class DataAccessLayerException extends Exception {
      * @param cause Cause of this exception.
      */
     @SuppressWarnings("unused")
-    public DataAccessLayerException(Throwable cause) {
+    public InvalidStartIndexValueException(Throwable cause) {
         super(cause);
     }
 
@@ -78,3 +77,4 @@ public class DataAccessLayerException extends Exception {
     }
 
 }
+

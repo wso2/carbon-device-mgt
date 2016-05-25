@@ -90,11 +90,7 @@ public class GadgetDataServiceDAOFactory {
                 "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
                     "transaction is already active is a sign of improper transaction handling.");
         }
-        try {
-            conn = dataSource.getConnection();
-        } catch (SQLException e) {
-
-        }
+        conn = dataSource.getConnection();
         currentConnection.set(conn);
     }
 

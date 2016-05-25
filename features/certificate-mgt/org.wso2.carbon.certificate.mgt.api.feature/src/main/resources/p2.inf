@@ -1,3 +1,2 @@
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/webapps/);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.api_${feature.version}/webapps/certificatemgt.war,target:${installFolder}/../../deployment/server/webapps/certificatemgt.war,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.certificate.mgt.api_${feature.version}/webapps/certificate-mgt.war,target:${installFolder}/../../deployment/server/webapps/certificate-mgt.war,overwrite:true);\

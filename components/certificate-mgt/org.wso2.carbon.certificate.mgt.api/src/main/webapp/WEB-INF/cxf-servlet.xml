@@ -26,7 +26,6 @@
 
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
-            <ref bean="searchingServiceBean"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
@@ -45,11 +44,11 @@
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
-    <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
+    <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers"/>
+    <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource"/>
 
     <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
-        <property name="resourcePackage" value="org.wso2.carbon.device.mgt.jaxrs"/>
+        <property name="resourcePackage" value="org.wso2.carbon.certificate.mgt.jaxrs"/>
         <property name="version" value="1.0.0"/>
         <property name="host" value="localhost:9443"/>
         <property name="basePath" value="/"/>

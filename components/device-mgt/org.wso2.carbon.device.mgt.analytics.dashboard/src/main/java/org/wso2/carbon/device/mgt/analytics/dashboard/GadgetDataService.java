@@ -99,8 +99,8 @@ public interface GadgetDataService {
      * @param startIndex Starting index of the data set to be retrieved.
      * @param resultCount Total count of the result set retrieved.
      * @return An object of type PaginationResult.
-     * @throws InvalidStartIndexValueException This can occur if startIndex value is lesser than its minimum.
-     * @throws InvalidResultCountValueException This can occur if resultCount value is lesser than its minimum.
+     * @throws InvalidStartIndexValueException This can occur if startIndex value is lesser than its minimum (0).
+     * @throws InvalidResultCountValueException This can occur if resultCount value is lesser than its minimum (5).
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
      */
@@ -146,8 +146,8 @@ public interface GadgetDataService {
      * This method is used to get device counts classified by ownership types.
      * @param extendedFilterSet An abstract representation of possible filtering options.
      *                          if this value is simply "null" or no values are set for the defined filtering
-     *                          options, this method would return total device counts per each ownership type in
-     *                          the system, wrapped by the defined return format.
+     *                          options, this method would return total device counts per each ownership
+     *                          type in the system, wrapped by the defined return format.
      * @return A list of objects of type DeviceCountByGroup.
      * @throws InvalidPotentialVulnerabilityValueException This can occur if potentialVulnerability
      *                                                     value of extendedFilterSet is set with some
@@ -160,7 +160,8 @@ public interface GadgetDataService {
                              throws InvalidPotentialVulnerabilityValueException, DataAccessLayerException;
 
     /**
-     * This method is used to get device counts non-compliant upon a particular feature classified by ownership types.
+     * This method is used to get device counts non-compliant upon a particular feature
+     * classified by ownership types.
      * @param featureCode Code name of the non-compliant feature.
      * @param basicFilterSet An abstract representation of possible filtering options.
      *                       if this value is simply "null" or no values are set for the defined filtering
@@ -191,8 +192,8 @@ public interface GadgetDataService {
      *                                                     value other than "NON_COMPLIANT" or "UNMONITORED".
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
-     * @throws InvalidStartIndexValueException This can occur if startIndex value is lesser than its minimum.
-     * @throws InvalidResultCountValueException This can occur if resultCount value is lesser than its minimum.
+     * @throws InvalidStartIndexValueException This can occur if startIndex value is lesser than its minimum (0).
+     * @throws InvalidResultCountValueException This can occur if resultCount value is lesser than its minimum (5).
      */
     @SuppressWarnings("unused")
     PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount)
@@ -200,7 +201,8 @@ public interface GadgetDataService {
                      InvalidStartIndexValueException, InvalidResultCountValueException;
 
     /**
-     * This method is used to get a paginated list of non-compliant devices with details, upon a particular feature.
+     * This method is used to get a paginated list of non-compliant devices with details,
+     * upon a particular feature.
      * @param featureCode Code name of the non-compliant feature.
      * @param basicFilterSet An abstract representation of possible filtering options.
      *                       if this value is simply "null" or no values are set for the defined filtering
@@ -213,8 +215,8 @@ public interface GadgetDataService {
      * @throws InvalidFeatureCodeValueException This can occur if featureCode is set to null or empty.
      * @throws DataAccessLayerException This can occur due to errors connecting to database,
      *                                  executing SQL query and retrieving data.
-     * @throws InvalidStartIndexValueException This can occur if startIndex value is lesser than its minimum.
-     * @throws InvalidResultCountValueException This can occur if resultCount value is lesser than its minimum.
+     * @throws InvalidStartIndexValueException This can occur if startIndex value is lesser than its minimum (0).
+     * @throws InvalidResultCountValueException This can occur if resultCount value is lesser than its minimum (5).
      */
     @SuppressWarnings("unused")
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String featureCode, BasicFilterSet basicFilterSet,

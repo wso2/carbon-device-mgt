@@ -886,10 +886,16 @@
     <Permission>
         <name>Device Search</name>
         <path>/device-mgt/admin/search</path>
-        <url>/information/*</url>
-        <method>GET</method>
+        <url>/search</url>
+        <method>POST</method>
     </Permission>
 
+    <Permission>
+        <name>Device Updated</name>
+        <path>/device-mgt/admin/search/after</path>
+        <url>/search/after/*</url>
+        <method>GET</method>
+    </Permission>
     <!--End of the device search and information -->
 
 
@@ -937,31 +943,27 @@
     <!-- Certificate related APIs -->
     <Permission>
         <name>Save certificate in the database</name>
-        <path>/device-mgt/emm-admin/certificate/save</path>
+        <path>/device-mgt/admin/certificate/save</path>
         <url>/certificates</url>
         <method>POST</method>
-        <scope>emm_admin</scope>
     </Permission>
     <Permission>
         <name>get certificate in the database</name>
-        <path>/device-mgt/emm-admin/certificate/Get</path>
+        <path>/device-mgt/admin/certificate/Get</path>
         <url>/certificates/*</url>
         <method>GET</method>
-        <scope>emm_admin</scope>
     </Permission>
     <Permission>
         <name>get certificate in the database</name>
-        <path>/device-mgt/emm-admin/certificate/GetAll</path>
+        <path>/device-mgt/admin/certificate/GetAll</path>
         <url>/certificates</url>
         <method>GET</method>
-        <scope>emm_admin</scope>
     </Permission>
     <Permission>
         <name>get certificate in the database</name>
-        <path>/device-mgt/emm-admin/certificate/Get</path>
+        <path>/device-mgt/admin/certificate/Get</path>
         <url>/certificates/*</url>
         <method>DELETE</method>
-        <scope>emm_admin</scope>
     </Permission>
     <!-- End of Certificate related APIs -->
 
@@ -1162,5 +1164,61 @@
         <method>DELETE</method>
     </Permission>
     <!-- End of Group related APIs -->
+    <!-- Dashboard related APIs -->
+    <Permission>
+        <name>get device count overview</name>
+        <path>/device-mgt/admin/dashboard/device-count-overview</path>
+        <url>/dashboard/device-count-overview</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get device counts by potential vulnerabilities</name>
+        <path>/device-mgt/admin/dashboard/device-counts-by-potential-vulnerabilities</path>
+        <url>/dashboard/device-counts-by-potential-vulnerabilities</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get non-compliant device counts by features</name>
+        <path>/device-mgt/admin/dashboard/non-compliant-device-counts-by-features</path>
+        <url>/dashboard/non-compliant-device-counts-by-features</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get device counts by groups</name>
+        <path>/device-mgt/admin/dashboard/device-counts-by-groups</path>
+        <url>/dashboard/device-counts-by-groups</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get feature-non-compliant device counts by groups</name>
+        <path>/device-mgt/admin/dashboard/feature-non-compliant-device-counts-by-groups</path>
+        <url>/dashboard/feature-non-compliant-device-counts-by-groups</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get filtered device count over total</name>
+        <path>/device-mgt/admin/dashboard/filtered-device-count-over-total</path>
+        <url>/dashboard/filtered-device-count-over-total</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get feature-non-compliant device count over total</name>
+        <path>/device-mgt/admin/dashboard/feature-non-compliant-device-count-over-total</path>
+        <url>/dashboard/feature-non-compliant-device-count-over-total</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get devices with details</name>
+        <path>/device-mgt/admin/dashboard/devices-with-details</path>
+        <url>/dashboard/devices-with-details</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>get feature-non-compliant devices with details</name>
+        <path>/device-mgt/admin/dashboard/feature-non-compliant-devices-with-details</path>
+        <url>/dashboard/feature-non-compliant-devices-with-details</url>
+        <method>GET</method>
+    </Permission>
+    <!-- End of Dashboard related APIs -->
 
 </PermissionConfiguration>

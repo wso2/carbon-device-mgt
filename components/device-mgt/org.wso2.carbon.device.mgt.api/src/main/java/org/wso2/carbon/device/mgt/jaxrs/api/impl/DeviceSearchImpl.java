@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api.impl;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
@@ -29,16 +30,22 @@ import org.wso2.carbon.device.mgt.jaxrs.api.DeviceSearch;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@Path("/search")
+@Api(value = "DeviceSearch", description = "Device searching related operations can be found here.")
 @SuppressWarnings("NonJaxWsWebServices")
 public class DeviceSearchImpl implements DeviceSearch {
 
     private static Log log = LogFactory.getLog(DeviceSearchImpl.class);
 
     @GET
-    public Response getFilteredDeviceInfo(SearchContext searchContext) {
+    public Response getDeviceInfo(SearchContext searchContext) {
+
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
         try {
@@ -52,5 +59,25 @@ public class DeviceSearchImpl implements DeviceSearch {
         }
         return Response.status(Response.Status.OK).entity(devices).build();
     }
+
+    @POST
+    @Path("after/{time}")
+    public Response getUpdatedDevices(@PathParam("time") String time){
+
+        SearchManagerService searchManagerService;
+        List<DeviceWrapper> devices;
+        try {
+            searchManagerService = DeviceMgtAPIUtils.getSearchManagerService();
+            devices = searchManagerService.getUpdated(Long.parseLong(time));
+
+        } catch (SearchMgtException e) {
+            String msg = "Error occurred while retrieving the updated device information after the given time.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(devices).build();
+
+    }
+
 }
 

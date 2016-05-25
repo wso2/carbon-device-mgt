@@ -40,6 +40,7 @@
             <ref bean="notificationServiceBean"/>
             <ref bean="informationServiceBean"/>
             <ref bean="searchingServiceBean"/>
+            <ref bean="dashboardServiceBean"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
@@ -78,6 +79,7 @@
     <bean id="searchingServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.DeviceSearchImpl"/>
     <bean id="policyServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.PolicyImpl"/>
     <bean id="profileServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.impl.ProfileImpl"/>
+    <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.api.DashboardImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
     <bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.api.common.ErrorHandler"/>
 

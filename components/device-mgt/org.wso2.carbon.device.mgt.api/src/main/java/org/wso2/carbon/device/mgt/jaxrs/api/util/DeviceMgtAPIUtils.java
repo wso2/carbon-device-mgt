@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
@@ -318,5 +319,14 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException(msg);
         }
         return searchManagerService;
+    }
+
+    public static GadgetDataService getGadgetDataService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        GadgetDataService gadgetDataService = (GadgetDataService) ctx.getOSGiService(GadgetDataService.class, null);
+        if (gadgetDataService == null) {
+            throw new IllegalStateException("Gadget Data Service has not been initialized.");
+        }
+        return gadgetDataService;
     }
 }

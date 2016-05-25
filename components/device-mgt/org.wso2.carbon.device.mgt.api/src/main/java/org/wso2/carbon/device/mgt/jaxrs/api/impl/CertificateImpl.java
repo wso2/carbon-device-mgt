@@ -97,6 +97,7 @@ public class CertificateImpl implements Certificate {
      * @param serialNumber serial of the certificate needed.
      * @return certificate response.
      */
+    @GET
     @Path("{serialNumber}")
     public Response getCertificate(@HeaderParam("Accept") String acceptHeader,
                                    @PathParam("serialNumber") String serialNumber) {

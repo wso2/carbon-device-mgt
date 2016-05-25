@@ -238,6 +238,11 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.analytics.dashboard</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

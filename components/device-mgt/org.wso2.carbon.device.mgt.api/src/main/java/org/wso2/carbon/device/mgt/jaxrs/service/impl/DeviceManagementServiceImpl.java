@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -108,8 +109,22 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @POST
     @Override
-    public Response getDevices(List<DeviceIdentifier> deviceIds) {
-        return null;
+    public Response getDevicesInfo(List<DeviceIdentifier> deviceIds) {
+        DeviceInformationManager informationManager;
+        List<DeviceInfo> deviceInfo;
+        try {
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceInfo = informationManager.getDevicesInfo(deviceIds);
+            if (deviceInfo == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
+                        "device list submitted").build();
+            }
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device information.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceInfo).build();
     }
 
     @GET
@@ -224,6 +239,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         try {
             informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
             deviceLocation = informationManager.getDeviceLocation(new DeviceIdentifier(id, type));
+            if (deviceLocation == null || deviceLocation.getLatitude() == null ||
+                    deviceLocation.getLongitude() == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Location details are not available for the " +
+                        "given device id '" + id + "'").build();
+            }
         } catch (DeviceDetailsMgtException e) {
             String msg = "Error occurred while getting the last updated location of the '" + type + "' device, " +
                     "which carries the id '" + id + "'";
@@ -285,6 +305,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         try {
             amc = DeviceMgtAPIUtils.getAppManagementService();
             applications = amc.getApplicationListForDevice(new DeviceIdentifier(id, type));
+            if (applications == null || applications.size() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No installed applications found on the " +
+                        "device searched").build();
+            }
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while fetching the apps of the '" + type + "' device, which carries " +
                     "the id '" + id + "'";

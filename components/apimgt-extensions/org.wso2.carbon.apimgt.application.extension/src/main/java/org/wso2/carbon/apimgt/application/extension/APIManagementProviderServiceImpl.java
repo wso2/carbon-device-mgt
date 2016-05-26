@@ -410,6 +410,9 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             int applicationId = createApplication(apiConsumer, apiApplicationName, username, groupId);
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             Set<API> userVisibleAPIs = apiConsumer.getAllPublishedAPIs(tenantDomain);
+            if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                userVisibleAPIs.addAll(apiConsumer.getAllPublishedAPIs(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
+            }
             Subscriber subscriber = apiConsumer.getSubscriber(username);
             Set<SubscribedAPI> subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber);
             for (API visibleApi : userVisibleAPIs) {

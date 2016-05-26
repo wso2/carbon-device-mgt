@@ -23,10 +23,24 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderServiceImpl;
+import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
+import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * @scr.component name="org.wso2.carbon.apimgt.application.extension.internal.APIApplicationManagerExtensionServiceComponent"
+ * @scr.reference name="tenant.registryloader"
+ * interface="org.wso2.carbon.registry.core.service.TenantRegistryLoader"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setTenantRegistryLoader"
+ * unbind="unsetTenantRegistryLoader"
+ * @scr.reference name="tenant.indexloader"
+ * interface="org.wso2.carbon.registry.indexing.service.TenantIndexingLoader"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setIndexLoader"
+ * unbind="unsetIndexLoader"
  * @scr.reference name="realm.service"
  * immediate="true"
  * interface="org.wso2.carbon.user.core.service.RealmService"
@@ -51,6 +65,25 @@ public class APIApplicationManagerExtensionServiceComponent {
 
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
+    }
+
+    protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader) {
+        APIApplicationManagerExtensionDataHolder.getInstance().setTenantRegistryLoader(tenantRegistryLoader);
+    }
+
+    protected void unsetTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader) {
+        APIApplicationManagerExtensionDataHolder.getInstance().setTenantRegistryLoader(null);
+    }
+
+    protected void setIndexLoader(TenantIndexingLoader indexLoader) {
+        if (indexLoader != null && log.isDebugEnabled()) {
+            log.debug("IndexLoader service initialized");
+        }
+        APIApplicationManagerExtensionDataHolder.getInstance().setIndexLoaderService(indexLoader);
+    }
+
+    protected void unsetIndexLoader(TenantIndexingLoader indexLoader) {
+        APIApplicationManagerExtensionDataHolder.getInstance().setIndexLoaderService(null);
     }
 
     /**

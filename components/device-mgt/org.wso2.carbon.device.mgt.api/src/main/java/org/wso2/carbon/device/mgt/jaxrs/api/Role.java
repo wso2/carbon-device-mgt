@@ -146,7 +146,7 @@ public interface Role {
             notes = "You are able to add a new role to WSO2 EMM using the REST API.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Added the role."),
                             @ApiResponse(code = 500, message = "Error occurred while adding the user role.") })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
+    @Permission(scope = "roles-add", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
     Response addRole(@ApiParam(name = "roleWrapper", value = "Role and permission details.",
                                required = true) RoleWrapper roleWrapper);
 
@@ -180,7 +180,7 @@ public interface Role {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Deleted the role."),
                             @ApiResponse(code = 500, message = "Error occurred while deleting the user role details" +
                                                                ".") })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
+    @Permission(scope = "roles-remove", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
     Response deleteRole(@ApiParam(name = "rolename", value = "Provide the name of the role you wish to delete.",
                                   required = true) @QueryParam("rolename") String roleName);
 
@@ -217,7 +217,7 @@ public interface Role {
             notes = "Get the number of roles in WSO2 EMM.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Retrieved the role count."),
                             @ApiResponse(code = 500, message = "Error occurred while retrieving the role count.") })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
+    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getRoleCount();
 
 }

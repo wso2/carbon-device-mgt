@@ -31,7 +31,7 @@
     <Permission>
         <name>Register tenant specific application</name>
         <path>/device-mgt/admin</path>
-        <url>/register/tenants/*</url>
+        <url>/register/tenants</url>
         <method>POST</method>
         <scope>super_admin_user</scope>
     </Permission>

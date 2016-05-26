@@ -9,9 +9,9 @@
   "iOSAPIRoot" : "%https.ip%/ios/",
   "dynamicClientRegistrationEndPoint" : "%https.ip%/dynamic-client-web/register/",
   "adminService":"%https.ip%",
-  "idPServer":"%https.ip%",
+  "idPServer":"https://localhost:8243",
   "callBackUrl":"%https.ip%/devicemgt_admin",
-  "adminUser":"admin",
+  "adminUser":"admin@carbon.super",
   "adminRole":"admin",
   "usernameLength":30,
   "ssoConfiguration" : {
@@ -48,5 +48,12 @@
     "copyrightOwner" : "WSO2 Inc.",
     "copyrightOwnersSite" : "http://www.wso2.org",
     "copyrightSuffix" : " All Rights Reserved."
-  }
+  },
+  "scopes" : ["license-add", "license-view", "device-view", "device-info", "device-list", "device-view-own",
+    "device-modify", "device-search", "operation-install", "operation-view", "operation-modify", "operation-uninstall",
+    "group-add", "group-share", "group-modify", "group-view", "group-remove", "certificate-modify", "certificate-view",
+    "configuration-view", "configuration-modify", "policy-view", "policy-modify", "device-notification-view",
+    "device-notification-modify", "feature-view", "arduino_device", "arduino_user", " android_sense_user",
+    "virtual_firealarm_user", "raspberrypi_user", "roles-view", "roles-modify", "roles-remove", "roles-add",
+    "user-password-reset", "user-password-modify", "user-modify", "user-view", "user-invite", "user-remove", "user-add"]
 }

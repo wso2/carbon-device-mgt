@@ -18,6 +18,8 @@
 package org.wso2.carbon.apimgt.application.extension.internal;
 
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
+import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
+import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
@@ -26,6 +28,8 @@ public class APIApplicationManagerExtensionDataHolder {
     private APIManagementProviderService apiManagementProviderService;
     private RealmService realmService;
     private TenantManager tenantManager;
+    private TenantRegistryLoader tenantRegistryLoader;
+    private TenantIndexingLoader indexLoader;
 
     private APIApplicationManagerExtensionDataHolder() {
     }
@@ -65,5 +69,21 @@ public class APIApplicationManagerExtensionDataHolder {
 
     public TenantManager getTenantManager() {
         return tenantManager;
+    }
+
+    public void setTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader){
+        this.tenantRegistryLoader = tenantRegistryLoader;
+    }
+
+    public TenantRegistryLoader getTenantRegistryLoader(){
+        return tenantRegistryLoader;
+    }
+
+    public void setIndexLoaderService(TenantIndexingLoader indexLoader) {
+        this.indexLoader = indexLoader;
+    }
+
+    public TenantIndexingLoader getIndexLoaderService(){
+        return indexLoader;
     }
 }

@@ -35,6 +35,7 @@ import org.wso2.carbon.apimgt.application.extension.exception.APIManagerExceptio
 import org.wso2.carbon.apimgt.application.extension.util.APIManagerUtil;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -57,6 +58,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                                                                 String username, boolean isAllowedAllDomains)
             throws APIManagerException {
         try {
+            APIManagerUtil.loadTenantRegistry();
             APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
             String groupId = getLoggedInUserGroupId(username, APIManagerUtil.getTenantDomain());
             int applicationId = createApplicationAndSubscribeToAllAPIs(apiApplicationName, username);
@@ -121,6 +123,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                                                                  boolean isAllowedAllDomains, String keyType)
             throws APIManagerException {
         try {
+            APIManagerUtil.loadTenantRegistry();
             APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
             if (apiConsumer != null) {
                 String groupId = getLoggedInUserGroupId(username, APIManagerUtil.getTenantDomain());
@@ -177,6 +180,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     @Override
     public void removeAPIApplication(String applicationName, String username) throws APIManagerException {
         try {
+            APIManagerUtil.loadTenantRegistry();
             APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
             if (apiConsumer != null) {
                 String groupId = getLoggedInUserGroupId(username, APIManagerUtil.getTenantDomain());
@@ -203,6 +207,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                                                                 boolean isAllowedAllDomains)
             throws APIManagerException {
         try {
+            APIManagerUtil.loadTenantRegistry();
             APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
             String groupId = getLoggedInUserGroupId(username, APIManagerUtil.getTenantDomain());
             int applicationId = createApplicationAndSubscribeToAPIs(apiApplicationName, tags, username);
@@ -441,4 +446,5 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             throw new APIManagerException("Unable to get groupIds of user " + username, e);
         }
     }
+
 }

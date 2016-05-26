@@ -79,7 +79,7 @@ var util = function () {
      */
     module.getTokenWithPasswordGrantType = function (username, password, encodedClientKeys, scope) {
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer + "/oauth2/token";
+        var tokenEndpoint = devicemgtProps.idPServer + "/token";
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + encodedClientKeys);
@@ -172,29 +172,54 @@ var util = function () {
         return jwtToken;
     };
 
-    module.getTenantBasedAppCredentials = function (token) {
-        var tenantDomain = "carbon.super";
-        var applicationName = "webapp_" + tenantDomain;
-        var xhr = new XMLHttpRequest();
-        var endpoint = devicemgtProps["adminService"] + "/register/tenants/" + tenantDomain + "?applicationName=" +
-            applicationName;
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>APIM App Register endpoint: " + endpoint);
-        xhr.open("POST", endpoint, false);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("Authorization", "X-JWT-Assertion " + token.accessToken);
-        xhr.send();
-        var clientData = {};
-        if (xhr.status == 201) {
-            var data = parse(xhr.responseText);
-            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>lllllllllllllllllll: " + stringify(data));
-            //clientData.clientId = data.client_id;
-            //clientData.clientSecret = data.client_secret;
+    module.getTenantBasedAppCredentials = function (uname, token) {
+        var tenantDomain = carbonModule.server.tenantDomain({
+            username: uname
+        });
+        var clientData = this.getCachedCredentials(tenantDomain);
+        if (!clientData) {
+            var applicationName = "webapp_" + tenantDomain;
+            var xhr = new XMLHttpRequest();
+            var endpoint = devicemgtProps["adminService"] + "/api-application-registration/register/tenants?tenantDomain=" +
+                tenantDomain + "&applicationName=" + applicationName;
+            xhr.open("POST", endpoint, false);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("Authorization", "Bearer " + token.accessToken);
+            xhr.send();
 
-        } else if (xhr.status == 400) {
-            throw "Invalid client meta data";
-        } else {
-            throw "Error in obtaining client id and secret from APIM";
+            if (xhr.status == 201) {
+                var data = parse(xhr.responseText);
+                clientData = {};
+                clientData.clientId = data.client_id;
+                clientData.clientSecret = data.client_secret;
+                this.setTenantBasedAppCredentials(tenantDomain, clientData);
+            } else if (xhr.status == 400) {
+                throw "Invalid client meta data";
+            } else {
+                throw "Error in obtaining client id and secret from APIM";
+            }
         }
-    }
+        return clientData;
+    };
+
+    module.setTenantBasedAppCredentials = function (tenantDomain, clientData) {
+        var cachedMap = application.get(constants.CACHED_CREDENTIALS);
+        if (!cachedMap) {
+            cachedMap = new Object();
+            cachedMap[tenantDomain] = clientData;
+            application.put(constants.CACHED_CREDENTIALS, cachedMap);
+        } else {
+            cachedMap[tenantDomain] = clientData;
+        }
+    };
+
+    module.getCachedCredentials = function(tenantDomain) {
+        var cachedMap = application.get(constants.CACHED_CREDENTIALS);
+        if (cachedMap) {
+            return cachedMap[tenantDomain];
+        }
+        return null;
+    };
+
     return module;
 }();

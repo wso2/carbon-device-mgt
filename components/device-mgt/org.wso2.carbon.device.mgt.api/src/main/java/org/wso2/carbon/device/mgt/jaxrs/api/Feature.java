@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 /**
  * Features
  */
-@API(name = "Device Search", version = "1.0.0", context = "/devicemgt_admin/features", tags = {"devicemgt_admin"})
+@API(name = "Feature", version = "1.0.0", context = "/devicemgt_admin/features", tags = {"devicemgt_admin"})
 
 // Below Api is for swagger annotations
 @Api(value = "Feature", description = "Feature management related operations can be found here.")
@@ -58,7 +58,7 @@ public interface Feature {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "List of Features"),
                             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of features" +
                                                                ".") })
-    @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/view",
+    @Permission(scope = "feature-view", permissions = {"/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"})
     Response getFeatures(@ApiParam(name = "type", value = "Provide the device type, such as ios, android or windows",
                                    required = true) @PathParam("type") String type);

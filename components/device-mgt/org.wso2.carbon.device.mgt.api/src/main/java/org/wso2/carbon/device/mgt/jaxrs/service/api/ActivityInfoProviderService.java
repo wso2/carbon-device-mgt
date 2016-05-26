@@ -28,6 +28,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * Activity related REST-API implementation.
+ */
 @Path("/activities")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -40,12 +43,11 @@ public interface ActivityInfoProviderService {
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "POST",
             value = "Retrieving the operation details.",
-            notes = "This will return the operation details including the responses from the devices")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Activity details provided successfully.."),
+            notes = "This will return the operation details including the responses from the devices.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Activity details provided successfully."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")})
     @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
-    Response getActivity(
-            @ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
+    Response getActivity(@ApiParam(name = "id", value = "Activity id of the operation/activity to be retrieved",
                     required = true) @PathParam("id") String id);
 
 }

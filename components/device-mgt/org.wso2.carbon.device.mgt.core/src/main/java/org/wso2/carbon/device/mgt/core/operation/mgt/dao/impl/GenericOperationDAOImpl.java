@@ -19,7 +19,11 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
+import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
@@ -89,12 +93,14 @@ public class GenericOperationDAOImpl implements OperationDAO {
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
+            long time = System.currentTimeMillis()/1000;
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS=? " +
+            stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS=?, UPDATED_TIMESTAMP=? " +
                     "WHERE ENROLMENT_ID=? and OPERATION_ID=?");
             stmt.setString(1, status.toString());
-            stmt.setInt(2, enrolmentId);
-            stmt.setInt(3, operationId);
+            stmt.setLong(2, time);
+            stmt.setInt(3, enrolmentId);
+            stmt.setInt(4, operationId);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -126,9 +132,11 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 id = rs.getInt("ID");
             }
             if (id != 0){
-                stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS = ? WHERE ID = ?");
+                stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS = ?, " +
+                        "UPDATED_TIMESTAMP = ?  WHERE ID = ?");
                 stmt.setString(1, newStatus.toString());
-                stmt.setInt(2, id);
+                stmt.setLong(2,  System.currentTimeMillis()/1000);
+                stmt.setInt(3, id);
                 stmt.executeUpdate();
             }
 
@@ -245,6 +253,112 @@ public class GenericOperationDAOImpl implements OperationDAO {
     }
 
     @Override
+    public Activity getActivity(int operationId) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Activity activity = new Activity();
+        List<ActivityStatus> activityStatusList = new ArrayList<>();
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT eom.ENROLMENT_ID, eom.OPERATION_ID, eom.ID AS EOM_MAPPING_ID, dor.ID AS OP_RES_ID,\n" +
+                    "de.DEVICE_ID, d.DEVICE_IDENTIFICATION, \n" +
+                    "d.DEVICE_TYPE_ID, dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, \n" +
+                    "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, dor.OPERATION_RESPONSE, \n" +
+                    "dor.RECEIVED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING AS eom \n" +
+                    "INNER JOIN DM_OPERATION AS op ON op.ID=eom.OPERATION_ID\n" +
+                    "INNER JOIN DM_ENROLMENT AS de ON de.ID=eom.ENROLMENT_ID\n" +
+                    "INNER JOIN DM_DEVICE AS d ON d.ID=de.DEVICE_ID \n" +
+                    "INNER JOIN DM_DEVICE_TYPE AS dt ON dt.ID=d.DEVICE_TYPE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE AS dor ON dor.ENROLMENT_ID=de.id \n" +
+                    "AND dor.OPERATION_ID = eom.OPERATION_ID\n" +
+                    "WHERE eom.OPERATION_ID = ? AND de.TENANT_ID = ?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, operationId);
+            stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            rs = stmt.executeQuery();
+
+            int enrolmentId = 0;
+            ActivityStatus activityStatus = null;
+            while (rs.next()) {
+                if (enrolmentId == 0){
+                    activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
+                    activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP"))).toString());
+                    activity.setCode(rs.getString("OPERATION_CODE"));
+                }
+                if (enrolmentId != rs.getInt("ENROLMENT_ID")) {
+                    activityStatus = new ActivityStatus();
+
+                    DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                    deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
+                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE_NAME"));
+                    activityStatus.setDeviceIdentifier(deviceIdentifier);
+
+                    activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));
+
+                    List<OperationResponse> operationResponses = new ArrayList<>();
+                    if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
+                        operationResponses.add(this.getOperationResponse(rs));
+                    }
+                    activityStatus.setResponses(operationResponses);
+
+                    activityStatusList.add(activityStatus);
+
+                    enrolmentId = rs.getInt("ENROLMENT_ID");
+                } else {
+                    if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
+                        activityStatus.getResponses().add(this.getOperationResponse(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while getting the operation details from " +
+                    "the database.", e);
+        } catch (ClassNotFoundException e) {
+            throw new OperationManagementDAOException("Error occurred while converting the operation response to string.", e);
+        } catch (IOException e) {
+            throw new OperationManagementDAOException("IO exception occurred while converting the operations responses.", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        activity.setActivityStatus(activityStatusList);
+        return activity;
+    }
+
+    private OperationResponse getOperationResponse(ResultSet rs) throws
+            ClassNotFoundException, IOException, SQLException {
+        OperationResponse response = new OperationResponse();
+        response.setRecievedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+        ByteArrayInputStream bais = null;
+        ObjectInputStream ois = null;
+        byte[] contentBytes;
+        try {
+            contentBytes = (byte[]) rs.getBytes("OPERATION_RESPONSE");
+            bais = new ByteArrayInputStream(contentBytes);
+            ois = new ObjectInputStream(bais);
+            response.setResponse(ois.readObject().toString());
+
+        } finally {
+            if (bais != null) {
+                try {
+                    bais.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
+        }
+        return response;
+    }
+
+    @Override
     public int getEnrolmentIdFromMappingId(int enrollmentOpMappingId) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -325,8 +439,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
         Operation operation = null;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE, \n" +
-                    " om.STATUS FROM DM_OPERATION o  \n" +
+            String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, OPERATION_CODE, \n" +
+                    " om.STATUS, om.UPDATED_TIMESTAMP FROM DM_OPERATION o  \n" +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm WHERE dm.ID = ? ) om \n" +
                     "ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC ";
             stmt = conn.prepareStatement(sql);
@@ -338,14 +452,20 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setId(rs.getInt("ID"));
                 operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
-                this.setActivityId(operation, enrollmentOpMappingId);
+                this.setActivityId(operation, rs.getInt("ID"));
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("SQL error occurred while retrieving the operation .", e);
@@ -362,8 +482,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
         Operation operation = null;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE, om.ID AS OM_MAPPING_ID " +
-                    " FROM (SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS," +
+            String sql = "SELECT o.ID, o.TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.STATUS, o.OPERATION_CODE, " +
+                    "om.ID AS OM_MAPPING_ID, " +
+                    "om.UPDATED_TIMESTAMP FROM (SELECT ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, STATUS," +
                     "OPERATION_CODE  FROM DM_OPERATION  WHERE id = ?) o INNER JOIN (SELECT * FROM " +
                     "DM_ENROLMENT_OP_MAPPING dm where dm.OPERATION_ID = ? AND dm.ENROLMENT_ID = ?) om " +
                     "ON o.ID = om.OPERATION_ID ";
@@ -378,13 +499,19 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setId(rs.getInt("ID"));
                 operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
-                this.setActivityId(operation, rs.getInt("OM_MAPPING_ID"));
+                this.setActivityId(operation, rs.getInt("ID"));
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("SQL error occurred while retrieving the operation " +
@@ -404,8 +531,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
         List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE, om.ID AS OM_MAPPING_ID" +
-                    "FROM DM_OPERATION o " +
+            String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.OPERATION_CODE, om.ID AS OM_MAPPING_ID," +
+                    "om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC";
             stmt = conn.prepareStatement(sql);
@@ -418,14 +545,20 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setId(rs.getInt("ID"));
                 operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(status);
-                this.setActivityId(operation, rs.getInt("OM_MAPPING_ID"));
+                this.setActivityId(operation, rs.getInt("ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {
@@ -447,8 +580,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
         List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE, om.ID AS OM_MAPPING_ID " +
-                         "FROM DM_OPERATION o " +
+            String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, o.OPERATION_CODE, " +
+                        "om.ID AS OM_MAPPING_ID, om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                          "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY " +
                          "o.CREATED_TIMESTAMP DESC LIMIT ?,?";
@@ -464,10 +597,16 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setId(rs.getInt("ID"));
                 operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(status);
@@ -491,8 +630,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
         List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
-                    "OPERATION_CODE, om.STATUS, om.ID AS OM_MAPPING_ID  FROM DM_OPERATION o " +
+            String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, " +
+                    "OPERATION_CODE, om.STATUS, om.ID AS OM_MAPPING_ID, om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC";
             stmt = conn.prepareStatement(sql);
@@ -504,14 +643,20 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setId(rs.getInt("ID"));
                 operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
-                this.setActivityId(operation, rs.getInt("OM_MAPPING_ID"));
+//                this.setActivityId(operation, rs.getInt("OM_MAPPING_ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {
@@ -532,8 +677,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
         List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
-                         "OPERATION_CODE, om.STATUS, om.ID AS OM_MAPPING_ID FROM DM_OPERATION o " +
+            String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, " +
+                         "OPERATION_CODE, om.STATUS, om.ID AS OM_MAPPING_ID, om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                          "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                          "WHERE dm.ENROLMENT_ID = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP DESC LIMIT ?,?";
             stmt = conn.prepareStatement(sql);
@@ -547,14 +692,20 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setId(rs.getInt("ID"));
                 operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(Operation.Status.valueOf(rs.getString("STATUS")));
-                this.setActivityId(operation, rs.getInt("OM_MAPPING_ID"));
+                this.setActivityId(operation, rs.getInt("ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {
@@ -596,8 +747,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
         ResultSet rs = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, " +
-                    "OPERATION_CODE, om.ID AS OM_MAPPING_ID FROM DM_OPERATION o " +
+            stmt = connection.prepareStatement("SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, " +
+                    "OPERATION_CODE, om.ID AS OM_MAPPING_ID, om.UPDATED_TIMESTAMP FROM DM_OPERATION o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID " +
                     "ORDER BY o.CREATED_TIMESTAMP ASC LIMIT 1");
@@ -611,14 +762,20 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setType(this.getType(rs.getString("TYPE")));
                 operation.setId(rs.getInt("ID"));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
                 operation.setStatus(Operation.Status.PENDING);
-                this.setActivityId(operation, rs.getInt("OM_MAPPING_ID"));
+                this.setActivityId(operation, rs.getInt("ID"));
             }
             return operation;
         } catch (SQLException e) {
@@ -637,8 +794,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
         List<Operation> operations = new ArrayList<Operation>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE, om.ID AS OM_MAPPING_ID FROM " +
-                    "(SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE " +
+            String sql = "SELECT o.ID, TYPE, o.CREATED_TIMESTAMP, o.RECEIVED_TIMESTAMP, OPERATION_CODE, om.ID AS OM_MAPPING_ID, " +
+                    "om.UPDATED_TIMESTAMP FROM (SELECT o.ID, TYPE, CREATED_TIMESTAMP, RECEIVED_TIMESTAMP, OPERATION_CODE " +
                     "FROM DM_OPERATION o WHERE o.TYPE = ?) o " +
                     "INNER JOIN (SELECT * FROM DM_ENROLMENT_OP_MAPPING dm " +
                     "WHERE dm.ENROLMENT_ID = ? AND dm.STATUS = ?) om ON o.ID = om.OPERATION_ID ORDER BY o.CREATED_TIMESTAMP ASC";
@@ -654,13 +811,19 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 operation.setId(rs.getInt("ID"));
                 operation.setType(Operation.Type.valueOf(rs.getString("TYPE")));
                 operation.setCreatedTimeStamp(rs.getTimestamp("CREATED_TIMESTAMP").toString());
-                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                if (rs.getTimestamp("RECEIVED_TIMESTAMP") == null) {
+//                    operation.setReceivedTimeStamp("");
+//                } else {
+//                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+//                }
+                if (rs.getLong("UPDATED_TIMESTAMP") == 0) {
                     operation.setReceivedTimeStamp("");
                 } else {
-                    operation.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                    operation.setReceivedTimeStamp(
+                            new java.sql.Timestamp((rs.getLong("UPDATED_TIMESTAMP")*1000)).toString());
                 }
                 operation.setCode(rs.getString("OPERATION_CODE"));
-                this.setActivityId(operation, rs.getInt("OM_MAPPING_ID"));
+                this.setActivityId(operation, rs.getInt("ID"));
                 operations.add(operation);
             }
         } catch (SQLException e) {

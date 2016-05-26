@@ -240,7 +240,7 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
     @Path("activity/{id}")
     public Response getActivity( @PathParam("id") String id)
             throws MDMAPIException {
-        org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation;
+        Activity operation;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();

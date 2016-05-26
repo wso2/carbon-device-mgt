@@ -4,6 +4,8 @@
   "apiContext" : "api",
   "httpsURL" : "https://localhost:8243",
   "httpURL" : "%http.ip%",
+  "wssURL" : "%https.ip%",
+  "wsURL" : "%http.ip%",
   "enrollmentDir": "/emm-web-agent/enrollment",
   "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
   "iOSAPIRoot" : "%https.ip%/ios/",

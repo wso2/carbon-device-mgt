@@ -33,6 +33,7 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
@@ -816,8 +817,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public int addOperation(String type, Operation operation,
-                            List<DeviceIdentifier> devices) throws OperationManagementException {
+    public Activity addOperation(String type, Operation operation,
+                                 List<DeviceIdentifier> devices) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().addOperation(operation, devices);
     }
 

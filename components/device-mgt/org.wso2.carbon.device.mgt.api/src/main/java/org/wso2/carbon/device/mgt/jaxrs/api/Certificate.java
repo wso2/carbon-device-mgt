@@ -52,7 +52,6 @@ public interface Certificate {
      * @return Status of the data persist operation.
      */
     @POST
-    @Path("saveCertificate")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,

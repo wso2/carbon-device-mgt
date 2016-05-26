@@ -280,4 +280,9 @@ public interface Policy {
             required = true) @PathParam("type") String type,
                                    @ApiParam(name = "id", value = "Define the device ID as the value for {id}.",
                                            required = true) @PathParam("id") String id);
+
+    //TODO: This API is still not in use, but will be needed when grouping is implemented.
+    @GET
+    @Path("/device-group/{user}")
+    public Response getDeviceGroupsRelatedToPolicies(@PathParam("user") String userName);
 }

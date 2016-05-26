@@ -180,14 +180,13 @@ public interface Operation {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
-            httpMethod = "POST",
+            httpMethod = "GET",
             value = "Retrieving the operation details.",
             notes = "This will return the operation details including the responses from the devices")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Activity details provided successfully.."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")})
     @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
-    Response getActivity(
-            @ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
+    Response getActivity(@ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
             required = true) @PathParam("id") String id)
             throws MDMAPIException;
 

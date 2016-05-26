@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.jaxrs.api.context.DeviceOperationContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
@@ -182,12 +183,33 @@ public interface Operation {
             produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
             httpMethod = "GET",
             value = "Retrieving the operation details.",
-            notes = "This will return the operation details including the responses from the devices")
+            notes = "This will return the operation details including the responses from the devices",
+            response = Activity.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Activity details provided successfully.."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")})
     @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
     Response getActivity(@ApiParam(name = "id", value = "Provide activity id {id} as ACTIVITY_(number)",
             required = true) @PathParam("id") String id)
+            throws MDMAPIException;
+
+
+    @GET
+    @Path("activity/after/{timestamp}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            httpMethod = "GET",
+            value = "Retrieving the operation details updated after given timestamp. Timestamp should be given as unix " +
+                    "value in seconds.",
+            notes = "This will return the operation details including the responses from the devices update after given" +
+                    "time.",
+            response = Activity.class,
+            responseContainer = "List")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Activity details provided successfully.."),
+            @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")})
+    @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
+    Response getActivityUpdatedAfter(@ApiParam(name = "timestamp", value = "Provide the timestamp as unix in seconds.",
+            required = true) @PathParam("timestamp") String timestamp)
             throws MDMAPIException;
 
 }

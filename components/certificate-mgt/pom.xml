@@ -37,6 +37,7 @@
     <modules>
         <module>org.wso2.carbon.certificate.mgt.core</module>
         <module>org.wso2.carbon.certificate.mgt.api</module>
+       <module>org.wso2.carbon.certificate.mgt.cert.adminapi</module>
     </modules>
 
     <build>

@@ -13,7 +13,7 @@ public interface CertificateMgtService {
      * @return X509Certificate type sign certificate.
      */
     @POST
-    @Path("csr-sign")
+    @Path("signcsr")
     @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN})
     @Consumes({MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN})
     Response getSignedCertFromCSR(String binarySecurityToken);

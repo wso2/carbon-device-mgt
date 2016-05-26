@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
+import java.util.List;
+
 public class Activity {
 
     public enum Type {
@@ -29,6 +31,7 @@ public class Activity {
     private String code;
     private Type type;
     private String createdTimeStamp;
+    private List<ActivityStatus> activityStatus;
 
     public String getActivityId() {
         return activityId;
@@ -60,6 +63,14 @@ public class Activity {
 
     public void setCreatedTimeStamp(String createdTimeStamp) {
         this.createdTimeStamp = createdTimeStamp;
+    }
+
+    public List<ActivityStatus> getActivityStatus() {
+        return activityStatus;
+    }
+
+    public void setActivityStatus(List<ActivityStatus> activityStatus) {
+        this.activityStatus = activityStatus;
     }
 }
 

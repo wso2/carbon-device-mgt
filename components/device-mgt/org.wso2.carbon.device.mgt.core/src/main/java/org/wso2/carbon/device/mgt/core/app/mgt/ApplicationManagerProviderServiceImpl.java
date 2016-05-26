@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
@@ -91,7 +92,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     }
 
     @Override
-    public void installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIds)
+    public Activity installApplicationForDevices(Operation operation, List<DeviceIdentifier> deviceIds)
             throws ApplicationManagementException {
         try {
             //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
@@ -99,10 +100,11 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (deviceIds.size() > 0) {
                 type = deviceIds.get(0).getType();
             }
-            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
-                    deviceIds);
+            Activity activity =  DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                   addOperation(type, operation, deviceIds);
             DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().notifyOperationToDevices
                     (operation, deviceIds);
+            return activity;
         } catch (OperationManagementException e) {
             throw new ApplicationManagementException("Error in add operation at app installation", e);
         } catch (DeviceManagementException e) {
@@ -111,7 +113,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     }
 
     @Override
-    public void installApplicationForUsers(Operation operation, List<String> userNameList)
+    public Activity installApplicationForUsers(Operation operation, List<String> userNameList)
             throws ApplicationManagementException {
 
         String userName = null;
@@ -138,9 +140,10 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (deviceIdentifierList.size() > 0) {
                 type = deviceIdentifierList.get(0).getType();
             }
-            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+            Activity activity = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                     .addOperation(type, operation, deviceIdentifierList);
 
+            return activity;
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user: " + userName +
                     " in app installation", e);
@@ -152,7 +155,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     }
 
     @Override
-    public void installApplicationForUserRoles(Operation operation, List<String> userRoleList)
+    public Activity installApplicationForUserRoles(Operation operation, List<String> userRoleList)
             throws ApplicationManagementException {
 
         String userRole = null;
@@ -178,9 +181,9 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (deviceIdentifierList.size() > 0) {
                 type = deviceIdentifierList.get(0).getType();
             }
-            DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
+            Activity activity = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
                     deviceIdentifierList);
-
+            return activity;
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user role " + userRole +
                     " in app installation", e);

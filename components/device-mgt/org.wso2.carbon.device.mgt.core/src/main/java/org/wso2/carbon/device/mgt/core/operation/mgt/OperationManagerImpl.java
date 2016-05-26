@@ -24,6 +24,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -47,6 +48,7 @@ import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,8 +85,8 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public int addOperation(Operation operation,
-                            List<DeviceIdentifier> deviceIds) throws OperationManagementException {
+    public Activity addOperation(Operation operation,
+                                 List<DeviceIdentifier> deviceIds) throws OperationManagementException {
         if (log.isDebugEnabled()) {
             log.debug("operation:[" + operation.toString() + "]");
             for (DeviceIdentifier deviceIdentifier : deviceIds) {
@@ -96,7 +98,7 @@ public class OperationManagerImpl implements OperationManager {
         List<DeviceIdentifier> authorizedDeviceList = this.getAuthorizedDevices(operation, deviceIds);
         if (authorizedDeviceList.size() <= 0) {
             log.info("User : " + getUser() + " is not authorized to perform operations on given device-list.");
-            return -1;
+            return null;
         }
 
         List<EnrolmentInfo> enrolments = this.getEnrollmentsByStatus(deviceIds);
@@ -128,7 +130,12 @@ public class OperationManagerImpl implements OperationManager {
                 }
             }
             OperationManagementDAOFactory.commitTransaction();
-            return operationId;
+            Activity activity = new Activity();
+            activity.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId);
+            activity.setCode(operationDto.getCode());
+            activity.setCreatedTimeStamp(new Date().toString());
+            activity.setType(Activity.Type.valueOf(operationDto.getType().toString()));
+            return activity;
         } catch (OperationManagementDAOException e) {
             OperationManagementDAOFactory.rollbackTransaction();
             throw new OperationManagementException("Error occurred while adding operation", e);

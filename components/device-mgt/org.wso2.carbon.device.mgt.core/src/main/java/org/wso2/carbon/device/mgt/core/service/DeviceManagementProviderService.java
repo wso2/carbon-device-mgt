@@ -243,6 +243,6 @@ public interface DeviceManagementProviderService {
 
     Operation getOperation(String type, int operationId) throws OperationManagementException;
 
-    Operation getOperationByActivityId(String activity) throws OperationManagementException;
+    Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
 }

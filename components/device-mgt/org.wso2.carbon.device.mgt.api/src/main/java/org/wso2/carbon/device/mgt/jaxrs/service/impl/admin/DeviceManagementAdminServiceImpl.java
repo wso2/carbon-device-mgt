@@ -25,10 +25,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -41,6 +38,7 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
     private static final Log log = LogFactory.getLog(DeviceManagementAdminServiceImpl.class);
 
     @Override
+    @GET
     public Response getDevicesByName(@QueryParam("name") String name, @QueryParam("tenant-domain") String tenantDomain) {
         List<Device> devices;
         try {

@@ -48,6 +48,9 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         List<String> filteredRoles;
         try {
             filteredRoles = getRolesFromUserStore();
+            if (filteredRoles == null || filteredRoles.size() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
+            }
         } catch (UserStoreException e) {
             String msg = "Error occurred while retrieving roles from the underlying user stores";
             log.error(msg, e);
@@ -82,6 +85,9 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 filteredRoles.add(role);
             }
         }
+        if (filteredRoles == null || filteredRoles.size() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
+        }
         return Response.status(Response.Status.OK).entity(filteredRoles).build();
     }
 
@@ -110,6 +116,9 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 filteredRoles.add(role);
             }
         }
+        if (filteredRoles == null || filteredRoles.size() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
+        }
         return Response.status(Response.Status.OK).entity(filteredRoles).build();
     }
 
@@ -126,6 +135,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
             rolePermissions = this.getUIPermissionNode(roleName, userRealmProxy);
+            if (rolePermissions == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No permissions found for the role '" +
+                        roleName + "'").build();
+            }
             return Response.status(Response.Status.OK).entity(rolePermissions).build();
         } catch (UserAdminException e) {
             String msg = "Error occurred while retrieving the permissions of role '" + roleName + "'";
@@ -187,6 +200,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 roleWrapper.setPermissionList(rolePermissions);
                 String[] permListAr = new String[permList.size()];
                 roleWrapper.setPermissions(permList.toArray(permListAr));
+            }
+            if (roleWrapper == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No roles found for the role name '"
+                        + roleName + ".").build();
             }
         } catch (UserStoreException | UserAdminException e) {
             String msg = "Error occurred while retrieving the user role '" + roleName + "'";

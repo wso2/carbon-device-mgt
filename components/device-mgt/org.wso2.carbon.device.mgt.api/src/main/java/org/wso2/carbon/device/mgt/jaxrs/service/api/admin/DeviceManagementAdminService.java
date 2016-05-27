@@ -18,18 +18,41 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.API;
+
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@API(name = "DeviceManagementAdmin", version = "1.0.0", context = "/devicemgt_admin/applications",
+        tags = {"devicemgt_admin"})
 @Path("/devices")
+@Api(value = "DeviceManagementAdmin", description = "Device management admin related operations are exposed through " +
+        "this API.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DeviceManagementAdminService {
 
-    Response getDevicesByName(@QueryParam("name") String name, @QueryParam("tenant-domain") String tenantDomain);
+    @GET
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get devices by the name.",
+            notes = "Get devices the name of device and tenant.",
+            response = org.wso2.carbon.device.mgt.common.Device.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully fetched device details.",
+                    response = org.wso2.carbon.device.mgt.common.Device.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "No matching device found in the provided tenant."),
+            @ApiResponse(code = 500, message = "Error while fetching device information.")
+    })
+    Response getDevicesByName(
+            @ApiParam(name = "name", value = "Name of the device.",required = true)
+            @QueryParam("name") String name,
+            @ApiParam(name = "tenant-domain", value = "Name of the tenant.",required = true)
+            @QueryParam("tenant-domain") String tenantDomain);
 
 }

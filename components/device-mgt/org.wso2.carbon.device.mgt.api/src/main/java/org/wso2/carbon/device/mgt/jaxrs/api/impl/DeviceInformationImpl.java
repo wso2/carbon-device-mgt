@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.api.impl;
 
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -95,6 +96,22 @@ public class DeviceInformationImpl implements DeviceInformation {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(deviceLocation).build();
+    }
+
+    @Override
+    public Response getDeviceLocations(@ApiParam(name = "deviceIdentifiers", value = "List of device identifiers",
+            required = true) List<DeviceIdentifier> deviceIdentifiers) {
+        DeviceInformationManager informationManager;
+        List<DeviceLocation> deviceLocations;
+        try {
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceLocations = informationManager.getDeviceLocations(deviceIdentifiers);
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device location.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceLocations).build();
     }
 }
 

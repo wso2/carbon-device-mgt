@@ -121,7 +121,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
                 }
             }
             DeviceManagementDAOFactory.openConnection();
-            for(Integer id : deviceIds) {
+            for (Integer id : deviceIds) {
                 DeviceInfo deviceInfo = deviceDetailsDAO.getDeviceInformation(id);
                 deviceInfo.setDeviceDetailsMap(deviceDetailsDAO.getDeviceProperties(id));
                 deviceInfos.add(deviceInfo);
@@ -180,6 +180,27 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device location.", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public List<DeviceLocation> getDeviceLocations(List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException {
+
+        try {
+            List<Device> devices = DeviceManagementDataHolder.getInstance().
+                    getDeviceManagementProvider().getAllDevices(deviceIdentifiers.get(0).getType());
+            List<DeviceLocation> deviceLocations = new ArrayList<>();
+            DeviceManagementDAOFactory.openConnection();
+            for (Device device : devices) {
+                deviceLocations.add(deviceDetailsDAO.getDeviceLocation(device.getId()));
+            }
+            return deviceLocations;
+        } catch (DeviceManagementException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving the devices.", e);
+        } catch (SQLException e) {
+            throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
+        } catch (DeviceDetailsMgtDAOException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving device locations.", e);
         }
     }
 

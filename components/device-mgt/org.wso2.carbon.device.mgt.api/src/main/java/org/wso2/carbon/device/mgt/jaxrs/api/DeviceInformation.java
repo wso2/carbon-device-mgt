@@ -105,4 +105,24 @@ public interface DeviceInformation {
                                @ApiParam(name = "id", value = "Provide the device identifier",
                                        required = true) @PathParam("id") String id);
 
+
+    @GET
+    @Path("location/list")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get the locations of devices",
+            notes = "This will return the locations of devices including latitude and longitude as well the "
+                    + "physical address for the supplied device identifiers",
+            response = DeviceLocation.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+    Response getDeviceLocations(@ApiParam(name = "deviceIdentifiers", value = "List of device identifiers",
+            required = true) List<DeviceIdentifier> deviceIdentifiers);
+
 }

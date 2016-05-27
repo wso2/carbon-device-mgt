@@ -16,7 +16,7 @@
 package org.wso2.carbon.device.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.*;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
@@ -34,12 +34,12 @@ public class TestDeviceManager implements DeviceManager {
     }
 
     @Override
-    public boolean saveConfiguration(TenantConfiguration configuration)
+    public boolean saveConfiguration(PlatformConfiguration configuration)
             throws DeviceManagementException {
         return false;
     }
 
-    @Override public TenantConfiguration getConfiguration() throws DeviceManagementException {
+    @Override public PlatformConfiguration getConfiguration() throws DeviceManagementException {
         return null;
     }
 

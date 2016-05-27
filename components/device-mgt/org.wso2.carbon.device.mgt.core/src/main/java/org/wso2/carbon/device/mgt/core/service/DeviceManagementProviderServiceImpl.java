@@ -30,7 +30,7 @@ import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -93,7 +93,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException {
+    public boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException {
         DeviceManager dms =
                 pluginRepository.getDeviceManagementService(configuration.getType(),
                         this.getTenantId()).getDeviceManager();
@@ -101,12 +101,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public TenantConfiguration getConfiguration() throws DeviceManagementException {
+    public PlatformConfiguration getConfiguration() throws DeviceManagementException {
         return null;
     }
 
     @Override
-    public TenantConfiguration getConfiguration(String deviceType) throws DeviceManagementException {
+    public PlatformConfiguration getConfiguration(String deviceType) throws DeviceManagementException {
         DeviceManager dms =
                 pluginRepository.getDeviceManagementService(deviceType, this.getTenantId()).getDeviceManager();
         if (dms == null) {
@@ -875,8 +875,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public Operation getOperationByActivityId(String activity) throws OperationManagementException {
+    public Activity getOperationByActivityId(String activity) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityId(activity);
+    }
+
+    @Override
+    public List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getActivitiesUpdatedAfter(timestamp);
     }
 
     @Override

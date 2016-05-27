@@ -68,9 +68,10 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 			conn = this.getConnection();
 			String sql =
 					"SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where PROVIDER_TENANT_ID =" +
-							"? OR SHARED_WITH_ALL_TENANTS = TRUE";
+							"? OR SHARED_WITH_ALL_TENANTS = ?";
 			stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, tenantId);
+			stmt.setBoolean(2, true);
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -125,8 +126,9 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 			conn = this.getConnection();
 			String sql =
 					"SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where  " +
-							"SHARED_WITH_ALL_TENANTS = TRUE";
+							"SHARED_WITH_ALL_TENANTS = ?";
 			stmt = conn.prepareStatement(sql);
+			stmt.setBoolean(1, true);
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -179,10 +181,11 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 		try {
 			conn = this.getConnection();
 			String sql = "SELECT ID AS DEVICE_TYPE_ID FROM DM_DEVICE_TYPE WHERE (PROVIDER_TENANT_ID =? OR " +
-							"SHARED_WITH_ALL_TENANTS = TRUE) AND NAME =?";
+							"SHARED_WITH_ALL_TENANTS = ?) AND NAME =?";
 			stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, tenantId);
-			stmt.setString(2, type);
+			stmt.setBoolean(2, true);
+			stmt.setString(3, type);
 			rs = stmt.executeQuery();
 			if (rs.next()) {
 				deviceType = new DeviceType();

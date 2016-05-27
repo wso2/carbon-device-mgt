@@ -34,12 +34,16 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
     public void addOperationMapping(int operationId, Integer deviceId) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
+            long time = System.currentTimeMillis()/1000;
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "INSERT INTO DM_ENROLMENT_OP_MAPPING(ENROLMENT_ID, OPERATION_ID, STATUS) VALUES (?, ?,?)";
+            String sql = "INSERT INTO DM_ENROLMENT_OP_MAPPING(ENROLMENT_ID, OPERATION_ID, STATUS, CREATED_TIMESTAMP, " +
+                    "UPDATED_TIMESTAMP) VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, operationId);
             stmt.setString(3, Operation.Status.PENDING.toString());
+            stmt.setLong(4, time);
+            stmt.setLong(5, time);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while persisting device operation mappings", e);

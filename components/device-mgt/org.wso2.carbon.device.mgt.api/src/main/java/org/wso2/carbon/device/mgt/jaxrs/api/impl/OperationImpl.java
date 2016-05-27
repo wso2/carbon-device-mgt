@@ -240,17 +240,36 @@ public class OperationImpl implements org.wso2.carbon.device.mgt.jaxrs.api.Opera
     @Path("activity/{id}")
     public Response getActivity( @PathParam("id") String id)
             throws MDMAPIException {
-        org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation;
+        Activity activity;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            operation = dmService.getOperationByActivityId(id);
+            activity = dmService.getOperationByActivityId(id);
         } catch (OperationManagementException e) {
             String msg = "Error occurred while fetching the activity for the supplied id.";
             log.error(msg, e);
             throw new MDMAPIException(msg, e);
         }
-         return Response.status(Response.Status.OK).entity(operation).build();
+         return Response.status(Response.Status.OK).entity(activity).build();
+    }
+
+
+    @Override
+    @GET
+    @Path("activity/after/{timestamp}")
+    public Response getActivityUpdatedAfter(@PathParam("timestamp") String timestamp)
+            throws MDMAPIException {
+        List<Activity> activities;
+        DeviceManagementProviderService dmService;
+        try {
+            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
+            activities = dmService.getActivitiesUpdatedAfter(Long.parseLong(timestamp));
+        } catch (OperationManagementException e) {
+            String msg = "Error occurred while fetching the activities updated after given time stamp.";
+            log.error(msg, e);
+            throw new MDMAPIException(msg, e);
+        }
+        return Response.status(Response.Status.OK).entity(activities).build();
     }
 
 }

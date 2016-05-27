@@ -24,12 +24,12 @@ import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
@@ -57,7 +57,7 @@ public class DeviceMgtAPIUtils {
     private static final String NOTIFIER_FREQUENCY = "notifierFrequency";
     private static Log log = LogFactory.getLog(DeviceMgtAPIUtils.class);
 
-    public static int getNotifierFrequency(TenantConfiguration tenantConfiguration) {
+    public static int getNotifierFrequency(PlatformConfiguration tenantConfiguration) {
         List<ConfigurationEntry> configEntryList = tenantConfiguration.getConfiguration();
         if (configEntryList != null && !configEntryList.isEmpty()) {
             for(ConfigurationEntry entry : configEntryList) {
@@ -234,10 +234,10 @@ public class DeviceMgtAPIUtils {
         return policyManagementService;
     }
 
-    public static TenantConfigurationManagementService getTenantConfigurationManagementService() {
+    public static PlatformConfigurationManagementService getTenantConfigurationManagementService() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        TenantConfigurationManagementService tenantConfigurationManagementService =
-                (TenantConfigurationManagementService) ctx.getOSGiService(TenantConfigurationManagementService.class, null);
+        PlatformConfigurationManagementService tenantConfigurationManagementService =
+                (PlatformConfigurationManagementService) ctx.getOSGiService(PlatformConfigurationManagementService.class, null);
         if (tenantConfigurationManagementService == null) {
             String msg = "Tenant configuration Management service not initialized.";
             log.error(msg);

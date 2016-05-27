@@ -25,13 +25,11 @@ import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
-import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
-import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
@@ -51,7 +49,6 @@ import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManageme
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
-import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationConfigRepository;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
@@ -221,9 +218,9 @@ public class DeviceManagementServiceComponent {
         bundleContext.registerService(GroupManagementProviderService.class.getName(), groupManagementProvider, null);
 
 	    /* Registering Tenant Configuration Management Service */
-        TenantConfigurationManagementService
+        PlatformConfigurationManagementService
                 tenantConfiguration = new TenantConfigurationManagementServiceImpl();
-        bundleContext.registerService(TenantConfigurationManagementService.class.getName(), tenantConfiguration, null);
+        bundleContext.registerService(PlatformConfigurationManagementService.class.getName(), tenantConfiguration, null);
 
         /* Registering Notification Service */
         NotificationManagementService notificationManagementService

@@ -23,6 +23,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+
+import java.util.List;
 
 @ApiModel(value = "DeviceWrapper", description = "This contains device details including, " +
         "location and device meta information.")
@@ -37,6 +40,8 @@ public class DeviceWrapper {
     private DeviceInfo deviceInfo;
     @ApiModelProperty(name = "deviceLocation", value = "Device's current location", required = true)
     private DeviceLocation deviceLocation;
+
+    private List<Application> applications;
 
     public Device getDevice() {
         return device;
@@ -68,6 +73,14 @@ public class DeviceWrapper {
 
     public void setDeviceLocation(DeviceLocation deviceLocation) {
         this.deviceLocation = deviceLocation;
+    }
+
+    public List<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
     }
 }
 

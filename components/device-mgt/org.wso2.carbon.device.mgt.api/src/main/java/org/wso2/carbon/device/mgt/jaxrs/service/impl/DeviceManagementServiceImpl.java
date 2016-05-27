@@ -44,12 +44,11 @@ import java.util.Date;
 import java.util.List;
 
 @Path("/devices")
-public class DeviceManagementServiceImpl implements DeviceManagementService {
+public class DeviceManagementServiceImpl implements DeviceManagementService{
 
     private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
 
     @GET
-    @Override
     public Response getDevices(@QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         try {
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();

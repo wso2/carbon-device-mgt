@@ -29,6 +29,7 @@ import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
+import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationProcessor;
 
@@ -48,7 +49,8 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
-        if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
+        if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType()) && WebappPublisherConfig.getInstance()
+                .isPublished()) {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
             ServletContext servletContext = context.getServletContext();
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);

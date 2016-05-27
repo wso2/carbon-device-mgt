@@ -21,6 +21,8 @@ package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
+import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.search.mgt.*;
 import org.wso2.carbon.device.mgt.core.search.mgt.dao.SearchDAO;
@@ -35,9 +37,11 @@ import java.util.Map;
 public class ProcessorImpl implements Processor {
 
     private SearchDAO searchDAO;
+    private ApplicationDAO applicationDAO;
 
     public ProcessorImpl() {
         searchDAO = DeviceManagementDAOFactory.getSearchDAO();
+        applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
     }
 
     @Override
@@ -91,7 +95,9 @@ public class ProcessorImpl implements Processor {
         deviceWrappers.put(Constants.PROP_OR, this.processORSearch(allORDevices));
         deviceWrappers.put(Constants.LOCATION, locationDevices);
 
-        return aggregator.aggregate(deviceWrappers);
+        List<DeviceWrapper> finalDeviceWrappers = aggregator.aggregate(deviceWrappers);
+        this.setApplicationListOfDevices(finalDeviceWrappers);
+        return finalDeviceWrappers;
     }
 
     @Override
@@ -184,6 +190,21 @@ public class ProcessorImpl implements Processor {
             maps.add(deviceWrapperMap);
         }
         return maps;
+    }
+
+    private void setApplicationListOfDevices(List<DeviceWrapper> deviceWrappers) throws SearchMgtException {
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            for (DeviceWrapper wrapper : deviceWrappers) {
+                wrapper.setApplications(applicationDAO.getInstalledApplications(wrapper.getDevice().getId()));
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new SearchMgtException("Error occurred while fetching the Application List of devices ", e);
+        } catch (SQLException e) {
+            throw new SearchMgtException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 
 }

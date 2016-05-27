@@ -18,6 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 
 import javax.ws.rs.*;
@@ -30,9 +34,29 @@ import javax.ws.rs.core.Response;
 public interface GroupManagementAdminService {
 
     @GET
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get groups by the name.",
+            notes = "Get devices the name of device and tenant.",
+            response = org.wso2.carbon.device.mgt.common.Device.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully fetched group details.",
+                    response = org.wso2.carbon.device.mgt.common.Device.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Device not found."),
+            @ApiResponse(code = 500, message = "Error while fetching group information.")
+    })
     @Permission(scope = "group-view", permissions = {"/permission/admin/device-mgt/user/groups/list"})
-    Response getGroupsOfUser(@QueryParam("username") String username, @QueryParam("offset") int offset,
-                             @QueryParam("limit") int limit);
+    Response getGroupsOfUser(
+            @ApiParam(name = "username", value = "Username of the user.",required = true)
+            @QueryParam("username") String username,
+            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
+            @QueryParam("offset") int offset,
+            @ApiParam(name = "limit", value = "How many policy details are required from the starting pagination " +
+                    "index.", required = true)
+            @QueryParam("limit") int limit);
 
 
 

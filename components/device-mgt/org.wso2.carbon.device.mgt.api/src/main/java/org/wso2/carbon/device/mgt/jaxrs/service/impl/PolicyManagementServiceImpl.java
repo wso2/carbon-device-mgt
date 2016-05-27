@@ -39,6 +39,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@Path("/policies")
 public class PolicyManagementServiceImpl implements PolicyManagementService {
 
     private static final Log log = LogFactory.getLog(PolicyManagementServiceImpl.class);
@@ -101,6 +102,9 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         try {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policies = policyAdministratorPoint.getPolicies();
+            if (policies == null || policies.size() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No policies found.").build();
+            }
         } catch (PolicyManagementException e) {
             String msg = "Error occurred while retrieving all available policies";
             log.error(msg, e);
@@ -118,6 +122,9 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         try {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policy = policyAdministratorPoint.getPolicy(id);
+            if (policy == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Policy not found.").build();
+            }
         } catch (PolicyManagementException e) {
             String msg = "Error occurred while retrieving policy corresponding to the id '" + id + "'";
             log.error(msg, e);
@@ -168,7 +175,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             return Response.status(Response.Status.OK).entity("Policies have been successfully deleted").build();
         } else {
             //TODO:Check of this logic is correct
-            return Response.status(Response.Status.BAD_REQUEST).entity("Policy doesn't exist").build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Policy doesn't exist").build();
         }
     }
 

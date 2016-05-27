@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
@@ -29,6 +30,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * Policy related REST-API. This can be used to manipulated policies and associate them with devices, users, roles,
+ * groups.
+ */
 @Path("/policies")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -39,44 +44,59 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Adding a Policy.",
-            notes = "Add a policy using this REST API command. When adding a policy you will have the option of " +
-                    "saving the policy or saving and publishing the policy. Using the REST API command given below " +
-                    "you are able to save a created Policy and this policy will be in the inactive state")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created the policy."),
-            @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
-                    "adding the policy")})
+            value = "Adding a policy.",
+            notes = "Add a policy using this REST API command. Using the REST API command given below " +
+                    "you are able to save a created Policy and this policy will be in the inactive state.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Created the policy."),
+            @ApiResponse(code = 401, message = "Current user is not authorized to add policies."),
+            @ApiResponse(code = 500, message = "Policy Management related error occurred when adding the policy.")})
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
-    Response addPolicy(PolicyWrapper policy);
+    Response addPolicy(@ApiParam(name = "policy", value = "Policy details related to the operation.",
+            required = true) PolicyWrapper policy);
 
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Details of Policies.",
+            value = "Getting details of policies.",
             responseContainer = "List",
-            notes = "Retrieve the details of all the policies that you have created in WSO2 EMM.",
+            notes = "Retrieve the details of all the policies that you have created in EMM.",
             response = org.wso2.carbon.policy.mgt.common.Policy.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched all policies.",
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Fetched all policies.",
             response = org.wso2.carbon.policy.mgt.common.Policy.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "No policies found."),
             @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
-                    "fetching the policies.")})
+                    "fetching the policies.")
+    })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
-    Response getPolicies(@QueryParam("offset") int offset, @QueryParam("limit") int limit);
+    Response getPolicies(
+            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
+            @QueryParam("offset") int offset,
+            @ApiParam(name = "limit", value = "How many policy details are required from the starting pagination " +
+                    "index.", required = true)
+            @QueryParam("limit") int limit);
 
     @GET
     @Path("/{id}")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Details of a Policy.",
-            notes = "Retrieve the details of a selected policy in WSO2 EMM.",
+            value = "Getting details of a policy.",
+            notes = "Retrieve the details of a given policy in EMM.",
             response = org.wso2.carbon.policy.mgt.common.Policy.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched policy details."),
-            @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
-                    "fetching the policies.")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Fetched policy details.",
+                    response = org.wso2.carbon.policy.mgt.common.Policy.class),
+            @ApiResponse(code = 404, message = "Policy not found."),
+            @ApiResponse(code = 500, message = "Policy management related error occurred when " +
+                    "fetching the policy.")
+    })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
-    Response getPolicy(@PathParam("id") int id);
+    Response getPolicy(
+            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
+            @PathParam("id") int id);
 
     @PUT
     @Path("/{id}")
@@ -84,27 +104,35 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Updating a Policy.",
+            value = "Updating a policy.",
             notes = "If you wish to make changes to an existing policy, you can do so by updating the policy using " +
-                    "this API")
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Policy has been updated successfully."),
-            @ApiResponse(code = 500, message = "Policy Management related exception in policy " +
-                    "update")})
+                    "this API.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Policy has been updated successfully."),
+            @ApiResponse(code = 500, message = "Policy management related exception in policy update.")
+    })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
-    Response updatePolicy(@PathParam("id") int id, PolicyWrapper policyWrapper);
+    Response updatePolicy(
+            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
+            @PathParam("id") int id,
+            @ApiParam(name = "policy", value = "Policy details related to the operation.",
+            required = true) PolicyWrapper policy);
 
     @POST
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Removing Multiple Policies.",
+            value = "Removing multiple policies.",
             notes = "In situations where you need to delete more than one policy you can do so using this API.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully deleted."),
-            @ApiResponse(code = 400, message = "Policy does not exist."),
-            @ApiResponse(code = 500, message = "Error in deleting policies.")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Policies have been successfully deleted."),
+            @ApiResponse(code = 404, message = "Policy does not exist."),
+            @ApiResponse(code = 500, message = "Error in deleting policies.")
+    })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
-    Response removePolicies(List<Integer> policyIds);
+    Response removePolicies(@ApiParam(name = "policyIds", value = "Policy ID list to be deleted.",
+            required = true) List<Integer> policyIds);
 
     @POST
     @Path("/activate-policy")
@@ -112,15 +140,19 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Activating Policies.",
+            value = "Activating policies.",
             notes = "Using the REST API command you are able to publish a policy in order to bring a policy that is " +
                     "in the inactive state to the active state.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully activated."),
-            @ApiResponse(code = 500, message = "Error in activating policies.")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Policies have been successfully activated."),
+            @ApiResponse(code = 500, message = "Error in activating policies.")
+    })
     @Permission(scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
             "/permission/admin/device-mgt/admin/policies/add"})
-    Response activatePolicies(List<Integer> policyIds);
+    Response activatePolicies(
+            @ApiParam(name = "policyIds", value = "Policy ID list to be activated.",
+            required = true) List<Integer> policyIds);
 
     @POST
     @Path("/deactivate-policy")
@@ -128,15 +160,19 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Deactivating Policies.",
+            value = "Deactivating policies.",
             notes = "Using the REST API command you are able to unpublish a policy in order to bring a policy that " +
                     "is in the active state to the inactive state.")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Policies have been successfully deactivated."),
-            @ApiResponse(code = 500, message = "Error in deactivating policies.")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Policies have been successfully deactivated."),
+            @ApiResponse(code = 500, message = "Error in deactivating policies.")
+    })
     @Permission(scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
             "/permission/admin/device-mgt/admin/policies/add"})
-    Response deactivatePolicies(List<Integer> policyIds);
+    Response deactivatePolicies(
+            @ApiParam(name = "policyIds", value = "Policy ID list to be deactivated.",
+            required = true) List<Integer> policyIds);
 
     @GET
     @ApiOperation(
@@ -147,9 +183,15 @@ public interface PolicyManagementService {
                     "filters the policies based on the Platform (device type), filters based on the device ownership" +
                     " type , filters based on the user role or name and finally the policy is enforced on the device.",
             response = org.wso2.carbon.policy.mgt.common.Policy.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Fetched current policy."),
-            @ApiResponse(code = 500, message = "Error occurred while getting the current policy.")})
-    Response getEffectivePolicyOfDevice(@QueryParam("device-type") String type,
-                                        @QueryParam("device-id") String deviceId);
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Fetched current policy."),
+            @ApiResponse(code = 404, message = "No policy found."),
+            @ApiResponse(code = 500, message = "Error occurred while getting the current policy.")
+    })
+    Response getEffectivePolicyOfDevice(
+            @ApiParam(name = "device-type", value = "The device type, such as ios, android or windows.", required = true)
+            @QueryParam("device-type") String type,
+            @ApiParam(name = "device-id", value = "The device identifier of the device.", required = true)
+            @QueryParam("device-id") String deviceId);
 
 }

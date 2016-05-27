@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
+import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 
 import javax.ws.rs.Consumes;
@@ -27,17 +29,44 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@API(name = "Application", version = "1.0.0", context = "/devicemgt_admin/applications", tags = {"devicemgt_admin"})
+
 @Path("/applications")
+@Api(value = "Application", description = "Application related operations are exposed through this API.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ApplicationManagementAdminService {
 
     @POST
     @Path("/install-application")
-    Response installApplication(ApplicationWrapper applicationWrapper);
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Application installation API.(Internal API)",
+            notes = "This is an internal API used for application installation on a device.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Application wil be installed on the device."),
+            @ApiResponse(code = 500, message = "Error while adding the application install operation.")
+    })
+    Response installApplication(
+            @ApiParam(name = "applicationWrapper", value = "Application details of the application to be installed.",
+                    required = true) ApplicationWrapper applicationWrapper);
 
     @POST
     @Path("/uninstall-application")
-    Response uninstallApplication(ApplicationWrapper applicationWrapper);
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Application uninstallation API.(Internal API)",
+            notes = "This is an internal API used for application uninstallation on a device.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Application wil be uninstalled on the device."),
+            @ApiResponse(code = 500, message = "Error while adding the application uninstall operation.")
+    })
+    Response uninstallApplication(
+            @ApiParam(name = "applicationWrapper", value = "Application details of the application to be uninstalled.",
+                    required = true) ApplicationWrapper applicationWrapper);
 
 }

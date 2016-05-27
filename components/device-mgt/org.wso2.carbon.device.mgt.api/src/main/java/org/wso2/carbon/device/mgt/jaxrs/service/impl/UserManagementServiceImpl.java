@@ -175,6 +175,10 @@ public class UserManagementServiceImpl implements UserManagementService {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " was found.");
                 }
+                if (user == null) {
+                    return Response.status(Response.Status.NOT_FOUND).entity("User by username '" + username + "' " +
+                            "doesn't exist").build();
+                }
                 return Response.status(Response.Status.OK).entity(user).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
@@ -182,7 +186,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + username + " does not exist.");
                 }
                 // returning response with bad request state
-                return Response.status(Response.Status.BAD_REQUEST).entity(
+                return Response.status(Response.Status.NOT_FOUND).entity(
                         "User by username: " + username + " does not exist").build();
             }
         } catch (UserStoreException e) {
@@ -196,7 +200,6 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Path("/{username}")
     @Override
     public Response updateUser(@PathParam("username") String username, UserWrapper userWrapper) {
-        ResponsePayload responsePayload = new ResponsePayload();
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
@@ -233,21 +236,16 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + userWrapper.getUsername() + " was successfully updated.");
                 }
                 // returning response with success state
-                responsePayload.setStatusCode(HttpStatus.SC_CREATED);
-                responsePayload.setMessageFromServer("User by username: " + userWrapper.getUsername() +
-                        " was successfully updated.");
-                return Response.status(Response.Status.CREATED).entity(responsePayload).build();
+                return Response.status(Response.Status.CREATED).entity("User by username '" + userWrapper.getUsername() +
+                        "' was successfully updated.").build();
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + userWrapper.getUsername() +
                             " doesn't exists. Therefore, request made to update user was refused.");
                 }
-                // returning response with bad request state
-                responsePayload.setStatusCode(HttpStatus.SC_CONFLICT);
-                responsePayload.
-                        setMessageFromServer("User by username: " + userWrapper.getUsername() +
-                                " doesn't  exists. Therefore, request made to update user was refused.");
-                return Response.status(Response.Status.CONFLICT).entity(responsePayload).build();
+                return Response.status(Response.Status.CONFLICT).entity("User by username: " +
+                        userWrapper.getUsername() + " doesn't  exists. Therefore, request made to update user was " +
+                        "refused.").build();
             }
         } catch (UserStoreException | UnsupportedEncodingException e) {
             String msg = "Exception in trying to update user by username: " + userWrapper.getUsername();
@@ -294,7 +292,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + username + " does not exist for removal.");
                 }
                 // returning response with bad request state
-                return Response.status(Response.Status.BAD_REQUEST).entity("User by username: " + username +
+                return Response.status(Response.Status.NOT_FOUND).entity("User by username: " + username +
                         " does not exist for removal.").build();
             }
         } catch (UserStoreException e) {
@@ -318,7 +316,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist for role retrieval.");
                 }
-                return Response.status(Response.Status.BAD_REQUEST).entity("User by username: " + username +
+                return Response.status(Response.Status.NOT_FOUND).entity("User by username: " + username +
                         " does not exist for role retrieval.").build();
             }
         } catch (UserStoreException e) {

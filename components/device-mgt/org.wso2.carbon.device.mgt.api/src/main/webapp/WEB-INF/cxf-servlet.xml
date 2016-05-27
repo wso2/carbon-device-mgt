@@ -64,7 +64,7 @@
     </bean>
 
     <bean id="deviceManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceManagementServiceImpl"/>
-    <bean id="deviceTypeManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceImpl"/>
+    <bean id="deviceTypeManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.ConfigurationServiceImpl"/>
     <bean id="activityProviderService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.ActivityProviderServiceImpl"/>
     <bean id="notificationManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.NotificationManagementServiceImpl"/>
     <bean id="policyManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.PolicyManagementServiceImpl"/>

@@ -18,10 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
@@ -38,15 +36,18 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Device related REST-API implementation. This can be used to manipulated device related details.
+ * Device related REST-API. This can be used to manipulated device related details.
  */
+@API(name = "Device", version = "1.0.0", context = "/devicemgt_admin/devices", tags = {"devicemgt_admin"})
 @Path("/devices")
+@Api(value = "Device", description = "Device related operations such as get all the available devices, etc.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DeviceManagementService {
 
     @GET
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the device list.",
@@ -72,6 +73,7 @@ public interface DeviceManagementService {
 
     @GET
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the device list corresponding to a device type.",
@@ -117,6 +119,7 @@ public interface DeviceManagementService {
 
     @GET
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the device list of a user.",
@@ -141,6 +144,7 @@ public interface DeviceManagementService {
 
     @GET
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Returns device list in a role.",
@@ -165,6 +169,7 @@ public interface DeviceManagementService {
 
     @GET
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Returns device list of an ownership scheme.",
@@ -181,8 +186,7 @@ public interface DeviceManagementService {
     @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDevicesByOwnership(
             @ApiParam(name = "ownership", value = "Ownership of the devices to be fetched registered under.",
-                    required = true)
-            @QueryParam("ownership") EnrolmentInfo.OwnerShip ownership,
+                    required = true) EnrolmentInfo.OwnerShip ownership,
             @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
             @QueryParam("offset") int offset,
             @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
@@ -191,6 +195,7 @@ public interface DeviceManagementService {
 
     @GET
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Returns device list",
@@ -206,7 +211,7 @@ public interface DeviceManagementService {
     @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDevicesByEnrollmentStatus(
             @ApiParam(name = "status", value = "Enrollment status of devices to be fetched.", required = true)
-            @QueryParam("status") EnrolmentInfo.Status status,
+                    EnrolmentInfo.Status status,
             @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
             @QueryParam("offset") int offset,
             @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
@@ -222,6 +227,7 @@ public interface DeviceManagementService {
     @GET
     @Path("/{type}/{id}/location")
     @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the device location of a given device and a device type.",
@@ -238,14 +244,14 @@ public interface DeviceManagementService {
     Response getDeviceLocation(
             @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "type", value = "The device identifier of the device.", required = true)
+            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
             @PathParam("id") String id);
 
     @GET
     @Path("/{type}/{id}/features")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
-            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get Feature Details of a Device",
             notes = "WSO2 EMM features enable you to carry out many operations on a given device platform. " +
@@ -256,13 +262,14 @@ public interface DeviceManagementService {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully fetched the features.",
                     response = org.wso2.carbon.device.mgt.common.Feature.class, responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Error occurred while retrieving the list of features.") })
+            @ApiResponse(code = 500, message = "Error occurred while retrieving the list of features.")
+    })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"})
     Response getFeaturesOfDevice(
             @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "type", value = "The device identifier of the device.", required = true)
+            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
             @PathParam("id") String id);
 
     @POST
@@ -288,8 +295,8 @@ public interface DeviceManagementService {
     @GET
     @Path("/{type}/{id}/applications")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
-            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting installed application details of a device.",
             responseContainer = "List",
@@ -299,22 +306,24 @@ public interface DeviceManagementService {
             @ApiResponse(code = 200, message = "List of installed application details of a device.",
             response = Application.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "No installed applications found on the device searched."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the apps of the device.")})
+            @ApiResponse(code = 500, message = "Error occurred while fetching the apps of the device.")
+    })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"})
+            "/permission/admin/device-mgt/user/devices/view"
+    })
     Response getInstalledApplications(
             @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "type", value = "The device identifier of the device.", required = true)
+            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
             @PathParam("id") String id);
 
 
     @GET
     @Path("/{type}/{id}/operations")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
-            produces = MediaType.APPLICATION_JSON + ", " + MediaType.APPLICATION_XML,
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting paginated details for operations on a device.",
             notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
@@ -326,10 +335,12 @@ public interface DeviceManagementService {
                     response = org.wso2.carbon.device.mgt.common.operation.mgt.Operation.class,
                     responseContainer = "List"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
-                    "device.")})
+                    "device.")
+    })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"})
+            "/permission/admin/device-mgt/user/devices/view"
+    })
     Response getDeviceOperations(
             @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
             @QueryParam("offset") int offset,
@@ -338,7 +349,7 @@ public interface DeviceManagementService {
             @QueryParam("limit") int limit,
             @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "type", value = "The device identifier of the device.", required = true)
+            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
             @PathParam("id") String id);
 
 }

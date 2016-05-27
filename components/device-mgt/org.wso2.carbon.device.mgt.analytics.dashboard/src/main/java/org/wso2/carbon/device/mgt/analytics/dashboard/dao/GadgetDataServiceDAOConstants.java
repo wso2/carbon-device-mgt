@@ -22,8 +22,8 @@ public final class GadgetDataServiceDAOConstants {
 
     public static class DatabaseView {
 
-        public static final String DEVICES_VIEW_1 = "DEVICES_WITH_POLICY_COMPLIANCE_STATUS";
-        public static final String DEVICES_VIEW_2 = "DEVICES_WITH_NON_COMPLIANT_FEATURES";
+        public static final String DEVICES_VIEW_1 = "POLICY_COMPLIANCE_INFO";
+        public static final String DEVICES_VIEW_2 = "FEATURE_NON_COMPLIANCE_INFO";
 
         private DatabaseView() {
             throw new AssertionError();

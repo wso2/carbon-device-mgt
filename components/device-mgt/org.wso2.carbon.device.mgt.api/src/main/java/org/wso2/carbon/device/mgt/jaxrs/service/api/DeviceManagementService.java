@@ -43,7 +43,7 @@ import java.util.List;
  */
 @API(name = "Device", version = "1.0.0", context = "/api/device-mgt/admin/devices", tags = {"devicemgt_admin"})
 @Path("/devices")
-@Api(value = "Device Management API", description = "This API carries all device management related operations " +
+@Api(value = "Device Management", description = "This API carries all device management related operations " +
         "such as get all the available devices, etc.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

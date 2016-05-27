@@ -29,8 +29,9 @@ import javax.ws.rs.core.Response;
 @API(name = "DeviceManagementAdmin", version = "1.0.0", context = "/devicemgt_admin/applications",
         tags = {"devicemgt_admin"})
 @Path("/devices")
-@Api(value = "DeviceManagementAdmin", description = "Device management admin related operations are exposed through " +
-        "this API.")
+@Api(value = "Device Management Administrative Service", description = "This an  API intended to be used by " +
+        "'internal' components to log in as an admin user and do a selected number of operations. " +
+        "Further, this is strictly restricted to admin users only ")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DeviceManagementAdminService {

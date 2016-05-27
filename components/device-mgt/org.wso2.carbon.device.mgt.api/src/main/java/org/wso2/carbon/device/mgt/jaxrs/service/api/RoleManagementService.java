@@ -32,7 +32,7 @@ import java.util.List;
 
 @API(name = "Role", version = "1.0.0", context = "/devicemgt_admin/roles", tags = {"devicemgt_admin"})
 @Path("/roles")
-@Api(value = "Role", description = "Role management related operations can be found here.")
+@Api(value = "Role Management", description = "Role management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface RoleManagementService {

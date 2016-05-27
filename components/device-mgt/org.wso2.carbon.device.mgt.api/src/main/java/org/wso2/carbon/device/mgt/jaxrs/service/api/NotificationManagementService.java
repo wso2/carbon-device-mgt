@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
  */
 @API(name = "Device Notification Management API", version = "1.0.0", context = "/devicemgt_admin/notifications",
         tags = {"devicemgt_admin"})
-@Api(value = "Device Notification Management API", description = "Device notification related operations can be found here.")
+@Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

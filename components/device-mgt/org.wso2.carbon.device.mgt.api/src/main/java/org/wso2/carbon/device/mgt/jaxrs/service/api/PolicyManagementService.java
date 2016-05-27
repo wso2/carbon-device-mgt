@@ -32,6 +32,8 @@ import java.util.List;
  * Policy related REST-API. This can be used to manipulated policies and associate them with devices, users, roles,
  * groups.
  */
+@Api(value = "Device Policy Management", description = "This API carries all the necessary functionalities " +
+        "around device policy management")
 @Path("/policies")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

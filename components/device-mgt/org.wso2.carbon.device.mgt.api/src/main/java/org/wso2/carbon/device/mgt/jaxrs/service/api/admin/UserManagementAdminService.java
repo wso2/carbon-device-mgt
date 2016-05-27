@@ -18,10 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 
@@ -32,6 +29,9 @@ import javax.ws.rs.core.Response;
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "User Management Administrative Service", description = "This an  API intended to be used by " +
+        "'internal' components to log in as an admin user and do a selected number of operations. " +
+        "Further, this is strictly restricted to admin users only ")
 public interface UserManagementAdminService {
 
     @PUT

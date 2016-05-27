@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response;
 @API(name = "Configuration", version = "1.0.0", context = "/devicemgt_admin/configuration", tags = {"devicemgt_admin"})
 
 @Path("/configuration")
-@Api(value = "Configuration", description = "General Tenant Configuration management capabilities are exposed " +
+@Api(value = "Configuration Management", description = "General Tenant Configuration management capabilities are exposed " +
         "through this API")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

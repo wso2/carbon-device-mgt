@@ -30,6 +30,9 @@ import java.util.Date;
 @Path("/groups")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "Group Management Administrative Service", description = "This an  API intended to be used by " +
+        "'internal' components to log in as an admin user and do a selected number of operations. " +
+        "Further, this is strictly restricted to admin users only ")
 public interface GroupManagementAdminService {
 
     @GET

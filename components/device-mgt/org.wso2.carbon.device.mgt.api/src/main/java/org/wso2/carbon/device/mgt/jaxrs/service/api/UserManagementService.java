@@ -32,7 +32,7 @@ import java.util.Date;
 
 @API(name = "User Management API", version = "1.0.0", context = "/devicemgt_admin/users", tags = {"devicemgt_admin"})
 @Path("/users")
-@Api(value = "User Management API", description = "User management related operations can be found here.")
+@Api(value = "User Management", description = "User management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface UserManagementService {

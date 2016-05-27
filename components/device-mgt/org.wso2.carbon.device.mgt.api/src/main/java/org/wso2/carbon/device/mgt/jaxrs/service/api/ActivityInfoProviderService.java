@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response;
  */
 @API(name = "Activities", version = "1.0.0", context = "/devicemgt_admin/activities", tags = {"devicemgt_admin"})
 @Path("/activities")
-@Api(value = "ActivityInfo", description = "Activity related information manipulation. For example operation details " +
+@Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example operation details " +
         "and responses from devices.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

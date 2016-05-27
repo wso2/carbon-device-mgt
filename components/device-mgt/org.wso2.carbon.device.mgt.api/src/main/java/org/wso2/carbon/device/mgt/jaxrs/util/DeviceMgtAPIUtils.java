@@ -82,7 +82,7 @@ public class DeviceMgtAPIUtils {
     }
 
     public static DeviceManagementProviderService getDeviceManagementService() {
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         DeviceManagementProviderService deviceManagementProviderService =
                 (DeviceManagementProviderService) ctx.getOSGiService(DeviceManagementProviderService.class, null);
         if (deviceManagementProviderService == null) {
@@ -94,7 +94,7 @@ public class DeviceMgtAPIUtils {
     }
 
     public static GroupManagementProviderService getGroupManagementProviderService() {
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         GroupManagementProviderService groupManagementProviderService =
                 (GroupManagementProviderService) ctx.getOSGiService(GroupManagementProviderService.class, null);
         if (groupManagementProviderService == null) {
@@ -108,7 +108,7 @@ public class DeviceMgtAPIUtils {
     public static UserStoreManager getUserStoreManager() throws UserStoreException {
         RealmService realmService;
         UserStoreManager userStoreManager;
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
         if (realmService == null) {
             String msg = "Realm service has not initialized.";
@@ -126,7 +126,7 @@ public class DeviceMgtAPIUtils {
     public static UserRealm getUserRealm() throws UserStoreException {
         RealmService realmService;
         UserRealm realm;
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
 
         if (realmService == null) {
@@ -140,7 +140,7 @@ public class DeviceMgtAPIUtils {
     public static AuthorizationManager getAuthorizationManager() throws UserStoreException {
         RealmService realmService;
         AuthorizationManager authorizationManager;
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
         if (realmService == null) {
             throw new IllegalStateException("Realm service is not initialized.");
@@ -159,7 +159,7 @@ public class DeviceMgtAPIUtils {
     }
 
     public static ApplicationManagementProviderService getAppManagementService() {
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         ApplicationManagementProviderService applicationManagementProviderService =
                 (ApplicationManagementProviderService) ctx.getOSGiService(ApplicationManagementProviderService.class, null);
         if (applicationManagementProviderService == null) {
@@ -170,7 +170,7 @@ public class DeviceMgtAPIUtils {
 
     public static PolicyManagerService getPolicyManagementService() {
         PolicyManagerService policyManagementService;
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         policyManagementService =
                 (PolicyManagerService) ctx.getOSGiService(PolicyManagerService.class, null);
         if (policyManagementService == null) {
@@ -194,7 +194,7 @@ public class DeviceMgtAPIUtils {
 
     public static NotificationManagementService getNotificationManagementService() {
         NotificationManagementService notificationManagementService;
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         notificationManagementService = (NotificationManagementService) ctx.getOSGiService(
                 NotificationManagementService.class, null);
         if (notificationManagementService == null) {
@@ -204,7 +204,7 @@ public class DeviceMgtAPIUtils {
     }
     
     public static CertificateManagementService getCertificateManagementService() {
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         CertificateManagementService certificateManagementService = (CertificateManagementService)
                 ctx.getOSGiService(CertificateManagementService.class, null);
 
@@ -227,7 +227,7 @@ public class DeviceMgtAPIUtils {
     }
 
     public static DeviceInformationManager getDeviceInformationManagerService() {
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         DeviceInformationManager deviceInformationManager =
                 (DeviceInformationManager) ctx.getOSGiService(DeviceInformationManager.class, null);
         if (deviceInformationManager == null) {
@@ -238,7 +238,7 @@ public class DeviceMgtAPIUtils {
 
 
     public static SearchManagerService getSearchManagerService() {
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         SearchManagerService searchManagerService =
                 (SearchManagerService) ctx.getOSGiService(SearchManagerService.class, null);
         if (searchManagerService == null) {

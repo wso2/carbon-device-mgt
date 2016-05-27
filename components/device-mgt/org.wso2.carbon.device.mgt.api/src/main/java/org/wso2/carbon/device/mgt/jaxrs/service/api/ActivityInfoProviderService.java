@@ -44,7 +44,7 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
+            httpMethod = "GET",
             response = Activity.class,
             value = "Retrieve details of a particular activity.",
             notes = "This will return information of a particular activity i.e. meta information of an operation, " +
@@ -78,7 +78,7 @@ public interface ActivityInfoProviderService {
                     code = 500,
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.")
     })
-    @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
+    @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
     Response getActivity(
             @ApiParam(
                     name = "id",

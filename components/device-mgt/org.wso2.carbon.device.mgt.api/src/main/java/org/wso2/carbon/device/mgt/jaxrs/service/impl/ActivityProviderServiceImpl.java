@@ -21,12 +21,12 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -37,7 +37,9 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
 
     @Override
     @Path("/{id}")
-    public Response getActivity(@PathParam("id") String id) {
+    public Response getActivity(
+            @PathParam("id") String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         Activity operation = null;
         DeviceManagementProviderService dmService;
         try {

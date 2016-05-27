@@ -28,7 +28,10 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.MDMAppConstants;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,25 +41,9 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
 
     private static final Log log = LogFactory.getLog(ConfigurationServiceImpl.class);
 
-    @POST
-    @Override
-    public Response saveConfiguration(PlatformConfiguration config) {
-        try {
-            DeviceMgtAPIUtils.getPlatformConfigurationManagementService().saveConfiguration(config,
-                    MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
-            //Schedule the task service
-            DeviceMgtAPIUtils.scheduleTaskService(DeviceMgtAPIUtils.getNotifierFrequency(config));
-            return Response.status(Response.Status.OK).entity("Platform configuration successfully saved.").build();
-        } catch (ConfigurationManagementException e) {
-            String msg = "Error occurred while saving the platform configuration.";
-            log.error(msg, e);
-            return javax.ws.rs.core.Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
     @GET
     @Override
-    public Response getConfiguration() {
+    public Response getConfiguration(@HeaderParam("If-Modified-Since") String ifModifiedSince) {
         String msg;
         try {
             PlatformConfiguration config = DeviceMgtAPIUtils.getPlatformConfigurationManagementService().

@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
@@ -25,12 +26,10 @@ import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.GroupManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 
 @Path("/groups")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,8 +39,11 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
     private static final Log log = LogFactory.getLog(GroupManagementAdminServiceImpl.class);
 
     @Override
-    public Response getGroupsOfUser(@QueryParam("username") String username, @QueryParam("offset") int offset,
-                                    @QueryParam("limit") int limit) {
+    public Response getGroupsOfUser(
+            @QueryParam("username") String username,
+            @HeaderParam("If-Modified-Since") Date timestamp,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
         try {
             PaginationResult result =
                     DeviceMgtAPIUtils.getGroupManagementProviderService().getGroups(username, offset, limit);

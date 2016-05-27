@@ -44,7 +44,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
     @GET
     @Override
-    public Response getRoles(@QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+    public Response getRoles(
+            @QueryParam("filter") String filter,
+            @QueryParam("user-store") String userStoreName,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         List<String> filteredRoles;
         try {
             filteredRoles = getRolesFromUserStore();
@@ -60,72 +64,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     }
 
     @GET
-    @Override
-    public Response getRoles(@QueryParam("user-store") String userStoreName, @QueryParam("offset") int offset,
-                             @QueryParam("limit") int limit) {
-        String[] roles;
-        try {
-            AbstractUserStoreManager abstractUserStoreManager =
-                    (AbstractUserStoreManager) DeviceMgtAPIUtils.getUserStoreManager();
-            if (log.isDebugEnabled()) {
-                log.debug("Getting the list of user roles");
-            }
-            roles = abstractUserStoreManager.getRoleNames(userStoreName + "/*", -1, false, true, true);
-
-        } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving the list of user roles from the underlying user-store '" +
-                    userStoreName + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        // removing all internal roles and roles created for Service-providers
-        List<String> filteredRoles = new ArrayList<>();
-        for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
-                filteredRoles.add(role);
-            }
-        }
-        if (filteredRoles == null || filteredRoles.size() == 0) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
-        }
-        return Response.status(Response.Status.OK).entity(filteredRoles).build();
-    }
-
-    @GET
-    @Override
-    public Response searchRoles(@QueryParam("filter") String filter, @QueryParam("offset") int offset,
-                                @QueryParam("limit") int limit) {
-        String[] roles;
-        try {
-            AbstractUserStoreManager abstractUserStoreManager =
-                    (AbstractUserStoreManager) DeviceMgtAPIUtils.getUserStoreManager();
-            if (log.isDebugEnabled()) {
-                log.debug("Getting the list of user roles using filter : " + filter);
-            }
-            roles = abstractUserStoreManager.getRoleNames("*" + filter + "*", -1, true, true, true);
-
-        } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving the list of user roles using the filter '" + filter + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        // removing all internal roles and roles created for Service-providers
-        List<String> filteredRoles = new ArrayList<>();
-        for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
-                filteredRoles.add(role);
-            }
-        }
-        if (filteredRoles == null || filteredRoles.size() == 0) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
-        }
-        return Response.status(Response.Status.OK).entity(filteredRoles).build();
-    }
-
-    @GET
     @Path("/{roleName}/permissions")
     @Override
-    public Response getPermissionsOfRole(@PathParam("roleName") String roleName) {
+    public Response getPermissionsOfRole(
+            @PathParam("roleName") String roleName,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         try {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             org.wso2.carbon.user.core.UserRealm userRealmCore = null;
@@ -176,7 +119,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @GET
     @Path("/{roleName}")
     @Override
-    public Response getRole(@PathParam("roleName") String roleName) {
+    public Response getRole(@PathParam("roleName") String roleName,
+                            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         RoleWrapper roleWrapper = new RoleWrapper();
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
@@ -200,10 +144,6 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 roleWrapper.setPermissionList(rolePermissions);
                 String[] permListAr = new String[permList.size()];
                 roleWrapper.setPermissions(permList.toArray(permListAr));
-            }
-            if (roleWrapper == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No roles found for the role name '"
-                        + roleName + ".").build();
             }
         } catch (UserStoreException | UserAdminException e) {
             String msg = "Error occurred while retrieving the user role '" + roleName + "'";

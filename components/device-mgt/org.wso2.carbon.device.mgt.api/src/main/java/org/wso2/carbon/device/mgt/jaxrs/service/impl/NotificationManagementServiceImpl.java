@@ -39,7 +39,10 @@ public class NotificationManagementServiceImpl implements NotificationManagement
 
     @GET
     @Override
-    public Response getNotifications(@QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+    public Response getNotifications(
+            @QueryParam("status") String status,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         String msg;
         try {
             List<Notification> notifications =
@@ -56,33 +59,13 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         }
     }
 
-    @GET
-    @Override
-    public Response getNotificationsByStatus(@QueryParam("status") Notification.Status status,
-                                             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
-        String msg;
-        try {
-            List<Notification> notifications =
-                    DeviceMgtAPIUtils.getNotificationManagementService().getNotificationsByStatus(status);
-            if (notifications == null || notifications.size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No notification, which carries " +
-                        "the status '" + status.toString() + "' is available to be retrieved").build();
-            }
-            return Response.status(Response.Status.OK).entity(notifications).build();
-        } catch (NotificationManagementException e) {
-            msg = "Error occurred while retrieving the notification list that carries the status '" +
-                    status.toString() + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
     @PUT
     @Path("/{id}/status")
     @Override
-    public Response updateNotificationStatus(@PathParam("id") int id, Notification.Status status) {
+    public Response updateNotificationStatus(@PathParam("id") int id, String status) {
         try {
-            DeviceMgtAPIUtils.getNotificationManagementService().updateNotificationStatus(id, status);
+            DeviceMgtAPIUtils.getNotificationManagementService().updateNotificationStatus(id,
+                    Notification.Status.valueOf(status));
             return Response.status(Response.Status.OK).entity("Notification status has successfully been updated").build();
         } catch (NotificationManagementException e) {
             String msg = "Error occurred while updating notification status";

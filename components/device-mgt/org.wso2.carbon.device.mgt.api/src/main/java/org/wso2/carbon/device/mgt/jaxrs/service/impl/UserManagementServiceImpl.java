@@ -19,7 +19,6 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,13 +26,12 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
-import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.jaxrs.util.ResponsePayload;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
+import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
+import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -162,7 +160,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     @GET
     @Path("/{username}")
     @Override
-    public Response getUser(@PathParam("username") String username) {
+    public Response getUser(@PathParam("username") String username,
+                            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(username)) {
@@ -174,10 +173,6 @@ public class UserManagementServiceImpl implements UserManagementService {
                 // Outputting debug message upon successful retrieval of user
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " was found.");
-                }
-                if (user == null) {
-                    return Response.status(Response.Status.NOT_FOUND).entity("User by username '" + username + "' " +
-                            "doesn't exist").build();
                 }
                 return Response.status(Response.Status.OK).entity(user).build();
             } else {
@@ -328,7 +323,8 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @GET
     @Override
-    public Response getUsers(@QueryParam("filter") String filter, @QueryParam("offset") int offset,
+    public Response getUsers(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") Date timestamp,
+                             @QueryParam("offset") int offset,
                              @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information");
@@ -359,9 +355,10 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @GET
+    @Path("/usernames")
     @Override
-    public Response getUserNames(@QueryParam("filter") String filter, @QueryParam("offset") int offset,
-                                 @QueryParam("limit") int limit) {
+    public Response getUserNames(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") Date timestamp,
+                                 @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information using the filter : " + filter);
         }

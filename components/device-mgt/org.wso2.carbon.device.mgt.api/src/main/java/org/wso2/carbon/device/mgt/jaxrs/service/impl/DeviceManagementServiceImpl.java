@@ -37,6 +37,9 @@ import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -50,7 +53,15 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @GET
     @Override
-    public Response getDevices(@QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+    public Response getDevices(
+            @QueryParam("type") String type,
+            @QueryParam("user") String user,
+            @QueryParam("roleName") String roleName,
+            @QueryParam("ownership") String ownership,
+            @QueryParam("status") String status,
+            @HeaderParam("If-Modified-Since") Date timestamp,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
         try {
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             PaginationRequest request = new PaginationRequest(offset, limit);
@@ -68,48 +79,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
     }
 
-    @Override
-    public Response getDevices(@HeaderParam("If-Modified-Since") Date timestamp,
-                               @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
-        SearchManagerService searchManagerService;
-        List<DeviceWrapper> devices;
-        try {
-            searchManagerService = DeviceMgtAPIUtils.getSearchManagerService();
-            devices = searchManagerService.getUpdated(timestamp.getTime());
-
-        } catch (SearchMgtException e) {
-            String msg = "Error occurred while retrieving the updated device information after the given time.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.OK).entity(devices).build();
-    }
-
-    @GET
-    @Override
-    public Response getDevices(@QueryParam("type") String type, @QueryParam("offset") int offset,
-                               @QueryParam("limit") int limit) {
-        try {
-            DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
-            PaginationRequest request = new PaginationRequest(offset, limit);
-            request.setDeviceType(type);
-
-            PaginationResult result = dms.getAllDevices(request);
-            if (result == null || result.getData().size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device of  type '" + type +
-                        "' is currently enrolled with the server").build();
-            }
-            return Response.status(Response.Status.OK).entity(result.getData()).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices of type '" + type + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
     @POST
     @Override
-    public Response getDevicesInfo(List<DeviceIdentifier> deviceIds) {
+    public Response getDevicesInfo(
+            List<DeviceIdentifier> deviceIds,
+            @HeaderParam("If-Modified-Since") Date timestamp) {
         DeviceInformationManager informationManager;
         List<DeviceInfo> deviceInfo;
         try {
@@ -129,91 +103,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @GET
     @Override
-    public Response getDeviceByUsername(@QueryParam("user") String user, @QueryParam("offset") int offset,
-                                        @QueryParam("limit") int limit) {
-        PaginationResult result;
-        try {
-            PaginationRequest request = new PaginationRequest(offset, limit);
-            request.setOwner(user);
-            result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request);
-            if (result == null || result.getData().size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device has currently been " +
-                        "enrolled by the user '" + user + "'").build();
-            }
-            return Response.status(Response.Status.OK).entity(result.getData()).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices of user '" + user + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @GET
-    @Override
-    public Response getDevicesByRole(@QueryParam("roleName") String roleName, @QueryParam("offset") int offset,
-                                     @QueryParam("limit") int limit) {
-        List<Device> devices;
-        try {
-            devices = DeviceMgtAPIUtils.getDeviceManagementService().getAllDevicesOfRole(roleName);
-            if (devices == null || devices.size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device has currently been " +
-                        "enrolled under the role '" + roleName + "'").build();
-            }
-            return Response.status(Response.Status.OK).entity(devices).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices of the role '" + roleName + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @GET
-    @Override
-    public Response getDevicesByOwnership(@QueryParam("ownership") EnrolmentInfo.OwnerShip ownership,
-                                          @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
-        PaginationResult result;
-        try {
-            PaginationRequest request = new PaginationRequest(offset, limit);
-            request.setOwnership(ownership.toString());
-            result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesByOwnership(request);
-            if (result == null || result.getData().size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device has currently been enrolled " +
-                        "under the ownership scheme '" + ownership.toString() + "'").build();
-            }
-            return Response.status(Response.Status.OK).entity(result.getData()).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices enrolled under the ownership scheme '" +
-                    ownership.toString() + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @GET
-    @Override
-    public Response getDevicesByEnrollmentStatus(@QueryParam("status") EnrolmentInfo.Status status,
-                                                 @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
-        PaginationResult result;
-        try {
-            PaginationRequest request = new PaginationRequest(offset, limit);
-            request.setStatus(status.toString());
-            result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesByOwnership(request);
-            if (result == null || result.getData().size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device is currently in enrollment " +
-                        "status '" + status.toString() + "'").build();
-            }
-            return Response.status(Response.Status.OK).entity(result.getData()).build();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices that carry the enrollment status '" +
-                    status.toString() + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @GET
-    @Override
-    public Response getDevice(@QueryParam("type") String type, @QueryParam("id") String id) {
+    public Response getDevice(
+            @PathParam("type") String type,
+            @PathParam("id") String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         Device device;
         try {
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
@@ -233,7 +126,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Path("/{type}/{id}/location")
     @Override
-    public Response getDeviceLocation(@PathParam("type") String type, @PathParam("id") String id) {
+    public Response getDeviceLocation(
+            @PathParam("type") String type,
+            @PathParam("id") String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         DeviceInformationManager informationManager;
         DeviceLocation deviceLocation;
         try {
@@ -256,7 +152,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Path("/{type}/{id}/features")
     @Override
-    public Response getFeaturesOfDevice(@PathParam("type") String type, @PathParam("id") String id) {
+    public Response getFeaturesOfDevice(
+            @PathParam("type") String type,
+            @PathParam("id") String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         List<Feature> features;
         DeviceManagementProviderService dms;
         try {
@@ -278,7 +177,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @POST
     @Path("/search-devices")
     @Override
-    public Response searchDevices(SearchContext searchContext) {
+    public Response searchDevices(SearchContext searchContext, @QueryParam("offset") int offset, int limit) {
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
         try {
@@ -299,7 +198,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Path("/{type}/{id}/applications")
     @Override
-    public Response getInstalledApplications(@PathParam("type") String type, @PathParam("id") String id) {
+    public Response getInstalledApplications(
+            @PathParam("type") String type,
+            @PathParam("id") String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
         List<Application> applications;
         ApplicationManagementProviderService amc;
         try {
@@ -321,8 +225,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Path("/{type}/{id}/operations")
     @Override
-    public Response getDeviceOperations(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
-                                        @PathParam("type") String type, @PathParam("id") String id) {
+    public Response getDeviceOperations(
+            @PathParam("type") String type,
+            @PathParam("id") String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
         List<? extends Operation> operations;
         DeviceManagementProviderService dms;
         try {
@@ -335,6 +243,26 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         return Response.status(Response.Status.OK).entity(operations).build();
+    }
+
+    @Override
+    public Response getEffectivePolicyOfDevice(@QueryParam("type") String type,
+                                               @QueryParam("id") String id,
+                                               @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        try {
+            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+            Policy policy = policyManagementService.getAppliedPolicyToDevice(new DeviceIdentifier(id, type));
+            if (policy == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No policy has been found for the '" +
+                        type + "' device, which carries the id '" + id + "'").build();
+            }
+            return Response.status(Response.Status.OK).entity(policy).build();
+        } catch (PolicyManagementException e) {
+            String msg = "Error occurred while retrieving the current policy associated with the '" + type +
+                    "' device, which carries the id '" + id + "'";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
     }
 
 }

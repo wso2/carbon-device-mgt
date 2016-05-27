@@ -18,12 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
+import org.wso2.carbon.policy.mgt.common.Policy;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -44,38 +42,106 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Adding a policy.",
-            notes = "Add a policy using this REST API command. Using the REST API command given below " +
-                    "you are able to save a created Policy and this policy will be in the inactive state.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created the policy."),
-            @ApiResponse(code = 401, message = "Current user is not authorized to add policies."),
-            @ApiResponse(code = 500, message = "Policy Management related error occurred when adding the policy.")})
+            value = "Add a new policy.",
+            notes = "This particular resource can be used to add a new policy, which will be created in in-active state.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "Created. \n Policy has successfully been created",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The URL of the added policy."),
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while adding a new policy.")})
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
-    Response addPolicy(@ApiParam(name = "policy", value = "Policy details related to the operation.",
-            required = true) PolicyWrapper policy);
+    Response addPolicy(
+            @ApiParam(
+                    name = "policy",
+                    value = "Policy details related to the operation.",
+                    required = true) PolicyWrapper policy);
 
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting details of policies.",
+            value = "Get details of policies.",
             responseContainer = "List",
-            notes = "Retrieve the details of all the policies that you have created in EMM.",
-            response = org.wso2.carbon.policy.mgt.common.Policy.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Fetched all policies.",
-            response = org.wso2.carbon.policy.mgt.common.Policy.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No policies found."),
-            @ApiResponse(code = 500, message = "Policy Management related error occurred when " +
-                    "fetching the policies.")
-    })
+            notes = "Retrieve the details of all the policies that have been created in EMM.",
+            response = Policy.class)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched policies.",
+                            response = Policy.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Server error occurred while fetching policies.")
+            })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicies(
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
             @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many policy details are required from the starting pagination " +
-                    "index.", required = true)
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
             @QueryParam("limit") int limit);
 
     @GET
@@ -83,20 +149,53 @@ public interface PolicyManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting details of a policy.",
-            notes = "Retrieve the details of a given policy in EMM.",
-            response = org.wso2.carbon.policy.mgt.common.Policy.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Fetched policy details.",
-                    response = org.wso2.carbon.policy.mgt.common.Policy.class),
-            @ApiResponse(code = 404, message = "Policy not found."),
-            @ApiResponse(code = 500, message = "Policy management related error occurred when " +
-                    "fetching the policy.")
-    })
+            value = "Get details of a policy.",
+            notes = "Retrieve the details of a given policy that has been created in EMM.",
+            response = Policy.class)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the policy.",
+                            response = Policy.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No policy is found with the given id."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Server error occurred while fetching the policy.")
+            })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicy(
-            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
-            @PathParam("id") int id);
+            @ApiParam(
+                    name = "id",
+                    value = "Policy identifier",
+                    required = true)
+            @PathParam("id") int id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
     @PUT
     @Path("/{id}")
@@ -104,35 +203,86 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Updating a policy.",
-            notes = "If you wish to make changes to an existing policy, you can do so by updating the policy using " +
-                    "this API.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Policy has been updated successfully."),
-            @ApiResponse(code = 500, message = "Policy management related exception in policy update.")
-    })
+            value = "Update a policy.",
+            notes = "If you wish to make changes to an existing policy, that can be done by updating the policy using " +
+                    "this resource.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Policy has been updated successfully",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The URL of the updated device."),
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Resource to be deleted does not exist."),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while updating the policy.")
+            })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
     Response updatePolicy(
-            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
+            @ApiParam(
+                    name = "id",
+                    value = "The device identifier of the device.", required = true)
             @PathParam("id") int id,
-            @ApiParam(name = "policy", value = "Policy details related to the operation.",
-            required = true) PolicyWrapper policy);
+            @ApiParam(
+                    name = "policy",
+                    value = "Policy details related to the operation.",
+                    required = true) PolicyWrapper policy);
 
     @POST
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Removing multiple policies.",
+            value = "Remove multiple policies.",
             notes = "In situations where you need to delete more than one policy you can do so using this API.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Policies have been successfully deleted."),
-            @ApiResponse(code = 404, message = "Policy does not exist."),
-            @ApiResponse(code = 500, message = "Error in deleting policies.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Policies have successfully been removed"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Resource to be deleted does not exist."),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while bulk removing policies.")
+            })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
-    Response removePolicies(@ApiParam(name = "policyIds", value = "Policy ID list to be deleted.",
-            required = true) List<Integer> policyIds);
+    Response removePolicies(
+            @ApiParam(
+                    name = "policyIds",
+                    value = "Policy id list to be deleted.",
+                    required = true) List<Integer> policyIds);
 
     @POST
     @Path("/activate-policy")
@@ -143,16 +293,17 @@ public interface PolicyManagementService {
             value = "Activating policies.",
             notes = "Using the REST API command you are able to publish a policy in order to bring a policy that is " +
                     "in the inactive state to the active state.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Policies have been successfully activated."),
-            @ApiResponse(code = 500, message = "Error in activating policies.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Policies have been successfully activated."),
+                    @ApiResponse(code = 500, message = "Error in activating policies.")
+            })
     @Permission(scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
             "/permission/admin/device-mgt/admin/policies/add"})
     Response activatePolicies(
             @ApiParam(name = "policyIds", value = "Policy ID list to be activated.",
-            required = true) List<Integer> policyIds);
+                    required = true) List<Integer> policyIds);
 
     @POST
     @Path("/deactivate-policy")
@@ -172,26 +323,7 @@ public interface PolicyManagementService {
             "/permission/admin/device-mgt/admin/policies/add"})
     Response deactivatePolicies(
             @ApiParam(name = "policyIds", value = "Policy ID list to be deactivated.",
-            required = true) List<Integer> policyIds);
+                    required = true) List<Integer> policyIds);
 
-    @GET
-    @ApiOperation(
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Getting Policy Enforced Details of a Device.",
-            notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the EMM " +
-                    "filters the policies based on the Platform (device type), filters based on the device ownership" +
-                    " type , filters based on the user role or name and finally the policy is enforced on the device.",
-            response = org.wso2.carbon.policy.mgt.common.Policy.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Fetched current policy."),
-            @ApiResponse(code = 404, message = "No policy found."),
-            @ApiResponse(code = 500, message = "Error occurred while getting the current policy.")
-    })
-    Response getEffectivePolicyOfDevice(
-            @ApiParam(name = "device-type", value = "The device type, such as ios, android or windows.", required = true)
-            @QueryParam("device-type") String type,
-            @ApiParam(name = "device-id", value = "The device identifier of the device.", required = true)
-            @QueryParam("device-id") String deviceId);
 
 }

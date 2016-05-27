@@ -21,6 +21,8 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -43,16 +45,50 @@ public interface ActivityInfoProviderService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Retrieving the operation details.",
-            notes = "This will return the operation details including the responses from the devices.")
+            response = Activity.class,
+            value = "Retrieve details of a particular activity.",
+            notes = "This will return information of a particular activity i.e. meta information of an operation, " +
+                    "etc; including the responses from the devices.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Activity details provided successfully."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Activity details is successfully fetched",
+                    response = Activity.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                            "the requested resource."),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported"),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching activity data.")
     })
     @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
     Response getActivity(
-            @ApiParam(name = "id", value = "Activity id of the operation/activity to be retrieved.",
+            @ApiParam(
+                    name = "id",
+                    value = "Activity id of the operation/activity to be retrieved.",
                     required = true)
-            @PathParam("id") String id);
+            @PathParam("id") String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
 }

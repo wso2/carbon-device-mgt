@@ -26,9 +26,9 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.PolicyManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
@@ -96,7 +96,10 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
 
     @GET
     @Override
-    public Response getPolicies(@QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+    public Response getPolicies(
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         List<Policy> policies;
         try {
@@ -116,7 +119,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @GET
     @Path("/{id}")
     @Override
-    public Response getPolicy(@PathParam("id") int id) {
+    public Response getPolicy(@PathParam("id") int id, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         final org.wso2.carbon.policy.mgt.common.Policy policy;
         try {
@@ -129,9 +132,6 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             String msg = "Error occurred while retrieving policy corresponding to the id '" + id + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        if (policy == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Policy for ID " + id + " not found").build();
         }
         return Response.status(Response.Status.OK).entity(policy).build();
     }
@@ -186,7 +186,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         try {
             PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
             PolicyAdministratorPoint pap = policyManagementService.getPAP();
-            for(int i : policyIds) {
+            for (int i : policyIds) {
                 pap.activatePolicy(i);
             }
         } catch (PolicyManagementException e) {
@@ -204,7 +204,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         try {
             PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
             PolicyAdministratorPoint pap = policyManagementService.getPAP();
-            for(int i : policyIds) {
+            for (int i : policyIds) {
                 pap.inactivatePolicy(i);
             }
         } catch (PolicyManagementException e) {
@@ -214,26 +214,6 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
         return Response.status(Response.Status.OK).entity("Selected policies have been successfully " +
                 "deactivated").build();
-    }
-
-    @GET
-    @Override
-    public Response getEffectivePolicyOfDevice(@QueryParam("device-type") String type,
-                                               @QueryParam("device-id") String deviceId) {
-        try {
-            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-            Policy policy = policyManagementService.getAppliedPolicyToDevice(new DeviceIdentifier(deviceId, type));
-            if (policy == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No policy has been found for the '" +
-                        type + "' device, which carries the id '" + deviceId + "'").build();
-            }
-            return Response.status(Response.Status.OK).entity(policy).build();
-        } catch (PolicyManagementException e) {
-            String msg = "Error occurred while retrieving the current policy associated with the '" + type +
-                    "' device, which carries the id '" + deviceId + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
     }
 
 }

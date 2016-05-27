@@ -46,11 +46,28 @@ public interface ApplicationManagementAdminService {
             value = "Application installation API.(Internal API)",
             notes = "This is an internal API used for application installation on a device.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Application wil be installed on the device."),
-            @ApiResponse(code = 500, message = "Error while adding the application install operation.")
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Install application operations have been successfully scheduled upon given devices"),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n Resource to be processed does not exist."),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n " +
+                            "Server error occurred while bulk issuing application installation operations upon " +
+                            "a given set of devices.")
     })
     Response installApplication(
-            @ApiParam(name = "applicationWrapper", value = "Application details of the application to be installed.",
+            @ApiParam(
+                    name = "applicationWrapper",
+                    value = "Application details of the application to be installed.",
                     required = true) ApplicationWrapper applicationWrapper);
 
     @POST
@@ -59,14 +76,31 @@ public interface ApplicationManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Application uninstallation API.(Internal API)",
+            value = "Application un-installation API.(Internal API)",
             notes = "This is an internal API used for application uninstallation on a device.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Application wil be uninstalled on the device."),
-            @ApiResponse(code = 500, message = "Error while adding the application uninstall operation.")
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Uninstall application operations have been successfully scheduled upon given devices"),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n Resource to be processed does not exist."),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n " +
+                            "Server error occurred while bulk issuing application un-installation operations upon " +
+                            "a given set of devices.")
     })
     Response uninstallApplication(
-            @ApiParam(name = "applicationWrapper", value = "Application details of the application to be uninstalled.",
+            @ApiParam(
+                    name = "applicationWrapper",
+                    value = "Application details of the application to be uninstalled.",
                     required = true) ApplicationWrapper applicationWrapper);
 
 }

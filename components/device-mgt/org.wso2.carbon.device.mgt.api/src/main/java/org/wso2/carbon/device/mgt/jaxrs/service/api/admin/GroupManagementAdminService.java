@@ -18,15 +18,14 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 
 @Path("/groups")
 @Produces(MediaType.APPLICATION_JSON)
@@ -35,27 +34,60 @@ public interface GroupManagementAdminService {
 
     @GET
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get groups by the name.",
             notes = "Get devices the name of device and tenant.",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
+            response = DeviceGroupWrapper.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched group details.",
-                    response = org.wso2.carbon.device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "Device not found."),
-            @ApiResponse(code = 500, message = "Error while fetching group information.")
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of groups.",
+                    response = DeviceGroupWrapper.class,
+                    responseContainer = "List",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported"),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the group list.")
     })
     @Permission(scope = "group-view", permissions = {"/permission/admin/device-mgt/user/groups/list"})
     Response getGroupsOfUser(
-            @ApiParam(name = "username", value = "Username of the user.",required = true)
+            @ApiParam(
+                    name = "username",
+                    value = "Username of the user.",
+                    required = true)
             @QueryParam("username") String username,
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Timestamp of the last modified date",
+                    required = false)
+            @HeaderParam("If-Modified-Since") Date timestamp,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
             @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many policy details are required from the starting pagination " +
-                    "index.", required = true)
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
             @QueryParam("limit") int limit);
 
 

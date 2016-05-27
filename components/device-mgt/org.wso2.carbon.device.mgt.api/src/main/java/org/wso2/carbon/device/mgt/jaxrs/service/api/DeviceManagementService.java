@@ -21,13 +21,16 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
+import org.wso2.carbon.policy.mgt.common.Policy;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -38,62 +41,90 @@ import java.util.List;
 /**
  * Device related REST-API. This can be used to manipulated device related details.
  */
-@API(name = "Device", version = "1.0.0", context = "/devicemgt_admin/devices", tags = {"devicemgt_admin"})
+@API(name = "Device", version = "1.0.0", context = "/api/device-mgt/admin/devices", tags = {"devicemgt_admin"})
 @Path("/devices")
-@Api(value = "Device", description = "Device related operations such as get all the available devices, etc.")
+@Api(value = "Device Management API", description = "This API carries all device management related operations " +
+        "such as get all the available devices, etc.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DeviceManagementService {
 
     @GET
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the device list.",
+            value = "Get the list of devices enrolled with the system.",
             notes = "Returns all devices enrolled with the system.",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
+            response = Device.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.", response = org.wso2.carbon
-                    .device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No device has currently been under the provided type."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the device list.")
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of devices.",
+                    response = Device.class,
+                    responseContainer = "List",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported"),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the device list.")
     })
     @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDevices(
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = false)
+            @QueryParam("type") String type,
+            @ApiParam(
+                    name = "user", value = "Username of owner of the devices.",
+                    required = true)
+            @QueryParam("user") String user,
+            @ApiParam(
+                    name = "roleName",
+                    value = "Role name of the devices to be fetched.",
+                    required = false)
+            @QueryParam("roleName") String roleName,
+            @ApiParam(
+                    name = "ownership",
+                    allowableValues = "BYOD, COPE",
+                    value = "Ownership of the devices to be fetched registered under.",
+                    required = false)
+            @QueryParam("ownership") String ownership,
+            @ApiParam(
+                    name = "status",
+                    value = "Enrollment status of devices to be fetched.",
+                    required = false)
+            @QueryParam("status") String status,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Timestamp of the last modified date",
+                    required = false)
+            @HeaderParam("If-Modified-Since") Date timestamp,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
             @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
-                    "index.", required = true)
-            @QueryParam("limit") int limit);
-
-    Response getDevices(@HeaderParam("If-Modified-Since") Date timestamp, @QueryParam("offset") int offset,
-                        @QueryParam("limit") int limit);
-
-    @GET
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Get the device list corresponding to a device type.",
-            notes = "Returns all devices enrolled with the system under the provided type.",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
-            responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.", response = org.wso2.carbon
-                    .device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No device has currently been under the provided type."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the device list.")
-    })
-    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDevices(
-            @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
-            @QueryParam ("type") String type,
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
-            @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
-                    "index.", required = true)
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
             @QueryParam("limit") int limit);
 
     @POST
@@ -101,128 +132,123 @@ public interface DeviceManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Get devices information from the supplied device identifies.",
+            value = "Retrieve devices information from the supplied device identifies.",
             notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
                     "identifiers.",
             response = DeviceInfo.class,
             responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched device information.", response = DeviceInfo.class,
-                    responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No device information is available for the device list submitted."),
-            @ApiResponse(code = 500, message = "Error occurred while getting the device information.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Information of the submitted list of devices is returned",
+                            response = DeviceInfo.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable. \n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving information of the list of the devices submitted.")
+            })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDevicesInfo(
-            @ApiParam(name = "deviceIds", value = "List of device identifiers",
-            required = true) List<DeviceIdentifier> deviceIds);
+            @ApiParam(
+                    name = "deviceIds",
+                    value = "List of device identifiers",
+                    required = true) List<DeviceIdentifier> deviceIds,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Timestamp of the last modified date",
+                    required = false)
+            @HeaderParam("If-Modified-Since") Date timestamp);
+
 
     @GET
+    @Path("/{type}/{id}")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the device list of a user.",
-            notes = "Returns the set of devices that matches a given username.",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
-            responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.", response = org.wso2.carbon
-                    .device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No device has currently been enrolled by the user."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the device list.")
-    })
-    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDeviceByUsername(
-            @ApiParam(name = "user", value = "Username of owner of the devices.", required = true)
-            @QueryParam("user") String user,
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
-            @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
-                    "index.", required = true)
-            @QueryParam("limit") int limit);
-
-    @GET
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Returns device list in a role.",
-            notes = "Returns the set of devices that matches a given role.",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
-            responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.", response = org.wso2.carbon
-                    .device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No device has currently been enrolled under the role."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the device list.")
-    })
-    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDevicesByRole(
-            @ApiParam(name = "roleName", value = "Role name of the devices to be fetched.", required = true)
-            @QueryParam("roleName") String roleName,
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
-            @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
-                    "index.", required = true)
-            @QueryParam("limit") int limit);
-
-    @GET
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Returns device list of an ownership scheme.",
-            notes = "Returns the set of devices that matches a given ownership scheme.",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
-            responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.", response = org.wso2.carbon
-                    .device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No device has currently been enrolled under the given ownership " +
-                    "scheme."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the device list.")
-    })
-    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDevicesByOwnership(
-            @ApiParam(name = "ownership", value = "Ownership of the devices to be fetched registered under.",
-                    required = true) EnrolmentInfo.OwnerShip ownership,
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
-            @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
-                    "index.", required = true)
-            @QueryParam("limit") int limit);
-
-    @GET
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Returns device list",
-            notes = "Returns the set of devices that matches a given enrollment status",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
-            responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.",
-                    response = org.wso2.carbon.device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No device is currently in the given enrollment status."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the device list.")
-    })
-    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDevicesByEnrollmentStatus(
-            @ApiParam(name = "status", value = "Enrollment status of devices to be fetched.", required = true)
-                    EnrolmentInfo.Status status,
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
-            @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
-                    "index.", required = true)
-            @QueryParam("limit") int limit);
-
-    @GET
+            value = "Get information of the requested device.",
+            notes = "Returns information of the requested device.",
+            response = Device.class)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched information of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No device is found under the provided type and id."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving information requested device.")
+            })
     @Permission(scope = "device-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"})
-    Response getDevice(@QueryParam("type") String type, @QueryParam("id") String id);
+    Response getDevice(
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
+            @PathParam("type") String type,
+            @ApiParam(
+                    name = "id",
+                    value = "The device identifier of the device.",
+                    required = true)
+            @PathParam("id") String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
     @GET
     @Path("/{type}/{id}/location")
@@ -234,18 +260,40 @@ public interface DeviceManagementService {
             notes = "This will return the device location including latitude and longitude as well the "
                     + "physical address.",
             response = DeviceLocation.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the device location.",
-                    response = DeviceLocation.class),
-            @ApiResponse(code = 404, message = "Location details are not available for the given device."),
-            @ApiResponse(code = 500, message = "Error occurred while getting the device location.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "Successfully fetched the device location.",
+                            response = DeviceLocation.class),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Location details are not available for the given device."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Error occurred while getting the device location.")
+            })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceLocation(
-            @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
-            @PathParam("id") String id);
+            @ApiParam(
+                    name = "id",
+                    value = "The device identifier of the device.",
+                    required = true)
+            @PathParam("id") String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
     @GET
     @Path("/{type}/{id}/features")
@@ -257,20 +305,71 @@ public interface DeviceManagementService {
             notes = "WSO2 EMM features enable you to carry out many operations on a given device platform. " +
                     "Using this REST API you can get the features that can be carried out on a preferred device type," +
                     " such as iOS, Android or Windows.",
-            response = org.wso2.carbon.device.mgt.common.Feature.class,
+            response = Feature.class,
             responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the features.",
-                    response = org.wso2.carbon.device.mgt.common.Feature.class, responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Error occurred while retrieving the list of features.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n List of features of the device is returned",
+                            response = Feature.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n " +
+                                    "Source can be retrieved from the URL specified at the Location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Device of which the feature list is requested, is not found."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable. \n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving feature list of the device.")
+            })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"})
     Response getFeaturesOfDevice(
-            @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
-            @PathParam("id") String id);
+            @ApiParam(
+                    name = "id",
+                    value = "The device identifier of the device.",
+                    required = true)
+            @PathParam("id") String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
     @POST
     @Path("/search-devices")
@@ -282,74 +381,300 @@ public interface DeviceManagementService {
             notes = "Carry out an advanced search of devices.",
             response = DeviceWrapper.class,
             responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched matching devices.", response = DeviceWrapper.class,
-                    responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Error occurred while searching the device information.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Device has successfully been enrolled. Location header " +
+                                    "contains URL of newly enrolled device",
+                            response = DeviceWrapper.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported"),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while enrolling the device.")
+            })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response searchDevices(
-            @ApiParam(name = "searchContext", value = "List of search conditions.",
-            required = true) SearchContext searchContext);
+            @ApiParam(
+                    name = "searchContext",
+                    value = "List of search conditions.",
+                    required = true) SearchContext searchContext,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
+            @QueryParam("offset") int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
+            @QueryParam("limit") int limit);
 
     @GET
     @Path("/{type}/{id}/applications")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting installed application details of a device.",
             responseContainer = "List",
             notes = "Get the list of applications that a device has subscribed.",
             response = Application.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of installed application details of a device.",
-            response = Application.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No installed applications found on the device searched."),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the apps of the device.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n List of applications installed into the device is returned",
+                            response = Application.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n " +
+                                    "Source can be retrieved from the URL specified at the Location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Device of which the application list is requested, is not found."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable. \n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving installed application list of the device.")
+            })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"
     })
     Response getInstalledApplications(
-            @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.", required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
-            @PathParam("id") String id);
+            @ApiParam(
+                    name = "id",
+                    value = "The device identifier of the device.",
+                    required = true)
+            @PathParam("id") String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
+            @QueryParam("offset") int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
+            @QueryParam("limit") int limit);
 
 
     @GET
     @Path("/{type}/{id}/operations")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting paginated details for operations on a device.",
             notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
                     " the operations carried out on a device it is not feasible to show all the details on one page" +
                     " therefore the details are paginated.",
-            response = org.wso2.carbon.device.mgt.common.operation.mgt.Operation.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of Operations on a device.",
-                    response = org.wso2.carbon.device.mgt.common.operation.mgt.Operation.class,
-                    responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Error occurred while fetching the operations for the " +
-                    "device.")
-    })
+            response = Operation.class)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n List of operations scheduled for the device is returned",
+                            response = Operation.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n " +
+                                    "Source can be retrieved from the URL specified at the Location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Device of which the operation list is requested, is not found."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable. \n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving operation list scheduled for the device.")
+            })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"
     })
     Response getDeviceOperations(
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
-            @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
-                    "index.", required = true)
-            @QueryParam("limit") int limit,
-            @ApiParam(name = "type", value = "The device type, such as ios, android or windows.", required = true)
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
             @PathParam("type") String type,
-            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
-            @PathParam("id") String id);
+            @ApiParam(
+                    name = "id",
+                    value = "The device identifier of the device.",
+                    required = true)
+            @PathParam("id") String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
+            @QueryParam("offset") int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
+            @QueryParam("limit") int limit);
+
+    @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get the effective policy calculated for a device.",
+            notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the EMM " +
+                    "filters the policies based on the Platform (device type), filters based on the device ownership" +
+                    " type , filters based on the user role or name and finally the policy is enforced on the device.",
+            response = Policy.class)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Effective policy calculated for the device is returned",
+                            response = Policy.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n " +
+                                    "Source can be retrieved from the URL specified at the Location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Device of which the effective policy is requested, is not found."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable. \n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the effective policy calculated for the device.")
+            })
+    Response getEffectivePolicyOfDevice(
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
+            @QueryParam("type") String type,
+            @ApiParam(
+                    name = "id",
+                    value = "Device Identifier",
+                    required = true)
+            @QueryParam("id") String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
 }

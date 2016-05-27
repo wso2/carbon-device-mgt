@@ -30,9 +30,9 @@ import javax.ws.rs.core.Response;
 /**
  * Notifications related REST-API.
  */
-@API(name = "Device Notification", version = "1.0.0", context = "/devicemgt_admin/notifications",
+@API(name = "Device Notification Management API", version = "1.0.0", context = "/devicemgt_admin/notifications",
         tags = {"devicemgt_admin"})
-@Api(value = "DeviceNotification", description = "Device notification related operations can be found here.")
+@Api(value = "Device Notification Management API", description = "Device notification related operations can be found here.")
 @Path("/notifications")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -40,7 +40,6 @@ public interface NotificationManagementService {
 
     @GET
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting all device notification details.",
@@ -48,52 +47,62 @@ public interface NotificationManagementService {
                     + "this REST API",
             response = Notification.class,
             responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of notifications",
-                    response = Notification.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No notification is available to be retrieved."),
-            @ApiResponse(code = 500, message = "Error occurred while retrieving the notification list.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the list of notifications.",
+                            response = Notification.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Server error occurred while fetching the notification list.")
+            })
     @Permission(scope = "device-notification-view", permissions = {
             "/permission/admin/device-mgt/admin/notifications/view",
             "/permission/admin/device-mgt/user/notifications/view"
     })
     Response getNotifications(
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
+            @ApiParam(name = "status",
+                    value = "Status of the notification.",
+                    allowableValues = "NEW, CHECKED",
+                    required = true)
+            @QueryParam("status") String status,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
             @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How notification device details are required from the starting " +
-                    "pagination index.", required = true)
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
             @QueryParam("limit") int limit);
 
-    @GET
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Getting the device notifications filtered by the status.",
-            notes = "Get the details of all the unread notifications or the details of all the read "
-                    + "notifications using this REST API.",
-            response = Notification.class,
-            responseContainer = "List")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of notifications.",
-                    response = Notification.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No notification, which carries the given status " +
-                    "is available to be retrieved."),
-            @ApiResponse(code = 500, message = "Error occurred while retrieving the notification list.")
-    })
-    @Permission(scope = "device-notification-view", permissions = {
-            "/permission/admin/device-mgt/admin/notifications/view",
-            "/permission/admin/device-mgt/user/notifications/view"
-    })
-    Response getNotificationsByStatus(
-            @ApiParam(name = "status", value = "Status of the notification.",required = true)
-                    Notification.Status status,
-            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
-            @QueryParam("offset") int offset,
-            @ApiParam(name = "limit", value = "How many notification details are required from the starting pagination " +
-                    "index.", required = true)
-            @QueryParam("limit") int limit);
 
     @PUT
     @Path("/{id}/status")
@@ -101,35 +110,100 @@ public interface NotificationManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Updating the device notification status",
+            value = "Update the device notification status",
             notes = "When a user has read the the device notifications, the device notification status must "
                     + "change from NEW to CHECKED. Update the device notification status using this REST API.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Notification status updated successfully."),
-            @ApiResponse(code = 500, message = "Error occurred while updating notification status.")
-    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Notification status has been updated successfully",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The URL of the updated device."),
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Resource to be deleted does not exist."),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while modifying status of the notification.")
+            })
     @Permission(scope = "device-notification-modify",
             permissions = {"/permission/admin/device-mgt/admin/notifications/modify"})
     Response updateNotificationStatus(
-            @ApiParam(name = "id", value = "The device identifier of the device.", required = true)
+            @ApiParam(
+                    name = "id",
+                    value = "Notification identifier.",
+                    required = true)
             @PathParam("id") int id,
-            @ApiParam(name = "status", value = "Status of the notification.",required = true)
-                    Notification.Status status);
+            @ApiParam(
+                    name = "status",
+                    value = "Status of the notification.",
+                    allowableValues = "NEW, CHECKED",
+                    required = true) String status);
 
     @POST
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Sending a device notification.",
-            notes = "Notify users on device operation failures and other information using this REST API.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Notification has added successfully."),
-            @ApiResponse(code = 500, message = "Error occurred while updating notification status.")
-    })
+            value = "Add a device notification.",
+            notes = "Add a device notification, which will then be sent to a device.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 201, message = "Created. \n Notification has been added successfully.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The URL of the added  notification."),
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")
+                            }),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while adding the notification.")
+            })
     @Permission(scope = "device-notification-modify",
             permissions = {"/permission/admin/device-mgt/admin/notifications/modify"})
-    Response addNotification(@ApiParam(name = "notification", value = "Notification details to be added.",required =
-            true) Notification notification);
+    Response addNotification(
+            @ApiParam(
+                    name = "notification",
+                    value = "Notification details to be added.",
+                    required = true) Notification notification);
 
 }

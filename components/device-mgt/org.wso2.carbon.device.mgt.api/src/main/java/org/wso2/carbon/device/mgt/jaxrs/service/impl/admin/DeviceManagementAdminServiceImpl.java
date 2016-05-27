@@ -39,7 +39,12 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
 
     @Override
     @GET
-    public Response getDevicesByName(@QueryParam("name") String name, @QueryParam("tenant-domain") String tenantDomain) {
+    public Response getDevicesByName(@QueryParam("name") String name,
+                                     @QueryParam("type") String type,
+                                     @QueryParam("tenant-domain") String tenantDomain,
+                                     @HeaderParam("If-Modified-Since") String ifModifiedSince,
+                                     @QueryParam("offset") int offset,
+                                     @QueryParam("limit") int limit) {
         List<Device> devices;
         try {
             devices = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesByName(name);

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.device.mgt.common.Device;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -36,23 +37,69 @@ public interface DeviceManagementAdminService {
 
     @GET
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get devices by the name.",
-            notes = "Get devices the name of device and tenant.",
-            response = org.wso2.carbon.device.mgt.common.Device.class,
+            value = "Get devices by  name.",
+            notes = "Get devices by name of the device and tenant that they belong to.",
+            response = Device.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched device details.",
-                    response = org.wso2.carbon.device.mgt.common.Device.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No matching device found in the provided tenant."),
-            @ApiResponse(code = 500, message = "Error while fetching device information.")
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of devices.",
+                    response = Device.class,
+                    responseContainer = "List",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported"),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the device list.")
     })
     Response getDevicesByName(
-            @ApiParam(name = "name", value = "Name of the device.",required = true)
+            @ApiParam(
+                    name = "name",
+                    value = "Name of the device.",
+                    required = true)
             @QueryParam("name") String name,
-            @ApiParam(name = "tenant-domain", value = "Name of the tenant.",required = true)
-            @QueryParam("tenant-domain") String tenantDomain);
+            @ApiParam(
+                    name = "type",
+                    value = "Type of the device.",
+                    required = true)
+            @QueryParam("type") String type,
+            @ApiParam(
+                    name = "tenant-domain",
+                    value = "Name of the tenant.",
+                    required = true)
+            @QueryParam("tenant-domain") String tenantDomain,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
+            @QueryParam("offset") int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
+            @QueryParam("limit") int limit);
 
 }

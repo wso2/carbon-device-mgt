@@ -18,9 +18,9 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.UserManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

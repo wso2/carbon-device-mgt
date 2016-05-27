@@ -34,25 +34,42 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface UserManagementAdminService {
 
-    @POST
+    @PUT
     @Path("/{username}/credentials")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Changing the user password.",
+            value = "Change the user password.",
             notes = "A user is able to change the password to secure their EMM profile via this REST API.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "User password was successfully changed."),
-            @ApiResponse(code = 400, message = "Old password does not match."),
-            @ApiResponse(code = 500, message = "Could not change the password of the user. The Character encoding is" +
-                    " not supported.")
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Credentials of the user have been updated successfully"),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n Resource to be deleted does not exist."),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n " +
+                            "Server error occurred while updating credentials of the user.")
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
     Response resetPassword(
-            @ApiParam(name = "username", value = "Username of the user.",required = true)
+            @ApiParam(
+                    name = "username",
+                    value = "Username of the user.",
+                    required = true)
             @PathParam("username") String username,
-            @ApiParam(name = "credentials", value = "Credential.",required = true)
-                    UserCredentialWrapper credentials);
+            @ApiParam(
+                    name = "credentials",
+                    value = "Credential.",
+                    required = true) UserCredentialWrapper credentials);
 
 }

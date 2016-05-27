@@ -42,11 +42,14 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 
 @Path("/devices")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class DeviceManagementServiceImpl implements DeviceManagementService{
 
     private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
@@ -177,7 +180,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
     @POST
     @Path("/search-devices")
     @Override
-    public Response searchDevices(SearchContext searchContext, @QueryParam("offset") int offset, int limit) {
+    public Response searchDevices(@QueryParam("offset") int offset, int limit, SearchContext searchContext) {
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
         try {

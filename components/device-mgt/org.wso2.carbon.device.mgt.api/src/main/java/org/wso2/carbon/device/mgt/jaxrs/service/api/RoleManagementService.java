@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @API(name = "Role", version = "1.0.0", context = "/devicemgt_admin/roles", tags = {"devicemgt_admin"})
+
 @Path("/roles")
 @Api(value = "Role Management", description = "Role management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
@@ -45,7 +46,8 @@ public interface RoleManagementService {
             responseContainer = "List",
             notes = "If you wish to get the details of all the roles in EMM, you can do so using this REST API. All " +
                     "internal roles, roles created for Service-providers and application related roles are omitted.",
-            response = String.class)
+            response = String.class,
+            tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -119,7 +121,8 @@ public interface RoleManagementService {
                     "out by a role. Therefore if you wish to retrieve the permission details of a role, you can do " +
                     "so using this REST API.",
             response = UIPermissionNode.class,
-            responseContainer = "List"
+            responseContainer = "List",
+            tags = "Role Management"
     )
     @ApiResponses(
             value = {
@@ -174,7 +177,8 @@ public interface RoleManagementService {
             httpMethod = "GET",
             value = "Get details of a role.",
             notes = "If you wish to get the details of a role in  EMM, you can do so using this REST API.",
-            response = RoleWrapper.class)
+            response = RoleWrapper.class,
+            tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -226,7 +230,8 @@ public interface RoleManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Add a role.",
-            notes = "You are able to add a new role to EMM using the REST API.")
+            notes = "You are able to add a new role to EMM using the REST API.",
+            tags = "Role Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 201,
@@ -279,7 +284,8 @@ public interface RoleManagementService {
             httpMethod = "PUT",
             value = "Update a role.",
             notes = "There will be situations where you will need to update the role details, such as the permissions" +
-                    " or the role name. In such situation you can update the role details.")
+                    " or the role name. In such situation you can update the role details.",
+            tags = "Role Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -331,7 +337,8 @@ public interface RoleManagementService {
             httpMethod = "DELETE",
             value = "Delete a role.",
             notes = "In a situation when your Organization identifies that a specific role is no longer required you " +
-                    "will need to remove the role details from  EMM.")
+                    "will need to remove the role details from  EMM.",
+            tags = "Role Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -364,7 +371,8 @@ public interface RoleManagementService {
                     "a role using this REST API." +
                     "Example: Your Organization hires 30 new engineers. Updating the role details for each user can " +
                     "be cumbersome, therefore you can define all the new employees that belong to the engineering " +
-                    "role using this API.")
+                    "role using this API.",
+            tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(

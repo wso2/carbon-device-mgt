@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
  * Activity related REST-API implementation.
  */
 @API(name = "Activities", version = "1.0.0", context = "/devicemgt_admin/activities", tags = {"devicemgt_admin"})
+
 @Path("/activities")
 @Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example operation details " +
         "and responses from devices.")
@@ -48,7 +49,8 @@ public interface ActivityInfoProviderService {
             response = Activity.class,
             value = "Retrieve details of a particular activity.",
             notes = "This will return information of a particular activity i.e. meta information of an operation, " +
-                    "etc; including the responses from the devices.")
+                    "etc; including the responses from the devices.",
+            tags = "Activity Info Provider")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

@@ -42,6 +42,7 @@ import java.util.List;
  * Device related REST-API. This can be used to manipulated device related details.
  */
 @API(name = "Device", version = "1.0.0", context = "/api/device-mgt/admin/devices", tags = {"devicemgt_admin"})
+
 @Path("/devices")
 @Api(value = "Device Management", description = "This API carries all device management related operations " +
         "such as get all the available devices, etc.")
@@ -56,7 +57,8 @@ public interface DeviceManagementService {
             value = "Get the list of devices enrolled with the system.",
             notes = "Returns all devices enrolled with the system.",
             response = Device.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "Device Management")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of devices.",
                     response = Device.class,
@@ -136,7 +138,8 @@ public interface DeviceManagementService {
             notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
                     "identifiers.",
             response = DeviceInfo.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -198,7 +201,8 @@ public interface DeviceManagementService {
             httpMethod = "GET",
             value = "Get information of the requested device.",
             notes = "Returns information of the requested device.",
-            response = Device.class)
+            response = Device.class,
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -259,7 +263,8 @@ public interface DeviceManagementService {
             value = "Get the device location of a given device and a device type.",
             notes = "This will return the device location including latitude and longitude as well the "
                     + "physical address.",
-            response = DeviceLocation.class)
+            response = DeviceLocation.class,
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -306,7 +311,8 @@ public interface DeviceManagementService {
                     "Using this REST API you can get the features that can be carried out on a preferred device type," +
                     " such as iOS, Android or Windows.",
             response = Feature.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -380,7 +386,8 @@ public interface DeviceManagementService {
             value = "Advanced search for devices.",
             notes = "Carry out an advanced search of devices.",
             response = DeviceWrapper.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -422,10 +429,6 @@ public interface DeviceManagementService {
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response searchDevices(
             @ApiParam(
-                    name = "searchContext",
-                    value = "List of search conditions.",
-                    required = true) SearchContext searchContext,
-            @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
@@ -434,7 +437,12 @@ public interface DeviceManagementService {
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit);
+            @QueryParam("limit") int limit,
+            @ApiParam(
+                    name = "searchContext",
+                    value = "List of search conditions.",
+                    required = true)
+            SearchContext searchContext);
 
     @GET
     @Path("/{type}/{id}/applications")
@@ -444,7 +452,8 @@ public interface DeviceManagementService {
             value = "Getting installed application details of a device.",
             responseContainer = "List",
             notes = "Get the list of applications that a device has subscribed.",
-            response = Application.class)
+            response = Application.class,
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -530,7 +539,9 @@ public interface DeviceManagementService {
             notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
                     " the operations carried out on a device it is not feasible to show all the details on one page" +
                     " therefore the details are paginated.",
-            response = Operation.class)
+            response = Operation.class,
+            responseContainer = "List",
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -615,7 +626,8 @@ public interface DeviceManagementService {
             notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the EMM " +
                     "filters the policies based on the Platform (device type), filters based on the device ownership" +
                     " type , filters based on the user role or name and finally the policy is enforced on the device.",
-            response = Policy.class)
+            response = Policy.class,
+            tags = "Device Management")
     @ApiResponses(
             value = {
                     @ApiResponse(

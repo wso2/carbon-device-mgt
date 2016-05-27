@@ -46,7 +46,8 @@ public interface ApplicationManagementAdminService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Application installation API.(Internal API)",
-            notes = "This is an internal API used for application installation on a device.")
+            notes = "This is an internal API used for application installation on a device.",
+            tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -79,7 +80,8 @@ public interface ApplicationManagementAdminService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Application un-installation API.(Internal API)",
-            notes = "This is an internal API used for application uninstallation on a device.")
+            notes = "This is an internal API used for application un-installation on a device.",
+            tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

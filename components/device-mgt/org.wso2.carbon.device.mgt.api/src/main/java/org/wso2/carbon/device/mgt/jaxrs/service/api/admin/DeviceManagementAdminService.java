@@ -43,7 +43,8 @@ public interface DeviceManagementAdminService {
             value = "Get devices by  name.",
             notes = "Get devices by name of the device and tenant that they belong to.",
             response = Device.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "Device Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of devices.",
                     response = Device.class,

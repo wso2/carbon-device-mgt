@@ -45,7 +45,8 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Add a new policy.",
-            notes = "This particular resource can be used to add a new policy, which will be created in in-active state.")
+            notes = "This particular resource can be used to add a new policy, which will be created in in-active state.",
+            tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -97,7 +98,8 @@ public interface PolicyManagementService {
             value = "Get details of policies.",
             responseContainer = "List",
             notes = "Retrieve the details of all the policies that have been created in EMM.",
-            response = Policy.class)
+            response = Policy.class,
+            tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -153,7 +155,8 @@ public interface PolicyManagementService {
             httpMethod = "GET",
             value = "Get details of a policy.",
             notes = "Retrieve the details of a given policy that has been created in EMM.",
-            response = Policy.class)
+            response = Policy.class,
+            tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -207,7 +210,8 @@ public interface PolicyManagementService {
             httpMethod = "PUT",
             value = "Update a policy.",
             notes = "If you wish to make changes to an existing policy, that can be done by updating the policy using " +
-                    "this resource.")
+                    "this resource.",
+            tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -259,7 +263,8 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Remove multiple policies.",
-            notes = "In situations where you need to delete more than one policy you can do so using this API.")
+            notes = "In situations where you need to delete more than one policy you can do so using this API.",
+            tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -294,7 +299,8 @@ public interface PolicyManagementService {
             httpMethod = "PUT",
             value = "Activating policies.",
             notes = "Using the REST API command you are able to publish a policy in order to bring a policy that is " +
-                    "in the inactive state to the active state.")
+                    "in the inactive state to the active state.",
+            tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "Policies have been successfully activated."),
@@ -315,7 +321,8 @@ public interface PolicyManagementService {
             httpMethod = "PUT",
             value = "Deactivating policies.",
             notes = "Using the REST API command you are able to unpublish a policy in order to bring a policy that " +
-                    "is in the active state to the inactive state.")
+                    "is in the active state to the inactive state.",
+            tags = "Device Policy Management")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Policies have been successfully deactivated."),
             @ApiResponse(code = 500, message = "Error in deactivating policies.")

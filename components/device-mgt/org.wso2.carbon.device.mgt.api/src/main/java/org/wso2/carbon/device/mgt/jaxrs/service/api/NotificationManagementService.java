@@ -46,7 +46,8 @@ public interface NotificationManagementService {
             notes = "Get the details of all notifications that were pushed to the device in WSO2 EMM using "
                     + "this REST API",
             response = Notification.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "Device Notification Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -112,7 +113,8 @@ public interface NotificationManagementService {
             httpMethod = "PUT",
             value = "Update the device notification status",
             notes = "When a user has read the the device notifications, the device notification status must "
-                    + "change from NEW to CHECKED. Update the device notification status using this REST API.")
+                    + "change from NEW to CHECKED. Update the device notification status using this REST API.",
+            tags = "Device Notification Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -167,7 +169,8 @@ public interface NotificationManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Add a device notification.",
-            notes = "Add a device notification, which will then be sent to a device.")
+            notes = "Add a device notification, which will then be sent to a device.",
+            tags = "Device Notification Management")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 201, message = "Created. \n Notification has been added successfully.",

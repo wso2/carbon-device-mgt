@@ -31,6 +31,7 @@ import java.util.Date;
 
 
 @API(name = "User Management API", version = "1.0.0", context = "/devicemgt_admin/users", tags = {"devicemgt_admin"})
+
 @Path("/users")
 @Api(value = "User Management", description = "User management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
@@ -43,7 +44,8 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Add a user.",
-            notes = "A new user can be added to the user management system via this resource")
+            notes = "A new user can be added to the user management system via this resource",
+            tags = "User Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -92,13 +94,13 @@ public interface UserManagementService {
     @GET
     @Path("/{username}")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting details of a user.",
             notes = "If you wish to get the details of a specific user that is registered with EMM,"
                     + " you can do so using the REST API.",
-            response = UserWrapper.class)
+            response = UserWrapper.class,
+            tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -151,7 +153,8 @@ public interface UserManagementService {
             httpMethod = "PUT",
             value = "Update details of a user",
             notes = "There will be situations where you will want to update the user details. In such "
-                    + "situation you can update the user details using this REST API.")
+                    + "situation you can update the user details using this REST API.",
+            tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -203,7 +206,8 @@ public interface UserManagementService {
             httpMethod = "DELETE",
             value = "Deleting a user.",
             notes = "In a situation where an employee leaves the organization you will need to remove the"
-                    + " user details from EMM. In such situations you can use this REST API to remove a user.")
+                    + " user details from EMM. In such situations you can use this REST API to remove a user.",
+            tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -230,7 +234,8 @@ public interface UserManagementService {
             notes = "A user can be assigned to one or more role in EMM. Using this REST API you are "
                     + "able to get the role/roles a user is assigned to.",
             response = String.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -276,7 +281,8 @@ public interface UserManagementService {
             notes = "If you wish to get the details of all the users registered with EMM, you can do so "
                     + "using the REST API",
             response = UserWrapper.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -341,7 +347,8 @@ public interface UserManagementService {
                     + "You will be given a list of users having the user name with the exact order of the "
                     + "characters you provided.",
             response = String.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -401,7 +408,8 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Changing the user password.",
-            notes = "A user is able to change the password to secure their EMM profile via this REST API.")
+            notes = "A user is able to change the password to secure their EMM profile via this REST API.",
+            tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

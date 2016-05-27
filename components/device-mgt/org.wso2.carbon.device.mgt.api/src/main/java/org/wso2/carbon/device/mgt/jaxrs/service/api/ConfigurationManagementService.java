@@ -45,7 +45,8 @@ public interface ConfigurationManagementService {
             httpMethod = "GET",
             value = "Get the general platform configurations.",
             notes = "Get the general platform level configuration details.",
-            response = PlatformConfiguration.class)
+            response = PlatformConfiguration.class,
+            tags = "Configuration Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -90,7 +91,8 @@ public interface ConfigurationManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
             value = "Update General Platform Configurations.",
-            notes = "This resource is used to update the general platform configuration.")
+            notes = "This resource is used to update the general platform configuration.",
+            tags = "Configuration Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

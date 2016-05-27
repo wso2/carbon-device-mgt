@@ -41,7 +41,8 @@ public interface UserManagementAdminService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Change the user password.",
-            notes = "A user is able to change the password to secure their EMM profile via this REST API.")
+            notes = "A user is able to change the password to secure their EMM profile via this REST API.",
+            tags = "User Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

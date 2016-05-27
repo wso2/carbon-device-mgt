@@ -42,7 +42,8 @@ public interface GroupManagementAdminService {
             value = "Get groups by the name.",
             notes = "Get devices the name of device and tenant.",
             response = DeviceGroupWrapper.class,
-            responseContainer = "List")
+            responseContainer = "List",
+            tags = "Group Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of groups.",
                     response = DeviceGroupWrapper.class,

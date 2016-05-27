@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 
@@ -125,5 +126,27 @@ public interface DeviceInformation {
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceLocations(@ApiParam(name = "deviceIdentifiers", value = "List of device identifiers",
             required = true) List<DeviceIdentifier> deviceIdentifiers);
+
+
+    @GET
+    @Path("application/{type}/{id}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get the device applications",
+            notes = "This will return the device applications including their memory usages.",
+            response = Application.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 400, message = ""),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+    Response getDeviceApplications(@ApiParam(name = "type", value = "Provide the device type, such as ios, "
+            + "android or windows", required = true) @PathParam("type") String type,
+                               @ApiParam(name = "id", value = "Provide the device identifier",
+                                       required = true) @PathParam("id") String id);
 
 }

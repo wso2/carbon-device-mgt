@@ -29,7 +29,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.certificate.mgt.cert.adminapi.feature</artifactId>
+    <artifactId>org.wso2.carbon.certificate.mgt.cert.admin.api.feature</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Admin Certificate Management API Feature</name>
     <url>http://wso2.org</url>
@@ -51,7 +51,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.wso2.carbon.devicemgt</groupId>
-                                    <artifactId>org.wso2.carbon.certificate.mgt.cert.adminapi
+                                    <artifactId>org.wso2.carbon.certificate.mgt.cert.admin.api
                                     </artifactId>
                                     <version>${project.version}</version>
                                     <type>war</type>
@@ -102,7 +102,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.certificate.mgt.cert.adminapi</id>
+                            <id>org.wso2.carbon.certificate.mgt.cert.admin.api</id>
                             <propertiesFile>../../../features/etc/feature.properties
                             </propertiesFile>
                             <adviceFile>

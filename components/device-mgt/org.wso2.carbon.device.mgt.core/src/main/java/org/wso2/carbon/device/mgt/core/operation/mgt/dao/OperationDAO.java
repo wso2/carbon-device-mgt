@@ -19,6 +19,8 @@
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
+import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
@@ -63,6 +65,12 @@ public interface OperationDAO {
 
     List<OperationResponse> getOperationResponses(int enrolmentId, int operationId) throws OperationManagementDAOException;
 
+    Activity getActivity(int operationId) throws OperationManagementDAOException;
+
     int getEnrolmentIdFromMappingId(int enrollmentOpMappingId) throws OperationManagementDAOException;
+
+    List<Operation> getOperationsUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
 }

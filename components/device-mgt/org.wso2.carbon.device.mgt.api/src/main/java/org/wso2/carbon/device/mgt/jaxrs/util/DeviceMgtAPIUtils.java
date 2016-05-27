@@ -24,10 +24,10 @@ import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
@@ -184,7 +184,8 @@ public class DeviceMgtAPIUtils {
     public static PlatformConfigurationManagementService getPlatformConfigurationManagementService() {
         CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
         PlatformConfigurationManagementService tenantConfigurationManagementService =
-                (PlatformConfigurationManagementService) ctx.getOSGiService(PlatformConfigurationManagementService.class, null);
+                (PlatformConfigurationManagementService) ctx.getOSGiService(
+                        PlatformConfigurationManagementService.class, null);
         if (tenantConfigurationManagementService == null) {
             throw new IllegalStateException("Tenant configuration Management service not initialized.");
         }

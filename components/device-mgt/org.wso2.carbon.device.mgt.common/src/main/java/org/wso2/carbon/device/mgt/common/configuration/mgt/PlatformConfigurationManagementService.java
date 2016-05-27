@@ -23,26 +23,24 @@ package org.wso2.carbon.device.mgt.common.configuration.mgt;
  */
 public interface PlatformConfigurationManagementService {
 
-    /**
-     * Method to add a operation to a device or a set of devices.
-     *
-     * @param tenantConfiguration Operation to be added.
-     * @param resourcePath        Registry resource path.
-     * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException
-     *          If some unusual behaviour is observed while adding the
-     *          configuration.
-     */
-    boolean saveConfiguration(PlatformConfiguration tenantConfiguration, String resourcePath) throws
-            ConfigurationManagementException;
+	/**
+	 * Method to add a operation to a device or a set of devices.
+	 *
+	 * @param platformConfiguration Operation to be added.
+	 * @param resourcePath Registry resource path.
+	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while adding the
+	 * configuration.
+	 */
+	 boolean saveConfiguration(PlatformConfiguration platformConfiguration,
+                               String resourcePath) throws ConfigurationManagementException;
 
-    /**
-     * Method to retrieve the list of general tenant configurations.
-     *
-     * @param resourcePath Registry resource path.
-     * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException
-     *          If some unusual behaviour is observed while fetching the
-     *          operation list.
-     */
-    PlatformConfiguration getConfiguration(String resourcePath) throws ConfigurationManagementException;
+	/**
+	 * Method to retrieve the list of general tenant configurations.
+	 *
+	 * @param resourcePath Registry resource path.
+	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while fetching the
+	 * operation list.
+	 */
+	 PlatformConfiguration getConfiguration(String resourcePath) throws ConfigurationManagementException;
 
 }

@@ -29,10 +29,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.certificate.mgt.api</artifactId>
+    <artifactId>org.wso2.carbon.certificate.mgt.cert.admin.api</artifactId>
     <packaging>war</packaging>
-    <name>WSO2 Carbon - Certificate Management API</name>
-    <description>WSO2 Carbon - Certificate Management API</description>
+    <name>WSO2 Carbon - Admin Certificate Management API</name>
+    <description>WSO2 Carbon - Admin Certificate Management API</description>
     <url>http://wso2.org</url>
 
     <build>
@@ -48,7 +48,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/*cxf*.jar</packagingExcludes>
-                    <warName>certificate-mgt</warName>
+                    <warName>admin-certificate</warName>
                 </configuration>
             </plugin>
             <plugin>
@@ -79,7 +79,7 @@
                                         <copy todir="${basedir}/../../../repository/deployment/server/webapps"
                                               overwrite="true">
                                             <fileset dir="${basedir}/target">
-                                                <include name="certificate-mgt.war"/>
+                                                <include name="admin-certificate.war"/>
                                             </fileset>
                                         </copy>
                                     </tasks>

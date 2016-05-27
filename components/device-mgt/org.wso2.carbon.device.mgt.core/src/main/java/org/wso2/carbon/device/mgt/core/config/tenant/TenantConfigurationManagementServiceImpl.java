@@ -20,8 +20,8 @@ package org.wso2.carbon.device.mgt.core.config.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.core.config.ConfigurationManagerConstants;
 import org.wso2.carbon.device.mgt.core.config.util.ConfigurationManagerUtil;
 import org.wso2.carbon.registry.api.Resource;
@@ -36,17 +36,17 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 /**
- * This class implements all the functionality exposed as part of the TenantConfigurationManagementService.
+ * This class implements all the functionality exposed as part of the PlatformConfigurationManagementService.
  * Main usage of this module is  saving/retrieving tenant configurations to the registry.
  *
  */
 public class TenantConfigurationManagementServiceImpl
-		implements TenantConfigurationManagementService {
+		implements PlatformConfigurationManagementService {
 
 	private static final Log log = LogFactory.getLog(TenantConfigurationManagementServiceImpl.class);
 
 	@Override
-	public boolean saveConfiguration(TenantConfiguration tenantConfiguration, String resourcePath)
+	public boolean saveConfiguration(PlatformConfiguration tenantConfiguration, String resourcePath)
 			throws ConfigurationManagementException {
 		boolean status;
 		try {
@@ -54,7 +54,7 @@ public class TenantConfigurationManagementServiceImpl
 				log.debug("Persisting tenant configurations in Registry");
 			}
 			StringWriter writer = new StringWriter();
-			JAXBContext context = JAXBContext.newInstance(TenantConfiguration.class);
+			JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.marshal(tenantConfiguration, writer);
 
@@ -74,19 +74,19 @@ public class TenantConfigurationManagementServiceImpl
 	}
 
 	@Override
-	public TenantConfiguration getConfiguration(String resourcePath)
+	public PlatformConfiguration getConfiguration(String resourcePath)
 			throws ConfigurationManagementException {
 		Resource resource;
 		try {
 			resource = ConfigurationManagerUtil.getRegistryResource(resourcePath);
 			if(resource != null){
-				JAXBContext context = JAXBContext.newInstance(TenantConfiguration.class);
+				JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
 				Unmarshaller unmarshaller = context.createUnmarshaller();
-				return (TenantConfiguration) unmarshaller.unmarshal(
+				return (PlatformConfiguration) unmarshaller.unmarshal(
 						new StringReader(new String((byte[]) resource.getContent(), Charset
 								.forName(ConfigurationManagerConstants.CharSets.CHARSET_UTF8))));
 			}
-			return new TenantConfiguration();
+			return new PlatformConfiguration();
 		} catch (JAXBException e) {
 			throw new ConfigurationManagementException(
 					"Error occurred while parsing the Tenant configuration : " + e.getMessage(), e);

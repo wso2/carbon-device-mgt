@@ -31,12 +31,12 @@ import java.util.List;
 /**
  * Represents the tenant configuration for a device platform.
  */
-@XmlRootElement(name = "tenantConfiguration")
+@XmlRootElement(name = "PlatformConfiguration")
 @XmlAccessorType(XmlAccessType.NONE)
 
-@ApiModel(value = "TenantConfiguration",
+@ApiModel(value = "PlatformConfiguration",
         description = "This class carries all information related to a Tenant configuration")
-public class TenantConfiguration implements Serializable {
+public class PlatformConfiguration implements Serializable {
 
     @XmlElement(name = "type")
     @ApiModelProperty(name = "type", value = "type of device", required = true)

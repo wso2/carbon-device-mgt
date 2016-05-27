@@ -56,6 +56,17 @@ public class CertificateResponse {
     @ApiModelProperty(name = "certificateVersion", value = "The version of the certificate", required = true)
     int certificateVersion;
 
+    @ApiModelProperty(name ="username", value="username of the logged user", required = true)
+    String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public long getNotAfter() {
         return notAfter;
     }

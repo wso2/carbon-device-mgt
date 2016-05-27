@@ -99,6 +99,7 @@ public class DeviceInformationImpl implements DeviceInformation {
     }
 
     @Override
+    @Path("location/list")
     public Response getDeviceLocations(@ApiParam(name = "deviceIdentifiers", value = "List of device identifiers",
             required = true) List<DeviceIdentifier> deviceIdentifiers) {
         DeviceInformationManager informationManager;

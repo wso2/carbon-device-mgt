@@ -114,7 +114,8 @@ public interface DeviceInformation {
             value = "Get the locations of devices",
             notes = "This will return the locations of devices including latitude and longitude as well the "
                     + "physical address for the supplied device identifiers",
-            response = DeviceLocation.class)
+            response = DeviceLocation.class,
+            responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = ""),
             @ApiResponse(code = 400, message = ""),

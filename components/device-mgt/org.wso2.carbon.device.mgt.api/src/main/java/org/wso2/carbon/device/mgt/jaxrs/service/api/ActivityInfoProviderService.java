@@ -42,17 +42,16 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
+            httpMethod = "GET",
             value = "Retrieving the operation details.",
             notes = "This will return the operation details including the responses from the devices.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Activity details provided successfully."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the activity for the supplied id.")
     })
-    @Permission(scope = "operation-view", permissions = {"/permission/admin/device-mgt/admin/devices/view"})
+    @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
     Response getActivity(
-            @ApiParam(name = "id", value = "Activity id of the operation/activity to be retrieved.",
-                    required = true)
+            @ApiParam(name = "id", value = "Activity id of the operation/activity to be retrieved.", required = true)
             @PathParam("id") String id);
 
 }

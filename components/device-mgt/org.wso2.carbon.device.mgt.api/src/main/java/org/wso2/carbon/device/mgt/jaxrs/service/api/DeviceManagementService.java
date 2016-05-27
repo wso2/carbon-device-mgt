@@ -55,8 +55,8 @@ public interface DeviceManagementService {
             response = org.wso2.carbon.device.mgt.common.Device.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.", response = org.wso2.carbon
-                    .device.mgt.common.Device.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "Successfully fetched the list of devices.",
+                    response = org.wso2.carbon.device.mgt.common.Device.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "No device has currently been under the provided type."),
             @ApiResponse(code = 500, message = "Error occurred while fetching the device list.")
     })
@@ -68,8 +68,14 @@ public interface DeviceManagementService {
                     "index.", required = true)
             @QueryParam("limit") int limit);
 
-    Response getDevices(@HeaderParam("If-Modified-Since") Date timestamp, @QueryParam("offset") int offset,
-                        @QueryParam("limit") int limit);
+    Response getDevices(
+            @ApiParam(name = "If-Modified-Since", value = "Time since the device information changed.")
+            @HeaderParam("If-Modified-Since") Date timestamp,
+            @ApiParam(name = "offset", value = "Starting pagination index.",required = true)
+            @QueryParam("offset") int offset,
+            @ApiParam(name = "limit", value = "How many device details are required from the starting pagination " +
+                    "index.", required = true)
+            @QueryParam("limit") int limit);
 
     @GET
     @ApiOperation(

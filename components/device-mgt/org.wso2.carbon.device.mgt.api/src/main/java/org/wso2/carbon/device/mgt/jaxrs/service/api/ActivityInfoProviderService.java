@@ -43,7 +43,6 @@ public interface ActivityInfoProviderService {
     @GET
     @Path("/{id}")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             response = Activity.class,
@@ -54,7 +53,7 @@ public interface ActivityInfoProviderService {
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Activity details is successfully fetched",
+                    message = "OK. \n Activity details are successfully fetched",
                     response = Activity.class,
                     responseHeaders = {
                             @ResponseHeader(
@@ -94,11 +93,9 @@ public interface ActivityInfoProviderService {
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
 
-
     @GET
     @Path("/")
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             response = Activity.class,
@@ -109,7 +106,7 @@ public interface ActivityInfoProviderService {
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Activity details is successfully fetched",
+                    message = "OK. \n Activity details are successfully fetched",
                     response = Activity.class,
                     responseContainer = "List",
                     responseHeaders = {
@@ -143,6 +140,11 @@ public interface ActivityInfoProviderService {
                     value = "Validates if the requested variant has not been modified since the time specified, this " +
                             "should be provided in unix format in seconds.",
                     required = true)
-            @QueryParam("timestamp") String timestamp);
+            @QueryParam("timestamp") String timestamp,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
 }

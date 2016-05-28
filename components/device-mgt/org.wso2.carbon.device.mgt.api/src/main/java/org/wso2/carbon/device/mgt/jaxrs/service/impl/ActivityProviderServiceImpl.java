@@ -26,17 +26,16 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
+
 
 public class ActivityProviderServiceImpl implements ActivityInfoProviderService {
 
     private static final Log log = LogFactory.getLog(ActivityProviderServiceImpl.class);
 
+    @GET
     @Override
     @Path("/{id}")
     public Response getActivity(
@@ -55,10 +54,11 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         return Response.status(Response.Status.OK).entity(operation).build();
     }
 
+    @GET
     @Override
-    @Path("/")
     public Response getActivities(
-            @QueryParam("timestamp") String timestamp) {
+            @QueryParam("timestamp") String timestamp,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         List<Activity> activities = null;
         DeviceManagementProviderService dmService;
         try {

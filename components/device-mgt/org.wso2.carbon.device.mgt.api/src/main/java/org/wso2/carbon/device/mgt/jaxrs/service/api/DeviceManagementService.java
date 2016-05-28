@@ -504,7 +504,7 @@ public interface DeviceManagementService {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Device has successfully been enrolled. Location header " +
+                            message = "OK. \n Device list searched for has successfully been retrieved. Location header " +
                                     "contains URL of newly enrolled device",
                             response = DeviceWrapper.class,
                             responseContainer = "List",

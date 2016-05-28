@@ -55,7 +55,7 @@ public interface ActivityInfoProviderService {
                     code = 200,
                     message = "OK. \n Activity details are successfully fetched",
                     response = Activity.class,
-                    responseHeaders = {
+                    responseHeaders =  {
                             @ResponseHeader(
                                     name = "Content-Type",
                                     description = "The content type of the body"),

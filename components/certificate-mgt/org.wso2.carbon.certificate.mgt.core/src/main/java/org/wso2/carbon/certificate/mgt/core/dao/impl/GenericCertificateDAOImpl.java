@@ -55,7 +55,11 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
         try {
             conn = this.getConnection();
             stmt = conn.prepareStatement(
-                    "INSERT INTO DM_DEVICE_CERTIFICATE (SERIAL_NUMBER, CERTIFICATE, TENANT_ID) VALUES (?,?,?)");
+                    "INSERT INTO DM_DEVICE_CERTIFICATE (SERIAL_NUMBER, CERTIFICATE, TENANT_ID, USERNAME)"
+                            + " VALUES (?,?,?,?)");
+            PrivilegedCarbonContext threadLocalCarbonContext = PrivilegedCarbonContext.
+                    getThreadLocalCarbonContext();
+            String username = threadLocalCarbonContext.getUsername();
             for (Certificate certificate : certificates) {
                 String serialNumber = certificate.getSerial();
                 if (serialNumber == null || serialNumber.isEmpty()) {
@@ -67,6 +71,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                 stmt.setString(1, serialNumber);
                 stmt.setObject(2, byteArrayInputStream);
                 stmt.setInt(3, certificate.getTenantId());
+                stmt.setString(4, username);
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -89,8 +94,8 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
         try {
             conn = this.getConnection();
             String query =
-                    "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER = ?" +
-                    " AND TENANT_ID = ? ";
+                    "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME FROM"
+                            + " DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER = ? AND TENANT_ID = ? ";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, serialNumber);
             stmt.setInt(2, tenantId);
@@ -102,6 +107,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                 certificateResponse.setCertificate(certificateBytes);
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                certificateResponse.setUsername(resultSet.getString("USERNAME"));
                 CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
                 break;
             }
@@ -128,8 +134,8 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
         try {
             conn = this.getConnection();
             String query =
-                    "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER LIKE ?" +
-                    " AND TENANT_ID = ? ";
+                    "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME FROM DM_DEVICE_CERTIFICATE "
+                            + "WHERE SERIAL_NUMBER LIKE ? AND TENANT_ID = ? ";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, "%" + serialNumber + "%");
             stmt.setInt(2, tenantId);
@@ -140,6 +146,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                 byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                certificateResponse.setUsername(resultSet.getString("USERNAME"));
                 CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
                 certificates.add(certificateResponse);
             }
@@ -164,8 +171,8 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             Connection conn = this.getConnection();
-            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? " +
-                         "ORDER BY ID DESC LIMIT ?,?";
+            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME FROM "
+                    + "DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? ORDER BY ID DESC LIMIT ?,?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, request.getStartIndex());
@@ -178,6 +185,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                 byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                certificateResponse.setUsername(resultSet.getString("USERNAME"));
                 CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
                 certificates.add(certificateResponse);
                 resultCount++;
@@ -204,8 +212,8 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             Connection conn = this.getConnection();
-            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID FROM DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? " +
-                         "ORDER BY ID DESC";
+            String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME"
+                    + " FROM DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? ORDER BY ID DESC";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             resultSet = stmt.executeQuery();
@@ -215,6 +223,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                 byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
+                certificateResponse.setUsername(resultSet.getString("USERNAME"));
                 CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
                 certificates.add(certificateResponse);
             }

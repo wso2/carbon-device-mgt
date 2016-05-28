@@ -24,8 +24,8 @@ import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -198,8 +198,8 @@ public class PolicyManagerUtil {
 
     public static int getMonitoringFequency() {
 
-        TenantConfigurationManagementService configMgtService = new TenantConfigurationManagementServiceImpl();
-        TenantConfiguration tenantConfiguration = null;
+        PlatformConfigurationManagementService configMgtService = new TenantConfigurationManagementServiceImpl();
+        PlatformConfiguration tenantConfiguration = null;
         int monitoringFrequency = 0;
         try {
             tenantConfiguration = configMgtService.getConfiguration(GENERAL_CONFIG_RESOURCE_PATH);

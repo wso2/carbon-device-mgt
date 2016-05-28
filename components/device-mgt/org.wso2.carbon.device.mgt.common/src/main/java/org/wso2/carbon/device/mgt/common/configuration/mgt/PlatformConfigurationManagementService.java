@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.common.configuration.mgt;
  * This represents the tenant configuration management functionality which should be implemented by
  * the device type plugins.
  */
-public interface TenantConfigurationManagementService {
+public interface PlatformConfigurationManagementService {
 
 	/**
 	 * Method to add a operation to a device or a set of devices.
@@ -31,7 +31,7 @@ public interface TenantConfigurationManagementService {
 	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while adding the
 	 * configuration.
 	 */
-	 boolean saveConfiguration(TenantConfiguration tenantConfiguration, String resourcePath) throws
+	 boolean saveConfiguration(PlatformConfiguration tenantConfiguration, String resourcePath) throws
 	                                                                                         ConfigurationManagementException;
 
 	/**
@@ -41,6 +41,6 @@ public interface TenantConfigurationManagementService {
 	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while fetching the
 	 * operation list.
 	 */
-	 TenantConfiguration getConfiguration(String resourcePath) throws ConfigurationManagementException;
+	 PlatformConfiguration getConfiguration(String resourcePath) throws ConfigurationManagementException;
 
 }

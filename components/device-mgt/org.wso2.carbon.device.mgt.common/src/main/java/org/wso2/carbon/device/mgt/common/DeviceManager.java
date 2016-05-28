@@ -17,7 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 
@@ -40,14 +40,14 @@ public interface DeviceManager {
      *
      * @return Returns the status of the operation
      */
-    boolean saveConfiguration(TenantConfiguration configuration) throws DeviceManagementException;
+    boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException;
 
     /**
      * Method to get platform specific Configuration.
      *
      * @return Returns the platform specific tenant configurations
      */
-    TenantConfiguration getConfiguration() throws DeviceManagementException;
+    PlatformConfiguration getConfiguration() throws DeviceManagementException;
 
     /**
      * Method to enrolling a particular device of type mobile, IoT, etc within CDM.

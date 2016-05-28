@@ -72,6 +72,14 @@ public interface DeviceInformationManager {
      */
     DeviceLocation getDeviceLocation(DeviceIdentifier deviceIdentifier) throws DeviceDetailsMgtException;
 
+    /**
+     * This method will return the device location with latitude, longitude, address etc.. of supplied devices.
+     * @param deviceIdentifiers - List of Device identifier and device type.
+     * @return Device Location list.
+     * @throws DeviceDetailsMgtException
+     */
+    List<DeviceLocation> getDeviceLocations(List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException;
+
 //    /**
 //     * This method will manage the storing of device application list.
 //     * @param deviceApplication - Device application list.

@@ -183,5 +183,26 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         }
     }
 
+    @Override
+    public List<DeviceLocation> getDeviceLocations(List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException {
+
+        try {
+            List<Device> devices = DeviceManagementDataHolder.getInstance().
+                    getDeviceManagementProvider().getAllDevices(deviceIdentifiers.get(0).getType());
+            List<DeviceLocation> deviceLocations = new ArrayList<>();
+            DeviceManagementDAOFactory.openConnection();
+            for (Device device : devices) {
+                deviceLocations.add(deviceDetailsDAO.getDeviceLocation(device.getId()));
+            }
+            return deviceLocations;
+        } catch (DeviceManagementException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving the devices.", e);
+        } catch (SQLException e) {
+            throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
+        } catch (DeviceDetailsMgtDAOException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving device locations.", e);
+        }
+    }
+
 }
 

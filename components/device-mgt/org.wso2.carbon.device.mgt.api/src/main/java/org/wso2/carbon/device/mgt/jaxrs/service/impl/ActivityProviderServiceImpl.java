@@ -29,7 +29,9 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 public class ActivityProviderServiceImpl implements ActivityInfoProviderService {
 
@@ -53,4 +55,20 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         return Response.status(Response.Status.OK).entity(operation).build();
     }
 
+    @Override
+    @Path("/")
+    public Response getActivities(
+            @QueryParam("timestamp") String timestamp) {
+        List<Activity> activities = null;
+        DeviceManagementProviderService dmService;
+        try {
+            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
+            activities = dmService.getActivitiesUpdatedAfter(Long.parseLong(timestamp));
+        } catch (OperationManagementException e) {
+            String msg = "Error occurred while fetching the activities updated after given time stamp.";
+            log.error(msg, e);
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(activities).build();
+    }
 }

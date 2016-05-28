@@ -93,4 +93,56 @@ public interface ActivityInfoProviderService {
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
+
+
+    @GET
+    @Path("/")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            response = Activity.class,
+            responseContainer = "List",
+            value = "Retrieve details of a particular activity.",
+            notes = "This will return information of a particular activities i.e. meta information of operations, " +
+                    "etc; including the responses from the devices which happened after given time.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Activity details is successfully fetched",
+                    response = Activity.class,
+                    responseContainer = "List",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                            "the requested resource."),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported"),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching activity data.")
+    })
+    @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
+    Response getActivities(
+            @ApiParam(
+                    name = "timestamp",
+                    value = "Validates if the requested variant has not been modified since the time specified, this " +
+                            "should be provided in unix format in seconds.",
+                    required = true)
+            @QueryParam("timestamp") String timestamp);
+
 }

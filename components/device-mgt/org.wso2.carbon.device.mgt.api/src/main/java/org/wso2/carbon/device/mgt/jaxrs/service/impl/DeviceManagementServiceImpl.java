@@ -82,6 +82,26 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         }
     }
 
+    @GET
+    @Path("{type}/{id}/info")
+    public Response getDeviceInfo(@PathParam("type") String type, @PathParam("id") String id,
+                                  @HeaderParam("If-Modified-Since") String timestamp) {
+        DeviceInformationManager informationManager;
+        DeviceInfo deviceInfo;
+        try {
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setId(id);
+            deviceIdentifier.setType(type);
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceInfo = informationManager.getDeviceInfo(deviceIdentifier);
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device information.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceInfo).build();
+    }
+
     @POST
     @Override
     public Response getDevicesInfo(
@@ -152,6 +172,23 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         return Response.status(Response.Status.OK).entity(deviceLocation).build();
     }
 
+    @POST
+    @Path("/locations")
+    public Response getDeviceLocations(List<DeviceIdentifier> deviceIdentifiers,
+                                       @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        DeviceInformationManager informationManager;
+        List<DeviceLocation> deviceLocations;
+        try {
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceLocations = informationManager.getDeviceLocations(deviceIdentifiers);
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device location.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceLocations).build();
+    }
+
     @GET
     @Path("/{type}/{id}/features")
     @Override
@@ -180,7 +217,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
     @POST
     @Path("/search-devices")
     @Override
-    public Response searchDevices(@QueryParam("offset") int offset, int limit, SearchContext searchContext) {
+    public Response searchDevices(@QueryParam("offset") int offset, @QueryParam("limit") int limit, SearchContext searchContext) {
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
         try {

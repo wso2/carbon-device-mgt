@@ -96,11 +96,11 @@ public interface ConfigurationManagementService {
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Notification status has been updated successfully",
+                    message = "OK. \n General platform configuration has been updated successfully",
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Location",
-                                    description = "The URL of the updated device."),
+                                    description = "URL of the updated general platform configuration."),
                             @ResponseHeader(
                                     name = "Content-Type",
                                     description = "The content type of the body"),
@@ -124,7 +124,7 @@ public interface ConfigurationManagementService {
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n " +
-                            "Server error occurred while modifying status of the notification.")
+                            "Server error occurred while modifying general platform configuration.")
     })
     @Permission(scope = "configuration-modify",
             permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"})

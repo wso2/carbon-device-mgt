@@ -41,7 +41,7 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
     @Override
     public Response getGroupsOfUser(
             @QueryParam("username") String username,
-            @HeaderParam("If-Modified-Since") Date timestamp,
+            @HeaderParam("If-Modified-Since") String timestamp,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {

@@ -82,7 +82,7 @@ public interface GroupManagementAdminService {
                     name = "If-Modified-Since",
                     value = "Timestamp of the last modified date",
                     required = false)
-            @HeaderParam("If-Modified-Since") Date timestamp,
+            @HeaderParam("If-Modified-Since") String timestamp,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",

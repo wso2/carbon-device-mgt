@@ -323,7 +323,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @GET
     @Override
-    public Response getUsers(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") Date timestamp,
+    public Response getUsers(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") String timestamp,
                              @QueryParam("offset") int offset,
                              @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
@@ -357,7 +357,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @GET
     @Path("/usernames")
     @Override
-    public Response getUserNames(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") Date timestamp,
+    public Response getUserNames(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") String timestamp,
                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information using the filter : " + filter);

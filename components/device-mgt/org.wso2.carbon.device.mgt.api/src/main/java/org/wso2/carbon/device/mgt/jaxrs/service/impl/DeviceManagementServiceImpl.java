@@ -62,7 +62,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
             @QueryParam("roleName") String roleName,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
-            @HeaderParam("If-Modified-Since") Date timestamp,
+            @HeaderParam("If-Modified-Since") String timestamp,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
@@ -86,7 +86,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
     @Override
     public Response getDevicesInfo(
             List<DeviceIdentifier> deviceIds,
-            @HeaderParam("If-Modified-Since") Date timestamp) {
+            @HeaderParam("If-Modified-Since") String timestamp) {
         DeviceInformationManager informationManager;
         List<DeviceInfo> deviceInfo;
         try {

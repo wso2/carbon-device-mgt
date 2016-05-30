@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
 import java.util.ArrayList;
@@ -204,6 +205,44 @@ public class RequestValidationUtil {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
                             "Activity Id should be in the form of '[ACTIVITY][_][any-positive-integer]'").build());
+        }
+    }
+
+    public static void validateApplicationInstallationContext(ApplicationWrapper installationCtx) {
+        int count = 0;
+
+        if (installationCtx.getDeviceIdentifiers() != null && installationCtx.getDeviceIdentifiers().size() > 0) {
+            count++;
+        }
+        if (installationCtx.getUserNameList() != null && installationCtx.getUserNameList().size() > 0) {
+            count++;
+        }
+        if (installationCtx.getRoleNameList() != null && installationCtx.getRoleNameList().size() > 0) {
+            count++;
+        }
+        if (count > 1) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("The incoming request has " +
+                            "more than one application installation criteria defined").build());
+        }
+    }
+
+    public static void validateApplicationUninstallationContext(ApplicationWrapper installationCtx) {
+        int count = 0;
+
+        if (installationCtx.getDeviceIdentifiers() != null && installationCtx.getDeviceIdentifiers().size() > 0) {
+            count++;
+        }
+        if (installationCtx.getUserNameList() != null && installationCtx.getUserNameList().size() > 0) {
+            count++;
+        }
+        if (installationCtx.getRoleNameList() != null && installationCtx.getRoleNameList().size() > 0) {
+            count++;
+        }
+        if (count > 1) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("The incoming request has " +
+                            "more than one application un-installation criteria defined").build());
         }
     }
 

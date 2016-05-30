@@ -23,7 +23,9 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ConfigurationManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.MDMAppConstants;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
@@ -63,7 +65,8 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
         } catch (ConfigurationManagementException | PolicyManagementException e) {
             msg = "ErrorResponse occurred while retrieving the configurations.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 
@@ -80,7 +83,8 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
         } catch (ConfigurationManagementException e) {
             String msg = "ErrorResponse occurred while updating the configuration.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 

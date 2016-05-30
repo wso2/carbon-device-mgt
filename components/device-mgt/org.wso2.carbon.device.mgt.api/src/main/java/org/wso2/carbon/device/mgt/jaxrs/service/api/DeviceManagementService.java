@@ -30,12 +30,12 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.policy.mgt.common.Policy;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -138,7 +138,6 @@ public interface DeviceManagementService {
             value = "Retrieve devices information from the supplied device identifier.",
             notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
                     "identifier.",
-            response = DeviceInfo.class,
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -173,12 +172,16 @@ public interface DeviceManagementService {
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error."),
                     @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No device is found under the provided type and id."),
+                    @ApiResponse(
                             code = 406,
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving information of the list of the devices submitted.")
+                                    "Server error occurred while retrieving information of the list of the devices submitted.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceInfo(
@@ -270,7 +273,6 @@ public interface DeviceManagementService {
             httpMethod = "GET",
             value = "Get information of the requested device.",
             notes = "Returns information of the requested device.",
-            response = Device.class,
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -301,7 +303,8 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving information requested device.")
+                                    "Server error occurred while retrieving information requested device.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "device-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
@@ -332,7 +335,6 @@ public interface DeviceManagementService {
             value = "Get the device location of a given device and a device type.",
             notes = "This will return the device location including latitude and longitude as well the "
                     + "physical address.",
-            response = DeviceLocation.class,
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -346,10 +348,11 @@ public interface DeviceManagementService {
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 404,
-                            message = "Location details are not available for the given device."),
+                            message = "Not Found. \n No device is found under the provided type and id."),
                     @ApiResponse(
                             code = 500,
-                            message = "ErrorResponse occurred while getting the device location.")
+                            message = "ErrorResponse occurred while getting the device location.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceLocation(
@@ -379,8 +382,6 @@ public interface DeviceManagementService {
             value = "Get the device location of a given devices and a device type.",
             notes = "This will return the device locations including latitude and longitude as well the "
                     + "physical address of the given devices.",
-            response = DeviceLocation.class,
-            responseContainer = "List",
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -398,7 +399,8 @@ public interface DeviceManagementService {
                             message = "Location details are not available for the given devices."),
                     @ApiResponse(
                             code = 500,
-                            message = "ErrorResponse occurred while getting the device location.")
+                            message = "ErrorResponse occurred while getting the device location.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceLocations(
@@ -422,8 +424,6 @@ public interface DeviceManagementService {
             notes = "WSO2 EMM features enable you to carry out many operations on a given device platform. " +
                     "Using this REST API you can get the features that can be carried out on a preferred device type," +
                     " such as iOS, Android or Windows.",
-            response = Feature.class,
-            responseContainer = "List",
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -458,7 +458,8 @@ public interface DeviceManagementService {
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n Device of which the feature list is requested, is not found."),
@@ -468,7 +469,8 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving feature list of the device.")
+                                    "Server error occurred while retrieving feature list of the device.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"})
@@ -497,8 +499,6 @@ public interface DeviceManagementService {
             httpMethod = "POST",
             value = "Advanced search for devices.",
             notes = "Carry out an advanced search of devices.",
-            response = DeviceWrapper.class,
-            responseContainer = "List",
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -526,7 +526,8 @@ public interface DeviceManagementService {
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
@@ -536,7 +537,8 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while enrolling the device.")
+                                    "Server error occurred while enrolling the device.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response searchDevices(
@@ -562,9 +564,7 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting installed application details of a device.",
-            responseContainer = "List",
             notes = "Get the list of applications that a device has subscribed.",
-            response = Application.class,
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -599,7 +599,8 @@ public interface DeviceManagementService {
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n Device of which the application list is requested, is not found."),
@@ -609,7 +610,8 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving installed application list of the device.")
+                                    "Server error occurred while retrieving installed application list of the device.",
+                    response = ErrorResponse.class)
             })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
@@ -651,8 +653,6 @@ public interface DeviceManagementService {
             notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
                     " the operations carried out on a device it is not feasible to show all the details on one page" +
                     " therefore the details are paginated.",
-            response = Operation.class,
-            responseContainer = "List",
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -687,7 +687,8 @@ public interface DeviceManagementService {
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n Device of which the operation list is requested, is not found."),
@@ -697,7 +698,8 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving operation list scheduled for the device.")
+                                    "Server error occurred while retrieving operation list scheduled for the device.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
@@ -739,7 +741,6 @@ public interface DeviceManagementService {
             notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the EMM " +
                     "filters the policies based on the Platform (device type), filters based on the device ownership" +
                     " type , filters based on the user role or name and finally the policy is enforced on the device.",
-            response = Policy.class,
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -773,7 +774,8 @@ public interface DeviceManagementService {
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n Device of which the effective policy is requested, is not found."),
@@ -783,7 +785,8 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving the effective policy calculated for the device.")
+                                    "Server error occurred while retrieving the effective policy calculated for the device.",
+                            response = ErrorResponse.class)
             })
     Response getEffectivePolicyOfDevice(
             @ApiParam(

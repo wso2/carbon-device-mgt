@@ -22,6 +22,7 @@ import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -45,7 +46,6 @@ public interface ConfigurationManagementService {
             httpMethod = "GET",
             value = "Get the general platform configurations.",
             notes = "Get the general platform level configuration details.",
-            response = PlatformConfiguration.class,
             tags = "Configuration Management")
     @ApiResponses(value = {
             @ApiResponse(
@@ -74,7 +74,9 @@ public interface ConfigurationManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the general platform configuration.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the general " +
+                            "platform configuration.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "configuration-view",
             permissions = {"/permission/admin/device-mgt/admin/platform-configs/view"})
@@ -116,15 +118,13 @@ public interface ConfigurationManagementService {
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error."),
             @ApiResponse(
-                    code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
-            @ApiResponse(
                     code = 415,
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while modifying general platform configuration.")
+                            "Server error occurred while modifying general platform configuration.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "configuration-modify",
             permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"})

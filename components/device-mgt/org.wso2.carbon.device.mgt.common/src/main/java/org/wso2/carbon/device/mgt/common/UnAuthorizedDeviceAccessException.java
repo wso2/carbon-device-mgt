@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -18,27 +18,27 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-public class IllegalTransactionStateException extends RuntimeException {
+public class UnauthorizedDeviceAccessException extends RuntimeException {
 
-    private static final long serialVersionUID = -3151279331929070297L;
+    private static final long serialVersionUID = -3151289331929070297L;
 
-    public IllegalTransactionStateException(String msg, Exception nestedEx) {
+    public UnauthorizedDeviceAccessException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }
 
-    public IllegalTransactionStateException(String message, Throwable cause) {
+    public UnauthorizedDeviceAccessException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public IllegalTransactionStateException(String msg) {
+    public UnauthorizedDeviceAccessException(String msg) {
         super(msg);
     }
 
-    public IllegalTransactionStateException() {
+    public UnauthorizedDeviceAccessException() {
         super();
     }
 
-    public IllegalTransactionStateException(Throwable cause) {
+    public UnauthorizedDeviceAccessException(Throwable cause) {
         super(cause);
     }
 

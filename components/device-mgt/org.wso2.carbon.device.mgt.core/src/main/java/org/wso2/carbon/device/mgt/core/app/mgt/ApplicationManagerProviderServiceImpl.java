@@ -264,6 +264,13 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             DeviceManagementDAOFactory.openConnection();
             device = deviceDAO.getDevice(deviceId, tenantId);
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
+                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                }
+                return null;
+            }
             return applicationDAO.getInstalledApplications(device.getId());
         } catch (DeviceManagementDAOException e) {
             throw new ApplicationManagementException("Error occurred while fetching the Application List of '" +

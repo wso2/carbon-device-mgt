@@ -71,7 +71,7 @@ public class DeviceMgtAPIUtils {
                                                 "frequency.").build()
                         );
                     }
-                    return Integer.parseInt(entry.getValue().toString());
+                    return (int) (Double.parseDouble(entry.getValue().toString()) + 0.5d);
                 }
             }
         }

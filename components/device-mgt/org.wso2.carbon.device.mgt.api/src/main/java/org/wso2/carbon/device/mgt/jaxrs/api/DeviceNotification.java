@@ -112,7 +112,7 @@ public interface DeviceNotification {
             value = "Sending a Device Notification",
             notes = "Notify users on device operation failures and other information using this REST API")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "NNotification has added successfully"),
+            @ApiResponse(code = 201, message = "Notification has been added successfully"),
             @ApiResponse(code = 500, message = "Error occurred while updating notification status")
     })
     @Permission(scope = "device-notification-modify",

@@ -76,7 +76,7 @@ public interface RoleManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching requested list of roles.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching requested list of roles.")
             })
     @Permission(scope = "roles-view", permissions = {
             "/permission/admin/device-mgt/admin/roles/list",
@@ -155,7 +155,7 @@ public interface RoleManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching the permission list of the requested role.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.")
             })
     @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getPermissionsOfRole(
@@ -209,7 +209,7 @@ public interface RoleManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching the requested role.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the requested role.")
     })
     @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getRole(
@@ -266,7 +266,7 @@ public interface RoleManagementService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while adding a new role.")
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
@@ -316,7 +316,7 @@ public interface RoleManagementService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while updating the role.")
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
@@ -348,7 +348,7 @@ public interface RoleManagementService {
                     message = "Not Found. \n Resource to be deleted does not exist."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while removing the role.")
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
@@ -404,7 +404,7 @@ public interface RoleManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while updating the user list of the role.")
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})

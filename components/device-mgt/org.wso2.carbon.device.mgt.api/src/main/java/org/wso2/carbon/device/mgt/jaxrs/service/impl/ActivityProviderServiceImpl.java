@@ -27,10 +27,13 @@ import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-
+@Path("/activities")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ActivityProviderServiceImpl implements ActivityInfoProviderService {
 
     private static final Log log = LogFactory.getLog(ActivityProviderServiceImpl.class);
@@ -47,7 +50,7 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             operation = dmService.getOperationByActivityId(id);
         } catch (OperationManagementException e) {
-            String msg = "Error occurred while fetching the activity for the supplied id.";
+            String msg = "ErrorResponse occurred while fetching the activity for the supplied id.";
             log.error(msg, e);
             Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -58,14 +61,16 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
     @Override
     public Response getActivities(
             @QueryParam("timestamp") String timestamp,
-            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit) {
         List<Activity> activities = null;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             activities = dmService.getActivitiesUpdatedAfter(Long.parseLong(timestamp));
         } catch (OperationManagementException e) {
-            String msg = "Error occurred while fetching the activities updated after given time stamp.";
+            String msg = "ErrorResponse occurred while fetching the activities updated after given time stamp.";
             log.error(msg, e);
             Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

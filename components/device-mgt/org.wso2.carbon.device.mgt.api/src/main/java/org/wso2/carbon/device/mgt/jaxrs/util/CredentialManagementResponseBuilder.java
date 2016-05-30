@@ -74,7 +74,7 @@ public class CredentialManagementResponseBuilder {
             return Response.status(Response.Status.CREATED).entity("UserImpl password by username: " +
                     credentials.getUsername() + " was successfully changed.").build();
         } catch (UserStoreException e) {
-            String msg = "Error occurred while updating the credentials of user '" + credentials.getUsername() + "'";
+            String msg = "ErrorResponse occurred while updating the credentials of user '" + credentials.getUsername() + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (UnsupportedEncodingException e) {

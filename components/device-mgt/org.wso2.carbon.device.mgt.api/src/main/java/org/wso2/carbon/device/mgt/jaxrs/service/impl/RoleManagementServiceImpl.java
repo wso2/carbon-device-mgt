@@ -60,7 +60,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
             }
         } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving roles from the underlying user stores";
+            String msg = "ErrorResponse occurred while retrieving roles from the underlying user stores";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -88,11 +88,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             return Response.status(Response.Status.OK).entity(rolePermissions).build();
         } catch (UserAdminException e) {
-            String msg = "Error occurred while retrieving the permissions of role '" + roleName + "'";
+            String msg = "ErrorResponse occurred while retrieving the permissions of role '" + roleName + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving the underlying user realm attached to the " +
+            String msg = "ErrorResponse occurred while retrieving the underlying user realm attached to the " +
                     "current logged in user";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
@@ -150,7 +150,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 roleWrapper.setPermissions(permList.toArray(permListAr));
             }
         } catch (UserStoreException | UserAdminException e) {
-            String msg = "Error occurred while retrieving the user role '" + roleName + "'";
+            String msg = "ErrorResponse occurred while retrieving the user role '" + roleName + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -186,7 +186,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             userStoreManager.addRole(roleWrapper.getRoleName(), roleWrapper.getUsers(), permissions);
         } catch (UserStoreException e) {
-            String msg = "Error occurred while adding role '" + roleWrapper.getRoleName() + "'";
+            String msg = "ErrorResponse occurred while adding role '" + roleWrapper.getRoleName() + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -228,7 +228,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 }
             }
         } catch (UserStoreException e) {
-            String msg = "Error occurred while updating role '" + roleName + "'";
+            String msg = "ErrorResponse occurred while updating role '" + roleName + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -249,7 +249,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             // Delete all authorizations for the current role before deleting
             authorizationManager.clearRoleAuthorization(roleName);
         } catch (UserStoreException e) {
-            String msg = "Error occurred while deleting the role '" + roleName + "'";
+            String msg = "ErrorResponse occurred while deleting the role '" + roleName + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -275,7 +275,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
             userStoreManager.updateUserListOfRole(roleName, usersToDelete, usersToAdd);
         } catch (UserStoreException e) {
-            String msg = "Error occurred while updating the users of the role '" + roleName + "'";
+            String msg = "ErrorResponse occurred while updating the users of the role '" + roleName + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

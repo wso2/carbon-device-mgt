@@ -34,6 +34,8 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManag
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
@@ -60,7 +62,16 @@ public class DeviceMgtAPIUtils {
         if (configEntryList != null && !configEntryList.isEmpty()) {
             for (ConfigurationEntry entry : configEntryList) {
                 if (NOTIFIER_FREQUENCY.equals(entry.getName())) {
-                    return Integer.parseInt((String) entry.getValue());
+                    if (entry.getValue() == null) {
+                        throw new InputValidationException(
+                                new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
+                                        "Notifier frequency cannot be null. Please specify a valid non-negative " +
+                                                "integer value to successfully set up notification frequency. " +
+                                                "Should the service be stopped, use '0' as the notification " +
+                                                "frequency.").build()
+                        );
+                    }
+                    return Integer.parseInt(entry.getValue().toString());
                 }
             }
         }
@@ -104,7 +115,7 @@ public class DeviceMgtAPIUtils {
         }
         return groupManagementProviderService;
     }
-    
+
     public static UserStoreManager getUserStoreManager() throws UserStoreException {
         RealmService realmService;
         UserStoreManager userStoreManager;
@@ -150,13 +161,6 @@ public class DeviceMgtAPIUtils {
 
         return authorizationManager;
     }
-    
-    public static DeviceIdentifier instantiateDeviceIdentifier(String deviceType, String deviceId) {
-        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setType(deviceType);
-        deviceIdentifier.setId(deviceId);
-        return deviceIdentifier;
-    }
 
     public static ApplicationManagementProviderService getAppManagementService() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -182,7 +186,7 @@ public class DeviceMgtAPIUtils {
     }
 
     public static PlatformConfigurationManagementService getPlatformConfigurationManagementService() {
-        CarbonContext ctx = CarbonContext.getThreadLocalCarbonContext();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         PlatformConfigurationManagementService tenantConfigurationManagementService =
                 (PlatformConfigurationManagementService) ctx.getOSGiService(
                         PlatformConfigurationManagementService.class, null);
@@ -201,29 +205,6 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException("Notification Management service not initialized.");
         }
         return notificationManagementService;
-    }
-    
-    public static CertificateManagementService getCertificateManagementService() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        CertificateManagementService certificateManagementService = (CertificateManagementService)
-                ctx.getOSGiService(CertificateManagementService.class, null);
-
-        if (certificateManagementService == null) {
-            throw new IllegalStateException("CertificateImpl Management service is not initialized.");
-        }
-        return certificateManagementService;
-    }
-
-
-    public static MediaType getResponseMediaType(String acceptHeader) {
-        MediaType responseMediaType;
-        if (acceptHeader == null || MediaType.WILDCARD.equals(acceptHeader)) {
-            responseMediaType = DEFAULT_CONTENT_TYPE;
-        } else {
-            responseMediaType = MediaType.valueOf(acceptHeader);
-        }
-
-        return responseMediaType;
     }
 
     public static DeviceInformationManager getDeviceInformationManagerService() {

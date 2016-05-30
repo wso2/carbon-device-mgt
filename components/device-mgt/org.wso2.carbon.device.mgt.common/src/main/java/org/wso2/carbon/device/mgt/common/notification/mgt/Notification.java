@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.common.notification.mgt;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -34,19 +35,28 @@ public class Notification {
     }
 
     public enum Type {
-        ALERT,
+        ALERT
     }
 
-    @ApiModelProperty(name = "notificationId", value = "Defines the notification ID.", required = true)
+    @JsonProperty(value = "notificationId", required = false)
+    @ApiModelProperty(name = "notificationId", value = "Defines the notification ID.", required = false)
     private int notificationId;
+
+    @JsonProperty(value = "deviceIdentifier", required = true)
     @ApiModelProperty(name = "deviceIdentifier", value = "Defines the device identification properties.",
             required = true)
     private DeviceIdentifier deviceIdentifier;
+
+    @JsonProperty(value = "description", required = false)
     @ApiModelProperty(name = "description", value = "Provides the message you want to send to the user.",
             required = true)
     private String description;
+
+    @JsonProperty(value = "operationId", required = true)
     @ApiModelProperty(name = "operationId", value = "Provides the operationID.", required = true)
     private int operationId;
+
+    @JsonProperty(value = "status", required = true)
     @ApiModelProperty(name = "status", value = "Provides the status of the message." +
             "The following values can be assigned for the status.\n" +
             "NEW: The message is in the unread state.\n" +
@@ -95,7 +105,7 @@ public class Notification {
 
     @Override
     public String toString() {
-        return "Notification{" +
+        return "notification {" +
                 "notificationId='" + notificationId + '\'' +
                 ", deviceId=" + deviceIdentifier.getId() +
                 ", deviceType=" + deviceIdentifier.getType() +

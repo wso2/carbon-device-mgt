@@ -69,7 +69,7 @@ public interface GroupManagementAdminService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the group list.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the group list.")
     })
     @Permission(scope = "group-view", permissions = {"/permission/admin/device-mgt/user/groups/list"})
     Response getGroupsOfUser(

@@ -60,7 +60,7 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
             config.setConfiguration(configList);
             return Response.status(Response.Status.OK).entity(config).build();
         } catch (ConfigurationManagementException e) {
-            msg = "Error occurred while retrieving the configurations.";
+            msg = "ErrorResponse occurred while retrieving the configurations.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -77,7 +77,7 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
             return Response.status(Response.Status.CREATED)
                     .entity("Configuration has successfully been updated").build();
         } catch (ConfigurationManagementException e) {
-            String msg = "Error occurred while updating the configuration.";
+            String msg = "ErrorResponse occurred while updating the configuration.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

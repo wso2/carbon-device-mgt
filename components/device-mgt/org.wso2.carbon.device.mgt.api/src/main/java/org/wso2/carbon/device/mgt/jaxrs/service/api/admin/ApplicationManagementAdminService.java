@@ -63,7 +63,7 @@ public interface ApplicationManagementAdminService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while bulk issuing application installation operations upon " +
                             "a given set of devices.")
     })
@@ -97,7 +97,7 @@ public interface ApplicationManagementAdminService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while bulk issuing application un-installation operations upon " +
                             "a given set of devices.")
     })

@@ -35,22 +35,24 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManag
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Date;
 import java.util.List;
 
 @Path("/devices")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DeviceManagementServiceImpl implements DeviceManagementService{
+public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
 
@@ -66,15 +68,33 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
+            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
+
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             PaginationRequest request = new PaginationRequest(offset, limit);
+            PaginationResult result;
 
-            PaginationResult result = dms.getAllDevices(request);
-            if (result == null || result.getData().size() == 0) {
+            if (type != null) {
+                result = dms.getDevicesByType(request);
+            } else if (user != null) {
+                result = dms.getDevicesOfUser(request);
+            } else if (ownership != null) {
+                RequestValidationUtil.validateOwnershipType(ownership);
+                result = dms.getDevicesByOwnership(request);
+            } else if (status != null) {
+                RequestValidationUtil.validateStatus(status);
+                result = dms.getDevicesByStatus(request);
+            } else {
+                result = dms.getAllDevices(request);
+            }
+            if (result == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No device is currently enrolled " +
                         "with the server").build();
             }
-            return Response.status(Response.Status.OK).entity(result.getData()).build();
+            DeviceList devices = new DeviceList();
+            devices.setList((List<Device>) result.getData());
+            devices.setCount(result.getRecordsTotal());
+            return Response.status(Response.Status.OK).entity(devices).build();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching all enrolled devices";
             log.error(msg, e);
@@ -84,11 +104,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
 
     @GET
     @Path("{type}/{id}/info")
-    public Response getDeviceInfo(@PathParam("type") String type, @PathParam("id") String id,
+    public Response getDeviceInfo(@PathParam("type") String type, @NotNull @PathParam("id") String id,
                                   @HeaderParam("If-Modified-Since") String timestamp) {
         DeviceInformationManager informationManager;
         DeviceInfo deviceInfo;
         try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
             DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
             deviceIdentifier.setId(id);
             deviceIdentifier.setType(type);
@@ -101,30 +123,31 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         }
         return Response.status(Response.Status.OK).entity(deviceInfo).build();
     }
-
-    @POST
-    @Override
-    public Response getDevicesInfo(
-            List<DeviceIdentifier> deviceIds,
-            @HeaderParam("If-Modified-Since") String timestamp) {
-        DeviceInformationManager informationManager;
-        List<DeviceInfo> deviceInfo;
-        try {
-            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-            deviceInfo = informationManager.getDevicesInfo(deviceIds);
-            if (deviceInfo == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
-                        "device list submitted").build();
-            }
-        } catch (DeviceDetailsMgtException e) {
-            String msg = "Error occurred while getting the device information.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.OK).entity(deviceInfo).build();
-    }
+//
+//    @POST
+//    @Override
+//    public Response getDevicesInfo(
+//            List<DeviceIdentifier> deviceIds,
+//            @HeaderParam("If-Modified-Since") String timestamp) {
+//        DeviceInformationManager informationManager;
+//        List<DeviceInfo> deviceInfo;
+//        try {
+//            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+//            deviceInfo = informationManager.getDevicesInfo(deviceIds);
+//            if (deviceInfo == null) {
+//                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
+//                        "device list submitted").build();
+//            }
+//        } catch (DeviceDetailsMgtException e) {
+//            String msg = "Error occurred while getting the device information.";
+//            log.error(msg, e);
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+//        }
+//        return Response.status(Response.Status.OK).entity(deviceInfo).build();
+//    }
 
     @GET
+    @Path("/{type}/{id}")
     @Override
     public Response getDevice(
             @PathParam("type") String type,
@@ -132,6 +155,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         Device device;
         try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             device = dms.getDevice(new DeviceIdentifier(id, type));
         } catch (DeviceManagementException e) {
@@ -156,6 +181,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         DeviceInformationManager informationManager;
         DeviceLocation deviceLocation;
         try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
             informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
             deviceLocation = informationManager.getDeviceLocation(new DeviceIdentifier(id, type));
             if (deviceLocation == null || deviceLocation.getLatitude() == null ||
@@ -199,6 +226,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         List<Feature> features;
         DeviceManagementProviderService dms;
         try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
             features = dms.getFeatureManager(type).getFeatures();
         } catch (DeviceManagementException e) {
@@ -207,9 +236,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        if (features == null || features.size() == 0) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No feature is currently associated " +
-                    "with the '" + type + "' device, which carries the id '" + id + "'").build();
+        if (features == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
+                    "the provided type and id").build();
         }
         return Response.status(Response.Status.OK).entity(features).build();
     }
@@ -217,7 +246,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
     @POST
     @Path("/search-devices")
     @Override
-    public Response searchDevices(@QueryParam("offset") int offset, @QueryParam("limit") int limit, SearchContext searchContext) {
+    public Response searchDevices(@QueryParam("offset") int offset,
+                                  @QueryParam("limit") int limit, SearchContext searchContext) {
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
         try {
@@ -228,9 +258,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        if (devices == null || devices.size() == 0) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No device can be retrieved upon the provided " +
-                    "selection criteria").build();
+        if (devices == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
+                    "the provided type and id").build();
         }
         return Response.status(Response.Status.OK).entity(devices).build();
     }
@@ -247,11 +277,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         List<Application> applications;
         ApplicationManagementProviderService amc;
         try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
             amc = DeviceMgtAPIUtils.getAppManagementService();
             applications = amc.getApplicationListForDevice(new DeviceIdentifier(id, type));
-            if (applications == null || applications.size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No installed applications found on the " +
-                        "device searched").build();
+            if (applications == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon" +
+                        "the provided type and id").build();
             }
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while fetching the apps of the '" + type + "' device, which carries " +
@@ -274,8 +306,14 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         List<? extends Operation> operations;
         DeviceManagementProviderService dms;
         try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
             operations = dms.getOperations(new DeviceIdentifier(id, type));
+            if (operations == null) {
+                Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
+                        "the provided type and id");
+            }
         } catch (OperationManagementException e) {
             String msg = "Error occurred while fetching the operations for the '" + type + "' device, which " +
                     "carries the id '" + id + "'";
@@ -285,11 +323,15 @@ public class DeviceManagementServiceImpl implements DeviceManagementService{
         return Response.status(Response.Status.OK).entity(operations).build();
     }
 
+    @GET
+    @Path("/{type}/{id}/effective-policy")
     @Override
-    public Response getEffectivePolicyOfDevice(@QueryParam("type") String type,
-                                               @QueryParam("id") String id,
+    public Response getEffectivePolicyOfDevice(@PathParam("type") String type,
+                                               @PathParam("id") String id,
                                                @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         try {
+            RequestValidationUtil.validateDeviceIdentifier(type, id);
+
             PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
             Policy policy = policyManagementService.getAppliedPolicyToDevice(new DeviceIdentifier(id, type));
             if (policy == null) {

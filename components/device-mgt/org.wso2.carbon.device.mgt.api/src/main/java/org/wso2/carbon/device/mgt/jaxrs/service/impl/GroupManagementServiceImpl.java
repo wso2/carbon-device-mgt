@@ -64,7 +64,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
 //            }
 //            return Response.status(Response.Status.OK).entity(groupWrappers).build();
 //        } catch (GroupManagementException e) {
-//            String error = "Error occurred while getting the groups related to users for policy.";
+//            String error = "ErrorResponse occurred while getting the groups related to users for policy.";
 //            log.error(error, e);
 //            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
 //        }

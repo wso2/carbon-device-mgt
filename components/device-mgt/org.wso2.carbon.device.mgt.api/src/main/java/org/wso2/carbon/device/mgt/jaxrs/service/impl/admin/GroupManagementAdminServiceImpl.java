@@ -53,7 +53,7 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (GroupManagementException e) {
-            String msg = "Error occurred while retrieving the groups of user '" + username + "'";
+            String msg = "ErrorResponse occurred while retrieving the groups of user '" + username + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

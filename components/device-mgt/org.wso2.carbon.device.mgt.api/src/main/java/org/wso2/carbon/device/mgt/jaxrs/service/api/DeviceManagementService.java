@@ -84,7 +84,7 @@ public interface DeviceManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the device list.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the device list.")
     })
     @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDevices(
@@ -95,7 +95,7 @@ public interface DeviceManagementService {
             @QueryParam("type") String type,
             @ApiParam(
                     name = "user", value = "Username of owner of the devices.",
-                    required = true)
+                    required = false)
             @QueryParam("user") String user,
             @ApiParam(
                     name = "roleName",
@@ -177,7 +177,7 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving information of the list of the devices submitted.")
             })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
@@ -198,69 +198,69 @@ public interface DeviceManagementService {
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
-    @POST
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
-            value = "Retrieve devices information from the supplied device identifies.",
-            notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
-                    "identifiers.",
-            response = DeviceInfo.class,
-            responseContainer = "List",
-            tags = "Device Management")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Information of the submitted list of devices is returned",
-                            response = DeviceInfo.class,
-                            responseContainer = "List",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Type",
-                                            description = "The content type of the body"),
-                                    @ResponseHeader(
-                                            name = "ETag",
-                                            description = "Entity Tag of the response resource.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                                    @ResponseHeader(
-                                            name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
-                                                    "Used by caches, or in conditional requests.")}),
-                    @ApiResponse(
-                            code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Location",
-                                            description = "The Source URL of the document.")}),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
-                    @ApiResponse(
-                            code = 406,
-                            message = "Not Acceptable. \n The requested media type is not supported."),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n " +
-                                    "Server error occurred while retrieving information of the list of the devices submitted.")
-            })
-    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDevicesInfo(
-            @ApiParam(
-                    name = "deviceIds",
-                    value = "List of device identifiers",
-                    required = true) List<DeviceIdentifier> deviceIds,
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Timestamp of the last modified date",
-                    required = false)
-            @HeaderParam("If-Modified-Since") String timestamp);
+//    @POST
+//    @ApiOperation(
+//            consumes = MediaType.APPLICATION_JSON,
+//            produces = MediaType.APPLICATION_JSON,
+//            httpMethod = "POST",
+//            value = "Retrieve devices information from the supplied device identifies.",
+//            notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
+//                    "identifiers.",
+//            response = DeviceInfo.class,
+//            responseContainer = "List",
+//            tags = "Device Management")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(
+//                            code = 200,
+//                            message = "OK. \n Information of the submitted list of devices is returned",
+//                            response = DeviceInfo.class,
+//                            responseContainer = "List",
+//                            responseHeaders = {
+//                                    @ResponseHeader(
+//                                            name = "Content-Type",
+//                                            description = "The content type of the body"),
+//                                    @ResponseHeader(
+//                                            name = "ETag",
+//                                            description = "Entity Tag of the response resource.\n" +
+//                                                    "Used by caches, or in conditional requests."),
+//                                    @ResponseHeader(
+//                                            name = "Last-Modified",
+//                                            description = "Date and time the resource has been modified the last time.\n" +
+//                                                    "Used by caches, or in conditional requests.")}),
+//                    @ApiResponse(
+//                            code = 303,
+//                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+//                            responseHeaders = {
+//                                    @ResponseHeader(
+//                                            name = "Content-Location",
+//                                            description = "The Source URL of the document.")}),
+//                    @ApiResponse(
+//                            code = 304,
+//                            message = "Not Modified. \n " +
+//                                    "Empty body because the client already has the latest version of the requested resource."),
+//                    @ApiResponse(
+//                            code = 400,
+//                            message = "Bad Request. \n Invalid request or validation error."),
+//                    @ApiResponse(
+//                            code = 406,
+//                            message = "Not Acceptable. \n The requested media type is not supported."),
+//                    @ApiResponse(
+//                            code = 500,
+//                            message = "Internal Server ErrorResponse. \n " +
+//                                    "Server error occurred while retrieving information of the list of the devices submitted.")
+//            })
+//    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+//    Response getDevicesInfo(
+//            @ApiParam(
+//                    name = "deviceIds",
+//                    value = "List of device identifiers",
+//                    required = true) List<DeviceIdentifier> deviceIds,
+//            @ApiParam(
+//                    name = "If-Modified-Since",
+//                    value = "Timestamp of the last modified date",
+//                    required = false)
+//            @HeaderParam("If-Modified-Since") String timestamp);
 
 
     @GET
@@ -300,7 +300,7 @@ public interface DeviceManagementService {
                             message = "Not Found. \n No device is found under the provided type and id."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving information requested device.")
             })
     @Permission(scope = "device-view", permissions = {
@@ -349,7 +349,7 @@ public interface DeviceManagementService {
                             message = "Location details are not available for the given device."),
                     @ApiResponse(
                             code = 500,
-                            message = "Error occurred while getting the device location.")
+                            message = "ErrorResponse occurred while getting the device location.")
             })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceLocation(
@@ -398,7 +398,7 @@ public interface DeviceManagementService {
                             message = "Location details are not available for the given devices."),
                     @ApiResponse(
                             code = 500,
-                            message = "Error occurred while getting the device location.")
+                            message = "ErrorResponse occurred while getting the device location.")
             })
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceLocations(
@@ -467,7 +467,7 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving feature list of the device.")
             })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/view",
@@ -535,7 +535,7 @@ public interface DeviceManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while enrolling the device.")
             })
     @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
@@ -608,7 +608,7 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving installed application list of the device.")
             })
     @Permission(scope = "operation-view", permissions = {
@@ -696,7 +696,7 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving operation list scheduled for the device.")
             })
     @Permission(scope = "operation-view", permissions = {
@@ -731,6 +731,7 @@ public interface DeviceManagementService {
             @QueryParam("limit") int limit);
 
     @GET
+    @Path("/{type}/{id}/effective-policy")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -781,7 +782,7 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving the effective policy calculated for the device.")
             })
     Response getEffectivePolicyOfDevice(
@@ -789,12 +790,12 @@ public interface DeviceManagementService {
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = true)
-            @QueryParam("type") String type,
+            @PathParam("type") String type,
             @ApiParam(
                     name = "id",
                     value = "Device Identifier",
                     required = true)
-            @QueryParam("id") String id,
+            @PathParam("id") String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",

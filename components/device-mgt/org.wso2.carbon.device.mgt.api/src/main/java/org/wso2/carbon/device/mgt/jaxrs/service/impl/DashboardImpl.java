@@ -70,7 +70,7 @@ public class DashboardImpl implements Dashboard {
 //        "parameter : " + NON_COMPLIANT_FEATURE_CODE;
 //    private static final String REQUIRED_QUERY_PARAM_VALUE_PAGINATION_ENABLED = "Missing required query " +
 //        "parameter : " + PAGINATION_ENABLED;
-//    private static final String ERROR_IN_RETRIEVING_REQUESTED_DATA = "Error in retrieving requested data.";
+//    private static final String ERROR_IN_RETRIEVING_REQUESTED_DATA = "ErrorResponse in retrieving requested data.";
 //
 //    @GET
 //    @Path("device-count-overview")

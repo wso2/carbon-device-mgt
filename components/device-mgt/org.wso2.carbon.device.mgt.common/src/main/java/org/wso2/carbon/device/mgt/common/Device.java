@@ -154,7 +154,7 @@ public class Device implements Serializable {
 
     @Override
     public String toString() {
-        return "Device[" +
+        return "device [" +
                 "name=" + name + ";" +
                 "type=" + type + ";" +
                 "description=" + description + ";" +

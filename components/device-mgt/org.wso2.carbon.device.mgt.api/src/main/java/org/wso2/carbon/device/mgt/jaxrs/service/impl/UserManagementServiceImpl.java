@@ -87,7 +87,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while inviting user to enroll the device";
+            String msg = "ErrorResponse occurred while inviting user to enroll the device";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -185,7 +185,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                         "User by username: " + username + " does not exist").build();
             }
         } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving information of the user '" + username + "'";
+            String msg = "ErrorResponse occurred while retrieving information of the user '" + username + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -348,7 +348,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             return Response.status(Response.Status.OK).entity(userList).build();
         } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving the list of users";
+            String msg = "ErrorResponse occurred while retrieving the list of users";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -381,7 +381,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             return Response.status(Response.Status.OK).entity(userList).build();
         } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving the list of users using the filter : " + filter;
+            String msg = "ErrorResponse occurred while retrieving the list of users using the filter : " + filter;
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

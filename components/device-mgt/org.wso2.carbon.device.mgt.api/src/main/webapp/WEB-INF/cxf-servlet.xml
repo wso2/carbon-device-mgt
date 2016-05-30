@@ -43,7 +43,7 @@
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
-            <ref bean="errorHandler"/>
+            <!--<ref bean="errorHandler"/>-->
             <ref bean="swaggerWriter"/>
         </jaxrs:providers>
     </jaxrs:server>
@@ -54,8 +54,8 @@
     <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
         <property name="resourcePackage" value="org.wso2.carbon.device.mgt.jaxrs"/>
         <property name="version" value="1.0"/>
-        <property name="host" value="device-mgt.wso2.com"/>
-        <property name="basePath" value="/api/device-mgt/admin/v1.0"/>
+        <property name="host" value="localhost:9443"/>
+        <property name="basePath" value="/api/device-mgt/v1.0"/>
         <property name="title" value="Device Management Admin Service API Definitions"/>
         <property name="contact" value="dev@wso2.org"/>
         <property name="license" value="Apache 2.0"/>
@@ -77,6 +77,6 @@
     <bean id="userManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.UserManagementAdminServiceImpl"/>
     <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DashboardImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
-    <bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>
+    <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->
 
 </beans>

@@ -67,7 +67,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                             "not authorized to add policies").build();
                 }
             } catch (DeviceAccessAuthorizationException e) {
-                String msg = "Error occurred while checking if the current user is authorized to add a policy";
+                String msg = "ErrorResponse occurred while checking if the current user is authorized to add a policy";
                 log.error(msg, e);
                 return javax.ws.rs.core.Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
             }
@@ -77,7 +77,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             pap.addPolicy(policy);
             return Response.status(Response.Status.OK).entity("Policy has been added successfully").build();
         } catch (PolicyManagementException e) {
-            String msg = "Error occurred while adding policy";
+            String msg = "ErrorResponse occurred while adding policy";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -112,7 +112,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                 return Response.status(Response.Status.NOT_FOUND).entity("No policies found.").build();
             }
         } catch (PolicyManagementException e) {
-            String msg = "Error occurred while retrieving all available policies";
+            String msg = "ErrorResponse occurred while retrieving all available policies";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -132,7 +132,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                 return Response.status(Response.Status.NOT_FOUND).entity("Policy not found.").build();
             }
         } catch (PolicyManagementException e) {
-            String msg = "Error occurred while retrieving policy corresponding to the id '" + id + "'";
+            String msg = "ErrorResponse occurred while retrieving policy corresponding to the id '" + id + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -150,7 +150,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             pap.updatePolicy(policy);
             return Response.status(Response.Status.OK).entity("Policy has successfully been updated").build();
         } catch (PolicyManagementException e) {
-            String msg = "Error occurred while updating the policy";
+            String msg = "ErrorResponse occurred while updating the policy";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -170,7 +170,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                 }
             }
         } catch (PolicyManagementException e) {
-            String msg = "Error occurred while removing policies";
+            String msg = "ErrorResponse occurred while removing policies";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
@@ -193,7 +193,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                 pap.activatePolicy(i);
             }
         } catch (PolicyManagementException e) {
-            String msg = "Error occurred while activating policies";
+            String msg = "ErrorResponse occurred while activating policies";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

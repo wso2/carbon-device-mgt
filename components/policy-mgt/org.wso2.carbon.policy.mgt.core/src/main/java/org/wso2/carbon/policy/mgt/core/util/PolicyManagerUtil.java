@@ -199,7 +199,7 @@ public class PolicyManagerUtil {
     public static int getMonitoringFequency() {
 
         PlatformConfigurationManagementService configMgtService = new TenantConfigurationManagementServiceImpl();
-        PlatformConfiguration tenantConfiguration = null;
+        PlatformConfiguration tenantConfiguration;
         int monitoringFrequency = 0;
         try {
             tenantConfiguration = configMgtService.getConfiguration(GENERAL_CONFIG_RESOURCE_PATH);
@@ -208,7 +208,10 @@ public class PolicyManagerUtil {
             if (configuration != null && !configuration.isEmpty()) {
                 for (ConfigurationEntry cEntry : configuration) {
                     if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
-                        monitoringFrequency = Integer.parseInt((String)cEntry.getValue());
+                        if (cEntry.getValue() == null) {
+                            throw new PolicyManagementException("Invalid ")
+                        }
+                        monitoringFrequency = Integer.parseInt(cEntry.getValue().toString());
                     }
                 }
             }

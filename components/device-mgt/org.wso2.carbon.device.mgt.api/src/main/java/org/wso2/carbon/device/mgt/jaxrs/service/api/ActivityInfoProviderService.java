@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 
 import javax.ws.rs.*;
@@ -55,7 +54,7 @@ public interface ActivityInfoProviderService {
                     code = 200,
                     message = "OK. \n Activity details are successfully fetched",
                     response = Activity.class,
-                    responseHeaders =  {
+                    responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
                                     description = "The content type of the body"),
@@ -77,7 +76,7 @@ public interface ActivityInfoProviderService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching activity data.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.")
     })
     @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
     Response getActivity(
@@ -94,7 +93,6 @@ public interface ActivityInfoProviderService {
 
 
     @GET
-    @Path("/")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -102,7 +100,8 @@ public interface ActivityInfoProviderService {
             responseContainer = "List",
             value = "Retrieve details of a particular activity.",
             notes = "This will return information of a particular activities i.e. meta information of operations, " +
-                    "etc; including the responses from the devices which happened after given time.")
+                    "etc; including the responses from the devices which happened after given time.",
+            tags = "Activity Info Provider")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -131,7 +130,7 @@ public interface ActivityInfoProviderService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching activity data.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.")
     })
     @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
     Response getActivities(
@@ -139,12 +138,22 @@ public interface ActivityInfoProviderService {
                     name = "timestamp",
                     value = "Validates if the requested variant has not been modified since the time specified, this " +
                             "should be provided in unix format in seconds.",
-                    required = true)
+                    required = false)
             @QueryParam("timestamp") String timestamp,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @ApiParam(
+                    name = "offset",
+                    value = "Starting point within the complete list of items qualified.",
+                    required = false)
+            @QueryParam("offset") int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Maximum size of resource array to return.",
+                    required = false)
+            @QueryParam("limit") int limit);
 
 }

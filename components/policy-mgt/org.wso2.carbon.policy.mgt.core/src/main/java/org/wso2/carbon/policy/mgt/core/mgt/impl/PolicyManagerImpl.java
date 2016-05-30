@@ -977,7 +977,8 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+    public Policy getAppliedPolicyToDevice(
+            DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         Policy policy;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();

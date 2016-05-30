@@ -58,7 +58,7 @@ public interface UserManagementAdminService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while updating credentials of the user.")
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})

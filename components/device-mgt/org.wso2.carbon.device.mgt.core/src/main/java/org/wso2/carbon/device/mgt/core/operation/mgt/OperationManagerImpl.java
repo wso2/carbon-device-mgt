@@ -185,7 +185,8 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     @Override
-    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
+    public List<? extends Operation> getOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException {
         int enrolmentId;
         List<Operation> operations = new ArrayList<>();
         try {
@@ -200,13 +201,10 @@ public class OperationManagerImpl implements OperationManager {
                     } finally {
                         DeviceManagementDAOFactory.closeConnection();
                     }
-
-                    OperationManagementDAOFactory.openConnection();
                     if (enrolmentId < 0) {
-                        throw new OperationManagementException("Device not found for given device " +
-                                "Identifier:" + deviceId.getId() + " and given type" +
-                                deviceId.getType());
+                        return null;
                     }
+                    OperationManagementDAOFactory.openConnection();
                     List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList =
                             operationDAO.getOperationsForDevice(enrolmentId);
 

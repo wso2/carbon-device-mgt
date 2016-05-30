@@ -82,7 +82,7 @@ public interface PolicyManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while adding a new policy.")})
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response addPolicy(
@@ -128,7 +128,7 @@ public interface PolicyManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching policies.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching policies.")
             })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicies(
@@ -187,7 +187,7 @@ public interface PolicyManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching the policy.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the policy.")
             })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicy(
@@ -243,7 +243,7 @@ public interface PolicyManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while updating the policy.")
             })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
@@ -281,7 +281,7 @@ public interface PolicyManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while bulk removing policies.")
             })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
@@ -304,7 +304,7 @@ public interface PolicyManagementService {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "Policies have been successfully activated."),
-                    @ApiResponse(code = 500, message = "Error in activating policies.")
+                    @ApiResponse(code = 500, message = "ErrorResponse in activating policies.")
             })
     @Permission(scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
@@ -325,7 +325,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Policies have been successfully deactivated."),
-            @ApiResponse(code = 500, message = "Error in deactivating policies.")
+            @ApiResponse(code = 500, message = "ErrorResponse in deactivating policies.")
     })
     @Permission(scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",

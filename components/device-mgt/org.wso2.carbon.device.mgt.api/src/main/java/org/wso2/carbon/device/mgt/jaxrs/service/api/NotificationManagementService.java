@@ -76,7 +76,7 @@ public interface NotificationManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching the notification list.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the notification list.")
             })
     @Permission(scope = "device-notification-view", permissions = {
             "/permission/admin/device-mgt/admin/notifications/view",
@@ -146,7 +146,7 @@ public interface NotificationManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while modifying status of the notification.")
             })
     @Permission(scope = "device-notification-modify",
@@ -198,7 +198,7 @@ public interface NotificationManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while adding the notification.")
             })
     @Permission(scope = "device-notification-modify",

@@ -54,7 +54,7 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
             }
             return Response.status(Response.Status.OK).entity(devices).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices that carry the name '" + name + "'";
+            String msg = "ErrorResponse occurred while fetching the devices that carry the name '" + name + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

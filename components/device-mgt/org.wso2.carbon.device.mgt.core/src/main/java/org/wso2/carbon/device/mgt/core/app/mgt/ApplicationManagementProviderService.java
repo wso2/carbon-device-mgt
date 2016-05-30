@@ -25,7 +25,7 @@ import java.util.List;
 public interface ApplicationManagementProviderService extends ApplicationManager{
 
     void updateApplicationListInstalledInDevice(DeviceIdentifier deviceIdentifier,
-            List<Application> applications)  throws ApplicationManagementException;
+            List<Application> applications) throws ApplicationManagementException;
 
     List<Application> getApplicationListForDevice(DeviceIdentifier deviceIdentifier)
             throws ApplicationManagementException;

@@ -81,7 +81,7 @@ public interface UserManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n " +
+                            message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while adding a new user.")
             })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/add"})
@@ -130,7 +130,7 @@ public interface UserManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the requested user.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the requested user.")
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getUser(
@@ -185,7 +185,7 @@ public interface UserManagementService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while updating the user.")
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/update"})
@@ -217,7 +217,7 @@ public interface UserManagementService {
                     message = "Not Found. \n Resource to be deleted does not exist."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while removing the user.")
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/remove"})
@@ -266,7 +266,7 @@ public interface UserManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the role list assigned to the user.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the role list assigned to the user.")
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getRolesOfUser(
@@ -310,7 +310,7 @@ public interface UserManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the user list.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the user list.")
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getUsers(
@@ -376,7 +376,7 @@ public interface UserManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the username list that matches the given filter.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the username list that matches the given filter.")
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getUserNames(
@@ -425,7 +425,7 @@ public interface UserManagementService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while updating credentials of the user.")
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})

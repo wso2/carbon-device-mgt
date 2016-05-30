@@ -70,7 +70,7 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
             return Response.status(Response.Status.ACCEPTED).entity("Application installation request has been sent " +
                     "to the device").build();
         } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while processing application installation request";
+            String msg = "ErrorResponse occurred while processing application installation request";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (UnknownApplicationTypeException e) {
@@ -103,7 +103,7 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
             return Response.status(Response.Status.ACCEPTED).entity("Application un-installation request has " +
                     "been sent to the device").build();
         } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while processing application un-installation request";
+            String msg = "ErrorResponse occurred while processing application un-installation request";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (UnknownApplicationTypeException e) {

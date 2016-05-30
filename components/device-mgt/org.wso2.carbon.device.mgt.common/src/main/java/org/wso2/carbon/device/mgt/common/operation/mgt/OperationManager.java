@@ -17,10 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.*;
 
 import java.util.List;
 

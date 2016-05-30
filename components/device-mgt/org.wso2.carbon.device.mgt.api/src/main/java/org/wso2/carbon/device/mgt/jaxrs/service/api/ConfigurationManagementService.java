@@ -74,7 +74,7 @@ public interface ConfigurationManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the general platform configuration.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the general platform configuration.")
     })
     @Permission(scope = "configuration-view",
             permissions = {"/permission/admin/device-mgt/admin/platform-configs/view"})
@@ -123,7 +123,7 @@ public interface ConfigurationManagementService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
+                    message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while modifying general platform configuration.")
     })
     @Permission(scope = "configuration-modify",

@@ -19,17 +19,12 @@
 
 package org.wso2.carbon.device.mgt.core.device.details.mgt.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -41,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DeviceInformationManagerImpl implements DeviceInformationManager {
-
-    private static Log log = LogFactory.getLog(DeviceInformationManagerImpl.class);
 
     private DeviceDetailsDAO deviceDetailsDAO;
 
@@ -79,7 +72,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     }
 
     @Override
-    public DeviceInfo getDeviceInfo(DeviceIdentifier deviceIdentifier) throws DeviceDetailsMgtException {
+    public DeviceInfo getDeviceInfo(
+            DeviceIdentifier deviceIdentifier) throws DeviceDetailsMgtException {
 
         try {
             Device device = DeviceManagementDataHolder.getInstance().
@@ -103,7 +97,6 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
     @Override
     public List<DeviceInfo> getDevicesInfo(List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException {
-
         List<DeviceInfo> deviceInfos = new ArrayList<>();
 
         Map<String, DeviceIdentifier> identifierMap = new HashMap<>();
@@ -116,7 +109,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
                     getDeviceManagementProvider().getAllDevices();
             for (Device device : devices) {
                 if (identifierMap.containsKey(device.getDeviceIdentifier()) &&
-                        device.getType().equals(identifierMap.get(device.getDeviceIdentifier()))) {
+                        device.getType().equals(identifierMap.get(device.getDeviceIdentifier()).getType())) {
                     deviceIds.add(device.getId());
                 }
             }

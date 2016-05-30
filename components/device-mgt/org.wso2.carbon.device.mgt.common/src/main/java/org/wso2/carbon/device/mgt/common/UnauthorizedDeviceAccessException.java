@@ -16,10 +16,10 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.device.mgt.common;
 
 public class UnauthorizedDeviceAccessException extends RuntimeException {
-
     private static final long serialVersionUID = -3151289331929070297L;
 
     public UnauthorizedDeviceAccessException(String msg, Exception nestedEx) {
@@ -41,5 +41,4 @@ public class UnauthorizedDeviceAccessException extends RuntimeException {
     public UnauthorizedDeviceAccessException(Throwable cause) {
         super(cause);
     }
-
 }

@@ -57,7 +57,7 @@
                                     <outputDirectory>
                                         ${project.build.directory}/maven-shared-archive-resources/webapps
                                     </outputDirectory>
-                                    <destFileName>api#device-mgt#v1.1.war</destFileName>
+                                    <destFileName>api#device-mgt#v1.0.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

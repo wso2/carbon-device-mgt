@@ -22,6 +22,8 @@ import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -44,7 +46,6 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            response = Activity.class,
             value = "Retrieve details of a particular activity.",
             notes = "This will return information of a particular activity i.e. meta information of an operation, " +
                     "etc; including the responses from the devices.",
@@ -72,11 +73,19 @@ public interface ActivityInfoProviderService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                             "the requested resource."),
             @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n No activity is found under the provided id."),
+            @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
     Response getActivity(
@@ -96,8 +105,6 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            response = Activity.class,
-            responseContainer = "List",
             value = "Retrieve details of a particular activity.",
             notes = "This will return information of a particular activities i.e. meta information of operations, " +
                     "etc; including the responses from the devices which happened after given time.",
@@ -106,8 +113,7 @@ public interface ActivityInfoProviderService {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Activity details are successfully fetched",
-                    response = Activity.class,
-                    responseContainer = "List",
+                    response = ActivityList.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -130,7 +136,8 @@ public interface ActivityInfoProviderService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
     Response getActivities(
@@ -138,8 +145,8 @@ public interface ActivityInfoProviderService {
                     name = "timestamp",
                     value = "Validates if the requested variant has not been modified since the time specified, this " +
                             "should be provided in unix format in seconds.",
-                    required = false)
-            @QueryParam("timestamp") String timestamp,
+                    required = true)
+            @QueryParam("timestamp") long timestamp,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",

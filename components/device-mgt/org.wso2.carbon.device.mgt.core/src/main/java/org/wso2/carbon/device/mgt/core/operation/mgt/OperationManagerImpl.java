@@ -757,13 +757,13 @@ public class OperationManagerImpl implements OperationManager {
         // This parses the operation id from activity id (ex : ACTIVITY_23) and converts to the integer.
         int operationId = Integer.parseInt(
                 activity.replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, ""));
-        if(operationId == 0){
+        if (operationId == 0){
             throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
         }
         try {
             OperationManagementDAOFactory.openConnection();
             Activity act = operationDAO.getActivity(operationId);
-            act.setActivityId(activity);
+//            act.setActivityId(activity);
             return act;
         } catch (SQLException e) {
             throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);

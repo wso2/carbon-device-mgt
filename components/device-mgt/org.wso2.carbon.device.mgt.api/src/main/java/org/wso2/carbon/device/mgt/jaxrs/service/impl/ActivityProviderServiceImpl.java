@@ -23,7 +23,10 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -44,23 +47,30 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
     public Response getActivity(
             @PathParam("id") String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
-        Activity operation = null;
+        Activity activity;
         DeviceManagementProviderService dmService;
         try {
+            RequestValidationUtil.validateActivityId(id);
+
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            operation = dmService.getOperationByActivityId(id);
+            activity = dmService.getOperationByActivityId(id);
+            if (activity == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No activity can be found upon the provided " +
+                        "activity id '" + id + "'").build();
+            }
         } catch (OperationManagementException e) {
             String msg = "ErrorResponse occurred while fetching the activity for the supplied id.";
             log.error(msg, e);
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).entity(operation).build();
+        return Response.status(Response.Status.OK).entity(activity).build();
     }
 
     @GET
     @Override
     public Response getActivities(
-            @QueryParam("timestamp") String timestamp,
+            @QueryParam("timestamp") long timestamp,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
@@ -68,11 +78,13 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            activities = dmService.getActivitiesUpdatedAfter(Long.parseLong(timestamp));
+            activities = dmService.getActivitiesUpdatedAfter(timestamp);
+
         } catch (OperationManagementException e) {
             String msg = "ErrorResponse occurred while fetching the activities updated after given time stamp.";
             log.error(msg, e);
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(activities).build();
     }

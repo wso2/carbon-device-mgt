@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ConfigurationManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.MDMAppConstants;
+import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import javax.ws.rs.GET;
@@ -59,7 +60,7 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
             configList.add(configurationEntry);
             config.setConfiguration(configList);
             return Response.status(Response.Status.OK).entity(config).build();
-        } catch (ConfigurationManagementException e) {
+        } catch (ConfigurationManagementException | PolicyManagementException e) {
             msg = "ErrorResponse occurred while retrieving the configurations.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();

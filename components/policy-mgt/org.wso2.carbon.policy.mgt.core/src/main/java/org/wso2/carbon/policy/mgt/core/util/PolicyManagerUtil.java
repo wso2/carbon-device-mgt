@@ -196,7 +196,7 @@ public class PolicyManagerUtil {
     }
 
 
-    public static int getMonitoringFequency() {
+    public static int getMonitoringFequency() throws PolicyManagementException {
 
         PlatformConfigurationManagementService configMgtService = new TenantConfigurationManagementServiceImpl();
         PlatformConfiguration tenantConfiguration;
@@ -209,7 +209,8 @@ public class PolicyManagerUtil {
                 for (ConfigurationEntry cEntry : configuration) {
                     if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
                         if (cEntry.getValue() == null) {
-                            throw new PolicyManagementException("Invalid ")
+                            throw new PolicyManagementException("Invalid value, i.e. '" + cEntry.getValue() +
+                                    "', is configured as the monitoring frequency");
                         }
                         monitoringFrequency = Integer.parseInt(cEntry.getValue().toString());
                     }

@@ -762,9 +762,7 @@ public class OperationManagerImpl implements OperationManager {
         }
         try {
             OperationManagementDAOFactory.openConnection();
-            Activity act = operationDAO.getActivity(operationId);
-//            act.setActivityId(activity);
-            return act;
+            return operationDAO.getActivity(operationId);
         } catch (SQLException e) {
             throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
         } catch (OperationManagementDAOException e) {
@@ -848,10 +846,6 @@ public class OperationManagerImpl implements OperationManager {
         }
 
         return status;
-    }
-
-    private void setActivityId(Operation operation, int enrolmentId) {
-        operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + enrolmentId);
     }
 
 }

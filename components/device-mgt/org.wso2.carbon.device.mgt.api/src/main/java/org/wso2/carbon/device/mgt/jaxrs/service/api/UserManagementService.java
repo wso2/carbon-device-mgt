@@ -317,7 +317,7 @@ public interface UserManagementService {
             @ApiParam(
                     name = "filter",
                     value = "Username of the user details to be fetched.",
-                    required = true)
+                    required = false)
             @QueryParam("filter") String filter,
             @ApiParam(
                     name = "If-Modified-Since",

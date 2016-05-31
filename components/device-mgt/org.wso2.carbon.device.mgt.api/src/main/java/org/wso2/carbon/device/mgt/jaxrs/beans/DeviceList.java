@@ -25,58 +25,10 @@ import org.wso2.carbon.device.mgt.common.Device;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceList {
-
-    private int count;
-    private String next;
-    private String previous;
+public class DeviceList extends BasePaginatedResult {
 
     private List<Device> devices = new ArrayList<>();
 
-    /**
-     * Number of Devices returned.
-     */
-    @ApiModelProperty(value = "Number of Devices returned.")
-    @JsonProperty("count")
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-
-    /**
-     * Link to the next subset of resources qualified. \nEmpty if no more resources are to be returned.
-     */
-    @ApiModelProperty(value = "Link to the next subset of resources qualified. \n " +
-            "Empty if no more resources are to be returned.")
-    @JsonProperty("next")
-    public String getNext() {
-        return next;
-    }
-
-    public void setNext(String next) {
-        this.next = next;
-    }
-
-    /**
-     * Link to the previous subset of resources qualified. \nEmpty if current subset is the first subset returned.
-     */
-    @ApiModelProperty(value = "Link to the previous subset of resources qualified. \n" +
-            "Empty if current subset is the first subset returned.")
-    @JsonProperty("previous")
-    public String getPrevious() {
-        return previous;
-    }
-
-    public void setPrevious(String previous) {
-        this.previous = previous;
-    }
-
-    /**
-     **/
     @ApiModelProperty(value = "List of devices returned")
     @JsonProperty("devices")
     public List<Device> getList() {
@@ -92,9 +44,9 @@ public class DeviceList {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
 
-        sb.append("  count: ").append(count).append(",\n");
-        sb.append("  next: ").append(next).append(",\n");
-        sb.append("  previous: ").append(previous).append(",\n");
+        sb.append("  count: ").append(getCount()).append(",\n");
+        sb.append("  next: ").append(getNext()).append(",\n");
+        sb.append("  previous: ").append(getPrevious()).append(",\n");
         sb.append("  devices: [").append(devices).append("\n");
         sb.append("]}\n");
         return sb.toString();

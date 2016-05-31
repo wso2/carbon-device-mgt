@@ -28,58 +28,10 @@ import java.util.List;
 
 @ApiModel(value = "List of activities", description = "This contains a set of activities that matches a given " +
         "criteria as a collection")
-public class ActivityList {
+public class ActivityList extends BasePaginatedResult {
 
-    private int count;
-    private String next;
-    private String previous;
+    private List<Activity> activities;
 
-    private List<Activity> activities = new ArrayList<>();
-
-    /**
-     * Number of Devices returned.
-     */
-    @ApiModelProperty(value = "Number of activities returned.")
-    @JsonProperty("count")
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-
-    /**
-     * Link to the next subset of resources qualified. \nEmpty if no more resources are to be returned.
-     */
-    @ApiModelProperty(value = "Link to the next subset of resources qualified. \n " +
-            "Empty if no more resources are to be returned.")
-    @JsonProperty("next")
-    public String getNext() {
-        return next;
-    }
-
-    public void setNext(String next) {
-        this.next = next;
-    }
-
-    /**
-     * Link to the previous subset of resources qualified. \nEmpty if current subset is the first subset returned.
-     */
-    @ApiModelProperty(value = "Link to the previous subset of resources qualified. \n" +
-            "Empty if current subset is the first subset returned.")
-    @JsonProperty("previous")
-    public String getPrevious() {
-        return previous;
-    }
-
-    public void setPrevious(String previous) {
-        this.previous = previous;
-    }
-
-    /**
-     **/
     @ApiModelProperty(value = "List of devices returned")
     @JsonProperty("activities")
     public List<Activity> getList() {
@@ -95,9 +47,9 @@ public class ActivityList {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
 
-        sb.append("  count: ").append(count).append(",\n");
-        sb.append("  next: ").append(next).append(",\n");
-        sb.append("  previous: ").append(previous).append(",\n");
+        sb.append("  count: ").append(getCount()).append(",\n");
+        sb.append("  next: ").append(getNext()).append(",\n");
+        sb.append("  previous: ").append(getPrevious()).append(",\n");
         sb.append("  devices: [").append(activities).append("\n");
         sb.append("]}\n");
         return sb.toString();

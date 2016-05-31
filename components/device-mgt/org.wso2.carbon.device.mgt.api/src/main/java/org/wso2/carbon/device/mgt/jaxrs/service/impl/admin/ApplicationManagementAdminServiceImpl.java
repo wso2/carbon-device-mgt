@@ -128,7 +128,8 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
                         applicationWrapper.getDeviceIdentifiers().size() > 0) {
                     appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
                 } else {
-                    throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
+                    throw new InputValidationException(
+                            new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
                             "No application un-installation criteria i.e. user/role/device is given").build());
                 }
             }

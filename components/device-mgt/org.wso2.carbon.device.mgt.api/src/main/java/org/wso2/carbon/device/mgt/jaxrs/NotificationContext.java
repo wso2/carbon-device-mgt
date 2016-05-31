@@ -16,42 +16,43 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.jaxrs.beans;
+package org.wso2.carbon.device.mgt.jaxrs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 
-import java.util.List;
+@ApiModel(value = "NotificationContext")
+public class NotificationContext {
 
-@ApiModel(value = "notificationList")
-public class NotificationList extends BasePaginatedResult {
+    private DeviceIdentifier deviceId;
+    private Notification notification;
 
-    private List<Notification> notifications;
-
-    @JsonProperty("notifications")
-    @ApiModelProperty("notifications")
-    public List<Notification> getNotifications() {
-        return notifications;
+    public NotificationContext(DeviceIdentifier deviceId, Notification notification) {
+        this.deviceId = deviceId;
+        this.notification = notification;
     }
 
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
+    @ApiModelProperty(value = "deviceId")
+    @JsonProperty("deviceId")
+    public DeviceIdentifier getDeviceId() {
+        return deviceId;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-
-        sb.append("  count: ").append(getCount()).append(",");
-        sb.append("  next: ").append(getNext()).append(",");
-        sb.append("  previous: ").append(getPrevious()).append(",");
-        sb.append("  notifications: [").append(notifications).append("");
-        sb.append("]}");
-        return sb.toString();
+    public void setDeviceId(DeviceIdentifier deviceId) {
+        this.deviceId = deviceId;
     }
 
+    @ApiModelProperty(value = "notification")
+    @JsonProperty("notification")
+    public Notification getNotification() {
+        return notification;
+    }
+
+    public void setNotification(Notification notification) {
+        this.notification = notification;
+    }
 
 }

@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 
 @Api(value = "Certificate Management", description = "This API carries all certificate management related operations " +
         "such as get all the available devices, etc.")
-@Path("/certificates")
+@Path("/admin/certificates")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface CertificateManagementAdminService {

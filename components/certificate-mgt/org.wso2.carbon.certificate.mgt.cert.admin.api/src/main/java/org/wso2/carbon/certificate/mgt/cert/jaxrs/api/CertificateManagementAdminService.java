@@ -227,7 +227,8 @@ public interface CertificateManagementAdminService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "DELETE",
             value = "Delete an SSL certificate",
-            notes = "Delete an SSL certificate that's on the client end")
+            notes = "Delete an SSL certificate that's on the client end",
+            tags = "Certificate Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

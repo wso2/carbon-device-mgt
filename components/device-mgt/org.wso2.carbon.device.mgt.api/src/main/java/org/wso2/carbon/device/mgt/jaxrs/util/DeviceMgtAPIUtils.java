@@ -130,6 +130,18 @@ public class DeviceMgtAPIUtils {
         return userStoreManager;
     }
 
+    public static RealmService getRealmService() throws UserStoreException {
+        RealmService realmService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
+        if (realmService == null) {
+            String msg = "Realm service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return realmService;
+    }
+
     /**
      * Getting the current tenant's user realm
      */

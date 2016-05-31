@@ -66,6 +66,9 @@ public interface DeviceManagementAdminService {
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized.\n The requested resource access is unauthorized"),
+            @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(

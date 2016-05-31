@@ -170,6 +170,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @POST
     @Override
     public Response addRole(RoleWrapper roleWrapper) {
+        if (roleWrapper == null) {
+            log.error("Request body is incorrect or empty");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (log.isDebugEnabled()) {
@@ -197,6 +201,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}")
     @Override
     public Response updateRole(@PathParam("roleName") String roleName, RoleWrapper roleWrapper) {
+        if (roleWrapper == null) {
+            log.error("Request body is incorrect or empty");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         String newRoleName = roleWrapper.getRoleName();
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
@@ -256,10 +264,14 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         return Response.status(Response.Status.OK).build();
     }
 
-    @POST
+    @PUT
     @Path("/{roleName}/users")
     @Override
     public Response updateUsersOfRole(@PathParam("roleName") String roleName, List<String> users) {
+        if (users == null || users.size() == 0) {
+            log.error("No users are found");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (log.isDebugEnabled()) {

@@ -460,7 +460,7 @@
     <Permission>
         <name>List roles</name>
         <path>/device-mgt/admin/roles/list</path>
-        <url>/roles/permissions</url>
+        <url>/roles/*/permissions</url>
         <method>GET</method>
     </Permission>
 
@@ -481,22 +481,14 @@
     <Permission>
         <name>Update role</name>
         <path>/device-mgt/admin/roles/update</path>
-        <url>/roles</url>
+        <url>/roles/*</url>
         <method>PUT</method>
     </Permission>
-
-    <!--<Permission>-->
-        <!--<name>Update a specific role</name>-->
-        <!--<path>/device-mgt/roles/update</path>-->
-        <!--<url>/roles/*</url>-->
-        <!--<method>PUT</method>-->
-        <!---->
-    <!--</Permission>-->
 
     <Permission>
         <name>Update role</name>
         <path>/device-mgt/admin/roles/update</path>
-        <url>/roles/users</url>
+        <url>/roles/*/users</url>
         <method>PUT</method>
     </Permission>
 
@@ -510,7 +502,7 @@
     <Permission>
         <name>Remove role</name>
         <path>/device-mgt/admin/roles/remove</path>
-        <url>/roles</url>
+        <url>/roles/*</url>
         <method>DELETE</method>
     </Permission>
 

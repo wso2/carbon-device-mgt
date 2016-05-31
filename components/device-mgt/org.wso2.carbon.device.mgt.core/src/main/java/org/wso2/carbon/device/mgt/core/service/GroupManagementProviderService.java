@@ -22,7 +22,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyEixistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
@@ -43,7 +43,7 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     void createGroup(DeviceGroup deviceGroup, String defaultRole,
-                     String[] defaultPermissions) throws GroupManagementException, GroupAlreadyEixistException;
+                     String[] defaultPermissions) throws GroupManagementException, GroupAlreadyExistException;
 
     /**
      * Update existing device group.

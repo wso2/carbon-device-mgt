@@ -20,14 +20,13 @@ package org.wso2.carbon.device.mgt.jaxrs.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
@@ -129,6 +128,18 @@ public class DeviceMgtAPIUtils {
         int tenantId = ctx.getTenantId();
         userStoreManager = realmService.getTenantUserRealm(tenantId).getUserStoreManager();
         return userStoreManager;
+    }
+
+    public static RealmService getRealmService() throws UserStoreException {
+        RealmService realmService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
+        if (realmService == null) {
+            String msg = "Realm service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return realmService;
     }
 
     /**
@@ -235,6 +246,19 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException("Gadget Data Service has not been initialized.");
         }
         return gadgetDataService;
+    }
+
+    public static int getTenantId(String tenantDomain) throws DeviceManagementException {
+        RealmService realmService =
+                (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(RealmService.class, null);
+        if (realmService == null) {
+            throw new IllegalStateException("");
+        }
+        try {
+            return realmService.getTenantManager().getTenantId(tenantDomain);
+        } catch (UserStoreException e) {
+            throw new DeviceManagementException("");
+        }
     }
 
 }

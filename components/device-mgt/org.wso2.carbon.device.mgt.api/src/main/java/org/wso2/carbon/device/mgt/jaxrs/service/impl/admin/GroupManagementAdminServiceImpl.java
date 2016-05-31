@@ -31,32 +31,32 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 
-@Path("/admin/groups")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+//@Path("/admin/groups")
+//@Produces(MediaType.APPLICATION_JSON)
+//@Consumes(MediaType.APPLICATION_JSON)
 public class GroupManagementAdminServiceImpl implements GroupManagementAdminService {
-
-    private static final Log log = LogFactory.getLog(GroupManagementAdminServiceImpl.class);
-
-    @Override
-    public Response getGroupsOfUser(
-            @QueryParam("username") String username,
-            @HeaderParam("If-Modified-Since") String timestamp,
-            @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
-        try {
-            PaginationResult result =
-                    DeviceMgtAPIUtils.getGroupManagementProviderService().getGroups(username, offset, limit);
-            if (result != null && result.getRecordsTotal() > 0) {
-                return Response.status(Response.Status.OK).entity(result).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-        } catch (GroupManagementException e) {
-            String msg = "ErrorResponse occurred while retrieving the groups of user '" + username + "'";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
+//
+//    private static final Log log = LogFactory.getLog(GroupManagementAdminServiceImpl.class);
+//
+//    @Override
+//    public Response getGroupsOfUser(
+//            @QueryParam("username") String username,
+//            @HeaderParam("If-Modified-Since") String timestamp,
+//            @QueryParam("offset") int offset,
+//            @QueryParam("limit") int limit) {
+//        try {
+//            PaginationResult result =
+//                    DeviceMgtAPIUtils.getGroupManagementProviderService().getGroups(username, offset, limit);
+//            if (result != null && result.getRecordsTotal() > 0) {
+//                return Response.status(Response.Status.OK).entity(result).build();
+//            } else {
+//                return Response.status(Response.Status.NOT_FOUND).build();
+//            }
+//        } catch (GroupManagementException e) {
+//            String msg = "ErrorResponse occurred while retrieving the groups of user '" + username + "'";
+//            log.error(msg, e);
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+//        }
+//    }
 
 }

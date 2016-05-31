@@ -22,7 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.RoleManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
@@ -54,17 +57,22 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         List<String> filteredRoles;
+        RoleList targetRoles;
         try {
             filteredRoles = getRolesFromUserStore();
-            if (filteredRoles == null || filteredRoles.size() == 0) {
+            if (filteredRoles == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
             }
+            targetRoles = new RoleList();
+            targetRoles.setCount(filteredRoles.size());
+            targetRoles.setList(filteredRoles);
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while retrieving roles from the underlying user stores";
+            String msg = "Error occurred while retrieving roles from the underlying user stores";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).entity(filteredRoles).build();
+        return Response.status(Response.Status.OK).entity(targetRoles).build();
     }
 
     @GET
@@ -88,14 +96,16 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             return Response.status(Response.Status.OK).entity(rolePermissions).build();
         } catch (UserAdminException e) {
-            String msg = "ErrorResponse occurred while retrieving the permissions of role '" + roleName + "'";
+            String msg = "Error occurred while retrieving the permissions of role '" + roleName + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while retrieving the underlying user realm attached to the " +
+            String msg = "Error occurred while retrieving the underlying user realm attached to the " +
                     "current logged in user";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 
@@ -150,9 +160,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 roleWrapper.setPermissions(permList.toArray(permListAr));
             }
         } catch (UserStoreException | UserAdminException e) {
-            String msg = "ErrorResponse occurred while retrieving the user role '" + roleName + "'";
+            String msg = "Error occurred while retrieving the user role '" + roleName + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(roleWrapper).build();
     }
@@ -190,11 +201,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             userStoreManager.addRole(roleWrapper.getRoleName(), roleWrapper.getUsers(), permissions);
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while adding role '" + roleWrapper.getRoleName() + "'";
+            String msg = "Error occurred while adding role '" + roleWrapper.getRoleName() + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("Role '" + roleWrapper.getRoleName() + "' has " +
+                "successfully been added").build();
     }
 
     @PUT
@@ -236,11 +249,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 }
             }
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while updating role '" + roleName + "'";
+            String msg = "Error occurred while updating role '" + roleName + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("Role '" + roleWrapper.getRoleName() + "' has " +
+                "successfully been updated").build();
     }
 
     @DELETE
@@ -257,11 +272,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             // Delete all authorizations for the current role before deleting
             authorizationManager.clearRoleAuthorization(roleName);
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while deleting the role '" + roleName + "'";
+            String msg = "Error occurred while deleting the role '" + roleName + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("Role '" + roleName + "' has " +
+                "successfully been deleted").build();
     }
 
     @PUT
@@ -287,11 +304,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
             userStoreManager.updateUserListOfRole(roleName, usersToDelete, usersToAdd);
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while updating the users of the role '" + roleName + "'";
+            String msg = "Error occurred while updating the users of the role '" + roleName + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).build();
+        return Response.status(Response.Status.OK).entity("Role '" + roleName + "' has " +
+                "successfully been updated with the user list").build();
     }
 
     private List<String> getRolesFromUserStore() throws UserStoreException {

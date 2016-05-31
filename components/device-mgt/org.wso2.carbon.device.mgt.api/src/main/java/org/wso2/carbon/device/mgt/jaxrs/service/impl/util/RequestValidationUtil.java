@@ -21,7 +21,9 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -242,6 +244,14 @@ public class RequestValidationUtil {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("The incoming request has " +
                             "more than one application un-installation criteria defined").build());
+        }
+    }
+
+    public static void validateCredentials(OldPasswordResetWrapper credentials) {
+        if (credentials == null || credentials.getNewPassword() == null || credentials.getOldPassword() == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Old or New password " +
+                            "fields cannot be empty").build());
         }
     }
 

@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -62,7 +62,7 @@ public interface UserManagementAdminService {
                             "Server error occurred while updating credentials of the user.")
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
-    Response resetPassword(
+    Response resetUserPassword(
             @ApiParam(
                     name = "username",
                     value = "Username of the user.",
@@ -71,6 +71,6 @@ public interface UserManagementAdminService {
             @ApiParam(
                     name = "credentials",
                     value = "Credential.",
-                    required = true) UserCredentialWrapper credentials);
+                    required = true) PasswordResetWrapper credentials);
 
 }

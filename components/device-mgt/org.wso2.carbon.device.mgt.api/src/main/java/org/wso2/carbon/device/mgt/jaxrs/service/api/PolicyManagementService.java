@@ -258,6 +258,7 @@ public interface PolicyManagementService {
                     required = true) PolicyWrapper policy);
 
     @POST
+    @Path("/remove-policy")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,

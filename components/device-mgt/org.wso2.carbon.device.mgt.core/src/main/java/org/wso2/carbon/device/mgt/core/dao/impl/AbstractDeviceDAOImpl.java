@@ -628,7 +628,18 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
      * @throws DeviceManagementDAOException
      */
     @Override
-    public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException {
+    public List<Device> getDevicesByNameAndType(String deviceName, String type, int tenantId, int offset, int limit)
+                                                                                throws DeviceManagementDAOException {
+
+        String filteringString = "";
+        if (deviceName != null && !deviceName.isEmpty()) {
+            filteringString = filteringString + " AND d.NAME LIKE ?";
+        }
+
+        if (type != null && !type.isEmpty()) {
+            filteringString = filteringString + " AND t.NAME = ?";
+        }
+
         Connection conn;
         PreparedStatement stmt = null;
         List<Device> devices = new ArrayList<>();
@@ -638,13 +649,26 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
                     "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                     "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, " +
-                    "d.DESCRIPTION, t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, " +
-                    "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.NAME LIKE ? AND d.TENANT_ID = ?) d1 " +
-                    "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
+                    "d.DESCRIPTION, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
+                    "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?" + filteringString +
+                    ") d1 WHERE d1.ID = e.DEVICE_ID LIMIT ?, ?";
+
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceName + "%");
-            stmt.setInt(2, tenantId);
-            stmt.setInt(3, tenantId);
+            stmt.setInt(1, tenantId);
+
+            int i = 1;
+
+            if (deviceName != null && !deviceName.isEmpty()) {
+                stmt.setString(++i, deviceName + "%");
+            }
+
+            if (type != null && !type.isEmpty()) {
+                stmt.setString(++i, type);
+            }
+
+            stmt.setInt(++i, offset);
+            stmt.setInt(++i, limit);
+
             rs = stmt.executeQuery();
 
             while (rs.next()) {

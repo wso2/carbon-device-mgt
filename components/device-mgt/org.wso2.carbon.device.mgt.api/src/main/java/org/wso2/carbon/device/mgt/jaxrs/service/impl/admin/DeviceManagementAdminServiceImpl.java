@@ -59,8 +59,10 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
             }
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(DeviceMgtAPIUtils.getTenantId(tenantDomain));
 
-            List<Device> devices = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesByName(name);
+            List<Device> devices = DeviceMgtAPIUtils.getDeviceManagementService().
+                    getDevicesByNameAndType(name, type, offset, limit);
             if (devices == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No device, which carries the name '" +
                         name + "', is currently enrolled in the system").build();

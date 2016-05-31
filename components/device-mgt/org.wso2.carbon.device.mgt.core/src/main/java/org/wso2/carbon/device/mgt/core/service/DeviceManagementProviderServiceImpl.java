@@ -31,11 +31,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
+import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
@@ -50,13 +46,7 @@ import org.wso2.carbon.email.sender.core.TypedValue;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
@@ -1062,12 +1052,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getDevicesByName(String deviceName) throws DeviceManagementException {
+    public List<Device> getDevicesByNameAndType(String deviceName, String type, int offset, int limit) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevicesByName(deviceName, this.getTenantId());
+            allDevices = deviceDAO.getDevicesByNameAndType(deviceName, type, this.getTenantId(), offset, limit);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
                     + deviceName + "'", e);
@@ -1240,7 +1230,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return CarbonContext.getThreadLocalCarbonContext().getTenantId();
     }
 
+//    private int getTenantId(String tenantDomain) throws DeviceManagementException {
+//        RealmService realmService =
+//                (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(RealmService.class, null);
+//        if (realmService == null) {
+//            throw new IllegalStateException("");
+//        }
+//        try {
+//            return realmService.getTenantManager().getTenantId(tenantDomain);
+//        } catch (UserStoreException e) {
+//            throw new DeviceManagementException("");
+//        }
+//    }
+
     private DeviceManager getDeviceManager(String deviceType) {
+
         DeviceManagementService deviceManagementService =
                 pluginRepository.getDeviceManagementService(deviceType, this.getTenantId());
         if (deviceManagementService == null) {

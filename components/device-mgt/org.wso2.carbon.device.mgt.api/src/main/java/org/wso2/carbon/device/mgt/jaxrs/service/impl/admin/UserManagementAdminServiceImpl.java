@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.UserManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
 
@@ -34,8 +34,8 @@ public class UserManagementAdminServiceImpl implements UserManagementAdminServic
     @POST
     @Path("/{username}/credentials")
     @Override
-    public Response resetPassword(@PathParam("username") String user, UserCredentialWrapper credentials) {
-        return CredentialManagementResponseBuilder.buildResetPasswordResponse(credentials);
+    public Response resetPassword(@PathParam("username") String user, PasswordResetWrapper credentials) {
+        return CredentialManagementResponseBuilder.buildResetPasswordResponse(user, credentials);
     }
 
 }

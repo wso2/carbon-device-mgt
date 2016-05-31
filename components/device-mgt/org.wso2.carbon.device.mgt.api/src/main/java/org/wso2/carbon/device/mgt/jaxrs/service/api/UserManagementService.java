@@ -336,7 +336,7 @@ public interface UserManagementService {
             @QueryParam("limit") int limit);
 
     @GET
-    @Path("/usernames")
+    @Path("/search/usernames")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",

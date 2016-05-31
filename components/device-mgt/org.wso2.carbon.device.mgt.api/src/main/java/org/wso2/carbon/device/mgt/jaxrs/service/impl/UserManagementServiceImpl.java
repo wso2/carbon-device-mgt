@@ -381,7 +381,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @GET
-    @Path("/usernames")
+    @Path("/search/usernames")
     @Override
     public Response getUserNames(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") String timestamp,
                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit) {

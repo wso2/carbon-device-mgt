@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
@@ -48,11 +49,13 @@ public interface ApplicationManagementAdminService {
             httpMethod = "POST",
             value = "Application installation API.(Internal API)",
             notes = "This is an internal API used for application installation on a device.",
+            response = Activity.class,
             tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 202,
-                    message = "OK. \n Install application operation will be delivered to the given devices"),
+                    message = "OK. \n Install application operation will be delivered to the given devices",
+                    response = Activity.class),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",
@@ -84,11 +87,13 @@ public interface ApplicationManagementAdminService {
             httpMethod = "POST",
             value = "Application un-installation API.(Internal API)",
             notes = "This is an internal API used for application un-installation on a device.",
+            response = Activity.class,
             tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 202,
-                    message = "OK. \n Uninstall application operation will be delivered to the provided devices"),
+                    message = "OK. \n Uninstall application operation will be delivered to the provided devices",
+                    response = Activity.class),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",

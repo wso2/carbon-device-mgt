@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Platform;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.exception.UnknownApplicationTypeException;
@@ -57,6 +58,7 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
     public Response installApplication(ApplicationWrapper applicationWrapper) {
         ApplicationManager appManagerConnector;
         Operation operation = null;
+        Activity activity = null;
 
         RequestValidationUtil.validateApplicationInstallationContext(applicationWrapper);
         try {
@@ -72,20 +74,19 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
                     }
                 }
                 if (applicationWrapper.getRoleNameList() != null && applicationWrapper.getRoleNameList().size() > 0) {
-                    appManagerConnector.installApplicationForUserRoles(operation, applicationWrapper.getRoleNameList());
+                    activity = appManagerConnector.installApplicationForUserRoles(operation, applicationWrapper.getRoleNameList());
                 } else if (applicationWrapper.getUserNameList() != null &&
                         applicationWrapper.getUserNameList().size() > 0) {
-                    appManagerConnector.installApplicationForUsers(operation, applicationWrapper.getUserNameList());
+                    activity = appManagerConnector.installApplicationForUsers(operation, applicationWrapper.getUserNameList());
                 } else if (applicationWrapper.getDeviceIdentifiers() != null &&
                         applicationWrapper.getDeviceIdentifiers().size() > 0) {
-                    appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
+                    activity = appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
                 } else {
                     throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
                             "No application installation criteria i.e. user/role/device is given").build());
                 }
             }
-            return Response.status(Response.Status.ACCEPTED).entity("Application installation request has been sent " +
-                    "to the device(s)").build();
+            return Response.status(Response.Status.ACCEPTED).entity(activity).build();
         } catch (ApplicationManagementException e) {
             String msg = "ErrorResponse occurred while processing application installation request";
             log.error(msg, e);
@@ -105,6 +106,7 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
     public Response uninstallApplication(ApplicationWrapper applicationWrapper) {
         ApplicationManager appManagerConnector;
         org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation = null;
+        Activity activity = null;
 
         RequestValidationUtil.validateApplicationInstallationContext(applicationWrapper);
         try {
@@ -120,21 +122,20 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
                     }
                 }
                 if (applicationWrapper.getRoleNameList() != null && applicationWrapper.getRoleNameList().size() > 0) {
-                    appManagerConnector.installApplicationForUserRoles(operation, applicationWrapper.getRoleNameList());
+                    activity = appManagerConnector.installApplicationForUserRoles(operation, applicationWrapper.getRoleNameList());
                 } else if (applicationWrapper.getUserNameList() != null &&
                         applicationWrapper.getUserNameList().size() > 0) {
-                    appManagerConnector.installApplicationForUsers(operation, applicationWrapper.getUserNameList());
+                    activity = appManagerConnector.installApplicationForUsers(operation, applicationWrapper.getUserNameList());
                 } else if (applicationWrapper.getDeviceIdentifiers() != null &&
                         applicationWrapper.getDeviceIdentifiers().size() > 0) {
-                    appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
+                    activity = appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
                 } else {
                     throw new InputValidationException(
                             new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
                             "No application un-installation criteria i.e. user/role/device is given").build());
                 }
             }
-            return Response.status(Response.Status.ACCEPTED).entity("Application un-installation request has " +
-                    "been sent to the given device(s)").build();
+            return Response.status(Response.Status.ACCEPTED).entity(activity).build();
         } catch (ApplicationManagementException e) {
             String msg = "ErrorResponse occurred while processing application un-installation request";
             log.error(msg, e);

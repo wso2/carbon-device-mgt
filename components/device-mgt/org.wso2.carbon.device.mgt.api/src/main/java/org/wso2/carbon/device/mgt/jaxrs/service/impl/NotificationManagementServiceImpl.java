@@ -22,8 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
+import org.wso2.carbon.device.mgt.jaxrs.NotificationContext;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.NotificationManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -56,48 +59,16 @@ public class NotificationManagementServiceImpl implements NotificationManagement
                 notifications = DeviceMgtAPIUtils.getNotificationManagementService().getAllNotifications();
             }
 
-            if (notifications == null || notifications.size() == 0) {
+            if (notifications == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No notification is available to be " +
                         "retrieved").build();
             }
             return Response.status(Response.Status.OK).entity(notifications).build();
         } catch (NotificationManagementException e) {
-            msg = "ErrorResponse occurred while retrieving notification info";
+            msg = "Error occurred while retrieving notification info";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @PUT
-    @Path("/{id}/status")
-    @Override
-    public Response updateNotificationStatus(@PathParam("id") int id, String status) {
-        try {
-            RequestValidationUtil.validateNotificationId(id);
-            RequestValidationUtil.validateNotificationStatus(status);
-
-            DeviceMgtAPIUtils.getNotificationManagementService().updateNotificationStatus(id,
-                    Notification.Status.valueOf(status));
-            return Response.status(Response.Status.OK).entity("Notification status has successfully been updated").build();
-        } catch (NotificationManagementException e) {
-            String msg = "ErrorResponse occurred while updating notification status";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @POST
-    @Override
-    public Response addNotification(Notification notification) {
-        try {
-            RequestValidationUtil.validateNotification(notification);
-
-            DeviceMgtAPIUtils.getNotificationManagementService().addNotification(notification);
-            return Response.status(Response.Status.OK).entity("Notification has successfully been added").build();
-        } catch (NotificationManagementException e) {
-            String msg = "ErrorResponse occurred while updating notification status.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 

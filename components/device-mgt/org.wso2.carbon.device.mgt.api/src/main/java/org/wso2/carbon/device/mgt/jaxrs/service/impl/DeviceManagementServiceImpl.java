@@ -36,8 +36,10 @@ import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
@@ -98,7 +100,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching all enrolled devices";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 
@@ -116,10 +119,15 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             deviceIdentifier.setType(type);
             informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
             deviceInfo = informationManager.getDeviceInfo(deviceIdentifier);
+            if (deviceInfo == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is " +
+                        "found upon the give type '" + type + "' and id '" + id + "'").build();
+            }
         } catch (DeviceDetailsMgtException e) {
             String msg = "Error occurred while getting the device information.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(deviceInfo).build();
     }
@@ -162,7 +170,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching the device information.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         if (device == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Requested device of type '" + type +
@@ -194,7 +203,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             String msg = "Error occurred while getting the last updated location of the '" + type + "' device, " +
                     "which carries the id '" + id + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(deviceLocation).build();
     }
@@ -211,7 +221,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         } catch (DeviceDetailsMgtException e) {
             String msg = "Error occurred while getting the device location.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(deviceLocations).build();
     }
@@ -229,16 +240,18 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
 
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
-            features = dms.getFeatureManager(type).getFeatures();
+            FeatureManager fm = dms.getFeatureManager(type);
+            if (fm == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No feature manager is registered with " +
+                        "the given type '" + type + "'").build();
+            }
+            features = fm.getFeatures();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while retrieving the list of features of '" + type + "' device, which " +
                     "carries the id '" + id + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        if (features == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
-                    "the provided type and id").build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(features).build();
     }
@@ -256,7 +269,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         } catch (SearchMgtException e) {
             String msg = "Error occurred while searching for devices that matches the provided selection criteria";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         if (devices == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
@@ -283,13 +297,14 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             applications = amc.getApplicationListForDevice(new DeviceIdentifier(id, type));
             if (applications == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon" +
-                        "the provided type and id").build();
+                        " the provided type and id").build();
             }
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while fetching the apps of the '" + type + "' device, which carries " +
                     "the id '" + id + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(applications).build();
     }
@@ -318,7 +333,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             String msg = "Error occurred while fetching the operations for the '" + type + "' device, which " +
                     "carries the id '" + id + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(operations).build();
     }
@@ -343,7 +359,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             String msg = "Error occurred while retrieving the current policy associated with the '" + type +
                     "' device, which carries the id '" + id + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 

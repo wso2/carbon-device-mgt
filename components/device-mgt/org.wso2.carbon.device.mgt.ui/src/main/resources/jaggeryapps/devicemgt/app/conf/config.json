@@ -37,6 +37,11 @@
     "emailJSRegEx" : "/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/",
     "emailRegExViolationErrorMsg" : "Provided email is invalid."
   },
+  "groupValidationConfig": {
+    "groupNameJSRegEx": "^[\\S]{3,30}$",
+    "groupNameRegExViolationErrorMsg": "Provided group name is invalid.",
+    "groupNameHelpMsg": "Should be in minimum 3 characters long and should not include any whitespaces."
+  },
   "roleValidationConfig" : {
     "rolenameJSRegEx" : "^[\\S]{3,30}$",
     "rolenameRegExViolationErrorMsg" : "Provided role name is invalid.",

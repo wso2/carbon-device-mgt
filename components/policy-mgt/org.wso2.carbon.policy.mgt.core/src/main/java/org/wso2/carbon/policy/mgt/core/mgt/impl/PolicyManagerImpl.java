@@ -607,7 +607,7 @@ public class PolicyManagerImpl implements PolicyManager {
                 policy.setPolicyCriterias(policyDAO.getPolicyCriteria(policy.getId()));
 
                 List<DeviceGroupWrapper> deviceGroupWrappers = policyDAO.getDeviceGroupsOfPolicy(policy.getId());
-                if(!deviceGroupWrappers.isEmpty()){
+                if (!deviceGroupWrappers.isEmpty()) {
                     deviceGroupWrappers = this.getDeviceGroupNames(deviceGroupWrappers);
                 }
                 policy.setDeviceGroups(deviceGroupWrappers);
@@ -977,17 +977,26 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public Policy getAppliedPolicyToDevice(
-            DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+    public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceId) throws PolicyManagementException {
         Policy policy;
+        DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+        Device device;
         try {
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            device = service.getDevice(deviceId);
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
+                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                }
+                return null;
+            }
+        } catch (DeviceManagementException e) {
+            throw new PolicyManagementException("Error occurred while getting device id.", e);
+        }
+        try {
             //int policyId = policyDAO.getAppliedPolicyId(device.getId());
             PolicyManagementDAOFactory.openConnection();
             policy = policyDAO.getAppliedPolicy(device.getId(), device.getEnrolmentInfo().getId());
-        } catch (DeviceManagementException e) {
-            throw new PolicyManagementException("Error occurred while getting device id.", e);
         } catch (PolicyManagerDAOException e) {
             throw new PolicyManagementException("Error occurred while getting policy id or policy.", e);
         } catch (SQLException e) {

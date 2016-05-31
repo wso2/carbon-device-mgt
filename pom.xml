@@ -52,7 +52,7 @@
         <module>features/oauth-extensions</module>
         <module>features/email-sender</module>
         <module>features/jwt-client</module>
-	<module>features/device-mgt-extensions</module>
+	    <module>features/device-mgt-extensions</module>
     </modules>
 
     <dependencyManagement>
@@ -1726,7 +1726,6 @@
             </releases>
         </repository>
     </repositories>
-
 
     <properties>
         <testng.version>6.1.1</testng.version>

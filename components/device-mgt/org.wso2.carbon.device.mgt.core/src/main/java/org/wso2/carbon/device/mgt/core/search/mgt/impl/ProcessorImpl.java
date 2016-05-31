@@ -19,6 +19,9 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
@@ -191,7 +194,6 @@ public class ProcessorImpl implements Processor {
         }
         return maps;
     }
-
     private void setApplicationListOfDevices(List<DeviceWrapper> deviceWrappers) throws SearchMgtException {
         try {
             DeviceManagementDAOFactory.openConnection();

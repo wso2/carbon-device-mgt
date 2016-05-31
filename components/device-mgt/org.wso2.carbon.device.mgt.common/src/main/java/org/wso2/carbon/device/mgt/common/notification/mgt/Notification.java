@@ -38,14 +38,9 @@ public class Notification {
         ALERT
     }
 
-    @JsonProperty(value = "notificationId", required = false)
-    @ApiModelProperty(name = "notificationId", value = "Defines the notification ID.", required = false)
-    private int notificationId;
-
-    @JsonProperty(value = "deviceIdentifier", required = true)
-    @ApiModelProperty(name = "deviceIdentifier", value = "Defines the device identification properties.",
-            required = true)
-    private DeviceIdentifier deviceIdentifier;
+    @JsonProperty(value = "id", required = false)
+    @ApiModelProperty(name = "id", value = "Defines the notification ID.", required = false)
+    private int id;
 
     @JsonProperty(value = "description", required = false)
     @ApiModelProperty(name = "description", value = "Provides the message you want to send to the user.",
@@ -72,19 +67,11 @@ public class Notification {
     }
 
     public int getNotificationId() {
-        return notificationId;
+        return id;
     }
 
-    public void setNotificationId(int notificationId) {
-        this.notificationId = notificationId;
-    }
-
-    public DeviceIdentifier getDeviceIdentifier() {
-        return deviceIdentifier;
-    }
-
-    public void setDeviceIdentifier(DeviceIdentifier deviceIdentifier) {
-        this.deviceIdentifier = deviceIdentifier;
+    public void setNotificationId(int id) {
+        this.id = id;
     }
 
     public String getDescription() {
@@ -106,12 +93,11 @@ public class Notification {
     @Override
     public String toString() {
         return "notification {" +
-                "notificationId='" + notificationId + '\'' +
-                ", deviceId=" + deviceIdentifier.getId() +
-                ", deviceType=" + deviceIdentifier.getType() +
+                "  id='" + id + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
                 ", operationId='" + operationId + '\'' +
                 '}';
     }
+
 }

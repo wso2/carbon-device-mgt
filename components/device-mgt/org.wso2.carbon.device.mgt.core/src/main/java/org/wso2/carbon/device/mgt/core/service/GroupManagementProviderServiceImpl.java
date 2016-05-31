@@ -23,13 +23,9 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyEixistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
@@ -45,11 +41,7 @@ import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GroupManagementProviderServiceImpl implements GroupManagementProviderService {
 
@@ -69,7 +61,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public void createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
-            throws GroupManagementException, GroupAlreadyEixistException {
+            throws GroupManagementException, GroupAlreadyExistException {
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
@@ -83,7 +75,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 groupId = this.groupDAO.addGroup(groupBroker, tenantId);
                 GroupManagementDAOFactory.commitTransaction();
             } else {
-                throw new GroupAlreadyEixistException("Group exist with name " + deviceGroup.getName());
+                throw new GroupAlreadyExistException("Group exist with name " + deviceGroup.getName());
             }
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();

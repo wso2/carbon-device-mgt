@@ -20,7 +20,9 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -47,14 +49,17 @@ public interface ApplicationManagementAdminService {
             httpMethod = "POST",
             value = "Application installation API.(Internal API)",
             notes = "This is an internal API used for application installation on a device.",
+            response = Activity.class,
             tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
-                    code = 200,
-                    message = "OK. \n Install application operations have been successfully scheduled upon given devices"),
+                    code = 202,
+                    message = "OK. \n Install application operation will be delivered to the given devices",
+                    response = Activity.class),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource to be processed does not exist."),
@@ -65,7 +70,8 @@ public interface ApplicationManagementAdminService {
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while bulk issuing application installation operations upon " +
-                            "a given set of devices.")
+                            "a given set of devices.",
+                    response = ErrorResponse.class)
     })
     Response installApplication(
             @ApiParam(
@@ -81,14 +87,17 @@ public interface ApplicationManagementAdminService {
             httpMethod = "POST",
             value = "Application un-installation API.(Internal API)",
             notes = "This is an internal API used for application un-installation on a device.",
+            response = Activity.class,
             tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
-                    code = 200,
-                    message = "OK. \n Uninstall application operations have been successfully scheduled upon given devices"),
+                    code = 202,
+                    message = "OK. \n Uninstall application operation will be delivered to the provided devices",
+                    response = Activity.class),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource to be processed does not exist."),
@@ -99,7 +108,8 @@ public interface ApplicationManagementAdminService {
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
                             "Server error occurred while bulk issuing application un-installation operations upon " +
-                            "a given set of devices.")
+                            "a given set of devices.",
+                    response = ErrorResponse.class)
     })
     Response uninstallApplication(
             @ApiParam(

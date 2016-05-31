@@ -112,20 +112,20 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
 
     @Override
     public DeviceInfo getDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        DeviceInfo deviceInfo = new DeviceInfo();
+        DeviceInfo deviceInfo = null;
         try {
             conn = this.getConnection();
 
-            String sql = "SELECT * FROM  DM_DEVICE_DETAIL WHERE DEVICE_ID = ?";
+            String sql = "SELECT * FROM DM_DEVICE_DETAIL WHERE DEVICE_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
             rs = stmt.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
+                deviceInfo = new DeviceInfo();
                 deviceInfo.setDeviceId(rs.getInt("DEVICE_ID"));
 //                deviceInfo.setIMEI(rs.getString("IMEI"));
 //                deviceInfo.setIMSI(rs.getString("IMSI"));
@@ -148,7 +148,6 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
                 deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
             }
 
-            deviceInfo.setDeviceId(deviceId);
             return deviceInfo;
         } catch (SQLException e) {
             throw new DeviceDetailsMgtDAOException("Error occurred while fetching the details of the registered devices.", e);

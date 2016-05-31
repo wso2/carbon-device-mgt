@@ -42,5 +42,4 @@ public class IllegalTransactionStateException extends RuntimeException {
         super(cause);
     }
 
-
 }

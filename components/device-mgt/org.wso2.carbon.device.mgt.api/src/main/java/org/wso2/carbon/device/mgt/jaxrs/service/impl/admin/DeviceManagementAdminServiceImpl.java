@@ -20,9 +20,14 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceManagementAdminService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnauthorizedAccessException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -45,18 +50,28 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
                                      @HeaderParam("If-Modified-Since") String ifModifiedSince,
                                      @QueryParam("offset") int offset,
                                      @QueryParam("limit") int limit) {
-        List<Device> devices;
         try {
-            devices = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesByName(name);
-            if (devices == null || devices.size() == 0) {
+            int currentTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            if (MultitenantConstants.SUPER_TENANT_ID != currentTenantId) {
+                throw new UnauthorizedAccessException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage(
+                                "Current logged in user is not authorized to perform this operation").build());
+            }
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+
+            List<Device> devices = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesByName(name);
+            if (devices == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No device, which carries the name '" +
                         name + "', is currently enrolled in the system").build();
             }
             return Response.status(Response.Status.OK).entity(devices).build();
         } catch (DeviceManagementException e) {
-            String msg = "ErrorResponse occurred while fetching the devices that carry the name '" + name + "'";
+            String msg = "Error occurred while fetching the devices that carry the name '" + name + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
     }
 

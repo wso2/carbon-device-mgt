@@ -16,38 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common.group.mgt;
+package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.exception;
 
-/**
- * This class represents a custom exception specified for group management
- */
-public class GroupAlreadyEixistException extends Exception {
+public class Message {
 
-    private static final long serialVersionUID = -312678379574816874L;
     private String errorMessage;
-
-    public GroupAlreadyEixistException(String msg, Exception nestedEx) {
-        super(msg, nestedEx);
-        setErrorMessage(msg);
-    }
-
-    public GroupAlreadyEixistException(String message, Throwable cause) {
-        super(message, cause);
-        setErrorMessage(message);
-    }
-
-    public GroupAlreadyEixistException(String msg) {
-        super(msg);
-        setErrorMessage(msg);
-    }
-
-    public GroupAlreadyEixistException() {
-        super();
-    }
-
-    public GroupAlreadyEixistException(Throwable cause) {
-        super(cause);
-    }
+    private String discription;
 
     public String getErrorMessage() {
         return errorMessage;
@@ -57,4 +31,11 @@ public class GroupAlreadyEixistException extends Exception {
         this.errorMessage = errorMessage;
     }
 
+    public String getDiscription() {
+        return discription;
+    }
+
+    public void setDiscription(String discription) {
+        this.discription = discription;
+    }
 }

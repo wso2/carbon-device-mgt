@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.device.mgt.core.device.details.mgt.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
@@ -38,6 +40,7 @@ import java.util.Map;
 public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
     private DeviceDetailsDAO deviceDetailsDAO;
+    private static final Log log = LogFactory.getLog(DeviceInformationManagerImpl.class);
 
     public DeviceInformationManagerImpl() {
         this.deviceDetailsDAO = DeviceManagementDAOFactory.getDeviceDetailsDAO();
@@ -72,13 +75,22 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     }
 
     @Override
-    public DeviceInfo getDeviceInfo(
-            DeviceIdentifier deviceIdentifier) throws DeviceDetailsMgtException {
-
+    public DeviceInfo getDeviceInfo(DeviceIdentifier deviceId) throws DeviceDetailsMgtException {
+        Device device;
         try {
-            Device device = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getDevice(deviceIdentifier);
-
+            device = DeviceManagementDataHolder.getInstance().
+                    getDeviceManagementProvider().getDevice(deviceId);
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
+                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                }
+                return null;
+            }
+        } catch (DeviceManagementException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving the device.", e);
+        }
+        try {
             DeviceManagementDAOFactory.openConnection();
             DeviceInfo deviceInfo = deviceDetailsDAO.getDeviceInformation(device.getId());
             deviceInfo.setDeviceDetailsMap(deviceDetailsDAO.getDeviceProperties(device.getId()));
@@ -86,8 +98,6 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
         } catch (SQLException e) {
             throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
-        } catch (DeviceManagementException e) {
-            throw new DeviceDetailsMgtException("Exception occurred while retrieving the device.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device details.", e);
         } finally {
@@ -114,7 +124,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
                 }
             }
             DeviceManagementDAOFactory.openConnection();
-            for(Integer id : deviceIds) {
+            for (Integer id : deviceIds) {
                 DeviceInfo deviceInfo = deviceDetailsDAO.getDeviceInformation(id);
                 deviceInfo.setDeviceDetailsMap(deviceDetailsDAO.getDeviceProperties(id));
                 deviceInfos.add(deviceInfo);
@@ -157,18 +167,25 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     }
 
     @Override
-    public DeviceLocation getDeviceLocation(DeviceIdentifier deviceIdentifier) throws DeviceDetailsMgtException {
+    public DeviceLocation getDeviceLocation(DeviceIdentifier deviceId) throws DeviceDetailsMgtException {
+        Device device;
         try {
-            Device device = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getDevice(deviceIdentifier);
-
-            DeviceManagementDAOFactory.openConnection();
-            return deviceDetailsDAO.getDeviceLocation(device.getId());
-
-        } catch (SQLException e) {
-            throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
+            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId);
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
+                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                }
+                return null;
+            }
         } catch (DeviceManagementException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving the device.", e);
+        }
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceDetailsDAO.getDeviceLocation(device.getId());
+        } catch (SQLException e) {
+            throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device location.", e);
         } finally {

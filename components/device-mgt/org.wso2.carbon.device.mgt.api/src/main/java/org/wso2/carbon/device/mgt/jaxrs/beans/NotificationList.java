@@ -26,54 +26,9 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import java.util.List;
 
 @ApiModel(value = "notificationList")
-public class NotificationList {
+public class NotificationList extends BasePaginatedResult {
 
-    private int count;
-    private String next;
-    private String previous;
     private List<Notification> notifications;
-
-    /**
-     * Number of notifications returned.
-     */
-    @ApiModelProperty(value = "Number of notifications returned.")
-    @JsonProperty("count")
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-
-    /**
-     * Link to the next subset of resources qualified. \nEmpty if no more resources are to be returned.
-     */
-    @ApiModelProperty(value = "Link to the next subset of resources qualified. \n " +
-            "Empty if no more resources are to be returned.")
-    @JsonProperty("next")
-    public String getNext() {
-        return next;
-    }
-
-    public void setNext(String next) {
-        this.next = next;
-    }
-
-    /**
-     * Link to the previous subset of resources qualified. \nEmpty if current subset is the first subset returned.
-     */
-    @ApiModelProperty(value = "Link to the previous subset of resources qualified. \n" +
-            "Empty if current subset is the first subset returned.")
-    @JsonProperty("previous")
-    public String getPrevious() {
-        return previous;
-    }
-
-    public void setPrevious(String previous) {
-        this.previous = previous;
-    }
 
     @JsonProperty("notifications")
     @ApiModelProperty("notifications")
@@ -90,9 +45,9 @@ public class NotificationList {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
 
-        sb.append("  count: ").append(count).append(",");
-        sb.append("  next: ").append(next).append(",");
-        sb.append("  previous: ").append(previous).append(",");
+        sb.append("  count: ").append(getCount()).append(",");
+        sb.append("  next: ").append(getNext()).append(",");
+        sb.append("  previous: ").append(getPrevious()).append(",");
         sb.append("  notifications: [").append(notifications).append("");
         sb.append("]}");
         return sb.toString();

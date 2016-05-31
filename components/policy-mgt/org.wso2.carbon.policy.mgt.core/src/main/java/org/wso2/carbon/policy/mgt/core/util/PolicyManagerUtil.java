@@ -212,7 +212,7 @@ public class PolicyManagerUtil {
                             throw new PolicyManagementException("Invalid value, i.e. '" + cEntry.getValue() +
                                     "', is configured as the monitoring frequency");
                         }
-                        monitoringFrequency = Integer.parseInt(cEntry.getValue().toString());
+                        monitoringFrequency = (int) (Double.parseDouble(cEntry.getValue().toString()) + 0.5d);
                     }
                 }
             }

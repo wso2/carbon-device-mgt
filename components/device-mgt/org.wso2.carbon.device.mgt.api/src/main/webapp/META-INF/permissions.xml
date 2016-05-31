@@ -736,7 +736,7 @@
     <Permission>
         <name>Remove policy</name>
         <path>/device-mgt/admin/policies/remove</path>
-        <url>/policies/bulk-remove</url>
+        <url>/policies/remove-policy</url>
         <method>POST</method>
     </Permission>
 

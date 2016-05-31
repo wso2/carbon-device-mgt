@@ -38,7 +38,7 @@
         <scope>emm_admin</scope>
     </Permission>
 
-    <!-- Certificate related APIs -->
+    <!-- CertificateManagementAdminService related APIs -->
     <Permission>
         <name>Save certificate in the database</name>
         <path>/device-mgt/admin/certificate/save</path>
@@ -63,5 +63,5 @@
         <url>/certificates/*</url>
         <method>DELETE</method>
     </Permission>
-    <!-- End of Certificate related APIs -->
+    <!-- End of CertificateManagementAdminService related APIs -->
 </PermissionConfiguration>

@@ -55,6 +55,7 @@
         <property name="resourcePackage" value="org.wso2.carbon.device.mgt.jaxrs"/>
         <property name="version" value="1.0"/>
         <property name="host" value="localhost:9443"/>
+        <property name="schemes" value="https" />
         <property name="basePath" value="/api/device-mgt/v1.0"/>
         <property name="title" value="Device Management Admin Service API Definitions"/>
         <property name="contact" value="dev@wso2.org"/>

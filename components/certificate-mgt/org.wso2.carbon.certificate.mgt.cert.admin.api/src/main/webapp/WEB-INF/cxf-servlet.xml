@@ -59,7 +59,7 @@
         <property name="scan" value="true"/>
     </bean>
 
-    <bean id="certificateServiceBean" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.impl.CertificateImpl"/>
+    <bean id="certificateServiceBean" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.impl.CertificateManagementAdminServiceImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.common.GsonMessageBodyHandler"/>
     <bean id="errorHandler" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.common.ErrorHandler"/>
 

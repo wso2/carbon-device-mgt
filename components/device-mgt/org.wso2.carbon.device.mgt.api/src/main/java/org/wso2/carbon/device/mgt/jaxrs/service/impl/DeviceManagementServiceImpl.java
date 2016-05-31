@@ -77,14 +77,18 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             PaginationResult result;
 
             if (type != null) {
+                request.setDeviceType(type);
                 result = dms.getDevicesByType(request);
             } else if (user != null) {
+                request.setOwner(user);
                 result = dms.getDevicesOfUser(request);
             } else if (ownership != null) {
                 RequestValidationUtil.validateOwnershipType(ownership);
+                request.setOwnership(ownership);
                 result = dms.getDevicesByOwnership(request);
             } else if (status != null) {
                 RequestValidationUtil.validateStatus(status);
+                request.setStatus(status);
                 result = dms.getDevicesByStatus(request);
             } else {
                 result = dms.getAllDevices(request);

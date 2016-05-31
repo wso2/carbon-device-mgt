@@ -79,7 +79,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 this.inviteNewlyAddedUserToEnrollDevice(userWrapper.getUsername(), initialUserPassword);
                 // Outputting debug message upon successful addition of user
                 if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + userWrapper.getUsername() + " was successfully added.");
+                    log.debug("User '" + userWrapper.getUsername() + "' has successfully been added.");
                 }
                 // returning response with success state
                 return Response.status(Response.Status.OK).entity("User by username: " + userWrapper.getUsername() +

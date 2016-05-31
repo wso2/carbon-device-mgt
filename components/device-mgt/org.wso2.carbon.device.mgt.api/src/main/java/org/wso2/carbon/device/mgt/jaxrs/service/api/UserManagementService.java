@@ -21,13 +21,12 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Date;
 
 
 @API(name = "User Management API", version = "1.0.0", context = "/devicemgt_admin/users", tags = {"devicemgt_admin"})
@@ -438,6 +437,6 @@ public interface UserManagementService {
             @ApiParam(
                     name = "credentials",
                     value = "Credential.",
-                    required = true) UserCredentialWrapper credentials);
+                    required = true) OldPasswordResetWrapper credentials);
 
 }

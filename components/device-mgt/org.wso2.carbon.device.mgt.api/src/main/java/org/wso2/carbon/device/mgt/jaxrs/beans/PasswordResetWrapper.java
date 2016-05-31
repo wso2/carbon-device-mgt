@@ -21,17 +21,13 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "UserCredentialWrapper", description = "User credentials are included in this class.")
-public class UserCredentialWrapper {
+@ApiModel(value = "PasswordResetWrapper", description = "User credential is included in this class.")
+public class PasswordResetWrapper {
 
-    @ApiModelProperty(name = "username", value = "Username of the user.", required = true )
-    private String username;
 	/*
-			Base64 encoded password
-		 */
-    @ApiModelProperty(name = "oldPassword", value = "Old password of the user.", required = true )
-	private String oldPassword;
-    @ApiModelProperty(name = "newPassword", value = "New password of the user.", required = true )
+		Base64 encoded password
+	*/
+	@ApiModelProperty(name = "newPassword", value = "New password of the user.", required = true )
 	private String newPassword;
 
 	public String getNewPassword() {
@@ -42,19 +38,4 @@ public class UserCredentialWrapper {
 		this.newPassword = newPassword;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getOldPassword() {
-		return oldPassword;
-	}
-
-	public void setOldPassword(String oldPassword) {
-		this.oldPassword = oldPassword;
-	}
 }

@@ -26,7 +26,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
@@ -390,8 +390,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     @PUT
     @Path("/{username}/credentials")
     @Override
-    public Response resetPassword(@PathParam("username") String username, UserCredentialWrapper credentials) {
-        return CredentialManagementResponseBuilder.buildChangePasswordResponse(credentials);
+    public Response resetPassword(@PathParam("username") String username, OldPasswordResetWrapper credentials) {
+        return CredentialManagementResponseBuilder.buildChangePasswordResponse(username, credentials);
     }
 
 }

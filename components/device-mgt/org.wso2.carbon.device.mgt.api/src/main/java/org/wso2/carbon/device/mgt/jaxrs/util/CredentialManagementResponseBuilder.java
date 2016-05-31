@@ -36,6 +36,7 @@ public class CredentialManagementResponseBuilder {
 
     private static Log log = LogFactory.getLog(CredentialManagementResponseBuilder.class);
     private static String PASSWORD_VALIDATION_REGEX_TAG = "PasswordJavaRegEx";
+    private static String PASSWORD_VALIDATION_ERROR_MSG_TAG = "PasswordJavaRegExViolationErrorMsg";
 
     /**
      * Builds the response to change the password of a user
@@ -55,8 +56,9 @@ public class CredentialManagementResponseBuilder {
                         .build();
             }
             if (!validateCredential(credentials.getNewPassword())) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Password does not match with required format.")
-                        .build();
+                String errorMsg = DeviceMgtAPIUtils.getRealmService().getBootstrapRealmConfiguration()
+                        .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorMsg).build();
             }
             userStoreManager.updateCredential(username, credentials.getNewPassword(),
                                               credentials.getOldPassword());
@@ -91,8 +93,9 @@ public class CredentialManagementResponseBuilder {
                         .build();
             }
             if (!validateCredential(credentials.getNewPassword())) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Password does not match with required format.")
-                        .build();
+                String errorMsg = DeviceMgtAPIUtils.getRealmService().getBootstrapRealmConfiguration()
+                        .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorMsg).build();
             }
             userStoreManager.updateCredentialByAdmin(username, credentials.getNewPassword());
             return Response.status(Response.Status.OK).entity("UserImpl password by username: " +

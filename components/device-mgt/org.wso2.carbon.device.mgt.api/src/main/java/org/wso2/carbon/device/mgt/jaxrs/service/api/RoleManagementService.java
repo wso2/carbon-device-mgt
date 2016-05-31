@@ -22,6 +22,8 @@ import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleWrapper;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
@@ -43,18 +45,15 @@ public interface RoleManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the list of roles.",
-            responseContainer = "List",
             notes = "If you wish to get the details of all the roles in EMM, you can do so using this REST API. All " +
                     "internal roles, roles created for Service-providers and application related roles are omitted.",
-            response = String.class,
             tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully fetched the requested list of roles.",
-                            response = String.class,
-                            responseContainer = "List",
+                            response = RoleList.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -76,7 +75,8 @@ public interface RoleManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching requested list of roles.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching requested list of roles.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "roles-view", permissions = {
             "/permission/admin/device-mgt/admin/roles/list",
@@ -155,7 +155,8 @@ public interface RoleManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getPermissionsOfRole(
@@ -209,7 +210,8 @@ public interface RoleManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the requested role.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the requested role.",
+                            response = ErrorResponse.class)
     })
     @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
     Response getRole(
@@ -260,14 +262,16 @@ public interface RoleManagementService {
                                     description = "The Source URL of the document.")}),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while adding a new role.")
+                            "Server error occurred while adding a new role.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
     Response addRole(
@@ -307,7 +311,8 @@ public interface RoleManagementService {
                                             "Used by caches, or in conditional requests.")}),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource to be deleted does not exist."),
@@ -317,7 +322,8 @@ public interface RoleManagementService {
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while updating the role.")
+                            "Server error occurred while updating the role.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
     Response updateRole(
@@ -349,7 +355,8 @@ public interface RoleManagementService {
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while removing the role.")
+                            "Server error occurred while removing the role.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
     Response deleteRole(
@@ -395,7 +402,8 @@ public interface RoleManagementService {
                                                     "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n Resource to be deleted does not exist."),
@@ -405,7 +413,8 @@ public interface RoleManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while updating the user list of the role.")
+                                    "Server error occurred while updating the user list of the role.",
+                            response = ErrorResponse.class)
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
     Response updateUsersOfRole(

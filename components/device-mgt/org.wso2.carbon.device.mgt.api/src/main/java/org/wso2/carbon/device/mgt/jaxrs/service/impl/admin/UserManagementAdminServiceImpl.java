@@ -34,7 +34,7 @@ public class UserManagementAdminServiceImpl implements UserManagementAdminServic
     @POST
     @Path("/{username}/credentials")
     @Override
-    public Response resetPassword(@PathParam("username") String user, PasswordResetWrapper credentials) {
+    public Response resetUserPassword(@PathParam("username") String user, PasswordResetWrapper credentials) {
         return CredentialManagementResponseBuilder.buildResetPasswordResponse(user, credentials);
     }
 

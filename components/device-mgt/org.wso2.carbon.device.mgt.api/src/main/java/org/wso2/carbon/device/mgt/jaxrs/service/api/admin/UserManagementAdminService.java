@@ -62,7 +62,7 @@ public interface UserManagementAdminService {
                             "Server error occurred while updating credentials of the user.")
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
-    Response resetPassword(
+    Response resetUserPassword(
             @ApiParam(
                     name = "username",
                     value = "Username of the user.",

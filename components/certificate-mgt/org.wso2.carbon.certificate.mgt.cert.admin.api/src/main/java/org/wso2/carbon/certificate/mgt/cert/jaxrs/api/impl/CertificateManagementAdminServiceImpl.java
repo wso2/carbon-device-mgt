@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/certificates")
+@Path("/admin/certificates")
 public class CertificateManagementAdminServiceImpl implements CertificateManagementAdminService {
 
     private static Log log = LogFactory.getLog(CertificateManagementAdminServiceImpl.class);

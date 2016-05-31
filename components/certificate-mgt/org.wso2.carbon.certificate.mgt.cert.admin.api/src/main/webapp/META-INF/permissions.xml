@@ -33,33 +33,33 @@
     <Permission>
         <name>get certificate in the database</name>
         <path>/device-mgt/emm-admin/certificate/GetSignCSR</path>
-        <url>/certificates/signcsr</url>
+        <url>/certificates/sign-csr</url>
         <method>POST</method>
         <scope>emm_admin</scope>
     </Permission>
 
     <!-- CertificateManagementAdminService related APIs -->
     <Permission>
-        <name>Save certificate in the database</name>
-        <path>/device-mgt/admin/certificate/save</path>
+        <name>Save certificate</name>
+        <path>/device-mgt/admin/certificate/Save</path>
         <url>/certificates</url>
         <method>POST</method>
     </Permission>
     <Permission>
-        <name>get certificate in the database</name>
+        <name>Get certificate</name>
         <path>/device-mgt/admin/certificate/Get</path>
         <url>/certificates/*</url>
         <method>GET</method>
     </Permission>
     <Permission>
-        <name>get certificate in the database</name>
+        <name>Get all certificates</name>
         <path>/device-mgt/admin/certificate/GetAll</path>
         <url>/certificates</url>
         <method>GET</method>
     </Permission>
     <Permission>
-        <name>get certificate in the database</name>
-        <path>/device-mgt/admin/certificate/Get</path>
+        <name>Remove certificate</name>
+        <path>/device-mgt/admin/certificate/Remove</path>
         <url>/certificates/*</url>
         <method>DELETE</method>
     </Permission>

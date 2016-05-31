@@ -58,17 +58,17 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         List<String> filteredRoles;
-        RoleList targetRoles;
+        RoleList targetRoles = new RoleList();
         try {
             filteredRoles = getRolesFromUserStore();
-            if (offset != -1 && limit != -1) {
-                filteredRoles = FilteringUtil.getFilteredList(filteredRoles, offset, limit);
-            }
-            if (filteredRoles == null) {
+            if (filteredRoles == null || filteredRoles.size() == 0) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
             }
-            targetRoles = new RoleList();
             targetRoles.setCount(filteredRoles.size());
+            filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(), offset, limit);
+            if (filteredRoles.size() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
+            }
             targetRoles.setList(filteredRoles);
         } catch (UserStoreException e) {
             String msg = "Error occurred while retrieving roles from the underlying user stores";
@@ -219,8 +219,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Override
     public Response updateRole(@PathParam("roleName") String roleName, RoleWrapper roleWrapper) {
         if (roleWrapper == null) {
-            log.error("Request body is incorrect or empty");
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body is incorrect or empty").build();
         }
         String newRoleName = roleWrapper.getRoleName();
         try {
@@ -290,8 +289,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Override
     public Response updateUsersOfRole(@PathParam("roleName") String roleName, List<String> users) {
         if (users == null || users.size() == 0) {
-            log.error("No users are found");
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("No users are found in the request").build();
         }
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();

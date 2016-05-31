@@ -18,21 +18,20 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
-import org.wso2.carbon.policy.mgt.common.Policy;
+
 
 import java.util.Collections;
 import java.util.List;
 
 /**
  * This is used instead of filtering from cache.
- * Todo : need to implement proper pagination support on retrieving policies.
  */
-public class PolicyFilteringUtil {
+public class FilteringUtil {
 
     /**
      * This is used to filter from the cached policies.
      */
-    public static List<Policy> getPolicies(List<Policy> sourceList, int offset, int limit) {
+    public static <T> List<T> getFilteredList(List<T> sourceList, int offset, int limit) {
         if(sourceList == null || sourceList.size() < offset){
             return Collections.emptyList();
         }

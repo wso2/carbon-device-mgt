@@ -25,6 +25,7 @@ import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.RoleManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleWrapper;
@@ -60,6 +61,9 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         RoleList targetRoles;
         try {
             filteredRoles = getRolesFromUserStore();
+            if (offset != -1 && limit != -1) {
+                filteredRoles = FilteringUtil.getFilteredList(filteredRoles, offset, limit);
+            }
             if (filteredRoles == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
             }

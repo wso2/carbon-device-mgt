@@ -29,7 +29,7 @@ import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorization
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.PolicyManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.PolicyFilteringUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -131,7 +131,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        return Response.status(Response.Status.OK).entity(PolicyFilteringUtil.getPolicies(policies, offset, limit))
+        return Response.status(Response.Status.OK).entity(FilteringUtil.getFilteredList(policies, offset, limit))
                 .build();
     }
 

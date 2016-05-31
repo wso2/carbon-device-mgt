@@ -484,6 +484,9 @@ function displayErrors(jqXHR) {
     showPopup();
     if (jqXHR.status == 400) {
         $(modalPopupContent).html($('#group-400-content').html());
+        if (jqXHR.responseText) {
+            $('#error-msg').html(jqXHR.responseText.replace(new RegExp("\"", 'g'), ""));
+        }
         $("a#group-400-link").click(function () {
             hidePopup();
         });

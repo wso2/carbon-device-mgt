@@ -62,7 +62,8 @@ public interface CertificateManagementAdminService {
                                             description = "The Source URL of the document.")}),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),

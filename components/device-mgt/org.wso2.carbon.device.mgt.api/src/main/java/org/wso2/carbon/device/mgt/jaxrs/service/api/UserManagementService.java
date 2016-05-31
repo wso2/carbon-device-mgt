@@ -22,6 +22,7 @@ import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
 
 import javax.ws.rs.*;
@@ -279,14 +280,14 @@ public interface UserManagementService {
             value = "Get user list",
             notes = "If you wish to get the details of all the users registered with EMM, you can do so "
                     + "using the REST API",
-            response = UserWrapper.class,
+            response = UserList.class,
             responseContainer = "List",
             tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the requested role.",
-                    response = UserWrapper.class,
+                    response = UserList.class,
                     responseContainer = "List",
                     responseHeaders = {
                             @ResponseHeader(
@@ -303,7 +304,7 @@ public interface UserManagementService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),

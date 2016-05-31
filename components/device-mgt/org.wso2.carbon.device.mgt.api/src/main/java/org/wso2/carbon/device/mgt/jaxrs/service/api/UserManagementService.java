@@ -406,7 +406,7 @@ public interface UserManagementService {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
+            httpMethod = "PUT",
             value = "Changing the user password.",
             notes = "A user is able to change the password to secure their EMM profile via this REST API.",
             tags = "User Management")

@@ -209,9 +209,8 @@ public class UserManagementServiceImpl implements UserManagementService {
                                 userWrapper.getEmailAddress());
                 if (StringUtils.isNotEmpty(userWrapper.getPassword())) {
                     // Decoding Base64 encoded password
-                    byte[] decodedBytes = Base64.decodeBase64(userWrapper.getPassword());
                     userStoreManager.updateCredentialByAdmin(userWrapper.getUsername(),
-                            new String(decodedBytes, "UTF-8"));
+                            userWrapper.getPassword());
                     log.debug("User credential of username: " + userWrapper.getUsername() + " has been changed");
                 }
                 List<String> currentRoles = this.getFilteredRoles(userStoreManager, userWrapper.getUsername());
@@ -248,7 +247,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                         userWrapper.getUsername() + " doesn't  exists. Therefore, request made to update user was " +
                         "refused.").build();
             }
-        } catch (UserStoreException | UnsupportedEncodingException e) {
+        } catch (UserStoreException e) {
             String msg = "Exception in trying to update user by username: " + userWrapper.getUsername();
             log.error(msg, e);
             throw new UnexpectedServerErrorException(
@@ -305,7 +304,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
     }
 
-    @POST
+    @GET
     @Path("/{username}/roles")
     @Override
     public Response getRolesOfUser(@PathParam("username") String username) {

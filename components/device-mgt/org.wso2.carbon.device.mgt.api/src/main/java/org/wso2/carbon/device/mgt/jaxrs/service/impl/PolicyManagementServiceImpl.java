@@ -27,9 +27,10 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.PolicyManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.PolicyFilteringUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -120,19 +121,27 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             @QueryParam("limit") int limit) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         List<Policy> policies;
+        List<Policy> filteredPolicies;
+        PolicyList targetPolicies = new PolicyList();
         try {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policies = policyAdministratorPoint.getPolicies();
             if (policies == null || policies.size() == 0) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No policies found.").build();
             }
+            targetPolicies.setCount(policies.size());
+            filteredPolicies = FilteringUtil.getFilteredList(policies, offset, limit);
+            if (filteredPolicies.size() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No policies found.").build();
+            }
+            targetPolicies.setList(filteredPolicies);
         } catch (PolicyManagementException e) {
             String msg = "ErrorResponse occurred while retrieving all available policies";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
-        return Response.status(Response.Status.OK).entity(PolicyFilteringUtil.getPolicies(policies, offset, limit))
-                .build();
+
+        return Response.status(Response.Status.OK).entity(targetPolicies).build();
     }
 
     @GET

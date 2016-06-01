@@ -137,10 +137,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @POST
+    @Path("/get-info")
     @Override
     public Response getDevicesInfo(
-            List<DeviceIdentifier> deviceIds,
-            @HeaderParam("If-Modified-Since") String timestamp) {
+            @HeaderParam("If-Modified-Since") String timestamp,
+            List<DeviceIdentifier> deviceIds) {
         DeviceInformationManager informationManager;
         List<DeviceInfo> deviceInfo;
         try {
@@ -276,10 +277,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             throw new UnexpectedServerErrorException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        if (devices == null) {
+        if (devices == null || devices.size() == 0) {
             return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
-                    "the provided type and id").build();
+                "the provided search filters").build();
         }
+
         return Response.status(Response.Status.OK).entity(devices).build();
     }
 
@@ -330,8 +332,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
             operations = dms.getOperations(new DeviceIdentifier(id, type));
             if (operations == null) {
-                Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
-                        "the provided type and id");
+                return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
+                        "the provided type and id").build();
             }
         } catch (OperationManagementException e) {
             String msg = "Error occurred while fetching the operations for the '" + type + "' device, which " +

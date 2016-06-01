@@ -255,14 +255,14 @@ public interface DeviceManagementService {
     @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDevicesInfo(
             @ApiParam(
-                    name = "deviceIds",
-                    value = "List of device identifiers",
-                    required = true) List<DeviceIdentifier> deviceIds,
-            @ApiParam(
                     name = "If-Modified-Since",
                     value = "Timestamp of the last modified date",
                     required = false)
-            @HeaderParam("If-Modified-Since") String timestamp);
+            @HeaderParam("If-Modified-Since") String timestamp,
+            @ApiParam(
+                    name = "deviceIds",
+                    value = "List of device identifiers",
+                    required = true) List<DeviceIdentifier> deviceIds);
 
 
     @GET
@@ -610,7 +610,7 @@ public interface DeviceManagementService {
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving installed application list of the device.",
-                    response = ErrorResponse.class)
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",

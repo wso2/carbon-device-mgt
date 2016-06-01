@@ -252,12 +252,13 @@ public class DeviceMgtAPIUtils {
         RealmService realmService =
                 (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(RealmService.class, null);
         if (realmService == null) {
-            throw new IllegalStateException("");
+            throw new IllegalStateException("Realm service has not been initialized.");
         }
         try {
             return realmService.getTenantManager().getTenantId(tenantDomain);
         } catch (UserStoreException e) {
-            throw new DeviceManagementException("");
+            throw new DeviceManagementException("Error occured while trying to " +
+                "obtain tenant id of currently logged in user");
         }
     }
 

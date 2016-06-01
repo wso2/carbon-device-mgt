@@ -56,30 +56,31 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
             int currentTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             if (MultitenantConstants.SUPER_TENANT_ID != currentTenantId) {
                 throw new UnauthorizedAccessException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage(
-                                "Current logged in user is not authorized to perform this operation").build());
+                    new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage(
+                        "Current logged in user is not authorized to perform this operation").build());
             }
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(DeviceMgtAPIUtils.getTenantId(tenantDomain));
 
             List<Device> devices = DeviceMgtAPIUtils.getDeviceManagementService().
-                    getDevicesByNameAndType(name, type, offset, limit);
-            if (devices == null) {
+                getDevicesByNameAndType(name, type, offset, limit);
+            if (devices == null || devices.size() == 0) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No device, which carries the name '" +
-                        name + "', is currently enrolled in the system").build();
+                    name + "', is currently enrolled in the system").build();
             }
 
+            // setting up paginated result
             DeviceList deviceList = new DeviceList();
-            deviceList.setCount(devices.size());
             deviceList.setList(devices);
+            deviceList.setCount(devices.size());
 
             return Response.status(Response.Status.OK).entity(deviceList).build();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred at server side while fetching device list.";
             log.error(msg, e);
             throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+                new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }

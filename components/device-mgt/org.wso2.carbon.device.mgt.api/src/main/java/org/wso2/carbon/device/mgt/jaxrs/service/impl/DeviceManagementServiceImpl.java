@@ -272,10 +272,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             throw new UnexpectedServerErrorException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        if (devices == null) {
+        if (devices == null || devices.size() == 0) {
             return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
-                    "the provided type and id").build();
+                "the provided search filters").build();
         }
+
         return Response.status(Response.Status.OK).entity(devices).build();
     }
 

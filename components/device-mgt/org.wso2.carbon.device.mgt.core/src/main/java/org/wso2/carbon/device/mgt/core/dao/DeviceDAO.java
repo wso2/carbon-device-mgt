@@ -259,7 +259,8 @@ public interface DeviceDAO {
      * @return returns list of devices.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevicesByNameAndType(String deviceName, String type, int tenantId, int offset, int limit) throws DeviceManagementDAOException;
+    List<Device> getDevicesByNameAndType(String deviceName, String type, int tenantId, int offset, int limit)
+                                                                                throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve devices of a given device name as a paginated result.

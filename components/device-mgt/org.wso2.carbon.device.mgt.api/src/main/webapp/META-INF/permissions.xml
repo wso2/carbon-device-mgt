@@ -222,7 +222,7 @@
     <Permission>
         <name>list devices</name>
         <path>/device-mgt/admin/devices/list</path>
-        <url>/devices/admin/devices</url>
+        <url>/admin/devices</url>
         <method>GET</method>
     </Permission>
 

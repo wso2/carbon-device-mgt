@@ -25,9 +25,11 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnauthorizedAccessException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -67,11 +69,17 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
                 return Response.status(Response.Status.NOT_FOUND).entity("No device, which carries the name '" +
                         name + "', is currently enrolled in the system").build();
             }
-            return Response.status(Response.Status.OK).entity(devices).build();
+
+            DeviceList deviceList = new DeviceList();
+            deviceList.setCount(devices.size());
+            deviceList.setList(devices);
+
+            return Response.status(Response.Status.OK).entity(deviceList).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the devices that carry the name '" + name + "'";
+            String msg = "Error occurred at server side while fetching device list.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }

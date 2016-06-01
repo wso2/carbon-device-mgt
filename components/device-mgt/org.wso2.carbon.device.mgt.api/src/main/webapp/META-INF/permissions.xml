@@ -394,6 +394,20 @@
         <method>GET</method>
     </Permission>
 
+    <Permission>
+        <name>View device</name>
+        <path>/device-mgt/admin/devices/view</path>
+        <url>/devices/*/*/operations</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>View device</name>
+        <path>/device-mgt/user/devices/view</path>
+        <url>/devices/*/*/operations</url>
+        <method>GET</method>
+    </Permission>
+
     <!--<Permission>-->
         <!--<name>Get Applications For Device Type</name>-->
         <!--<path>/device-mgt/operations/application/view</path>-->

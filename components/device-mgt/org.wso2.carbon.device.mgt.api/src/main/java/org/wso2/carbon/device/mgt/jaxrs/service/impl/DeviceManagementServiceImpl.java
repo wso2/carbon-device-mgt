@@ -326,8 +326,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
             operations = dms.getOperations(new DeviceIdentifier(id, type));
             if (operations == null) {
-                Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
-                        "the provided type and id");
+                return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is found upon " +
+                        "the provided type and id").build();
             }
         } catch (OperationManagementException e) {
             String msg = "Error occurred while fetching the operations for the '" + type + "' device, which " +

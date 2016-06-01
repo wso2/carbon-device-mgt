@@ -121,9 +121,13 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
 
         CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
         try {
-            certificateService.removeCertificate(serialNumber);
+            boolean status = certificateService.removeCertificate(serialNumber);
+            if (!status) {
+                Response.status(Response.Status.NOT_FOUND).entity("No certificate is found with the given " +
+                        "serial number '" + serialNumber + "'");
+            }
             return Response.status(Response.Status.OK).entity("Certificate that carries the serial number '" +
-                    serialNumber + " has been removed").build();
+                    serialNumber + "' has been removed").build();
         } catch (CertificateManagementDAOException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);

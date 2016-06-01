@@ -418,34 +418,61 @@
     <!-- End of Operations related APIs -->
 
     <!-- Feature related APIs -->
+    <!--<Permission>-->
+        <!--<name>List policies</name>-->
+        <!--<path>/device-mgt/admin/policies/list</path>-->
+        <!--<url>/features/*</url>-->
+        <!--<method>GET</method>-->
+    <!--</Permission>-->
+
+    <!--<Permission>-->
+        <!--<name>View device</name>-->
+        <!--<path>/device-mgt/admin/devices/view</path>-->
+        <!--<url>/features/*</url>-->
+        <!--<method>GET</method>-->
+    <!--</Permission>-->
+
+    <!--<Permission>-->
+        <!--<name>View device</name>-->
+        <!--<path>/device-mgt/user/devices/view</path>-->
+        <!--<url>/features/*</url>-->
+        <!--<method>GET</method>-->
+    <!--</Permission>-->
+
+    <!--<Permission>-->
+        <!--<name>View device</name>-->
+        <!--<path>/device-mgt/user/devices/view</path>-->
+        <!--<url>/features</url>-->
+        <!--<method>GET</method>      -->
+    <!--</Permission>-->
     <Permission>
         <name>List policies</name>
         <path>/device-mgt/admin/policies/list</path>
-        <url>/features/*</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
         <name>View device</name>
         <path>/device-mgt/admin/devices/view</path>
-        <url>/features/*</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
         <name>View device</name>
         <path>/device-mgt/user/devices/view</path>
-        <url>/features/*</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
         <name>View device</name>
         <path>/device-mgt/user/devices/view</path>
-        <url>/features</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
-        
     </Permission>
+
     <!-- End of Feature related APIs -->
 
     <!-- Role related APIs -->

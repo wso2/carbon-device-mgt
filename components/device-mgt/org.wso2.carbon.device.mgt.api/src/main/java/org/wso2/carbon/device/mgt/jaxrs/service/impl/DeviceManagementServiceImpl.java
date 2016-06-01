@@ -131,28 +131,29 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
         return Response.status(Response.Status.OK).entity(deviceInfo).build();
     }
-//
-//    @POST
-//    @Override
-//    public Response getDevicesInfo(
-//            List<DeviceIdentifier> deviceIds,
-//            @HeaderParam("If-Modified-Since") String timestamp) {
-//        DeviceInformationManager informationManager;
-//        List<DeviceInfo> deviceInfo;
-//        try {
-//            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-//            deviceInfo = informationManager.getDevicesInfo(deviceIds);
-//            if (deviceInfo == null) {
-//                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
-//                        "device list submitted").build();
-//            }
-//        } catch (DeviceDetailsMgtException e) {
-//            String msg = "Error occurred while getting the device information.";
-//            log.error(msg, e);
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-//        }
-//        return Response.status(Response.Status.OK).entity(deviceInfo).build();
-//    }
+
+    @POST
+    @Path("/get-info")
+    @Override
+    public Response getDevicesInfo(
+            @HeaderParam("If-Modified-Since") String timestamp,
+            List<DeviceIdentifier> deviceIds) {
+        DeviceInformationManager informationManager;
+        List<DeviceInfo> deviceInfo;
+        try {
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceInfo = informationManager.getDevicesInfo(deviceIds);
+            if (deviceInfo == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
+                        "device list submitted").build();
+            }
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device information.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceInfo).build();
+    }
 
     @GET
     @Path("/{type}/{id}")

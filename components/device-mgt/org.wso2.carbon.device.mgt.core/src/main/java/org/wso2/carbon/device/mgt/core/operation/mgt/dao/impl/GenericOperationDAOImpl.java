@@ -282,7 +282,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             int enrolmentId = 0;
             ActivityStatus activityStatus = null;
 
-            if (rs.next()) {
+            while (rs.next()) {
                 activity = new Activity();
                 if (enrolmentId == 0) {
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));

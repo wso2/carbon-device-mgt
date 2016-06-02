@@ -59,8 +59,8 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
             List<ConfigurationEntry> configList = config.getConfiguration();
             if (configList == null) {
                 configList = new ArrayList<>();
+                configList.add(configurationEntry);
             }
-            configList.add(configurationEntry);
             config.setConfiguration(configList);
             return Response.status(Response.Status.OK).entity(config).build();
         } catch (ConfigurationManagementException | PolicyManagementException e) {

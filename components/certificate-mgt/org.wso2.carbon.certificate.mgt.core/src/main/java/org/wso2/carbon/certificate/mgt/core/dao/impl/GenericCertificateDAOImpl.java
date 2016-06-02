@@ -252,10 +252,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
             stmt.setString(1, serialNumber);
             stmt.setInt(2, tenantId);
 
-            if(stmt.executeUpdate() > 0) {
-                return true;
-            }
-            return false;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             String errorMsg =
                     "Unable to get the read the certificate with serial" + serialNumber;

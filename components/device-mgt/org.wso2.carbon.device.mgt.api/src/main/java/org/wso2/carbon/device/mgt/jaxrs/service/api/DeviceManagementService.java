@@ -78,13 +78,24 @@ public interface DeviceManagementService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                            "the requested resource."),
+            @ApiResponse(
+                    code = 400,
+                    message = "The incoming request has more than one selection criteria defined through query" +
+                            " parameters.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "No device is currently enrolled with the server.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the device list.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the device list.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
     Response getDevices(
@@ -170,10 +181,12 @@ public interface DeviceManagementService {
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n No device is found under the provided type and id."),
+                            message = "Not Found. \n No device is found under the provided type and id.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable. \n The requested media type is not supported."),
@@ -201,69 +214,74 @@ public interface DeviceManagementService {
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
-//    @POST
-//    @ApiOperation(
-//            consumes = MediaType.APPLICATION_JSON,
-//            produces = MediaType.APPLICATION_JSON,
-//            httpMethod = "POST",
-//            value = "Retrieve devices information from the supplied device identifies.",
-//            notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
-//                    "identifiers.",
-//            response = DeviceInfo.class,
-//            responseContainer = "List",
-//            tags = "Device Management")
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(
-//                            code = 200,
-//                            message = "OK. \n Information of the submitted list of devices is returned",
-//                            response = DeviceInfo.class,
-//                            responseContainer = "List",
-//                            responseHeaders = {
-//                                    @ResponseHeader(
-//                                            name = "Content-Type",
-//                                            description = "The content type of the body"),
-//                                    @ResponseHeader(
-//                                            name = "ETag",
-//                                            description = "Entity Tag of the response resource.\n" +
-//                                                    "Used by caches, or in conditional requests."),
-//                                    @ResponseHeader(
-//                                            name = "Last-Modified",
-//                                            description = "Date and time the resource has been modified the last time.\n" +
-//                                                    "Used by caches, or in conditional requests.")}),
-//                    @ApiResponse(
-//                            code = 303,
-//                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
-//                            responseHeaders = {
-//                                    @ResponseHeader(
-//                                            name = "Content-Location",
-//                                            description = "The Source URL of the document.")}),
-//                    @ApiResponse(
-//                            code = 304,
-//                            message = "Not Modified. \n " +
-//                                    "Empty body because the client already has the latest version of the requested resource."),
-//                    @ApiResponse(
-//                            code = 400,
-//                            message = "Bad Request. \n Invalid request or validation error."),
-//                    @ApiResponse(
-//                            code = 406,
-//                            message = "Not Acceptable. \n The requested media type is not supported."),
-//                    @ApiResponse(
-//                            code = 500,
-//                            message = "Internal Server ErrorResponse. \n " +
-//                                    "Server error occurred while retrieving information of the list of the devices submitted.")
-//            })
-//    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-//    Response getDevicesInfo(
-//            @ApiParam(
-//                    name = "deviceIds",
-//                    value = "List of device identifiers",
-//                    required = true) List<DeviceIdentifier> deviceIds,
-//            @ApiParam(
-//                    name = "If-Modified-Since",
-//                    value = "Timestamp of the last modified date",
-//                    required = false)
-//            @HeaderParam("If-Modified-Since") String timestamp);
+    @POST
+    @Path("/get-info")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Retrieve devices information from the supplied device identifies.",
+            notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
+                    "identifiers.",
+            tags = "Device Management")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Information of the submitted list of devices is returned",
+                            response = DeviceInfo.class,
+                            responseContainer = "List",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests.")}),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the client already has the latest version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No device information is available for the device list submitted.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable. \n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server ErrorResponse. Server error occurred while retrieving " +
+                                    "information of the list of the devices submitted.",
+                            response = ErrorResponse.class)
+            })
+    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+    Response getDevicesInfo(
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Timestamp of the last modified date",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String timestamp,
+            @ApiParam(
+                    name = "deviceIds",
+                    value = "List of device identifiers",
+                    required = true) List<DeviceIdentifier> deviceIds);
 
 
     @GET
@@ -295,11 +313,16 @@ public interface DeviceManagementService {
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
+                            message = "Not Modified. Empty body because the client already has the latest " +
+                                    "version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n No device is found under the provided type and id."),
+                            message = "Not Found. \n No device is found under the provided type and id.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
@@ -347,8 +370,13 @@ public interface DeviceManagementService {
                             message = "Not Modified. \n " +
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n No device is found under the provided type and id."),
+                            message = "Not Found. \n No device is found under the provided type and id.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
                             message = "ErrorResponse occurred while getting the device location.",
@@ -395,8 +423,13 @@ public interface DeviceManagementService {
                             message = "Not Modified. \n " +
                                     "Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
                             code = 404,
-                            message = "Location details are not available for the given devices."),
+                            message = "Location details are not available for the given devices.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
                             message = "ErrorResponse occurred while getting the device location.",
@@ -462,7 +495,8 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Device of which the feature list is requested, is not found."),
+                            message = "Not Found. \n Device of which the feature list is requested, is not found.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable. \n The requested media type is not supported."),
@@ -527,6 +561,11 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Acceptable.\n TIt is likely that no device is found upon the " +
+                                    "provided filters",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
@@ -603,7 +642,8 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Device of which the application list is requested, is not found."),
+                            message = "Not Found. \n Device of which the application list is requested, is not found.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable. \n The requested media type is not supported."),
@@ -611,7 +651,7 @@ public interface DeviceManagementService {
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
                                     "Server error occurred while retrieving installed application list of the device.",
-                    response = ErrorResponse.class)
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "operation-view", permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
@@ -691,7 +731,8 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Device of which the operation list is requested, is not found."),
+                            message = "Not Found. \n Device of which the operation list is requested, is not found.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable. \n The requested media type is not supported."),
@@ -778,7 +819,8 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Device of which the effective policy is requested, is not found."),
+                            message = "Not Found. \n Device of which the effective policy is requested, is not found.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable. \n The requested media type is not supported."),

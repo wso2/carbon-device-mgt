@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.policy.mgt.common.Policy;
 
@@ -66,7 +67,8 @@ public interface PolicyManagementService {
                                     @ResponseHeader(
                                             name = "Last-Modified",
                                             description = "Date and time the resource has been modified the last time.\n" +
-                                                    "Used by caches, or in conditional requests.")}),
+                                                    "Used by caches, or in conditional requests.")
+                            }),
                     @ApiResponse(
                             code = 303,
                             message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
@@ -76,14 +78,21 @@ public interface PolicyManagementService {
                                             description = "The Source URL of the document.")}),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 401,
+                            message = "Not Found. \n Current logged in user is not authorized to add policies.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while adding a new policy.")})
+                                    "Server error occurred while adding a new policy.",
+                            response = ErrorResponse.class)
+            })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response addPolicy(
             @ApiParam(
@@ -124,11 +133,17 @@ public interface PolicyManagementService {
                             code = 304,
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
                     @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching policies.")
+                            message = ("Internal Server ErrorResponse. \n Server error occurred while fetching " +
+                                    "policies."),
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicies(
@@ -181,13 +196,17 @@ public interface PolicyManagementService {
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n No policy is found with the given id."),
+                            message = "Not Found. \n No policy is found with the given id.",
+                            response = ErrorResponse.class
+                    ),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the policy.")
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the " +
+                                    "policy.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicy(
@@ -234,17 +253,20 @@ public interface PolicyManagementService {
                                                     "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist."),
+                            message = "Not Found. \n Resource to be deleted does not exist.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while updating the policy.")
+                                    "Server error occurred while updating the policy.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
     Response updatePolicy(
@@ -258,6 +280,7 @@ public interface PolicyManagementService {
                     required = true) PolicyWrapper policy);
 
     @POST
+    @Path("/remove-policy")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
@@ -272,17 +295,20 @@ public interface PolicyManagementService {
                             message = "OK. \n Policies have successfully been removed"),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist."),
+                            message = "Not Found. \n Resource to be deleted does not exist.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while bulk removing policies.")
+                                    "Server error occurred while bulk removing policies.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
     Response removePolicies(
@@ -303,8 +329,21 @@ public interface PolicyManagementService {
             tags = "Device Policy Management")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "Policies have been successfully activated."),
-                    @ApiResponse(code = 500, message = "ErrorResponse in activating policies.")
+                    @ApiResponse(
+                            code = 200,
+                            message = "Policies have been successfully activated."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Resource does not exist.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "ErrorResponse in activating policies.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
@@ -324,8 +363,21 @@ public interface PolicyManagementService {
                     "is in the active state to the inactive state.",
             tags = "Device Policy Management")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Policies have been successfully deactivated."),
-            @ApiResponse(code = 500, message = "ErrorResponse in deactivating policies.")
+            @ApiResponse(
+                    code = 200,
+                    message = "Policies have been successfully deactivated."),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n Resource does not exist.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "ErrorResponse in deactivating policies.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",

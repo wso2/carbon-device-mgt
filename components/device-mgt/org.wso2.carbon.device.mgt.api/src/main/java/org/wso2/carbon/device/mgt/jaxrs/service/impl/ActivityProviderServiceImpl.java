@@ -75,7 +75,7 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
-        List<Activity> activities;
+        List<Activity> activities = null;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();

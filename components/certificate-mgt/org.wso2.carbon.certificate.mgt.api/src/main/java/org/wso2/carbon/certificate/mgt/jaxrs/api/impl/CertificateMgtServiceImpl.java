@@ -5,6 +5,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
+import org.wso2.carbon.certificate.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.certificate.mgt.jaxrs.exception.UnexpectedServerErrorException;
 import org.wso2.carbon.certificate.mgt.jaxrs.api.CertificateMgtService;
 import org.wso2.carbon.certificate.mgt.jaxrs.exception.Message;
 
@@ -14,15 +16,16 @@ import javax.ws.rs.core.Response;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
-
+@Path("/scep")
 public class CertificateMgtServiceImpl implements CertificateMgtService {
     private static Log log = LogFactory.getLog(CertificateMgtServiceImpl.class);
 
     @POST
-    @Path("signcsr")
-    @Produces({MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN})
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN})
-    public Response getSignedCertFromCSR(String binarySecurityToken) {
+    @Path("/sign-csr")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response getSignedCertFromCSR(
+            @HeaderParam("If-Modified-Since") String ifModifiedSince, String binarySecurityToken) {
         Message message = new Message();
         X509Certificate signedCert;
         String singedCertificate;
@@ -41,11 +44,13 @@ public class CertificateMgtServiceImpl implements CertificateMgtService {
         } catch (KeystoreException e) {
             String msg = "Error occurred while fetching certificate.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(new ErrorResponse.ErrorResponseBuilder().setCode(
+                    500l).setMessage(msg).build());
         } catch (CertificateEncodingException e) {
             String msg = "Error occurred while encoding the certificate.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(new ErrorResponse.ErrorResponseBuilder().setCode(
+                    500l).setMessage(msg).build());
         }
     }
 }

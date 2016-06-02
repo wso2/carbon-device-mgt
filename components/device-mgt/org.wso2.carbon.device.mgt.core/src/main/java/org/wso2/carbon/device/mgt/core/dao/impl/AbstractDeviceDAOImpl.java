@@ -619,47 +619,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         return deviceCount;
     }
 
-    /**
-     * Get the list of devices that matches with the given device name.
-     *
-     * @param deviceName Name of the device.
-     * @param tenantId   Id of the current tenant
-     * @return device list
-     * @throws DeviceManagementDAOException
-     */
-    @Override
-    public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        List<Device> devices = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
-                    "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
-                    "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, " +
-                    "d.DESCRIPTION, t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, " +
-                    "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.NAME LIKE ? AND d.TENANT_ID = ?) d1 " +
-                    "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, deviceName + "%");
-            stmt.setInt(2, tenantId);
-            stmt.setInt(3, tenantId);
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                devices.add(device);
-            }
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while fetching the list of devices that matches " +
-                    "'" + deviceName + "'", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-        return devices;
-    }
-
     @Override
     public int addEnrollment(Device device, int tenantId) throws DeviceManagementDAOException {
         Connection conn;

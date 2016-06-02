@@ -27,11 +27,12 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserCredentialWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.ConflictException;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserList;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
@@ -42,7 +43,6 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Path("/users")
@@ -81,7 +81,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 this.inviteNewlyAddedUserToEnrollDevice(userWrapper.getUsername(), initialUserPassword);
                 // Outputting debug message upon successful addition of user
                 if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + userWrapper.getUsername() + " was successfully added.");
+                    log.debug("User '" + userWrapper.getUsername() + "' has successfully been added.");
                 }
                 // returning response with success state
                 return Response.status(Response.Status.OK).entity("User by username: " + userWrapper.getUsername() +
@@ -149,10 +149,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         Properties props = new Properties();
         props.setProperty("username", usernameBits[1]);
         props.setProperty("domain-name", tenantDomain);
-        props.setProperty("first-name", getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
+        props.setProperty("first-name", getClaimValue(usernameBits[1], Constants.USER_CLAIM_FIRST_NAME));
         props.setProperty("password", password);
 
-        String recipient = getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS);
+        String recipient = getClaimValue(usernameBits[1], Constants.USER_CLAIM_EMAIL_ADDRESS);
 
         EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
 
@@ -188,8 +188,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + username + " does not exist.");
                 }
                 // returning response with bad request state
-                return Response.status(Response.Status.NOT_FOUND).entity(
-                        "User by username: " + username + " does not exist").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User doesn't exist.")
+                                .build());
             }
         } catch (UserStoreException e) {
             String msg = "ErrorResponse occurred while retrieving information of the user '" + username + "'";
@@ -211,9 +212,8 @@ public class UserManagementServiceImpl implements UserManagementService {
                                 userWrapper.getEmailAddress());
                 if (StringUtils.isNotEmpty(userWrapper.getPassword())) {
                     // Decoding Base64 encoded password
-                    byte[] decodedBytes = Base64.decodeBase64(userWrapper.getPassword());
                     userStoreManager.updateCredentialByAdmin(userWrapper.getUsername(),
-                            new String(decodedBytes, "UTF-8"));
+                            userWrapper.getPassword());
                     log.debug("User credential of username: " + userWrapper.getUsername() + " has been changed");
                 }
                 List<String> currentRoles = this.getFilteredRoles(userStoreManager, userWrapper.getUsername());
@@ -246,11 +246,12 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + userWrapper.getUsername() +
                             " doesn't exists. Therefore, request made to update user was refused.");
                 }
-                return Response.status(Response.Status.CONFLICT).entity("User by username: " +
-                        userWrapper.getUsername() + " doesn't  exists. Therefore, request made to update user was " +
-                        "refused.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " +
+                                userWrapper.getUsername() + " doesn't  exists. Therefore, request made to update user" +
+                                " was refused.").build());
             }
-        } catch (UserStoreException | UnsupportedEncodingException e) {
+        } catch (UserStoreException e) {
             String msg = "Exception in trying to update user by username: " + userWrapper.getUsername();
             log.error(msg, e);
             throw new UnexpectedServerErrorException(
@@ -296,8 +297,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + username + " does not exist for removal.");
                 }
                 // returning response with bad request state
-                return Response.status(Response.Status.NOT_FOUND).entity("User by username: " + username +
-                        " does not exist for removal.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " +
+                                username + " does not exist for removal.").build());
             }
         } catch (UserStoreException e) {
             String msg = "Exception in trying to remove user by username: " + username;
@@ -307,7 +309,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
     }
 
-    @POST
+    @GET
     @Path("/{username}/roles")
     @Override
     public Response getRolesOfUser(@PathParam("username") String username) {
@@ -321,8 +323,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist for role retrieval.");
                 }
-                return Response.status(Response.Status.NOT_FOUND).entity("User by username: " + username +
-                        " does not exist for role retrieval.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " + username +
+                                " does not exist for role retrieval.").build());
             }
         } catch (UserStoreException e) {
             String msg = "Exception in trying to retrieve roles for user by username: " + username;
@@ -340,10 +343,15 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information");
         }
-        List<UserWrapper> userList;
+        List<UserWrapper> userList, offsetList;
+        String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter);
+        int appliedLimit =  (limit <= 0) ? -1 : (limit + offset);
+
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            String[] users = userStoreManager.listUsers("*", -1);
+
+            //As the listUsers function accepts limit only to accommodate offset we are passing offset + limit
+            String[] users = userStoreManager.listUsers(appliedFilter, appliedLimit);
             userList = new ArrayList<>(users.length);
             UserWrapper user;
             for (String username : users) {
@@ -354,12 +362,24 @@ public class UserManagementServiceImpl implements UserManagementService {
                 user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
                 userList.add(user);
             }
-            if (userList.size() <= 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No user is available to be retrieved").build();
+
+            if (offset <= userList.size()) {
+                offsetList = userList.subList(offset, userList.size());
+            } else {
+                offsetList = new ArrayList<>();
             }
-            return Response.status(Response.Status.OK).entity(userList).build();
+
+//            if (offsetList.size() <= 0) {
+//                return Response.status(Response.Status.NOT_FOUND).entity("No users available for retrieval").build();
+//            }
+
+            UserList result = new UserList();
+            result.setList(offsetList);
+            result.setCount(offsetList.size());
+
+            return Response.status(Response.Status.OK).entity(result).build();
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while retrieving the list of users";
+            String msg = "ErrorResponse occurred while retrieving the list of users.";
             log.error(msg, e);
             throw new UnexpectedServerErrorException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
@@ -367,7 +387,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @GET
-    @Path("/usernames")
+    @Path("/search/usernames")
     @Override
     public Response getUserNames(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") String timestamp,
                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
@@ -388,12 +408,12 @@ public class UserManagementServiceImpl implements UserManagementService {
                 user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
                 userList.add(user);
             }
-            if (userList.size() <= 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No user is available to be retrieved").build();
-            }
+//            if (userList.size() <= 0) {
+//                return Response.status(Response.Status.NOT_FOUND).entity("No user is available to be retrieved").build();
+//            }
             return Response.status(Response.Status.OK).entity(userList).build();
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while retrieving the list of users using the filter : " + filter;
+            String msg = "Error occurred while retrieving the list of users using the filter : " + filter;
             log.error(msg, e);
             throw new UnexpectedServerErrorException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
@@ -403,8 +423,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     @PUT
     @Path("/{username}/credentials")
     @Override
-    public Response resetPassword(@PathParam("username") String username, UserCredentialWrapper credentials) {
-        return CredentialManagementResponseBuilder.buildChangePasswordResponse(credentials);
+    public Response resetPassword(@PathParam("username") String username, OldPasswordResetWrapper credentials) {
+        return CredentialManagementResponseBuilder.buildChangePasswordResponse(username, credentials);
     }
 
 }

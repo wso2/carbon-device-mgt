@@ -77,14 +77,18 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             PaginationResult result;
 
             if (type != null) {
+                request.setDeviceType(type);
                 result = dms.getDevicesByType(request);
             } else if (user != null) {
+                request.setOwner(user);
                 result = dms.getDevicesOfUser(request);
             } else if (ownership != null) {
                 RequestValidationUtil.validateOwnershipType(ownership);
+                request.setOwnership(ownership);
                 result = dms.getDevicesByOwnership(request);
             } else if (status != null) {
                 RequestValidationUtil.validateStatus(status);
+                request.setStatus(status);
                 result = dms.getDevicesByStatus(request);
             } else {
                 result = dms.getAllDevices(request);
@@ -133,28 +137,30 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
         return Response.status(Response.Status.OK).entity(deviceInfo).build();
     }
-//
-//    @POST
-//    @Override
-//    public Response getDevicesInfo(
-//            List<DeviceIdentifier> deviceIds,
-//            @HeaderParam("If-Modified-Since") String timestamp) {
-//        DeviceInformationManager informationManager;
-//        List<DeviceInfo> deviceInfo;
-//        try {
-//            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-//            deviceInfo = informationManager.getDevicesInfo(deviceIds);
-//            if (deviceInfo == null) {
-//                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
-//                        "device list submitted").build();
-//            }
-//        } catch (DeviceDetailsMgtException e) {
-//            String msg = "Error occurred while getting the device information.";
-//            log.error(msg, e);
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-//        }
-//        return Response.status(Response.Status.OK).entity(deviceInfo).build();
-//    }
+
+    @POST
+    @Path("/get-info")
+    @Override
+    public Response getDevicesInfo(
+            @HeaderParam("If-Modified-Since") String timestamp,
+            List<DeviceIdentifier> deviceIds) {
+        DeviceInformationManager informationManager;
+        List<DeviceInfo> deviceInfo;
+        try {
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceInfo = informationManager.getDevicesInfo(deviceIds);
+            if (deviceInfo == null) {
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No device information " +
+                                "is available for the device list submitted").build());
+            }
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device information.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceInfo).build();
+    }
 
     @GET
     @Path("/{type}/{id}")
@@ -274,11 +280,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                                   @QueryParam("limit") int limit, SearchContext searchContext) {
         SearchManagerService searchManagerService;
         List<DeviceWrapper> devices;
-        if(searchContext == null) {
-            throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Search context is " +
-                            "empty.").build());
-        }
         try {
             searchManagerService = DeviceMgtAPIUtils.getSearchManagerService();
             devices = searchManagerService.search(searchContext);
@@ -288,10 +289,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             throw new UnexpectedServerErrorException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        if (devices == null) {
+        if (devices == null || devices.size() == 0) {
             throw new NotFoundException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("It is likely that no device " +
-                            "is found upon the provided type and id").build());
+                    new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("It is likely that no device is found upon " +
+                            "the provided search filters").build());
         }
         return Response.status(Response.Status.OK).entity(devices).build();
     }

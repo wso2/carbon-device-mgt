@@ -77,8 +77,12 @@ public interface ActivityInfoProviderService {
                     message = "Bad Request. \n Invalid request or validation error.",
                     response = ErrorResponse.class),
             @ApiResponse(
+                    code = 401,
+                    message = ". \n Invalid request or validation error."),
+            @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n No activity is found under the provided id."),
+                    message = "Not Found. \n No activity is found under the provided id.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
@@ -131,6 +135,10 @@ public interface ActivityInfoProviderService {
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                             "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n No activities found.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),

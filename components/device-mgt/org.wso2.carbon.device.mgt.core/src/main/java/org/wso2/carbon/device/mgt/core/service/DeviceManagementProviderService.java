@@ -139,7 +139,7 @@ public interface DeviceManagementProviderService {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      *                                   device list
      */
-    List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
+    List<Device> getDevicesByNameAndType(String deviceName, String type, int offset, int limit) throws DeviceManagementException;
 
     /**
      * This method is used to retrieve list of devices that matches with the given device name with paging information.

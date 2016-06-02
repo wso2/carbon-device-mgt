@@ -173,7 +173,7 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         try {
             CertificateManagementDAOFactory.beginTransaction();
             CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
-            Boolean status = certificateDAO.removeCertificate(serialNumber);
+            boolean status = certificateDAO.removeCertificate(serialNumber);
             CertificateManagementDAOFactory.commitTransaction();
             return status;
         } catch (TransactionManagementException e) {

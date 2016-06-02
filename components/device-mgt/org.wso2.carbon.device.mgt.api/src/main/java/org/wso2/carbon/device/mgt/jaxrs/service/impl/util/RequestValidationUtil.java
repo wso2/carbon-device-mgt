@@ -21,10 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
-import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
-
+import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -296,6 +293,22 @@ public class RequestValidationUtil {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("User list isn't valid.").build
                             ());
+        }
+    }
+
+    public static void validateCredentials(OldPasswordResetWrapper credentials) {
+        if (credentials == null || credentials.getNewPassword() == null || credentials.getOldPassword() == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Old or New password " +
+                            "fields cannot be empty").build());
+        }
+    }
+
+    public static void validateRoleDetails(RoleWrapper roleWrapper) {
+        if (roleWrapper == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is incorrect or" +
+                            " empty").build());
         }
     }
 

@@ -207,7 +207,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
             while (rs.next()) {
                 OperationResponse response = new OperationResponse();
-                response.setRecievedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+                response.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
                 ByteArrayInputStream bais = null;
                 ObjectInputStream ois = null;
                 byte[] contentBytes;
@@ -435,7 +435,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             ClassNotFoundException, IOException, SQLException {
         OperationResponse response = new OperationResponse();
         if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
-            response.setRecievedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+            response.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
         }
         ByteArrayInputStream bais = null;
         ObjectInputStream ois = null;

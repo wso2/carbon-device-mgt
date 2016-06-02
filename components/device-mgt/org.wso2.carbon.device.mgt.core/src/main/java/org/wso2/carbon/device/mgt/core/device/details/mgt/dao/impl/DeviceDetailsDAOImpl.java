@@ -40,7 +40,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     private static Log log = LogFactory.getLog(DeviceDetailsDAOImpl.class);
 
     @Override
-    public void addDeviceInformation(DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException {
+    public void addDeviceInformation(int deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -53,7 +53,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
                     "SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN, UPDATE_TIMESTAMP) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-            stmt.setInt(1, deviceInfo.getDeviceId());
+            stmt.setInt(1, deviceId);
             stmt.setString(2, deviceInfo.getDeviceModel());
             stmt.setString(3, deviceInfo.getVendor());
             stmt.setString(4, deviceInfo.getOsVersion());
@@ -126,7 +126,6 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
 
             if (rs.next()) {
                 deviceInfo = new DeviceInfo();
-                deviceInfo.setDeviceId(rs.getInt("DEVICE_ID"));
 //                deviceInfo.setIMEI(rs.getString("IMEI"));
 //                deviceInfo.setIMSI(rs.getString("IMSI"));
                 deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));

@@ -145,7 +145,7 @@ public interface ActivityInfoProviderService {
                     name = "timestamp",
                     value = "Validates if the requested variant has not been modified since the time specified, this " +
                             "should be provided in unix format in seconds.",
-                    required = true)
+                    required = false)
             @QueryParam("timestamp") long timestamp,
             @ApiParam(
                     name = "If-Modified-Since",

@@ -39,7 +39,8 @@ public interface DeviceInformationManager {
      * @param deviceInfo - Device info object.
      * @throws DeviceDetailsMgtException
      */
-    void addDeviceInfo(DeviceInfo deviceInfo) throws DeviceDetailsMgtException;
+    //void addDeviceInfo(DeviceInfo deviceInfo) throws DeviceDetailsMgtException;
+    void addDeviceInfo(DeviceIdentifier deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtException;
 
     /**
      * This method will return the device information.

@@ -109,55 +109,55 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
     }
 
-    @GET
-    @Path("{type}/{id}/info")
-    public Response getDeviceInfo(@PathParam("type") String type, @NotNull @PathParam("id") String id,
-                                  @HeaderParam("If-Modified-Since") String timestamp) {
-        DeviceInformationManager informationManager;
-        DeviceInfo deviceInfo;
-        try {
-            RequestValidationUtil.validateDeviceIdentifier(type, id);
+//    @GET
+//    @Path("{type}/{id}/info")
+//    public Response getDeviceInfo(@PathParam("type") String type, @NotNull @PathParam("id") String id,
+//                                  @HeaderParam("If-Modified-Since") String timestamp) {
+//        DeviceInformationManager informationManager;
+//        DeviceInfo deviceInfo;
+//        try {
+//            RequestValidationUtil.validateDeviceIdentifier(type, id);
+//
+//            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+//            deviceIdentifier.setId(id);
+//            deviceIdentifier.setType(type);
+//            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+//            deviceInfo = informationManager.getDeviceInfo(deviceIdentifier);
+//            if (deviceInfo == null) {
+//                return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is " +
+//                        "found upon the give type '" + type + "' and id '" + id + "'").build();
+//            }
+//        } catch (DeviceDetailsMgtException e) {
+//            String msg = "Error occurred while getting the device information.";
+//            log.error(msg, e);
+//            throw new UnexpectedServerErrorException(
+//                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+//        }
+//        return Response.status(Response.Status.OK).entity(deviceInfo).build();
+//    }
 
-            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-            deviceIdentifier.setId(id);
-            deviceIdentifier.setType(type);
-            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-            deviceInfo = informationManager.getDeviceInfo(deviceIdentifier);
-            if (deviceInfo == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("It is likely that no device is " +
-                        "found upon the give type '" + type + "' and id '" + id + "'").build();
-            }
-        } catch (DeviceDetailsMgtException e) {
-            String msg = "Error occurred while getting the device information.";
-            log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
-        }
-        return Response.status(Response.Status.OK).entity(deviceInfo).build();
-    }
-
-    @POST
-    @Path("/get-info")
-    @Override
-    public Response getDevicesInfo(
-            @HeaderParam("If-Modified-Since") String timestamp,
-            List<DeviceIdentifier> deviceIds) {
-        DeviceInformationManager informationManager;
-        List<DeviceInfo> deviceInfo;
-        try {
-            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-            deviceInfo = informationManager.getDevicesInfo(deviceIds);
-            if (deviceInfo == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
-                        "device list submitted").build();
-            }
-        } catch (DeviceDetailsMgtException e) {
-            String msg = "Error occurred while getting the device information.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-        return Response.status(Response.Status.OK).entity(deviceInfo).build();
-    }
+//    @POST
+//    @Path("/get-info")
+//    @Override
+//    public Response getDevicesInfo(
+//            @HeaderParam("If-Modified-Since") String timestamp,
+//            List<DeviceIdentifier> deviceIds) {
+//        DeviceInformationManager informationManager;
+//        List<DeviceInfo> deviceInfo;
+//        try {
+//            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+//            deviceInfo = informationManager.getDevicesInfo(deviceIds);
+//            if (deviceInfo == null) {
+//                return Response.status(Response.Status.NOT_FOUND).entity("No device information is available for the " +
+//                        "device list submitted").build();
+//            }
+//        } catch (DeviceDetailsMgtException e) {
+//            String msg = "Error occurred while getting the device information.";
+//            log.error(msg, e);
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+//        }
+//        return Response.status(Response.Status.OK).entity(deviceInfo).build();
+//    }
 
     @GET
     @Path("/{type}/{id}")
@@ -185,52 +185,52 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         return Response.status(Response.Status.OK).entity(device).build();
     }
 
-    @GET
-    @Path("/{type}/{id}/location")
-    @Override
-    public Response getDeviceLocation(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
-            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
-        DeviceInformationManager informationManager;
-        DeviceLocation deviceLocation;
-        try {
-            RequestValidationUtil.validateDeviceIdentifier(type, id);
+//    @GET
+//    @Path("/{type}/{id}/location")
+//    //@Override
+//    public Response getDeviceLocation(
+//            @PathParam("type") String type,
+//            @PathParam("id") String id,
+//            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+//        DeviceInformationManager informationManager;
+//        DeviceLocation deviceLocation;
+//        try {
+//            RequestValidationUtil.validateDeviceIdentifier(type, id);
+//
+//            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+//            deviceLocation = informationManager.getDeviceLocation(new DeviceIdentifier(id, type));
+//            if (deviceLocation == null || deviceLocation.getLatitude() == null ||
+//                    deviceLocation.getLongitude() == null) {
+//                return Response.status(Response.Status.NOT_FOUND).entity("Location details are not available for the " +
+//                        "given device id '" + id + "'").build();
+//            }
+//        } catch (DeviceDetailsMgtException e) {
+//            String msg = "Error occurred while getting the last updated location of the '" + type + "' device, " +
+//                    "which carries the id '" + id + "'";
+//            log.error(msg, e);
+//            throw new UnexpectedServerErrorException(
+//                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+//        }
+//        return Response.status(Response.Status.OK).entity(deviceLocation).build();
+//    }
 
-            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-            deviceLocation = informationManager.getDeviceLocation(new DeviceIdentifier(id, type));
-            if (deviceLocation == null || deviceLocation.getLatitude() == null ||
-                    deviceLocation.getLongitude() == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("Location details are not available for the " +
-                        "given device id '" + id + "'").build();
-            }
-        } catch (DeviceDetailsMgtException e) {
-            String msg = "Error occurred while getting the last updated location of the '" + type + "' device, " +
-                    "which carries the id '" + id + "'";
-            log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
-        }
-        return Response.status(Response.Status.OK).entity(deviceLocation).build();
-    }
-
-    @POST
-    @Path("/locations")
-    public Response getDeviceLocations(List<DeviceIdentifier> deviceIdentifiers,
-                                       @HeaderParam("If-Modified-Since") String ifModifiedSince) {
-        DeviceInformationManager informationManager;
-        List<DeviceLocation> deviceLocations;
-        try {
-            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
-            deviceLocations = informationManager.getDeviceLocations(deviceIdentifiers);
-        } catch (DeviceDetailsMgtException e) {
-            String msg = "Error occurred while getting the device location.";
-            log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
-        }
-        return Response.status(Response.Status.OK).entity(deviceLocations).build();
-    }
+//    @POST
+//    @Path("/locations")
+//    public Response getDeviceLocations(List<DeviceIdentifier> deviceIdentifiers,
+//                                       @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+//        DeviceInformationManager informationManager;
+//        List<DeviceLocation> deviceLocations;
+//        try {
+//            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+//            deviceLocations = informationManager.getDeviceLocations(deviceIdentifiers);
+//        } catch (DeviceDetailsMgtException e) {
+//            String msg = "Error occurred while getting the device location.";
+//            log.error(msg, e);
+//            throw new UnexpectedServerErrorException(
+//                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+//        }
+//        return Response.status(Response.Status.OK).entity(deviceLocations).build();
+//    }
 
     @GET
     @Path("/{type}/{id}/features")

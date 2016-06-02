@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -200,4 +201,29 @@ public final class DeviceManagementDAOUtil {
         deviceType.setName(rs.getString("NAME"));
         return deviceType;
     }
+
+    public static DeviceInfo loadDeviceInfo(ResultSet rs) throws SQLException {
+        DeviceInfo deviceInfo = new DeviceInfo();
+//                deviceInfo.setIMEI(rs.getString("IMEI"));
+//                deviceInfo.setIMSI(rs.getString("IMSI"));
+        deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
+        deviceInfo.setVendor(rs.getString("VENDOR"));
+        deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
+        deviceInfo.setBatteryLevel(rs.getDouble("BATTERY_LEVEL"));
+        deviceInfo.setInternalTotalMemory(rs.getDouble("INTERNAL_TOTAL_MEMORY"));
+        deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
+        deviceInfo.setExternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
+        deviceInfo.setExternalAvailableMemory(rs.getDouble("EXTERNAL_AVAILABLE_MEMORY"));
+//                deviceInfo.setOperator(rs.getString("OPERATOR"));
+        deviceInfo.setConnectionType(rs.getString("CONNECTION_TYPE"));
+//                deviceInfo.setMobileSignalStrength(rs.getDouble("MOBILE_SIGNAL_STRENGTH"));
+        deviceInfo.setSsid(rs.getString("SSID"));
+        deviceInfo.setCpuUsage(rs.getDouble("CPU_USAGE"));
+        deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));
+        deviceInfo.setAvailableRAMMemory(rs.getDouble("AVAILABLE_RAM_MEMORY"));
+        deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
+        deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
+        return deviceInfo;
+    }
+
 }

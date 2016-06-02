@@ -41,7 +41,7 @@ import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationSe
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.mgt.core.config.tenant.TenantConfigurationManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.config.tenant.PlatformConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImpl;
@@ -219,7 +219,7 @@ public class DeviceManagementServiceComponent {
 
 	    /* Registering Tenant Configuration Management Service */
         PlatformConfigurationManagementService
-                tenantConfiguration = new TenantConfigurationManagementServiceImpl();
+                tenantConfiguration = new PlatformConfigurationManagementServiceImpl();
         bundleContext.registerService(PlatformConfigurationManagementService.class.getName(), tenantConfiguration, null);
 
         /* Registering Notification Service */

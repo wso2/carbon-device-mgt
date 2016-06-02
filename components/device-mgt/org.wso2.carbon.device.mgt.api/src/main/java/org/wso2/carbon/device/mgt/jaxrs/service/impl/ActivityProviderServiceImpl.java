@@ -71,10 +71,9 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
     @Override
     public Response getActivities(
             @QueryParam("timestamp") long timestamp,
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
-        List<Activity> activities = null;
+        List<Activity> activities;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();

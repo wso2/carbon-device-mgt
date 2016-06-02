@@ -40,13 +40,13 @@ import java.nio.charset.Charset;
  * Main usage of this module is  saving/retrieving tenant configurations to the registry.
  *
  */
-public class TenantConfigurationManagementServiceImpl
+public class PlatformConfigurationManagementServiceImpl
 		implements PlatformConfigurationManagementService {
 
-	private static final Log log = LogFactory.getLog(TenantConfigurationManagementServiceImpl.class);
+	private static final Log log = LogFactory.getLog(PlatformConfigurationManagementServiceImpl.class);
 
 	@Override
-	public boolean saveConfiguration(PlatformConfiguration tenantConfiguration, String resourcePath)
+	public boolean saveConfiguration(PlatformConfiguration platformConfiguration, String resourcePath)
 			throws ConfigurationManagementException {
 		boolean status;
 		try {
@@ -56,7 +56,7 @@ public class TenantConfigurationManagementServiceImpl
 			StringWriter writer = new StringWriter();
 			JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
 			Marshaller marshaller = context.createMarshaller();
-			marshaller.marshal(tenantConfiguration, writer);
+			marshaller.marshal(platformConfiguration, writer);
 
 			Resource resource = ConfigurationManagerUtil.getConfigurationRegistry().newResource();
 			resource.setContent(writer.toString());
@@ -65,10 +65,10 @@ public class TenantConfigurationManagementServiceImpl
 			status = true;
 		} catch (RegistryException e) {
 			throw new ConfigurationManagementException(
-					"Error occurred while persisting the Registry resource of Tenant Configuration : " + e.getMessage(), e);
+					"Error occurred while persisting the Registry resource of Platform Configuration", e);
 		} catch (JAXBException e) {
 			throw new ConfigurationManagementException(
-					"Error occurred while parsing the Tenant configuration : " + e.getMessage(), e);
+					"Error occurred while parsing the Platform configuration", e);
 		}
 		return status;
 	}

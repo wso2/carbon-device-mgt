@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.impl.DeviceInformationManagerImpl;
@@ -49,8 +50,8 @@ public class DeviceDetails extends BaseDeviceManagementTest {
 
         log.debug("Adding the device details to database.....!");
         DeviceInformationManager deviceInformationManager = new DeviceInformationManagerImpl();
-        deviceInformationManager.addDeviceInfo(Utils.getDeviceInfo());
-        deviceInformationManager.addDeviceLocation(Utils.getSampleDeviceLocation());
+//        deviceInformationManager.addDeviceInfo(Utils.getDeviceIdentifier(), Utils.getDeviceInfo());
+//        deviceInformationManager.addDeviceLocation(Utils.getSampleDeviceLocation());
         log.debug("Device details added to database.....!");
     }
 

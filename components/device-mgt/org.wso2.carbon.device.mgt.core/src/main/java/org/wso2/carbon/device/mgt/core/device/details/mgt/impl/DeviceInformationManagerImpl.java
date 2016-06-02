@@ -47,18 +47,16 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     }
 
     @Override
-    public void addDeviceInfo(DeviceInfo deviceInfo) throws DeviceDetailsMgtException {
-
+    public void addDeviceInfo(DeviceIdentifier deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtException {
         try {
             Device device = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getDevice(deviceInfo.getDeviceIdentifier());
-            deviceInfo.setDeviceId(device.getId());
+                    getDeviceManagementProvider().getDevice(deviceId);
 
             DeviceManagementDAOFactory.beginTransaction();
-            deviceDetailsDAO.deleteDeviceInformation(deviceInfo.getDeviceId());
-            deviceDetailsDAO.deleteDeviceProperties(deviceInfo.getDeviceId());
-            deviceDetailsDAO.addDeviceInformation(deviceInfo);
-            deviceDetailsDAO.addDeviceProperties(deviceInfo.getDeviceDetailsMap(), deviceInfo.getDeviceId());
+            deviceDetailsDAO.deleteDeviceInformation(device.getId());
+            deviceDetailsDAO.deleteDeviceProperties(device.getId());
+            deviceDetailsDAO.addDeviceInformation(device.getId(), deviceInfo);
+            deviceDetailsDAO.addDeviceProperties(deviceInfo.getDeviceDetailsMap(), device.getId());
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();

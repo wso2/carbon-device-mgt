@@ -282,9 +282,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
             int enrolmentId = 0;
             ActivityStatus activityStatus = null;
 
-            if (rs.next()) {
-                activity = new Activity();
+            while (rs.next()) {
                 if (enrolmentId == 0) {
+                    activity = new Activity();
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
                     activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP"))).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));

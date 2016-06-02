@@ -73,7 +73,6 @@ public class SearchDAOImpl implements SearchDAO {
                     identifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
 
                     DeviceInfo deviceInfo = new DeviceInfo();
-                    deviceInfo.setDeviceId(rs.getInt("ID"));
                     deviceInfo.setAvailableRAMMemory(rs.getDouble("AVAILABLE_RAM_MEMORY"));
                     deviceInfo.setBatteryLevel(rs.getDouble("BATTERY_LEVEL"));
                     deviceInfo.setConnectionType(rs.getString("CONNECTION_TYPE"));
@@ -156,7 +155,6 @@ public class SearchDAOImpl implements SearchDAO {
                     identifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
 
                     DeviceInfo deviceInfo = new DeviceInfo();
-                    deviceInfo.setDeviceId(rs.getInt("ID"));
                     deviceInfo.setAvailableRAMMemory(rs.getDouble("AVAILABLE_RAM_MEMORY"));
                     deviceInfo.setBatteryLevel(rs.getDouble("BATTERY_LEVEL"));
                     deviceInfo.setConnectionType(rs.getString("CONNECTION_TYPE"));

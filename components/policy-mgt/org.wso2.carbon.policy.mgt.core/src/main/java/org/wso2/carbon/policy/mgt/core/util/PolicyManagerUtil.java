@@ -30,7 +30,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.config.tenant.TenantConfigurationManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.config.tenant.PlatformConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -198,7 +198,7 @@ public class PolicyManagerUtil {
 
     public static int getMonitoringFequency() throws PolicyManagementException {
 
-        PlatformConfigurationManagementService configMgtService = new TenantConfigurationManagementServiceImpl();
+        PlatformConfigurationManagementService configMgtService = new PlatformConfigurationManagementServiceImpl();
         PlatformConfiguration tenantConfiguration;
         int monitoringFrequency = 0;
         try {

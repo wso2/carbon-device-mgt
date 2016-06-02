@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.policy.mgt.common.Policy;
 
@@ -56,13 +57,10 @@ public interface DeviceManagementService {
             httpMethod = "GET",
             value = "Get the list of devices enrolled with the system.",
             notes = "Returns all devices enrolled with the system.",
-            response = Device.class,
-            responseContainer = "List",
             tags = "Device Management")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of devices.",
-                    response = Device.class,
-                    responseContainer = "List",
+                    response = DeviceList.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -140,149 +138,6 @@ public interface DeviceManagementService {
                     required = false)
             @QueryParam("limit") int limit);
 
-    @GET
-    @Path("{type}/{id}/info")
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Retrieve devices information from the supplied device identifier.",
-            notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
-                    "identifier.",
-            tags = "Device Management")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Information of the submitted list of devices is returned",
-                            response = DeviceInfo.class,
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Type",
-                                            description = "The content type of the body"),
-                                    @ResponseHeader(
-                                            name = "ETag",
-                                            description = "Entity Tag of the response resource.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                                    @ResponseHeader(
-                                            name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
-                                                    "Used by caches, or in conditional requests.")}),
-                    @ApiResponse(
-                            code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Location",
-                                            description = "The Source URL of the document.")}),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Not Found. \n No device is found under the provided type and id.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 406,
-                            message = "Not Acceptable. \n The requested media type is not supported."),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving information of the list of the devices submitted.",
-                            response = ErrorResponse.class)
-            })
-    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDeviceInfo(
-            @ApiParam(
-                    name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true)
-            @PathParam("type") String type,
-            @ApiParam(
-                    name = "id",
-                    value = "The device identifier of the device.",
-                    required = true)
-            @PathParam("id") String id,
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
-                    required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
-
-    @POST
-    @Path("/get-info")
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
-            value = "Retrieve devices information from the supplied device identifies.",
-            notes = "This will return device information such as CPU usage, memory usage etc for supplied device " +
-                    "identifiers.",
-            tags = "Device Management")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Information of the submitted list of devices is returned",
-                            response = DeviceInfo.class,
-                            responseContainer = "List",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Type",
-                                            description = "The content type of the body"),
-                                    @ResponseHeader(
-                                            name = "ETag",
-                                            description = "Entity Tag of the response resource.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                                    @ResponseHeader(
-                                            name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
-                                                    "Used by caches, or in conditional requests.")}),
-                    @ApiResponse(
-                            code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Location",
-                                            description = "The Source URL of the document.")}),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Not Found. \n No device information is available for the device list submitted.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 406,
-                            message = "Not Acceptable. \n The requested media type is not supported."),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server ErrorResponse. Server error occurred while retrieving " +
-                                    "information of the list of the devices submitted.",
-                            response = ErrorResponse.class)
-            })
-    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDevicesInfo(
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Timestamp of the last modified date",
-                    required = false)
-            @HeaderParam("If-Modified-Since") String timestamp,
-            @ApiParam(
-                    name = "deviceIds",
-                    value = "List of device identifiers",
-                    required = true) List<DeviceIdentifier> deviceIds);
-
 
     @GET
     @Path("/{type}/{id}")
@@ -343,104 +198,6 @@ public interface DeviceManagementService {
                     value = "The device identifier of the device.",
                     required = true)
             @PathParam("id") String id,
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
-                    required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
-
-    @GET
-    @Path("/{type}/{id}/location")
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "GET",
-            value = "Get the device location of a given device and a device type.",
-            notes = "This will return the device location including latitude and longitude as well the "
-                    + "physical address.",
-            tags = "Device Management")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "Successfully fetched the device location.",
-                            response = DeviceLocation.class),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Not Found. \n No device is found under the provided type and id.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "ErrorResponse occurred while getting the device location.",
-                            response = ErrorResponse.class)
-            })
-    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDeviceLocation(
-            @ApiParam(
-                    name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true)
-            @PathParam("type") String type,
-            @ApiParam(
-                    name = "id",
-                    value = "The device identifier of the device.",
-                    required = true)
-            @PathParam("id") String id,
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
-                    required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
-
-
-    @POST
-    @Path("/locations")
-    @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "POST",
-            value = "Get the device location of a given devices and a device type.",
-            notes = "This will return the device locations including latitude and longitude as well the "
-                    + "physical address of the given devices.",
-            tags = "Device Management")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "Successfully fetched the device location.",
-                            response = DeviceLocation.class,
-                            responseContainer = "List"),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Location details are not available for the given devices.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "ErrorResponse occurred while getting the device location.",
-                            response = ErrorResponse.class)
-            })
-    @Permission(scope = "device-info", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
-    Response getDeviceLocations(
-            @ApiParam(
-                    name = "deviceIds",
-                    value = "List of device identifiers",
-                    required = true) List<DeviceIdentifier> deviceIds,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",

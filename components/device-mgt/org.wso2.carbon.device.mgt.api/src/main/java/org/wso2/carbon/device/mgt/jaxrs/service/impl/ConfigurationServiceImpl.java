@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManageme
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ConfigurationManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.MDMAppConstants;
@@ -74,6 +75,7 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
     @Override
     public Response updateConfiguration(PlatformConfiguration config) {
         try {
+            RequestValidationUtil.validateUpdateConfiguration(config);
             DeviceMgtAPIUtils.getPlatformConfigurationManagementService().saveConfiguration(config,
                     MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
             //Schedule the task service

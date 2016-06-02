@@ -18,9 +18,12 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -242,6 +245,57 @@ public class RequestValidationUtil {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("The incoming request has " +
                             "more than one application un-installation criteria defined").build());
+        }
+    }
+
+    public static void validateUpdateConfiguration(PlatformConfiguration config) {
+        if (config == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Configurations are not defined.")
+                            .build());
+        } else if (config.getConfiguration() == null || config.getConfiguration().size() == 0) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Does not contain any " +
+                            "configuration entries.").build());
+        }
+    }
+
+    public static void validateDeviceIdentifiers(List<DeviceIdentifier> deviceIdentifiers) {
+        if (deviceIdentifiers == null || deviceIdentifiers.size() == 0) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Device identifier list is " +
+                            "empty.").build());
+        }
+    }
+
+    public static void validatePolicyDetails(PolicyWrapper policyWrapper) {
+        if (policyWrapper == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Policy is empty.").build());
+        }
+    }
+
+    public static void validatePolicyIds(List<Integer> policyIds) {
+        if (policyIds == null || policyIds.size() == 0) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Policy Id list is empty.").build
+                            ());
+        }
+    }
+
+    public static void validateRoleName(String roleName) {
+        if (roleName == null || roleName.isEmpty()) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Role name isn't valid.").build
+                            ());
+        }
+    }
+
+    public static void validateUsers(List<String> users) {
+        if (users == null || users.size() == 0) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("User list isn't valid.").build
+                            ());
         }
     }
 

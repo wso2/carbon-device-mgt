@@ -19,6 +19,7 @@ package org.wso2.carbon.device.mgt.common;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 
 import java.io.Serializable;
@@ -63,6 +64,8 @@ public class Device implements Serializable {
     @ApiModelProperty(name = "advanceInfo", value = "This defines the device registration related information. " +
             "It is mandatory to define this information.", required = true)
     private DeviceInfo deviceInfo;
+
+    private List<Application> applications;
 
     public Device() {
     }
@@ -148,6 +151,14 @@ public class Device implements Serializable {
 
     public void setDeviceInfo(DeviceInfo deviceInfo) {
         this.deviceInfo = deviceInfo;
+    }
+
+    public List<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
     }
 
     public static class Property {

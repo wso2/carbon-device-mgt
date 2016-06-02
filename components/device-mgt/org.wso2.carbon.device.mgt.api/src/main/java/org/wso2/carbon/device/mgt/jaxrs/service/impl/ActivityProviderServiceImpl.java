@@ -25,8 +25,8 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -55,8 +55,9 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             activity = dmService.getOperationByActivityId(id);
             if (activity == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No activity can be found upon the provided " +
-                        "activity id '" + id + "'").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No activity can be " +
+                                "found upon the provided activity id '" + id + "'").build());
             }
         } catch (OperationManagementException e) {
             String msg = "ErrorResponse occurred while fetching the activity for the supplied id.";
@@ -71,14 +72,18 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
     @Override
     public Response getActivities(
             @QueryParam("timestamp") long timestamp,
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
-        List<Activity> activities = null;
+        List<Activity> activities;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             activities = dmService.getActivitiesUpdatedAfter(timestamp);
+            if (activities == null || activities.size() == 0) {
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No activities " +
+                                "found.").build());
+            }
 
         } catch (OperationManagementException e) {
             String msg = "ErrorResponse occurred while fetching the activities updated after given time stamp.";

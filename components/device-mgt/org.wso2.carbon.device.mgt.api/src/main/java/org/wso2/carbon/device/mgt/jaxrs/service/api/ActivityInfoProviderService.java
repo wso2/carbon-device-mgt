@@ -77,8 +77,12 @@ public interface ActivityInfoProviderService {
                     message = "Bad Request. \n Invalid request or validation error.",
                     response = ErrorResponse.class),
             @ApiResponse(
+                    code = 401,
+                    message = ". \n Invalid request or validation error."),
+            @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n No activity is found under the provided id."),
+                    message = "Not Found. \n No activity is found under the provided id.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
@@ -132,6 +136,10 @@ public interface ActivityInfoProviderService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                             "the requested resource."),
             @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n No activities found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
@@ -147,11 +155,6 @@ public interface ActivityInfoProviderService {
                             "should be provided in unix format in seconds.",
                     required = false)
             @QueryParam("timestamp") long timestamp,
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
-                    required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",

@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
@@ -77,12 +78,17 @@ public interface UserManagementService {
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error."),
                     @ApiResponse(
+                            code = 409,
+                            message = "Conflict. \n User already exist.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
                             code = 415,
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while adding a new user.")
+                                    "Server error occurred while adding a new user.",
+                            response = ErrorResponse.class)
             })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/add"})
     Response addUser(
@@ -124,13 +130,16 @@ public interface UserManagementService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Resource does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the requested user.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while" +
+                            " fetching the requested user.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getUser(
@@ -179,14 +188,16 @@ public interface UserManagementService {
                     message = "Bad Request. \n Invalid request or validation error."),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Resource does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while updating the user.")
+                            "Server error occurred while updating the user.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/update"})
     Response updateUser(
@@ -214,11 +225,14 @@ public interface UserManagementService {
                     message = "OK. \n User has successfully been removed"),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Resource to be deleted does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while removing the user.")
+                            "Server error occurred while removing the user.",
+                    response = ErrorResponse.class
+            )
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/remove"})
     Response removeUser(
@@ -260,13 +274,16 @@ public interface UserManagementService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Resource to be deleted does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the role list assigned to the user.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the role list" +
+                            " assigned to the user.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getRolesOfUser(
@@ -310,7 +327,8 @@ public interface UserManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the user list.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the user list.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getUsers(
@@ -376,7 +394,9 @@ public interface UserManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the username list that matches the given filter.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the username " +
+                            "list that matches the given filter.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getUserNames(
@@ -416,7 +436,8 @@ public interface UserManagementService {
                     message = "OK. \n Credentials of the user have been updated successfully"),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource to be deleted does not exist."),
@@ -426,7 +447,8 @@ public interface UserManagementService {
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while updating credentials of the user.")
+                            "Server error occurred while updating credentials of the user.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
     Response resetPassword(

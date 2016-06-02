@@ -71,6 +71,10 @@ public interface RoleManagementService {
                             code = 304,
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
                     @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Resource does not exist.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
@@ -148,8 +152,13 @@ public interface RoleManagementService {
                             code = 304,
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
                     @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist."),
+                            message = "Not Found. \n Resource does not exist.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
@@ -201,16 +210,23 @@ public interface RoleManagementService {
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client has already the latest version of" +
+                                    " the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist."),
+                            message = "Not Found. \n Resource does not exist.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the requested role.",
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the " +
+                                    "requested role.",
                             response = ErrorResponse.class)
     })
     @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
@@ -349,6 +365,10 @@ public interface RoleManagementService {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Role has successfully been removed"),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource to be deleted does not exist."),

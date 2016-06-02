@@ -28,8 +28,8 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceManagementAdminService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnauthorizedAccessException;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -66,8 +66,9 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
             List<Device> devices = DeviceMgtAPIUtils.getDeviceManagementService().
                 getDevicesByNameAndType(name, type, offset, limit);
             if (devices == null || devices.size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No device, which carries the name '" +
-                    name + "', is currently enrolled in the system").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No device, which carries" +
+                                " the name '" + name + "', is currently enrolled in the system").build());
             }
 
             // setting up paginated result

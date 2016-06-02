@@ -72,6 +72,15 @@ public interface NotificationManagementService {
                             code = 304,
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
                     @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid notification status type " +
+                                    "received. Valid status types are NEW | CHECKED",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No notification is available to be retrieved.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(

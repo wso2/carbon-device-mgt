@@ -23,15 +23,16 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.RoleManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
 import org.wso2.carbon.user.api.*;
-import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.mgt.UserRealmProxy;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 import org.wso2.carbon.user.mgt.common.UserAdminException;
@@ -62,12 +63,14 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         try {
             filteredRoles = getRolesFromUserStore();
             if (filteredRoles == null || filteredRoles.size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No roles found.").build());
             }
             targetRoles.setCount(filteredRoles.size());
             filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(), offset, limit);
             if (filteredRoles.size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No roles found.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No roles found").build());
             }
             targetRoles.setList(filteredRoles);
         } catch (UserStoreException e) {
@@ -85,6 +88,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     public Response getPermissionsOfRole(
             @PathParam("roleName") String roleName,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        RequestValidationUtil.validateRoleName(roleName);
         try {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             org.wso2.carbon.user.core.UserRealm userRealmCore = null;
@@ -95,8 +99,9 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
             rolePermissions = this.getUIPermissionNode(roleName, userRealmProxy);
             if (rolePermissions == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No permissions found for the role '" +
-                        roleName + "'").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No permissions found" +
+                                " for the role '" + roleName + "'").build());
             }
             return Response.status(Response.Status.OK).entity(rolePermissions).build();
         } catch (UserAdminException e) {
@@ -139,6 +144,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Override
     public Response getRole(@PathParam("roleName") String roleName,
                             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        RequestValidationUtil.validateRoleName(roleName);
         RoleWrapper roleWrapper = new RoleWrapper();
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
@@ -162,6 +168,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 roleWrapper.setPermissionList(rolePermissions);
                 String[] permListAr = new String[permList.size()];
                 roleWrapper.setPermissions(permList.toArray(permListAr));
+            } else {
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("Role name doesn't exist.")
+                                .build());
             }
         } catch (UserStoreException | UserAdminException e) {
             String msg = "Error occurred while retrieving the user role '" + roleName + "'";
@@ -185,10 +195,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @POST
     @Override
     public Response addRole(RoleWrapper roleWrapper) {
-        if (roleWrapper == null) {
-            log.error("Request body is incorrect or empty");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+        RequestValidationUtil.validateRoleDetails(roleWrapper);
+        RequestValidationUtil.validateRoleName(roleWrapper.getRoleName());
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (log.isDebugEnabled()) {
@@ -218,9 +226,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}")
     @Override
     public Response updateRole(@PathParam("roleName") String roleName, RoleWrapper roleWrapper) {
-        if (roleWrapper == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Request body is incorrect or empty").build();
-        }
+        RequestValidationUtil.validateRoleName(roleName);
+        RequestValidationUtil.validateRoleDetails(roleWrapper);
         String newRoleName = roleWrapper.getRoleName();
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
@@ -265,6 +272,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}")
     @Override
     public Response deleteRole(@PathParam("roleName") String roleName) {
+        RequestValidationUtil.validateRoleName(roleName);
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             final AuthorizationManager authorizationManager = DeviceMgtAPIUtils.getAuthorizationManager();
@@ -288,9 +296,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}/users")
     @Override
     public Response updateUsersOfRole(@PathParam("roleName") String roleName, List<String> users) {
-        if (users == null || users.size() == 0) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("No users are found in the request").build();
-        }
+        RequestValidationUtil.validateRoleName(roleName);
+        RequestValidationUtil.validateUsers(users);
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (log.isDebugEnabled()) {

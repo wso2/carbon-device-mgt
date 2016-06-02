@@ -27,11 +27,12 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserList;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
@@ -42,7 +43,6 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Path("/users")
@@ -65,8 +65,10 @@ public class UserManagementServiceImpl implements UserManagementService {
                             " already exists. Therefore, request made to add user was refused.");
                 }
                 // returning response with bad request state
-                return Response.status(Response.Status.CONFLICT).entity("User by username: " + userWrapper.getUsername() +
-                        " already exists. Therefore, request made to add user was refused.").build();
+                throw new ConflictException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(409l).setMessage("User by username: " +
+                                userWrapper.getUsername() +  " already exists. Therefore, request made to add user " +
+                                "was refused.").build());
             } else {
                 String initialUserPassword = this.generateInitialUserPassword();
                 Map<String, String> defaultUserClaims =
@@ -186,8 +188,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + username + " does not exist.");
                 }
                 // returning response with bad request state
-                return Response.status(Response.Status.NOT_FOUND).entity(
-                        "User by username: " + username + " does not exist").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User doesn't exist.")
+                                .build());
             }
         } catch (UserStoreException e) {
             String msg = "ErrorResponse occurred while retrieving information of the user '" + username + "'";
@@ -243,9 +246,10 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + userWrapper.getUsername() +
                             " doesn't exists. Therefore, request made to update user was refused.");
                 }
-                return Response.status(Response.Status.CONFLICT).entity("User by username: " +
-                        userWrapper.getUsername() + " doesn't  exists. Therefore, request made to update user was " +
-                        "refused.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " +
+                                userWrapper.getUsername() + " doesn't  exists. Therefore, request made to update user" +
+                                " was refused.").build());
             }
         } catch (UserStoreException e) {
             String msg = "Exception in trying to update user by username: " + userWrapper.getUsername();
@@ -293,8 +297,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + username + " does not exist for removal.");
                 }
                 // returning response with bad request state
-                return Response.status(Response.Status.NOT_FOUND).entity("User by username: " + username +
-                        " does not exist for removal.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " +
+                                username + " does not exist for removal.").build());
             }
         } catch (UserStoreException e) {
             String msg = "Exception in trying to remove user by username: " + username;
@@ -318,8 +323,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist for role retrieval.");
                 }
-                return Response.status(Response.Status.NOT_FOUND).entity("User by username: " + username +
-                        " does not exist for role retrieval.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " + username +
+                                " does not exist for role retrieval.").build());
             }
         } catch (UserStoreException e) {
             String msg = "Exception in trying to retrieve roles for user by username: " + username;

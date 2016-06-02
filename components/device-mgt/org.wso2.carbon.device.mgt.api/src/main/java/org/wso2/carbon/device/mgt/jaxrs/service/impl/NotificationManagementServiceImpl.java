@@ -25,8 +25,8 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagement
 import org.wso2.carbon.device.mgt.jaxrs.NotificationContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.NotificationManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -59,9 +59,10 @@ public class NotificationManagementServiceImpl implements NotificationManagement
                 notifications = DeviceMgtAPIUtils.getNotificationManagementService().getAllNotifications();
             }
 
-            if (notifications == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No notification is available to be " +
-                        "retrieved").build();
+            if (notifications == null || notifications.size() == 0) {
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No notification is " +
+                                "available to be retrieved.").build());
             }
             return Response.status(Response.Status.OK).entity(notifications).build();
         } catch (NotificationManagementException e) {

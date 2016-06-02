@@ -27,9 +27,12 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.PolicyManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyList;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
@@ -53,7 +56,9 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @POST
     @Override
     public Response addPolicy(PolicyWrapper policyWrapper) {
+        RequestValidationUtil.validatePolicyDetails(policyWrapper);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+
         try {
             Policy policy = this.getPolicyFromWrapper(policyWrapper);
 
@@ -67,13 +72,15 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                 String username = threadLocalCarbonContext.getUsername();
                 try {
                     if (!deviceAccessAuthorizationService.isUserAuthorized(deviceIdentifier, username)) {
-                        return Response.status(Response.Status.UNAUTHORIZED).entity("Current logged in user is " +
-                                "not authorized to add policies").build();
+                        throw new UnauthorizedAccessException(
+                                new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage
+                                        ("Current logged in user is not authorized to add policies").build());
                     }
                 } catch (DeviceAccessAuthorizationException e) {
                     String msg = "ErrorResponse occurred while checking if the current user is authorized to add a policy";
                     log.error(msg, e);
-                    return javax.ws.rs.core.Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+                    throw new UnexpectedServerErrorException(
+                            new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
                 }
             }
 
@@ -83,11 +90,13 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         } catch (PolicyManagementException e) {
             String msg = "ErrorResponse occurred while adding policy";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         } catch (DeviceManagementException e) {
             String msg = "ErrorResponse occurred while retrieving device list.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 
@@ -127,7 +136,8 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policies = policyAdministratorPoint.getPolicies();
             if (policies == null || policies.size() == 0) {
-                return Response.status(Response.Status.NOT_FOUND).entity("No policies found.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No policies found.").build());
             }
             targetPolicies.setCount(policies.size());
             filteredPolicies = FilteringUtil.getFilteredList(policies, offset, limit);
@@ -138,7 +148,8 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         } catch (PolicyManagementException e) {
             String msg = "ErrorResponse occurred while retrieving all available policies";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
 
         return Response.status(Response.Status.OK).entity(targetPolicies).build();
@@ -154,12 +165,14 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policy = policyAdministratorPoint.getPolicy(id);
             if (policy == null) {
-                return Response.status(Response.Status.NOT_FOUND).entity("Policy not found.").build();
+                throw new NotFoundException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No policy found.").build());
             }
         } catch (PolicyManagementException e) {
             String msg = "ErrorResponse occurred while retrieving policy corresponding to the id '" + id + "'";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         return Response.status(Response.Status.OK).entity(policy).build();
     }
@@ -168,6 +181,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @Path("/{id}")
     @Override
     public Response updatePolicy(@PathParam("id") int id, PolicyWrapper policyWrapper) {
+        RequestValidationUtil.validatePolicyDetails(policyWrapper);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         try {
             Policy policy = this.getPolicyFromWrapper(policyWrapper);
@@ -178,15 +192,17 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                 return Response.status(Response.Status.NOT_FOUND).entity("Policy not found.").build();
             }
             pap.updatePolicy(policy);
-            return Response.status(Response.Status.OK).entity("Policy has successfully been updated").build();
+            return Response.status(Response.Status.OK).entity("Policy has successfully been updated.").build();
         } catch (PolicyManagementException e) {
             String msg = "ErrorResponse occurred while updating the policy";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         } catch (DeviceManagementException e) {
             String msg = "ErrorResponse occurred while retrieving the device list.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
     }
 
@@ -194,6 +210,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @Path("/remove-policy")
     @Override
     public Response removePolicies(List<Integer> policyIds) {
+        RequestValidationUtil.validatePolicyIds(policyIds);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         boolean policyDeleted = true;
         try {
@@ -207,13 +224,15 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         } catch (PolicyManagementException e) {
             String msg = "ErrorResponse occurred while removing policies";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         if (policyDeleted) {
             return Response.status(Response.Status.OK).entity("Policies have been successfully deleted").build();
         } else {
             //TODO:Check of this logic is correct
-            return Response.status(Response.Status.NOT_FOUND).entity("Policy doesn't exist").build();
+            throw new NotFoundException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("Policy doesn't exist").build());
         }
     }
 
@@ -221,6 +240,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @Path("/activate-policy")
     @Override
     public Response activatePolicies(List<Integer> policyIds) {
+        RequestValidationUtil.validatePolicyIds(policyIds);
         boolean isPolicyActivated = false;
         try {
             PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
@@ -235,14 +255,16 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         } catch (PolicyManagementException e) {
             String msg = "ErrorResponse occurred while activating policies";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         if (isPolicyActivated) {
             return Response.status(Response.Status.OK).entity("Selected policies have been successfully activated")
                     .build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).entity("Selected policies have not been activated")
-                    .build();
+            throw new NotFoundException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("Selected policies have " +
+                            "not been activated").build());
         }
     }
 
@@ -250,6 +272,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @Path("/deactivate-policy")
     @Override
     public Response deactivatePolicies(List<Integer> policyIds) {
+        RequestValidationUtil.validatePolicyIds(policyIds);
         boolean isPolicyDeActivated = false;
         try {
             PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
@@ -264,14 +287,16 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         } catch (PolicyManagementException e) {
             String msg = "Exception in inactivating policies.";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         if (isPolicyDeActivated) {
             return Response.status(Response.Status.OK).entity("Selected policies have been successfully " +
                                                                       "deactivated").build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).entity("Selected policies have not been deactivated")
-                    .build();
+            throw new NotFoundException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("Selected policies have " +
+                            "not been deactivated").build());
         }
     }
 

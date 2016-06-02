@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
 
 import javax.ws.rs.*;
@@ -49,7 +50,8 @@ public interface UserManagementAdminService {
                     message = "OK. \n Credentials of the user have been updated successfully"),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource to be deleted does not exist."),
@@ -59,7 +61,8 @@ public interface UserManagementAdminService {
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while updating credentials of the user.")
+                            "Server error occurred while updating credentials of the user.",
+                    response = ErrorResponse.class)
     })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
     Response resetUserPassword(

@@ -252,7 +252,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.setId(currentDevice.getId());
             device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
 
-            deviceDAO.updateDevice(type.getId(), device, tenantId);
+            deviceDAO.updateDevice(device, tenantId);
             enrollmentDAO.updateEnrollment(device.getEnrolmentInfo());
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
@@ -317,7 +317,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
             enrollmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
-            deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
+            deviceDAO.updateDevice(device, tenantId);
 
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
@@ -378,6 +378,73 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevices(this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                    "the current tenant", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        for (Device device : allDevices) {
+            DeviceInfo info = null;
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                info = deviceInfoDAO.getDeviceInformation(device.getId());
+                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
+                if (info != null) {
+                    info.setLocation(location);
+                }
+            } catch (DeviceDetailsMgtDAOException e) {
+                log.error("Error occurred while retrieving advance info of '" + device.getType() +
+                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
+            } catch (SQLException e) {
+                log.error("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+            device.setDeviceInfo(info);
+
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
+                device.setApplications(applications);
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
+                        "which carries the id '" + device.getId() + "'", e);
+            } catch (SQLException e) {
+                log.error("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                            "Therefore, not attempting method 'isEnrolled'");
+                }
+                devices.add(device);
+                continue;
+            }
+            Device dmsDevice =
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        return devices;
+    }
+
+    public List<Device> getDevices(Date since) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<>();
+        List<Device> allDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            allDevices = deviceDAO.getDevices(since.getTime(), this.getTenantId());
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
                     "the current tenant", e);
@@ -1463,10 +1530,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
             DeviceManagementDAOFactory.beginTransaction();
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType(), this.getTenantId());
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(status);
-            deviceDAO.updateDevice(deviceType.getId(), device, this.getTenantId());
+            deviceDAO.updateDevice(device, this.getTenantId());
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();

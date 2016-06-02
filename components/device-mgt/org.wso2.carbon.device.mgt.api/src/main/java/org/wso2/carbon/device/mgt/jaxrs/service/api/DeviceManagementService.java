@@ -123,6 +123,11 @@ public interface DeviceManagementService {
                     required = false)
             @QueryParam("status") String status,
             @ApiParam(
+                    name = "since",
+                    value = "Last modified timestamp",
+                    required = false)
+            @QueryParam("since") String since,
+            @ApiParam(
                     name = "If-Modified-Since",
                     value = "Timestamp of the last modified date",
                     required = false)

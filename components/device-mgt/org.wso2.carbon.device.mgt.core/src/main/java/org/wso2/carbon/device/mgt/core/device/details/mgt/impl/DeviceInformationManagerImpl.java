@@ -21,9 +21,12 @@ package org.wso2.carbon.device.mgt.core.device.details.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
@@ -40,9 +43,11 @@ import java.util.Map;
 public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
     private DeviceDetailsDAO deviceDetailsDAO;
+    private DeviceDAO deviceDAO;
     private static final Log log = LogFactory.getLog(DeviceInformationManagerImpl.class);
 
     public DeviceInformationManagerImpl() {
+        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.deviceDetailsDAO = DeviceManagementDAOFactory.getDeviceDetailsDAO();
     }
 
@@ -53,6 +58,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
                     getDeviceManagementProvider().getDevice(deviceId);
 
             DeviceManagementDAOFactory.beginTransaction();
+            deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
             deviceDetailsDAO.deleteDeviceInformation(device.getId());
             deviceDetailsDAO.deleteDeviceProperties(device.getId());
             deviceDetailsDAO.addDeviceInformation(device.getId(), deviceInfo);
@@ -60,13 +66,17 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceDetailsMgtException("Transactional error occurred while adding the device information.");
+            throw new DeviceDetailsMgtException("Transactional error occurred while adding the device information.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceDetailsMgtException("Error occurred while adding the device information.");
+            throw new DeviceDetailsMgtException("Error occurred while adding the device information.", e);
         } catch (DeviceManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceDetailsMgtException("Error occurred while retrieving the device information.");
+            throw new DeviceDetailsMgtException("Error occurred while retrieving the device information.", e);
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceDetailsMgtException("Error occurred while updating the last update timestamp of the " +
+                    "device", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -147,18 +157,23 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
                     getDeviceManagementProvider().getDevice(deviceLocation.getDeviceIdentifier());
             deviceLocation.setDeviceId(device.getId());
             DeviceManagementDAOFactory.beginTransaction();
+            deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
             deviceDetailsDAO.deleteDeviceLocation(deviceLocation.getDeviceId());
             deviceDetailsDAO.addDeviceLocation(deviceLocation);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceDetailsMgtException("Transactional error occurred while adding the device location information.");
+            throw new DeviceDetailsMgtException("Transactional error occurred while adding the device location " +
+                    "information.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceDetailsMgtException("Error occurred while adding the device location information.");
+            throw new DeviceDetailsMgtException("Error occurred while adding the device location information.", e);
         } catch (DeviceManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceDetailsMgtException("Error occurred while getting the device information.");
+            throw new DeviceDetailsMgtException("Error occurred while getting the device information.", e);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceDetailsMgtException("Error occurred while updating the last updated timestamp of " +
+                    "the device", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -192,7 +207,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     }
 
     @Override
-    public List<DeviceLocation> getDeviceLocations(List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException {
+    public List<DeviceLocation> getDeviceLocations(
+            List<DeviceIdentifier> deviceIdentifiers) throws DeviceDetailsMgtException {
 
         try {
             List<Device> devices = DeviceManagementDataHolder.getInstance().

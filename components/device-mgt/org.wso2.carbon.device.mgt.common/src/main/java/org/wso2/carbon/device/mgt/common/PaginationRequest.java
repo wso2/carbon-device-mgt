@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.common;
 
+import java.util.Date;
+
 /**
  * This class holds required parameters for a querying a paginated response.
  */
@@ -30,6 +32,7 @@ public class PaginationRequest {
     private String deviceType;
     private String deviceName;
     private String ownership;
+    private Date since;
 
     public PaginationRequest(int start, int rowCount) {
         this.startIndex = start;
@@ -91,4 +94,13 @@ public class PaginationRequest {
     public void setOwnership(String ownership) {
         this.ownership = ownership;
     }
+
+    public Date getSince() {
+        return since;
+    }
+
+    public void setSince(Date since) {
+        this.since = since;
+    }
+
 }

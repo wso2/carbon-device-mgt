@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
@@ -49,6 +50,9 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Path("/devices")
@@ -66,7 +70,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("roleName") String roleName,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
-            @HeaderParam("If-Modified-Since") String timestamp,
+            @QueryParam("since") String since,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
@@ -78,26 +83,60 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
             if (type != null) {
                 request.setDeviceType(type);
-                result = dms.getDevicesByType(request);
-            } else if (user != null) {
+            }
+            if (user != null) {
                 request.setOwner(user);
-                result = dms.getDevicesOfUser(request);
-            } else if (ownership != null) {
+            }
+            if (ownership != null) {
                 RequestValidationUtil.validateOwnershipType(ownership);
                 request.setOwnership(ownership);
-                result = dms.getDevicesByOwnership(request);
-            } else if (status != null) {
+            }
+            if (status != null) {
                 RequestValidationUtil.validateStatus(status);
                 request.setStatus(status);
-                result = dms.getDevicesByStatus(request);
+            }
+
+            if (ifModifiedSince != null) {
+                Date sinceDate;
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                try {
+                    sinceDate = format.parse(ifModifiedSince);
+                } catch (ParseException e) {
+                    throw new InputValidationException(
+                            new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Invalid date " +
+                                    "string is provided in 'If-Modified-Since' header").build());
+                }
+                request.setSince(sinceDate);
+                result = dms.getAllDevices(request);
+                if (result == null || result.getData() == null || result.getData().size() <= 0) {
+                    return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
+                            "after the timestamp provided in 'If-Modified-Since' header").build();
+                }
+            } else if (since != null) {
+                Date sinceDate;
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                try {
+                    sinceDate = format.parse(since);
+                } catch (ParseException e) {
+                    throw new InputValidationException(
+                            new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Invalid date " +
+                                    "string is provided in 'since' filter").build());
+                }
+                request.setSince(sinceDate);
+                result = dms.getAllDevices(request);
+                if (result == null || result.getData() == null || result.getData().size() <= 0) {
+                    return Response.status(Response.Status.OK).entity("No device is modified " +
+                            "after the timestamp provided in 'since' filter").build();
+                }
             } else {
                 result = dms.getAllDevices(request);
+                if (result == null) {
+                    throw new NotFoundException(
+                            new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No device is currently" +
+                                    " enrolled with the server").build());
+                }
             }
-            if (result == null) {
-                throw new NotFoundException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No device is currently" +
-                                " enrolled with the server").build());
-            }
+
             DeviceList devices = new DeviceList();
             devices.setList((List<Device>) result.getData());
             devices.setCount(result.getRecordsTotal());

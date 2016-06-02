@@ -25,11 +25,9 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.impl.AbstractDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,6 +52,8 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
         boolean isStatusProvided = false;
+        Date since = request.getSince();
+        boolean isSinceProvided = false;
         try {
             conn = this.getConnection();
             String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
@@ -71,6 +71,12 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             if (deviceName != null && !deviceName.isEmpty()) {
                 sql = sql + " AND d.NAME LIKE ?";
                 isDeviceNameProvided = true;
+            }
+
+            //Add query for last updated timestamp
+            if (since != null) {
+                sql = sql + " AND d.LAST_UPDATED_TIMESTAMP > ?";
+                isSinceProvided = true;
             }
 
             sql = sql + ") d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
@@ -101,6 +107,9 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             }
             if (isDeviceNameProvided) {
                 stmt.setString(paramIdx++, request.getDeviceName() + "%");
+            }
+            if (isSinceProvided) {
+                stmt.setTimestamp(paramIdx++, new Timestamp(since.getTime()));
             }
             stmt.setInt(paramIdx++, tenantId);
             if (isOwnershipProvided) {

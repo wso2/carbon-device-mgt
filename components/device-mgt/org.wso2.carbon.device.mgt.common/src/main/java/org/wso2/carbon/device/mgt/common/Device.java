@@ -62,9 +62,11 @@ public class Device implements Serializable {
     private List<Device.Property> properties;
 
     @ApiModelProperty(name = "advanceInfo", value = "This defines the device registration related information. " +
-            "It is mandatory to define this information.", required = true)
+            "It is mandatory to define this information.", required = false)
     private DeviceInfo deviceInfo;
 
+    @ApiModelProperty(name = "applications", value = "This represents the application list installed into the device",
+    required = false)
     private List<Application> applications;
 
     public Device() {

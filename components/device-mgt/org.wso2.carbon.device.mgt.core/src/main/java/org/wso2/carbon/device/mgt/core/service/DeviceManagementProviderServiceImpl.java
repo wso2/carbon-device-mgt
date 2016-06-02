@@ -539,6 +539,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
             device.setDeviceInfo(info);
+
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
+                device.setApplications(applications);
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
+                        "which carries the id '" + device.getId() + "'", e);
+            } catch (SQLException e) {
+                log.error("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+
             DeviceManager deviceManager = this.getDeviceManager(device.getType());
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {

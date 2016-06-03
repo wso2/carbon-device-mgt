@@ -286,7 +286,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 if (enrolmentId == 0) {
                     activity = new Activity();
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
-                    activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP"))).toString());
+                    activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
                 }
                 if (enrolmentId != rs.getInt("ENROLMENT_ID")) {
@@ -370,7 +370,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     enrolmentId = rs.getInt("ENROLMENT_ID");
 
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
-                    activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP"))).toString());
+                    activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
@@ -396,7 +396,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activityStatus = new ActivityStatus();
 
                     activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
-                    activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP"))).toString());
+                    activity.setCreatedTimeStamp(new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
                     activity.setCode(rs.getString("OPERATION_CODE"));
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();

@@ -164,6 +164,11 @@ public interface ActivityInfoProviderService {
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit);
+            @QueryParam("limit") int limit,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Validates if the requested variant has not been modified since the time specified",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
 }

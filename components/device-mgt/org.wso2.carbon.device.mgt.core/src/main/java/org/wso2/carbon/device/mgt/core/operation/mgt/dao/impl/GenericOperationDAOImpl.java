@@ -355,7 +355,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
             int operationId = 0;
             int enrolmentId = 0;
-            int responceId = 0;
+            int responseId = 0;
             Activity activity = null;
             ActivityStatus activityStatus = null;
             while (rs.next()) {
@@ -383,7 +383,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     List<OperationResponse> operationResponses = new ArrayList<>();
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         operationResponses.add(this.getOperationResponse(rs));
-                        responceId = rs.getInt("OP_RES_ID");
+                        responseId = rs.getInt("OP_RES_ID");
                     }
                     activityStatus.setResponses(operationResponses);
                     statusList.add(activityStatus);
@@ -409,7 +409,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     List<OperationResponse> operationResponses = new ArrayList<>();
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         operationResponses.add(this.getOperationResponse(rs));
-                        responceId = rs.getInt("OP_RES_ID");
+                        responseId = rs.getInt("OP_RES_ID");
                     }
                     activityStatus.setResponses(operationResponses);
                     activity.getActivityStatus().add(activityStatus);
@@ -417,10 +417,10 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     enrolmentId = rs.getInt("ENROLMENT_ID");
                 }
 
-                if (rs.getInt("OP_RES_ID") != 0 && responceId != rs.getInt("OP_RES_ID")){
+                if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")){
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         activityStatus.getResponses().add(this.getOperationResponse(rs));
-                        responceId = rs.getInt("OP_RES_ID");
+                        responseId = rs.getInt("OP_RES_ID");
                     }
                 }
             }

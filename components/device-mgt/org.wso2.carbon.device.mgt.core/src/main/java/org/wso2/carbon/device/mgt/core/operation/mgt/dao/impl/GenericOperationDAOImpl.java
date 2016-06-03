@@ -412,7 +412,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activity.getActivityStatus().add(activityStatus);
 
                     enrolmentId = rs.getInt("ENROLMENT_ID");
-                } else {
+                }
+
+                if (operationId == rs.getInt("OPERATION_ID") && enrolmentId == rs.getInt("ENROLMENT_ID")){
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         activityStatus.getResponses().add(this.getOperationResponse(rs));
                     }

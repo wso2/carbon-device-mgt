@@ -79,7 +79,6 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             @QueryParam("limit") int limit,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
 
-
         long sinceTimestamp = 0;
         boolean isSinceModifiedIsSet = false;
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
@@ -103,7 +102,8 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             activities = dmService.getActivitiesUpdatedAfter(timestamp);
             if (activities == null || activities.size() == 0) {
                 if (isSinceModifiedIsSet) {
-                    return Response.status(Response.Status.NOT_MODIFIED).entity(activities).build();
+                    return Response.status(Response.Status.NOT_MODIFIED).entity("No activities " +
+                            "after the timestamp provided in 'If-Modified-Since' header").build();
                 }
                 throw new NotFoundException(
                         new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No activities " +

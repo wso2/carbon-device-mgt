@@ -456,12 +456,13 @@ public class OperationManagerImpl implements OperationManager {
                         DeviceManagementDAOFactory.closeConnection();
                     }
                     OperationManagementDAOFactory.beginTransaction();
+                    boolean isUpdated = false;
                     if (operation.getStatus() != null) {
-                        operationDAO.updateOperationStatus(enrolmentId, operationId,
+                        isUpdated = operationDAO.updateOperationStatus(enrolmentId, operationId,
                                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.
                                         valueOf(operation.getStatus().toString()));
                     }
-                    if (operation.getOperationResponse() != null) {
+                    if (isUpdated && operation.getOperationResponse() != null) {
                         operationDAO.addOperationResponse(enrolmentId, operationId, operation.getOperationResponse());
                     }
                     OperationManagementDAOFactory.commitTransaction();

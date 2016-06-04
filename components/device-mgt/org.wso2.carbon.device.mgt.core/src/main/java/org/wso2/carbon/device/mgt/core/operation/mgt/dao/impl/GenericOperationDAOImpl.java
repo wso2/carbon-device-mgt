@@ -89,9 +89,10 @@ public class GenericOperationDAOImpl implements OperationDAO {
         }
     }
 
-    public void updateOperationStatus(int enrolmentId, int operationId, Operation.Status status)
+    public boolean updateOperationStatus(int enrolmentId, int operationId, Operation.Status status)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
+        boolean isUpdated = false;
         try {
             long time = System.currentTimeMillis() / 1000;
             Connection connection = OperationManagementDAOFactory.getConnection();
@@ -101,14 +102,17 @@ public class GenericOperationDAOImpl implements OperationDAO {
             stmt.setLong(2, time);
             stmt.setInt(3, enrolmentId);
             stmt.setInt(4, operationId);
-            stmt.executeUpdate();
-
+            int numOfRecordsUpdated = stmt.executeUpdate();
+            if (numOfRecordsUpdated != 0) {
+                isUpdated = true;
+            }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while update device mapping operation status " +
                     "metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
+        return isUpdated;
     }
 
     @Override

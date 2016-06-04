@@ -32,6 +32,9 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Path("/activities")
@@ -73,13 +76,35 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
     public Response getActivities(
             @QueryParam("timestamp") long timestamp,
             @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
+            @QueryParam("limit") int limit,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+
+        long sinceTimestamp = 0;
+        boolean isSinceModifiedIsSet = false;
+        if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                Date sinceDate = format.parse(ifModifiedSince);
+                sinceTimestamp = sinceDate.getTime();
+            } catch (ParseException e) {
+                throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
+                        .setMessage("Invalid date " + "string is provided in 'If-Modified-Since' header").build());
+            }
+        }
+        if (sinceTimestamp > timestamp) {
+            timestamp = sinceTimestamp;
+            isSinceModifiedIsSet = true;
+        }
         List<Activity> activities;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             activities = dmService.getActivitiesUpdatedAfter(timestamp);
             if (activities == null || activities.size() == 0) {
+                if (isSinceModifiedIsSet) {
+                    return Response.status(Response.Status.NOT_MODIFIED).entity("No activities " +
+                            "after the timestamp provided in 'If-Modified-Since' header").build();
+                }
                 throw new NotFoundException(
                         new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No activities " +
                                 "found.").build());

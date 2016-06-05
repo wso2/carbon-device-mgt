@@ -501,7 +501,6 @@ var module = {};
             response.sendError(500, e.message);
             return;
         }
-
         if (ssoClient.isLogoutResponse(samlResponseObj)) {
             // This is a logout response.
             module.logout(response);
@@ -510,11 +509,15 @@ var module = {};
             var ssoConfigs = getSsoConfigurations();
             var rsEnabled = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_RESPONSE_SIGNING_ENABLED];
             if (utils.parseBoolean(rsEnabled)) {
-                // Response signing is enabled.
+                var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
+                var keyStorePassword = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Password");
+                var keyStoreName = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Location");
+                var identityAlias = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_ALIAS];
                 var keyStoreParams = {
-                    KEY_STORE_NAME: ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_KEY_STORE_NAME],
-                    KEY_STORE_PASSWORD: ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_KEY_STORE_PASSWORD],
-                    IDP_ALIAS: ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_PROVIDER_ALIAS]
+                    KEY_STORE_NAME: keyStoreName,
+                    KEY_STORE_PASSWORD: keyStorePassword,
+                    IDP_ALIAS: identityAlias,
+                    USE_ST_KEY: !ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_USE_ST_KEY]
                 };
                 if (!ssoClient.validateSignature(samlResponseObj, keyStoreParams)) {
                     var msg = "Invalid signature found in the SAML response.";
@@ -532,15 +535,37 @@ var module = {};
             if (ssoSession.sessionId) {
                 var ssoSessions = getSsoSessions();
                 ssoSessions[ssoSession.sessionId] = ssoSession;
-                var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
-                utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
-                var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};
-                handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
+                if (ssoSessions.sessionIndex != null || ssoSessions.sessionIndex != 'undefined') {
+                    module.loadTenant(ssoSessions.loggedInUser);
+                    var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
+                    utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
+                    var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};
+                    handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
+                }
             } else {
                 var msg = "Cannot decode SAML login response.";
                 log.error(msg);
                 response.sendError(500, msg);
             }
+        }
+    };
+
+    /**
+     * Load current user tenant
+     * @param username logged user name
+     */
+    module.loadTenant = function (username) {
+        var carbon = require('carbon');
+        var MultitenantUtils = Packages.org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+        var MultitenantConstants = Packages.org.wso2.carbon.base.MultitenantConstants;
+        var TenantAxisUtils = Packages.org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
+        var service;
+        var ctx;
+        var domain = MultitenantUtils.getTenantDomain(username);
+        if (domain != null && !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(domain)) {
+            service = carbon.server.osgiService('org.wso2.carbon.utils.ConfigurationContextService');
+            ctx = service.getServerConfigContext();
+            TenantAxisUtils.setTenantAccessed(domain, ctx);
         }
     };
 

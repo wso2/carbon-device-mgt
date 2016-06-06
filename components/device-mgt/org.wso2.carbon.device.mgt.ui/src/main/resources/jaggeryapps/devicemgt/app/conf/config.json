@@ -4,6 +4,7 @@
   "apiContext" : "api",
   "httpsURL" : "https://localhost:9443",
   "httpURL" : "%http.ip%",
+  "httpsWebURL" : "%https.ip%",
   "wssURL" : "%https.ip%",
   "wsURL" : "%http.ip%",
   "enrollmentDir": "/emm-web-agent/enrollment",

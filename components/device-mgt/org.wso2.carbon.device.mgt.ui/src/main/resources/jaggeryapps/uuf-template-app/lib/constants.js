@@ -69,6 +69,8 @@ var constants = {
     APP_CONF_AUTH_MODULE_SSO_IDENTITY_PROVIDER_ALIAS: "identityProviderAlias",
     APP_CONF_AUTH_MODULE_SSO_IDENTITY_PROVIDER_URL: "identityProviderUrl",
     APP_CONF_AUTH_MODULE_SSO_INTERMEDIATE_PAGE: "intermediatePage",
+    APP_CONF_AUTH_MODULE_SSO_IDENTITY_ALIAS : "identityAlias",
+    APP_CONF_AUTH_MODULE_SSO_USE_ST_KEY : "useTenantKey",
     // Configurations - UUF
     UUF_CONF_DISPLAY_NAME: "displayName",
     UUF_CONF_LOG_LEVEL: "logLevel",

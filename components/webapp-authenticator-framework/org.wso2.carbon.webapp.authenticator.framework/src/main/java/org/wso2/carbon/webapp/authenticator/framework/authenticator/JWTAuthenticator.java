@@ -26,6 +26,8 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
@@ -88,12 +90,23 @@ public class JWTAuthenticator implements WebappAuthenticator {
             String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             int tenantId = Integer.parseInt(jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_TENANT_ID));
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
             PublicKey publicKey =  publicKeyHolder.get(tenantDomain);
             if (publicKey == null) {
                 loadTenantRegistry(tenantId);
                 KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(tenantId);
-                publicKey = keyStoreManager.getDefaultPublicKey();
-                publicKeyHolder.put(tenantDomain, publicKey);
+                if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                    publicKey = keyStoreManager.getDefaultPublicKey();
+                } else {
+                    String ksName = tenantDomain.trim().replace('.', '-');
+                    String jksName = ksName + ".jks";
+                    publicKey = keyStoreManager.getKeyStore(jksName).getCertificate(tenantDomain).getPublicKey();
+                }
+                if (publicKey != null) {
+                    publicKeyHolder.put(tenantDomain, publicKey);
+                }
             }
 
             //Get the filesystem keystore default primary certificate
@@ -124,6 +137,8 @@ public class JWTAuthenticator implements WebappAuthenticator {
             log.error("Error occurred while verifying the JWT header.", e);
         } catch (Exception e) {
             log.error("Error occurred while verifying the JWT header.", e);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
         return authenticationInfo;
     }

@@ -63,6 +63,10 @@
             <groupId>com.googlecode.json-simple.wso2</groupId>
             <artifactId>json-simple</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -103,7 +107,9 @@
                             org.wso2.carbon.utils.multitenancy,
                             org.json.simple,
                             org.wso2.carbon.context,
-                            org.wso2.carbon.base
+                            org.wso2.carbon.base,
+                            org.wso2.carbon.registry.core.*;resolution:=optional,
+                            org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.apimgt.application.extension.internal,

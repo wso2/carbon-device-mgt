@@ -52,7 +52,7 @@ public interface User {
             @ApiResponse(code = 201, message = "Created"),
             @ApiResponse(code = 500, message = "Exception in trying to add user by username: 'username'")
             })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/add"})
+    @Permission(scope = "user-add", permissions = {"/permission/admin/device-mgt/admin/user/add"})
     Response addUser(@ApiParam(name = "userWrapper", value = "Includes the required properties to add a user"
                             + " as the <JSON_PAYLOAD> value", required = true) UserWrapper userWrapper);
 
@@ -113,7 +113,7 @@ public interface User {
             @ApiResponse(code = 400, message = "User by username: 'username' does not exist for removal"),
             @ApiResponse(code = 500, message = "Exception in trying to remove user by username: 'username'")
             })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/remove"})
+    @Permission(scope = "user-remove", permissions = {"/permission/admin/device-mgt/admin/user/remove"})
     Response removeUser(@ApiParam(name = "username", value = "Provide the name of the user you wish to delete"
                                 + " as the value for {username}", required = true)
                                 @QueryParam("username") String username);
@@ -220,7 +220,7 @@ public interface User {
             @ApiResponse(code = 200, message = "Email invitation was successfully sent to user"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the list of users")
             })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/users/invite"})
+    @Permission(scope = "user-invite", permissions = {"/permission/admin/device-mgt/admin/users/invite"})
     Response inviteExistingUsersToEnrollDevice(@ApiParam(name = "usernames", value = "List of the users to be"
                                                     + " invited as the <JSON_PAYLOAD>", required = true)
                                                     List<String> usernames);
@@ -291,7 +291,7 @@ public interface User {
                     + " Character Encoding is not supported"),
             @ApiResponse(code = 500, message = "Internal Server Error")
             })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
+    @Permission(scope = "user-password-modify", permissions = {"/permission/admin/login"})
     Response resetPassword(@ApiParam(name = "credentials", value = "Include the required properties to change"
                                 + " the user password as <JSON_PAYLOAD> value", required = true)
                                 UserCredentialWrapper credentials);
@@ -317,7 +317,7 @@ public interface User {
                     + " Character Encoding is not supported"),
             @ApiResponse(code = 500, message = "Internal Server Error")
             })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/users/password-reset"})
+    @Permission(scope = "user-password-reset", permissions = {"/permission/admin/device-mgt/admin/users/password-reset"})
     Response resetPasswordByAdmin(@ApiParam(name = "credentials", value = "Include the required properties "
                                         + "to change a user password as <JSON_PAYLOAD> value",
                                         required = true) UserCredentialWrapper credentials);

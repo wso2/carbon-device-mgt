@@ -23,6 +23,8 @@ import org.wso2.carbon.apimgt.application.extension.exception.APIManagerExceptio
 import org.wso2.carbon.apimgt.application.extension.internal.APIApplicationManagerExtensionDataHolder;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserStoreException;
 
@@ -52,4 +54,18 @@ public final class APIManagerUtil {
     public static String getTenantDomain() {
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
     }
+
+    public static void loadTenantRegistry() throws APIManagerException {
+        String tenantDomain = getTenantDomain();
+        try {
+            int tenantId = getTenantId(tenantDomain);
+            TenantRegistryLoader tenantRegistryLoader =
+                    APIApplicationManagerExtensionDataHolder.getInstance().getTenantRegistryLoader();
+            APIApplicationManagerExtensionDataHolder.getInstance().getIndexLoaderService().loadTenantIndex(tenantId);
+            tenantRegistryLoader.loadTenantRegistry(tenantId);
+        } catch (RegistryException e) {
+            throw new APIManagerException("Error occured while loading registry for tenant '" + tenantDomain + "'");
+        }
+    }
+
 }

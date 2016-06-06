@@ -35,7 +35,7 @@ var onFail;
         }
         var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
         var carbonServer = require("carbon").server;
-        (new carbonServer.Server({url: devicemgtProps["httpsURL"]}))
+        (new carbonServer.Server({url: devicemgtProps["adminService"]}))
                 .login(context.input.username, context.input.password);
     };
 

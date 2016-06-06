@@ -42,12 +42,12 @@ import javax.ws.rs.core.Response;
 public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegistrationService {
     private static final Log log = LogFactory.getLog(ApiApplicationRegistrationServiceImpl.class);
 
-    @Path("register/tenants/{tenantDomain}")
+    @Path("register/tenants")
     @POST
-    public Response register(@PathParam("tenantDomain") String tenantDomain,
+    public Response register(@QueryParam("tenantDomain") String tenantDomain,
                              @QueryParam("applicationName") String applicationName) {
         String authenticatedTenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        if (authenticatedTenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+        if (!authenticatedTenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
         try {

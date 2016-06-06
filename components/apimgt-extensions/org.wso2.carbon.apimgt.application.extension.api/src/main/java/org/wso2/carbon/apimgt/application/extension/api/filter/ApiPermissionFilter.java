@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * this filter check for permission for the request
  */
-public class ApiPermissionFilter implements Filter{
+public class ApiPermissionFilter implements Filter {
     private static final Log log = LogFactory.getLog(ApiPermissionFilter.class);
     private static final String UI_EXECUTE = "ui.execute";
     private static final String PERMISSION_CONFIG_PATH = File.separator + "META-INF" + File.separator
@@ -53,16 +53,9 @@ public class ApiPermissionFilter implements Filter{
         if (servletRequest instanceof HttpServletRequest) {
             String uri = ((HttpServletRequest)servletRequest).getRequestURI();
             boolean status = false;
-            if (uri.contains("register/tenants")) {
-                String urlPermission = getPermission("/register/tenants/*");
-                if (urlPermission != null) {
-                    status = isUserAuthorized(PERMISSION_PREFIX + urlPermission, UI_EXECUTE);
-                }
-            } else {
-                String urlPermission = getPermission(uri);
-                if (urlPermission != null) {
-                    status = isUserAuthorized(PERMISSION_PREFIX + urlPermission, UI_EXECUTE);
-                }
+            String urlPermission = getPermission(uri);
+            if (urlPermission != null) {
+                status = isUserAuthorized(PERMISSION_PREFIX + urlPermission, UI_EXECUTE);
             }
             if (status) {
                 filterChain.doFilter(servletRequest, servletResponse);

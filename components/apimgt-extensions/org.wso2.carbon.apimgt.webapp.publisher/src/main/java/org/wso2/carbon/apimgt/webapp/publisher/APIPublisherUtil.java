@@ -289,8 +289,7 @@ public class APIPublisherUtil {
         apiConfig.setTransports(transports);
 
         String sharingValueParam = servletContext.getInitParameter(PARAM_SHARED_WITH_ALL_TENANTS);
-        boolean isSharedWithAllTenants = (sharingValueParam == null || (!sharingValueParam.isEmpty())
-                && Boolean.parseBoolean(sharingValueParam));
+        boolean isSharedWithAllTenants = Boolean.parseBoolean(sharingValueParam);
         apiConfig.setSharedWithAllTenants(isSharedWithAllTenants);
 
         Set<URITemplate> uriTemplates = new LinkedHashSet<>();

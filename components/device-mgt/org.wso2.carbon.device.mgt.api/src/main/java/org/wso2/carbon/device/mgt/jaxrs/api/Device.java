@@ -117,7 +117,7 @@ public interface Device {
      */
     @GET
     @Path("user/{user}/count")
-    @Permission(scope = "device-count-own", permissions = {
+    @Permission(scope = "device-view-own", permissions = {
             "/permission/admin/device-mgt/user/devices/list",
             "/permission/admin/device-mgt/admin/devices/list"})
     Response getDeviceCountOfUser(@PathParam("user") String user);

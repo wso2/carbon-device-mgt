@@ -16,6 +16,18 @@
  * under the License.
  */
 
+/**
+ * Checks if provided input is valid against RegEx input.
+ *
+ * @param regExp Regular expression
+ * @param inputString Input string to check
+ * @returns {boolean} Returns true if input matches RegEx
+ */
+function inputIsValid(regExp, inputString) {
+    regExp = new RegExp(regExp);
+    return regExp.test(inputString);
+}
+
 $(function () {
     $("button#add-group-btn").click(function () {
 
@@ -24,6 +36,10 @@ $(function () {
 
         if (!name) {
             $('.wr-validation-summary strong').text("Group Name is a required field. It cannot be empty.");
+            $('.wr-validation-summary').removeClass("hidden");
+            return false;
+        } else if (!inputIsValid($("input#name").data("regex"), name)) {
+            $('.wr-validation-summary strong').text($("input#name").data("errormsg"));
             $('.wr-validation-summary').removeClass("hidden");
             return false;
         } else {

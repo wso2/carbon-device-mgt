@@ -20,7 +20,8 @@ var apiWrapperUtil = function () {
     var module = {};
     var tokenUtil = require("/app/modules/util.js").util;
     var constants = require("/app/modules/constants.js");
-    var constants = require("/app/modules/constants.js");
+    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var log = new Log("/app/modules/api-wrapper-util.js");
 
     module.refreshToken = function () {
         var tokenPair = session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
@@ -31,11 +32,19 @@ var apiWrapperUtil = function () {
     module.setupAccessTokenPair = function (type, properties) {
         var tokenPair;
         var clientData = tokenUtil.getDyanmicCredentials(properties);
+        var jwtToken = tokenUtil.getTokenWithJWTGrantType(clientData);
+        clientData = tokenUtil.getTenantBasedAppCredentials(properties.username, jwtToken);
         var encodedClientKeys = tokenUtil.encode(clientData.clientId + ":" + clientData.clientSecret);
         session.put(constants.ENCODED_CLIENT_KEYS_IDENTIFIER, encodedClientKeys);
         if (type == constants.GRANT_TYPE_PASSWORD) {
+            var scopes = devicemgtProps.scopes;
+            var scope = "";
+            scopes.forEach(function(entry) {
+                scope += entry + " ";
+            });
             tokenPair =
-                tokenUtil.getTokenWithPasswordGrantType(properties.username, encodeURIComponent(properties.password), encodedClientKeys);
+                tokenUtil.getTokenWithPasswordGrantType(properties.username, encodeURIComponent(properties.password),
+                    encodedClientKeys, scope);
         } else if (type == constants.GRANT_TYPE_SAML) {
             tokenPair = tokenUtil.
             getTokenWithSAMLGrantType(properties.samlToken, encodedClientKeys, "PRODUCTION");

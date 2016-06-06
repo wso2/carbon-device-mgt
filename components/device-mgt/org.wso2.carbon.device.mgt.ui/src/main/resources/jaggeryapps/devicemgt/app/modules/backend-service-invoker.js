@@ -65,6 +65,7 @@ var backendServiceInvoker = function () {
         }
         xmlHttpRequest.setRequestHeader(constants.CONTENT_TYPE_IDENTIFIER, contentType);
         xmlHttpRequest.setRequestHeader(constants.ACCEPT_IDENTIFIER, acceptType);
+        xmlHttpRequest.setRequestHeader(constants.REFERER, String(privateMethods.getClientDomain()));
         if (IS_OAUTH_ENABLED) {
             var accessToken = privateMethods.getAccessToken();
             if (!accessToken) {
@@ -150,6 +151,10 @@ var backendServiceInvoker = function () {
         header.setName(constants.ACCEPT_IDENTIFIER);
         header.setValue(acceptType);
         httpMethodObject.addRequestHeader(header);
+        header = new Header();
+        header.setName(constants.REFERER);
+        header.setValue(String(privateMethods.getClientDomain()));
+        httpMethodObject.addRequestHeader(header);
         if (IS_OAUTH_ENABLED) {
             var accessToken = privateMethods.getAccessToken();
             if (accessToken) {
@@ -210,6 +215,12 @@ var backendServiceInvoker = function () {
                 oAuthAuthenticationData.name = authenticationHeaderName;
                 oAuthAuthenticationData.value = authenticationHeaderValue;
                 headers.push(oAuthAuthenticationData);
+
+                var referrerData = {};
+                referrerData.name = constants.REFERER;
+                referrerData.value = String(privateMethods.getClientDomain());
+                headers.push(referrerData);
+
                 options.HTTPHeaders = headers;
             } else {
                 response.sendRedirect(devicemgtProps["httpsURL"] + "/devicemgt/login");
@@ -330,6 +341,16 @@ var backendServiceInvoker = function () {
     publicHTTPClientInvokers.delete = function (url, successCallback, errorCallback, contentType, acceptType) {
         return privateMethods.initiateHTTPClientRequest(constants.HTTP_DELETE, url, successCallback, errorCallback, contentType, acceptType);
     };
+
+    /**
+     * This method fetch the current logged user from the session and returns
+     * the tenant domain name of the user
+     * @returns {tenantDomain}
+     */
+    privateMethods.getClientDomain = function () {
+        var user = session.get(constants.USER_SESSION_KEY);
+        return user.domain;
+    }
 
     var publicInvokers = {};
     publicInvokers.XMLHttp = publicXMLHTTPInvokers;

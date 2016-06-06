@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.jaxrs.api.Configuration;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.api.util.MDMAppConstants;
@@ -51,7 +51,7 @@ public class ConfigurationImpl implements Configuration{
 	private static Log log = LogFactory.getLog(ConfigurationImpl.class);
 
 	@POST
-    public Response saveTenantConfiguration(TenantConfiguration configuration) {
+    public Response saveTenantConfiguration(PlatformConfiguration configuration) {
         ResponsePayload responseMsg = new ResponsePayload();
         try {
             DeviceMgtAPIUtils.getTenantConfigurationManagementService().saveConfiguration(configuration,
@@ -72,7 +72,7 @@ public class ConfigurationImpl implements Configuration{
     public Response getConfiguration() {
         String msg;
         try {
-            TenantConfiguration tenantConfiguration = DeviceMgtAPIUtils.getTenantConfigurationManagementService().
+            PlatformConfiguration tenantConfiguration = DeviceMgtAPIUtils.getTenantConfigurationManagementService().
                     getConfiguration(MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
 			ConfigurationEntry configurationEntry = new ConfigurationEntry();
 			configurationEntry.setContentType("text");
@@ -93,7 +93,7 @@ public class ConfigurationImpl implements Configuration{
     }
 
 	@PUT
-    public Response updateConfiguration(TenantConfiguration configuration) {
+    public Response updateConfiguration(PlatformConfiguration configuration) {
         ResponsePayload responseMsg = new ResponsePayload();
         try {
             DeviceMgtAPIUtils.getTenantConfigurationManagementService().saveConfiguration(configuration,

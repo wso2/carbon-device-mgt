@@ -69,4 +69,8 @@ public interface OperationDAO {
 
     int getEnrolmentIdFromMappingId(int enrollmentOpMappingId) throws OperationManagementDAOException;
 
+    List<Operation> getOperationsUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
 }

@@ -97,7 +97,7 @@ public class DeviceNotificationImpl implements DeviceNotification{
         ResponsePayload responseMsg = new ResponsePayload();
         try {
             DeviceMgtAPIUtils.getNotificationManagementService().addNotification(notification);
-            responseMsg.setMessageFromServer("Notification has added successfully.");
+            responseMsg.setMessageFromServer("Notification has been added successfully.");
 			responseMsg.setStatusCode(HttpStatus.SC_CREATED);
             return Response.status(Response.Status.CREATED).entity(responseMsg).build();
         } catch (NotificationManagementException e) {

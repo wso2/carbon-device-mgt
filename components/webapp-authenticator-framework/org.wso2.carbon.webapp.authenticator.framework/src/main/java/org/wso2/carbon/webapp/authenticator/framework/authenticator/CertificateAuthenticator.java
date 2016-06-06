@@ -129,10 +129,9 @@ public class CertificateAuthenticator implements WebappAuthenticator {
                 isEmpty()) {
             authenticationInfo.setTenantId(certificateResponse.getTenantId());
             authenticationInfo.setStatus(Status.CONTINUE);
-            authenticationInfo.setUsername(certificateResponse.getCommonName());
+            authenticationInfo.setUsername(certificateResponse.getUsername());
             try {
-                authenticationInfo.setTenantDomain(Utils.
-                                                                getTenantDomain(
+                authenticationInfo.setTenantDomain(Utils.getTenantDomain(
                                                                         certificateResponse.getTenantId()));
             } catch (AuthenticationException e) {
                 authenticationInfo.setStatus(Status.FAILURE);

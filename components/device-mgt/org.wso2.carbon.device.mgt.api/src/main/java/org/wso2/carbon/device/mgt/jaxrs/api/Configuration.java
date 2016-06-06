@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.*;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -55,7 +55,7 @@ public interface Configuration {
     @Permission(scope = "configuration-modify", permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"})
     Response saveTenantConfiguration(@ApiParam(name = "configuration", value = "The required properties to "
                                     + "update the platform configurations the as the <JSON_PAYLOAD> value",
-                                    required = true) TenantConfiguration configuration);
+                                    required = true) PlatformConfiguration configuration);
 
     @GET
     @ApiOperation(
@@ -64,7 +64,7 @@ public interface Configuration {
             httpMethod = "GET",
             value = "Getting General Platform Configurations",
             notes = "Get the general platform level configuration details using this REST API",
-            response = TenantConfiguration.class)
+            response = PlatformConfiguration.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving the tenant configuration")
@@ -86,6 +86,6 @@ public interface Configuration {
     @Permission(scope = "configuration-modify", permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"})
     Response updateConfiguration(@ApiParam(name = "configuration", value = "The required properties to update"
                                 + " the platform configurations the as the <JSON_PAYLOAD> value",
-                                required = true) TenantConfiguration configuration);
+                                required = true) PlatformConfiguration configuration);
 
 }

@@ -121,6 +121,7 @@
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.registry.common.*;version="${carbon.registry.imp.pkg.version.range}",
                             org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
+                            org.wso2.carbon.base
                         </Import-Package>
                     </instructions>
                 </configuration>

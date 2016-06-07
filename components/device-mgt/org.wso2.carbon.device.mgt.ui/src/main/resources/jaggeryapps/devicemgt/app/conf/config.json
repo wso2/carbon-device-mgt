@@ -7,6 +7,7 @@
   "httpsWebURL" : "%https.ip%",
   "wssURL" : "%https.ip%",
   "wsURL" : "%http.ip%",
+  "dashboardserverURL" : "%https.ip%",
   "enrollmentDir": "/emm-web-agent/enrollment",
   "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
   "iOSAPIRoot" : "%https.ip%/ios/",

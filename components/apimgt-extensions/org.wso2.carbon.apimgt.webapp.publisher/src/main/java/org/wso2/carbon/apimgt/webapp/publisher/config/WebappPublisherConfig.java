@@ -40,6 +40,7 @@ public class WebappPublisherConfig {
 
     private String host;
     private boolean isPublished;
+    private Profiles profiles;
 
     private static WebappPublisherConfig config;
 
@@ -71,8 +72,17 @@ public class WebappPublisherConfig {
         return isPublished;
     }
 
+    @XmlElement(name = "Profiles", required = true)
+    public Profiles getProfiles() {
+        return profiles;
+    }
+
     public void setPublished(boolean published) {
         isPublished = published;
+    }
+
+    public void setProfiles(Profiles profiles) {
+        this.profiles = profiles;
     }
 
     public static void init() throws WebappPublisherConfigurationFailedException {

@@ -29,6 +29,7 @@ import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
+import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationProcessor;
 
@@ -56,8 +57,8 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
             String profile = System.getProperty(PROPERTY_PROFILE);
 
-            if ((profile.equalsIgnoreCase(PROFILE_DT_WORKER) ||
-                    profile.equalsIgnoreCase(PROFILE_DEFAULT)) && isManagedApi) {
+            if (WebappPublisherConfig.getInstance().getProfiles().getProfile().contains(profile.toLowerCase())
+                    && isManagedApi) {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
                     Set<String> annotatedAPIClasses = annotationProcessor.

@@ -28,5 +28,8 @@
 
     <!-- If it is true, the APIs of this instance will be published to the defined host -->
     <PublishAPI>true</PublishAPI>
-
+    <!--Webapp will be published only when running below profiles-->
+    <Profiles>
+        <Profile>default</Profile>
+    </Profiles>
 </WebappPublisherConfigs>

@@ -61,6 +61,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                     getThreadLocalCarbonContext();
             String username = threadLocalCarbonContext.getUsername();
             for (Certificate certificate : certificates) {
+                // the serial number of the certificate used for its creation is set as its alias.
                 String serialNumber = certificate.getSerial();
                 if (serialNumber == null || serialNumber.isEmpty()) {
                     serialNumber = String.valueOf(certificate.getCertificate().getSerialNumber());

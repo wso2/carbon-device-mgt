@@ -53,5 +53,4 @@ public class CertificateMgtServiceImpl implements CertificateMgtService {
                     500l).setMessage(msg).build());
         }
     }
-
 }

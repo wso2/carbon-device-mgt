@@ -53,4 +53,10 @@ public class CertificateMgtServiceImpl implements CertificateMgtService {
                     500l).setMessage(msg).build());
         }
     }
+
+    @POST
+    @Path("/ca")
+    public Response getCA() {
+
+    }
 }

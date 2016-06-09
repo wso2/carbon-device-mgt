@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.certificate.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -55,5 +54,7 @@ public interface CertificateMgtService {
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             String binarySecurityToken);
+
+    Response getCA();
 
 }

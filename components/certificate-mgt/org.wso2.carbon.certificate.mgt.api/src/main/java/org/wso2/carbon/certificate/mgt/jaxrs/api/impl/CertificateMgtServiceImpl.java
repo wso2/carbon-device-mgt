@@ -54,9 +54,4 @@ public class CertificateMgtServiceImpl implements CertificateMgtService {
         }
     }
 
-    @POST
-    @Path("/ca")
-    public Response getCA() {
-
-    }
 }

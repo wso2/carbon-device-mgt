@@ -54,7 +54,4 @@ public interface CertificateMgtService {
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             String binarySecurityToken);
-
-    Response getCA();
-
 }

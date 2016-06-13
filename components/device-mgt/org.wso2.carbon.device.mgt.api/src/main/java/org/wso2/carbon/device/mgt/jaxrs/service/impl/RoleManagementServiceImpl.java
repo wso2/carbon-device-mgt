@@ -61,13 +61,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         List<String> filteredRoles;
         RoleList targetRoles = new RoleList();
         try {
-            filteredRoles = getRolesFromUserStore();
+            filteredRoles = getRolesFromUserStore(filter);
             if (filteredRoles == null || filteredRoles.size() == 0) {
                 throw new NotFoundException(
                         new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No roles found.").build());
             }
             targetRoles.setCount(filteredRoles.size());
-            filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(), offset, limit);
+            filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(filter), offset, limit);
             if (filteredRoles.size() == 0) {
                 throw new NotFoundException(
                         new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No roles found").build());
@@ -322,9 +322,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 "successfully been updated with the user list").build();
     }
 
-    private List<String> getRolesFromUserStore() throws UserStoreException {
+    private List<String> getRolesFromUserStore(String filter) throws UserStoreException {
         UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
         String[] roles;
+        boolean filterRolesByName = ((filter == null) || filter.isEmpty() ? false : true);
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");
         }
@@ -333,7 +334,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {
             if (!(role.startsWith("Internal/") || role.startsWith("Authentication/") || role.startsWith("Application/"))) {
-                filteredRoles.add(role);
+                if(!filterRolesByName) {
+                    filteredRoles.add(role);
+                } else{
+                    if(role.contains(filter)){
+                        filteredRoles.add(role);
+                    }
+                }
             }
         }
         return filteredRoles;

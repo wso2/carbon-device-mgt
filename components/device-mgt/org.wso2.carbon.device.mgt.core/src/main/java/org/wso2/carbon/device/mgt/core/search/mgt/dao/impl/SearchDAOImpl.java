@@ -228,7 +228,8 @@ public class SearchDAOImpl implements SearchDAO {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (?) ORDER BY DEVICE_ID ;";
             stmt = conn.prepareStatement(query);
-            if (conn.getMetaData().getDatabaseProductName().contains("H2")) {
+            if (conn.getMetaData().getDatabaseProductName().contains("H2") ||
+                    conn.getMetaData().getDatabaseProductName().contains("MySQL")) {
                 String inData = Utils.getDeviceIdsAsString(devices);
                 stmt.setString(1, inData);
             } else {
@@ -252,7 +253,7 @@ public class SearchDAOImpl implements SearchDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SearchDAOException("Error occurred while retrieving the device properties.", e);
         }
         return devices;
     }

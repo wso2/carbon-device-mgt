@@ -83,15 +83,15 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         long sinceTimestamp =0;
         boolean isIfModifiedSinceSet = false;
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
-            Date sinceDate;
+            Date ifSinceDate;
             SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
             try {
-                sinceDate = format.parse(ifModifiedSince);
+                ifSinceDate = format.parse(ifModifiedSince);
             } catch (ParseException e) {
                 throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
                         .setMessage("Invalid date string is provided in 'If-Modified-Since' header").build());
             }
-            ifModifiedSinceTimestamp = sinceDate.getTime();
+            ifModifiedSinceTimestamp = ifSinceDate.getTime();
         }
         if (since != null && !since.isEmpty()){
             Date sinceDate;
@@ -112,7 +112,7 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            activities = dmService.getActivitiesUpdatedAfter(sinceTimestamp);
+            activities = dmService.getActivitiesUpdatedAfter(sinceTimestamp/1000);
             if (activities == null || activities.size() == 0) {
                 if (isIfModifiedSinceSet) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No activities " +

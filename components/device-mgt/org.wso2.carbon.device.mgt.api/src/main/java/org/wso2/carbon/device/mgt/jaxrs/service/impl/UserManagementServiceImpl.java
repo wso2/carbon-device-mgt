@@ -84,7 +84,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User '" + userWrapper.getUsername() + "' has successfully been added.");
                 }
                 // returning response with success state
-                return Response.status(Response.Status.OK).entity("User by username: " + userWrapper.getUsername() +
+                return Response.status(Response.Status.CREATED).entity("User by username: " + userWrapper.getUsername() +
                         " was successfully added.").build();
             }
         } catch (UserStoreException e) {

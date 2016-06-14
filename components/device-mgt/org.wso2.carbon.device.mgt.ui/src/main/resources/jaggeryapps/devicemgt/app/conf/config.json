@@ -2,7 +2,7 @@
   "appContext" : "/devicemgt/",
   "webAgentContext" : "/devicemgt-web-agent/",
   "apiContext" : "api",
-  "httpsURL" : "https://localhost:9443",
+  "httpsURL" : "https://localhost:8243",
   "httpURL" : "%http.ip%",
   "httpsWebURL" : "%https.ip%",
   "wssURL" : "%https.ip%",

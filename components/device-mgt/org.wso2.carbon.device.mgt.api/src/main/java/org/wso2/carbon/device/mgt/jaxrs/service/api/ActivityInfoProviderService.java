@@ -150,11 +150,11 @@ public interface ActivityInfoProviderService {
     @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
     Response getActivities(
             @ApiParam(
-                    name = "timestamp",
+                    name = "since",
                     value = "Validates if the requested variant has not been modified since the time specified, this " +
                             "should be provided in unix format in seconds.",
                     required = false)
-            @QueryParam("timestamp") long timestamp,
+            @QueryParam("since") String since,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",

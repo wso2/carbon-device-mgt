@@ -60,7 +60,7 @@ public class SearchDAOImpl implements SearchDAO {
             stmt = conn.prepareStatement(query);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                if(!devs.containsKey(rs.getInt("ID"))) {
+                if (!devs.containsKey(rs.getInt("ID"))) {
                     Device device = new Device();
                     device.setId(rs.getInt("ID"));
                     device.setDescription(rs.getString("DESCRIPTION"));
@@ -142,7 +142,7 @@ public class SearchDAOImpl implements SearchDAO {
             stmt = conn.prepareStatement(query);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                if(!devs.containsKey(rs.getInt("ID"))) {
+                if (!devs.containsKey(rs.getInt("ID"))) {
                     Device device = new Device();
                     device.setId(rs.getInt("ID"));
                     device.setDescription(rs.getString("DESCRIPTION"));
@@ -238,19 +238,10 @@ public class SearchDAOImpl implements SearchDAO {
             }
             rs = stmt.executeQuery();
 
-            int deviceId = 0;
+            DeviceInfo dInfo;
             while (rs.next()) {
-                DeviceInfo dInfo = new DeviceInfo();
-
-                if (deviceId != rs.getInt("DEVICE_ID")) {
-                    deviceId = rs.getInt("DEVICE_ID");
-                    dInfo = this.getDeviceInfo(devices, deviceId);
-                    if (dInfo != null) {
-                        dInfo.getDeviceDetailsMap().put(rs.getString("KEY_FIELD"), rs.getString("VALUE_FIELD"));
-                    }
-                } else {
-                    dInfo.getDeviceDetailsMap().put(rs.getString("KEY_FIELD"), rs.getString("VALUE_FIELD"));
-                }
+                dInfo = this.getDeviceInfo(devices, rs.getInt("DEVICE_ID"));
+                dInfo.getDeviceDetailsMap().put(rs.getString("KEY_FIELD"), rs.getString("VALUE_FIELD"));
             }
         } catch (SQLException e) {
             throw new SearchDAOException("Error occurred while retrieving the device properties.", e);
@@ -262,6 +253,9 @@ public class SearchDAOImpl implements SearchDAO {
 
         for (DeviceWrapper dw : devices) {
             if (dw.getDevice().getId() == deviceId) {
+                if (dw.getDeviceInfo() == null) {
+                    dw.setDeviceInfo(new DeviceInfo());
+                }
                 return dw.getDeviceInfo();
             }
         }

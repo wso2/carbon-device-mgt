@@ -74,42 +74,54 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
     @GET
     @Override
     public Response getActivities(
-            @QueryParam("timestamp") long timestamp,
+            @QueryParam("since") String since,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
 
-        long sinceTimestamp = 0;
-        boolean isSinceModifiedIsSet = false;
+        long ifModifiedSinceTimestamp = 0;
+        long sinceTimestamp =0;
+        boolean isIfModifiedSinceSet = false;
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+            Date sinceDate;
+            SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
             try {
-                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-                Date sinceDate = format.parse(ifModifiedSince);
-                sinceTimestamp = sinceDate.getTime();
+                sinceDate = format.parse(ifModifiedSince);
             } catch (ParseException e) {
                 throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
-                        .setMessage("Invalid date " + "string is provided in 'If-Modified-Since' header").build());
+                        .setMessage("Invalid date string is provided in 'If-Modified-Since' header").build());
             }
+            ifModifiedSinceTimestamp = sinceDate.getTime();
         }
-        if (sinceTimestamp > timestamp) {
-            timestamp = sinceTimestamp;
-            isSinceModifiedIsSet = true;
+        if (since != null && !since.isEmpty()){
+            Date sinceDate;
+            SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+            try{
+                sinceDate = format.parse(since);
+            }catch (ParseException e){
+                throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
+                        .setMessage("Invalid date string is provided in 'since' filter").build());
+            }
+            sinceTimestamp = sinceDate.getTime();
+        }
+        if (ifModifiedSinceTimestamp >= sinceTimestamp) {
+            sinceTimestamp = ifModifiedSinceTimestamp;
+            isIfModifiedSinceSet = true;
         }
         List<Activity> activities;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            activities = dmService.getActivitiesUpdatedAfter(timestamp);
+            activities = dmService.getActivitiesUpdatedAfter(sinceTimestamp);
             if (activities == null || activities.size() == 0) {
-                if (isSinceModifiedIsSet) {
+                if (isIfModifiedSinceSet) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No activities " +
-                            "after the timestamp provided in 'If-Modified-Since' header").build();
+                            "after the time provided in 'If-Modified-Since' header").build();
                 }
                 throw new NotFoundException(
                         new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No activities " +
                                 "found.").build());
             }
-
         } catch (OperationManagementException e) {
             String msg = "ErrorResponse occurred while fetching the activities updated after given time stamp.";
             log.error(msg, e);

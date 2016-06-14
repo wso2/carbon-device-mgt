@@ -176,8 +176,8 @@ var backendServiceInvoker = function () {
             client.executeMethod(httpMethodObject);
             var status = httpMethodObject.getStatusCode();
             if (status == 200) {
-                var responseContentTypeHeader = httpMethodObject.getResponseHeader(constants.CONTENT_TYPE_IDENTIFIER);
-                if (responseContentTypeHeader && responseContentTypeHeader.getValue() == constants.APPLICATION_ZIP) {
+                var responseContentDispositionHeader = httpMethodObject.getResponseHeader(constants.CONTENT_DISPOSITION_IDENTIFIER);
+                if (responseContentDispositionHeader) {
                     return successCallback(httpMethodObject.getResponseBodyAsStream(), httpMethodObject.getResponseHeaders());
                 } else {
                     return successCallback(httpMethodObject.getResponseBody());

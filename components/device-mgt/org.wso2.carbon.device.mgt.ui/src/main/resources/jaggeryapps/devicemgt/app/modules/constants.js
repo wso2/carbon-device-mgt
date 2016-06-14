@@ -61,6 +61,7 @@ var WEB_SERVICE_ADDRESSING_VERSION = 1.0;
 var ACCESS_TOKEN_PAIR_IDENTIFIER = "accessTokenPair";
 var ENCODED_CLIENT_KEYS_IDENTIFIER = "encodedClientKey";
 var CONTENT_TYPE_IDENTIFIER = "Content-Type";
+var CONTENT_DISPOSITION_IDENTIFIER = "Content-Disposition";
 var APPLICATION_JSON = "application/json";
 var APPLICATION_ZIP = "application/zip";
 var ACCEPT_IDENTIFIER = "Accept";

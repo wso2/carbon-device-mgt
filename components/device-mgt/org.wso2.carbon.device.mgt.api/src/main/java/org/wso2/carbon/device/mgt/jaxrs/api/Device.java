@@ -45,7 +45,6 @@ public interface Device {
      * @return Device List
      */
     @GET
-    @Path("devices")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,

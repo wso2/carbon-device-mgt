@@ -166,6 +166,12 @@
         <method>GET</method>
     </Permission>
     <Permission>
+        <name>List device types</name>
+        <path>/device-mgt/admin/devices/types</path>
+        <url>/devices/types</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
         <name>Retrieve device information</name>
         <path>/device-mgt/admin/devices/list</path>
         <url>/devices/*/*/info</url>

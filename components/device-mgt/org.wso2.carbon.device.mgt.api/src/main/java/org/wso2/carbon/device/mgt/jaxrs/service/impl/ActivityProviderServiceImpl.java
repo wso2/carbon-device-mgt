@@ -81,7 +81,9 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
 
         long ifModifiedSinceTimestamp = 0;
         long sinceTimestamp =0;
+        long timestamp =0;
         boolean isIfModifiedSinceSet = false;
+        boolean isSinceSet = false;
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
             Date ifSinceDate;
             SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
@@ -92,8 +94,9 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
                         .setMessage("Invalid date string is provided in 'If-Modified-Since' header").build());
             }
             ifModifiedSinceTimestamp = ifSinceDate.getTime();
-        }
-        if (since != null && !since.isEmpty()){
+            isIfModifiedSinceSet = true;
+            timestamp = ifModifiedSinceTimestamp/1000;
+        } else if (since != null && !since.isEmpty()){
             Date sinceDate;
             SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
             try{
@@ -103,20 +106,21 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
                         .setMessage("Invalid date string is provided in 'since' filter").build());
             }
             sinceTimestamp = sinceDate.getTime();
-        }
-        if (ifModifiedSinceTimestamp >= sinceTimestamp) {
-            sinceTimestamp = ifModifiedSinceTimestamp;
-            isIfModifiedSinceSet = true;
+            isSinceSet = true;
+            timestamp = sinceTimestamp/1000;
         }
         List<Activity> activities;
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            activities = dmService.getActivitiesUpdatedAfter(sinceTimestamp/1000);
+            activities = dmService.getActivitiesUpdatedAfter(timestamp);
             if (activities == null || activities.size() == 0) {
                 if (isIfModifiedSinceSet) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No activities " +
                             "after the time provided in 'If-Modified-Since' header").build();
+                } else if(isSinceSet){
+                    return Response.status(Response.Status.NOT_MODIFIED).entity("No activities " +
+                            "after the time provided in 'since' filter").build();
                 }
                 throw new NotFoundException(
                         new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No activities " +

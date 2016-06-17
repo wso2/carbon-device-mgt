@@ -22,11 +22,8 @@ import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
@@ -37,7 +34,6 @@ import org.wso2.carbon.policy.mgt.common.Policy;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Device related REST-API. This can be used to manipulated device related details.
@@ -609,5 +605,7 @@ public interface DeviceManagementService {
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
-
+    @GET
+    @Path("/types")
+    Response getDeviceTypes();
 }

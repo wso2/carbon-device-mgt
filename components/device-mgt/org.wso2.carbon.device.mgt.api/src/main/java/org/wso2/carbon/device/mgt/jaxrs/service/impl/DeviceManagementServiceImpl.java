@@ -18,35 +18,32 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
-import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
-import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
-import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -316,6 +313,20 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             throw new UnexpectedServerErrorException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
+    }
+
+    @Override
+    public Response getDeviceTypes() {
+        List<DeviceType> deviceTypes;
+        try {
+            deviceTypes = DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while fetching the list of device types.";
+            log.error(msg, e);
+            throw new UnexpectedServerErrorException(new ErrorResponse.ErrorResponseBuilder().
+                setCode(500l).setMessage(msg).build());
+        }
+        return Response.status(Response.Status.OK).entity(deviceTypes).build();
     }
 
 }

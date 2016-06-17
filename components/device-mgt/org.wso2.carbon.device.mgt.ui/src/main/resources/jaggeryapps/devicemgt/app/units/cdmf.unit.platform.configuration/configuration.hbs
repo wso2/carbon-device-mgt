@@ -32,18 +32,25 @@
             <div class="wr-advance-operations">
                 <div class="row no-gutter">
                     <div class="wr-hidden-operations-nav col-lg-4">
-                        <a class="selected">
-                                <span class="wr-hidden-operations-icon fw-stack">
-                                    <i class="fw fw-settings fw-stack-2x"></i>
-                                </span>
+                        <a id="generalConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('general', this)" class="selected">
+                                        <span class="wr-hidden-operations-icon fw-stack">
+                                            <i class="fw fw-settings fw-stack-2x"></i>
+                                        </span>
                             General Configurations
                         </a>
+                        {{#each deviceTypes}}
+                            <a id="{{name}}ConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('{{name}}', this)">
+                                        <span class="wr-hidden-operations-icon fw-stack">
+                                            <i class="fw fw-settings fw-stack-2x"></i>
+                                        </span>
+                                {{label}} Configurations
+                            </a>
+                        {{/each}}
                     </div>
 
                     <div class="wr-hidden-operations-content col-lg-8">
                         <!-- general -->
-                        <div class="wr-hidden-operation" data-operation="general"
-                             style="display: block">
+                        <div class="wr-hidden-operation" data-operation="general" style="display: block">
                             <div class="panel panel-default">
                                 <div id="general-config-heading" class="panel-heading" role="tab">
                                     <h2 class="sub-title panel-title">
@@ -78,6 +85,12 @@
                             </div>
                         </div>
                         <!-- general-->
+                        {{#each deviceTypes}}
+                            <div class="wr-hidden-operation" data-operation="{{name}}" style="display: none;">
+                                {{unit unitName}}
+                            </div>
+                        {{/each}}
+
                     </div>
                 </div>
             </div>

@@ -119,7 +119,7 @@ var util = function () {
         encodedExtractedAssertion = this.encode(extractedAssertion);
 
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer + "/oauth2/token";
+        var tokenEndpoint = devicemgtProps.idPServer + "/token";
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + clientKeys);
@@ -140,7 +140,7 @@ var util = function () {
 
     module.refreshToken = function (tokenPair, clientData, scope) {
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer + "/oauth2/token";
+        var tokenEndpoint = devicemgtProps.idPServer + "/token";
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + clientData);

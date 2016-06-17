@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
+import org.apache.axis2.databinding.types.soapencoding.Integer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -305,6 +306,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
                     List<OperationResponse> operationResponses = new ArrayList<>();
                     if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
+                        activityStatus.setUpdatedTimestamp(String.valueOf(rs.getInt("UPDATED_TIMESTAMP")));
                         operationResponses.add(this.getOperationResponse(rs));
                     }
                     activityStatus.setResponses(operationResponses);
@@ -385,6 +387,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));
 
                     List<OperationResponse> operationResponses = new ArrayList<>();
+                    if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
+                        activityStatus.setUpdatedTimestamp(String.valueOf(rs.getInt("UPDATED_TIMESTAMP")));
+                    }
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         operationResponses.add(this.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
@@ -411,6 +416,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));
 
                     List<OperationResponse> operationResponses = new ArrayList<>();
+                    if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
+                        activityStatus.setUpdatedTimestamp(String.valueOf(rs.getInt("UPDATED_TIMESTAMP")));
+                    }
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         operationResponses.add(this.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");

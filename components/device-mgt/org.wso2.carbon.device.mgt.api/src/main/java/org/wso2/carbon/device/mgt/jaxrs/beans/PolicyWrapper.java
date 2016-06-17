@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.util.List;
@@ -51,6 +50,10 @@ public class PolicyWrapper {
             + "COPE (Corporate-Owned, Personally-Enabled) - The policy will only be applied on the COPE "
             + "device type", required = true)
     private String ownershipType;
+
+    @ApiModelProperty(name = "active", value = "If the value is true it indicates that the policy is active. "
+            + "If the value is false it indicates that the policy is inactive", required = true)
+    private boolean active;
 
     @ApiModelProperty(name = "profile", value = "Contains the details of the profile that is included in the"
             + " policy", required = true)
@@ -115,11 +118,19 @@ public class PolicyWrapper {
         this.ownershipType = ownershipType;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public List<DeviceIdentifier> getDeviceIdentifiers() {
         return deviceIdentifiers;
     }
 
-    public void setDeviceIdentifier(List<DeviceIdentifier> deviceIdentifier) {
+    public void setDeviceIdentifier(List<DeviceIdentifier> deviceIdentifiers) {
         this.deviceIdentifiers = deviceIdentifiers;
     }
 

@@ -54,6 +54,14 @@
             <groupId>com.googlecode.json-simple.wso2</groupId>
             <artifactId>json-simple</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity</groupId>
+            <artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -118,7 +126,9 @@
                             org.wso2.carbon.identity.oauth.config,
                             org.wso2.carbon.identity.oauth2.dao,
                             org.wso2.carbon.utils.multitenancy,
-                            org.wso2.carbon.base
+                            org.wso2.carbon.base,
+                            org.wso2.carbon.identity.oauth2.grant.jwt.*,
+                            org.wso2.carbon.device.mgt.core.*
                         </Import-Package>
                     </instructions>
                 </configuration>

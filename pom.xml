@@ -1054,6 +1054,11 @@
                 <artifactId>org.wso2.carbon.identity.application.common</artifactId>
                 <version>${carbon.identity.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
+                <version>${identity.jwt.extension.version}</version>
+            </dependency>
             <!-- End of Carbon Identity dependencies -->
 
             <!-- CXF dependencies -->
@@ -1865,6 +1870,9 @@
         <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
         <swagger.version>1.5.8</swagger.version>
         <servlet-api.version>2.5</servlet-api.version>
+
+        <!--JWT grant type extension feature-->
+        <identity.jwt.extension.version>1.0.2</identity.jwt.extension.version>
     </properties>
 
 </project>

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 
 /**
  * @scr.component name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.internal.XMPPPushNotificationServiceComponent" immediate="true"
@@ -31,6 +32,12 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
  * policy="dynamic"
  * bind="setDeviceManagementProviderService"
  * unbind="unsetDeviceManagementProviderService"
+ * @scr.reference name="event.output.adapter.service"
+ * interface="org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setOutputEventAdapterService"
+ * unbind="unsetOutputEventAdapterService"
  */
 public class XMPPPushNotificationServiceComponent {
 
@@ -67,4 +74,11 @@ public class XMPPPushNotificationServiceComponent {
         XMPPDataHolder.getInstance().setDeviceManagementProviderService(deviceManagementProviderService);
     }
 
+    protected void setOutputEventAdapterService(OutputEventAdapterService outputEventAdapterService){
+        XMPPDataHolder.getInstance().setOutputEventAdapterService(outputEventAdapterService);
+    }
+
+    protected void unsetOutputEventAdapterService(OutputEventAdapterService outputEventAdapterService){
+        XMPPDataHolder.getInstance().setOutputEventAdapterService(null);
+    }
 }

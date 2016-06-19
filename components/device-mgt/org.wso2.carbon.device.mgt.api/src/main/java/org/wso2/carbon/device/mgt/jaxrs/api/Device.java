@@ -184,7 +184,7 @@ public interface Device {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of devices based on the type"),
             @ApiResponse(code = 500, message = "Error occurred while fetching the list of device types") })
-    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/user/devices/list"})
     Response getDeviceTypes();
 
     /**

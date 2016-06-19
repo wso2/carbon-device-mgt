@@ -19,11 +19,13 @@
 package org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.internal;
 
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 
 public class XMPPDataHolder {
 
     private DeviceManagementProviderService deviceManagementProviderService;
     private static XMPPDataHolder thisInstance = new XMPPDataHolder();
+    private OutputEventAdapterService outputEventAdapterService;
 
     public static XMPPDataHolder getInstance() {
         return thisInstance;
@@ -35,6 +37,14 @@ public class XMPPDataHolder {
 
     public void setDeviceManagementProviderService(DeviceManagementProviderService deviceManagementProviderService) {
         this.deviceManagementProviderService = deviceManagementProviderService;
+    }
+
+    public void setOutputEventAdapterService(OutputEventAdapterService outputEventAdapterService) {
+        this.outputEventAdapterService = outputEventAdapterService;
+    }
+
+    public OutputEventAdapterService getOutputEventAdapterService() {
+        return outputEventAdapterService;
     }
 
 }

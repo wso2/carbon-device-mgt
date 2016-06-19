@@ -19,7 +19,11 @@
 package org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.internal;
 
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
+
+import java.util.List;
+import java.util.Stack;
 
 public class MQTTDataHolder {
 

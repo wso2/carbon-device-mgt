@@ -178,6 +178,17 @@ public interface DeviceManagementProviderService {
      */
     PaginationResult getDevicesByStatus(PaginationRequest request) throws DeviceManagementException;
 
+    /**
+     * This method is used to check whether the device is enrolled with the give user.
+     *
+     * @param deviceId identifier of the device that needs to be checked against the user.
+     * @param user username of the device owner.
+     *
+     * @return true if the user owns the device else will return false.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the device.
+     */
+    public boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
+
     License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
 
     void addLicense(String deviceType, License license) throws DeviceManagementException;

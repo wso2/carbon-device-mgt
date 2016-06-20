@@ -117,6 +117,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -132,8 +136,14 @@
                         <Import-Package>
                             org.apache.commons.logging,
                             org.osgi.service.component,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.device.mgt.common.operation.mgt,
                             org.wso2.carbon.device.mgt.common.push.notification,
-                            org.wso2.carbon.device.mgt.core.service
+                            org.wso2.carbon.device.mgt.core.service,
+                            org.wso2.carbon.event.output.adapter.core,
+                            org.wso2.carbon.event.output.adapter.core.exception,
+                            org.osgi.framework,
+                            org.wso2.carbon.core
                         </Import-Package>
                     </instructions>
                 </configuration>

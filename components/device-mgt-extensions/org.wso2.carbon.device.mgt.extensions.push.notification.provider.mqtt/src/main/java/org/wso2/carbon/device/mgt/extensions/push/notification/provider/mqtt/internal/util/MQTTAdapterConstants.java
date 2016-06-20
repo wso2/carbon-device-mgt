@@ -29,9 +29,8 @@ public final class MQTTAdapterConstants {
     public static final String MQTT_ADAPTER_PROPERTY_USERNAME = "username";
     public static final String MQTT_ADAPTER_PROPERTY_DCR_URL = "dcrUrl";
     public static final String MQTT_ADAPTER_PROPERTY_SCOPES = "scopes";
-    public static final String MQTT_ADAPTER_PROPERTY_PASSWORD = "password";
-    public static final String MQTT_ADAPTER_PROPERTY_CLIENT_ID = "clientId";
     public static final String MQTT_ADAPTER_PROPERTY_CLEAR_SESSION = "cleanSession";
     public static final String MQTT_ADAPTER_PROPERTY_MESSAGE_QOS = "qos";
+    public static final String MQTT_ADAPTER_PROPERTY_NAME = "mqtt.adapter.name";
 
 }

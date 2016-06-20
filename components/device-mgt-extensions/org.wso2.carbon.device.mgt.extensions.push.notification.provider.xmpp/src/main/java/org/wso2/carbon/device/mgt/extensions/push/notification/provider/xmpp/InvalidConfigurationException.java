@@ -18,20 +18,29 @@
  */
 package org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp;
 
-import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
-import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
-import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
+/**
+ * This exception is thrown whether the xmpp configured with invalid configuration.
+ */
+public class InvalidConfigurationException extends  RuntimeException {
 
-public class XMPPBasedPushNotificationProvider implements PushNotificationProvider {
-
-    @Override
-    public String getType() {
-        return "XMPP";
+    public InvalidConfigurationException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
     }
 
-    @Override
-    public NotificationStrategy getNotificationStrategy(PushNotificationConfig pushNotificationConfig) {
-        return new XMPPNotificationStrategy(pushNotificationConfig);
+    public InvalidConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidConfigurationException(String msg) {
+        super(msg);
+    }
+
+    public InvalidConfigurationException() {
+        super();
+    }
+
+    public InvalidConfigurationException(Throwable cause) {
+        super(cause);
     }
 
 }

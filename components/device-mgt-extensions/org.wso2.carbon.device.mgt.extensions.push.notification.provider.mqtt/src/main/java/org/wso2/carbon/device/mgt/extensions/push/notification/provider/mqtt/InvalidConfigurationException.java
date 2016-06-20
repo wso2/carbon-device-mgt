@@ -18,5 +18,29 @@
  */
 package org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt;
 
-public class InvalidConfigurationException {
+/**
+ * This exception is thrown whether the mqtt configured with invalid configuration.
+ */
+public class InvalidConfigurationException extends  RuntimeException {
+
+    public InvalidConfigurationException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+    }
+
+    public InvalidConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidConfigurationException(String msg) {
+        super(msg);
+    }
+
+    public InvalidConfigurationException() {
+        super();
+    }
+
+    public InvalidConfigurationException(Throwable cause) {
+        super(cause);
+    }
+
 }

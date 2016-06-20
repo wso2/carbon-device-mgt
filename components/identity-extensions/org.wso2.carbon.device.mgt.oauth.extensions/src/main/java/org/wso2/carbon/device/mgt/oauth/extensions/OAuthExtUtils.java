@@ -24,6 +24,9 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.dao.ApiMgtDAO;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.oauth.extensions.internal.OAuthExtensionsDataHolder;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
@@ -48,7 +51,7 @@ public class OAuthExtUtils {
     private static final String UI_EXECUTE = "ui.execute";
     private static final String REST_API_SCOPE_CACHE = "REST_API_SCOPE_CACHE";
     private static final int START_INDEX = 0;
-
+    private static final String CDMF_SCOPE_SEPERATOR = "/";
     /**
      * This method is used to get the tenant id when given tenant domain.
      *
@@ -59,7 +62,8 @@ public class OAuthExtUtils {
         int tenantId = 0;
         if (tenantDomain != null) {
             try {
-                TenantManager tenantManager = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantManager();
+                TenantManager tenantManager =
+                        OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantManager();
                 tenantId = tenantManager.getTenantId(tenantDomain);
             } catch (UserStoreException e) {
                 String errorMsg = "Error when getting the tenant id from the tenant domain : " +
@@ -121,7 +125,7 @@ public class OAuthExtUtils {
             if (appScopes.isEmpty()) {
                 if (log.isDebugEnabled()) {
                     log.debug("No scopes defined for the Application " +
-                            tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId());
+                                      tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId());
                 }
 
                 String[] allowedScopes = getAllowedScopes(reqScopeList);
@@ -163,6 +167,20 @@ public class OAuthExtUtils {
     }
 
     /**
+     * Determines if the scope is specified with CDMF device scope prefix.
+     *
+     * @param scope - The scope key to check
+     * @return - 'true' if the scope has the prefix. 'false' if not.
+     */
+    private static boolean isCDMFDeviceSpecificScope(String scope) {
+        // load white listed scopes
+        if (scope.startsWith(OAuthExtensionsDataHolder.getInstance().getDeviceScope())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Get the set of default scopes. If a requested scope is matches with the patterns specified in the white list,
      * then such scopes will be issued without further validation. If the scope list is empty,
      * token will be issued for default scope.
@@ -191,7 +209,7 @@ public class OAuthExtUtils {
      *
      * @param tokReqMsgCtx OAuth token request message context.
      * @param reqScopeList Requested scope list.
-     * @param appScopes App scopes.
+     * @param appScopes    App scopes.
      * @return Returns a list of scopes.
      */
     private static List<String> getAuthorizedScopes(OAuthTokenReqMessageContext tokReqMsgCtx, List<String> reqScopeList,
@@ -213,7 +231,8 @@ public class OAuthExtUtils {
                 tenantId = IdentityTenantUtil.getTenantIdOfUser(username);
             }
 
-            UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+            UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(
+                    tenantId);
 
             //Iterate the requested scopes list.
             for (String scope : reqScopeList) {
@@ -222,9 +241,11 @@ public class OAuthExtUtils {
                 //Get the set of roles associated with the requested scope.
                 String appPermissions = appScopes.get(scope);
 
-                //If the scope has been defined in the context of the App and if permissions have been defined for the scope
+                //If the scope has been defined in the context of the App and if permissions have been defined for
+                // the scope
                 if (appPermissions != null && appPermissions.length() != 0) {
-                    List<String> permissions = new ArrayList<>(Arrays.asList(appPermissions.replaceAll(" ", "").split(",")));
+                    List<String> permissions = new ArrayList<>(Arrays.asList(appPermissions.replaceAll(" ", "").split(
+                            ",")));
 
                     //Check if user has at least one of the permission associated with the scope
                     if (!permissions.isEmpty()) {
@@ -253,6 +274,27 @@ public class OAuthExtUtils {
                 //The scope string starts with 'device_'.
                 else if (appScopes.containsKey(scope) || isWhiteListedScope(scope)) {
                     authorizedScopes.add(scope);
+                }
+
+                //check whether is device specific scope (CDMF)
+                else if (isCDMFDeviceSpecificScope(scope)) {
+                    PrivilegedCarbonContext.startTenantFlow();
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
+                    try {
+                        String deviceId[] = scope.split(CDMF_SCOPE_SEPERATOR);
+                        DeviceIdentifier deviceIdentifier = new DeviceIdentifier(deviceId[2], deviceId[1]);
+                        boolean enrolled = OAuthExtensionsDataHolder.getInstance().getDeviceManagementService().isEnrolled(
+                                deviceIdentifier, tokReqMsgCtx.getAuthorizedUser().getUserName());
+                        if (enrolled) {
+                            authorizedScopes.add(scope);
+                        }
+                    } catch (DeviceManagementException e) {
+                        log.error("Error occurred while checking device scope with CDMF", e);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        log.error("Invalid scope format, have to adhere [prefix/devicetype/deviceId]", e);
+                    }finally {
+                        PrivilegedCarbonContext.endTenantFlow();
+                    }
                 }
             }
         } catch (UserStoreException e) {

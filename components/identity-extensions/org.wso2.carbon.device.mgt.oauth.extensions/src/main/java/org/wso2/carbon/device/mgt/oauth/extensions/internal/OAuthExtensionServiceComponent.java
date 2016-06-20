@@ -25,6 +25,7 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -53,6 +54,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setPermissionManagerService"
  * unbind="unsetPermissionManagerService"
+ * @scr.reference name="org.wso2.carbon.device.manager"
+ * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setDeviceManagementService"
+ * unbind="unsetDeviceManagementService"
  */
 public class OAuthExtensionServiceComponent {
 
@@ -60,6 +67,8 @@ public class OAuthExtensionServiceComponent {
     private static final String REPOSITORY = "repository";
     private static final String CONFIGURATION = "conf";
     private static final String APIM_CONF_FILE = "api-manager.xml";
+    private static final String API_KEY_MANGER_DEVICE_SCOPE = "APIKeyValidator.DeviceScope";
+    private static final String CDMF_DEVICE_SCOPE_PREFIX = "cdmf_";
 
 
     @SuppressWarnings("unused")
@@ -93,6 +102,15 @@ public class OAuthExtensionServiceComponent {
             }
 
             OAuthExtensionsDataHolder.getInstance().setWhitelistedScopes(whiteList);
+
+            // Read device scope(Specific to CDMF) from Configuration.
+            String deviceScope = configuration.getFirstProperty(API_KEY_MANGER_DEVICE_SCOPE);
+
+            if (deviceScope == null) {
+                deviceScope = CDMF_DEVICE_SCOPE_PREFIX;
+            }
+
+            OAuthExtensionsDataHolder.getInstance().setDeviceScope(deviceScope);
 
         } catch (APIManagementException e) {
             log.error("Error occurred while loading APIM configurations", e);
@@ -176,6 +194,28 @@ public class OAuthExtensionServiceComponent {
             log.debug("Unsetting PermissionManager Service");
         }
         OAuthExtensionsDataHolder.getInstance().setPermissionManagerService(null);
+    }
+
+    /**
+     *  Set DeviceManagementProviderService
+     * @param deviceManagerService  An instance of PermissionManagerService
+     */
+    protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Device Management Service");
+        }
+        OAuthExtensionsDataHolder.getInstance().setDeviceManagementService(deviceManagerService);
+    }
+
+    /**
+     * unset DeviceManagementProviderService
+     * @param deviceManagementService  An instance of PermissionManagerService
+     */
+    protected void unsetDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing Device Management Service");
+        }
+        OAuthExtensionsDataHolder.getInstance().setDeviceManagementService(null);
     }
 
 }

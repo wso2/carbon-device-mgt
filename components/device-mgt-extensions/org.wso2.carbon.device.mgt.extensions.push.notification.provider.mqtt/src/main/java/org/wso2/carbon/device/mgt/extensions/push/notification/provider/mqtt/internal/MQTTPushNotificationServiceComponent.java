@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.internal.MQTTPushNotificationServiceComponent" immediate="true"
+ * @scr.component name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.internal.MQTTPushNotificationServiceComponent" immediate="true"
  * @scr.reference name="carbon.device.mgt.provider"
  * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
  * cardinality="1..1"
@@ -34,7 +34,9 @@ import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
  * unbind="unsetDeviceManagementProviderService"
  * @scr.reference name="event.output.adapter.service"
  * interface="org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService"
- * cardinality="1..1" policy="dynamic"  bind="setOutputEventAdapterService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setOutputEventAdapterService"
  * unbind="unsetOutputEventAdapterService"
  */
 public class MQTTPushNotificationServiceComponent {

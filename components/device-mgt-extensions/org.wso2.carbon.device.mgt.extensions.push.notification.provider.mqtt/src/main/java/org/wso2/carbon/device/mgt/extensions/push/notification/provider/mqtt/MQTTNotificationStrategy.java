@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -33,15 +35,16 @@ import java.util.Map;
 
 public class MQTTNotificationStrategy implements NotificationStrategy {
 
-    private static final String MQTT_ADAPTER_PROPERTY_NAME = "mqtt.adapter.name";
     private static final String MQTT_ADAPTER_TOPIC = "mqtt.adapter.topic";
-    private static final String MQTT_ADAPTER_NAME = "mqtt.push.notification.publisher";
+    private String mqttAdapterName;
+    private static final Log log = LogFactory.getLog(MQTTNotificationStrategy.class);
 
     public MQTTNotificationStrategy(PushNotificationConfig config) {
         OutputEventAdapterConfiguration adapterConfig = new OutputEventAdapterConfiguration();
         adapterConfig.setType(MQTTAdapterConstants.MQTT_ADAPTER_TYPE);
-        adapterConfig.setName(MQTT_ADAPTER_NAME);
-        adapterConfig.setMessageFormat(MessageType.JSON);
+        mqttAdapterName = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_NAME);
+        adapterConfig.setName(mqttAdapterName);
+        adapterConfig.setMessageFormat(MessageType.TEXT);
 
         Map<String, String> configProperties = new HashMap<String, String>();
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL,
@@ -60,7 +63,7 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         try {
             MQTTDataHolder.getInstance().getOutputEventAdapterService().create(adapterConfig);
         } catch (OutputEventAdapterException e) {
-            throw new RuntimeException("Error occurred while initializing MQTT output event adapter", e);
+            throw new InvalidConfigurationException("Error occurred while initializing MQTT output event adapter", e);
         }
     }
 
@@ -71,10 +74,10 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
 
     @Override
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
-        Map<String, String> dynamicProperties = ctx.getProperties();
+        Map<String, String> dynamicProperties = new HashMap<>();
         dynamicProperties.put("topic", (String) ctx.getOperation().getProperties().get(MQTT_ADAPTER_TOPIC));
-        MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(MQTT_ADAPTER_NAME, dynamicProperties,
-                ctx.getOperation().getPayLoad());
+        MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(mqttAdapterName, dynamicProperties,
+                                                                            ctx.getOperation().getPayLoad());
     }
 
     @Override

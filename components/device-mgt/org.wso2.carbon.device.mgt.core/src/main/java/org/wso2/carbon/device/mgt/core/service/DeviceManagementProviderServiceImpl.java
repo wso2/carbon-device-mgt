@@ -36,8 +36,6 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
-import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
@@ -49,8 +47,6 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerRepository;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.email.sender.core.ContentProviderInfo;
 import org.wso2.carbon.email.sender.core.EmailContext;
@@ -75,11 +71,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     private DeviceTypeDAO deviceTypeDAO;
     private EnrollmentDAO enrollmentDAO;
     private DeviceManagementPluginRepository pluginRepository;
-    private OperationManagerRepository operationManagerRepository;
 
     public DeviceManagementProviderServiceImpl() {
         this.pluginRepository = new DeviceManagementPluginRepository();
-        this.operationManagerRepository = new OperationManagerRepository();
         initDataAccessObjects();
         /* Registering a listener to retrieve events when some device management service plugin is installed after
         * the component is done getting initialized */
@@ -819,59 +813,63 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public Activity addOperation(String type, Operation operation,
                                  List<DeviceIdentifier> devices) throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().addOperation(operation, devices);
+        return pluginRepository.getOperationManager(type, this.getTenantId()).addOperation(operation, devices);
     }
 
     @Override
     public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperations(deviceId);
+        return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId()).getOperations(deviceId);
     }
 
     @Override
     public PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request)
             throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperations(deviceId, request);
+        return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
+                .getOperations(deviceId, request);
     }
 
     @Override
     public List<? extends Operation> getPendingOperations(DeviceIdentifier deviceId)
             throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getPendingOperations(deviceId);
+        return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
+                .getPendingOperations(deviceId);
     }
 
     @Override
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getNextPendingOperation(deviceId);
+        return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
+                .getNextPendingOperation(deviceId);
     }
 
     @Override
     public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException {
-        DeviceManagementDataHolder.getInstance().getOperationManager().updateOperation(deviceId, operation);
+        pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
+                .updateOperation(deviceId, operation);
     }
 
     @Override
     public void deleteOperation(String type, int operationId) throws OperationManagementException {
-        DeviceManagementDataHolder.getInstance().getOperationManager().deleteOperation(operationId);
+        pluginRepository.getOperationManager(type, this.getTenantId()).deleteOperation(operationId);
     }
 
     @Override
     public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId,
                                                         int operationId) throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByDeviceAndOperationId(
-                deviceId, operationId);
+        return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
+                .getOperationByDeviceAndOperationId(deviceId, operationId);
     }
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(
             DeviceIdentifier deviceId,
             Operation.Status status) throws OperationManagementException, DeviceManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsByDeviceAndStatus(
-                deviceId, status);
+        return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
+                .getOperationsByDeviceAndStatus(deviceId, status);
     }
 
     @Override
     public Operation getOperation(String type, int operationId) throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getOperation(operationId);
+        return pluginRepository.getOperationManager(type, this.getTenantId()).getOperation(operationId);
     }
 
     @Override
@@ -1155,17 +1153,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void registerDeviceManagementService(DeviceManagementService deviceManagementService) {
         try {
             pluginRepository.addDeviceManagementProvider(deviceManagementService);
-            PushNotificationConfig pushNoteConfig = deviceManagementService.getPushNotificationConfig();
-            if (pushNoteConfig != null) {
-                NotificationStrategy notificationStrategy =
-                        DeviceManagementDataHolder.getInstance().getPushNotificationProviderRepository().getProvider(
-                                pushNoteConfig.getType()).getNotificationStrategy(pushNoteConfig);
-                operationManagerRepository.addOperationManager(
-                        deviceManagementService.getType(), new OperationManagerImpl(notificationStrategy));
-            } else {
-                operationManagerRepository.addOperationManager(
-                        deviceManagementService.getType(), new OperationManagerImpl());
-            }
         } catch (DeviceManagementException e) {
             log.error("Error occurred while registering device management plugin '" +
                     deviceManagementService.getType() + "'", e);
@@ -1176,7 +1163,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void unregisterDeviceManagementService(DeviceManagementService deviceManagementService) {
         try {
             pluginRepository.removeDeviceManagementProvider(deviceManagementService);
-            operationManagerRepository.removeOperationManager(deviceManagementService.getType());
         } catch (DeviceManagementException e) {
             log.error("Error occurred while un-registering device management plugin '" +
                     deviceManagementService.getType() + "'", e);
@@ -1242,6 +1228,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         result.setData(devices);
         return result;
+    }
+
+    @Override
+    public boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException {
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            Device device = deviceDAO.getDevice(deviceId, this.getTenantId());
+            if (device != null && device.getEnrolmentInfo().getOwner().equals(user)) {
+                return true;
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
+                                                        "id '" + deviceId.getId() + "' and user : " + user, e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return false;
     }
 
     private int getTenantId() {

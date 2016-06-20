@@ -101,31 +101,28 @@ public class OperationManagerImpl implements OperationManager {
             return null;
         }
 
-        List<EnrolmentInfo> enrolments = this.getEnrollmentsByStatus(deviceIds);
         try {
-
             OperationManagementDAOFactory.beginTransaction();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                     OperationDAOUtil.convertOperation(operation);
             int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
-            for (EnrolmentInfo enrolmentInfo : enrolments) {
+            //TODO have to create a sql to load device details from deviceDAO using single query.
+            for (DeviceIdentifier deviceId : deviceIds) {
+                Device device = getDevice(deviceId);
                 if (operationDto.getControl() ==
                         org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT) {
-                    operationDAO.updateEnrollmentOperationsStatus(enrolmentInfo.getId(), operationDto.getCode(),
+                    operationDAO.updateEnrollmentOperationsStatus(device.getEnrolmentInfo().getId(), operationDto.getCode(),
                             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
                             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
                 }
-                operationMappingDAO.addOperationMapping(operationId, enrolmentInfo.getId());
+                operationMappingDAO.addOperationMapping(operationId, device.getId());
                 if (notificationStrategy != null) {
                     try {
-
-                        notificationStrategy.execute(new NotificationContext(
-                                new DeviceIdentifier(enrolmentInfo.getDevice().getDeviceIdentifier(),
-                                        enrolmentInfo.getDevice().getType())));
+                        notificationStrategy.execute(new NotificationContext(deviceId, operation));
                     } catch (PushNotificationExecutionFailedException e) {
                         log.error("Error occurred while sending push notifications to " +
-                                enrolmentInfo.getDevice().getType() + " device carrying id '" +
-                                enrolmentInfo.getDevice().getDeviceIdentifier() + "'", e);
+                                          deviceId.getType() + " device carrying id '" +
+                                          deviceId + "'", e);
                     }
                 }
             }
@@ -182,6 +179,23 @@ public class OperationManagerImpl implements OperationManager {
             DeviceManagementDAOFactory.closeConnection();
         }
         return enrolments;
+    }
+
+    private Device getDevice(DeviceIdentifier deviceId) throws OperationManagementException {
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceDAO.getDevice(deviceId, tenantId);
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection the data " +
+                                                           "source", e);
+        } catch (DeviceManagementDAOException e) {
+            OperationManagementDAOFactory.rollbackTransaction();
+            throw new OperationManagementException(
+                    "Error occurred while retrieving device info", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 
     @Override

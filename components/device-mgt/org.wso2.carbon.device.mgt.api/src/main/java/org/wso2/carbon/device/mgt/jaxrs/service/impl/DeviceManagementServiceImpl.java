@@ -127,7 +127,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 }
             } else {
                 result = dms.getAllDevices(request);
-                if (result == null) {
+                int resultCount = result.getRecordsTotal();
+                if (resultCount == 0) {
                     throw new NotFoundException(
                             new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No device is currently" +
                                     " enrolled with the server").build());

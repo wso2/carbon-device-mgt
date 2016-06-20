@@ -794,6 +794,21 @@ public class OperationManagerImpl implements OperationManager {
         }
     }
 
+    @Override
+    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException {
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getActivitiesUpdatedAfter(timestamp, limit, offset);
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while getting the activity list changed after a " +
+                    "given time.", e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
     private OperationDAO lookupOperationDAO(Operation operation) {
 
         if (operation instanceof CommandOperation) {

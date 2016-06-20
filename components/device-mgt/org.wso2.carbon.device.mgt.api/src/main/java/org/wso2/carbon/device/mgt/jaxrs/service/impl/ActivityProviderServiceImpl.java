@@ -112,7 +112,7 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         DeviceManagementProviderService dmService;
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
-            activities = dmService.getActivitiesUpdatedAfter(timestamp);
+            activities = dmService.getActivitiesUpdatedAfter(timestamp, limit, offset);
             if (activities == null || activities.size() == 0) {
                 if (isIfModifiedSinceSet) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity(

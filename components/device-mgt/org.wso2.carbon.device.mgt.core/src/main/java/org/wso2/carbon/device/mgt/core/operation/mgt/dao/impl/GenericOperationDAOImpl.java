@@ -306,7 +306,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
                     List<OperationResponse> operationResponses = new ArrayList<>();
                     if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
-                        activityStatus.setUpdatedTimestamp(String.valueOf(rs.getInt("UPDATED_TIMESTAMP")));
+                        activityStatus.setUpdatedTimestamp(new java.util.Date(rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
                         operationResponses.add(this.getOperationResponse(rs));
                     }
                     activityStatus.setResponses(operationResponses);
@@ -336,6 +336,11 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
     @Override
     public List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException {
+        return this.getActivitiesUpdatedAfter(timestamp, 0, 0);
+    }
+
+    @Override
+    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Activity> activities = new ArrayList<>();
@@ -352,11 +357,28 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "INNER JOIN DM_DEVICE_TYPE AS dt ON dt.ID=d.DEVICE_TYPE_ID\n" +
                     "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE AS dor ON dor.ENROLMENT_ID=de.id \n" +
                     "AND dor.OPERATION_ID=eom.OPERATION_ID\n" +
-                    "WHERE eom.UPDATED_TIMESTAMP > ? AND de.TENANT_ID = ?";
+                    "WHERE eom.UPDATED_TIMESTAMP > ? AND de.TENANT_ID = ? ORDER BY eom.OPERATION_ID";
+
+            if(limit > 0) {
+                sql = sql + " LIMIT ?";
+            }
+
+            if(offset > 0) {
+                sql = sql + " OFFSET ?";
+            }
 
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, timestamp);
             stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+
+            int increment = 2;
+
+            if(limit > 0) {
+                stmt.setInt(++increment, limit);
+            }
+            if(offset > 0) {
+                stmt.setInt(++increment, offset);
+            }
             rs = stmt.executeQuery();
 
             int operationId = 0;
@@ -388,7 +410,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
                     List<OperationResponse> operationResponses = new ArrayList<>();
                     if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
-                        activityStatus.setUpdatedTimestamp(String.valueOf(rs.getInt("UPDATED_TIMESTAMP")));
+                        activityStatus.setUpdatedTimestamp(new java.util.Date(
+                                rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
+
                     }
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         operationResponses.add(this.getOperationResponse(rs));
@@ -417,7 +441,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
                     List<OperationResponse> operationResponses = new ArrayList<>();
                     if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
-                        activityStatus.setUpdatedTimestamp(String.valueOf(rs.getInt("UPDATED_TIMESTAMP")));
+                        activityStatus.setUpdatedTimestamp(new java.util.Date(
+                                rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
                     }
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         operationResponses.add(this.getOperationResponse(rs));

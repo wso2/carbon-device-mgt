@@ -88,4 +88,6 @@ public interface OperationManager {
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException;
 
+    List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
+
 }

@@ -1099,6 +1099,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getActivityCountUpdatedAfter(timestamp);
+    }
+
+    @Override
     public List<Device> getDevicesOfUser(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;

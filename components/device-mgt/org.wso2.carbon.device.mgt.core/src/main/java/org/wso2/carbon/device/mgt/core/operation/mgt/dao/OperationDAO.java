@@ -75,4 +75,6 @@ public interface OperationDAO {
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;
 
+    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
 }

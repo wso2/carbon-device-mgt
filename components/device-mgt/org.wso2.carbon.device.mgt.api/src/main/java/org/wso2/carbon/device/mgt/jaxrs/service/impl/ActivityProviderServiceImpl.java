@@ -113,6 +113,9 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         try {
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             activities = dmService.getActivitiesUpdatedAfter(timestamp, limit, offset);
+            activityList.setList(activities);
+            int count = dmService.getActivityCountUpdatedAfter(timestamp);
+            activityList.setCount(count);
             if (activities == null || activities.size() == 0) {
                 if (isIfModifiedSinceSet) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity(
@@ -132,6 +135,6 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             throw new UnexpectedServerErrorException(new ErrorResponse.ErrorResponseBuilder().setCode(500l)
                     .setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).entity(activities).build();
+        return Response.status(Response.Status.OK).entity(activityList).build();
     }
 }

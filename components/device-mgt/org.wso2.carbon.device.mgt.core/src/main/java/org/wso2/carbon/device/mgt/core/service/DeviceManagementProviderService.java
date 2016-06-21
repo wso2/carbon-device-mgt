@@ -242,4 +242,6 @@ public interface DeviceManagementProviderService {
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 
+    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
+
 }

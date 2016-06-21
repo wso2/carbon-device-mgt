@@ -474,6 +474,31 @@ public class GenericOperationDAOImpl implements OperationDAO {
         return activities;
     }
 
+    @Override
+    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT COUNT(*) AS COUNT FROM DM_ENROLMENT_OP_MAPPING AS m \n" +
+                    "INNER JOIN DM_ENROLMENT AS d ON m.ENROLMENT_ID = d.ID \n" +
+                    "WHERE m.UPDATED_TIMESTAMP > ? AND d.TENANT_ID = ?;";
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, timestamp);
+            stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            rs = stmt.executeQuery();
+            if(rs.next()){
+                return rs.getInt("COUNT");
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while getting the activity count from " +
+                    "the database.", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return 0;
+    }
+
     private OperationResponse getOperationResponse(ResultSet rs) throws
             ClassNotFoundException, IOException, SQLException {
         OperationResponse response = new OperationResponse();

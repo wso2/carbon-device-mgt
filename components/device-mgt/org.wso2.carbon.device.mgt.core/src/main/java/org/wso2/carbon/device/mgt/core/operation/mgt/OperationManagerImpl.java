@@ -809,6 +809,21 @@ public class OperationManagerImpl implements OperationManager {
         }
     }
 
+    @Override
+    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getActivityCountUpdatedAfter(timestamp);
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while getting the activity count changed after a " +
+                    "given time.", e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
     private OperationDAO lookupOperationDAO(Operation operation) {
 
         if (operation instanceof CommandOperation) {

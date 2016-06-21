@@ -131,4 +131,9 @@ public class PushNotificationBasedOperationManager implements OperationManager {
         return this.operationManager.getActivitiesUpdatedAfter(timestamp, limit, offset);
     }
 
+    @Override
+    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
+        return this.operationManager.getActivityCountUpdatedAfter(timestamp);
+    }
+
 }

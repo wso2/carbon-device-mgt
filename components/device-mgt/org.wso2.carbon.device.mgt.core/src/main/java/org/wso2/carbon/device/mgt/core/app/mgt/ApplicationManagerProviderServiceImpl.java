@@ -24,7 +24,10 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -137,9 +140,10 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (deviceIdentifierList.size() > 0) {
                 type = deviceIdentifierList.get(0).getType();
             }
-
-            return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+            Activity activity = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                     .addOperation(type, operation, deviceIdentifierList);
+
+            return activity;
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user: " + userName +
                     " in app installation", e);
@@ -177,8 +181,9 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (deviceIdentifierList.size() > 0) {
                 type = deviceIdentifierList.get(0).getType();
             }
-            return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
+            Activity activity = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
                     deviceIdentifierList);
+            return activity;
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user role " + userRole +
                     " in app installation", e);
@@ -191,8 +196,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
 
     @Override
     public void updateApplicationListInstalledInDevice(
-            DeviceIdentifier deviceIdentifier,
-            List<Application> applications) throws ApplicationManagementException {
+            DeviceIdentifier deviceIdentifier, List<Application> applications) throws ApplicationManagementException {
         List<Application> installedAppList = getApplicationListForDevice(deviceIdentifier);
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -264,13 +268,6 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             DeviceManagementDAOFactory.openConnection();
             device = deviceDAO.getDevice(deviceId, tenantId);
-            if (device == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
-                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
-                }
-                return null;
-            }
             return applicationDAO.getInstalledApplications(device.getId());
         } catch (DeviceManagementDAOException e) {
             throw new ApplicationManagementException("Error occurred while fetching the Application List of '" +

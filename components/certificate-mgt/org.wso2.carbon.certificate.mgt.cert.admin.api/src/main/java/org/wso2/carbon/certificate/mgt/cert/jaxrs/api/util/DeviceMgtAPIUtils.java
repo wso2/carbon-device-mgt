@@ -41,7 +41,7 @@ public class DeviceMgtAPIUtils {
                 ctx.getOSGiService(CertificateManagementService.class, null);
 
         if (certificateManagementService == null) {
-            String msg = "CertificateManagementAdminServiceImpl Management service not initialized.";
+            String msg = "CertificateImpl Management service not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }

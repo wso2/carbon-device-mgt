@@ -38,7 +38,7 @@ public interface DeviceDetailsDAO {
      * @param deviceInfo - Device information object.
      * @throws DeviceDetailsMgtDAOException
      */
-    void addDeviceInformation(int deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException;
+    void addDeviceInformation(DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException;
 
     /**
      * This method will add the device properties to the database.

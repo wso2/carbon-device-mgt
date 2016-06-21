@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.certificate.mgt.core.service;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
@@ -32,6 +33,7 @@ import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -171,7 +173,7 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         try {
             CertificateManagementDAOFactory.beginTransaction();
             CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
-            boolean status = certificateDAO.removeCertificate(serialNumber);
+            Boolean status = certificateDAO.removeCertificate(serialNumber);
             CertificateManagementDAOFactory.commitTransaction();
             return status;
         } catch (TransactionManagementException e) {

@@ -26,11 +26,11 @@ import io.swagger.annotations.ApiModelProperty;
         + " responses")
 public class OperationResponse {
 
-    @ApiModelProperty(name = "response", value = "Operation response returned from the device", required = true)
+    @ApiModelProperty(name = "response", value = "Operation response return from the device", required = true)
     private String response;
-    @ApiModelProperty(name = "receivedTimeStamp", value = "Time that the operation response received",
+    @ApiModelProperty(name = "recievedTimeStamp", value = "Time that the operation response received",
             required = true)
-    private String receivedTimeStamp;
+    private String recievedTimeStamp;
 
     public String getResponse() {
         return response;
@@ -40,12 +40,12 @@ public class OperationResponse {
         this.response = response;
     }
 
-    public String getReceivedTimeStamp() {
-        return receivedTimeStamp;
+    public String getRecievedTimeStamp() {
+        return recievedTimeStamp;
     }
 
-    public void setReceivedTimeStamp(String receivedTimeStamp) {
-        this.receivedTimeStamp = receivedTimeStamp;
+    public void setRecievedTimeStamp(String recievedTimeStamp) {
+        this.recievedTimeStamp = recievedTimeStamp;
     }
 }
 

@@ -19,54 +19,18 @@
 
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
-@ApiModel(value = "Activity", description = "An activity instance carries a unique identifier that can be " +
-        "used to identify a particular operation instance uniquely")
 public class Activity {
 
     public enum Type {
         CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY
     }
 
-    @ApiModelProperty(
-            name = "activityId",
-            value = "Activity identifier",
-            required = true)
-    @JsonProperty("activityId")
     private String activityId;
-
-    @ApiModelProperty(
-            name = "code",
-            value = "Activity code",
-            required = true)
-    @JsonProperty("code")
     private String code;
-
-    @ApiModelProperty(
-            name = "type",
-            value = "Activity type",
-            required = true,
-            allowableValues = "CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY")
-    @JsonProperty("type")
     private Type type;
-
-    @ApiModelProperty(
-            name = "createdTimeStamp",
-            value = "Timestamp recorded when the activity took place",
-            required = true)
-    @JsonProperty("createdTimestamp")
     private String createdTimeStamp;
-
-    @ApiModelProperty(
-            name = "activityStatuses",
-            value = "Collection of statuses corresponding to the activity",
-            required = true)
-    @JsonProperty("activityStatuses")
     private List<ActivityStatus> activityStatus;
 
     public String getActivityId() {

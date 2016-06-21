@@ -30,7 +30,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.config.tenant.PlatformConfigurationManagementServiceImpl;
+import org.wso2.carbon.device.mgt.core.config.tenant.TenantConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -196,10 +196,10 @@ public class PolicyManagerUtil {
     }
 
 
-    public static int getMonitoringFequency() throws PolicyManagementException {
+    public static int getMonitoringFequency() {
 
-        PlatformConfigurationManagementService configMgtService = new PlatformConfigurationManagementServiceImpl();
-        PlatformConfiguration tenantConfiguration;
+        PlatformConfigurationManagementService configMgtService = new TenantConfigurationManagementServiceImpl();
+        PlatformConfiguration tenantConfiguration = null;
         int monitoringFrequency = 0;
         try {
             tenantConfiguration = configMgtService.getConfiguration(GENERAL_CONFIG_RESOURCE_PATH);
@@ -208,11 +208,7 @@ public class PolicyManagerUtil {
             if (configuration != null && !configuration.isEmpty()) {
                 for (ConfigurationEntry cEntry : configuration) {
                     if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
-                        if (cEntry.getValue() == null) {
-                            throw new PolicyManagementException("Invalid value, i.e. '" + cEntry.getValue() +
-                                    "', is configured as the monitoring frequency");
-                        }
-                        monitoringFrequency = (int) (Double.parseDouble(cEntry.getValue().toString()) + 0.5d);
+                        monitoringFrequency = Integer.parseInt((String)cEntry.getValue());
                     }
                 }
             }

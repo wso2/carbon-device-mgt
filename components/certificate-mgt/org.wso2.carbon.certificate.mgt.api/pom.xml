@@ -48,7 +48,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/*cxf*.jar</packagingExcludes>
-                    <warName>api#scep-mgt#v1.0</warName>
+                    <warName>certificate-mgt</warName>
                 </configuration>
             </plugin>
             <plugin>
@@ -79,7 +79,7 @@
                                         <copy todir="${basedir}/../../../repository/deployment/server/webapps"
                                               overwrite="true">
                                             <fileset dir="${basedir}/target">
-                                                <include name="api#scep-mgt#v1.0.war"/>
+                                                <include name="certificate-mgt.war"/>
                                             </fileset>
                                         </copy>
                                     </tasks>

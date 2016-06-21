@@ -19,46 +19,18 @@
 
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 import java.util.List;
 
-@ApiModel(value = "ActivityStatus", description = "Status of an activity is described in this class.")
 public class ActivityStatus {
 
     public enum Status {
         IN_PROGRESS, PENDING, COMPLETED, ERROR, REPEATED
     }
-
-    @ApiModelProperty(
-            name = "deviceIdentifier",
-            value = "Device identifier of the device.",
-            required = true)
-    @JsonProperty("deviceIdentifier")
     private DeviceIdentifier deviceIdentifier;
-
-    @ApiModelProperty(
-            name = "status",
-            value = "Status of the activity performed.",
-            required = true)
-    @JsonProperty("status")
     private Status status;
-
-    @ApiModelProperty(
-            name = "responses",
-            value = "Responses received from devices.",
-            required = true)
-    @JsonProperty("responses")
     private List<OperationResponse> responses;
-
-    @ApiModelProperty(
-            name = "updatedTimestamp    ",
-            value = "Last updated time of the activity.",
-            required = true)
-    @JsonProperty("updatedTimestamp")
     private String updatedTimestamp;
 
     public DeviceIdentifier getDeviceIdentifier() {

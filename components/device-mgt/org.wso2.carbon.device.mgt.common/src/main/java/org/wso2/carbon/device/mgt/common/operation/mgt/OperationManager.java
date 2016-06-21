@@ -17,7 +17,10 @@
  */
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.util.List;
 
@@ -87,9 +90,5 @@ public interface OperationManager {
     List<Operation> getOperationUpdatedAfter(long timestamp) throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException;
-
-    List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
-
-    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
 
 }

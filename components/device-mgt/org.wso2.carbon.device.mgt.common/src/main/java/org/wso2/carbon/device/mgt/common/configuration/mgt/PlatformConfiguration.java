@@ -38,8 +38,6 @@ import java.util.List;
         description = "This class carries all information related to a Tenant configuration")
 public class PlatformConfiguration implements Serializable {
 
-    public static final int INVALID_NOTIFIER_FREQUENCY = -1;
-
     @XmlElement(name = "type")
     @ApiModelProperty(name = "type", value = "type of device", required = true)
     private String type;

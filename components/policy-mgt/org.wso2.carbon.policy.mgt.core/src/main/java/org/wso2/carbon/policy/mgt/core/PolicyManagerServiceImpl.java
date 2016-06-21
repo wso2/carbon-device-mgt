@@ -168,8 +168,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
-    public Policy getAppliedPolicyToDevice(
-            DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+    public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         return policyManager.getAppliedPolicyToDevice(deviceIdentifier);
     }
 
@@ -185,7 +184,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
         List<ComplianceFeature> complianceFeatures =
                 monitoringManager.checkPolicyCompliance(deviceIdentifier, response);
-        return !(complianceFeatures == null || complianceFeatures.isEmpty());
+        if (complianceFeatures == null || complianceFeatures.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     @Override

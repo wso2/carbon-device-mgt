@@ -81,13 +81,13 @@ public class ApplicationManagementProviderServiceTest {
 
         ApplicationManagementProviderService appMgtProvider = new ApplicationManagerProviderServiceImpl();
 
-//        try {
-//            appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);
-//        } catch (ApplicationManagementException appMgtEx) {
-//            String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
-//            log.error(msg, appMgtEx);
-//            Assert.fail(msg, appMgtEx);
-//        }
+        try {
+            appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);
+        } catch (ApplicationManagementException appMgtEx) {
+            String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
+            log.error(msg, appMgtEx);
+            Assert.fail(msg, appMgtEx);
+        }
 
         Application application5 = TestDataHolder.generateApplicationDummyData("org.wso2.app5");
         applications = new ArrayList<>();
@@ -95,16 +95,16 @@ public class ApplicationManagementProviderServiceTest {
         applications.add(application3);
         applications.add(application5);
 
-//        try {
-//            appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);
-//            List<Application> installedApps = appMgtProvider.getApplicationListForDevice(deviceId);
-//            log.info("Number of installed applications:" + installedApps.size());
-//            Assert.assertEquals(installedApps.size(), 3, "Num of installed applications should be two");
-//        } catch (ApplicationManagementException appMgtEx) {
-//            String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
-//            log.error(msg, appMgtEx);
-//            Assert.fail(msg, appMgtEx);
-//        }
+        try {
+            appMgtProvider.updateApplicationListInstalledInDevice(deviceId, applications);
+            List<Application> installedApps = appMgtProvider.getApplicationListForDevice(deviceId);
+            log.info("Number of installed applications:" + installedApps.size());
+            Assert.assertEquals(installedApps.size(), 3, "Num of installed applications should be two");
+        } catch (ApplicationManagementException appMgtEx) {
+            String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
+            log.error(msg, appMgtEx);
+            Assert.fail(msg, appMgtEx);
+        }
 
     }
 

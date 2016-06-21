@@ -29,31 +29,39 @@
 -->
 <PermissionConfiguration>
     <APIVersion></APIVersion>
-
-    <!-- CertificateManagementAdminService related APIs -->
+    <!-- Device related APIs -->
     <Permission>
-        <name>Save certificate</name>
-        <path>/device-mgt/admin/certificate/Save</path>
-        <url>/admin/certificates</url>
+        <name>get certificate in the database</name>
+        <path>/device-mgt/emm-admin/certificate/GetSignCSR</path>
+        <url>/certificates/signcsr</url>
+        <method>POST</method>
+        <scope>emm_admin</scope>
+    </Permission>
+
+    <!-- Certificate related APIs -->
+    <Permission>
+        <name>Save certificate in the database</name>
+        <path>/device-mgt/admin/certificate/save</path>
+        <url>/certificates</url>
         <method>POST</method>
     </Permission>
     <Permission>
-        <name>Get certificate</name>
+        <name>get certificate in the database</name>
         <path>/device-mgt/admin/certificate/Get</path>
-        <url>/admin/certificates/*</url>
+        <url>/certificates/*</url>
         <method>GET</method>
     </Permission>
     <Permission>
-        <name>Get all certificates</name>
+        <name>get certificate in the database</name>
         <path>/device-mgt/admin/certificate/GetAll</path>
-        <url>/admin/certificates</url>
+        <url>/certificates</url>
         <method>GET</method>
     </Permission>
     <Permission>
-        <name>Remove certificate</name>
-        <path>/device-mgt/admin/certificate/Remove</path>
-        <url>/admin/certificates/*</url>
+        <name>get certificate in the database</name>
+        <path>/device-mgt/admin/certificate/Get</path>
+        <url>/certificates/*</url>
         <method>DELETE</method>
     </Permission>
-    <!-- End of CertificateManagementAdminService related APIs -->
+    <!-- End of Certificate related APIs -->
 </PermissionConfiguration>

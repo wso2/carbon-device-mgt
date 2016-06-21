@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -28,11 +27,8 @@ import java.io.Serializable;
                                                     "uniquely.")
 public class DeviceIdentifier implements Serializable{
 
-    @JsonProperty(value = "id", required = true)
     @ApiModelProperty(name = "id", value = "Identity of the device.", required = true)
     private String id;
-
-    @JsonProperty(value = "type", required = true)
     @ApiModelProperty(name = "type", value = "Type of the device.", required = true)
     private String type;
 
@@ -60,7 +56,7 @@ public class DeviceIdentifier implements Serializable{
 
     @Override
     public String toString() {
-        return "deviceId {" +
+        return "DeviceIdentifier{" +
                 "id='" + id + '\'' +
                 ", type='" + type + '\'' +
                 '}';

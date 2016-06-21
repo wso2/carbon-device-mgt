@@ -19,7 +19,6 @@
 
 package org.wso2.carbon.policy.mgt.core;
 
-import junit.framework.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
@@ -88,10 +87,7 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
     public void getDeviceAppliedPolicy() throws PolicyManagementException {
 
         PolicyManager manager = new PolicyManagerImpl();
-        Policy policy = null;
-
-        policy = manager.getAppliedPolicyToDevice(identifier);
-
+        Policy policy = manager.getAppliedPolicyToDevice(identifier);
 
         if (policy != null) {
 
@@ -111,10 +107,7 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         log.debug("Compliance operations adding started.");
 
         PolicyManager manager = new PolicyManagerImpl();
-        Policy policy = null;
-
-        policy = manager.getAppliedPolicyToDevice(identifier);
-
+        Policy policy = manager.getAppliedPolicyToDevice(identifier);
         OperationManager operationManager = new OperationManagerImpl();
 
         DeviceManagementDataHolder.getInstance().setOperationManager(operationManager);
@@ -130,7 +123,7 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         List<Device> devices = service.getAllDevices(ANDROID);
 
-        // monitoringManager.addMonitoringOperation(devices);
+       // monitoringManager.addMonitoringOperation(devices);
 
         log.debug("Compliance operations adding done.");
 
@@ -161,11 +154,9 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         monitoringServiceTest.notifyDevices(devices);
 
         PolicyManager manager = new PolicyManagerImpl();
-        Policy policy = null;
+        Policy policy = manager.getAppliedPolicyToDevice(identifier);
 
-        policy = manager.getAppliedPolicyToDevice(identifier);
-
-        if (policy != null) {
+        if(policy != null) {
             Object ob = new Object();
 
             monitoringServiceTest.checkPolicyCompliance(identifier, policy, ob);
@@ -197,9 +188,7 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
         log.debug(identifier.getId());
         log.debug(identifier.getType());
 
-
         monitoringManager.checkPolicyCompliance(identifier, ob);
-
 
     }
 

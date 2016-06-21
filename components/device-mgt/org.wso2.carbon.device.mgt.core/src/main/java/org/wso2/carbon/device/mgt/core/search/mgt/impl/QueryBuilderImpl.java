@@ -112,11 +112,11 @@ public class QueryBuilderImpl implements QueryBuilder {
         String querySuffix = "";
 
         for (Condition con : conditions) {
-            if (Utils.checkDeviceDetailsColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey().toLowerCase()) +
-                        con.getOperator() + Utils.getConvertedValue(con.getKey().toLowerCase(), con.getValue());
-            } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " AND DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase()) +
+            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
+                querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) +
+                        con.getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
+            } else if (Utils.checkDeviceLocationColumns(con.getKey())) {
+                querySuffix = querySuffix + " AND DL." + Utils.getDeviceLocationColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();
             }
         }
@@ -130,11 +130,11 @@ public class QueryBuilderImpl implements QueryBuilder {
         String querySuffix = "";
 
         for (Condition con : conditions) {
-            if (Utils.checkDeviceDetailsColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey().toLowerCase()) +
+            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
+                querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) +
                         con.getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
-            } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase()) +
+            } else if (Utils.checkDeviceLocationColumns(con.getKey())) {
+                querySuffix = querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey()) +
                         con.getOperator() + con.getValue();
             }
         }
@@ -190,17 +190,15 @@ public class QueryBuilderImpl implements QueryBuilder {
     private String getGenericQueryPart() {
 
         return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
-                "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
+                "  D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
                 "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
                 "DD.OS_VERSION, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
                 "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
                 "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                 "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
-                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP \n" +
-                "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
-                "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID \n" +
-                "INNER JOIN  DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                "WHERE D.TENANT_ID = " +
+                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP " +
+                "FROM DM_DEVICE_DETAIL AS DD, DM_DEVICE AS D, DM_DEVICE_LOCATION AS DL, " +
+                "DM_DEVICE_TYPE AS DT WHERE DEVICE_TYPE_ID=D.DEVICE_TYPE_ID AND D.TENANT_ID = " +
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
 
@@ -209,18 +207,16 @@ public class QueryBuilderImpl implements QueryBuilder {
     private String getPropertyQueryPart() {
 
         return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
-                "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
+                " D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
                 "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
                 "DD.OS_VERSION, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
                 "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
                 "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                 "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
-                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DI.KEY_FIELD, DI.VALUE_FIELD \n" +
-                "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
-                "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID  \n" +
-                "INNER JOIN  DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                "LEFT JOIN DM_DEVICE_INFO AS DI ON DI.DEVICE_ID=D.ID\n" +
-                "WHERE D.TENANT_ID = " +
+                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, " +
+                "DI.KEY_FIELD, DI.VALUE_FIELD FROM DM_DEVICE_DETAIL AS DD, " +
+                "DM_DEVICE AS D, DM_DEVICE_LOCATION AS DL, \n" +
+                "DM_DEVICE_INFO AS DI, DM_DEVICE_TYPE AS DT WHERE DEVICE_TYPE_ID=D.DEVICE_TYPE_ID AND D.TENANT_ID = " +
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
     }

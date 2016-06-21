@@ -194,6 +194,8 @@ public class ProcessorImpl implements Processor {
         }
         return maps;
     }
+
+
     private void setApplicationListOfDevices(List<DeviceWrapper> deviceWrappers) throws SearchMgtException {
         try {
             DeviceManagementDAOFactory.openConnection();

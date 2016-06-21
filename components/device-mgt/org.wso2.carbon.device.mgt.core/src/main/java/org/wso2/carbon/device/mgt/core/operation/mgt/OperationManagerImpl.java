@@ -201,47 +201,49 @@ public class OperationManagerImpl implements OperationManager {
     @Override
     public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
         int enrolmentId;
-        List<Operation> operations = null;
+        List<Operation> operations = new ArrayList<>();
         try {
             boolean isUserAuthorized = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
                     isUserAuthorized(deviceId, DeviceGroupConstants.Permissions.DEFAULT_OPERATOR_PERMISSIONS);
-            if (!isUserAuthorized) {
-                throw new UnauthorizedDeviceAccessException("User '" + getUser() + "' is not authorized to " +
-                        "fetch operations on device '" + deviceId.getId() + "'");
-            }
-            try {
+            if (isUserAuthorized) {
                 try {
-                    DeviceManagementDAOFactory.openConnection();
-                    int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-                    enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
-                } finally {
-                    DeviceManagementDAOFactory.closeConnection();
-                }
-                if (enrolmentId < 0) {
-                    return null;
-                }
-                OperationManagementDAOFactory.openConnection();
-                List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList =
-                        operationDAO.getOperationsForDevice(enrolmentId);
+                    try {
+                        DeviceManagementDAOFactory.openConnection();
+                        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+                        enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE, tenantId);
+                    } finally {
+                        DeviceManagementDAOFactory.closeConnection();
+                    }
 
-                operations = new ArrayList<>();
-                for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : operationList) {
-                    Operation operation = OperationDAOUtil.convertOperation(dtoOperation);
-                    operations.add(operation);
+                    OperationManagementDAOFactory.openConnection();
+                    if (enrolmentId < 0) {
+                        throw new OperationManagementException("Device not found for given device " +
+                                "Identifier:" + deviceId.getId() + " and given type" +
+                                deviceId.getType());
+                    }
+                    List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList =
+                            operationDAO.getOperationsForDevice(enrolmentId);
+
+                    for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : operationList) {
+                        Operation operation = OperationDAOUtil.convertOperation(dtoOperation);
+                        operations.add(operation);
+                    }
+                } catch (OperationManagementDAOException e) {
+                    throw new OperationManagementException("Error occurred while retrieving the list of " +
+                            "operations assigned for '" + deviceId.getType() +
+                            "' device '" + deviceId.getId() + "'", e);
+                } catch (DeviceManagementDAOException e) {
+                    throw new OperationManagementException("Error occurred while retrieving metadata of '" +
+                            deviceId.getType() + "' device carrying the identifier '" +
+                            deviceId.getId() + "'");
+                } catch (SQLException e) {
+                    throw new OperationManagementException(
+                            "Error occurred while opening a connection to the data source", e);
+                } finally {
+                    OperationManagementDAOFactory.closeConnection();
                 }
-            } catch (OperationManagementDAOException e) {
-                throw new OperationManagementException("Error occurred while retrieving the list of " +
-                        "operations assigned for '" + deviceId.getType() +
-                        "' device '" + deviceId.getId() + "'", e);
-            } catch (DeviceManagementDAOException e) {
-                throw new OperationManagementException("Error occurred while retrieving metadata of '" +
-                        deviceId.getType() + "' device carrying the identifier '" +
-                        deviceId.getId() + "'");
-            } catch (SQLException e) {
-                throw new OperationManagementException(
-                        "Error occurred while opening a connection to the data source", e);
-            } finally {
-                OperationManagementDAOFactory.closeConnection();
+            } else {
+                log.info("User : " + getUser() + " is not authorized to fetch operations on device : " + deviceId.getId());
             }
         } catch (DeviceAccessAuthorizationException e) {
             throw new OperationManagementException("Error occurred while authorizing access to the devices for user : " +
@@ -470,13 +472,12 @@ public class OperationManagerImpl implements OperationManager {
                         DeviceManagementDAOFactory.closeConnection();
                     }
                     OperationManagementDAOFactory.beginTransaction();
-                    boolean isUpdated = false;
                     if (operation.getStatus() != null) {
-                        isUpdated = operationDAO.updateOperationStatus(enrolmentId, operationId,
+                        operationDAO.updateOperationStatus(enrolmentId, operationId,
                                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.
                                         valueOf(operation.getStatus().toString()));
                     }
-                    if (isUpdated && operation.getOperationResponse() != null) {
+                    if (operation.getOperationResponse() != null) {
                         operationDAO.addOperationResponse(enrolmentId, operationId, operation.getOperationResponse());
                     }
                     OperationManagementDAOFactory.commitTransaction();
@@ -772,12 +773,14 @@ public class OperationManagerImpl implements OperationManager {
         // This parses the operation id from activity id (ex : ACTIVITY_23) and converts to the integer.
         int operationId = Integer.parseInt(
                 activity.replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, ""));
-        if (operationId == 0) {
+        if(operationId == 0){
             throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
         }
         try {
             OperationManagementDAOFactory.openConnection();
-            return operationDAO.getActivity(operationId);
+            Activity act = operationDAO.getActivity(operationId);
+            act.setActivityId(activity);
+            return act;
         } catch (SQLException e) {
             throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
         } catch (OperationManagementDAOException e) {
@@ -802,36 +805,6 @@ public class OperationManagerImpl implements OperationManager {
             throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while getting the activity list changed after a " +
-                    "given time.", e);
-        } finally {
-            OperationManagementDAOFactory.closeConnection();
-        }
-    }
-
-    @Override
-    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException {
-        try {
-            OperationManagementDAOFactory.openConnection();
-            return operationDAO.getActivitiesUpdatedAfter(timestamp, limit, offset);
-        } catch (SQLException e) {
-            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
-        } catch (OperationManagementDAOException e) {
-            throw new OperationManagementException("Error occurred while getting the activity list changed after a " +
-                    "given time.", e);
-        } finally {
-            OperationManagementDAOFactory.closeConnection();
-        }
-    }
-
-    @Override
-    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
-        try {
-            OperationManagementDAOFactory.openConnection();
-            return operationDAO.getActivityCountUpdatedAfter(timestamp);
-        } catch (SQLException e) {
-            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
-        } catch (OperationManagementDAOException e) {
-            throw new OperationManagementException("Error occurred while getting the activity count changed after a " +
                     "given time.", e);
         } finally {
             OperationManagementDAOFactory.closeConnection();
@@ -891,6 +864,10 @@ public class OperationManagerImpl implements OperationManager {
         }
 
         return status;
+    }
+
+    private void setActivityId(Operation operation, int enrolmentId) {
+        operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + enrolmentId);
     }
 
 }

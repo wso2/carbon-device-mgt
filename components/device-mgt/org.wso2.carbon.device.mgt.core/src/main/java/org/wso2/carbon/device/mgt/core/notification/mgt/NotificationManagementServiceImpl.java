@@ -21,8 +21,6 @@ package org.wso2.carbon.device.mgt.core.notification.mgt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.EntityDoesNotExistException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
@@ -42,133 +40,133 @@ import java.util.List;
  */
 public class NotificationManagementServiceImpl implements NotificationManagementService {
 
-    private static final Log log = LogFactory.getLog(NotificationManagementServiceImpl.class);
+	private static final Log log = LogFactory.getLog(NotificationManagementServiceImpl.class);
 
-    private NotificationDAO notificationDAO;
-    private DeviceDAO deviceDAO;
+	private NotificationDAO notificationDAO;
+	private DeviceDAO deviceDAO;
 
-    public NotificationManagementServiceImpl() {
-        this.notificationDAO = NotificationManagementDAOFactory.getNotificationDAO();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-    }
+	public NotificationManagementServiceImpl() {
+		this.notificationDAO = NotificationManagementDAOFactory.getNotificationDAO();
+		this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+	}
 
-    @Override
-    public boolean addNotification(DeviceIdentifier deviceId,
-                                   Notification notification) throws NotificationManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Adding a Notification : [" + notification.toString() + "]");
-        }
-        int notificationId;
-        int tenantId = NotificationDAOUtil.getTenantId();
+	@Override
+	public boolean addNotification(Notification notification) throws NotificationManagementException {
+		boolean status = false;
+		int deviceId, tenantId;
+		if (log.isDebugEnabled()) {
+			log.debug("Adding a Notification : [" + notification.toString() + "]");
+		}
+		try {
+			tenantId = NotificationDAOUtil.getTenantId();
+			DeviceManagementDAOFactory.openConnection();
+			Device device = deviceDAO.getDevice(notification.getDeviceIdentifier(), tenantId);
+			deviceId = device.getId();
+		} catch (SQLException e) {
+			throw new NotificationManagementException("Error occurred while opening a connection to" +
+			                                          " the data source", e);
+		} catch (DeviceManagementDAOException e) {
+			throw new NotificationManagementException("Error occurred while retriving device data for " +
+			                                          " adding notification", e);
+		} finally {
+			DeviceManagementDAOFactory.closeConnection();
+		}
+		try {
+			NotificationManagementDAOFactory.beginTransaction();
+			int notificationId = notificationDAO.addNotification(deviceId, tenantId, notification);
+			NotificationManagementDAOFactory.commitTransaction();
 
-        Device device = this.getDevice(deviceId, tenantId);
-        if (device == null) {
-            throw new EntityDoesNotExistException("No device is found with type '" + deviceId.getType() +
-                    "' and id '" + deviceId.getId() + "'");
-        }
+			if (log.isDebugEnabled()) {
+				log.debug("Notification id : " + notificationId +" was added to the table.");
+			}
+			if(notificationId > 0) {
+				status = true;
+			}
+		} catch (TransactionManagementException e) {
+			NotificationManagementDAOFactory.rollbackTransaction();
+			throw new NotificationManagementException("Error occurred while adding notification", e);
+		} finally {
+			NotificationManagementDAOFactory.closeConnection();
+		}
+		return status;
+	}
 
-        try {
-            NotificationManagementDAOFactory.beginTransaction();
-            notificationId = notificationDAO.addNotification(device.getId(), tenantId, notification);
-            NotificationManagementDAOFactory.commitTransaction();
-        } catch (TransactionManagementException e) {
-            NotificationManagementDAOFactory.rollbackTransaction();
-            throw new NotificationManagementException("Error occurred while adding notification", e);
-        } finally {
-            NotificationManagementDAOFactory.closeConnection();
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Notification id : " + notificationId + " was added to the table.");
-        }
-        return true;
-    }
+	@Override
+	public boolean updateNotification(Notification notification) throws NotificationManagementException {
+		boolean status = false;
+		if (log.isDebugEnabled()) {
+			log.debug("Updating Notification : [" + notification.toString() + "]");
+		}
+		try {
+			NotificationManagementDAOFactory.beginTransaction();
+			if(notificationDAO.updateNotification(notification) > 0 ) {
+				status = true;
+			}
+			NotificationManagementDAOFactory.commitTransaction();
 
-    private Device getDevice(DeviceIdentifier deviceId, int tenantId) throws NotificationManagementException {
-        Device device;
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            device = deviceDAO.getDevice(deviceId, tenantId);
-        } catch (SQLException e) {
-            throw new NotificationManagementException("Error occurred while opening a connection to" +
-                    " the data source", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new NotificationManagementException("Error occurred while retriving device data for " +
-                    " adding notification", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-        return device;
-    }
+			if (log.isDebugEnabled()) {
+				log.debug("Notification id : " + notification.getNotificationId() +
+				          " has updated successfully.");
+			}
+		} catch (TransactionManagementException e) {
+			NotificationManagementDAOFactory.rollbackTransaction();
+			throw new NotificationManagementException("Error occurred while updating notification ", e);
+		} finally {
+			NotificationManagementDAOFactory.closeConnection();
+		}
+		return status;
+	}
 
-    @Override
-    public boolean updateNotification(Notification notification) throws NotificationManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Updating Notification : [" + notification.toString() + "]");
-        }
-        try {
-            NotificationManagementDAOFactory.beginTransaction();
-            notificationDAO.updateNotification(notification);
-            NotificationManagementDAOFactory.commitTransaction();
-        } catch (TransactionManagementException e) {
-            NotificationManagementDAOFactory.rollbackTransaction();
-            throw new NotificationManagementException("Error occurred while updating notification ", e);
-        } finally {
-            NotificationManagementDAOFactory.closeConnection();
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Notification id : " + notification.getNotificationId() +
-                    " has updated successfully.");
-        }
-        return true;
-    }
+	@Override
+	public boolean updateNotificationStatus(int notificationId, Notification.Status status)
+			throws NotificationManagementException {
+		boolean operationStatus = false;
+		if (log.isDebugEnabled()) {
+			log.debug("Updating Notification id : " + notificationId);
+		}
+		try {
+			NotificationManagementDAOFactory.beginTransaction();
+			if(notificationDAO.updateNotificationStatus(notificationId, status) > 0 ) {
+				operationStatus = true;
+			}
+			NotificationManagementDAOFactory.commitTransaction();
 
-    @Override
-    public boolean updateNotificationStatus(int notificationId, Notification.Status status)
-            throws NotificationManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Updating Notification id : " + notificationId);
-        }
-        try {
-            NotificationManagementDAOFactory.beginTransaction();
-            notificationDAO.updateNotificationStatus(notificationId, status);
-            NotificationManagementDAOFactory.commitTransaction();
-        } catch (TransactionManagementException e) {
-            NotificationManagementDAOFactory.rollbackTransaction();
-            throw new NotificationManagementException("Error occurred while updating notification", e);
-        } finally {
-            NotificationManagementDAOFactory.closeConnection();
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Notification id : " + notificationId + " has updated successfully.");
-        }
-        return true;
-    }
+			if (log.isDebugEnabled()) {
+				log.debug("Notification id : " + notificationId +" has updated successfully.");
+			}
+		} catch (TransactionManagementException e) {
+			NotificationManagementDAOFactory.rollbackTransaction();
+			throw new NotificationManagementException("Error occurred while updating notification", e);
+		} finally {
+			NotificationManagementDAOFactory.closeConnection();
+		}
+		return operationStatus;
+	}
 
-    @Override
-    public List<Notification> getAllNotifications() throws NotificationManagementException {
-        try {
-            NotificationManagementDAOFactory.openConnection();
-            return notificationDAO.getAllNotifications(NotificationDAOUtil.getTenantId());
-        } catch (SQLException e) {
-            throw new NotificationManagementException("Error occurred while opening a connection to" +
-                    " the data source", e);
-        } finally {
-            NotificationManagementDAOFactory.closeConnection();
-        }
-    }
+	@Override
+	public List<Notification> getAllNotifications() throws NotificationManagementException{
+	    try {
+			NotificationManagementDAOFactory.openConnection();
+			return notificationDAO.getAllNotifications(NotificationDAOUtil.getTenantId());
+		} catch (SQLException e) {
+			throw new NotificationManagementException("Error occurred while opening a connection to" +
+			                                          " the data source", e);
+		} finally {
+			NotificationManagementDAOFactory.closeConnection();
+		}
+	}
 
-    @Override
-    public List<Notification> getNotificationsByStatus(Notification.Status status)
-            throws NotificationManagementException {
-        try {
-            NotificationManagementDAOFactory.openConnection();
-            return notificationDAO.getNotificationsByStatus(status, NotificationDAOUtil.getTenantId());
-        } catch (SQLException e) {
-            throw new NotificationManagementException("Error occurred while opening a connection " +
-                    "to the data source", e);
-        } finally {
-            NotificationManagementDAOFactory.closeConnection();
-        }
-    }
-
+	@Override
+	public List<Notification> getNotificationsByStatus(Notification.Status status)
+			throws NotificationManagementException{
+		try {
+			NotificationManagementDAOFactory.openConnection();
+			return notificationDAO.getNotificationsByStatus(status, NotificationDAOUtil.getTenantId());
+		} catch (SQLException e) {
+			throw new NotificationManagementException("Error occurred while opening a connection " +
+			                                          "to the data source", e);
+		} finally {
+			NotificationManagementDAOFactory.closeConnection();
+		}
+	}
 }

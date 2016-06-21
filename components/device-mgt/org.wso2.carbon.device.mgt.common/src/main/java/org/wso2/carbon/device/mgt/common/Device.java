@@ -19,8 +19,6 @@ package org.wso2.carbon.device.mgt.common;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.device.mgt.common.app.mgt.Application;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,17 +31,13 @@ public class Device implements Serializable {
     @ApiModelProperty(name = "id", value = "ID of the device in the WSO2 EMM device information database.",
             required = true)
     private int id;
-
     @ApiModelProperty(name = "name", value = "The device name that can be set on the device by the device user.",
             required = true)
     private String name;
-
     @ApiModelProperty(name = "type", value = "The OS type of the device.", required = true)
     private String type;
-
     @ApiModelProperty(name = "description", value = "Additional information on the device.", required = true)
     private String description;
-
     @ApiModelProperty(name = "deviceIdentifier", value = "This is a 64-bit number (as a hex string) that is randomly" +
             " generated when the user first sets up the device and should" +
             " remain constant for the lifetime of the user's device." +
@@ -51,23 +45,12 @@ public class Device implements Serializable {
             "the device.",
             required = true)
     private String deviceIdentifier;
-
     @ApiModelProperty(name = "enrolmentInfo", value = "This defines the device registration related information. " +
             "It is mandatory to define this information.", required = true)
     private EnrolmentInfo enrolmentInfo;
-
     @ApiModelProperty(name = "features", value = "List of features.", required = true)
     private List<Feature> features;
-
     private List<Device.Property> properties;
-
-    @ApiModelProperty(name = "advanceInfo", value = "This defines the device registration related information. " +
-            "It is mandatory to define this information.", required = false)
-    private DeviceInfo deviceInfo;
-
-    @ApiModelProperty(name = "applications", value = "This represents the application list installed into the device",
-    required = false)
-    private List<Application> applications;
 
     public Device() {
     }
@@ -147,22 +130,6 @@ public class Device implements Serializable {
         this.properties = properties;
     }
 
-    public DeviceInfo getDeviceInfo() {
-        return deviceInfo;
-    }
-
-    public void setDeviceInfo(DeviceInfo deviceInfo) {
-        this.deviceInfo = deviceInfo;
-    }
-
-    public List<Application> getApplications() {
-        return applications;
-    }
-
-    public void setApplications(List<Application> applications) {
-        this.applications = applications;
-    }
-
     public static class Property {
 
         private String name;
@@ -187,7 +154,7 @@ public class Device implements Serializable {
 
     @Override
     public String toString() {
-        return "device [" +
+        return "Device[" +
                 "name=" + name + ";" +
                 "type=" + type + ";" +
                 "description=" + description + ";" +

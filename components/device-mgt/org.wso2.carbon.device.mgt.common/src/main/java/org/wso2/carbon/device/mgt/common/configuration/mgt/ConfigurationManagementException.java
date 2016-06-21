@@ -18,19 +18,31 @@
 package org.wso2.carbon.device.mgt.common.configuration.mgt;
 
 public class ConfigurationManagementException extends Exception {
+	private static final long serialVersionUID = -3151279311929070299L;
 
-    private static final long serialVersionUID = -3151279311929070299L;
+	private String errorMessage;
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
 
 	public ConfigurationManagementException(String msg, Exception nestedEx) {
 		super(msg, nestedEx);
+		setErrorMessage(msg);
 	}
 
 	public ConfigurationManagementException(String message, Throwable cause) {
 		super(message, cause);
+		setErrorMessage(message);
 	}
 
 	public ConfigurationManagementException(String msg) {
 		super(msg);
+		setErrorMessage(msg);
 	}
 
 	public ConfigurationManagementException() {
@@ -40,5 +52,4 @@ public class ConfigurationManagementException extends Exception {
 	public ConfigurationManagementException(Throwable cause) {
 		super(cause);
 	}
-
 }

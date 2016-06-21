@@ -49,8 +49,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
-        if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType()) && WebappPublisherConfig.getInstance()
-                .isPublished()) {
+        if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType())) {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
             ServletContext servletContext = context.getServletContext();
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);

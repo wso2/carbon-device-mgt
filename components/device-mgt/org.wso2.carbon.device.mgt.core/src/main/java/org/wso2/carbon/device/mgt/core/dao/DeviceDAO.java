@@ -97,12 +97,13 @@ public interface DeviceDAO {
     /**
      * This method is used to update a given device.
      *
+     * @param typeId   device type id.
      * @param device   device object.
      * @param tenantId tenant id.
      * @return returns the id of updated device.
      * @throws DeviceManagementDAOException
      */
-    boolean updateDevice(Device device, int tenantId) throws DeviceManagementDAOException;
+    boolean updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to remove a device.
@@ -193,8 +194,6 @@ public interface DeviceDAO {
      */
     List<Device> getDevices(String type, int tenantId) throws DeviceManagementDAOException;
 
-    List<Device> getDevices(long timestamp, int tenantId) throws DeviceManagementDAOException;
-
     /**
      * This method is used to retrieve devices of a given user.
      *
@@ -260,8 +259,7 @@ public interface DeviceDAO {
      * @return returns list of devices.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevicesByNameAndType(String deviceName, String type, int tenantId, int offset, int limit)
-                                                                                throws DeviceManagementDAOException;
+    List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve devices of a given device name as a paginated result.

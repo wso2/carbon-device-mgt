@@ -77,9 +77,8 @@ public class MonitoringManagerImpl implements MonitoringManager {
     }
 
     @Override
-    public List<ComplianceFeature> checkPolicyCompliance(
-            DeviceIdentifier deviceIdentifier,
-            Object deviceResponse) throws PolicyComplianceException {
+    public List<ComplianceFeature> checkPolicyCompliance(DeviceIdentifier deviceIdentifier,
+                                                         Object deviceResponse) throws PolicyComplianceException {
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
         try {

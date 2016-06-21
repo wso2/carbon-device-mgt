@@ -17,7 +17,13 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -139,7 +145,7 @@ public interface DeviceManagementProviderService {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      *                                   device list
      */
-    List<Device> getDevicesByNameAndType(String deviceName, String type, int offset, int limit) throws DeviceManagementException;
+    List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
 
     /**
      * This method is used to retrieve list of devices that matches with the given device name with paging information.
@@ -250,9 +256,5 @@ public interface DeviceManagementProviderService {
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException;
-
-    List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
-
-    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
 
 }

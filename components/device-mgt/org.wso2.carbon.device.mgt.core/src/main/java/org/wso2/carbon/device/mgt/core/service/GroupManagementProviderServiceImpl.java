@@ -23,7 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
@@ -41,7 +45,11 @@ import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GroupManagementProviderServiceImpl implements GroupManagementProviderService {
 

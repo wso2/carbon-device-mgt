@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.beans.android;
 
 import com.google.gson.Gson;
+import org.wso2.carbon.device.mgt.jaxrs.api.common.MDMAPIException;
 
 import java.io.Serializable;
 
@@ -27,37 +28,36 @@ import java.io.Serializable;
  */
 public class EnterpriseApplication implements Serializable {
 
-    private String type;
-    private String url;
-    private String appIdentifier;
+	private String type;
+	private String url;
+	private String appIdentifier;
 
-    public String getAppIdentifier() {
-        return appIdentifier;
-    }
+	public String getAppIdentifier() {
+		return appIdentifier;
+	}
 
-    public void setAppIdentifier(String appIdentifier) {
-        this.appIdentifier = appIdentifier;
-    }
+	public void setAppIdentifier(String appIdentifier) {
+		this.appIdentifier = appIdentifier;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public String toJSON() {
+	public String toJSON() throws MDMAPIException {
         Gson gson = new Gson();
         return gson.toJson(this);
-    }
-
+	}
 }

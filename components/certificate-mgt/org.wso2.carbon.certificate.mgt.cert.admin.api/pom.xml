@@ -48,12 +48,8 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/*cxf*.jar</packagingExcludes>
-                    <warName>admin-certificate</warName>
+                    <warName>api#certificate-mgt#v1.0</warName>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
@@ -79,7 +75,7 @@
                                         <copy todir="${basedir}/../../../repository/deployment/server/webapps"
                                               overwrite="true">
                                             <fileset dir="${basedir}/target">
-                                                <include name="admin-certificate.war"/>
+                                                <include name="api#certificate-mgt#v1.0.war"/>
                                             </fileset>
                                         </copy>
                                     </tasks>

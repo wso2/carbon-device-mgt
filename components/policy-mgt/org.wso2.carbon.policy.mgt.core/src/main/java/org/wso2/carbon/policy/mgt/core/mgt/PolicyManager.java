@@ -22,7 +22,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
 
 import java.util.HashMap;
 import java.util.List;

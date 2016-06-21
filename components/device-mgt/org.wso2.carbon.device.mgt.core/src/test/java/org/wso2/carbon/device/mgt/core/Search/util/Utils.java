@@ -34,14 +34,10 @@ public class Utils {
 
         DeviceInfo deviceInfo = new DeviceInfo();
 
-        deviceInfo.setDeviceIdentifier(Utils.getDeviceIdentifier());
-
-        deviceInfo.setDeviceId(1);
         deviceInfo.setIMSI("e6f236ac82537a8e");
         deviceInfo.setSsid("FAFDA");
 
 
-        deviceInfo.setDeviceId(1);
         deviceInfo.setAvailableRAMMemory(1.24);
         deviceInfo.setBatteryLevel(27.3);
         deviceInfo.setConnectionType("GSM");
@@ -96,13 +92,14 @@ public class Utils {
         return deviceLocation;
     }
 
-    private static DeviceIdentifier getDeviceIdentifier(){
+    public static DeviceIdentifier getDeviceIdentifier(){
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
         deviceIdentifier.setType(TestDataHolder.TEST_DEVICE_TYPE);
         deviceIdentifier.setId("12345");
 
         return deviceIdentifier;
     }
+
 }
 
 

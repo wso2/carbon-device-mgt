@@ -26,21 +26,13 @@
 
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
+            <ref bean="certificateServiceBean"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
             <ref bean="errorHandler"/>
             <ref bean="swaggerWriter"/>
-        </jaxrs:providers>
-    </jaxrs:server>
-    <jaxrs:server id="certificateService" address="/certificates">
-        <jaxrs:serviceBeans>
-            <ref bean="certificateServiceBean"/>
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
-            <ref bean="jsonProvider"/>
-            <ref bean="errorHandler"/>
         </jaxrs:providers>
     </jaxrs:server>
 
@@ -51,15 +43,16 @@
         <property name="resourcePackage" value="org.wso2.carbon.certificate.mgt.cert.jaxrs.api"/>
         <property name="version" value="1.0.0"/>
         <property name="host" value="localhost:9443"/>
-        <property name="basePath" value="/"/>
-        <property name="title" value="Device Management Admin Service API Definitions"/>
+        <property name="schemes" value="https" />
+        <property name="basePath" value="/api/certificate-mgt/v1.0"/>
+        <property name="title" value="Certificate Management Admin Service API Definitions"/>
         <property name="contact" value="dev@wso2.org"/>
         <property name="license" value="Apache 2.0"/>
         <property name="licenseUrl" value="http://www.apache.org/licenses/LICENSE-2.0.html"/>
         <property name="scan" value="true"/>
     </bean>
 
-    <bean id="certificateServiceBean" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.impl.CertificateImpl"/>
+    <bean id="certificateServiceBean" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.impl.CertificateManagementAdminServiceImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.common.GsonMessageBodyHandler"/>
     <bean id="errorHandler" class="org.wso2.carbon.certificate.mgt.cert.jaxrs.api.common.ErrorHandler"/>
 

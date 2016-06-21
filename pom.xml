@@ -1506,6 +1506,12 @@
                 <artifactId>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson-annotations.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -1873,6 +1879,7 @@
 
         <!--JWT grant type extension feature-->
         <identity.jwt.extension.version>1.0.2</identity.jwt.extension.version>
+        <jackson-annotations.version>2.7.4</jackson-annotations.version>
     </properties>
 
 </project>

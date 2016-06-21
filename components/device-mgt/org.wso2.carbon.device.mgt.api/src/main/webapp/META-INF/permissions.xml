@@ -29,8 +29,8 @@
 -->
 <PermissionConfiguration>
     <APIVersion></APIVersion>
-    <!-- Device related APIs -->
 
+    <!--Permission Tree Name-->
     <Permission>
         <name>Device Management</name>
         <path>/device-mgt</path>
@@ -142,126 +142,96 @@
         <url>/</url>
         <method>GET</method>
     </Permission>
+    <!--End of Permission Tree-->
 
+    <!-- Activity related APIs -->
+    <Permission>
+        <name>Fetch Activity related details</name>
+        <path>/device-mgt/admin/activities/view</path>
+        <url>/activities/*</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>Fetch Activity related details</name>
+        <path>/device-mgt/admin/activities/view</path>
+        <url>/activities</url>
+        <method>GET</method>
+    </Permission>
+    <!-- Activity related APIs -->
+    <!-- Device related APIs -->
     <Permission>
         <name>List devices</name>
         <path>/device-mgt/admin/devices/list</path>
         <url>/devices</url>
         <method>GET</method>
     </Permission>
-
     <Permission>
         <name>List device types</name>
+        <path>/device-mgt/admin/devices/types</path>
+        <url>/devices/types</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>Retrieve device information</name>
         <path>/device-mgt/admin/devices/list</path>
-        <url>/devices/types</url>
+        <url>/devices/*/*/info</url>
         <method>GET</method>
     </Permission>
-
     <Permission>
-        <name>List device types</name>
-        <path>/device-mgt/user/devices/list</path>
-        <url>/devices/types</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/devices/types</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Add User policy</name>
-        <path>/device-mgt/user/policies/add</path>
-        <url>/devices/types</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Edit policy</name>
-        <path>/device-mgt/admin/policies/update</path>
-        <url>/devices/types</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Edit User policy</name>
-        <path>/device-mgt/user/policies/update</path>
-        <url>/devices/types</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>View device</name>
-        <path>/device-mgt/admin/devices/view</path>
-        <url>/devices/view</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>View user device</name>
-        <path>/device-mgt/user/devices/view</path>
-        <url>/devices/view</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Modify user device</name>
-        <path>/device-mgt/user/devices/update</path>
-        <url>/devices/type/*/id/*</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Remove user device</name>
-        <path>/device-mgt/user/devices/remove</path>
-        <url>/devices/type/*/id/*</url>
-        <method>DELETE</method>
-    </Permission>
-
-    <!--<Permission>-->
-        <!--<name>Get device</name>-->
-        <!--<path>/device-mgt/devices/view</path>-->
-        <!--<url>/devices/*/*</url>-->
-        <!--<method>GET</method>-->
-        <!--<scope>emm_admin,emm_user</scope>-->
-    <!--</Permission>-->
-
-    <Permission>
-        <name>View device</name>
-        <path>/device-mgt/admin/devices/view</path>
-        <url>/devices/user/*/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Devices Count All</name>
+        <name>Get device</name>
         <path>/device-mgt/admin/devices/list</path>
-        <url>/devices/count</url>
+        <url>/devices/*/*</url>
         <method>GET</method>
     </Permission>
-
     <Permission>
-        <name>Device Count</name>
-        <path>/device-mgt/user/devices/list</path>
-        <url>/devices/user/*/count</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List devices</name>
+        <name>Get device location</name>
         <path>/device-mgt/admin/devices/list</path>
-        <url>/devices/name/*/*</url>
+        <url>/devices/*/*/location</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>devices location</name>
+        <path>/device-mgt/admin/devices/list</path>
+        <url>/devices/locations</url>
+        <method>POST</method>
+    </Permission>
+    <Permission>
+        <name>Get devices feature</name>
+        <path>/device-mgt/admin/devices/list</path>
+        <url>/devices/*/*/features</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>Search devices</name>
+        <path>/device-mgt/admin/devices/list</path>
+        <url>/devices/search-devices</url>
+        <method>POST</method>
+    </Permission>
+    <Permission>
+        <name>list device application</name>
+        <path>/device-mgt/admin/devices/list</path>
+        <url>/devices/*/*/applications</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>list device operation</name>
+        <path>/device-mgt/admin/devices/list</path>
+        <url>/devices/*/*/operations</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>list device effective-policy</name>
+        <path>/device-mgt/admin/devices/list</path>
+        <url>/devices/*/*/effective-policy</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>list devices</name>
+        <path>/device-mgt/admin/devices/list</path>
+        <url>/admin/devices</url>
         <method>GET</method>
     </Permission>
 
-    <Permission>
-        <name>List All Own Devices</name>
-        <path>/device-mgt/user/devices/list</path>
-        <url>/devices/user/*</url>
-        <method>GET</method>
-    </Permission>
     <!-- End of Device related APIs -->
 
     <!-- Notification related APIs -->
@@ -372,6 +342,20 @@
         <method>GET</method>
     </Permission>
 
+    <Permission>
+        <name>View device</name>
+        <path>/device-mgt/admin/devices/view</path>
+        <url>/devices/*/*/operations</url>
+        <method>GET</method>
+    </Permission>
+
+    <Permission>
+        <name>View device</name>
+        <path>/device-mgt/user/devices/view</path>
+        <url>/devices/*/*/operations</url>
+        <method>GET</method>
+    </Permission>
+
     <!--<Permission>-->
         <!--<name>Get Applications For Device Type</name>-->
         <!--<path>/device-mgt/operations/application/view</path>-->
@@ -382,34 +366,61 @@
     <!-- End of Operations related APIs -->
 
     <!-- Feature related APIs -->
+    <!--<Permission>-->
+        <!--<name>List policies</name>-->
+        <!--<path>/device-mgt/admin/policies/list</path>-->
+        <!--<url>/features/*</url>-->
+        <!--<method>GET</method>-->
+    <!--</Permission>-->
+
+    <!--<Permission>-->
+        <!--<name>View device</name>-->
+        <!--<path>/device-mgt/admin/devices/view</path>-->
+        <!--<url>/features/*</url>-->
+        <!--<method>GET</method>-->
+    <!--</Permission>-->
+
+    <!--<Permission>-->
+        <!--<name>View device</name>-->
+        <!--<path>/device-mgt/user/devices/view</path>-->
+        <!--<url>/features/*</url>-->
+        <!--<method>GET</method>-->
+    <!--</Permission>-->
+
+    <!--<Permission>-->
+        <!--<name>View device</name>-->
+        <!--<path>/device-mgt/user/devices/view</path>-->
+        <!--<url>/features</url>-->
+        <!--<method>GET</method>      -->
+    <!--</Permission>-->
     <Permission>
         <name>List policies</name>
         <path>/device-mgt/admin/policies/list</path>
-        <url>/features/*</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
         <name>View device</name>
         <path>/device-mgt/admin/devices/view</path>
-        <url>/features/*</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
         <name>View device</name>
         <path>/device-mgt/user/devices/view</path>
-        <url>/features/*</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
     </Permission>
 
     <Permission>
         <name>View device</name>
         <path>/device-mgt/user/devices/view</path>
-        <url>/features</url>
+        <url>/devices/*/*/features</url>
         <method>GET</method>
-        
     </Permission>
+
     <!-- End of Feature related APIs -->
 
     <!-- Role related APIs -->
@@ -444,7 +455,7 @@
     <Permission>
         <name>List roles</name>
         <path>/device-mgt/admin/roles/list</path>
-        <url>/roles/permissions</url>
+        <url>/roles/*/permissions</url>
         <method>GET</method>
     </Permission>
 
@@ -465,22 +476,14 @@
     <Permission>
         <name>Update role</name>
         <path>/device-mgt/admin/roles/update</path>
-        <url>/roles</url>
+        <url>/roles/*</url>
         <method>PUT</method>
     </Permission>
-
-    <!--<Permission>-->
-        <!--<name>Update a specific role</name>-->
-        <!--<path>/device-mgt/roles/update</path>-->
-        <!--<url>/roles/*</url>-->
-        <!--<method>PUT</method>-->
-        <!---->
-    <!--</Permission>-->
 
     <Permission>
         <name>Update role</name>
         <path>/device-mgt/admin/roles/update</path>
-        <url>/roles/users</url>
+        <url>/roles/*/users</url>
         <method>PUT</method>
     </Permission>
 
@@ -494,7 +497,7 @@
     <Permission>
         <name>Remove role</name>
         <path>/device-mgt/admin/roles/remove</path>
-        <url>/roles</url>
+        <url>/roles/*</url>
         <method>DELETE</method>
     </Permission>
 
@@ -513,334 +516,100 @@
         <url>/users</url>
         <method>GET</method>
     </Permission>
-
+    <Permission>
+        <name>List users</name>
+        <path>/device-mgt/admin/users/list</path>
+        <url>/users/search/usernames</url>
+        <method>GET</method>
+    </Permission>
     <Permission>
         <name>Add user</name>
         <path>/device-mgt/admin/users/add</path>
         <url>/users</url>
         <method>POST</method>
     </Permission>
-
-    <Permission>
-        <name>View user</name>
-        <path>/device-mgt/admin/users/view</path>
-        <url>/users/view</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Update user</name>
-        <path>/device-mgt/admin/users/update</path>
-        <url>/users</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Change user password</name>
-        <path>/login</path>
-        <url>/users/change-password</url>
-        <method>POST</method>
-    </Permission>
-
-    <Permission>
-        <name>Reset password</name>
-        <path>/device-mgt/admin/users/password-reset</path>
-        <url>/users/reset-password</url>
-        <method>POST</method>
-    </Permission>
-
     <Permission>
         <name>Remove user</name>
         <path>/device-mgt/admin/users/remove</path>
-        <url>/users</url>
+        <url>/users/*</url>
         <method>DELETE</method>
     </Permission>
-
     <Permission>
         <name>View user</name>
         <path>/device-mgt/admin/users/view</path>
-        <url>/users/roles</url>
+        <url>/users/*</url>
         <method>GET</method>
     </Permission>
-
-    <!--<Permission>-->
-        <!--<name>Get user roles by name</name>-->
-        <!--<path>/device-mgt/admin/users/view</path>-->
-        <!--<url>/roles</url>-->
-        <!--<method>GET</method>-->
-    <!--</Permission>-->
-
     <Permission>
-        <name>Add user</name>
-        <path>/device-mgt/admin/users/add</path>
-        <url>/roles</url>
-        <method>POST</method>
+        <name>Update user</name>
+        <path>/device-mgt/admin/users/update</path>
+        <url>/users/*</url>
+        <method>PUT</method>
     </Permission>
-
     <Permission>
-        <name>List user devices</name>
-        <path>/device-mgt/user/devices/list</path>
-        <url>/users/devices</url>
-        <method>GET</method>
+        <name>Update user credential</name>
+        <path>/device-mgt/admin/users/update</path>
+        <url>/users/*/credentials</url>
+        <method>PUT</method>
     </Permission>
-
     <Permission>
-        <name>View user</name>
-        <path>/device-mgt/admin/users/view</path>
-        <url>/users/*/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List users</name>
-        <path>/device-mgt/admin/users/list</path>
-        <url>/users/count</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List users</name>
-        <path>/device-mgt/admin/users/list</path>
-        <url>/users/view-users</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Add role</name>
+        <name>Get role</name>
         <path>/device-mgt/admin/roles/add</path>
-        <url>/users/view-users</url>
+        <url>/users/*/roles</url>
         <method>GET</method>
     </Permission>
-
     <Permission>
-        <name>Update role</name>
-        <path>/device-mgt/admin/roles/update</path>
-        <url>/users/view-users</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/users/view-users</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Update policy</name>
-        <path>/device-mgt/admin/policies/update</path>
-        <url>/users/view-users</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List users</name>
-        <path>/device-mgt/admin/users/list</path>
-        <url>/users/users-by-username</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List users</name>
-        <path>/device-mgt/admin/users/list</path>
-        <url>/users/users-by-username/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Invite user</name>
-        <path>/device-mgt/admin/users/invite</path>
-        <url>/users/email-invitation</url>
+        <name>Update user credential</name>
+        <path>/device-mgt/admin/users/update</path>
+        <url>/admin/users/*/credentials</url>
         <method>POST</method>
     </Permission>
 
-    <Permission>
-        <name>Authorize user</name>
-        <path>/login</path>
-        <url>/users/authorize</url>
-        <method>POST</method>
-    </Permission>
+
     <!-- End of User related APIs -->
 
     <!-- Policy related APIs -->
     <Permission>
-        <name>Add Policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/policies/inactive-policy</url>
-        <method>POST</method>
+        <name>List policies</name>
+        <path>/device-mgt/admin/policies/list</path>
+        <url>/policies</url>
+        <method>GET</method>
     </Permission>
     <Permission>
         <name>Add Policy</name>
+        <path>/device-mgt/admin/policies/add</path>
+        <url>/policies</url>
+        <method>POST</method>
+    </Permission>
+    <Permission>
+        <name>Activate policy</name>
+        <path>/device-mgt/admin/policies/add</path>
+        <url>/policies/activate-policy</url>
+        <method>PUT</method>
+    </Permission>
+    <Permission>
+        <name>Deactivate Policy</name>
         <path>/device-mgt/user/policies/add</path>
-        <url>/policies/inactive-policy</url>
-        <method>POST</method>
+        <url>/policies/deactivate-policy</url>
+        <method>PUT</method>
     </Permission>
-
     <Permission>
-        <name>List policies</name>
-        <path>/device-mgt/admin/policies/list</path>
-        <url>/policies/*/*</url>
-        <method>POST</method>
-    </Permission>
-
-    <Permission>
-        <name>List policies</name>
-        <path>/device-mgt/admin/policies/list</path>
-        <url>/policies/*/*/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>View device</name>
-        <path>/device-mgt/admin/devices/view</path>
-        <url>/policies/*/*/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>View device</name>
-        <path>/device-mgt/user/devices/view</path>
-        <url>/policies/*/*/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/policies/active-policy</url>
+        <name>Remove Policy</name>
+        <path>/device-mgt/user/policies/remove</path>
+        <url>/policies/remove-policy</url>
         <method>POST</method>
     </Permission>
     <Permission>
-        <name>Add Policy</name>
-        <path>/device-mgt/user/policies/add</path>
-        <url>/policies/inactive-policy</url>
-        <method>POST</method>
-    </Permission>
-
-    <Permission>
-        <name>Remove policy</name>
-        <path>/device-mgt/admin/policies/remove</path>
-        <url>/policies/bulk-remove</url>
-        <method>POST</method>
-    </Permission>
-
-    <Permission>
-        <name>List policies</name>
-        <path>/device-mgt/admin/policies/list</path>
-        <url>/policies</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List policies</name>
-        <path>/device-mgt/admin/policies/list</path>
+        <name>View Policy</name>
+        <path>/device-mgt/admin/policies/view</path>
         <url>/policies/*</url>
         <method>GET</method>
     </Permission>
-
     <Permission>
-        <name>List user policies</name>
-        <path>/device-mgt/user/policies/list</path>
-        <url>/policies</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List user policies</name>
-        <path>/device-mgt/user/policies/list</path>
-        <url>/policies/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Update policy</name>
+        <name>Update Policy</name>
         <path>/device-mgt/admin/policies/update</path>
         <url>/policies/*</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Remove policy</name>
-        <path>/device-mgt/admin/policies/remove</path>
-        <url>/policies</url>
-        <method>DELETE</method>
-    </Permission>
-
-    <Permission>
-        <name>List policies</name>
-        <path>/device-mgt/admin/policies/list</path>
-        <url>/policies/count</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Edit policy</name>
-        <path>/device-mgt/admin/policies/update</path>
-        <url>/policies/priorities</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Edit policy</name>
-        <path>/device-mgt/admin/policies/update</path>
-        <url>/policies/activate</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/policies/activate</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Edit policy</name>
-        <path>/device-mgt/admin/policies/update</path>
-        <url>/policies/inactivate</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/policies/inactivate</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Edit policy</name>
-        <path>/device-mgt/admin/policies/update</path>
-        <url>/policies/apply-changes</url>
-        <method>PUT</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/policies/start-task/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/policies/update-task/*</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>Add policy</name>
-        <path>/device-mgt/admin/policies/add</path>
-        <url>/policies/stop-task</url>
-        <method>GET</method>
-    </Permission>
-
-    <Permission>
-        <name>List policies</name>
-        <path>/device-mgt/admin/policies/list</path>
-        <url>/policies/*/*</url>
-        <method>GET</method>
+        <method>Put</method>
     </Permission>
     <!-- End of Policy related APIs -->
 
@@ -877,9 +646,9 @@
     </Permission>
 
     <Permission>
-        <name>Device Information</name>
+        <name>Get additional information of devices</name>
         <path>/device-mgt/admin/information/list</path>
-        <url>/information/list</url>
+        <url>/devices/get-info</url>
         <method>POST</method>
     </Permission>
 
@@ -923,14 +692,6 @@
         <url>/configuration</url>
         <method>GET</method>
     </Permission>
-
-    <Permission>
-        <name>Add configuration</name>
-        <path>/device-mgt/admin/platform-configs/add</path>
-        <url>/configuration</url>
-        <method>POST</method>
-    </Permission>
-
     <Permission>
         <name>Update configuration</name>
         <path>/device-mgt/admin/platform-configs/modify</path>
@@ -1220,5 +981,4 @@
         <method>GET</method>
     </Permission>
     <!-- End of Dashboard related APIs -->
-
 </PermissionConfiguration>

@@ -40,7 +40,7 @@ public class DeviceWrapper {
     private DeviceInfo deviceInfo;
     @ApiModelProperty(name = "deviceLocation", value = "Device's current location", required = true)
     private DeviceLocation deviceLocation;
-
+    @ApiModelProperty(name = "applications", value = "Application list of devices", required = true)
     private List<Application> applications;
 
     public Device getDevice() {

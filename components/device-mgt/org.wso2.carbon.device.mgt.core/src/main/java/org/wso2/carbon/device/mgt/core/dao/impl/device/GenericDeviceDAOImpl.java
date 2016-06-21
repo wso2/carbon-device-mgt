@@ -25,11 +25,9 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.impl.AbstractDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,6 +52,8 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
         boolean isStatusProvided = false;
+        Date since = request.getSince();
+        boolean isSinceProvided = false;
         try {
             conn = this.getConnection();
             String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
@@ -71,6 +71,12 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             if (deviceName != null && !deviceName.isEmpty()) {
                 sql = sql + " AND d.NAME LIKE ?";
                 isDeviceNameProvided = true;
+            }
+
+            //Add query for last updated timestamp
+            if (since != null) {
+                sql = sql + " AND d.LAST_UPDATED_TIMESTAMP > ?";
+                isSinceProvided = true;
             }
 
             sql = sql + ") d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
@@ -101,6 +107,9 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             }
             if (isDeviceNameProvided) {
                 stmt.setString(paramIdx++, request.getDeviceName() + "%");
+            }
+            if (isSinceProvided) {
+                stmt.setTimestamp(paramIdx++, new Timestamp(since.getTime()));
             }
             stmt.setInt(paramIdx++, tenantId);
             if (isOwnershipProvided) {
@@ -299,6 +308,71 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
                                                    "'" + request.getStatus() + "'", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return devices;
+    }
+
+    /**
+     * Get the list of devices that matches with the given device name and (or) device type.
+     *
+     * @param deviceName Name of the device.
+     * @param tenantId   Id of the current tenant
+     * @return device list
+     * @throws DeviceManagementDAOException
+     */
+    @Override
+    public List<Device> getDevicesByNameAndType(String deviceName, String type, int tenantId, int offset, int limit)
+            throws DeviceManagementDAOException {
+
+        String filteringString = "";
+        if (deviceName != null && !deviceName.isEmpty()) {
+            filteringString = filteringString + " AND d.NAME LIKE ?";
+        }
+
+        if (type != null && !type.isEmpty()) {
+            filteringString = filteringString + " AND t.NAME = ?";
+        }
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        List<Device> devices = new ArrayList<>();
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
+                    "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
+                    "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, " +
+                    "d.DESCRIPTION, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
+                    "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?" + filteringString +
+                    ") d1 WHERE d1.ID = e.DEVICE_ID LIMIT ?, ?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+
+            int i = 1;
+
+            if (deviceName != null && !deviceName.isEmpty()) {
+                stmt.setString(++i, deviceName + "%");
+            }
+
+            if (type != null && !type.isEmpty()) {
+                stmt.setString(++i, type);
+            }
+
+            stmt.setInt(++i, offset);
+            stmt.setInt(++i, limit);
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while fetching the list of devices corresponding" +
+            "to the mentioned filtering criteria", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return devices;
     }

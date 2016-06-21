@@ -78,7 +78,7 @@ public class Condition {
                       required = true)
     public String operator;
 
-    @ApiModelProperty(name = "conditions", value = "There can be many search options as shown in the sample JSON " +
+    @ApiModelProperty(name = "state", value = "There can be many search options as shown in the sample JSON " +
                                                    "definition. The field that connects the independent search " +
                                                    "options, is known as state.\n" +
                                                    "The following values can be assigned to state.\n" +

@@ -18,10 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.push.notification.mgt;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -58,7 +55,8 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     }
 
     @Override
-    public List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException {
+    public List<? extends Operation> getOperations(
+            DeviceIdentifier deviceId) throws OperationManagementException {
         return this.operationManager.getOperations(deviceId);
     }
 
@@ -126,6 +124,16 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     @Override
     public List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException {
         return this.operationManager.getActivitiesUpdatedAfter(timestamp);
+    }
+
+    @Override
+    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException {
+        return this.operationManager.getActivitiesUpdatedAfter(timestamp, limit, offset);
+    }
+
+    @Override
+    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
+        return this.operationManager.getActivityCountUpdatedAfter(timestamp);
     }
 
 }

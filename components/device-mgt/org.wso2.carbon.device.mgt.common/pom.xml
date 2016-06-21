@@ -49,6 +49,7 @@
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind.annotation,
+                            com.fasterxml.jackson.annotation,
                             io.swagger.annotations.*;resolution:=optional
                         </Import-Package>
                     </instructions>
@@ -62,6 +63,10 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
     </dependencies>
 

@@ -60,7 +60,7 @@ public class SearchDAOImpl implements SearchDAO {
             stmt = conn.prepareStatement(query);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                if(!devs.containsKey(rs.getInt("ID"))) {
+                if (!devs.containsKey(rs.getInt("ID"))) {
                     Device device = new Device();
                     device.setId(rs.getInt("ID"));
                     device.setDescription(rs.getString("DESCRIPTION"));
@@ -73,7 +73,6 @@ public class SearchDAOImpl implements SearchDAO {
                     identifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
 
                     DeviceInfo deviceInfo = new DeviceInfo();
-                    deviceInfo.setDeviceId(rs.getInt("ID"));
                     deviceInfo.setAvailableRAMMemory(rs.getDouble("AVAILABLE_RAM_MEMORY"));
                     deviceInfo.setBatteryLevel(rs.getDouble("BATTERY_LEVEL"));
                     deviceInfo.setConnectionType(rs.getString("CONNECTION_TYPE"));
@@ -143,7 +142,7 @@ public class SearchDAOImpl implements SearchDAO {
             stmt = conn.prepareStatement(query);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                if(!devs.containsKey(rs.getInt("ID"))) {
+                if (!devs.containsKey(rs.getInt("ID"))) {
                     Device device = new Device();
                     device.setId(rs.getInt("ID"));
                     device.setDescription(rs.getString("DESCRIPTION"));
@@ -156,7 +155,6 @@ public class SearchDAOImpl implements SearchDAO {
                     identifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
 
                     DeviceInfo deviceInfo = new DeviceInfo();
-                    deviceInfo.setDeviceId(rs.getInt("ID"));
                     deviceInfo.setAvailableRAMMemory(rs.getDouble("AVAILABLE_RAM_MEMORY"));
                     deviceInfo.setBatteryLevel(rs.getDouble("BATTERY_LEVEL"));
                     deviceInfo.setConnectionType(rs.getString("CONNECTION_TYPE"));
@@ -230,7 +228,8 @@ public class SearchDAOImpl implements SearchDAO {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (?) ORDER BY DEVICE_ID ;";
             stmt = conn.prepareStatement(query);
-            if (conn.getMetaData().getDatabaseProductName().contains("H2")) {
+            if (conn.getMetaData().getDatabaseProductName().contains("H2") ||
+                    conn.getMetaData().getDatabaseProductName().contains("MySQL")) {
                 String inData = Utils.getDeviceIdsAsString(devices);
                 stmt.setString(1, inData);
             } else {
@@ -239,22 +238,13 @@ public class SearchDAOImpl implements SearchDAO {
             }
             rs = stmt.executeQuery();
 
-            int deviceId = 0;
+            DeviceInfo dInfo;
             while (rs.next()) {
-                DeviceInfo dInfo = new DeviceInfo();
-
-                if (deviceId != rs.getInt("DEVICE_ID")) {
-                    deviceId = rs.getInt("DEVICE_ID");
-                    dInfo = this.getDeviceInfo(devices, deviceId);
-                    if (dInfo != null) {
-                        dInfo.getDeviceDetailsMap().put(rs.getString("KEY_FIELD"), rs.getString("VALUE_FIELD"));
-                    }
-                } else {
-                    dInfo.getDeviceDetailsMap().put(rs.getString("KEY_FIELD"), rs.getString("VALUE_FIELD"));
-                }
+                dInfo = this.getDeviceInfo(devices, rs.getInt("DEVICE_ID"));
+                dInfo.getDeviceDetailsMap().put(rs.getString("KEY_FIELD"), rs.getString("VALUE_FIELD"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SearchDAOException("Error occurred while retrieving the device properties.", e);
         }
         return devices;
     }
@@ -263,6 +253,9 @@ public class SearchDAOImpl implements SearchDAO {
 
         for (DeviceWrapper dw : devices) {
             if (dw.getDevice().getId() == deviceId) {
+                if (dw.getDeviceInfo() == null) {
+                    dw.setDeviceInfo(new DeviceInfo());
+                }
                 return dw.getDeviceInfo();
             }
         }

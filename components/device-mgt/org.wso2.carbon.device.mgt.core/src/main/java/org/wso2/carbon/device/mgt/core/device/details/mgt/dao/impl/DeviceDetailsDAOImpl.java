@@ -40,7 +40,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
     private static Log log = LogFactory.getLog(DeviceDetailsDAOImpl.class);
 
     @Override
-    public void addDeviceInformation(DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException {
+    public void addDeviceInformation(int deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
@@ -53,7 +53,7 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
                     "SSID, CPU_USAGE, TOTAL_RAM_MEMORY, AVAILABLE_RAM_MEMORY, PLUGGED_IN, UPDATE_TIMESTAMP) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-            stmt.setInt(1, deviceInfo.getDeviceId());
+            stmt.setInt(1, deviceId);
             stmt.setString(2, deviceInfo.getDeviceModel());
             stmt.setString(3, deviceInfo.getVendor());
             stmt.setString(4, deviceInfo.getOsVersion());
@@ -112,21 +112,20 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
 
     @Override
     public DeviceInfo getDeviceInformation(int deviceId) throws DeviceDetailsMgtDAOException {
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        DeviceInfo deviceInfo = new DeviceInfo();
+        DeviceInfo deviceInfo = null;
         try {
             conn = this.getConnection();
 
-            String sql = "SELECT * FROM  DM_DEVICE_DETAIL WHERE DEVICE_ID = ?";
+            String sql = "SELECT * FROM DM_DEVICE_DETAIL WHERE DEVICE_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
             rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                deviceInfo.setDeviceId(rs.getInt("DEVICE_ID"));
+            if (rs.next()) {
+                deviceInfo = new DeviceInfo();
 //                deviceInfo.setIMEI(rs.getString("IMEI"));
 //                deviceInfo.setIMSI(rs.getString("IMSI"));
                 deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
@@ -148,7 +147,6 @@ public class DeviceDetailsDAOImpl implements DeviceDetailsDAO {
                 deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
             }
 
-            deviceInfo.setDeviceId(deviceId);
             return deviceInfo;
         } catch (SQLException e) {
             throw new DeviceDetailsMgtDAOException("Error occurred while fetching the details of the registered devices.", e);

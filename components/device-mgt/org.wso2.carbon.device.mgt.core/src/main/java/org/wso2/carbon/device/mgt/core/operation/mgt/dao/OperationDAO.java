@@ -54,7 +54,7 @@ public interface OperationDAO {
 
     Operation getNextOperation(int enrolmentId) throws OperationManagementDAOException;
 
-    void updateOperationStatus(int enrolmentId, int operationId,Operation.Status status)
+    boolean updateOperationStatus(int enrolmentId, int operationId,Operation.Status status)
             throws OperationManagementDAOException;
 
     void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode, Operation.Status existingStatus,
@@ -72,5 +72,9 @@ public interface OperationDAO {
     List<Operation> getOperationsUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;
+
+    int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
 }

@@ -117,7 +117,8 @@ public class PolicyManagementService implements PolicyManagerService {
     }
 
     @Override
-    public Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+    public Policy getAppliedPolicyToDevice(
+            DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         return policyManagerService.getAppliedPolicyToDevice(deviceIdentifier);
     }
 

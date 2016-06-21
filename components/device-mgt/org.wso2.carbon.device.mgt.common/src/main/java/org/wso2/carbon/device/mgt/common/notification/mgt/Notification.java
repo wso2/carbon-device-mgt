@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.common.notification.mgt;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -29,79 +30,74 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 @ApiModel(value = "Notification", description = "This is used to communicate Operation notifications to MDM.")
 public class Notification {
 
-	public enum Status{
-		NEW, CHECKED
-	}
+    public enum Status {
+        NEW, CHECKED
+    }
 
-	public enum Type{
-		ALERT,
-	}
+    public enum Type {
+        ALERT
+    }
 
-    @ApiModelProperty(name = "notificationId", value = "Defines the notification ID.", required = true )
-	private int notificationId;
-    @ApiModelProperty(name = "deviceIdentifier", value = "Defines the device identification properties.",
-                      required = true )
-	private DeviceIdentifier deviceIdentifier;
+    @JsonProperty(value = "id", required = false)
+    @ApiModelProperty(name = "id", value = "Defines the notification ID.", required = false)
+    private int id;
+
+    @JsonProperty(value = "description", required = false)
     @ApiModelProperty(name = "description", value = "Provides the message you want to send to the user.",
-                      required = true )
-	private String description;
-    @ApiModelProperty(name = "operationId", value = "Provides the operationID.", required = true )
-	private int operationId;
+            required = true)
+    private String description;
+
+    @JsonProperty(value = "operationId", required = true)
+    @ApiModelProperty(name = "operationId", value = "Provides the operationID.", required = true)
+    private int operationId;
+
+    @JsonProperty(value = "status", required = true)
     @ApiModelProperty(name = "status", value = "Provides the status of the message." +
-                                               "The following values can be assigned for the status.\n" +
-                                               "NEW: The message is in the unread state.\n" +
-                                               "CHECKED: The message is in the read state.", required = true )
-	private Status status;
+            "The following values can be assigned for the status.\n" +
+            "NEW: The message is in the unread state.\n" +
+            "CHECKED: The message is in the read state.", required = true)
+    private Status status;
 
-	public Status getStatus() {
-		return status;
-	}
+    public Status getStatus() {
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = Status.valueOf(status);
-	}
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
+    }
 
-	public int getNotificationId() {
-		return notificationId;
-	}
+    public int getNotificationId() {
+        return id;
+    }
 
-	public void setNotificationId(int notificationId) {
-		this.notificationId = notificationId;
-	}
+    public void setNotificationId(int id) {
+        this.id = id;
+    }
 
-	public DeviceIdentifier getDeviceIdentifier() {
-		return deviceIdentifier;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDeviceIdentifier(DeviceIdentifier deviceIdentifier) {
-		this.deviceIdentifier = deviceIdentifier;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public int getOperationId() {
+        return operationId;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setOperationId(int operationId) {
+        this.operationId = operationId;
+    }
 
-	public int getOperationId() {
-		return operationId;
-	}
+    @Override
+    public String toString() {
+        return "notification {" +
+                "  id='" + id + '\'' +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                ", operationId='" + operationId + '\'' +
+                '}';
+    }
 
-	public void setOperationId(int operationId) {
-		this.operationId = operationId;
-	}
-
-	@Override
-	public String toString() {
-		return "Notification{" +
-		       "notificationId='" + notificationId + '\'' +
-		       ", deviceId=" + deviceIdentifier.getId() +
-		       ", deviceType=" + deviceIdentifier.getType() +
-		       ", status=" + status +
-		       ", description='" + description + '\'' +
-		       ", operationId='" + operationId + '\'' +
-		       '}';
-	}
 }

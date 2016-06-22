@@ -27,17 +27,17 @@ import java.util.List;
 
 @ApiModel(value = "List of users", description = "This contains a set of users that matches a given " +
         "criteria as a collection")
-public class UserList extends BasePaginatedResult {
+public class UserInfoList extends BasePaginatedResult {
 
-    private List<UserWrapper> users = new ArrayList<>();
+    private List<UserInfo> users = new ArrayList<>();
 
     @ApiModelProperty(value = "List of devices returned")
     @JsonProperty("users")
-    public List<UserWrapper> getList() {
+    public List<UserInfo> getList() {
         return users;
     }
 
-    public void setList(List<UserWrapper> users) {
+    public void setList(List<UserInfo> users) {
         this.users = users;
     }
 
@@ -53,6 +53,5 @@ public class UserList extends BasePaginatedResult {
         sb.append("]}\n");
         return sb.toString();
     }
-
 
 }

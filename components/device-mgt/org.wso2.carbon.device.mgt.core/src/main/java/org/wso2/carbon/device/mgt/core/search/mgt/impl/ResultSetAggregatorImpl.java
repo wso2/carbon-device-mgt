@@ -19,23 +19,26 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.core.search.mgt.Constants;
 import org.wso2.carbon.device.mgt.core.search.mgt.ResultSetAggregator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ResultSetAggregatorImpl implements ResultSetAggregator {
 
     @Override
-    public List<DeviceWrapper> aggregate(Map<String, List<DeviceWrapper>> deviceWrappers) {
+    public List<Device> aggregate(Map<String, List<Device>> devices) {
 
-        Map<Integer, DeviceWrapper> generalQueryMap = this.convertToMap(deviceWrappers.get(Constants.GENERAL));
-        Map<Integer, DeviceWrapper> andMap = this.convertToMap(deviceWrappers.get(Constants.PROP_AND));
-        Map<Integer, DeviceWrapper> orMap = this.convertToMap(deviceWrappers.get(Constants.PROP_OR));
-        Map<Integer, DeviceWrapper> locationMap = this.convertToMap(deviceWrappers.get(Constants.LOCATION));
-        Map<Integer, DeviceWrapper> finalMap = new HashMap<>();
-        List<DeviceWrapper> finalResult = new ArrayList<>();
+        Map<Integer, Device> generalQueryMap = this.convertToMap(devices.get(Constants.GENERAL));
+        Map<Integer, Device> andMap = this.convertToMap(devices.get(Constants.PROP_AND));
+        Map<Integer, Device> orMap = this.convertToMap(devices.get(Constants.PROP_OR));
+        Map<Integer, Device> locationMap = this.convertToMap(devices.get(Constants.LOCATION));
+        Map<Integer, Device> finalMap = new HashMap<>();
+        List<Device> finalResult = new ArrayList<>();
 
         if (andMap.isEmpty()) {
             finalMap = generalQueryMap;
@@ -70,24 +73,23 @@ public class ResultSetAggregatorImpl implements ResultSetAggregator {
         return finalResult;
     }
 
-    private Map<Integer, DeviceWrapper> convertToMap(List<DeviceWrapper> deviceWrappers) {
-
-        if (deviceWrappers == null) {
+    private Map<Integer, Device> convertToMap(List<Device> devices) {
+        if (devices == null) {
             return null;
         }
-        Map<Integer, DeviceWrapper> deviceWrapperMap = new HashMap<>();
-        for (DeviceWrapper dw : deviceWrappers) {
-            deviceWrapperMap.put(dw.getDevice().getId(), dw);
+        Map<Integer, Device> deviceWrapperMap = new HashMap<>();
+        for (Device device : devices) {
+            deviceWrapperMap.put(device.getId(), device);
         }
         return deviceWrapperMap;
     }
 
-    private List<DeviceWrapper> convertDeviceMapToList(Map<Integer, DeviceWrapper> map) {
-        List<DeviceWrapper> list = new ArrayList<>();
-
+    private List<Device> convertDeviceMapToList(Map<Integer, Device> map) {
+        List<Device> list = new ArrayList<>();
         for (Integer a : map.keySet()) {
             list.add(map.get(a));
         }
         return list;
     }
+
 }

@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
@@ -77,6 +76,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             PaginationRequest request = new PaginationRequest(offset, limit);
             PaginationResult result;
+            DeviceList devices = new DeviceList();
 
             if (type != null) {
                 request.setDeviceType(type);
@@ -129,13 +129,10 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 result = dms.getAllDevices(request);
                 int resultCount = result.getRecordsTotal();
                 if (resultCount == 0) {
-                    throw new NotFoundException(
-                            new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No device is currently" +
-                                    " enrolled with the server").build());
+                    Response.status(Response.Status.OK).entity(devices).build();
                 }
             }
 
-            DeviceList devices = new DeviceList();
             devices.setList((List<Device>) result.getData());
             devices.setCount(result.getRecordsTotal());
             return Response.status(Response.Status.OK).entity(devices).build();
@@ -210,7 +207,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     public Response searchDevices(@QueryParam("offset") int offset,
                                   @QueryParam("limit") int limit, SearchContext searchContext) {
         SearchManagerService searchManagerService;
-        List<DeviceWrapper> devices;
+        List<Device> devices;
+        DeviceList deviceList = new DeviceList();
         try {
             searchManagerService = DeviceMgtAPIUtils.getSearchManagerService();
             devices = searchManagerService.search(searchContext);
@@ -221,11 +219,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
         if (devices == null || devices.size() == 0) {
-            throw new NotFoundException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("It is likely that no device is found upon " +
-                            "the provided search filters").build());
+            Response.status(Response.Status.OK).entity(deviceList);
         }
-        return Response.status(Response.Status.OK).entity(devices).build();
+
+        deviceList.setList(devices);
+        return Response.status(Response.Status.OK).entity(deviceList).build();
     }
 
     @GET

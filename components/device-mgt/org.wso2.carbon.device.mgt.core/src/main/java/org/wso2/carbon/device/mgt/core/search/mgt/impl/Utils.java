@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.common.Device;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,22 +65,23 @@ public class Utils {
         boolean bool = false;
 
         switch (column) {
-            case  "deviceModel":
+            case "deviceModel":
                 bool = true;
                 break;
-            case  "vendor":
+            case "vendor":
                 bool = true;
                 break;
-            case  "osVersion":
+            case "osVersion":
                 bool = true;
                 break;
-            case  "connectionType":
+            case "connectionType":
                 bool = true;
                 break;
-            case  "ssid":
+            case "ssid":
                 bool = true;
                 break;
-            default: bool =false;
+            default:
+                bool = false;
                 break;
         }
 
@@ -89,9 +90,9 @@ public class Utils {
 
     public static String getConvertedValue(String column, String value) {
 
-        if(checkColumnType(column)){
-            return  "\'" + value + "\'";
-        } else  return value;
+        if (checkColumnType(column)) {
+            return "\'" + value + "\'";
+        } else return value;
 
     }
 
@@ -130,28 +131,28 @@ public class Utils {
         return stList;
     }
 
-    public static Integer[] getArrayOfDeviceIds(List<DeviceWrapper> deviceWrappers) {
-
-        Integer[] arr = new Integer[deviceWrappers.size()];
+    public static Integer[] getArrayOfDeviceIds(List<Device> devices) {
+        Integer[] arr = new Integer[devices.size()];
         int x = 0;
-        for (DeviceWrapper dw : deviceWrappers) {
-            arr[x] = dw.getDevice().getId();
+        for (Device device : devices) {
+            arr[x] = device.getId();
             x++;
         }
         return arr;
     }
 
 
-    public static String getDeviceIdsAsString(List<DeviceWrapper> deviceWrappers) {
+    public static String getDeviceIdsAsString(List<Device> devices) {
 
         String str = "";
-        for (DeviceWrapper dw : deviceWrappers) {
-            str += dw.getDevice().getId() + ",";
+        for (Device device : devices) {
+            str += device.getId() + ",";
         }
-        if (deviceWrappers.isEmpty()) {
+        if (devices.isEmpty()) {
             return null;
         }
         return str.substring(0, str.length() - 1);
     }
+
 }
 

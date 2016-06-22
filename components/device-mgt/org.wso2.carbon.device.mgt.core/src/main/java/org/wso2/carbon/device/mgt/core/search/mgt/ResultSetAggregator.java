@@ -19,13 +19,13 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt;
 
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.common.Device;
 
 import java.util.List;
 import java.util.Map;
 
 public interface ResultSetAggregator {
 
-    List<DeviceWrapper> aggregate(Map<String, List<DeviceWrapper>> deviceWrappers);
+    List<Device> aggregate(Map<String, List<Device>> devices);
 
 }

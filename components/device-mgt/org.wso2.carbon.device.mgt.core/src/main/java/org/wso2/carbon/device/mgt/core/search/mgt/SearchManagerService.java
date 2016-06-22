@@ -19,15 +19,15 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt;
 
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 
 import java.util.List;
 
 public interface SearchManagerService {
 
-    List<DeviceWrapper> search(SearchContext searchContext) throws SearchMgtException;
+    List<Device> search(SearchContext searchContext) throws SearchMgtException;
 
-    List<DeviceWrapper> getUpdated(long epochTime) throws SearchMgtException;
+    List<Device> getUpdated(long epochTime) throws SearchMgtException;
 }
 

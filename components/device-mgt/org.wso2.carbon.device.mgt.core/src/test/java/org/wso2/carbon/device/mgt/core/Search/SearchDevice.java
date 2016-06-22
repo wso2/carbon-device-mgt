@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.search.Condition;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -79,22 +79,22 @@ public class SearchDevice extends BaseDeviceManagementTest {
         context.setConditions(conditions);
 
         SearchManagerService service = new SearchManagerServiceImpl();
-        List<DeviceWrapper> deviceWrappers = service.search(context);
+        List<Device> devices = service.search(context);
 
         Gson gson = new Gson();
-        String bbbb = gson.toJson(deviceWrappers);
+        String bbbb = gson.toJson(devices);
         log.info(bbbb);
 
 
-        for (DeviceWrapper dw : deviceWrappers) {
-            log.debug(dw.getDevice().getDescription());
-            log.debug(dw.getDevice().getDeviceIdentifier());
+        for (Device device : devices) {
+            log.debug(device.getDescription());
+            log.debug(device.getDeviceIdentifier());
         }
 
     }
 
     @Test
-    public void doValidLocationSearch()  throws Exception{
+    public void doValidLocationSearch() throws Exception {
 
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
@@ -109,21 +109,21 @@ public class SearchDevice extends BaseDeviceManagementTest {
         context.setConditions(conditions);
 
         SearchManagerService service = new SearchManagerServiceImpl();
-        List<DeviceWrapper> deviceWrappers = service.search(context);
+        List<Device> devices = service.search(context);
 
         Gson gson = new Gson();
-        String bbbb = gson.toJson(deviceWrappers);
+        String bbbb = gson.toJson(devices);
         log.info("Valid Search " + bbbb);
 
 
-        for (DeviceWrapper dw : deviceWrappers) {
-            log.debug(dw.getDevice().getDescription());
-            log.debug(dw.getDevice().getDeviceIdentifier());
+        for (Device device : devices) {
+            log.debug(device.getDescription());
+            log.debug(device.getDeviceIdentifier());
         }
     }
 
     @Test
-    public void doInvalidLocationSearch()  throws Exception{
+    public void doInvalidLocationSearch() throws Exception {
 
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
@@ -138,21 +138,21 @@ public class SearchDevice extends BaseDeviceManagementTest {
         context.setConditions(conditions);
 
         SearchManagerService service = new SearchManagerServiceImpl();
-        List<DeviceWrapper> deviceWrappers = service.search(context);
+        List<Device> devices = service.search(context);
 
         Gson gson = new Gson();
-        String bbbb = gson.toJson(deviceWrappers);
+        String bbbb = gson.toJson(devices);
         log.info("Invalid Search " + bbbb);
 
 
-        for (DeviceWrapper dw : deviceWrappers) {
-            log.debug(dw.getDevice().getDescription());
-            log.debug(dw.getDevice().getDeviceIdentifier());
+        for (Device device : devices) {
+            log.debug(device.getDescription());
+            log.debug(device.getDeviceIdentifier());
         }
     }
 
     @Test
-    public void doStringSearch()  throws Exception{
+    public void doStringSearch() throws Exception {
 
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();
@@ -167,16 +167,16 @@ public class SearchDevice extends BaseDeviceManagementTest {
         context.setConditions(conditions);
 
         SearchManagerService service = new SearchManagerServiceImpl();
-        List<DeviceWrapper> deviceWrappers = service.search(context);
+        List<Device> devices = service.search(context);
 
         Gson gson = new Gson();
-        String bbbb = gson.toJson(deviceWrappers);
+        String bbbb = gson.toJson(devices);
         log.info("Invalid Search " + bbbb);
 
 
-        for (DeviceWrapper dw : deviceWrappers) {
-            log.debug(dw.getDevice().getDescription());
-            log.debug(dw.getDevice().getDeviceIdentifier());
+        for (Device device : devices) {
+            log.debug(device.getDescription());
+            log.debug(device.getDeviceIdentifier());
         }
     }
 }

@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.search.mgt.Processor;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
@@ -29,7 +29,6 @@ import java.util.List;
 
 public class SearchManagerServiceImpl implements SearchManagerService {
 
-
     private Processor processor;
 
     public SearchManagerServiceImpl() {
@@ -37,13 +36,14 @@ public class SearchManagerServiceImpl implements SearchManagerService {
     }
 
     @Override
-    public List<DeviceWrapper> search(SearchContext searchContext) throws SearchMgtException {
+    public List<Device> search(SearchContext searchContext) throws SearchMgtException {
         return processor.execute(searchContext);
     }
 
     @Override
-    public List<DeviceWrapper> getUpdated(long epochTime) throws SearchMgtException {
+    public List<Device> getUpdated(long epochTime) throws SearchMgtException {
         return processor.getUpdatedDevices(epochTime);
     }
+
 }
 

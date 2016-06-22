@@ -32,7 +32,6 @@ public class Utils {
     private static Map<String, String> locationColumnsMap = new HashMap<>();
 
     static {
-
         genericColumnsMap.put("deviceModel", "DEVICE_MODEL");
         genericColumnsMap.put("vendor", "VENDOR");
         genericColumnsMap.put("osVersion", "OS_VERSION");
@@ -105,23 +104,11 @@ public class Utils {
     }
 
     public static boolean checkDeviceDetailsColumns(String str) {
-        if (genericColumnsMap.containsKey(str)) {
-            return true;
-        }
-        if (genericColumnsMap.containsValue(str)) {
-            return true;
-        }
-        return false;
+        return genericColumnsMap.containsKey(str) || genericColumnsMap.containsValue(str);
     }
 
     public static boolean checkDeviceLocationColumns(String str) {
-        if (locationColumnsMap.containsKey(str)) {
-            return true;
-        }
-        if (locationColumnsMap.containsValue(str)) {
-            return true;
-        }
-        return false;
+        return locationColumnsMap.containsKey(str) || locationColumnsMap.containsValue(str);
     }
 
     public static List<String> convertStringToList(String str) {

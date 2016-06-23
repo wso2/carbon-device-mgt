@@ -35,15 +35,18 @@ function onRequest(context) {
         var policyListToView = response["content"];
         page["policyListToView"] = policyListToView;
         var policyCount = policyListToView.length;
-        if (policyCount == 0) {
+        switch (policyCount) {
+            case 0:
             page["policyListingStatusMsg"] = "No policy is available to be displayed.";
             page["saveNewPrioritiesButtonEnabled"] = false;
             page["noPolicy"] = true;
-        } else if (policyCount == 1) {
+                break;
+            case 1:
             page["saveNewPrioritiesButtonEnabled"] = false;
             page["noPolicy"] = false;
             page["isUpdated"] = response["updated"];
-        } else {
+                break;
+            default:
             page["saveNewPrioritiesButtonEnabled"] = true;
             page["noPolicy"] = false;
             page["isUpdated"] = response["updated"];

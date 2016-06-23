@@ -136,12 +136,12 @@ policyModule = function () {
         var mqttBrokerPort = mqttEndPointDeviceConfig.getPort();
         var mqttQueueEndpoint = mqttBrokerURL + ":" + mqttBrokerPort;
 
-        var mqttsenderClass = Packages.org.wso2.carbon.device.mgt.iot.mqtt.PolicyPush;
-        var mqttsender = new mqttsenderClass();
+        var mqttSenderClass = Packages.org.wso2.carbon.device.mgt.iot.mqtt.PolicyPush;
+        var mqttSender = new mqttSenderClass();
 
         var policyPayload = "POLICY:" + policyDefinition;
-        var result = mqttsender.pushToMQTT(queName, policyPayload, mqttQueueEndpoint, "MQTT_Agent");
-        mqttsender = null;
+        var result = mqttSender.pushToMQTT(queName, policyPayload, mqttQueueEndpoint, "MQTT_Agent");
+        mqttSender = null;
         return result;
     };
 

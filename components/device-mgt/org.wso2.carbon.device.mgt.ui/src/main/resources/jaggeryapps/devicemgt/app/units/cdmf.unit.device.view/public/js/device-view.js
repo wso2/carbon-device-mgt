@@ -167,7 +167,7 @@
                 var viewModel = {};
                 viewModel.policy = activePolicy;
                 viewModel.deviceType = deviceType;
-                if (data != null && data.complianceFeatures != null && data.complianceFeatures != undefined && data.complianceFeatures.length > 0) {
+                if (data && data.complianceFeatures && data.complianceFeatures.length > 0) {
                     viewModel.compliance = "NON-COMPLIANT";
                     viewModel.complianceFeatures = data.complianceFeatures;
                     var content = template(viewModel);

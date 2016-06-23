@@ -51,7 +51,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -191,7 +191,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                     // Decoding Base64 encoded password
                     byte[] decodedBytes = Base64.decodeBase64(userWrapper.getPassword());
                     userStoreManager.updateCredentialByAdmin(userWrapper.getUsername(),
-                            new String(decodedBytes, "UTF-8"));
+                                                             new String(decodedBytes, StandardCharsets.UTF_8));
                     log.debug("User credential of username: " + userWrapper.getUsername() + " has been changed");
                 }
                 List<String> currentRoles = getFilteredRoles(userStoreManager, userWrapper.getUsername());
@@ -233,7 +233,7 @@ public class UserImpl implements org.wso2.carbon.device.mgt.jaxrs.api.User {
                                 " doesn't  exists. Therefore, request made to update user was refused.");
                 return Response.status(Response.Status.CONFLICT).entity(responsePayload).build();
             }
-        } catch (UserStoreException | UnsupportedEncodingException | MDMAPIException e) {
+        } catch (UserStoreException | MDMAPIException e) {
             String msg = "Exception in trying to update user by username: " + userWrapper.getUsername();
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();

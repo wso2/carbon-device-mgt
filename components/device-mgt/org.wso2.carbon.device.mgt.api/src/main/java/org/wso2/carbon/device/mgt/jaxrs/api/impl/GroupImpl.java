@@ -51,7 +51,7 @@ import java.util.List;
 public class GroupImpl implements Group {
 
     private static final String GROUP_CANNOT_NULL_MSG = "Group cannot be null.";
-    private static final String GROUP_NAME_INVALID_MSG = "Provided group name is invalid. Should be in minimum 3 " +
+    private static final String GROUP_NAME_INVALID_MSG = "Provided group name is invalid. Should be at least 3 " +
                                                          "characters long and should not include any whitespaces.";
     private static Log log = LogFactory.getLog(GroupImpl.class);
 

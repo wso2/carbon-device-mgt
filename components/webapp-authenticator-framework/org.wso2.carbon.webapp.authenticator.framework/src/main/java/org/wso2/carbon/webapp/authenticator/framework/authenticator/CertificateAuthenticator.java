@@ -29,7 +29,7 @@ public class CertificateAuthenticator implements WebappAuthenticator {
     private static final String CERTIFICATE_AUTHENTICATOR = "CertificateAuth";
     private static final String MUTUAL_AUTH_HEADER = "mutual-auth-header";
     private static final String PROXY_MUTUAL_AUTH_HEADER = "proxy-mutual-auth-header";
-    private static final String CERTIFICATE_VERIFICATION_HEADER = "certificate-verification-header";
+    private static final String CERTIFICATE_VERIFICATION_HEADER = "Mdm-Signature";
     private static final String CLIENT_CERTIFICATE_ATTRIBUTE = "javax.servlet.request.X509Certificate";
 
     @Override
@@ -55,7 +55,6 @@ public class CertificateAuthenticator implements WebappAuthenticator {
             authenticationInfo.setStatus(Status.CONTINUE);
         }
 
-        String certVerificationHeader = request.getContext().findParameter(CERTIFICATE_VERIFICATION_HEADER);
         try {
             // When there is a load balancer terminating mutual SSL, it should pass this header along and
             // as the value of this header, the client certificate subject dn should be passed.
@@ -78,7 +77,7 @@ public class CertificateAuthenticator implements WebappAuthenticator {
                 }
             } else if (request.getHeader(CERTIFICATE_VERIFICATION_HEADER) != null) {
 
-                String certHeader = request.getHeader(certVerificationHeader);
+                String certHeader = request.getHeader(CERTIFICATE_VERIFICATION_HEADER);
                 if (certHeader != null &&
                     AuthenticatorFrameworkDataHolder.getInstance().getCertificateManagementService().
                             verifySignature(certHeader)) {

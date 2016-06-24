@@ -21,10 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -95,7 +92,7 @@ public interface UserManagementService {
             @ApiParam(
                     name = "user",
                     value = "User related details.",
-                    required = true) UserWrapper user);
+                    required = true) UserInfo user);
 
     @GET
     @Path("/{username}")
@@ -105,13 +102,13 @@ public interface UserManagementService {
             value = "Getting details of a user.",
             notes = "If you wish to get the details of a specific user that is registered with EMM,"
                     + " you can do so using the REST API.",
-            response = UserWrapper.class,
+            response = BasicUserInfo.class,
             tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the requested role.",
-                    response = UserWrapper.class,
+                    response = BasicUserInfo.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -209,7 +206,7 @@ public interface UserManagementService {
             @ApiParam(
                     name = "userData",
                     value = "User related details.",
-                    required = true) UserWrapper userData);
+                    required = true) UserInfo userData);
 
     @DELETE
     @Path("/{username}")
@@ -247,15 +244,12 @@ public interface UserManagementService {
             value = "Get the role list of a user.",
             notes = "A user can be assigned to one or more role in EMM. Using this REST API you are "
                     + "able to get the role/roles a user is assigned to.",
-            response = String.class,
-            responseContainer = "List",
             tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the role list assigned to the user.",
-                    response = String.class,
-                    responseContainer = "List",
+                    response = RoleList.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -297,15 +291,12 @@ public interface UserManagementService {
             value = "Get user list",
             notes = "If you wish to get the details of all the users registered with EMM, you can do so "
                     + "using the REST API",
-            response = UserList.class,
-            responseContainer = "List",
             tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the requested role.",
-                    response = UserList.class,
-                    responseContainer = "List",
+                    response = UserInfoList.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -364,8 +355,6 @@ public interface UserManagementService {
                     + "search for that user by giving a character or a few characters in the username. "
                     + "You will be given a list of users having the user name with the exact order of the "
                     + "characters you provided.",
-            response = String.class,
-            responseContainer = "List",
             tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(

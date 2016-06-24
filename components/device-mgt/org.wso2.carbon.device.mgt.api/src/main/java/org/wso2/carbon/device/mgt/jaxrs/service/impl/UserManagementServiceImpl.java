@@ -18,7 +18,6 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,12 +25,9 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
-import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
-import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.beans.UserList;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
@@ -55,7 +51,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @POST
     @Override
-    public Response addUser(UserWrapper userWrapper) {
+    public Response addUser(UserInfo userWrapper) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
@@ -172,7 +168,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(username)) {
-                UserWrapper user = new UserWrapper();
+                BasicUserInfo user = new BasicUserInfo();
                 user.setUsername(username);
                 user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
                 user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
@@ -203,7 +199,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @PUT
     @Path("/{username}")
     @Override
-    public Response updateUser(@PathParam("username") String username, UserWrapper userWrapper) {
+    public Response updateUser(@PathParam("username") String username, UserInfo userWrapper) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
@@ -316,8 +312,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (userStoreManager.isExistingUser(username)) {
-                return Response.status(Response.Status.OK).entity(Collections.singletonList(
-                        getFilteredRoles(userStoreManager, username))).build();
+                RoleList result = new RoleList();
+                result.setList(getFilteredRoles(userStoreManager, username));
+                return Response.status(Response.Status.OK).entity(result).build();
             } else {
                 // Outputting debug message upon trying to remove non-existing user
                 if (log.isDebugEnabled()) {
@@ -343,7 +340,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information");
         }
-        List<UserWrapper> userList, offsetList;
+        List<BasicUserInfo> userList, offsetList;
         String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter);
         int appliedLimit =  (limit <= 0) ? -1 : (limit + offset);
 
@@ -353,9 +350,9 @@ public class UserManagementServiceImpl implements UserManagementService {
             //As the listUsers function accepts limit only to accommodate offset we are passing offset + limit
             String[] users = userStoreManager.listUsers(appliedFilter, appliedLimit);
             userList = new ArrayList<>(users.length);
-            UserWrapper user;
+            BasicUserInfo user;
             for (String username : users) {
-                user = new UserWrapper();
+                user = new BasicUserInfo();
                 user.setUsername(username);
                 user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
                 user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
@@ -368,12 +365,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             } else {
                 offsetList = new ArrayList<>();
             }
-
-//            if (offsetList.size() <= 0) {
-//                return Response.status(Response.Status.NOT_FOUND).entity("No users available for retrieval").build();
-//            }
-
-            UserList result = new UserList();
+            BasicUserInfoList result = new BasicUserInfoList();
             result.setList(offsetList);
             result.setCount(offsetList.size());
 
@@ -394,14 +386,14 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information using the filter : " + filter);
         }
-        List<UserWrapper> userList;
+        List<UserInfo> userList;
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             String[] users = userStoreManager.listUsers(filter + "*", -1);
             userList = new ArrayList<>(users.length);
-            UserWrapper user;
+            UserInfo user;
             for (String username : users) {
-                user = new UserWrapper();
+                user = new UserInfo();
                 user.setUsername(username);
                 user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
                 user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));

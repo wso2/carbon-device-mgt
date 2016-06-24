@@ -99,52 +99,7 @@ policyModule = function () {
         response.content = policyListToView;
         return response;
     };
-
-    publicMethods.addPolicy = function (policyName, deviceType, policyDefinition, policyDescription,
-                                        deviceId) {
-        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
-        if (!carbonUser) {
-            log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
-        }
-        if (policyName && deviceType) {
-            var queName = "WSO2IoTServer/" + carbonUser.username + "/" + deviceType;
-            var deviceQueName;
-            if (deviceId) {
-                deviceQueName = queName + "/" + deviceId;
-                privateMethods.publish(deviceQueName, policyName, deviceType, policyDefinition);
-            } else {
-                var deviceManagementService = utility.getDeviceManagementService();
-                var devices = deviceManagementService.getDevicesOfUser(carbonUser.username);
-                var device;
-                for (var i = 0; i < devices.size(); i++) {
-                    device = devices.get(i);
-                    deviceId = device.getDeviceIdentifier();
-                    deviceQueName = queName + "/" + deviceId;
-                    privateMethods.publish(deviceQueName, policyName, deviceType, policyDefinition);
-                }
-            }
-            return true;
-        }
-        return false;
-    };
-
-    privateMethods.publish = function (queName, policyName, deviceType, policyDefinition) {
-        var configurationService = utility.getConfigurationService();
-        var mqttEndPointDeviceConfig = configurationService.getControlQueue(constants.MQTT_QUEUE_CONFIG_NAME);
-        var mqttBrokerURL = mqttEndPointDeviceConfig.getServerURL();
-        var mqttBrokerPort = mqttEndPointDeviceConfig.getPort();
-        var mqttQueueEndpoint = mqttBrokerURL + ":" + mqttBrokerPort;
-
-        var mqttSenderClass = Packages.org.wso2.carbon.device.mgt.iot.mqtt.PolicyPush;
-        var mqttSender = new mqttSenderClass();
-
-        var policyPayload = "POLICY:" + policyDefinition;
-        var result = mqttSender.pushToMQTT(queName, policyPayload, mqttQueueEndpoint, "MQTT_Agent");
-        mqttSender = null;
-        return result;
-    };
-
+    
     /*
      @Updated
      */

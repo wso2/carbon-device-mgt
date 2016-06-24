@@ -19,25 +19,22 @@
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 
 import java.util.List;
 
-@ApiModel(value = "Policy List")
-public class PolicyList extends BasePaginatedResult {
+public class OperationList extends BasePaginatedResult {
+    private List<? extends Operation> operations;
 
-    private List<Policy> policies;
-
-    @ApiModelProperty(value = "List of policies returned")
-    @JsonProperty("policies")
-    public List<Policy> getList() {
-        return policies;
+    @ApiModelProperty(value = "List of operations returned")
+    @JsonProperty("operations")
+    public List<? extends Operation> getList() {
+        return operations;
     }
 
-    public void setList(List<Policy> policies) {
-        this.policies = policies;
+    public void setList(List<? extends Operation> operations) {
+        this.operations = operations;
     }
 
     @Override
@@ -47,7 +44,7 @@ public class PolicyList extends BasePaginatedResult {
         sb.append("  count: ").append(getCount()).append(",\n");
         sb.append("  next: ").append(getNext()).append(",\n");
         sb.append("  previous: ").append(getPrevious()).append(",\n");
-        sb.append("  policies: [").append(policies).append("\n");
+        sb.append("  operations: [").append(operations).append("\n");
         sb.append("]}\n");
         return sb.toString();
     }

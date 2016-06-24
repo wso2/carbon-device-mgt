@@ -23,10 +23,10 @@
  * @returns {*} A context object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require("/app/conf/devicemgt-props.js").config();
     var page = {};
-    page["groupNameJSRegEx"] = devicemgtProps.groupValidationConfig.groupNameJSRegEx;
-    page["groupNameRegExViolationErrorMsg"] = devicemgtProps.groupValidationConfig.groupNameRegExViolationErrorMsg;
-    page["groupNameHelpMsg"] = devicemgtProps.groupValidationConfig.groupNameHelpMsg;
+    page["groupNameJSRegEx"] = devicemgtProps["groupValidationConfig"]["groupNameJSRegEx"];
+    page["groupNameRegExViolationErrorMsg"] = devicemgtProps["groupValidationConfig"]["groupNameRegExViolationErrorMsg"];
+    page["groupNameHelpMsg"] = devicemgtProps["groupValidationConfig"]["groupNameHelpMsg"];
     return page;
 }

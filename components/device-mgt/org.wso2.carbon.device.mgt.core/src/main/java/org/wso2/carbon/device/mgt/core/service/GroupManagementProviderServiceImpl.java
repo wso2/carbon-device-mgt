@@ -29,7 +29,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistsException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
@@ -69,7 +69,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public void createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
-            throws GroupManagementException, GroupAlreadyExistException {
+            throws GroupManagementException, GroupAlreadyExistsException {
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
@@ -83,7 +83,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 groupId = this.groupDAO.addGroup(groupBroker, tenantId);
                 GroupManagementDAOFactory.commitTransaction();
             } else {
-                throw new GroupAlreadyExistException("Group exist with name " + deviceGroup.getName());
+                throw new GroupAlreadyExistsException("Group exist with name " + deviceGroup.getName());
             }
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();

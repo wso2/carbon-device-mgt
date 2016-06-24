@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistsException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -50,7 +50,7 @@ import java.util.List;
 @SuppressWarnings("NonJaxWsWebServices")
 public class GroupImpl implements Group {
 
-    private static final String GROUP_CANNOT_NULL_MSG = "Group cannot be null.";
+    private static final String NULL_GROUP_NAME_ERROR_MSG = "Group cannot be null.";
     private static final String GROUP_NAME_INVALID_MSG = "Provided group name is invalid. Should be at least 3 " +
                                                          "characters long and should not include any whitespaces.";
     private static Log log = LogFactory.getLog(GroupImpl.class);
@@ -59,12 +59,12 @@ public class GroupImpl implements Group {
     @POST
     @Consumes("application/json")
     public Response createGroup(DeviceGroup group) {
-        String owner = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
         if (group == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(GROUP_CANNOT_NULL_MSG).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(NULL_GROUP_NAME_ERROR_MSG).build();
         } else if (group.getName() == null || !group.getName().matches("^[\\S]{3,30}$")) {
             return Response.status(Response.Status.BAD_REQUEST).entity(GROUP_NAME_INVALID_MSG).build();
         }
+        String owner = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
         group.setOwner(owner);
         group.setDateOfCreation(new Date().getTime());
         group.setDateOfLastUpdate(new Date().getTime());
@@ -83,7 +83,7 @@ public class GroupImpl implements Group {
             groupManagementService.addGroupSharingRole(owner, group.getName(), owner, DeviceGroupConstants.Roles.DEFAULT_VIEW_EVENTS,
                                                        DeviceGroupConstants.Permissions.DEFAULT_VIEW_EVENTS_PERMISSIONS);
             return Response.status(Response.Status.CREATED).build();
-        } catch (GroupAlreadyExistException e) {
+        } catch (GroupAlreadyExistsException e) {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         } catch (GroupManagementException e) {
             log.error(e.getErrorMessage(), e);

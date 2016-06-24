@@ -21,31 +21,31 @@ package org.wso2.carbon.device.mgt.common.group.mgt;
 /**
  * This class represents a custom exception specified for group management
  */
-public class GroupAlreadyExistException extends Exception {
+public class GroupAlreadyExistsException extends Exception {
 
     private static final long serialVersionUID = -312678379574816874L;
     private String errorMessage;
 
-    public GroupAlreadyExistException(String msg, Exception nestedEx) {
+    public GroupAlreadyExistsException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
         setErrorMessage(msg);
     }
 
-    public GroupAlreadyExistException(String message, Throwable cause) {
+    public GroupAlreadyExistsException(String message, Throwable cause) {
         super(message, cause);
         setErrorMessage(message);
     }
 
-    public GroupAlreadyExistException(String msg) {
+    public GroupAlreadyExistsException(String msg) {
         super(msg);
         setErrorMessage(msg);
     }
 
-    public GroupAlreadyExistException() {
+    public GroupAlreadyExistsException() {
         super();
     }
 
-    public GroupAlreadyExistException(Throwable cause) {
+    public GroupAlreadyExistsException(Throwable cause) {
         super(cause);
     }
 

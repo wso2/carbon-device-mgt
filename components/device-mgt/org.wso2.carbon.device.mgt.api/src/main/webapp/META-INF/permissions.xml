@@ -611,6 +611,12 @@
         <url>/policies/*</url>
         <method>Put</method>
     </Permission>
+    <Permission>
+        <name>Edit policy</name>
+        <path>/device-mgt/admin/policies/update</path>
+        <url>/policies/apply-changes</url>
+        <method>PUT</method>
+    </Permission>
     <!-- End of Policy related APIs -->
 
     <!-- Profile related APIs -->

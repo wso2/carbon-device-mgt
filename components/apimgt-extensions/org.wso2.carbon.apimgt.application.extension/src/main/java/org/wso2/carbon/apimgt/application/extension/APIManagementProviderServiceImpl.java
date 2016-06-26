@@ -35,7 +35,6 @@ import org.wso2.carbon.apimgt.application.extension.exception.APIManagerExceptio
 import org.wso2.carbon.apimgt.application.extension.util.APIManagerUtil;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -120,8 +119,8 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     @Override
     public void registerExistingOAuthApplicationToAPIApplication(String jsonString, String applicationName,
                                                                  String clientId, String username,
-                                                                 boolean isAllowedAllDomains, String keyType)
-            throws APIManagerException {
+                                                                 boolean isAllowedAllDomains, String keyType,
+                                                                 String tags[]) throws APIManagerException {
         try {
             APIManagerUtil.loadTenantRegistry();
             APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
@@ -156,6 +155,9 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                 }
                 if (retrievedApiApplicationKey != null) {
                     if (retrievedApiApplicationKey.getConsumerKey().equals(clientId)) {
+                        if (tags != null && tags.length > 0) {
+                            createApplicationAndSubscribeToAPIs(applicationName, tags, username);
+                        }
                         return;
                     } else {
                         throw new APIManagerException("Api application already mapped to another OAuth App");
@@ -170,6 +172,9 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                 }
                 apiConsumer.mapExistingOAuthClient(jsonString, username, clientId, applicationName,
                                                    ApiApplicationConstants.DEFAULT_TOKEN_TYPE, allowedDomains);
+                if (tags != null && tags.length > 0) {
+                    createApplicationAndSubscribeToAPIs(applicationName, tags, username);
+                }
             }
         } catch (APIManagementException e) {
             throw new APIManagerException(

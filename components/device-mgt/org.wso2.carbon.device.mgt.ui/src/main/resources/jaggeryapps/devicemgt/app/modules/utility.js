@@ -48,10 +48,6 @@ utility = function () {
         PrivilegedCarbonContext.endTenantFlow();
     };
 
-    publicMethods.getConfigurationService = function () {
-        return getOsgiService('org.wso2.carbon.device.mgt.iot.service.ConfigurationService');
-    };
-
     publicMethods.getDeviceManagementService = function () {
         return getOsgiService('org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService');
     };

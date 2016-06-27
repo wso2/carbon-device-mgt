@@ -23,6 +23,7 @@ import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -385,6 +386,34 @@ public interface PolicyManagementService {
     Response deactivatePolicies(
             @ApiParam(name = "policyIds", value = "Policy ID list to be deactivated.",
                     required = true) List<Integer> policyIds);
+
+
+    @PUT
+    @Path("/priorities")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Prioritizing policies.",
+            notes = "",
+            tags = "Device Policy Management"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "Policy Priorities successfully updated."),
+            @ApiResponse(
+                    code = 400,
+                    message = "Policy priorities did not update. Bad Request.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Exception in updating policy priorities.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(scope = "", permissions = {})
+    Response updatePolicyPriorities(@ApiParam(name = "priorityUpdatedPolicies", value = "",
+            required = true) List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
 
 }

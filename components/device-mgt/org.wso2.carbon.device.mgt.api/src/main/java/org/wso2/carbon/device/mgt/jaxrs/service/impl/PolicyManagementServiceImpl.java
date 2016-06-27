@@ -303,6 +303,24 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
     }
 
+    @Override
+    @PUT
+    @Produces("application/json")
+    @Path("apply-changes")
+    public Response applyChanges() {
+        try {
+            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+            PolicyAdministratorPoint pap = policyManagementService.getPAP();
+            pap.publishChanges();
+        } catch (PolicyManagementException e) {
+            String msg = "Exception in applying changes.";
+            log.error(msg, e);
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+        }
+        return Response.status(Response.Status.OK).entity("Changes have been successfully updated.").build();
+    }
+
     @PUT
     @Path("/priorities")
     public Response updatePolicyPriorities(List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies) {

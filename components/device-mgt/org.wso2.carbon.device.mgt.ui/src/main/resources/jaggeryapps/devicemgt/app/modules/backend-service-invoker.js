@@ -306,7 +306,7 @@ var backendServiceInvoker = function () {
      * @param errorCallback a function to be called if en error is reserved.
      */
     publicHTTPClientInvokers.get = function (url, successCallback, errorCallback, contentType, acceptType) {
-        return privateMethods.initiateHTTPClientRequest(constants.HTTP_GET, url, successCallback, errorCallback, contentType, acceptType);
+        return privateMethods.initiateHTTPClientRequest(constants.HTTP_GET, url, successCallback, errorCallback, null, contentType, acceptType);
     };
 
     /**

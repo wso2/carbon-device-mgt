@@ -27,16 +27,20 @@ import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
 
+import java.io.FileInputStream;
+import java.security.KeyStore;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
@@ -55,7 +59,12 @@ public class JWTAuthenticator implements WebappAuthenticator {
     private static final String SIGNED_JWT_AUTH_TENANT_ID = "http://wso2.org/claims/enduserTenantId";
     private static final String JWT_AUTHENTICATOR = "JWT";
     private static final String JWT_ASSERTION_HEADER = "X-JWT-Assertion";
+    private static final String DEFAULT_TRUST_STORE_LOCATION = "Security.TrustStore.Location";
+    private static final String DEFAULT_TRUST_STORE_PASSWORD = "Security.TrustStore.Password";
+
     private static final Map<String, PublicKey> publicKeyHolder = new HashMap<>();
+    private Properties properties;
+
     @Override
     public void init() {
 
@@ -98,7 +107,31 @@ public class JWTAuthenticator implements WebappAuthenticator {
                 loadTenantRegistry(tenantId);
                 KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(tenantId);
                 if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-                    publicKey = keyStoreManager.getDefaultPublicKey();
+                    String defaultPublicKey = properties.getProperty("DefaultPublicKey");
+                    if (defaultPublicKey != null && !defaultPublicKey.isEmpty()) {
+                        boolean isDefaultPublicKey = Boolean.parseBoolean(defaultPublicKey);
+                        if (isDefaultPublicKey) {
+                            publicKey = keyStoreManager.getDefaultPublicKey();
+                        } else {
+                            String alias = properties.getProperty("KeyAlias");
+                            if (alias != null && !alias.isEmpty()) {
+                                ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
+                                KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                                String trustStorePath = serverConfig.getFirstProperty(DEFAULT_TRUST_STORE_LOCATION);
+                                String trustStorePassword = serverConfig.getFirstProperty(
+                                        DEFAULT_TRUST_STORE_PASSWORD);
+                                keyStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
+                                publicKey = keyStore.getCertificate(alias).getPublicKey();
+                            } else {
+                                authenticationInfo.setStatus(Status.FAILURE);
+                                return  authenticationInfo;
+                            }
+                        }
+
+                    } else {
+                        publicKey = keyStoreManager.getDefaultPublicKey();
+                    }
+
                 } else {
                     String ksName = tenantDomain.trim().replace('.', '-');
                     String jksName = ksName + ".jks";
@@ -150,17 +183,20 @@ public class JWTAuthenticator implements WebappAuthenticator {
 
     @Override
     public void setProperties(Properties properties) {
-
+        this.properties = properties;
     }
 
     @Override
     public Properties getProperties() {
-        return null;
+        return properties;
     }
 
     @Override
     public String getProperty(String name) {
-        return null;
+        if (this.properties == null) {
+            return null;
+        }
+        return this.properties.getProperty(name);
     }
 
     private static void loadTenantRegistry(int tenantId) throws RegistryException {

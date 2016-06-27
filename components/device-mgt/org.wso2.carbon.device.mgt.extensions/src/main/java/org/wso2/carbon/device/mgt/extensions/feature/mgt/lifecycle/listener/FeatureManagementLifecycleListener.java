@@ -42,10 +42,6 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
     private static final String PARAM_MANAGED_API_ENABLED = "managed-api-enabled";
 
     private static final Log log = LogFactory.getLog(FeatureManagementLifecycleListener.class);
-    private static final String UNLIMITED = "Unlimited";
-    public static final String PROPERTY_PROFILE = "profile";
-    public static final String PROFILE_DT_WORKER = "dtWorker";
-    public static final String PROFILE_DEFAULT = "default";
 
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
@@ -54,11 +50,7 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
             ServletContext servletContext = context.getServletContext();
             String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
-
-            String profile = System.getProperty(PROPERTY_PROFILE);
-
-            if ((profile.equalsIgnoreCase(PROFILE_DT_WORKER) ||
-                    profile.equalsIgnoreCase(PROFILE_DEFAULT)) && isManagedApi) {
+            if (isManagedApi) {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
                     Set<String> annotatedAPIClasses = annotationProcessor.scanStandardContext(DeviceType.class.getName());

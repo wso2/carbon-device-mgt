@@ -34,7 +34,6 @@ import org.wso2.carbon.user.api.UserStoreException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
@@ -97,7 +96,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                 apiManagementProviderService.registerExistingOAuthApplicationToAPIApplication(
                         jsonStringObject.toJSONString(), registrationProfile.getApplicationName(),
                         registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains(),
-                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE);
+                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE, registrationProfile.getTags());
                 return Response.status(Response.Status.ACCEPTED).entity("true").build();
             } else {
                 ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(

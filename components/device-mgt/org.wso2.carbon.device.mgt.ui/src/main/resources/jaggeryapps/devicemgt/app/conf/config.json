@@ -11,7 +11,7 @@
   "enrollmentDir": "/emm-web-agent/enrollment",
   "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
   "iOSAPIRoot" : "%https.ip%/ios/",
-  "dynamicClientRegistrationEndPoint" : "%https.ip%/dynamic-client-web/register/",
+  "dynamicClientRegistrationEndPoint" : "https://localhost:8243/dynamic-client-web/register/",
   "adminService":"%https.ip%",
   "idPServer":"https://localhost:8243",
   "callBackUrl":"%https.ip%/devicemgt_admin",

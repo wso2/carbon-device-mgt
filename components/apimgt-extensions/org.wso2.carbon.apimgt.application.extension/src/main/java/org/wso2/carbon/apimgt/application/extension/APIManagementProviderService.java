@@ -59,8 +59,8 @@ public interface APIManagementProviderService {
      * Register existing Oauth application as apim application.
      */
     void registerExistingOAuthApplicationToAPIApplication(String jsonString, String applicationName, String clientId,
-                                                          String username, boolean isAllowedAllDomains, String keyType)
-            throws APIManagerException;
+                                                          String username, boolean isAllowedAllDomains, String keyType,
+                                                          String tags[]) throws APIManagerException;
 
     /**
      * Remove APIM Application.

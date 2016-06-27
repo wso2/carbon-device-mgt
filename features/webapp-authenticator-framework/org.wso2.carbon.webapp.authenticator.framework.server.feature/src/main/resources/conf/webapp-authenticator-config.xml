@@ -19,6 +19,11 @@
         <Authenticator>
             <Name>JWT</Name>
             <ClassName>org.wso2.carbon.webapp.authenticator.framework.authenticator.JWTAuthenticator</ClassName>
+            <Parameters>
+                <Parameter Name="DefaultPublicKey">true</Parameter>
+                <!--KeyAlias is alias of the certificate that is used to sign the JWT token-->
+                <!-- <Parameter Name="KeyAlias"></Parameter> -->
+            </Parameters>
         </Authenticator>
         <Authenticator>
             <Name>CertificateAuth</Name>

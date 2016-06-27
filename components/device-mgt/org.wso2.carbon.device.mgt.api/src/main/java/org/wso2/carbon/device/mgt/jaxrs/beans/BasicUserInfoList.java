@@ -21,33 +21,35 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.policy.mgt.common.Policy;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel(value = "Policy List")
-public class PolicyList extends BasePaginatedResult {
+@ApiModel(value = "BasicUserInfoList", description = "This contains basic details of a set of users that matches " +
+        "a given criteria as a collection")
+public class BasicUserInfoList extends BasePaginatedResult {
 
-    private List<Policy> policies;
+    private List<BasicUserInfo> users = new ArrayList<>();
 
-    @ApiModelProperty(value = "List of policies returned")
-    @JsonProperty("policies")
-    public List<Policy> getList() {
-        return policies;
+    @ApiModelProperty(value = "List of devices returned")
+    @JsonProperty("users")
+    public List<BasicUserInfo> getList() {
+        return users;
     }
 
-    public void setList(List<Policy> policies) {
-        this.policies = policies;
+    public void setList(List<BasicUserInfo> users) {
+        this.users = users;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
+
         sb.append("  count: ").append(getCount()).append(",\n");
         sb.append("  next: ").append(getNext()).append(",\n");
         sb.append("  previous: ").append(getPrevious()).append(",\n");
-        sb.append("  policies: [").append(policies).append("\n");
+        sb.append("  users: [").append(users).append("\n");
         sb.append("]}\n");
         return sb.toString();
     }

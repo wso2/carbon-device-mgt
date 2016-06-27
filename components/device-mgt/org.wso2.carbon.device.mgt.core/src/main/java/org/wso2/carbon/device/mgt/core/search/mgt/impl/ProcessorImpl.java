@@ -19,10 +19,7 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
@@ -48,13 +45,13 @@ public class ProcessorImpl implements Processor {
     }
 
     @Override
-    public List<DeviceWrapper> execute(SearchContext searchContext) throws SearchMgtException {
+    public List<Device> execute(SearchContext searchContext) throws SearchMgtException {
 
         QueryBuilder queryBuilder = new QueryBuilderImpl();
-        List<DeviceWrapper> generalDevices = new ArrayList<>();
-        List<List<DeviceWrapper>> allANDDevices = new ArrayList<>();
-        List<List<DeviceWrapper>> allORDevices = new ArrayList<>();
-        List<DeviceWrapper> locationDevices = new ArrayList<>();
+        List<Device> generalDevices = new ArrayList<>();
+        List<List<Device>> allANDDevices = new ArrayList<>();
+        List<List<Device>> allORDevices = new ArrayList<>();
+        List<Device> locationDevices = new ArrayList<>();
         try {
             Map<String, List<String>> queries = queryBuilder.buildQueries(searchContext.getConditions());
             DeviceManagementDAOFactory.openConnection();
@@ -64,13 +61,13 @@ public class ProcessorImpl implements Processor {
             }
             if (queries.containsKey(Constants.PROP_AND)) {
                 for (String query : queries.get(Constants.PROP_AND)) {
-                    List<DeviceWrapper> andDevices = searchDAO.searchDevicePropertyTable(query);
+                    List<Device> andDevices = searchDAO.searchDevicePropertyTable(query);
                     allANDDevices.add(andDevices);
                 }
             }
             if (queries.containsKey(Constants.PROP_OR)) {
                 for (String query : queries.get(Constants.PROP_OR)) {
-                    List<DeviceWrapper> orDevices = searchDAO.searchDevicePropertyTable(query);
+                    List<Device> orDevices = searchDAO.searchDevicePropertyTable(query);
                     allORDevices.add(orDevices);
                 }
             }
@@ -88,23 +85,22 @@ public class ProcessorImpl implements Processor {
             DeviceManagementDAOFactory.closeConnection();
         }
 
-
         ResultSetAggregator aggregator = new ResultSetAggregatorImpl();
 
-        Map<String, List<DeviceWrapper>> deviceWrappers = new HashMap<>();
+        Map<String, List<Device>> devices = new HashMap<>();
 
-        deviceWrappers.put(Constants.GENERAL, generalDevices);
-        deviceWrappers.put(Constants.PROP_AND, this.processANDSearch(allANDDevices));
-        deviceWrappers.put(Constants.PROP_OR, this.processORSearch(allORDevices));
-        deviceWrappers.put(Constants.LOCATION, locationDevices);
+        devices.put(Constants.GENERAL, generalDevices);
+        devices.put(Constants.PROP_AND, this.processANDSearch(allANDDevices));
+        devices.put(Constants.PROP_OR, this.processORSearch(allORDevices));
+        devices.put(Constants.LOCATION, locationDevices);
 
-        List<DeviceWrapper> finalDeviceWrappers = aggregator.aggregate(deviceWrappers);
-        this.setApplicationListOfDevices(finalDeviceWrappers);
-        return finalDeviceWrappers;
+        List<Device> finalDevices = aggregator.aggregate(devices);
+        this.setApplicationListOfDevices(finalDevices);
+        return finalDevices;
     }
 
     @Override
-    public List<DeviceWrapper> getUpdatedDevices(long epochTime) throws SearchMgtException {
+    public List<Device> getUpdatedDevices(long epochTime) throws SearchMgtException {
 
         if((1 + (int)Math.floor(Math.log10(epochTime))) <=10 ) {
             epochTime = epochTime * 1000;
@@ -126,15 +122,14 @@ public class ProcessorImpl implements Processor {
     }
 
 
-    private List<DeviceWrapper> processANDSearch(List<List<DeviceWrapper>> deLists) {
-
-        List<DeviceWrapper> devices = new ArrayList<>();
-        List<DeviceWrapper> smallestDeviceList = this.findListWithLowestItems(deLists);
-        List<Map<Integer, DeviceWrapper>> maps = this.convertDeviceListToMap(deLists);
+    private List<Device> processANDSearch(List<List<Device>> deLists) {
+        List<Device> deviceList = new ArrayList<>();
+        List<Device> smallestDeviceList = this.findListWithLowestItems(deLists);
+        List<Map<Integer, Device>> maps = this.convertDeviceListToMap(deLists);
         boolean valueExist = false;
-        for (DeviceWrapper dw : smallestDeviceList) {
-            for (Map<Integer, DeviceWrapper> deviceWrapperMap : maps) {
-                if (deviceWrapperMap.containsKey(dw.getDevice().getId())) {
+        for (Device device : smallestDeviceList) {
+            for (Map<Integer, Device> devices : maps) {
+                if (devices.containsKey(device.getId())) {
                     valueExist = true;
                 } else {
                     valueExist = false;
@@ -142,63 +137,61 @@ public class ProcessorImpl implements Processor {
                 }
             }
             if (valueExist) {
-                devices.add(dw);
+                deviceList.add(device);
             }
         }
-        return devices;
+        return deviceList;
     }
 
-    private List<DeviceWrapper> processORSearch(List<List<DeviceWrapper>> deLists) {
-        List<DeviceWrapper> devices = new ArrayList<>();
-        Map<Integer, DeviceWrapper> map = new HashMap<>();
+    private List<Device> processORSearch(List<List<Device>> deLists) {
+        List<Device> devices = new ArrayList<>();
+        Map<Integer, Device> map = new HashMap<>();
 
-        for (List<DeviceWrapper> list : deLists) {
-            for (DeviceWrapper dw : list) {
-                if (!map.containsKey(dw.getDevice().getId())) {
-                    map.put(dw.getDevice().getId(), dw);
-                    devices.add(dw);
+        for (List<Device> list : deLists) {
+            for (Device device : list) {
+                if (!map.containsKey(device.getId())) {
+                    map.put(device.getId(), device);
+                    devices.add(device);
                 }
             }
         }
         return devices;
     }
 
-    private List<DeviceWrapper> findListWithLowestItems(List<List<DeviceWrapper>> deLists) {
-
+    private List<Device> findListWithLowestItems(List<List<Device>> deLists) {
         int size = 0;
-        List<DeviceWrapper> deviceWrappers = new ArrayList<>();
-        for (List<DeviceWrapper> list : deLists) {
+        List<Device> devices = new ArrayList<>();
+        for (List<Device> list : deLists) {
             if (size == 0) {
                 size = list.size();
-                deviceWrappers = list;
-                continue;
+                devices = list;
             } else {
                 if (list.size() < size) {
-                    deviceWrappers = list;
+                    devices = list;
                 }
             }
         }
-        return deviceWrappers;
+        return devices;
     }
 
-    private List<Map<Integer, DeviceWrapper>> convertDeviceListToMap(List<List<DeviceWrapper>> deLists) {
+    private List<Map<Integer, Device>> convertDeviceListToMap(List<List<Device>> deLists) {
+        List<Map<Integer, Device>> maps = new ArrayList<>();
+        for (List<Device> devices : deLists) {
+            Map<Integer, Device> deviceMap = new HashMap<>();
 
-        List<Map<Integer, DeviceWrapper>> maps = new ArrayList<>();
-        for (List<DeviceWrapper> deviceWrapperList : deLists) {
-            Map<Integer, DeviceWrapper> deviceWrapperMap = new HashMap<>();
-
-            for (DeviceWrapper dw : deviceWrapperList) {
-                deviceWrapperMap.put(dw.getDevice().getId(), dw);
+            for (Device device: devices) {
+                deviceMap.put(device.getId(), device);
             }
-            maps.add(deviceWrapperMap);
+            maps.add(deviceMap);
         }
         return maps;
     }
-    private void setApplicationListOfDevices(List<DeviceWrapper> deviceWrappers) throws SearchMgtException {
+
+    private void setApplicationListOfDevices(List<Device> devices) throws SearchMgtException {
         try {
             DeviceManagementDAOFactory.openConnection();
-            for (DeviceWrapper wrapper : deviceWrappers) {
-                wrapper.setApplications(applicationDAO.getInstalledApplications(wrapper.getDevice().getId()));
+            for (Device device : devices) {
+                device.setApplications(applicationDAO.getInstalledApplications(device.getId()));
             }
         } catch (DeviceManagementDAOException e) {
             throw new SearchMgtException("Error occurred while fetching the Application List of devices ", e);

@@ -24,7 +24,6 @@ import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
@@ -298,8 +297,7 @@ public interface DeviceManagementService {
                             code = 200,
                             message = "OK. \n Device list searched for has successfully been retrieved. Location header " +
                                     "contains URL of newly enrolled device",
-                            response = DeviceWrapper.class,
-                            responseContainer = "List",
+                            response = DeviceList.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",

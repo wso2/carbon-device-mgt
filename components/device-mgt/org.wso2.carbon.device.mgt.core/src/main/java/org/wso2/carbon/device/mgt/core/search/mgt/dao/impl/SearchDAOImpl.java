@@ -25,7 +25,6 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
-import org.wso2.carbon.device.mgt.common.device.details.DeviceWrapper;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.search.mgt.dao.SearchDAO;
@@ -38,22 +37,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class SearchDAOImpl implements SearchDAO {
 
     private static final Log log = LogFactory.getLog(SearchDAOImpl.class);
 
     @Override
-    public List<DeviceWrapper> searchDeviceDetailsTable(String query) throws SearchDAOException {
-
+    public List<Device> searchDeviceDetailsTable(String query) throws SearchDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Query : " + query);
         }
-
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs;
-        List<DeviceWrapper> devices = new ArrayList<>();
+        List<Device> devices = new ArrayList<>();
         Map<Integer, Integer> devs = new HashMap<>();
         try {
             conn = this.getConnection();
@@ -101,15 +97,11 @@ public class SearchDAOImpl implements SearchDAO {
                     deviceLocation.setDeviceId(rs.getInt("ID"));
                     deviceLocation.setUpdatedTime(new java.util.Date(rs.getLong("DL_UPDATED_TIMESTAMP")));
 
-                    DeviceWrapper wrapper = new DeviceWrapper();
-                    wrapper.setDevice(device);
-                    wrapper.setDeviceInfo(deviceInfo);
-                    wrapper.setDeviceLocation(deviceLocation);
-                    wrapper.setDeviceIdentifier(identifier);
-                    devices.add(wrapper);
+                    deviceInfo.setLocation(deviceLocation);
+                    device.setDeviceInfo(deviceInfo);
+                    devices.add(device);
                     devs.put(device.getId(), device.getId());
                 }
-
             }
         } catch (SQLException e) {
             throw new SearchDAOException("Error occurred while acquiring the device details.", e);
@@ -126,8 +118,7 @@ public class SearchDAOImpl implements SearchDAO {
     }
 
     @Override
-    public List<DeviceWrapper> searchDevicePropertyTable(String query) throws SearchDAOException {
-
+    public List<Device> searchDevicePropertyTable(String query) throws SearchDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Query : " + query);
         }
@@ -135,7 +126,7 @@ public class SearchDAOImpl implements SearchDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs;
-        List<DeviceWrapper> devices = new ArrayList<>();
+        List<Device> devices = new ArrayList<>();
         Map<Integer, Integer> devs = new HashMap<>();
         try {
             conn = this.getConnection();
@@ -183,13 +174,9 @@ public class SearchDAOImpl implements SearchDAO {
                     deviceLocation.setDeviceId(rs.getInt("ID"));
                     deviceLocation.setUpdatedTime(new java.util.Date(rs.getLong("DL_UPDATED_TIMESTAMP")));
 
-                    DeviceWrapper wrapper = new DeviceWrapper();
-                    wrapper.setDevice(device);
-                    wrapper.setDeviceInfo(deviceInfo);
-                    wrapper.setDeviceLocation(deviceLocation);
-                    wrapper.setDeviceIdentifier(identifier);
-
-                    devices.add(wrapper);
+                    deviceInfo.setLocation(deviceLocation);
+                    device.setDeviceInfo(deviceInfo);
+                    devices.add(device);
                     devs.put(device.getId(), device.getId());
                 }
 
@@ -214,8 +201,7 @@ public class SearchDAOImpl implements SearchDAO {
         return DeviceManagementDAOFactory.getConnection();
     }
 
-    private List<DeviceWrapper> fillPropertiesOfDevices(List<DeviceWrapper> devices) throws SearchDAOException {
-
+    private List<Device> fillPropertiesOfDevices(List<Device> devices) throws SearchDAOException {
         if (devices.isEmpty()) {
             return null;
         }
@@ -249,14 +235,13 @@ public class SearchDAOImpl implements SearchDAO {
         return devices;
     }
 
-    private DeviceInfo getDeviceInfo(List<DeviceWrapper> devices, int deviceId) {
-
-        for (DeviceWrapper dw : devices) {
-            if (dw.getDevice().getId() == deviceId) {
-                if (dw.getDeviceInfo() == null) {
-                    dw.setDeviceInfo(new DeviceInfo());
+    private DeviceInfo getDeviceInfo(List<Device> devices, int deviceId) {
+        for (Device device : devices) {
+            if (device.getId() == deviceId) {
+                if (device.getDeviceInfo() == null) {
+                    device.setDeviceInfo(new DeviceInfo());
                 }
-                return dw.getDeviceInfo();
+                return device.getDeviceInfo();
             }
         }
         return null;

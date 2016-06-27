@@ -65,33 +65,28 @@ public interface UserManagementService {
                                             description = "Date and time the resource has been modified the last time.\n" +
                                                     "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
-                            code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Location",
-                                            description = "The Source URL of the document.")}),
-                    @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 409,
-                            message = "Conflict. \n User already exist.",
+                            message = "Conflict. \n User already exists.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported media type. \n The entity of the request was in a not " +
+                                    "supported format.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while adding a new user.",
+                            message = "Internal Server Error. \n Server error occurred while adding a new user.",
                             response = ErrorResponse.class)
             })
     @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/add"})
     Response addUser(
             @ApiParam(
                     name = "user",
-                    value = "User related details.",
+                    value = "Information of the user to be added",
                     required = true) UserInfo user);
 
     @GET
@@ -131,7 +126,8 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n Server error occurred while" +
@@ -182,14 +178,16 @@ public interface UserManagementService {
                                             "Used by caches, or in conditional requests.")}),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource does not exist.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +
@@ -272,7 +270,8 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching the role list" +
@@ -296,7 +295,7 @@ public interface UserManagementService {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the requested role.",
-                    response = UserInfoList.class,
+                    response = BasicUserInfoList.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -315,7 +314,8 @@ public interface UserManagementService {
                     message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching the user list.",
@@ -380,7 +380,8 @@ public interface UserManagementService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching the username " +
@@ -429,10 +430,12 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Resource to be deleted does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n " +

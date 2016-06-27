@@ -21,10 +21,9 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.RoleWrapper;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
 import javax.ws.rs.*;
@@ -71,15 +70,11 @@ public interface RoleManagementService {
                             code = 304,
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
                     @ApiResponse(
-                            code = 404,
-                            message = "Not Found. \n Resource does not exist.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching requested list of roles.",
+                            message = "Internal Server Error. \n Server error occurred while fetching requested list of roles.",
                             response = ErrorResponse.class)
             })
     @Permission(scope = "roles-view", permissions = {
@@ -157,11 +152,12 @@ public interface RoleManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource does not exist.",
+                            message = "Not Found. \n Role does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
-                            message = "Not Acceptable.\n The requested media type is not supported"),
+                            message = "Not Acceptable.\n The requested media type is not supported",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
@@ -187,14 +183,14 @@ public interface RoleManagementService {
             httpMethod = "GET",
             value = "Get details of a role.",
             notes = "If you wish to get the details of a role in  EMM, you can do so using this REST API.",
-            response = RoleWrapper.class,
+            response = RoleInfo.class,
             tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully fetched the requested role.",
-                            response = RoleWrapper.class,
+                            response = RoleInfo.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -218,14 +214,15 @@ public interface RoleManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource does not exist.",
+                            message = "Not Found. \n Role does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
-                            message = "Not Acceptable.\n The requested media type is not supported"),
+                            message = "Not Acceptable.\n The requested media type is not supported",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the " +
+                            message = "Internal Server Error. \n Server error occurred while fetching the " +
                                     "requested role.",
                             response = ErrorResponse.class)
     })
@@ -282,11 +279,11 @@ public interface RoleManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while adding a new role.",
+                    message = "Internal Server Error. \n Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
@@ -294,7 +291,7 @@ public interface RoleManagementService {
             @ApiParam(
                     name = "role",
                     value = "Details about the role to be added.",
-                    required = true) RoleWrapper role);
+                    required = true) RoleInfo role);
 
     @PUT
     @Path("/{roleName}")
@@ -331,14 +328,15 @@ public interface RoleManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Role to be deleted does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while updating the role.",
+                    message = "Internal Server Error. \n Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
@@ -351,7 +349,7 @@ public interface RoleManagementService {
             @ApiParam(
                     name = "role",
                     value = "Details about the role to be added.",
-                    required = true) RoleWrapper role);
+                    required = true) RoleInfo role);
 
     @DELETE
     @Path("/{roleName}")
@@ -371,11 +369,11 @@ public interface RoleManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Role to be deleted does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
-                            "Server error occurred while removing the role.",
+                    message = "Internal Server Error. \n Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
     @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
@@ -426,13 +424,16 @@ public interface RoleManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist."),
+                            message = "Not Found. \n Resource to be deleted does not exist.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported media type. \n The entity of the request was in a not " +
+                                    "supported format.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
+                            message = "Internal Server Error. \n " +
                                     "Server error occurred while updating the user list of the role.",
                             response = ErrorResponse.class)
     })

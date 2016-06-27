@@ -603,7 +603,4 @@ public interface DeviceManagementService {
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
-    @GET
-    @Path("/types")
-    Response getDeviceTypes();
 }

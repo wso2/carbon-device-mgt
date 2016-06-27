@@ -314,18 +314,4 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
     }
 
-    @Override
-    public Response getDeviceTypes() {
-        List<DeviceType> deviceTypes;
-        try {
-            deviceTypes = DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes();
-        } catch (DeviceManagementException e) {
-            String msg = "Error occurred while fetching the list of device types.";
-            log.error(msg, e);
-            throw new UnexpectedServerErrorException(new ErrorResponse.ErrorResponseBuilder().
-                setCode(500l).setMessage(msg).build());
-        }
-        return Response.status(Response.Status.OK).entity(deviceTypes).build();
-    }
-
 }

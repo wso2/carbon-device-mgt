@@ -33,6 +33,7 @@ import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
@@ -266,14 +267,18 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
-        List<? extends Operation> operations;
+        OperationList operationsList = new OperationList();
+        PaginationRequest request = new PaginationRequest(offset, limit);
+        PaginationResult result;
         DeviceManagementProviderService dms;
         try {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
 
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
-            operations = dms.getOperations(new DeviceIdentifier(id, type));
-            if (operations == null) {
+            result = dms.getOperations(new DeviceIdentifier(id, type),request);
+            int resultCount = result.getRecordsTotal();
+
+            if (resultCount == 0) {
                 throw new NotFoundException(
                         new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("It is likely that" +
                                 " no operation is found upon the provided type and id").build());
@@ -285,7 +290,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             throw new UnexpectedServerErrorException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
         }
-        return Response.status(Response.Status.OK).entity(operations).build();
+        operationsList.setList((List<? extends Operation>) result.getData());
+        operationsList.setCount(result.getRecordsTotal());
+        return Response.status(Response.Status.OK).entity(operationsList).build();
     }
 
     @GET

@@ -40,10 +40,12 @@ import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/policies")
@@ -298,6 +300,57 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             throw new NotFoundException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("Selected policies have " +
                             "not been deactivated").build());
+        }
+    }
+
+    @Override
+    @PUT
+    @Produces("application/json")
+    @Path("apply-changes")
+    public Response applyChanges() {
+        try {
+            PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+            PolicyAdministratorPoint pap = policyManagementService.getPAP();
+            pap.publishChanges();
+        } catch (PolicyManagementException e) {
+            String msg = "Exception in applying changes.";
+            log.error(msg, e);
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+        }
+        return Response.status(Response.Status.OK).entity("Changes have been successfully updated.").build();
+    }
+
+    @PUT
+    @Path("/priorities")
+    public Response updatePolicyPriorities(List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies) {
+        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+        List<Policy> policiesToUpdate = new ArrayList<>(priorityUpdatedPolicies.size());
+        int i;
+        for (i = 0; i < priorityUpdatedPolicies.size(); i++) {
+            Policy policyObj = new Policy();
+            policyObj.setId(priorityUpdatedPolicies.get(i).getId());
+            policyObj.setPriorityId(priorityUpdatedPolicies.get(i).getPriority());
+            policiesToUpdate.add(policyObj);
+        }
+        boolean policiesUpdated;
+        try {
+            PolicyAdministratorPoint pap = policyManagementService.getPAP();
+            policiesUpdated = pap.updatePolicyPriorities(policiesToUpdate);
+        } catch (PolicyManagementException e) {
+            String error = "Exception in updating policy priorities.";
+            log.error(error, e);
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(error).build());
+        }
+        if (policiesUpdated) {
+            return Response.status(Response.Status.OK).entity("Policy Priorities successfully "
+                    + "updated.").build();
+
+        } else {
+            throw new NotFoundException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Policy priorities did "
+                            + "not update. Bad Request.").build());
         }
     }
 

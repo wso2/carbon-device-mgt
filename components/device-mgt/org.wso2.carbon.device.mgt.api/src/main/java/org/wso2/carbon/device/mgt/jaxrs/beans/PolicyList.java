@@ -47,7 +47,7 @@ public class PolicyList extends BasePaginatedResult {
         sb.append("  count: ").append(getCount()).append(",\n");
         sb.append("  next: ").append(getNext()).append(",\n");
         sb.append("  previous: ").append(getPrevious()).append(",\n");
-        sb.append("  roles: [").append(policies).append("\n");
+        sb.append("  policies: [").append(policies).append("\n");
         sb.append("]}\n");
         return sb.toString();
     }

@@ -23,6 +23,7 @@ import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -385,6 +386,59 @@ public interface PolicyManagementService {
     Response deactivatePolicies(
             @ApiParam(name = "policyIds", value = "Policy ID list to be deactivated.",
                     required = true) List<Integer> policyIds);
+
+    @PUT
+    @Produces("application/json")
+    @Path("apply-changes")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Applying Changes on Policies.",
+            notes = "Policies in the active state will be applied to new device that register with WSO2 EMM based on" +
+                    " the policy enforcement criteria . In a situation where you need to make changes to existing" +
+                    " policies (removing, activating, deactivating and updating) or add new policies, the existing" +
+                    " devices will not receive these changes immediately. Once all the required changes are made" +
+                    " you need to apply the changes to push the policy changes to the existing devices.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "Changes have been successfully updated."),
+            @ApiResponse(
+                    code = 500,
+                    message = "ErrorResponse in deactivating policies.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
+    Response applyChanges();
+
+
+    @PUT
+    @Path("/priorities")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Prioritizing policies.",
+            notes = "",
+            tags = "Device Policy Management"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "Policy Priorities successfully updated."),
+            @ApiResponse(
+                    code = 400,
+                    message = "Policy priorities did not update. Bad Request.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Exception in updating policy priorities.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(scope = "", permissions = {})
+    Response updatePolicyPriorities(@ApiParam(name = "priorityUpdatedPolicies", value = "",
+            required = true) List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
 
 }

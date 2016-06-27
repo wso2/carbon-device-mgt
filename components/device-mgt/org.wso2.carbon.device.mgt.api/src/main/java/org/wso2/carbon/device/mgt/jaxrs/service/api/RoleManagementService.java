@@ -309,9 +309,6 @@ public interface RoleManagementService {
                     message = "OK. \n Role has been updated successfully",
                     responseHeaders = {
                             @ResponseHeader(
-                                    name = "Content-Location",
-                                    description = "URL of the updated role."),
-                            @ResponseHeader(
                                     name = "Content-Type",
                                     description = "Content type of the body"),
                             @ResponseHeader(
@@ -404,9 +401,6 @@ public interface RoleManagementService {
                             code = 200,
                             message = "OK. \n User list of the role has been updated successfully",
                             responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Location",
-                                            description = "URL of the updated user list."),
                                     @ResponseHeader(
                                             name = "Content-Type",
                                             description = "Content type of the body"),

@@ -196,7 +196,7 @@ public class PolicyManagerUtil {
     }
 
 
-    public static int getMonitoringFequency() throws PolicyManagementException {
+    public static int getMonitoringFrequency() throws PolicyManagementException {
 
         PlatformConfigurationManagementService configMgtService = new PlatformConfigurationManagementServiceImpl();
         PlatformConfiguration tenantConfiguration;

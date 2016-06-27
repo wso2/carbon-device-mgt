@@ -91,7 +91,7 @@ public class PolicyManagementServiceComponent {
                     DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
             if(policyConfiguration.getMonitoringEnable()) {
                 TaskScheduleService taskScheduleService = new TaskScheduleServiceImpl();
-                taskScheduleService.startTask(PolicyManagerUtil.getMonitoringFequency());
+                taskScheduleService.startTask(PolicyManagerUtil.getMonitoringFrequency());
             }
 
         } catch (Throwable t) {

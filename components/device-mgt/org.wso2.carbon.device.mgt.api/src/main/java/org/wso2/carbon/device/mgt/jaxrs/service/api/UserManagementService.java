@@ -163,9 +163,6 @@ public interface UserManagementService {
                     message = "OK. \n User has been updated successfully",
                     responseHeaders = {
                             @ResponseHeader(
-                                    name = "Content-Location",
-                                    description = "URL of the updated user."),
-                            @ResponseHeader(
                                     name = "Content-Type",
                                     description = "Content type of the body"),
                             @ResponseHeader(
@@ -190,7 +187,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while updating the user.",
                     response = ErrorResponse.class)
     })
@@ -224,7 +221,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while removing the user.",
                     response = ErrorResponse.class
             )
@@ -274,7 +271,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the role list" +
+                    message = "Internal Server Error. \n Server error occurred while fetching the role list" +
                             " assigned to the user.",
                     response = ErrorResponse.class)
     })
@@ -318,7 +315,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the user list.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the user list.",
                     response = ErrorResponse.class)
     })
     @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
@@ -384,7 +381,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the username " +
+                    message = "Internal Server Error. \n Server error occurred while fetching the username " +
                             "list that matches the given filter.",
                     response = ErrorResponse.class)
     })
@@ -438,7 +435,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })

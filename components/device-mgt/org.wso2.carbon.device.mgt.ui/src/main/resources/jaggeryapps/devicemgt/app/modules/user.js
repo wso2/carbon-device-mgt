@@ -66,22 +66,18 @@ var userModule = function () {
      */
     privateMethods.callBackend = function (url, method) {
         if (constants.HTTP_GET == method) {
-            var response = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-                var response = {};
-                response.content = responsePayload["responseContent"];
-                if (responsePayload["responseContent"] == null && responsePayload != null) {
-                    response.content = responsePayload;
+            return serviceInvokers.XMLHttp.get(url,
+                function (backendResponse) {
+                    var response = {};
+                    response.content = backendResponse.responseText;
+                    if (backendResponse.status == 200) {
+                        response.status = "success";
+                    } else {
+                        response.status = "error";
+                    }
+                    return response;
                 }
-                response.status = "success";
-                return response;
-            },
-            function (responsePayload) {
-                var response = {};
-                response.content = responsePayload;
-                response.status = "error";
-                return response;
-            });
-            return response;
+            );
         } else {
             log.error("Programming error : This method only support HTTP GET requests.");
         }
@@ -382,9 +378,12 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users";
-            return privateMethods.callBackend(url, constants.HTTP_GET);
-
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users?offset=0&limit=100";
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content).users;
+            }
+            return response;
         } catch (e) {
             throw e;
         } finally {
@@ -409,8 +408,10 @@ var userModule = function () {
         var carbonUser = privateMethods.getCarbonUser();
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/view?username=" + username;
-            var response = privateMethods.callBackend(url, constants.HTTP_GET);
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/" +
+                encodeURIComponent(username);
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            response["content"] = parse(response.content);
             response["userDomain"] = carbonUser.domain;
             return response;
         } catch (e) {
@@ -420,17 +421,17 @@ var userModule = function () {
         }
     };
     /**
-     * TODO: comment
+     * Returns a set of roles assigned to a particular user
      * @param username
-     * @returns {*}
+     * @returns {object} a response object with status and content on success.
      */
     publicMethods.getRolesByUsername = function (username) {
         var carbonUser = privateMethods.getCarbonUser();
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/users/roles?username=" + username;
-            var response = privateMethods.callBackend(url, constants.HTTP_GET);
-            return response;
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + + "/users/" +
+                encodeURIComponent(username) + "/roles";
+            return privateMethods.callBackend(url, constants["HTTP_GET"]);
         } catch (e) {
             throw e;
         } finally {
@@ -464,6 +465,7 @@ var userModule = function () {
      */
     /**
      * Get User Roles from user store (Internal roles not included).
+     * @returns {object} a response object with status and content on success.
      */
     publicMethods.getRoles = function () {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
@@ -475,7 +477,11 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles";
-            return privateMethods.callBackend(url, constants.HTTP_GET);
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content).roles;
+            }
+            return response;
         } catch (e) {
             throw e;
         } finally {
@@ -488,8 +494,10 @@ var userModule = function () {
      */
     /**
      * Get User Roles from user store (Internal roles not included).
+     * @returns {object} a response object with status and content on success.
      */
-    publicMethods.getRolesByUserStore = function (userStore) {
+    publicMethods.getRolesByUserStore = function () {
+        var ROLE_LIMIT = devicemgtProps.pageSize;
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require('/app/modules/utility.js')["utility"];
         if (!carbonUser) {
@@ -498,8 +506,12 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/" + encodeURIComponent(userStore);
-            return privateMethods.callBackend(url, constants.HTTP_GET);
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles?limit=" + ROLE_LIMIT;
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content).roles;
+            }
+            return response;
         } catch (e) {
             throw e;
         } finally {
@@ -520,7 +532,11 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/types";
-            return privateMethods.callBackend(url, constants.HTTP_GET);
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content);
+            }
+            return response;
         } catch (e) {
             throw e;
         } finally {
@@ -542,8 +558,9 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/role?rolename=" + encodeURIComponent(roleName);
-            var response = privateMethods.callBackend(url, constants.HTTP_GET);
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/roles/" + encodeURIComponent(roleName);
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            response.content = parse(response.content);
             return response;
         } catch (e) {
             throw e;
@@ -682,6 +699,9 @@ var userModule = function () {
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/platform-configs/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
+            permissions["LIST_OWN_DEVICES"] = true;
         }
 
         return permissions;

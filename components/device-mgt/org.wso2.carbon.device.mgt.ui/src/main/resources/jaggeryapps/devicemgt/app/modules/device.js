@@ -36,7 +36,8 @@ deviceModule = function () {
     var publicMethods = {};
     var privateMethods = {};
 
-    var deviceCloudService = devicemgtProps["httpsURL"] + "/common/device_manager";
+    //var deviceCloudService = devicemgtProps["httpsURL"] + "/common/device_manager";
+    var deviceManagementService = utility.getDeviceManagementService();
 
     privateMethods.validateAndReturn = function (value) {
         return (value == undefined || value == null) ? constants.UNSPECIFIED : value;
@@ -56,6 +57,61 @@ deviceModule = function () {
             utility.startTenantFlow(carbonUser);
             var deviceManagementService = utility.getDeviceManagementService();
             var devices = deviceManagementService.getAllDevices();
+            var deviceList = [];
+            var i, device, propertiesList, deviceObject;
+            for (i = 0; i < devices.size(); i++) {
+                device = devices.get(i);
+                propertiesList = DeviceManagerUtil.convertDevicePropertiesToMap(device.getProperties());
+
+                deviceObject = {};
+                deviceObject[constants.DEVICE_IDENTIFIER] =
+                    privateMethods.validateAndReturn(device.getDeviceIdentifier());
+                deviceObject[constants.DEVICE_NAME] =
+                    privateMethods.validateAndReturn(device.getName());
+                deviceObject[constants.DEVICE_OWNERSHIP] =
+                    privateMethods.validateAndReturn(device.getEnrolmentInfo().getOwnership());
+                deviceObject[constants.DEVICE_OWNER] =
+                    privateMethods.validateAndReturn(device.getEnrolmentInfo().getOwner());
+                deviceObject[constants.DEVICE_TYPE] =
+                    privateMethods.validateAndReturn(device.getType());
+                deviceObject[constants.DEVICE_PROPERTIES] = {};
+                if (device.getType() == constants.PLATFORM_IOS) {
+                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_MODEL] =
+                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_PRODUCT));
+                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_VENDOR] = constants.VENDOR_APPLE;
+                } else {
+                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_MODEL] =
+                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_MODEL));
+                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_VENDOR] =
+                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_VENDOR));
+                }
+                deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_OS_VERSION] =
+                    privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_OS_VERSION));
+
+                deviceList.push(deviceObject);
+            }
+            return deviceList;
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
+    /*
+     @Deprecated
+     */
+    publicMethods.listDevicesForUser = function (username) {
+        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        var utility = require('/modules/utility.js').utility;
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants.ERRORS.USER_NOT_FOUND;
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var deviceManagementService = utility.getDeviceManagementService();
+            var devices = deviceManagementService.getDeviceListOfUser(username);
             var deviceList = [];
             var i, device, propertiesList, deviceObject;
             for (i = 0; i < devices.size(); i++) {
@@ -216,36 +272,36 @@ deviceModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
 
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/view?type=" + deviceType + "&id=" + deviceId;
+            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId;
             return serviceInvokers.XMLHttp.get(
-                    url, function (responsePayload) {
-                        var device = responsePayload.responseContent;
-                        if (device) {
-                            var propertiesList = device["properties"];
-                            var properties = {};
-                            if (propertiesList){
-                                for (var i = 0; i < propertiesList.length; i++) {
-                                    properties[propertiesList[i]["name"]] = propertiesList[i]["value"];
-                                }
-                            }
-                            var deviceObject = {};
-                            deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
-                            deviceObject[constants["DEVICE_NAME"]] = device["name"];
-                            deviceObject[constants["DEVICE_OWNERSHIP"]] = device["enrolmentInfo"]["ownership"];
-                            deviceObject[constants["DEVICE_OWNER"]] = device["enrolmentInfo"]["owner"];
-                            deviceObject[constants["DEVICE_STATUS"]] = device["enrolmentInfo"]["status"];
-                            deviceObject[constants["DEVICE_TYPE"]] = device["type"];
-                            if (device["type"] == constants["PLATFORM_IOS"]) {
-                                properties[constants["DEVICE_MODEL"]] = properties[constants["DEVICE_PRODUCT"]];
-                                delete properties[constants["DEVICE_PRODUCT"]];
-                                properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
-                            }
-                            deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
-                            return deviceObject;
+                url, 
+                function (backendResponse) {
+                    var response = {};
+                    if (backendResponse.status == 200 && backendResponse.responseText) {
+                        response["status"] = "success";
+                        var device = parse(backendResponse.responseText);
+                        var propertiesList = device["properties"];
+                        var properties = {};
+                        for (var i = 0; i < propertiesList.length; i++) {
+                            properties[propertiesList[i]["name"]] =
+                                propertiesList[i]["value"];
                         }
-                    },
-                    function (responsePayload) {
-                        var response = {};
+                        var deviceObject = {};
+                        deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
+                        deviceObject[constants["DEVICE_NAME"]] = device["name"];
+                        deviceObject[constants["DEVICE_OWNERSHIP"]] = device["enrolmentInfo"]["ownership"];
+                        deviceObject[constants["DEVICE_OWNER"]] = device["enrolmentInfo"]["owner"];
+                        deviceObject[constants["DEVICE_STATUS"]] = device["enrolmentInfo"]["status"];
+                        deviceObject[constants["DEVICE_TYPE"]] = device["type"];
+                        if (device["type"] == constants["PLATFORM_IOS"]) {
+                            properties[constants["DEVICE_MODEL"]] = properties[constants["DEVICE_PRODUCT"]];
+                            delete properties[constants["DEVICE_PRODUCT"]];
+                            properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
+                        }
+                        deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
+                        response["content"] = deviceObject;
+                        return response;
+                    } else {
                         response["status"] = "error";
                         return response;
                     }

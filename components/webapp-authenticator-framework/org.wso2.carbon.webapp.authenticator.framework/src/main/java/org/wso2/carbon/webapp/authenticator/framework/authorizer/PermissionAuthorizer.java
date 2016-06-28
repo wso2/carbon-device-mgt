@@ -22,6 +22,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.owasp.encoder.Encode;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
@@ -57,13 +58,13 @@ public class PermissionAuthorizer {
             requestPermission = registryBasedPermissionManager.getPermission(properties);
         } catch (PermissionManagementException e) {
             log.error(
-                    "Error occurred while fetching the permission for URI : " + requestUri + " ," +
+                    "Error occurred while fetching the permission for URI : " + Encode.forJava(requestUri) + " ," +
                     " METHOD : " + requestMethod + ", msg = " + e.getMessage());
         }
 
         if (requestPermission == null) {
             if (log.isDebugEnabled()) {
-                log.debug("Permission to request '" + requestUri + "' is not defined in the configuration");
+                log.debug("Permission to request '" + Encode.forJava(requestUri) + "' is not defined in the configuration");
             }
             return WebappAuthenticator.Status.FAILURE;
         }

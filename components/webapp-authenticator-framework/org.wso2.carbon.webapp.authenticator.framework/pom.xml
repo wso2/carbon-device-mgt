@@ -121,7 +121,8 @@
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.registry.common.*;version="${carbon.registry.imp.pkg.version.range}",
                             org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
-                            org.wso2.carbon.base
+                            org.wso2.carbon.base,
+                            org.owasp.encoder
                         </Import-Package>
                     </instructions>
                 </configuration>
@@ -225,6 +226,10 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
+            <artifactId>encoder</artifactId>
         </dependency>
     </dependencies>
 

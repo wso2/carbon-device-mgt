@@ -21,6 +21,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.owasp.encoder.Encode;
 import org.w3c.dom.Document;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.core.authenticate.APITokenValidator;
@@ -42,7 +43,7 @@ public class AuthenticationFrameworkUtil {
     public static void handleNoMatchAuthScheme(Request request, Response response, String httpVerb, String version,
                                                String context) {
         String msg = "Resource is not matched for HTTP Verb: '" + httpVerb + "', API context: '" + context +
-                "', Version: '" + version + "' and RequestURI: '" + request.getRequestURI() + "'";
+                "', Version: '" + version + "' and RequestURI: '" + Encode.forHtml(request.getRequestURI()) + "'";
         handleResponse(request, response, HttpServletResponse.SC_FORBIDDEN, msg);
     }
 

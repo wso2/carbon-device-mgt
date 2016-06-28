@@ -1511,6 +1511,11 @@
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson-annotations.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
+                <artifactId>encoder</artifactId>
+                <version>${owasp.encoder.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -1880,6 +1885,7 @@
         <!--JWT grant type extension feature-->
         <identity.jwt.extension.version>1.0.2</identity.jwt.extension.version>
         <jackson-annotations.version>2.7.4</jackson-annotations.version>
+        <owasp.encoder.version>1.2.0.wso2v1</owasp.encoder.version>
     </properties>
 
 </project>

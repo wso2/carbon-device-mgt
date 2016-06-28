@@ -19,6 +19,8 @@
 package org.wso2.carbon.device.mgt.common.notification.mgt;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 
 import java.util.List;
 
@@ -69,6 +71,8 @@ public interface NotificationManagementService {
      */
     List<Notification> getAllNotifications() throws NotificationManagementException;
 
+    PaginationResult getAllNotifications(PaginationRequest request) throws NotificationManagementException;
+
     /**
      * @param status - Status of the notifications to be fetched from database.
      * @return A list of notifications matching the given status.
@@ -77,5 +81,8 @@ public interface NotificationManagementService {
      */
     List<Notification> getNotificationsByStatus(Notification.Status status) throws
             NotificationManagementException;
+
+    PaginationResult getNotificationsByStatus(Notification.Status status,
+                                   PaginationRequest request) throws NotificationManagementException;
 
 }

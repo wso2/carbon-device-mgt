@@ -94,12 +94,15 @@ public interface PolicyManagementService {
                                     "Server error occurred while adding a new policy.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/add"})
+    @Permission(
+            scope = "policy-modify",
+            permissions = {"/permission/admin/device-mgt/admin/policies/add"})
     Response addPolicy(
             @ApiParam(
                     name = "policy",
                     value = "Policy details related to the operation.",
-                    required = true) PolicyWrapper policy);
+                    required = true)
+                    PolicyWrapper policy);
 
     @GET
     @ApiOperation(
@@ -146,23 +149,28 @@ public interface PolicyManagementService {
                                     "policies."),
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
+    @Permission(
+            scope = "policy-view",
+            permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicies(
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset") int offset,
+            @QueryParam("offset")
+                    int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit);
+            @QueryParam("limit")
+                    int limit);
 
     @GET
     @Path("/{id}")
@@ -209,18 +217,22 @@ public interface PolicyManagementService {
                                     "policy.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "policy-view", permissions = {"/permission/admin/device-mgt/admin/policies/list"})
+    @Permission(
+            scope = "policy-view",
+            permissions = {"/permission/admin/device-mgt/admin/policies/list"})
     Response getPolicy(
             @ApiParam(
                     name = "id",
                     value = "Policy identifier",
                     required = true)
-            @PathParam("id") int id,
+            @PathParam("id")
+                    int id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince);
 
     @PUT
     @Path("/{id}")
@@ -269,16 +281,21 @@ public interface PolicyManagementService {
                                     "Server error occurred while updating the policy.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
+    @Permission(
+            scope = "policy-modify",
+            permissions = {"/permission/admin/device-mgt/admin/policies/update"})
     Response updatePolicy(
             @ApiParam(
                     name = "id",
-                    value = "The device identifier of the device.", required = true)
-            @PathParam("id") int id,
+                    value = "The device identifier of the device.",
+                    required = true)
+            @PathParam("id")
+                    int id,
             @ApiParam(
                     name = "policy",
                     value = "Policy details related to the operation.",
-                    required = true) PolicyWrapper policy);
+                    required = true)
+                    PolicyWrapper policy);
 
     @POST
     @Path("/remove-policy")
@@ -311,12 +328,15 @@ public interface PolicyManagementService {
                                     "Server error occurred while bulk removing policies.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
+    @Permission(
+            scope = "policy-modify",
+            permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
     Response removePolicies(
             @ApiParam(
                     name = "policyIds",
                     value = "Policy id list to be deleted.",
-                    required = true) List<Integer> policyIds);
+                    required = true)
+                    List<Integer> policyIds);
 
     @POST
     @Path("/activate-policy")
@@ -346,12 +366,16 @@ public interface PolicyManagementService {
                             message = "ErrorResponse in activating policies.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "policy-modify", permissions = {
+    @Permission(
+            scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
             "/permission/admin/device-mgt/admin/policies/add"})
     Response activatePolicies(
-            @ApiParam(name = "policyIds", value = "Policy ID list to be activated.",
-                    required = true) List<Integer> policyIds);
+            @ApiParam(
+                    name = "policyIds",
+                    value = "Policy ID list to be activated.",
+                    required = true)
+                    List<Integer> policyIds);
 
     @POST
     @Path("/deactivate-policy")
@@ -363,7 +387,8 @@ public interface PolicyManagementService {
             notes = "Using the REST API command you are able to unpublish a policy in order to bring a policy that " +
                     "is in the active state to the inactive state.",
             tags = "Device Policy Management")
-    @ApiResponses(value = {
+    @ApiResponses(
+            value = {
             @ApiResponse(
                     code = 200,
                     message = "Policies have been successfully deactivated."),
@@ -380,12 +405,17 @@ public interface PolicyManagementService {
                     message = "ErrorResponse in deactivating policies.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "policy-modify", permissions = {
+    @Permission(
+            scope = "policy-modify",
+            permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
             "/permission/admin/device-mgt/admin/policies/add"})
     Response deactivatePolicies(
-            @ApiParam(name = "policyIds", value = "Policy ID list to be deactivated.",
-                    required = true) List<Integer> policyIds);
+            @ApiParam(
+                    name = "policyIds",
+                    value = "Policy ID list to be deactivated.",
+                    required = true)
+                    List<Integer> policyIds);
 
     @PUT
     @Produces("application/json")
@@ -400,7 +430,8 @@ public interface PolicyManagementService {
                     " policies (removing, activating, deactivating and updating) or add new policies, the existing" +
                     " devices will not receive these changes immediately. Once all the required changes are made" +
                     " you need to apply the changes to push the policy changes to the existing devices.")
-    @ApiResponses(value = {
+    @ApiResponses(
+            value = {
             @ApiResponse(
                     code = 200,
                     message = "Changes have been successfully updated."),
@@ -420,10 +451,12 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
             value = "Prioritizing policies.",
-            notes = "",
+            notes = "If you wish to make changes to the existing policy priority order, you can do so by "
+                    + "updating the priority order using this end-point",
             tags = "Device Policy Management"
     )
-    @ApiResponses(value = {
+    @ApiResponses(
+            value = {
             @ApiResponse(
                     code = 200,
                     message = "Policy Priorities successfully updated."),
@@ -436,9 +469,15 @@ public interface PolicyManagementService {
                     message = "Exception in updating policy priorities.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "", permissions = {})
-    Response updatePolicyPriorities(@ApiParam(name = "priorityUpdatedPolicies", value = "",
-            required = true) List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
+    @Permission(
+            scope = "",
+            permissions = {})
+    Response updatePolicyPriorities(
+            @ApiParam(
+                    name = "priorityUpdatedPolicies",
+                    value = "List of policies with priorities",
+                    required = true)
+                    List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
 
 }

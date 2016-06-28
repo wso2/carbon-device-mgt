@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.core.notification.mgt.dao;
 
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 
@@ -69,6 +71,12 @@ public interface NotificationDAO {
 	 */
 	List<Notification> getAllNotifications(int tenantId) throws NotificationManagementException;
 
+	List<Notification> getAllNotifications(PaginationRequest request, int tenantId) throws NotificationManagementException;
+
+	int getNotificationCount(int tenantId) throws NotificationManagementException;
+
+	int getNotificationCountByStatus(Notification.Status status, int tenantId) throws NotificationManagementException;
+
 	/**
 	 * This method is used to get all notifications based on notification-status.
 	 *
@@ -79,5 +87,8 @@ public interface NotificationDAO {
 	 */
 	List<Notification> getNotificationsByStatus(Notification.Status status, int tenantId) throws
 	                                                              NotificationManagementException;
+
+	List<Notification> getNotificationsByStatus(PaginationRequest request, Notification.Status status, int tenantId) throws
+			NotificationManagementException;
 
 }

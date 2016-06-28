@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationContext;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
@@ -88,31 +89,36 @@ public interface NotificationManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "device-notification-view", permissions = {
+    @Permission(
+            scope = "device-notification-view",
+            permissions = {
             "/permission/admin/device-mgt/admin/notifications/view",
             "/permission/admin/device-mgt/user/notifications/view"
-    })
+             })
     Response getNotifications(
-            @ApiParam(name = "status",
+            @ApiParam(
+                    name = "status",
                     value = "Status of the notification.",
                     allowableValues = "NEW, CHECKED",
                     required = false)
-            @QueryParam("status") String status,
+            @QueryParam("status")
+                    String status,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset") int offset,
+            @QueryParam("offset")
+                    int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit);
-
-
+            @QueryParam("limit")
+                    int limit);
 }

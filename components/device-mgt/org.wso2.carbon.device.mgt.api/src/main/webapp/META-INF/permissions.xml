@@ -589,13 +589,13 @@
     </Permission>
     <Permission>
         <name>Deactivate Policy</name>
-        <path>/device-mgt/user/policies/add</path>
+        <path>/device-mgt/admin/policies/add</path>
         <url>/policies/deactivate-policy</url>
         <method>PUT</method>
     </Permission>
     <Permission>
         <name>Remove Policy</name>
-        <path>/device-mgt/user/policies/remove</path>
+        <path>/device-mgt/admin/policies/remove</path>
         <url>/policies/remove-policy</url>
         <method>POST</method>
     </Permission>

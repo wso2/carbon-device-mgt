@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EntityDoesNotExistException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
@@ -35,6 +37,7 @@ import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManageme
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.util.NotificationDAOUtil;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -156,6 +159,50 @@ public class NotificationManagementServiceImpl implements NotificationManagement
             NotificationManagementDAOFactory.closeConnection();
         }
     }
+
+    @Override
+    public PaginationResult getAllNotifications(PaginationRequest request) throws NotificationManagementException {
+        PaginationResult paginationResult = new PaginationResult();
+        List<Notification> notifications = new ArrayList<>();
+        int count =0;
+        try {
+            NotificationManagementDAOFactory.openConnection();
+            notifications = notificationDAO.getAllNotifications(request, NotificationDAOUtil.getTenantId());
+            count = notificationDAO.getNotificationCount(NotificationDAOUtil.getTenantId());
+            paginationResult.setData(notifications);
+            paginationResult.setRecordsFiltered(count);
+            paginationResult.setRecordsTotal(count);
+            return paginationResult;
+        } catch (SQLException e) {
+            throw new NotificationManagementException("Error occurred while opening a connection to" +
+                    " the data source", e);
+        } finally {
+            NotificationManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public PaginationResult getNotificationsByStatus(Notification.Status status,
+                                                     PaginationRequest request) throws NotificationManagementException{
+        PaginationResult paginationResult = new PaginationResult();
+        List<Notification> notifications = new ArrayList<>();
+        int count =0;
+        try {
+            NotificationManagementDAOFactory.openConnection();
+            notifications = notificationDAO.getNotificationsByStatus(request, status, NotificationDAOUtil.getTenantId());
+            count = notificationDAO.getNotificationCountByStatus(status, NotificationDAOUtil.getTenantId());
+            paginationResult.setData(notifications);
+            paginationResult.setRecordsFiltered(count);
+            paginationResult.setRecordsTotal(count);
+            return paginationResult;
+        } catch (SQLException e) {
+            throw new NotificationManagementException("Error occurred while opening a connection " +
+                    "to the data source", e);
+        } finally {
+            NotificationManagementDAOFactory.closeConnection();
+        }
+    }
+
 
     @Override
     public List<Notification> getNotificationsByStatus(Notification.Status status)

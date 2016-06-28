@@ -90,53 +90,66 @@ public interface DeviceManagementService {
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "device-list", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+    @Permission(
+            scope = "device-list",
+            permissions = {"/permission/admin/device-mgt/admin/devices/list"}
+    )
     Response getDevices(
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = false)
-            @QueryParam("type") String type,
+            @QueryParam("type")
+                    String type,
             @ApiParam(
-                    name = "user", value = "Username of owner of the devices.",
+                    name = "user",
+                    value = "Username of owner of the devices.",
                     required = false)
-            @QueryParam("user") String user,
+            @QueryParam("user")
+                    String user,
             @ApiParam(
                     name = "roleName",
                     value = "Role name of the devices to be fetched.",
                     required = false)
-            @QueryParam("roleName") String roleName,
+            @QueryParam("roleName")
+                    String roleName,
             @ApiParam(
                     name = "ownership",
                     allowableValues = "BYOD, COPE",
                     value = "Ownership of the devices to be fetched registered under.",
                     required = false)
-            @QueryParam("ownership") String ownership,
+            @QueryParam("ownership")
+                    String ownership,
             @ApiParam(
                     name = "status",
                     value = "Enrollment status of devices to be fetched.",
                     required = false)
-            @QueryParam("status") String status,
+            @QueryParam("status")
+                    String status,
             @ApiParam(
                     name = "since",
                     value = "Last modified timestamp",
                     required = false)
-            @QueryParam("since") String since,
+            @QueryParam("since")
+                    String since,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Timestamp of the last modified date",
                     required = false)
-            @HeaderParam("If-Modified-Since") String timestamp,
+            @HeaderParam("If-Modified-Since")
+                    String timestamp,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset") int offset,
+            @QueryParam("offset")
+                    int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit);
+            @QueryParam("limit")
+                    int limit);
 
 
     @GET
@@ -184,25 +197,32 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "device-view", permissions = {
+    @Permission(
+            scope = "device-view",
+            permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"})
+            "/permission/admin/device-mgt/user/devices/view"
+            }
+    )
     Response getDevice(
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = true)
-            @PathParam("type") String type,
+            @PathParam("type")
+                    String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
-            @PathParam("id") String id,
+            @PathParam("id")
+                    String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince);
 
     @GET
     @Path("/{type}/{id}/features")
@@ -263,24 +283,31 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving feature list of the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"})
+    @Permission(
+            scope = "device-search",
+            permissions = {"/permission/admin/device-mgt/admin/devices/view",
+            "/permission/admin/device-mgt/user/devices/view"
+            }
+    )
     Response getFeaturesOfDevice(
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = true)
-            @PathParam("type") String type,
+            @PathParam("type")
+                    String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
-            @PathParam("id") String id,
+            @PathParam("id")
+                    String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince);
 
     @POST
     @Path("/search-devices")
@@ -335,23 +362,28 @@ public interface DeviceManagementService {
                                     "Server error occurred while enrolling the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "device-search", permissions = {"/permission/admin/device-mgt/admin/devices/list"})
+    @Permission(
+            scope = "device-search",
+            permissions = {"/permission/admin/device-mgt/admin/devices/list" }
+    )
     Response searchDevices(
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset") int offset,
+            @QueryParam("offset")
+                    int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit,
+            @QueryParam("limit")
+                    int limit,
             @ApiParam(
                     name = "searchContext",
                     value = "List of search conditions.",
                     required = true)
-            SearchContext searchContext);
+                    SearchContext searchContext);
 
     @GET
     @Path("/{type}/{id}/applications")
@@ -378,7 +410,8 @@ public interface DeviceManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource has been modified the "
+                                                    + "last time.\n" +
                                                     "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
                             code = 303,
@@ -391,14 +424,16 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
+                                    "Empty body because the client already has the latest version of the "
+                                    + "requested resource."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Device of which the application list is requested, is not found.",
+                            message = "Not Found. \n Device of which the application list is requested, is "
+                                    + "not found.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
@@ -406,38 +441,47 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving installed application list of the device.",
+                                    "Server error occurred while retrieving installed application list of "
+                                    + "the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "operation-view", permissions = {
+    @Permission(
+            scope = "operation-view",
+            permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"
-    })
+            }
+    )
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.", required = true)
-            @PathParam("type") String type,
+            @PathParam("type")
+                    String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
-            @PathParam("id") String id,
+            @PathParam("id")
+                    String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset") int offset,
+            @QueryParam("offset")
+                    int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit);
+            @QueryParam("limit")
+                    int limit);
 
 
     @GET
@@ -446,9 +490,9 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting paginated details for operations on a device.",
-            notes = "You will carry out many operations on a device. In a situation where you wish to view the all" +
-                    " the operations carried out on a device it is not feasible to show all the details on one page" +
-                    " therefore the details are paginated.",
+            notes = "You will carry out many operations on a device. In a situation where you wish to view "
+                    + "the all the operations carried out on a device it is not feasible to show all the "
+                    + "details on one page therefore the details are paginated.",
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -467,7 +511,8 @@ public interface DeviceManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource has been modified the "
+                                                    + "last time.\n" +
                                                     "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
                             code = 303,
@@ -480,14 +525,16 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
+                                    "Empty body because the client already has the latest version of the "
+                                    + "requested resource."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Device of which the operation list is requested, is not found.",
+                            message = "Not Found. \n Device of which the operation list is requested, is not "
+                                    + "found.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
@@ -495,39 +542,49 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving operation list scheduled for the device.",
+                                    "Server error occurred while retrieving operation list scheduled for the "
+                                    + "device.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "operation-view", permissions = {
+    @Permission(
+            scope = "operation-view",
+            permissions = {
             "/permission/admin/device-mgt/admin/devices/view",
             "/permission/admin/device-mgt/user/devices/view"
-    })
+            }
+    )
     Response getDeviceOperations(
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = true)
-            @PathParam("type") String type,
+            @PathParam("type")
+                    String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
-            @PathParam("id") String id,
+            @PathParam("id")
+                    String id,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Validates if the requested variant has not been modified since the time "
+                            + "specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset") int offset,
+            @QueryParam("offset")
+                    int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit") int limit);
+            @QueryParam("limit")
+                    int limit);
 
     @GET
     @Path("/{type}/{id}/effective-policy")
@@ -535,9 +592,10 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the effective policy calculated for a device.",
-            notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the EMM " +
-                    "filters the policies based on the Platform (device type), filters based on the device ownership" +
-                    " type , filters based on the user role or name and finally the policy is enforced on the device.",
+            notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the "
+                    + "EMM filters the policies based on the Platform (device type), filters based on the "
+                    + "device ownership type , filters based on the user role or name and finally the policy"
+                    + " is enforced on the device.",
             tags = "Device Management")
     @ApiResponses(
             value = {
@@ -555,7 +613,8 @@ public interface DeviceManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource has been modified the "
+                                                    + "last time.\n" +
                                                     "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
                             code = 303,
@@ -568,14 +627,16 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
+                                    "Empty body because the client already has the latest version of the "
+                                    + "requested resource."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Device of which the effective policy is requested, is not found.",
+                            message = "Not Found. \n Device of which the effective policy is requested, is "
+                                    + "not found.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
@@ -583,27 +644,50 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving the effective policy calculated for the device.",
+                                    "Server error occurred while retrieving the effective policy calculated "
+                                    + "for the device.",
                             response = ErrorResponse.class)
-            })
+            }
+    )
     Response getEffectivePolicyOfDevice(
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = true)
-            @PathParam("type") String type,
+            @PathParam("type")
+                    String type,
             @ApiParam(
                     name = "id",
                     value = "Device Identifier",
                     required = true)
-            @PathParam("id") String id,
+            @PathParam("id")
+                    String id,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Validates if the requested variant has not been modified since the time "
+                            + "specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince);
 
     @GET
     @Path("/types")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get the device type.",
+            notes = "You are able to register Android, iOS and Windows devices with WSO2 EMM. In order to"
+                    + "retrieve the device type details that are registered this end-point van be used.",
+            tags = "Device Management")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Registered device types have successfully retrieved"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Error occurred while fetching the list of device types.")
+            }
+    )
     Response getDeviceTypes();
 }

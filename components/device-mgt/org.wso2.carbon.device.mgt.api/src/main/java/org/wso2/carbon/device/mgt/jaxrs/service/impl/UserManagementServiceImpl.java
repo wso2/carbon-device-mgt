@@ -348,7 +348,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
 
             //As the listUsers function accepts limit only to accommodate offset we are passing offset + limit
-            String[] users = userStoreManager.listUsers(appliedFilter, appliedLimit);
+            String[] users = userStoreManager.listUsers(appliedFilter + "*", appliedLimit);
             userList = new ArrayList<>(users.length);
             BasicUserInfo user;
             for (String username : users) {

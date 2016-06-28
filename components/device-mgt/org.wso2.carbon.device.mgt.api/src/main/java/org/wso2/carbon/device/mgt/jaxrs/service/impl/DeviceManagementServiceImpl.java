@@ -322,6 +322,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @GET
+    @Path("/types")
     @Override
     public Response getDeviceTypes() {
         List<DeviceType> deviceTypes;

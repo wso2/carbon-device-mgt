@@ -429,7 +429,9 @@ public interface PolicyManagementService {
                     " the policy enforcement criteria . In a situation where you need to make changes to existing" +
                     " policies (removing, activating, deactivating and updating) or add new policies, the existing" +
                     " devices will not receive these changes immediately. Once all the required changes are made" +
-                    " you need to apply the changes to push the policy changes to the existing devices.")
+                    " you need to apply the changes to push the policy changes to the existing devices.",
+            tags = "Device Policy Management"
+    )
     @ApiResponses(
             value = {
             @ApiResponse(

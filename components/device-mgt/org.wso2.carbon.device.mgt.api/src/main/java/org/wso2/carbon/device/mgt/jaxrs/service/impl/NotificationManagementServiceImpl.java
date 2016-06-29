@@ -22,11 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
-import org.wso2.carbon.device.mgt.jaxrs.NotificationContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.NotificationManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -49,6 +48,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         String msg;
         List<Notification> notifications;
+        NotificationList notificationList = new NotificationList();
         try {
             if (status != null) {
                 RequestValidationUtil.validateNotificationStatus(status);
@@ -59,17 +59,14 @@ public class NotificationManagementServiceImpl implements NotificationManagement
                 notifications = DeviceMgtAPIUtils.getNotificationManagementService().getAllNotifications();
             }
 
-            if (notifications == null || notifications.size() == 0) {
-                throw new NotFoundException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("No notification is " +
-                                "available to be retrieved.").build());
-            }
-            return Response.status(Response.Status.OK).entity(notifications).build();
+            notificationList.setCount(notifications.size());
+            notificationList.setNotifications(notifications);
+            return Response.status(Response.Status.OK).entity(notificationList).build();
         } catch (NotificationManagementException e) {
-            msg = "Error occurred while retrieving notification info";
+            msg = "Error occurred while retrieving notification list";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 

@@ -85,7 +85,8 @@ public interface NotificationManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the notification list.",
+                            message = "Internal Server Error. " +
+                                    "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
     @Permission(scope = "device-notification-view", permissions = {

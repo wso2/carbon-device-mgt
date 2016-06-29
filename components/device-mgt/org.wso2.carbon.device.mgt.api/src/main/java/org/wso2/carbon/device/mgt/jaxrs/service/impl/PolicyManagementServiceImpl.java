@@ -298,7 +298,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
         if (isPolicyDeActivated) {
             return Response.status(Response.Status.OK).entity("Selected policies have been successfully " +
-                                                                      "deactivated").build();
+                    "deactivated").build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage("Selected policies have " +

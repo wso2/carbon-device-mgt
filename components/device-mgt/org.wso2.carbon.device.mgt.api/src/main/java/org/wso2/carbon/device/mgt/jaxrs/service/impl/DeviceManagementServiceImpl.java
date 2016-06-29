@@ -265,7 +265,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
 
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
-            result = dms.getOperations(new DeviceIdentifier(id, type),request);
+            result = dms.getOperations(new DeviceIdentifier(id, type), request);
 
             operationsList.setList((List<? extends Operation>) result.getData());
             operationsList.setCount(result.getRecordsTotal());

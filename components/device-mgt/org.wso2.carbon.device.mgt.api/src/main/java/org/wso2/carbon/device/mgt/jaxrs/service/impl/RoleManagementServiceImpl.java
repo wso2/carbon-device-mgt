@@ -209,7 +209,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             //TODO fix what's returned in the entity
             return Response.created(new URI(API_BASE_PATH + "/" + roleInfo.getRoleName())).entity(
                     "Role '" + roleInfo.getRoleName() + "' has " +
-                    "successfully been added").build();
+                            "successfully been added").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while adding role '" + roleInfo.getRoleName() + "'";
             log.error(msg, e);

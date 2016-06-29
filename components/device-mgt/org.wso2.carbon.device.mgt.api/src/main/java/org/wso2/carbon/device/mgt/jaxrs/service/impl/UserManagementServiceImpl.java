@@ -110,7 +110,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 }
                 return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage(
-                        "User doesn't exist.").build()).build();
+                                "User doesn't exist.").build()).build();
             }
 
             BasicUserInfo user = this.getBasicUserInfo(username);

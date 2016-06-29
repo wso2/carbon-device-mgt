@@ -88,7 +88,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         try {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             if (!userRealm.getUserStoreManager().isExistingRole(roleName)) {
-                return Response.status(404).entity(new ErrorResponse.ErrorResponseBuilder().setMessage(
+                return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse.ErrorResponseBuilder().setMessage(
                         "No role exists with the name '" + roleName + "'").build()).build();
             }
 
@@ -153,7 +153,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             if (!userStoreManager.isExistingRole(roleName)) {
-                return Response.status(404).entity(
+                return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
                                 roleName + "'").build()).build();
             }
@@ -234,7 +234,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             final UserStoreManager userStoreManager = userRealm.getUserStoreManager();
             if (!userStoreManager.isExistingRole(roleName)) {
-                return Response.status(404).entity(
+                return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
                                 roleName + "'").build()).build();
             }
@@ -290,7 +290,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             final UserStoreManager userStoreManager = userRealm.getUserStoreManager();
             if (!userStoreManager.isExistingRole(roleName)) {
-                return Response.status(404).entity(
+                return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
                                 roleName + "'").build()).build();
             }

@@ -57,7 +57,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                             " already exists. Therefore, request made to add user was refused.");
                 }
                 // returning response with bad request state
-                return Response.status(409).entity(
+                return Response.status(Response.Status.CONFLICT).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
                                 userInfo.getUsername() + " already exists. Therefore, request made to add user " +
                                 "was refused.").build()).build();
@@ -108,7 +108,8 @@ public class UserManagementServiceImpl implements UserManagementService {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist.");
                 }
-                return Response.status(404).entity(new ErrorResponse.ErrorResponseBuilder().setMessage(
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(
                         "User doesn't exist.").build()).build();
             }
 
@@ -133,7 +134,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                     log.debug("User by username: " + userInfo.getUsername() +
                             " doesn't exists. Therefore, request made to update user was refused.");
                 }
-                return Response.status(404).entity(
+                return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
                                 userInfo.getUsername() + " doesn't  exist.").build()).build();
             }
@@ -206,7 +207,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist for removal.");
                 }
-                return Response.status(404).entity(
+                return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User '" +
                                 username + "' does not exist for removal.").build()).build();
             }
@@ -234,7 +235,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist for role retrieval.");
                 }
-                return Response.status(404).entity(
+                return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " + username +
                                 " does not exist for role retrieval.").build()).build();
             }

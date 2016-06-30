@@ -88,4 +88,29 @@ public class NotificationManagementServiceImpl implements NotificationManagement
         }
     }
 
+    @PUT
+    @Path("{id}/mark-checked")
+    public Response updateNotificationStatus(
+            @PathParam("id") int id) {
+        String msg;
+        Notification.Status status = Notification.Status.CHECKED;
+        Notification notification;
+        try {
+            DeviceMgtAPIUtils.getNotificationManagementService().updateNotificationStatus(id, status);
+        } catch (NotificationManagementException e) {
+            msg = "Error occurred while updating notification status.";
+            log.error(msg, e);
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+        }
+        try {
+            notification = DeviceMgtAPIUtils.getNotificationManagementService().getNotification(id);
+            return Response.status(Response.Status.OK).entity(notification).build();
+        } catch (NotificationManagementException e) {
+            msg = "Notification updated successfully. But the retrial of the updated notification failed";
+            log.error(msg, e);
+            return Response.status(Response.Status.OK).build();
+        }
+    }
+
 }

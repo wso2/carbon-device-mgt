@@ -88,13 +88,14 @@ public interface NotificationManagementService {
                             code = 500,
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
-            })
+            }
+    )
     @Permission(
             scope = "device-notification-view",
             permissions = {
             "/permission/admin/device-mgt/admin/notifications/view",
-            "/permission/admin/device-mgt/user/notifications/view"
-             })
+            "/permission/admin/device-mgt/user/notifications/view" }
+    )
     Response getNotifications(
             @ApiParam(
                     name = "status",
@@ -121,4 +122,15 @@ public interface NotificationManagementService {
                     required = false)
             @QueryParam("limit")
                     int limit);
+
+    @PUT
+    @Path("{id}/{status}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "",
+            notes = "",
+            tags = "Device Notification Management")
+    Response updateNotificationStatus(
+            @PathParam("id") int id);
 }

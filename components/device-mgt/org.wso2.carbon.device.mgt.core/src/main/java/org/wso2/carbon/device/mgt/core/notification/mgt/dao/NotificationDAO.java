@@ -71,6 +71,8 @@ public interface NotificationDAO {
 	 */
 	List<Notification> getAllNotifications(int tenantId) throws NotificationManagementException;
 
+	Notification getNotification(int tenantId, int notificationId) throws NotificationManagementException;
+
 	List<Notification> getAllNotifications(PaginationRequest request, int tenantId) throws NotificationManagementException;
 
 	int getNotificationCount(int tenantId) throws NotificationManagementException;

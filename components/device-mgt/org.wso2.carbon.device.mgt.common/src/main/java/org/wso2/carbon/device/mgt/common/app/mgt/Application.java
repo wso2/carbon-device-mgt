@@ -49,8 +49,10 @@ public class Application implements Serializable {
     private Properties appProperties;
     @ApiModelProperty(name = "applicationIdentifier", value = "The application identifier", required = true)
     private String applicationIdentifier;
-    @ApiModelProperty(name = "memoryUsage", value = "AMount of memory used by the application", required = true)
+    @ApiModelProperty(name = "memoryUsage", value = "Amount of memory used by the application", required = true)
     private int memoryUsage;
+    @ApiModelProperty(name = "isActive", value = "Is the application actively running", required = true)
+    private boolean isActive;
 
 
     public String getType() {
@@ -166,4 +168,12 @@ public class Application implements Serializable {
         this.appProperties = appProperties;
     }
 
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }

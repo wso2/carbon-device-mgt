@@ -63,43 +63,31 @@ public interface UserManagementService {
                                     @ResponseHeader(
                                             name = "Last-Modified",
                                             description = "Date and time the resource has been modified the last time.\n" +
-                                                    "Used by caches, or in conditional requests.")
-                            }
-                    ),
-                    @ApiResponse(
-                            code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Location",
-                                            description = "The Source URL of the document.")}),
+                                                    "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid request or validation error."),
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 409,
-                            message = "Conflict. \n User already exist.",
+                            message = "Conflict. \n User already exists.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported media type. \n The entity of the request was in a not " +
+                                    "supported format.",
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while adding a new user.",
+                            message = "Internal Server Error. \n Server error occurred while adding a new user.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-modify",
-            permissions = {"/permission/admin/device-mgt/admin/user/add"}
-    )
+            })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/add"})
     Response addUser(
             @ApiParam(
                     name = "user",
-                    value = "User related details.",
-                    required = true)
-                    UserInfo user);
+                    value = "Information of the user to be added",
+                    required = true) UserInfo user);
 
     @GET
     @Path("/{username}")
@@ -111,8 +99,7 @@ public interface UserManagementService {
                     + " you can do so using the REST API.",
             response = BasicUserInfo.class,
             tags = "User Management")
-    @ApiResponses(
-            value = {
+    @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the requested role.",
@@ -129,43 +116,36 @@ public interface UserManagementService {
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
                                             "Used by caches, or in conditional requests."),
-                    }
-            ),
+                    }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest "
-                            + "version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource does not exist.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server ErrorResponse. \n Server error occurred while" +
                             " fetching the requested user.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-view",
-            permissions = {"/permission/admin/device-mgt/admin/user/view"}
-    )
+    })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getUser(
             @ApiParam(
                     name = "username",
                     value = "Username of the user to be fetched.",
                     required = true)
-            @PathParam("username")
-                    String username,
+            @PathParam("username") String username,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since")
-                    String ifModifiedSince);
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
     @PUT
     @Path("/{username}")
@@ -177,15 +157,11 @@ public interface UserManagementService {
             notes = "There will be situations where you will want to update the user details. In such "
                     + "situation you can update the user details using this REST API.",
             tags = "User Management")
-    @ApiResponses(
-            value = {
+    @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n User has been updated successfully",
                     responseHeaders = {
-                            @ResponseHeader(
-                                    name = "Content-Location",
-                                    description = "URL of the updated user."),
                             @ResponseHeader(
                                     name = "Content-Type",
                                     description = "Content type of the body"),
@@ -196,42 +172,36 @@ public interface UserManagementService {
                             @ResponseHeader(
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
-                                            "Used by caches, or in conditional requests.")
-                    }
-            ),
+                                            "Used by caches, or in conditional requests.")}),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request. \n Invalid request or validation error."),
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n Resource does not exist.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while updating the user.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-modify",
-            permissions = {"/permission/admin/device-mgt/admin/user/update"}
-    )
+    })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/update"})
     Response updateUser(
             @ApiParam(
                     name = "username",
                     value = "Username of the user to be updated.",
                     required = true)
-            @PathParam("username")
-                    String username,
+            @PathParam("username") String username,
             @ApiParam(
                     name = "userData",
                     value = "User related details.",
-                    required = true)
-                    UserInfo userData);
+                    required = true) UserInfo userData);
 
     @DELETE
     @Path("/{username}")
@@ -241,8 +211,7 @@ public interface UserManagementService {
             notes = "In a situation where an employee leaves the organization you will need to remove the"
                     + " user details from EMM. In such situations you can use this REST API to remove a user.",
             tags = "User Management")
-    @ApiResponses(
-            value = {
+    @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n User has successfully been removed"),
@@ -252,22 +221,15 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while removing the user.",
-                    response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-modify",
-            permissions = {"/permission/admin/device-mgt/admin/user/remove"}
-    )
+                    response = ErrorResponse.class
+            )
+    })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/remove"})
     Response removeUser(
-            @ApiParam(
-                    name = "username",
-                    value = "Username of the user to be deleted.",
-                    required = true)
-            @PathParam("username")
-                    String username);
+            @ApiParam(name = "username", value = "Username of the user to be deleted.", required = true)
+            @PathParam("username") String username);
 
     @GET
     @Path("/{username}/roles")
@@ -278,8 +240,7 @@ public interface UserManagementService {
             notes = "A user can be assigned to one or more role in EMM. Using this REST API you are "
                     + "able to get the role/roles a user is assigned to.",
             tags = "User Management")
-    @ApiResponses(
-            value = {
+    @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the role list assigned to the user.",
@@ -296,8 +257,7 @@ public interface UserManagementService {
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
                                             "Used by caches, or in conditional requests."),
-                    }
-            ),
+                    }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
@@ -307,25 +267,18 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the role list" +
+                    message = "Internal Server Error. \n Server error occurred while fetching the role list" +
                             " assigned to the user.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-view",
-            permissions = {"/permission/admin/device-mgt/admin/user/view"}
-    )
+    })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
     Response getRolesOfUser(
-            @ApiParam(
-                    name = "username",
-                    value = "Username of the user.",
-                    required = true)
-            @PathParam("username")
-                    String username);
+            @ApiParam(name = "username", value = "Username of the user.", required = true)
+            @PathParam("username") String username);
 
     @GET
     @ApiOperation(
@@ -335,12 +288,11 @@ public interface UserManagementService {
             notes = "If you wish to get the details of all the users registered with EMM, you can do so "
                     + "using the REST API",
             tags = "User Management")
-    @ApiResponses(
-            value = {
+    @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the requested role.",
-                    response = UserInfoList.class,
+                    response = BasicUserInfoList.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -353,49 +305,41 @@ public interface UserManagementService {
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
                                             "Used by caches, or in conditional requests."),
-                    }
-            ),
+                    }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the user list.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the user list.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-view",
-            permissions = {"/permission/admin/device-mgt/admin/user/list"}
-    )
+    })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getUsers(
             @ApiParam(
                     name = "filter",
                     value = "Username of the user details to be fetched.",
                     required = false)
-            @QueryParam("filter")
-                    String filter,
+            @QueryParam("filter") String filter,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Timestamp of the last modified date",
                     required = false)
-            @HeaderParam("If-Modified-Since")
-                    String timestamp,
+            @HeaderParam("If-Modified-Since") String timestamp,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset")
-                    int offset,
+            @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit")
-                    int limit);
+            @QueryParam("limit") int limit);
 
     @GET
     @Path("/search/usernames")
@@ -409,8 +353,7 @@ public interface UserManagementService {
                     + "You will be given a list of users having the user name with the exact order of the "
                     + "characters you provided.",
             tags = "User Management")
-    @ApiResponses(
-            value = {
+    @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched the username list that matches the given filter.",
@@ -428,50 +371,42 @@ public interface UserManagementService {
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
                                             "Used by caches, or in conditional requests."),
-                    }
-            ),
+                    }),
             @ApiResponse(
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the username " +
+                    message = "Internal Server Error. \n Server error occurred while fetching the username " +
                             "list that matches the given filter.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-view",
-            permissions = {"/permission/admin/device-mgt/admin/user/list"}
-    )
+    })
+    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
     Response getUserNames(
             @ApiParam(
                     name = "filter",
                     value = "Username/part of the user name to search.",
                     required = true)
-            @QueryParam("filter")
-                    String filter,
+            @QueryParam("filter") String filter,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Timestamp of the last modified date",
                     required = false)
-            @HeaderParam("If-Modified-Since")
-                    String timestamp,
+            @HeaderParam("If-Modified-Since") String timestamp,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
-            @QueryParam("offset")
-                    int offset,
+            @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
-            @QueryParam("limit")
-                    int limit);
+            @QueryParam("limit") int limit);
 
     @PUT
     @Path("/{username}/credentials")
@@ -482,8 +417,7 @@ public interface UserManagementService {
             value = "Changing the user password.",
             notes = "A user is able to change the password to secure their EMM profile via this REST API.",
             tags = "User Management")
-    @ApiResponses(
-            value = {
+    @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Credentials of the user have been updated successfully"),
@@ -493,32 +427,28 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n Resource to be deleted does not exist.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "user-modify",
-            permissions = {"/permission/admin/login"}
-    )
+    })
+    @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
     Response resetPassword(
             @ApiParam(
                     name = "username",
                     value = "Username of the user.",
                     required = true)
-            @PathParam("username")
-                    String username,
+            @PathParam("username") String username,
             @ApiParam(
                     name = "credentials",
                     value = "Credential.",
-                    required = true)
-                    OldPasswordResetWrapper credentials);
+                    required = true) OldPasswordResetWrapper credentials);
 
 }

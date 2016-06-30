@@ -78,7 +78,7 @@ public interface ActivityInfoProviderService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 401,
-                    message = ". \n Invalid request or validation error."),
+                    message = "Unauthorized. \n Unauthorized request."),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n No activity is found under the provided id.",
@@ -88,7 +88,7 @@ public interface ActivityInfoProviderService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.",
+                    message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
     @Permission(
@@ -139,6 +139,9 @@ public interface ActivityInfoProviderService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                             "the requested resource."),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
                     code = 404,
                     message = "Not Found. \n No activities found.",
                     response = ErrorResponse.class),
@@ -147,7 +150,7 @@ public interface ActivityInfoProviderService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.",
+                    message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
     @Permission(

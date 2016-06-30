@@ -29,9 +29,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.exception.UnknownApplicationTypeException;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.ApplicationManagementAdminService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.MDMAndroidOperationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.MDMIOSOperationUtil;
@@ -82,21 +80,22 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
                         applicationWrapper.getDeviceIdentifiers().size() > 0) {
                     activity = appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
                 } else {
-                    throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
-                            "No application installation criteria i.e. user/role/device is given").build());
+                    return Response.status(Response.Status.BAD_REQUEST).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                    "No application installation criteria i.e. user/role/device is given").build()).build();
                 }
             }
             return Response.status(Response.Status.ACCEPTED).entity(activity).build();
         } catch (ApplicationManagementException e) {
-            String msg = "ErrorResponse occurred while processing application installation request";
+            String msg = "Error occurred while processing application installation request";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UnknownApplicationTypeException e) {
             String msg = "The type of application requested to be installed is not supported";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -130,22 +129,22 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
                         applicationWrapper.getDeviceIdentifiers().size() > 0) {
                     activity = appManagerConnector.installApplicationForDevices(operation, applicationWrapper.getDeviceIdentifiers());
                 } else {
-                    throw new InputValidationException(
-                            new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(
-                            "No application un-installation criteria i.e. user/role/device is given").build());
+                    return Response.status(Response.Status.BAD_REQUEST).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                    "No application un-installation criteria i.e. user/role/device is given").build()).build();
                 }
             }
             return Response.status(Response.Status.ACCEPTED).entity(activity).build();
         } catch (ApplicationManagementException e) {
-            String msg = "ErrorResponse occurred while processing application un-installation request";
+            String msg = "Error occurred while processing application un-installation request";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UnknownApplicationTypeException e) {
             String msg = "The type of application requested to be un-installed is not supported";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 

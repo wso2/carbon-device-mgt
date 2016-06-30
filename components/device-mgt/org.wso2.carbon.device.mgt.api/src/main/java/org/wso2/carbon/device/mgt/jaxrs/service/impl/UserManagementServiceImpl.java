@@ -21,24 +21,19 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @Path("/users")
@@ -47,117 +42,59 @@ import java.util.*;
 public class UserManagementServiceImpl implements UserManagementService {
 
     private static final String ROLE_EVERYONE = "Internal/everyone";
+    private static final String API_BASE_PATH = "/users";
     private static final Log log = LogFactory.getLog(UserManagementServiceImpl.class);
 
     @POST
     @Override
-    public Response addUser(UserInfo userWrapper) {
+    public Response addUser(UserInfo userInfo) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
+            if (userStoreManager.isExistingUser(userInfo.getUsername())) {
                 // if user already exists
                 if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + userWrapper.getUsername() +
+                    log.debug("User by username: " + userInfo.getUsername() +
                             " already exists. Therefore, request made to add user was refused.");
                 }
                 // returning response with bad request state
-                throw new ConflictException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(409l).setMessage("User by username: " +
-                                userWrapper.getUsername() +  " already exists. Therefore, request made to add user " +
-                                "was refused.").build());
-            } else {
-                String initialUserPassword = this.generateInitialUserPassword();
-                Map<String, String> defaultUserClaims =
-                        this.buildDefaultUserClaims(userWrapper.getFirstname(), userWrapper.getLastname(),
-                                userWrapper.getEmailAddress());
-                // calling addUser method of carbon user api
-                userStoreManager.addUser(userWrapper.getUsername(), initialUserPassword,
-                        userWrapper.getRoles(), defaultUserClaims, null);
-                // invite newly added user to enroll device
-                this.inviteNewlyAddedUserToEnrollDevice(userWrapper.getUsername(), initialUserPassword);
-                // Outputting debug message upon successful addition of user
-                if (log.isDebugEnabled()) {
-                    log.debug("User '" + userWrapper.getUsername() + "' has successfully been added.");
-                }
-                // returning response with success state
-                return Response.status(Response.Status.CREATED).entity("User by username: " + userWrapper.getUsername() +
-                        " was successfully added.").build();
+                return Response.status(Response.Status.CONFLICT).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
+                                userInfo.getUsername() + " already exists. Therefore, request made to add user " +
+                                "was refused.").build()).build();
             }
+
+            String initialUserPassword = this.generateInitialUserPassword();
+            Map<String, String> defaultUserClaims =
+                    this.buildDefaultUserClaims(userInfo.getFirstname(), userInfo.getLastname(),
+                            userInfo.getEmailAddress());
+            // calling addUser method of carbon user api
+            userStoreManager.addUser(userInfo.getUsername(), initialUserPassword,
+                    userInfo.getRoles(), defaultUserClaims, null);
+            // Outputting debug message upon successful addition of user
+            if (log.isDebugEnabled()) {
+                log.debug("User '" + userInfo.getUsername() + "' has successfully been added.");
+            }
+
+            BasicUserInfo createdUserInfo = this.getBasicUserInfo(userInfo.getUsername());
+            // Outputting debug message upon successful retrieval of user
+            if (log.isDebugEnabled()) {
+                log.debug("User by username: " + userInfo.getUsername() + " was found.");
+            }
+            return Response.created(new URI(API_BASE_PATH + "/" + userInfo.getUsername())).entity(
+                    createdUserInfo).build();
         } catch (UserStoreException e) {
-            String msg = "Exception in trying to add user '" + userWrapper.getUsername() + "' to the user store";
+            String msg = "Error occurred while trying to add user '" + userInfo.getUsername() + "' to the " +
+                    "underlying user management system";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
-        } catch (DeviceManagementException e) {
-            String msg = "ErrorResponse occurred while inviting user to enroll the device";
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (URISyntaxException e) {
+            String msg = "Error occurred while composing the location URI, which represents information of the " +
+                    "newly created user '" + userInfo.getUsername() + "'";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-    }
-
-    private Map<String, String> buildDefaultUserClaims(String firstname, String lastname, String emailAddress) {
-        Map<String, String> defaultUserClaims = new HashMap<>();
-        defaultUserClaims.put(Constants.USER_CLAIM_FIRST_NAME, firstname);
-        defaultUserClaims.put(Constants.USER_CLAIM_LAST_NAME, lastname);
-        defaultUserClaims.put(Constants.USER_CLAIM_EMAIL_ADDRESS, emailAddress);
-        if (log.isDebugEnabled()) {
-            log.debug("Default claim map is created for new user: " + defaultUserClaims.toString());
-        }
-        return defaultUserClaims;
-    }
-
-    private String generateInitialUserPassword() {
-        int passwordLength = 6;
-        //defining the pool of characters to be used for initial password generation
-        String lowerCaseCharset = "abcdefghijklmnopqrstuvwxyz";
-        String upperCaseCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String numericCharset = "0123456789";
-        Random randomGenerator = new Random();
-        String totalCharset = lowerCaseCharset + upperCaseCharset + numericCharset;
-        int totalCharsetLength = totalCharset.length();
-        StringBuilder initialUserPassword = new StringBuilder();
-        for (int i = 0; i < passwordLength; i++) {
-            initialUserPassword
-                    .append(totalCharset.charAt(randomGenerator.nextInt(totalCharsetLength)));
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Initial user password is created for new user: " + initialUserPassword);
-        }
-        return initialUserPassword.toString();
-    }
-
-    private void inviteNewlyAddedUserToEnrollDevice(String username,
-                                                    String password) throws DeviceManagementException, UserStoreException {
-        if (log.isDebugEnabled()) {
-            log.debug("Sending invitation mail to user by username: " + username);
-        }
-        String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equalsIgnoreCase(tenantDomain)) {
-            tenantDomain = "";
-        }
-        if (!username.contains("/")) {
-            username = "/" + username;
-        }
-        String[] usernameBits = username.split("/");
-        DeviceManagementProviderService deviceManagementProviderService = DeviceMgtAPIUtils.getDeviceManagementService();
-
-        Properties props = new Properties();
-        props.setProperty("username", usernameBits[1]);
-        props.setProperty("domain-name", tenantDomain);
-        props.setProperty("first-name", getClaimValue(usernameBits[1], Constants.USER_CLAIM_FIRST_NAME));
-        props.setProperty("password", password);
-
-        String recipient = getClaimValue(usernameBits[1], Constants.USER_CLAIM_EMAIL_ADDRESS);
-
-        EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-
-        deviceManagementProviderService.sendRegistrationEmail(metaInfo);
-    }
-
-    private String getClaimValue(String username, String claimUri) throws UserStoreException {
-        UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-        return userStoreManager.getUserClaimValue(username, claimUri, null);
     }
 
     @GET
@@ -167,91 +104,80 @@ public class UserManagementServiceImpl implements UserManagementService {
                             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            if (userStoreManager.isExistingUser(username)) {
-                BasicUserInfo user = new BasicUserInfo();
-                user.setUsername(username);
-                user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
-                user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
-                user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
-                // Outputting debug message upon successful retrieval of user
-                if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + username + " was found.");
-                }
-                return Response.status(Response.Status.OK).entity(user).build();
-            } else {
-                // Outputting debug message upon trying to remove non-existing user
+            if (!userStoreManager.isExistingUser(username)) {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist.");
                 }
-                // returning response with bad request state
-                throw new NotFoundException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User doesn't exist.")
-                                .build());
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                "User doesn't exist.").build()).build();
             }
+
+            BasicUserInfo user = this.getBasicUserInfo(username);
+            return Response.status(Response.Status.OK).entity(user).build();
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while retrieving information of the user '" + username + "'";
+            String msg = "Error occurred while retrieving information of the user '" + username + "'";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
     @PUT
     @Path("/{username}")
     @Override
-    public Response updateUser(@PathParam("username") String username, UserInfo userWrapper) {
+    public Response updateUser(@PathParam("username") String username, UserInfo userInfo) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            if (userStoreManager.isExistingUser(userWrapper.getUsername())) {
-                Map<String, String> defaultUserClaims =
-                        this.buildDefaultUserClaims(userWrapper.getFirstname(), userWrapper.getLastname(),
-                                userWrapper.getEmailAddress());
-                if (StringUtils.isNotEmpty(userWrapper.getPassword())) {
-                    // Decoding Base64 encoded password
-                    userStoreManager.updateCredentialByAdmin(userWrapper.getUsername(),
-                            userWrapper.getPassword());
-                    log.debug("User credential of username: " + userWrapper.getUsername() + " has been changed");
-                }
-                List<String> currentRoles = this.getFilteredRoles(userStoreManager, userWrapper.getUsername());
-                List<String> newRoles = Arrays.asList(userWrapper.getRoles());
-
-                List<String> rolesToAdd = new ArrayList<>(newRoles);
-                List<String> rolesToDelete = new ArrayList<>();
-
-                for (String role : currentRoles) {
-                    if (newRoles.contains(role)) {
-                        rolesToAdd.remove(role);
-                    } else {
-                        rolesToDelete.add(role);
-                    }
-                }
-                rolesToDelete.remove(ROLE_EVERYONE);
-                userStoreManager.updateRoleListOfUser(userWrapper.getUsername(),
-                        rolesToDelete.toArray(new String[rolesToDelete.size()]),
-                        rolesToAdd.toArray(new String[rolesToAdd.size()]));
-                userStoreManager.setUserClaimValues(userWrapper.getUsername(), defaultUserClaims, null);
-                // Outputting debug message upon successful addition of user
+            if (!userStoreManager.isExistingUser(userInfo.getUsername())) {
                 if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + userWrapper.getUsername() + " was successfully updated.");
-                }
-                // returning response with success state
-                return Response.status(Response.Status.CREATED).entity("User by username '" + userWrapper.getUsername() +
-                        "' was successfully updated.").build();
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + userWrapper.getUsername() +
+                    log.debug("User by username: " + userInfo.getUsername() +
                             " doesn't exists. Therefore, request made to update user was refused.");
                 }
-                throw new NotFoundException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " +
-                                userWrapper.getUsername() + " doesn't  exists. Therefore, request made to update user" +
-                                " was refused.").build());
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
+                                userInfo.getUsername() + " doesn't  exist.").build()).build();
             }
+
+            Map<String, String> defaultUserClaims =
+                    this.buildDefaultUserClaims(userInfo.getFirstname(), userInfo.getLastname(),
+                            userInfo.getEmailAddress());
+            if (StringUtils.isNotEmpty(userInfo.getPassword())) {
+                // Decoding Base64 encoded password
+                userStoreManager.updateCredentialByAdmin(userInfo.getUsername(),
+                        userInfo.getPassword());
+                log.debug("User credential of username: " + userInfo.getUsername() + " has been changed");
+            }
+            List<String> currentRoles = this.getFilteredRoles(userStoreManager, userInfo.getUsername());
+            List<String> newRoles = Arrays.asList(userInfo.getRoles());
+
+            List<String> rolesToAdd = new ArrayList<>(newRoles);
+            List<String> rolesToDelete = new ArrayList<>();
+
+            for (String role : currentRoles) {
+                if (newRoles.contains(role)) {
+                    rolesToAdd.remove(role);
+                } else {
+                    rolesToDelete.add(role);
+                }
+            }
+            rolesToDelete.remove(ROLE_EVERYONE);
+            userStoreManager.updateRoleListOfUser(userInfo.getUsername(),
+                    rolesToDelete.toArray(new String[rolesToDelete.size()]),
+                    rolesToAdd.toArray(new String[rolesToAdd.size()]));
+            userStoreManager.setUserClaimValues(userInfo.getUsername(), defaultUserClaims, null);
+            // Outputting debug message upon successful addition of user
+            if (log.isDebugEnabled()) {
+                log.debug("User by username: " + userInfo.getUsername() + " was successfully updated.");
+            }
+
+            BasicUserInfo updatedUserInfo = this.getBasicUserInfo(username);
+            return Response.ok().entity(updatedUserInfo).build();
         } catch (UserStoreException e) {
-            String msg = "Exception in trying to update user by username: " + userWrapper.getUsername();
+            String msg = "Error occurred while trying to update user '" + userInfo.getUsername() + "'";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -277,31 +203,25 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response removeUser(@PathParam("username") String username) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            if (userStoreManager.isExistingUser(username)) {
-                // if user already exists, trying to remove user
-                userStoreManager.deleteUser(username);
-                // Outputting debug message upon successful removal of user
-                if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + username + " was successfully removed.");
-                }
-                // returning response with success state
-                return Response.status(Response.Status.OK).entity("User by username: " + username +
-                        " was successfully removed.").build();
-            } else {
-                // Outputting debug message upon trying to remove non-existing user
+            if (!userStoreManager.isExistingUser(username)) {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist for removal.");
                 }
-                // returning response with bad request state
-                throw new NotFoundException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " +
-                                username + " does not exist for removal.").build());
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("User '" +
+                                username + "' does not exist for removal.").build()).build();
             }
+
+            userStoreManager.deleteUser(username);
+            if (log.isDebugEnabled()) {
+                log.debug("User '" + username + "' was successfully removed.");
+            }
+            return Response.status(Response.Status.OK).build();
         } catch (UserStoreException e) {
             String msg = "Exception in trying to remove user by username: " + username;
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -311,24 +231,23 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response getRolesOfUser(@PathParam("username") String username) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            if (userStoreManager.isExistingUser(username)) {
-                RoleList result = new RoleList();
-                result.setList(getFilteredRoles(userStoreManager, username));
-                return Response.status(Response.Status.OK).entity(result).build();
-            } else {
-                // Outputting debug message upon trying to remove non-existing user
+            if (!userStoreManager.isExistingUser(username)) {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username + " does not exist for role retrieval.");
                 }
-                throw new NotFoundException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(404l).setMessage("User by username: " + username +
-                                " does not exist for role retrieval.").build());
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " + username +
+                                " does not exist for role retrieval.").build()).build();
             }
+
+            RoleList result = new RoleList();
+            result.setList(getFilteredRoles(userStoreManager, username));
+            return Response.status(Response.Status.OK).entity(result).build();
         } catch (UserStoreException e) {
-            String msg = "Exception in trying to retrieve roles for user by username: " + username;
+            String msg = "Error occurred while trying to retrieve roles of the user '" + username + "'";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -342,7 +261,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
         List<BasicUserInfo> userList, offsetList;
         String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter);
-        int appliedLimit =  (limit <= 0) ? -1 : (limit + offset);
+        int appliedLimit = (limit <= 0) ? -1 : (limit + offset);
 
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
@@ -371,10 +290,10 @@ public class UserManagementServiceImpl implements UserManagementService {
 
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while retrieving the list of users.";
+            String msg = "Error occurred while retrieving the list of users.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -407,8 +326,8 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (UserStoreException e) {
             String msg = "Error occurred while retrieving the list of users using the filter : " + filter;
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -417,6 +336,51 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public Response resetPassword(@PathParam("username") String username, OldPasswordResetWrapper credentials) {
         return CredentialManagementResponseBuilder.buildChangePasswordResponse(username, credentials);
+    }
+
+    private Map<String, String> buildDefaultUserClaims(String firstName, String lastName, String emailAddress) {
+        Map<String, String> defaultUserClaims = new HashMap<>();
+        defaultUserClaims.put(Constants.USER_CLAIM_FIRST_NAME, firstName);
+        defaultUserClaims.put(Constants.USER_CLAIM_LAST_NAME, lastName);
+        defaultUserClaims.put(Constants.USER_CLAIM_EMAIL_ADDRESS, emailAddress);
+        if (log.isDebugEnabled()) {
+            log.debug("Default claim map is created for new user: " + defaultUserClaims.toString());
+        }
+        return defaultUserClaims;
+    }
+
+    private String generateInitialUserPassword() {
+        int passwordLength = 6;
+        //defining the pool of characters to be used for initial password generation
+        String lowerCaseCharset = "abcdefghijklmnopqrstuvwxyz";
+        String upperCaseCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String numericCharset = "0123456789";
+        Random randomGenerator = new Random();
+        String totalCharset = lowerCaseCharset + upperCaseCharset + numericCharset;
+        int totalCharsetLength = totalCharset.length();
+        StringBuilder initialUserPassword = new StringBuilder();
+        for (int i = 0; i < passwordLength; i++) {
+            initialUserPassword.append(
+                    totalCharset.charAt(randomGenerator.nextInt(totalCharsetLength)));
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Initial user password is created for new user: " + initialUserPassword);
+        }
+        return initialUserPassword.toString();
+    }
+
+    private BasicUserInfo getBasicUserInfo(String username) throws UserStoreException {
+        BasicUserInfo userInfo = new BasicUserInfo();
+        userInfo.setUsername(username);
+        userInfo.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
+        userInfo.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
+        userInfo.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
+        return userInfo;
+    }
+
+    private String getClaimValue(String username, String claimUri) throws UserStoreException {
+        UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+        return userStoreManager.getUserClaimValue(username, claimUri, null);
     }
 
 }

@@ -68,13 +68,14 @@ public interface ConfigurationManagementService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                            "the requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the general " +
+                    message = "Internal Server Error. \n Server error occurred while fetching the general " +
                             "platform configuration.",
                     response = ErrorResponse.class)
     })
@@ -101,9 +102,6 @@ public interface ConfigurationManagementService {
                     message = "OK. \n General platform configuration has been updated successfully",
                     responseHeaders = {
                             @ResponseHeader(
-                                    name = "Content-Location",
-                                    description = "URL of the updated general platform configuration."),
-                            @ResponseHeader(
                                     name = "Content-Type",
                                     description = "The content type of the body"),
                             @ResponseHeader(
@@ -122,7 +120,7 @@ public interface ConfigurationManagementService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while modifying general platform configuration.",
                     response = ErrorResponse.class)
     })

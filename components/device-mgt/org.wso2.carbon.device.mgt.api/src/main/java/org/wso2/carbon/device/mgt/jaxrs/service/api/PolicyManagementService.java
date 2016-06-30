@@ -90,7 +90,7 @@ public interface PolicyManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
+                            message = "Internal Server Error. \n " +
                                     "Server error occurred while adding a new policy.",
                             response = ErrorResponse.class)
             })
@@ -145,7 +145,7 @@ public interface PolicyManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = ("Internal Server ErrorResponse. \n Server error occurred while fetching " +
+                            message = ("Internal Server Error. \n Server error occurred while fetching " +
                                     "policies."),
                             response = ErrorResponse.class)
             })
@@ -213,7 +213,7 @@ public interface PolicyManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the " +
+                            message = "Internal Server Error. \n Server error occurred while fetching the " +
                                     "policy.",
                             response = ErrorResponse.class)
             })
@@ -277,7 +277,7 @@ public interface PolicyManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
+                            message = "Internal Server Error. \n " +
                                     "Server error occurred while updating the policy.",
                             response = ErrorResponse.class)
             })
@@ -324,7 +324,7 @@ public interface PolicyManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
+                            message = "Internal Server Error. \n " +
                                     "Server error occurred while bulk removing policies.",
                             response = ErrorResponse.class)
             })

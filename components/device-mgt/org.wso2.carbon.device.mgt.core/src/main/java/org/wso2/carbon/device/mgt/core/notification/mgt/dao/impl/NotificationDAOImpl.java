@@ -71,6 +71,35 @@ public class NotificationDAOImpl implements NotificationDAO {
     }
 
     @Override
+    public Notification getNotification(int tenantId, int notificationId) throws NotificationManagementException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Notification notification = null;
+        try {
+            conn = NotificationManagementDAOFactory.getConnection();
+            String sql =
+                    "SELECT NOTIFICATION_ID, OPERATION_ID, DESCRIPTION, STATUS FROM DM_NOTIFICATION WHERE " +
+                            "TENANT_ID = ? AND NOTIFICATION_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            stmt.setInt(2, notificationId);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                notification = this.getNotification(rs);
+            }
+        } catch (SQLException e) {
+            throw new NotificationManagementException(
+                    "Error occurred while retrieving information of all notifications", e);
+        } finally {
+            NotificationDAOUtil.cleanupResources(stmt, rs);
+        }
+        return notification;
+
+    }
+
+    @Override
     public int updateNotification(Notification notification)
             throws NotificationManagementException {
         Connection conn;

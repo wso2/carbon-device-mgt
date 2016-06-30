@@ -69,7 +69,8 @@ public interface PolicyManagementService {
                                             name = "Last-Modified",
                                             description = "Date and time the resource has been modified the last time.\n" +
                                                     "Used by caches, or in conditional requests.")
-                            }),
+                            }
+                    ),
                     @ApiResponse(
                             code = 303,
                             message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
@@ -93,10 +94,12 @@ public interface PolicyManagementService {
                             message = "Internal Server Error. \n " +
                                     "Server error occurred while adding a new policy.",
                             response = ErrorResponse.class)
-            })
+            }
+    )
     @Permission(
             scope = "policy-modify",
-            permissions = {"/permission/admin/device-mgt/admin/policies/add"})
+            permissions = {"/permission/admin/device-mgt/admin/policies/add"}
+    )
     Response addPolicy(
             @ApiParam(
                     name = "policy",
@@ -132,7 +135,8 @@ public interface PolicyManagementService {
                                             name = "Last-Modified",
                                             description = "Date and time the resource has been modified the last time.\n" +
                                                     "Used by caches, or in conditional requests."),
-                            }),
+                            }
+                    ),
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
@@ -148,10 +152,12 @@ public interface PolicyManagementService {
                             message = ("Internal Server Error. \n Server error occurred while fetching " +
                                     "policies."),
                             response = ErrorResponse.class)
-            })
+            }
+    )
     @Permission(
             scope = "policy-view",
-            permissions = {"/permission/admin/device-mgt/admin/policies/list"})
+            permissions = {"/permission/admin/device-mgt/admin/policies/list"}
+    )
     Response getPolicies(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -199,15 +205,15 @@ public interface PolicyManagementService {
                                             name = "Last-Modified",
                                             description = "Date and time the resource has been modified the last time.\n" +
                                                     "Used by caches, or in conditional requests."),
-                            }),
+                            }
+                    ),
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
                     @ApiResponse(
                             code = 404,
                             message = "Not Found. \n No policy is found with the given id.",
-                            response = ErrorResponse.class
-                    ),
+                            response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
@@ -219,7 +225,8 @@ public interface PolicyManagementService {
             })
     @Permission(
             scope = "policy-view",
-            permissions = {"/permission/admin/device-mgt/admin/policies/list"})
+            permissions = {"/permission/admin/device-mgt/admin/policies/list"}
+    )
     Response getPolicy(
             @ApiParam(
                     name = "id",
@@ -263,7 +270,9 @@ public interface PolicyManagementService {
                                     @ResponseHeader(
                                             name = "Last-Modified",
                                             description = "Date and time the resource has been modified the last time.\n" +
-                                                    "Used by caches, or in conditional requests.")}),
+                                                    "Used by caches, or in conditional requests.")
+                            }
+                    ),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
@@ -280,10 +289,12 @@ public interface PolicyManagementService {
                             message = "Internal Server Error. \n " +
                                     "Server error occurred while updating the policy.",
                             response = ErrorResponse.class)
-            })
+            }
+    )
     @Permission(
             scope = "policy-modify",
-            permissions = {"/permission/admin/device-mgt/admin/policies/update"})
+            permissions = {"/permission/admin/device-mgt/admin/policies/update"}
+    )
     Response updatePolicy(
             @ApiParam(
                     name = "id",
@@ -321,16 +332,19 @@ public interface PolicyManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported media type. \n The entity of the request was in a not "
+                                    + "supported format."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
                                     "Server error occurred while bulk removing policies.",
                             response = ErrorResponse.class)
-            })
+            }
+    )
     @Permission(
             scope = "policy-modify",
-            permissions = {"/permission/admin/device-mgt/admin/policies/remove"})
+            permissions = {"/permission/admin/device-mgt/admin/policies/remove"}
+    )
     Response removePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -365,11 +379,13 @@ public interface PolicyManagementService {
                             code = 500,
                             message = "ErrorResponse in activating policies.",
                             response = ErrorResponse.class)
-            })
+            }
+    )
     @Permission(
             scope = "policy-modify", permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
-            "/permission/admin/device-mgt/admin/policies/add"})
+            "/permission/admin/device-mgt/admin/policies/add"}
+    )
     Response activatePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -384,8 +400,8 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
             value = "Deactivating policies.",
-            notes = "Using the REST API command you are able to unpublish a policy in order to bring a policy that " +
-                    "is in the active state to the inactive state.",
+            notes = "Using the REST API command you are able to unpublish a policy in order to bring a "
+                    + "policy that is in the active state to the inactive state.",
             tags = "Device Policy Management")
     @ApiResponses(
             value = {
@@ -404,12 +420,14 @@ public interface PolicyManagementService {
                     code = 500,
                     message = "ErrorResponse in deactivating policies.",
                     response = ErrorResponse.class)
-    })
+            }
+    )
     @Permission(
             scope = "policy-modify",
             permissions = {
             "/permission/admin/device-mgt/admin/policies/update",
-            "/permission/admin/device-mgt/admin/policies/add"})
+            "/permission/admin/device-mgt/admin/policies/add"}
+    )
     Response deactivatePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -441,8 +459,12 @@ public interface PolicyManagementService {
                     code = 500,
                     message = "ErrorResponse in deactivating policies.",
                     response = ErrorResponse.class)
-    })
-    @Permission(scope = "policy-modify", permissions = {"/permission/admin/device-mgt/admin/policies/update"})
+            }
+    )
+    @Permission(
+            scope = "policy-modify",
+            permissions = {"/permission/admin/device-mgt/admin/policies/update"}
+    )
     Response applyChanges();
 
 
@@ -470,7 +492,8 @@ public interface PolicyManagementService {
                     code = 500,
                     message = "Exception in updating policy priorities.",
                     response = ErrorResponse.class)
-    })
+            }
+    )
     @Permission(
             scope = "",
             permissions = {})

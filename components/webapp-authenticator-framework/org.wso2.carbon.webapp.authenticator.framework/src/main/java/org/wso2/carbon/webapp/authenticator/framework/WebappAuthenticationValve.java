@@ -22,6 +22,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.owasp.encoder.Encode;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
@@ -151,11 +152,10 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                     response.setHeader("WWW-Authenticate", msg);
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug(msg + " , API : " + request.getRequestURI());
+                    log.debug(msg + " , API : " + Encode.forUriComponent(request.getRequestURI()));
                 }
-                AuthenticationFrameworkUtil
-                        .handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED,
-                                        msg);
+                AuthenticationFrameworkUtil.
+                        handleResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, msg);
                 break;
         }
     }

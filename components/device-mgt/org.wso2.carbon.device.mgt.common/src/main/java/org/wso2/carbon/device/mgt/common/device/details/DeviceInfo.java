@@ -57,6 +57,9 @@ public class DeviceInfo implements Serializable {
     @ApiModelProperty(name = "osVersion", value = "Operating system version.", required = true)
     private String osVersion;
 
+    @ApiModelProperty(name = "osBuildDate", value = "Operating system build date.", required = true)
+    private String osBuildDate;
+
     @ApiModelProperty(name = "batteryLevel", value = "Battery level of the device.", required = true)
     private Double batteryLevel;
 
@@ -199,6 +202,19 @@ public class DeviceInfo implements Serializable {
 
     public void setOsVersion(String osVersion) {
         this.osVersion = osVersion;
+    }
+
+
+    public String getOsBuildDate() {
+        if (osBuildDate != null) {
+            return osBuildDate;
+        } else {
+            return "";
+        }
+    }
+
+    public void setOsBuildDate(String osBuildDate) {
+        this.osBuildDate = osBuildDate;
     }
 
     public Double getBatteryLevel() {

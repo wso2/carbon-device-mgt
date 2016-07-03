@@ -86,7 +86,8 @@ public interface NotificationManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the notification list.",
+                            message = "Internal Server Error. " +
+                                    "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
     @Permission(scope = "device-notification-view", roles = {"emm-admin"})
@@ -116,4 +117,15 @@ public interface NotificationManagementService {
                     required = false)
             @QueryParam("limit")
                     int limit);
+
+    @PUT
+    @Path("{id}/{status}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "",
+            notes = "",
+            tags = "Device Notification Management")
+    Response updateNotificationStatus(
+            @PathParam("id") int id);
 }

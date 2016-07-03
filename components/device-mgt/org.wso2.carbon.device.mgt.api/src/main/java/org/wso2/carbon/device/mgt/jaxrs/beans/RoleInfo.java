@@ -22,9 +22,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
-@ApiModel(value = "RoleWrapper", description = "Role details including permission and the users in the roles are " +
+@ApiModel(value = "RoleInfo", description = "Role details including permission and the users in the roles are " +
         "wrapped here.")
-public class RoleWrapper {
+public class RoleInfo {
 
     @ApiModelProperty(name = "roleName", value = "The name of the role.", required = true)
     private String roleName;

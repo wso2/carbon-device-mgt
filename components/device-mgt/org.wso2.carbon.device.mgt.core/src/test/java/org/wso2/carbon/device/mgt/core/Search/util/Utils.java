@@ -52,6 +52,7 @@ public class Utils {
         deviceInfo.setMobileSignalStrength(0.67);
         deviceInfo.setOperator("Dialog");
         deviceInfo.setOsVersion("Lolipop");
+        deviceInfo.setOsBuildDate("1467366458");
         deviceInfo.setPluggedIn(true);
         deviceInfo.setSsid("SSSSSS");
         deviceInfo.setTotalRAMMemory(4.00);

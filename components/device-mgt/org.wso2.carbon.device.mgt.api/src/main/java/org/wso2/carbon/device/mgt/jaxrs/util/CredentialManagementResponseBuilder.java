@@ -21,11 +21,9 @@ package org.wso2.carbon.device.mgt.jaxrs.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 
@@ -44,7 +42,8 @@ public class CredentialManagementResponseBuilder {
 
     /**
      * Builds the response to change the password of a user
-     * @param username - Username of the user.
+     *
+     * @param username    - Username of the user.
      * @param credentials - User credentials
      * @return Response Object
      */
@@ -52,38 +51,39 @@ public class CredentialManagementResponseBuilder {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (!userStoreManager.isExistingUser(username)) {
-                throw new InputValidationException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("No user found with the username "
-                                + username).build());
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("No user found with the username '"
+                                + username + "'").build()).build();
             }
             RequestValidationUtil.validateCredentials(credentials);
 
             if (!validateCredential(credentials.getNewPassword())) {
                 String errorMsg = DeviceMgtAPIUtils.getRealmService().getBootstrapRealmConfiguration()
                         .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
-                throw new InputValidationException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(errorMsg).build());
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(errorMsg).build()).build();
             }
             userStoreManager.updateCredential(username, credentials.getNewPassword(),
-                                              credentials.getOldPassword());
+                    credentials.getOldPassword());
             return Response.status(Response.Status.OK).entity("UserImpl password by username: " +
                     username + " was successfully changed.").build();
         } catch (UserStoreException e) {
             log.error(e.getMessage(), e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(e.getMessage()).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(e.getMessage()).build()).build();
         } catch (UnsupportedEncodingException e) {
             String msg = "Could not change the password of the user: " + username +
                     ". The Character Encoding is not supported.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
     /**
      * Builds the response to reset the password of a user
-     * @param username - Username of the user.
+     *
+     * @param username    - Username of the user.
      * @param credentials - User credentials
      * @return Response Object
      */
@@ -91,35 +91,35 @@ public class CredentialManagementResponseBuilder {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (!userStoreManager.isExistingUser(username)) {
-                throw new InputValidationException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("No user found with the username "
-                                + username).build());
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("No user found with the username "
+                                + username).build()).build();
             }
             if (credentials == null || credentials.getNewPassword() == null) {
-                throw new InputValidationException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Password cannot be empty."
-                                + username).build());
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("Password cannot be empty."
+                                + username).build()).build();
             }
             if (!validateCredential(credentials.getNewPassword())) {
                 String errorMsg = DeviceMgtAPIUtils.getRealmService().getBootstrapRealmConfiguration()
                         .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
-                throw new InputValidationException(
-                        new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(errorMsg).build());
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(errorMsg).build()).build();
             }
             userStoreManager.updateCredentialByAdmin(username, credentials.getNewPassword());
             return Response.status(Response.Status.OK).entity("UserImpl password by username: " +
                     username + " was successfully changed.").build();
         } catch (UserStoreException e) {
-            String msg = "ErrorResponse occurred while updating the credentials of user '" + username + "'";
+            String msg = "Error occurred while updating the credentials of user '" + username + "'";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UnsupportedEncodingException e) {
             String msg = "Could not change the password of the user: " + username +
                     ". The Character Encoding is not supported.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 

@@ -304,8 +304,8 @@ public class RequestValidationUtil {
         }
     }
 
-    public static void validateRoleDetails(RoleWrapper roleWrapper) {
-        if (roleWrapper == null) {
+    public static void validateRoleDetails(RoleInfo roleInfo) {
+        if (roleInfo == null) {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is incorrect or" +
                             " empty").build());

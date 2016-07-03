@@ -35,6 +35,7 @@ public class Utils {
         genericColumnsMap.put("deviceModel", "DEVICE_MODEL");
         genericColumnsMap.put("vendor", "VENDOR");
         genericColumnsMap.put("osVersion", "OS_VERSION");
+        genericColumnsMap.put("osBuildDate", "OS_BUILD_DATE");
         genericColumnsMap.put("batteryLevel", "BATTERY_LEVEL");
         genericColumnsMap.put("internalTotalMemory", "INTERNAL_TOTAL_MEMORY");
         genericColumnsMap.put("internalAvailableMemory", "INTERNAL_AVAILABLE_MEMORY");

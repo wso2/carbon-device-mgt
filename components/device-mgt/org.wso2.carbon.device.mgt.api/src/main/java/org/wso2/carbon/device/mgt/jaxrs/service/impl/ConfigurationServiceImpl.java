@@ -55,19 +55,19 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
             ConfigurationEntry configurationEntry = new ConfigurationEntry();
             configurationEntry.setContentType("text");
             configurationEntry.setName("notifierFrequency");
-            configurationEntry.setValue(PolicyManagerUtil.getMonitoringFequency());
+            configurationEntry.setValue(PolicyManagerUtil.getMonitoringFrequency());
             List<ConfigurationEntry> configList = config.getConfiguration();
             if (configList == null) {
                 configList = new ArrayList<>();
                 configList.add(configurationEntry);
             }
             config.setConfiguration(configList);
-            return Response.status(Response.Status.OK).entity(config).build();
+            return Response.ok().entity(config).build();
         } catch (ConfigurationManagementException | PolicyManagementException e) {
-            msg = "ErrorResponse occurred while retrieving the configurations.";
+            msg = "Error occurred while retrieving the general platform configuration";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -80,13 +80,15 @@ public class ConfigurationServiceImpl implements ConfigurationManagementService 
                     MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
             //Schedule the task service
             DeviceMgtAPIUtils.scheduleTaskService(DeviceMgtAPIUtils.getNotifierFrequency(config));
-            return Response.status(Response.Status.CREATED)
-                    .entity("Configuration has successfully been updated").build();
+
+            PlatformConfiguration updatedConfig = DeviceMgtAPIUtils.getPlatformConfigurationManagementService().
+                    getConfiguration(MDMAppConstants.RegistryConstants.GENERAL_CONFIG_RESOURCE_PATH);
+            return Response.ok().entity(updatedConfig).build();
         } catch (ConfigurationManagementException e) {
-            String msg = "ErrorResponse occurred while updating the configuration.";
+            String msg = "Error occurred while updating the general platform configuration";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 

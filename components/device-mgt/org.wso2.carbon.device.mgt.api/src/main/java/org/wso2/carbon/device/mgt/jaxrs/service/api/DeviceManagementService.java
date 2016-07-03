@@ -87,7 +87,7 @@ public interface DeviceManagementService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the device list.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
     @Permission(scope = "device-list", roles = {"emm-admin"})
@@ -190,7 +190,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
+                            message = "Internal Server Error. \n " +
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
@@ -270,7 +270,7 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
+                            message = "Internal Server Error. \n " +
                                     "Server error occurred while retrieving feature list of the device.",
                             response = ErrorResponse.class)
             })
@@ -344,7 +344,7 @@ public interface DeviceManagementService {
                             message = "Unsupported media type. \n The entity of the request was in a not supported format."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
+                            message = "Internal Server Error. \n " +
                                     "Server error occurred while enrolling the device.",
                             response = ErrorResponse.class)
             })
@@ -423,9 +423,8 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving installed application list of "
-                                    + "the device.",
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving installed application list of the device.",
                             response = ErrorResponse.class)
             })
     @Permission(scope = "operation-view", roles = {"emm-admin"})
@@ -518,9 +517,8 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving operation list scheduled for the "
-                                    + "device.",
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving operation list scheduled for the device.",
                             response = ErrorResponse.class)
             })
     @Permission(scope = "operation-view", roles = {"emm-admin"})
@@ -614,9 +612,8 @@ public interface DeviceManagementService {
                             message = "Not Acceptable. \n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n " +
-                                    "Server error occurred while retrieving the effective policy calculated "
-                                    + "for the device.",
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the effective policy calculated for the device.",
                             response = ErrorResponse.class)
             }
     )

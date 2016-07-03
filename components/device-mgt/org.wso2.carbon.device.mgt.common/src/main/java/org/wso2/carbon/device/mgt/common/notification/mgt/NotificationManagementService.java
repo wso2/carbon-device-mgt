@@ -71,6 +71,8 @@ public interface NotificationManagementService {
      */
     List<Notification> getAllNotifications() throws NotificationManagementException;
 
+    Notification getNotification(int notificationId) throws NotificationManagementException;
+
     PaginationResult getAllNotifications(PaginationRequest request) throws NotificationManagementException;
 
     /**

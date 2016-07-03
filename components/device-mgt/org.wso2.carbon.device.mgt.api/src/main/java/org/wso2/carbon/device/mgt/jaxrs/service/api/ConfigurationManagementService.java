@@ -47,7 +47,8 @@ public interface ConfigurationManagementService {
             value = "Get the general platform configurations.",
             notes = "Get the general platform level configuration details.",
             tags = "Configuration Management")
-    @ApiResponses(value = {
+    @ApiResponses(
+            value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n Successfully fetched general platform configuration.",
@@ -65,16 +66,18 @@ public interface ConfigurationManagementService {
                                     name = "Last-Modified",
                                     description = "Date and time the resource has been modified the last time.\n" +
                                             "Used by caches, or in conditional requests."),
-                    }),
+                    }
+            ),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                            "the requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the general " +
+                    message = "Internal Server Error. \n Server error occurred while fetching the general " +
                             "platform configuration.",
                     response = ErrorResponse.class)
     })
@@ -84,7 +87,8 @@ public interface ConfigurationManagementService {
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince);
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince);
 
     @PUT
     @ApiOperation(
@@ -94,14 +98,12 @@ public interface ConfigurationManagementService {
             value = "Update General Platform Configurations.",
             notes = "This resource is used to update the general platform configuration.",
             tags = "Configuration Management")
-    @ApiResponses(value = {
+    @ApiResponses(
+            value = {
             @ApiResponse(
                     code = 200,
                     message = "OK. \n General platform configuration has been updated successfully",
                     responseHeaders = {
-                            @ResponseHeader(
-                                    name = "Content-Location",
-                                    description = "URL of the updated general platform configuration."),
                             @ResponseHeader(
                                     name = "Content-Type",
                                     description = "The content type of the body"),
@@ -121,7 +123,7 @@ public interface ConfigurationManagementService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n " +
+                    message = "Internal Server Error. \n " +
                             "Server error occurred while modifying general platform configuration.",
                     response = ErrorResponse.class)
     })
@@ -130,6 +132,7 @@ public interface ConfigurationManagementService {
             @ApiParam(
                     name = "configuration",
                     value = "The required properties to be updated in the platform configuration.",
-                    required = true) PlatformConfiguration configuration);
+                    required = true)
+                    PlatformConfiguration configuration);
 
 }

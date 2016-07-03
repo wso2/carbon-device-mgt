@@ -26,8 +26,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.NotFoundException;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -58,17 +57,17 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             activity = dmService.getOperationByActivityId(id);
             if (activity == null) {
-                throw new NotFoundException(new ErrorResponse.ErrorResponseBuilder().setCode(404l)
-                        .setMessage("No activity can be " +
-                                "found upon the provided activity id '" + id + "'").build());
+                return Response.status(404).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("No activity can be " +
+                                "found upon the provided activity id '" + id + "'").build()).build();
             }
+            return Response.status(Response.Status.OK).entity(activity).build();
         } catch (OperationManagementException e) {
             String msg = "ErrorResponse occurred while fetching the activity for the supplied id.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(new ErrorResponse.ErrorResponseBuilder().setCode(500l)
-                    .setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-        return Response.status(Response.Status.OK).entity(activity).build();
     }
 
     @GET
@@ -77,19 +76,21 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
                                   @QueryParam("limit") int limit,
                                   @HeaderParam("If-Modified-Since") String ifModifiedSince) {
 
-        long ifModifiedSinceTimestamp = 0;
-        long sinceTimestamp = 0;
+        long ifModifiedSinceTimestamp;
+        long sinceTimestamp;
         long timestamp = 0;
         boolean isIfModifiedSinceSet = false;
         boolean isSinceSet = false;
+
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
             Date ifSinceDate;
             SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
             try {
                 ifSinceDate = format.parse(ifModifiedSince);
             } catch (ParseException e) {
-                throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
-                        .setMessage("Invalid date string is provided in 'If-Modified-Since' header").build());
+                return Response.status(400).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                "Invalid date string is provided in 'If-Modified-Since' header").build()).build();
             }
             ifModifiedSinceTimestamp = ifSinceDate.getTime();
             isIfModifiedSinceSet = true;
@@ -100,13 +101,15 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             try {
                 sinceDate = format.parse(since);
             } catch (ParseException e) {
-                throw new InputValidationException(new ErrorResponse.ErrorResponseBuilder().setCode(400l)
-                        .setMessage("Invalid date string is provided in 'since' filter").build());
+                return Response.status(400).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                "Invalid date string is provided in 'since' filter").build()).build();
             }
             sinceTimestamp = sinceDate.getTime();
             isSinceSet = true;
             timestamp = sinceTimestamp / 1000;
         }
+
         List<Activity> activities;
         ActivityList activityList = new ActivityList();
         DeviceManagementProviderService dmService;
@@ -117,24 +120,18 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             int count = dmService.getActivityCountUpdatedAfter(timestamp);
             activityList.setCount(count);
             if (activities == null || activities.size() == 0) {
-                if (isIfModifiedSinceSet) {
-                    return Response.status(Response.Status.NOT_MODIFIED).entity(
-                            "No activities " + "after the time provided in 'If-Modified-Since' header")
-                            .build();
-                } else if (isSinceSet) {
-                    return Response.status(Response.Status.NOT_MODIFIED).entity(
-                            "No activities " + "after the time provided in 'since' filter").build();
+                if (isIfModifiedSinceSet || isSinceSet) {
+                    return Response.notModified().build();
                 }
-                throw new NotFoundException(new ErrorResponse.ErrorResponseBuilder().setCode(404l)
-                        .setMessage("No activities " + "found.").build());
             }
+            return Response.ok().entity(activityList).build();
         } catch (OperationManagementException e) {
             String msg
                     = "ErrorResponse occurred while fetching the activities updated after given time stamp.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(new ErrorResponse.ErrorResponseBuilder().setCode(500l)
-                    .setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-        return Response.status(Response.Status.OK).entity(activityList).build();
     }
+
 }

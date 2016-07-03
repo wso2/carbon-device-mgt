@@ -161,6 +161,19 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     }
 
     @Override
+    public Notification getNotification(int notificationId) throws NotificationManagementException {
+        try {
+            NotificationManagementDAOFactory.openConnection();
+            return notificationDAO.getNotification(NotificationDAOUtil.getTenantId(), notificationId);
+        } catch (SQLException e) {
+            throw new NotificationManagementException("Error occurred while opening a connection to" +
+                    " the data source", e);
+        } finally {
+            NotificationManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
     public PaginationResult getAllNotifications(PaginationRequest request) throws NotificationManagementException {
         PaginationResult paginationResult = new PaginationResult();
         List<Notification> notifications = new ArrayList<>();

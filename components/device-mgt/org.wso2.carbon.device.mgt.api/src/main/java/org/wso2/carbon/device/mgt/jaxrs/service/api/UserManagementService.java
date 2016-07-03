@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
-@API(name = "User Management API", version = "1.0.0", context = "/devicemgt_admin/users", tags = {"devicemgt_admin"})
+@API(name = "User Management", version = "1.0.0", context = "/api-device-mgt-v1.0/users", tags = {"devicemgt_admin"})
 
 @Path("/users")
 @Api(value = "User Management", description = "User management related operations can be found here.")
@@ -87,7 +87,7 @@ public interface UserManagementService {
                                     "Server error occurred while adding a new user.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/add"})
+    @Permission(scope = "user-modify", roles = {"emm-admin"})
     Response addUser(
             @ApiParam(
                     name = "user",
@@ -138,7 +138,7 @@ public interface UserManagementService {
                             " fetching the requested user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
+    @Permission(scope = "user-view", roles = {"emm-admin"})
     Response getUser(
             @ApiParam(
                     name = "username",
@@ -196,7 +196,7 @@ public interface UserManagementService {
                             "Server error occurred while updating the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/update"})
+    @Permission(scope = "user-modify", roles = {"emm-admin"})
     Response updateUser(
             @ApiParam(
                     name = "username",
@@ -231,7 +231,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class
             )
     })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/device-mgt/admin/user/remove"})
+    @Permission(scope = "user-modify", roles = {"emm-admin"})
     Response removeUser(
             @ApiParam(name = "username", value = "Username of the user to be deleted.", required = true)
             @PathParam("username") String username);
@@ -279,7 +279,7 @@ public interface UserManagementService {
                             " assigned to the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/view"})
+    @Permission(scope = "user-view", roles = {"emm-admin"})
     Response getRolesOfUser(
             @ApiParam(name = "username", value = "Username of the user.", required = true)
             @PathParam("username") String username);
@@ -321,7 +321,7 @@ public interface UserManagementService {
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching the user list.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
+    @Permission(scope = "user-view", roles = {"emm-admin"})
     Response getUsers(
             @ApiParam(
                     name = "filter",
@@ -387,7 +387,7 @@ public interface UserManagementService {
                             "list that matches the given filter.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", permissions = {"/permission/admin/device-mgt/admin/user/list"})
+    @Permission(scope = "user-view", roles = {"emm-admin"})
     Response getUserNames(
             @ApiParam(
                     name = "filter",
@@ -439,7 +439,7 @@ public interface UserManagementService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-modify", permissions = {"/permission/admin/login"})
+    @Permission(scope = "user-modify", roles = {"emm-admin"})
     Response resetPassword(
             @ApiParam(
                     name = "username",

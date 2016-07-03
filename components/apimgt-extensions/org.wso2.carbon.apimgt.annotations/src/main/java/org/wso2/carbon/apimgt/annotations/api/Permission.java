@@ -40,6 +40,6 @@ public @interface Permission {
      * Represents the associated permissions.
      * @return Returns list of permissions.
      */
-    String[] permissions();
+    String[] roles();
 
 }

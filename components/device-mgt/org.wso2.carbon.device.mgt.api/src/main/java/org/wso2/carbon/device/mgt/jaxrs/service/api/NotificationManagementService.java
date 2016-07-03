@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
 /**
  * Notifications related REST-API.
  */
-@API(name = "Device Notification Management API", version = "1.0.0", context = "/devicemgt_admin/notifications",
+@API(name = "Device Notification Management", version = "1.0.0", context = "/api-device-mgt-v1.0/notifications",
         tags = {"devicemgt_admin"})
 @Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
@@ -89,12 +89,7 @@ public interface NotificationManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "device-notification-view",
-            permissions = {
-            "/permission/admin/device-mgt/admin/notifications/view",
-            "/permission/admin/device-mgt/user/notifications/view"
-             })
+    @Permission(scope = "device-notification-view", roles = {"emm-admin"})
     Response getNotifications(
             @ApiParam(
                     name = "status",

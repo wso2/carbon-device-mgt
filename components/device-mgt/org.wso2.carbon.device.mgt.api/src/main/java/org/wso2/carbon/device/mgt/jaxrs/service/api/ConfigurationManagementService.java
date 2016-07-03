@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 /**
  * General Tenant Configuration REST-API.
  */
-@API(name = "Configuration", version = "1.0.0", context = "/devicemgt_admin/configuration", tags = {"devicemgt_admin"})
+@API(name = "Configuration Management", version = "1.0.0", context = "/api-device-mgt-v1.0/configuration", tags = {"devicemgt_admin"})
 
 @Path("/configuration")
 @Api(value = "Configuration Management", description = "General Tenant Configuration management capabilities are exposed " +
@@ -78,8 +78,7 @@ public interface ConfigurationManagementService {
                             "platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "configuration-view",
-            permissions = {"/permission/admin/device-mgt/admin/platform-configs/view"})
+    @Permission(scope = "configuration-view", roles = {"emm-admin"})
     Response getConfiguration(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -126,8 +125,7 @@ public interface ConfigurationManagementService {
                             "Server error occurred while modifying general platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "configuration-modify",
-            permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"})
+    @Permission(scope = "configuration-modify", roles = {"emm-admin"})
     Response updateConfiguration(
             @ApiParam(
                     name = "configuration",

@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
 /**
  * Device related REST-API. This can be used to manipulated device related details.
  */
-@API(name = "Device", version = "1.0.0", context = "/api/device-mgt/admin/devices", tags = {"devicemgt_admin"})
+@API(name = "Device Management", version = "1.0.0", context = "/api-device-mgt-v1.0/devices", tags = {"devicemgt_admin"})
 
 @Path("/devices")
 @Api(value = "Device Management", description = "This API carries all device management related operations " +
@@ -90,10 +90,7 @@ public interface DeviceManagementService {
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Permission(
-            scope = "device-list",
-            permissions = {"/permission/admin/device-mgt/admin/devices/list"}
-    )
+    @Permission(scope = "device-list", roles = {"emm-admin"})
     Response getDevices(
             @ApiParam(
                     name = "type",
@@ -197,13 +194,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "device-view",
-            permissions = {
-            "/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Permission(scope = "device-view", roles = {"emm-admin"})
     Response getDevice(
             @ApiParam(
                     name = "type",
@@ -283,12 +274,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving feature list of the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "device-search",
-            permissions = {"/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Permission(scope = "device-search", roles = {"emm-admin"})
     Response getFeaturesOfDevice(
             @ApiParam(
                     name = "type",
@@ -362,10 +348,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while enrolling the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "device-search",
-            permissions = {"/permission/admin/device-mgt/admin/devices/list" }
-    )
+    @Permission(scope = "device-search", roles = {"emm-admin" })
     Response searchDevices(
             @ApiParam(
                     name = "offset",
@@ -445,13 +428,7 @@ public interface DeviceManagementService {
                                     + "the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "operation-view",
-            permissions = {
-            "/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Permission(scope = "operation-view", roles = {"emm-admin"})
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
@@ -546,13 +523,7 @@ public interface DeviceManagementService {
                                     + "device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "operation-view",
-            permissions = {
-            "/permission/admin/device-mgt/admin/devices/view",
-            "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Permission(scope = "operation-view", roles = {"emm-admin"})
     Response getDeviceOperations(
             @ApiParam(
                     name = "type",
@@ -649,6 +620,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             }
     )
+    @Permission(scope = "operation-view", roles = {"emm-admin"})
     Response getEffectivePolicyOfDevice(
             @ApiParam(
                     name = "type",
@@ -689,5 +661,6 @@ public interface DeviceManagementService {
                             message = "Error occurred while fetching the list of device types.")
             }
     )
+    @Permission(scope = "operation-view", roles = {"emm-admin"})
     Response getDeviceTypes();
 }

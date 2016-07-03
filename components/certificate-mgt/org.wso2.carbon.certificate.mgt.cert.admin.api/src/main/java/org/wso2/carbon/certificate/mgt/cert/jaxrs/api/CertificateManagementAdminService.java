@@ -72,7 +72,7 @@ public interface CertificateManagementAdminService {
                             message = "Internal Server Error. \n Server error occurred while adding certificates.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "certificate-modify", permissions = {"/permission/admin/device-mgt/certificate/save"})
+    @Permission(scope = "certificate-modify", roles = {"admin"})
     Response addCertificate(
             @ApiParam(
                     name = "enrollmentCertificates",
@@ -130,7 +130,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving information requested certificate.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "certificate-view", permissions = {"/permission/admin/device-mgt/certificate/view"})
+    @Permission(scope = "certificate-view", roles = {"emm-admin"})
     Response getCertificate(
             @ApiParam(name = "serialNumber",
                     value = "Provide the serial number of the certificate that you wish to get the details of",
@@ -202,7 +202,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving all certificates enrolled in the system.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "certificate-view", permissions = {"/permission/admin/device-mgt/certificate/view"})
+    @Permission(scope = "certificate-view", roles = {"emm-admin"})
     Response getAllCertificates(
             @ApiParam(
                     name = "offset",
@@ -245,7 +245,7 @@ public interface CertificateManagementAdminService {
                     message = "Internal Server Error. \n " +
                             "Server error occurred while removing the certificate.",
                     response = ErrorResponse.class)})
-    @Permission(scope = "certificate-modify", permissions = {"/permission/admin/device-mgt/certificate/remove"})
+    @Permission(scope = "certificate-modify", roles = {"emm-admin"})
     Response removeCertificate(
             @ApiParam(
                     name = "serialNumber",

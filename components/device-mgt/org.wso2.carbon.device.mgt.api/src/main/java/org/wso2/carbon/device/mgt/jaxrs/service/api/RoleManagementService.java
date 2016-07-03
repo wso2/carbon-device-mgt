@@ -32,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "Role", version = "1.0.0", context = "/devicemgt_admin/roles", tags = {"devicemgt_admin"})
+@API(name = "Role Management", version = "1.0.0", context = "/api-device-mgt-v1.0/roles", tags = {"devicemgt_admin"})
 
 @Path("/roles")
 @Api(value = "Role Management", description = "Role management related operations can be found here.")
@@ -82,11 +82,7 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching requested list of roles.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", permissions = {
-            "/permission/admin/device-mgt/admin/roles/list",
-            "/permission/admin/device-mgt/admin/users/view",
-            "/permission/admin/device-mgt/admin/policies/add",
-            "/permission/admin/device-mgt/admin/policies/update"})
+    @Permission(scope = "roles-view", roles = {"emm-admin"})
     Response getRoles(
             @ApiParam(
                     name = "filter",
@@ -167,7 +163,7 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
+    @Permission(scope = "roles-view", roles = {"emm-admin"})
     Response getPermissionsOfRole(
             @ApiParam(
                     name = "roleName",
@@ -229,7 +225,7 @@ public interface RoleManagementService {
                                     "requested role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
+    @Permission(scope = "roles-view", roles = {"emm-admin"})
     Response getRole(
             @ApiParam(
                     name = "roleName",
@@ -289,7 +285,7 @@ public interface RoleManagementService {
                             "Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
+    @Permission(scope = "roles-modify", roles = {"emm-admin"})
     Response addRole(
             @ApiParam(
                     name = "role",
@@ -341,7 +337,7 @@ public interface RoleManagementService {
                             "Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
+    @Permission(scope = "roles-modify", roles = {"emm-admin"})
     Response updateRole(
             @ApiParam(
                     name = "roleName",
@@ -378,7 +374,7 @@ public interface RoleManagementService {
                             "Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
+    @Permission(scope = "roles-modify", roles = {"emm-admin"})
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
@@ -436,7 +432,7 @@ public interface RoleManagementService {
                                     "Server error occurred while updating the user list of the role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
+    @Permission(scope = "roles-modify", roles = {"emm-admin"})
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",

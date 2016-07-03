@@ -46,7 +46,7 @@ public interface CertificateMgtService {
                             message = "Internal Server Error. \n Error occurred while retrieving signed certificate.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "sign-csr", permissions = {"/permission/admin/device-mgt/scep/sign-csr"})
+    @Permission(scope = "sign-csr", roles = {"emm-admin"})
     Response getSignedCertFromCSR(
             @ApiParam(
                     name = "If-Modified-Since",

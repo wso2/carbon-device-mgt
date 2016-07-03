@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 /**
  * Activity related REST-API implementation.
  */
-@API(name = "Activities", version = "1.0.0", context = "/devicemgt_admin/activities", tags = {"devicemgt_admin"})
+@API(name = "Activity Info Provider", version = "1.0.0", context = "/api-device-mgt-v1.0/activities", tags = {"devicemgt_admin"})
 
 @Path("/activities")
 @Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example operation details " +
@@ -91,7 +91,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
+    @Permission(scope = "activity-view", roles = {"emm-user", "emm-admin"})
     Response getActivity(
             @ApiParam(
                     name = "id",
@@ -147,7 +147,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server ErrorResponse. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "activity-view", permissions = {"/permission/admin/device-mgt/admin/activities/view"})
+    @Permission(scope = "activity-view", roles = {"emm-admin"})
     Response getActivities(
             @ApiParam(
                     name = "since",

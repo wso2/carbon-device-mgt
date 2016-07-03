@@ -16,21 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util;
+package org.wso2.carbon.device.mgt.core.config.permission;
 
 import org.apache.catalina.core.StandardContext;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scannotation.AnnotationDB;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.api.model.Scope;
-import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
-import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
-import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
-import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionConfiguration;
-import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementException;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -48,6 +40,7 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 public class AnnotationProcessor {
 
@@ -57,8 +50,8 @@ public class AnnotationProcessor {
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
     private static final String WILD_CARD = "/*";
+    private static final String URL_SEPARATOR = "/";
 
-    private static final String AUTH_TYPE = "Any";
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
 
@@ -85,7 +78,6 @@ public class AnnotationProcessor {
         db.addIgnoredPackages(PACKAGE_ORG_APACHE);
         db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
         db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
-
         URL classPath = findWebInfClassesPath(servletContext);
         db.scanArchives(classPath);
 
@@ -99,19 +91,21 @@ public class AnnotationProcessor {
      * @param entityClasses
      * @return
      */
-    public List<APIResourceConfiguration> extractAPIInfo(final ServletContext servletContext, Set<String> entityClasses)
-            throws ClassNotFoundException {
+    public List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission>
+        extractPermissions(Set<String> entityClasses) {
 
-        List<APIResourceConfiguration> apiResourceConfigs = new ArrayList<APIResourceConfiguration>();
+        List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> permissions = new ArrayList<>();
 
         if (entityClasses != null && !entityClasses.isEmpty()) {
+
             for (final String className : entityClasses) {
 
-                APIResourceConfiguration resource =
-                        AccessController.doPrivileged(new PrivilegedAction<APIResourceConfiguration>() {
-                            public APIResourceConfiguration run() {
-                                Class<?> clazz = null;
-                                APIResourceConfiguration apiResourceConfig = null;
+                List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> resourcePermissions =
+                        AccessController.doPrivileged(new PrivilegedAction<List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission>>() {
+                            public List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> run() {
+                                Class<?> clazz;
+                                List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> apiPermissions =
+                                        new ArrayList<>();
                                 try {
                                     clazz = classLoader.loadClass(className);
 
@@ -120,7 +114,7 @@ public class AnnotationProcessor {
                                                     .class.getName());
 
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
-                                    List<APIResource> resourceList;
+                                    List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> resourceList;
 
                                     if (apiAnno != null) {
 
@@ -129,13 +123,12 @@ public class AnnotationProcessor {
                                         }
 
                                         try {
-                                            apiResourceConfig = processAPIAnnotation(apiAnno);
                                             String rootContext = servletContext.getContextPath();
                                             pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
                                             pathClazzMethods = pathClazz.getMethods();
 
                                             Annotation rootContectAnno = clazz.getAnnotation(pathClazz);
-                                            String subContext;
+                                            String subContext = "";
                                             if (rootContectAnno != null) {
                                                 subContext = invokeMethod(pathClazzMethods[0], rootContectAnno, STRING);
                                                 if (subContext != null && !subContext.isEmpty()) {
@@ -151,51 +144,21 @@ public class AnnotationProcessor {
                                             }
 
                                             Method[] annotatedMethods = clazz.getDeclaredMethods();
-                                            resourceList = getApiResources(rootContext, annotatedMethods);
-                                            apiResourceConfig.setResources(resourceList);
+                                            apiPermissions = getApiResources(rootContext, annotatedMethods);
                                         } catch (Throwable throwable) {
                                             log.error("Error encountered while scanning for annotations", throwable);
                                         }
                                     }
                                 } catch (ClassNotFoundException e) {
-                                    log.error("Error when passing the api annotation for device type apis.", e);
+                                    log.error("Error when passing the api annotation for device type apis.");
                                 }
-                                return apiResourceConfig;
+                                return apiPermissions;
                             }
                         });
-                apiResourceConfigs.add(resource);
+                permissions.addAll(resourcePermissions);
             }
         }
-        return apiResourceConfigs;
-    }
-
-    /**
-     * Iterate API annotation and build API Configuration
-     *
-     * @param apiAnno
-     * @return
-     * @throws Throwable
-     */
-    private APIResourceConfiguration processAPIAnnotation(Annotation apiAnno) throws Throwable {
-        Method[] apiClazzMethods = apiClazz.getMethods();
-        APIResourceConfiguration apiResourceConfig = new APIResourceConfiguration();
-        for (int k = 0; k < apiClazzMethods.length; k++) {
-            switch (apiClazzMethods[k].getName()) {
-                case "name":
-                    apiResourceConfig.setName(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                    break;
-                case "version":
-                    apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                    break;
-                case "context":
-                    apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                    break;
-                case "tags":
-                    apiResourceConfig.setTags(invokeMethod(apiClazzMethods[k], apiAnno));
-                    break;
-            }
-        }
-        return apiResourceConfig;
+        return permissions;
     }
 
 
@@ -207,12 +170,15 @@ public class AnnotationProcessor {
      * @return
      * @throws Throwable
      */
-    private List<APIResource> getApiResources(String resourceRootContext, Method[] annotatedMethods) throws Throwable {
-        List<APIResource> resourceList = new ArrayList<>();
-        String subCtx = null;
+    private List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission>
+        getApiResources(String resourceRootContext, Method[] annotatedMethods) throws Throwable {
+
+        List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> permissions = new ArrayList<>();
+        String subCtx;
         for (Method method : annotatedMethods) {
             Annotation[] annotations = method.getDeclaredAnnotations();
-            APIResource resource = new APIResource();
+            org.wso2.carbon.device.mgt.common.permission.mgt.Permission permission =
+                    new org.wso2.carbon.device.mgt.common.permission.mgt.Permission();
 
             if (isHttpMethodAvailable(annotations)) {
                 Annotation methodContextAnno = method.getAnnotation(pathClazz);
@@ -221,69 +187,48 @@ public class AnnotationProcessor {
                 } else {
                     subCtx = WILD_CARD;
                 }
-                resource.setUriTemplate(makeContextURLReady(subCtx));
+                permission.setContext(makeContextURLReady(resourceRootContext));
+                permission.setUrlTemplate(makeContextURLReady(subCtx));
 
-                resource.setUri(APIPublisherUtil.getServerBaseUrl() + makeContextURLReady(resourceRootContext) +
-                        makeContextURLReady(subCtx));
-                resource.setAuthType(AUTH_TYPE);
-
+                // this check is added to avoid url resolving conflict which happens due
+                // to adding of '*' notation for dynamic path variables.
+                if (WILD_CARD.equals(subCtx)) {
+                    subCtx = makeContextURLReady(resourceRootContext);
+                } else {
+                    subCtx = makeContextURLReady(resourceRootContext) + makeContextURLReady(subCtx);
+                }
+                permission.setUrl(replaceDynamicPathVariables(subCtx));
+                String httpMethod;
                 for (int i = 0; i < annotations.length; i++) {
-                    processHTTPMethodAnnotation(resource, annotations[i]);
-                    if (annotations[i].annotationType().getName().equals(Consumes.class.getName())) {
-                        Class<Consumes> consumesClass = (Class<Consumes>) classLoader.loadClass(
-                                Consumes.class.getName());
-                        Method[] consumesClassMethods = consumesClass.getMethods();
-                        Annotation consumesAnno = method.getAnnotation(consumesClass);
-                        resource.setConsumes(invokeMethod(consumesClassMethods[0], consumesAnno, STRING_ARR));
-                    }
-                    if (annotations[i].annotationType().getName().equals(Produces.class.getName())) {
-                        Class<Produces> producesClass = (Class<Produces>) classLoader.loadClass(
-                                Produces.class.getName());
-                        Method[] producesClassMethods = producesClass.getMethods();
-                        Annotation producesAnno = method.getAnnotation(producesClass);
-                        resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
-                    }
-                    if (annotations[i].annotationType().getName().equals(Permission.class.getName())) {
-                        PermissionConfiguration permissionConf = this.getPermission(method);
-                        if (permissionConf != null) {
-                            Scope scope = new Scope();
-                            scope.setKey(permissionConf.getScopeName());
-                            scope.setDescription(permissionConf.getScopeName());
-                            scope.setName(permissionConf.getScopeName());
-                            String roles = StringUtils.join(permissionConf.getRoles(), ",");
-                            scope.setRoles(roles);
-                            resource.setScope(scope);
-                        }
+                    httpMethod = getHTTPMethodAnnotation(annotations[i]);
+                    if (httpMethod != null) {
+                        permission.setMethod(httpMethod);
+                        break;
                     }
                 }
-                resourceList.add(resource);
+                permissions.add(permission);
             }
         }
-        return resourceList;
+        return permissions;
     }
 
     /**
      * Read Method annotations indicating HTTP Methods
-     *
-     * @param resource
      * @param annotation
      */
-    private void processHTTPMethodAnnotation(APIResource resource, Annotation annotation) {
+    private String getHTTPMethodAnnotation(Annotation annotation) {
         if (annotation.annotationType().getName().equals(GET.class.getName())) {
-            resource.setHttpVerb(HttpMethod.GET);
+            return HttpMethod.GET;
+        } else if (annotation.annotationType().getName().equals(POST.class.getName())) {
+            return HttpMethod.POST;
+        } else if (annotation.annotationType().getName().equals(OPTIONS.class.getName())) {
+            return HttpMethod.OPTIONS;
+        } else if (annotation.annotationType().getName().equals(DELETE.class.getName())) {
+            return HttpMethod.DELETE;
+        } else if (annotation.annotationType().getName().equals(PUT.class.getName())) {
+            return HttpMethod.PUT;
         }
-        if (annotation.annotationType().getName().equals(POST.class.getName())) {
-            resource.setHttpVerb(HttpMethod.POST);
-        }
-        if (annotation.annotationType().getName().equals(OPTIONS.class.getName())) {
-            resource.setHttpVerb(HttpMethod.OPTIONS);
-        }
-        if (annotation.annotationType().getName().equals(DELETE.class.getName())) {
-            resource.setHttpVerb(HttpMethod.DELETE);
-        }
-        if (annotation.annotationType().getName().equals(PUT.class.getName())) {
-            resource.setHttpVerb(HttpMethod.PUT);
-        }
+        return null;
     }
 
     private boolean isHttpMethodAvailable(Annotation[] annotations) {
@@ -310,7 +255,7 @@ public class AnnotationProcessor {
      * @return
      */
     private String makeContextURLReady(String context) {
-        if (context != null && !context.equalsIgnoreCase("")) {
+        if (context != null && ! context.isEmpty()) {
             if (context.startsWith("/")) {
                 return context;
             } else {
@@ -341,43 +286,6 @@ public class AnnotationProcessor {
         }
     }
 
-    /**
-     * When an annotation and method is passed, this method invokes that executes said method against the annotation
-     */
-    private String[] invokeMethod(Method method, Annotation annotation) throws Throwable {
-        InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
-        return ((String[]) methodHandler.invoke(annotation, method, null));
-    }
-
-    private PermissionConfiguration getPermission(Method currentMethod) throws Throwable {
-        Class<Permission> permissionClass = (Class<Permission>) classLoader.loadClass(Permission.class.getName());
-        Annotation permissionAnnotation = currentMethod.getAnnotation(permissionClass);
-        if (permissionClass != null) {
-            Method[] permissionClassMethods = permissionClass.getMethods();
-            PermissionConfiguration permissionConf = new PermissionConfiguration();
-            for (Method method : permissionClassMethods) {
-                switch (method.getName()) {
-                    case "scope":
-                        permissionConf.setScopeName(invokeMethod(method, permissionAnnotation, STRING));
-                        break;
-                    case "roles":
-                        String roles[] = invokeMethod(method, permissionAnnotation);
-                        this.addPermission(roles);
-                        permissionConf.setRoles(roles);
-                        break;
-                }
-            }
-            return permissionConf;
-        }
-        return null;
-    }
-
-    private void addPermission(String[] permissions) throws PermissionManagementException {
-        for (String permission : permissions) {
-            PermissionUtils.addPermission(permission);
-        }
-    }
-
 
     /**
      * Find the URL pointing to "/WEB-INF/classes"  This method may not work in conjunction with IteratorFactory
@@ -401,6 +309,24 @@ public class AnnotationProcessor {
         {
             throw new RuntimeException(e);
         }
+    }
+
+    private String replaceDynamicPathVariables(String path) {
+        StringBuilder replacedPath = new StringBuilder();
+        StringTokenizer st = new StringTokenizer(path, URL_SEPARATOR);
+        String currentToken;
+        while (st.hasMoreTokens()) {
+            currentToken = st.nextToken();
+            if (currentToken.charAt(0) == '{') {
+                if (currentToken.charAt(currentToken.length() - 1) == '}') {
+                    replacedPath.append(WILD_CARD);
+                }
+            } else {
+                replacedPath.append(URL_SEPARATOR);
+                replacedPath.append(currentToken);
+            }
+        }
+        return replacedPath.toString();
     }
 
 }

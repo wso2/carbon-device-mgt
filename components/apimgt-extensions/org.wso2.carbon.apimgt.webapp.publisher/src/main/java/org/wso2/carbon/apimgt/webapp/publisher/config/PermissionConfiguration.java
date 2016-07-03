@@ -24,7 +24,7 @@ package org.wso2.carbon.apimgt.webapp.publisher.config;
 public class PermissionConfiguration {
 
     private String scopeName;
-    private String[] permissions;
+    private String[] roles;
 
     public String getScopeName() {
         return scopeName;
@@ -34,12 +34,12 @@ public class PermissionConfiguration {
         this.scopeName = scope;
     }
 
-    public String[] getPermissions() {
-        return permissions;
+    public String[] getRoles() {
+        return roles;
     }
 
-    public void setPermissions(String[] permissions) {
-        this.permissions = permissions;
+    public void setRoles(String[] roles) {
+        this.roles = roles;
     }
 
 }

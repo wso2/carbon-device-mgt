@@ -142,8 +142,7 @@ public interface NotificationManagementService {
                             message = "Error occurred while updating notification status.")
             }
     )
-    @Permission(scope = "notification:modify", roles = {"admin"}
-    )
+    @Permission(scope = "notification:view", roles = {"admin"})
     Response updateNotificationStatus(
             @ApiParam(
                     name = "id",

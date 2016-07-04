@@ -59,7 +59,7 @@
                                     <outputDirectory>
                                         ${project.build.directory}/maven-shared-archive-resources/webapps
                                     </outputDirectory>
-                                    <destFileName>api#certificate-mgt#v1.0.war</destFileName>
+                                    <destFileName>api-certificate-mgt-v1.0.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

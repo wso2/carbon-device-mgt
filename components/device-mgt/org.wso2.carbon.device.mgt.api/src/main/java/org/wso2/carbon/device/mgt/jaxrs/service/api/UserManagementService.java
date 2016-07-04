@@ -82,7 +82,7 @@ public interface UserManagementService {
                             message = "Internal Server Error. \n Server error occurred while adding a new user.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "user-modify", roles = {"emm-admin"})
+    @Permission(scope = "user:add", roles = {"admin"})
     Response addUser(
             @ApiParam(
                     name = "user",
@@ -134,7 +134,7 @@ public interface UserManagementService {
                             " fetching the requested user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", roles = {"emm-admin"})
+    @Permission(scope = "user:view", roles = {"admin"})
     Response getUser(
             @ApiParam(
                     name = "username",
@@ -191,7 +191,7 @@ public interface UserManagementService {
                             "Server error occurred while updating the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-modify", roles = {"emm-admin"})
+    @Permission(scope = "user:modify", roles = {"admin"})
     Response updateUser(
             @ApiParam(
                     name = "username",
@@ -226,7 +226,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class
             )
     })
-    @Permission(scope = "user-modify", roles = {"emm-admin"})
+    @Permission(scope = "user:modify", roles = {"admin"})
     Response removeUser(
             @ApiParam(name = "username", value = "Username of the user to be deleted.", required = true)
             @PathParam("username") String username);
@@ -275,7 +275,7 @@ public interface UserManagementService {
                             " assigned to the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", roles = {"emm-admin"})
+    @Permission(scope = "user:view", roles = {"admin"})
     Response getRolesOfUser(
             @ApiParam(name = "username", value = "Username of the user.", required = true)
             @PathParam("username") String username);
@@ -318,7 +318,7 @@ public interface UserManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the user list.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", roles = {"emm-admin"})
+    @Permission(scope = "user:list", roles = {"admin"})
     Response getUsers(
             @ApiParam(
                     name = "filter",
@@ -385,7 +385,7 @@ public interface UserManagementService {
                             "list that matches the given filter.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-view", roles = {"emm-admin"})
+    @Permission(scope = "user:view", roles = {"admin"})
     Response getUserNames(
             @ApiParam(
                     name = "filter",
@@ -439,7 +439,7 @@ public interface UserManagementService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "user-modify", roles = {"emm-admin"})
+    @Permission(scope = "user:modify", roles = {"admin"})
     Response resetPassword(
             @ApiParam(
                     name = "username",

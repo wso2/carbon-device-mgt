@@ -1,6 +1,7 @@
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.EnrollmentCertificate;
@@ -10,6 +11,10 @@ import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+@API(name = "Certificate Management", version = "1.0.0",
+        context = "api-device-mgt-android-v1.0/admin/certificates",
+        tags = {"devicemgt_admin"})
 
 @Api(value = "Certificate Management", description = "This API carries all certificate management related operations " +
         "such as get all the available devices, etc.")
@@ -72,7 +77,7 @@ public interface CertificateManagementAdminService {
                             message = "Internal Server Error. \n Server error occurred while adding certificates.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "certificate-modify", roles = {"admin"})
+    @Permission(scope = "certificate:add", roles = {"admin"})
     Response addCertificate(
             @ApiParam(
                     name = "enrollmentCertificates",
@@ -130,7 +135,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving information requested certificate.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "certificate-view", roles = {"emm-admin"})
+    @Permission(scope = "certificate:view", roles = {"admin"})
     Response getCertificate(
             @ApiParam(name = "serialNumber",
                     value = "Provide the serial number of the certificate that you wish to get the details of",
@@ -202,7 +207,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving all certificates enrolled in the system.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "certificate-view", roles = {"emm-admin"})
+    @Permission(scope = "certificate:view", roles = {"admin"})
     Response getAllCertificates(
             @ApiParam(
                     name = "offset",
@@ -245,7 +250,7 @@ public interface CertificateManagementAdminService {
                     message = "Internal Server Error. \n " +
                             "Server error occurred while removing the certificate.",
                     response = ErrorResponse.class)})
-    @Permission(scope = "certificate-modify", roles = {"emm-admin"})
+    @Permission(scope = "certificate:modify", roles = {"admin"})
     Response removeCertificate(
             @ApiParam(
                     name = "serialNumber",

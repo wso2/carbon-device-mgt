@@ -209,6 +209,7 @@ public final class DeviceManagementDAOUtil {
         deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
         deviceInfo.setVendor(rs.getString("VENDOR"));
         deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
+        deviceInfo.setOsBuildDate(rs.getString("OS_BUILD_DATE"));
         deviceInfo.setBatteryLevel(rs.getDouble("BATTERY_LEVEL"));
         deviceInfo.setInternalTotalMemory(rs.getDouble("INTERNAL_TOTAL_MEMORY"));
         deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));

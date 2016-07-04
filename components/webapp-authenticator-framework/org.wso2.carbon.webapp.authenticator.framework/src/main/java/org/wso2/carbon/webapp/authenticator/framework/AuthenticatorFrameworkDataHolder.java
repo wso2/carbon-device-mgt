@@ -18,8 +18,8 @@
  */
 package org.wso2.carbon.webapp.authenticator.framework;
 
+import org.wso2.carbon.certificate.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
-import org.wso2.carbon.device.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;

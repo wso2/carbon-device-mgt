@@ -79,6 +79,7 @@ public class SearchDAOImpl implements SearchDAO {
                     deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
                     deviceInfo.setInternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
                     deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
+                    deviceInfo.setOsBuildDate(rs.getString("OS_BUILD_DATE"));
                     deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
                     deviceInfo.setSsid(rs.getString("SSID"));
                     deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));
@@ -156,6 +157,7 @@ public class SearchDAOImpl implements SearchDAO {
                     deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
                     deviceInfo.setInternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
                     deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
+                    deviceInfo.setOsBuildDate(rs.getString("OS_BUILD_DATE"));
                     deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
                     deviceInfo.setSsid(rs.getString("SSID"));
                     deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));

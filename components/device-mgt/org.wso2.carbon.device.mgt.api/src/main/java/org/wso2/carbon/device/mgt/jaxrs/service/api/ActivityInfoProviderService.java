@@ -91,7 +91,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "activity-view", roles = {"emm-user", "emm-admin"})
+    @Permission(scope = "activity:view", roles = {"admin"})
     Response getActivity(
             @ApiParam(
                     name = "id",
@@ -150,7 +150,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "activity-view", roles = {"emm-admin"})
+    @Permission(scope = "activity:view", roles = {"admin"})
     Response getActivities(
             @ApiParam(
                     name = "since",

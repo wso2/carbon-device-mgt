@@ -90,7 +90,7 @@ public interface NotificationManagementService {
                                     "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "device-notification-view", roles = {"emm-admin"})
+    @Permission(scope = "notification:view", roles = {"admin"})
     Response getNotifications(
             @ApiParam(
                     name = "status",

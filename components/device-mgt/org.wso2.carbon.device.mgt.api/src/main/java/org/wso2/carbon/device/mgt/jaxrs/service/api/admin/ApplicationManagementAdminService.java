@@ -74,7 +74,7 @@ public interface ApplicationManagementAdminService {
                             "a given set of devices.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "application-modify", roles = {"emm-admin"})
+    @Permission(scope = "application:install", roles = {"admin"})
     Response installApplication(
             @ApiParam(
                     name = "applicationWrapper",
@@ -113,7 +113,7 @@ public interface ApplicationManagementAdminService {
                             "a given set of devices.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "application-modify", roles = {"emm-admin"})
+    @Permission(scope = "application:uninstall", roles = {"admin"})
     Response uninstallApplication(
             @ApiParam(
                     name = "applicationWrapper",

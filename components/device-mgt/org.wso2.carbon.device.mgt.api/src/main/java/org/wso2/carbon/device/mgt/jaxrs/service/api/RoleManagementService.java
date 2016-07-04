@@ -77,7 +77,7 @@ public interface RoleManagementService {
                             message = "Internal Server Error. \n Server error occurred while fetching requested list of roles.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", roles = {"emm-admin"})
+    @Permission(scope = "roles:list", roles = {"admin"})
     Response getRoles(
             @ApiParam(
                     name = "filter",
@@ -159,7 +159,7 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", roles = {"emm-admin"})
+    @Permission(scope = "roles:view", roles = {"admin"})
     Response getPermissionsOfRole(
             @ApiParam(
                     name = "roleName",
@@ -222,7 +222,7 @@ public interface RoleManagementService {
                                     "requested role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-view", roles = {"emm-admin"})
+    @Permission(scope = "roles:view", roles = {"admin"})
     Response getRole(
             @ApiParam(
                     name = "roleName",
@@ -282,7 +282,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", roles = {"emm-admin"})
+    @Permission(scope = "roles:add", roles = {"admin"})
     Response addRole(
             @ApiParam(
                     name = "role",
@@ -332,7 +332,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", roles = {"emm-admin"})
+    @Permission(scope = "roles:modify", roles = {"admin"})
     Response updateRole(
             @ApiParam(
                     name = "roleName",
@@ -369,7 +369,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", roles = {"emm-admin"})
+    @Permission(scope = "roles:modify", roles = {"admin"})
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
@@ -427,7 +427,7 @@ public interface RoleManagementService {
                                     "Server error occurred while updating the user list of the role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", roles = {"emm-admin"})
+    @Permission(scope = "roles:modify", roles = {"admin"})
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",

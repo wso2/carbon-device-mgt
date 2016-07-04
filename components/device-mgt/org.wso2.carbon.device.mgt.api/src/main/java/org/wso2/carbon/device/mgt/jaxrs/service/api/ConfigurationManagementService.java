@@ -81,7 +81,7 @@ public interface ConfigurationManagementService {
                             "platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "configuration-view", roles = {"emm-admin"})
+    @Permission(scope = "configuration:view", roles = {"admin"})
     Response getConfiguration(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -127,7 +127,7 @@ public interface ConfigurationManagementService {
                             "Server error occurred while modifying general platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "configuration-modify", roles = {"emm-admin"})
+    @Permission(scope = "configuration:modify", roles = {"admin"})
     Response updateConfiguration(
             @ApiParam(
                     name = "configuration",

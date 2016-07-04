@@ -99,7 +99,6 @@
                             org.wso2.carbon.device.mgt.core.permission.mgt,
                             org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.common.permission.mgt,
-                            org.wso2.carbon.device.mgt.core.scep,
                             org.apache.axis2,
                             org.apache.axis2.client,
                             org.apache.commons.codec.binary,

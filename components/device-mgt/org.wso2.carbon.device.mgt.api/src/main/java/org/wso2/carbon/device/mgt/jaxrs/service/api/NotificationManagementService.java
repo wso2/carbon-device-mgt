@@ -125,13 +125,38 @@ public interface NotificationManagementService {
                     int limit);
 
     @PUT
-    @Path("{id}/{status}")
+    @Path("{id}/mark-checked")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "",
-            notes = "",
+            value = "Updating the Device Notification Status",
+            notes = "When a user has read the the device notification the device notification status must "
+                    + "change from NEW to CHECKED. This API is used to update device notification status.",
             tags = "Device Notification Management")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK",
+                            response = Notification.class),
+                    @ApiResponse(
+                            code = 200,
+                            message = "Notification updated successfully. But the retrial of the updated "
+                                    + "notification failed."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Error occurred while updating notification status.")
+            }
+    )
+    @Permission(
+            scope = "",
+            permissions = { "" }
+    )
     Response updateNotificationStatus(
-            @PathParam("id") int id);
+            @ApiParam(
+                    name = "id",
+                    value = "Notification ID.",
+                    required = true)
+            @PathParam("id")
+                    int id);
 }

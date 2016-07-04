@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @API(name = "Certificate Management", version = "1.0.0",
-        context = "api-device-mgt-android-v1.0/admin/certificates",
+        context = "api-certificate-mgt-v1.0/admin/certificates",
         tags = {"devicemgt_admin"})
 
 @Api(value = "Certificate Management", description = "This API carries all certificate management related operations " +

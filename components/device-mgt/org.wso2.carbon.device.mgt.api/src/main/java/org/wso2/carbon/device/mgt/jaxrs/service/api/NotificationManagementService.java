@@ -125,7 +125,7 @@ public interface NotificationManagementService {
                     int limit);
 
     @PUT
-    @Path("{id}/mark-checked")
+    @Path("/{id}/mark-checked")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",

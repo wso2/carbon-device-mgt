@@ -38,6 +38,7 @@
             <!--<ref bean="groupManagementService"/>-->
             <ref bean="groupManagementAdminService"/>
             <ref bean="applicationManagementAdminService"/>
+            <ref bean="deviceTypeManagementAdminService"/>
             <ref bean="dashboardServiceBean"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
@@ -77,6 +78,7 @@
     <bean id="groupManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.GroupManagementAdminServiceImpl"/>
     <bean id="userManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.UserManagementAdminServiceImpl"/>
     <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DashboardImpl"/>
+    <bean id="deviceTypeManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceTypeManagementServiceImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
     <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->
 

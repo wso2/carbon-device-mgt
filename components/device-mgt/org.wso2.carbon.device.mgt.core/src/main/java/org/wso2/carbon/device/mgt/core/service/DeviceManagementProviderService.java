@@ -207,7 +207,7 @@ public interface DeviceManagementProviderService {
 
     Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException;
 
-    List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException;
+    List<String> getAvailableDeviceTypes() throws DeviceManagementException;
 
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
 

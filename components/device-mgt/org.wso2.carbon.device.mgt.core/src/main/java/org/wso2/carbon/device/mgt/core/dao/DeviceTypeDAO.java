@@ -51,17 +51,17 @@ public interface DeviceTypeDAO {
 	List<DeviceType> getDeviceTypes(int tenantId) throws DeviceManagementDAOException;
 
 	/**
-	 * @param tenandId of the device type provider.
+	 * @param tenantId of the device type provider.
 	 * @return return only the device types that are associated with the provider tenant.
 	 * @throws DeviceManagementDAOException
 	 */
-	List<DeviceType> getDeviceTypesByProvider(int tenandId) throws DeviceManagementDAOException;
+	List<String> getDeviceTypesByProvider(int tenantId) throws DeviceManagementDAOException;
 
 	/**
 	 * @return sharedWithAllDeviceTypes This returns public shared device types.
 	 * @throws DeviceManagementDAOException
 	 */
-	List<DeviceType> getSharedDeviceTypes() throws DeviceManagementDAOException;
+	List<String> getSharedDeviceTypes() throws DeviceManagementDAOException;
 
 	/**
 	 * @param id retrieve the device type with its id.

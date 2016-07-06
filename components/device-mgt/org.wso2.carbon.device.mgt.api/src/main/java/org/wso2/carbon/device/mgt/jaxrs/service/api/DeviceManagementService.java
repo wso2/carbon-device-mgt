@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -667,4 +668,45 @@ public interface DeviceManagementService {
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince);
 
+
+
+    @GET
+    @Path("{type}/{id}/compliance-data")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get the effective policy calculated for a device.",
+            notes = "When a device registers with WSO2 EMM a policy is enforced on the device. Initially the "
+                    + "EMM filters the policies based on the Platform (device type), filters based on the "
+                    + "device ownership type , filters based on the user role or name and finally the policy"
+                    + " is enforced on the device.",
+            tags = "Device Management")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK",
+                            response = ComplianceData.class),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Error occurred while getting the compliance data.",
+                            response = ErrorResponse.class)
+            }
+    )
+    Response getComplianceDataOfDevice(
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
+            @PathParam("type")
+                    String type,
+            @ApiParam(
+                    name = "id",
+                    value = "Device Identifier",
+                    required = true)
+            @PathParam("id") String id);
 }

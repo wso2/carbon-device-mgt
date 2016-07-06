@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServ
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceCompliance;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
@@ -38,6 +39,8 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
 import javax.ws.rs.*;
@@ -298,6 +301,50 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @GET
+    @Path("{type}/{id}/compliance-data")
+    public Response getComplianceDataOfDevice(@PathParam("type") String type,
+                                              @PathParam("id") String id) {
+
+        RequestValidationUtil.validateDeviceIdentifier(type, id);
+        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+        Policy policy;
+        ComplianceData complianceData = null;
+        DeviceCompliance deviceCompliance = new DeviceCompliance();
+
+        try {
+            policy = policyManagementService.getAppliedPolicyToDevice(new DeviceIdentifier(id, type));
+        } catch (PolicyManagementException e) {
+            String msg = "Error occurred while retrieving the current policy associated with the '" + type +
+                    "' device, which carries the id '" + id + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+
+        if (policy == null) {
+            deviceCompliance.setDeviceID(Integer.valueOf(id));
+            deviceCompliance.setComplianceData(null);
+            deviceCompliance.setCode(0001l);
+            return Response.status(Response.Status.OK).entity(deviceCompliance).build();
+        } else {
+            try {
+                policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+                complianceData = policyManagementService.getDeviceCompliance(
+                        new DeviceIdentifier(id, type));
+                deviceCompliance.setDeviceID(Integer.valueOf(id));
+                deviceCompliance.setComplianceData(complianceData);
+                deviceCompliance.setCode(0002l);
+                return Response.status(Response.Status.OK).entity(deviceCompliance).build();
+            } catch (PolicyComplianceException e) {
+                String error = "Error occurred while getting the compliance data.";
+                log.error(error, e);
+                return Response.serverError().entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(error).build()).build();
+            }
         }
     }
 

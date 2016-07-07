@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
@@ -143,6 +144,32 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
+
+    @GET
+    @Path("/user-devices")
+    public Response getDeviceByUser(@QueryParam("offset") int offset,
+                                    @QueryParam("limit") int limit) {
+
+        PaginationRequest request = new PaginationRequest(offset, limit);
+        PaginationResult result;
+        DeviceList devices = new DeviceList();
+
+        String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+        request.setOwner(currentUser);
+
+        try {
+            result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request);
+            devices.setList((List<Device>) result.getData());
+            devices.setCount(result.getRecordsTotal());
+            return Response.status(Response.Status.OK).entity(devices).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while fetching all enrolled devices";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
 
     @GET
     @Path("/{type}/{id}")

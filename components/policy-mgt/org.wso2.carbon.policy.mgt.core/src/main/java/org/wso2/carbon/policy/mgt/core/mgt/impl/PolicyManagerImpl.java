@@ -681,7 +681,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
 
         for (Policy policy : allPolicies) {
-            if (policy.getProfile().getDeviceType().getName().equalsIgnoreCase(deviceTypeName)) {
+            if (policy.getProfile().getDeviceType().equalsIgnoreCase(deviceTypeName)) {
                 policies.add(policy);
             }
         }
@@ -843,9 +843,9 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public List<DeviceType> applyChangesMadeToPolicies() throws PolicyManagementException {
+    public List<String> applyChangesMadeToPolicies() throws PolicyManagementException {
 
-        List<DeviceType> changedDeviceTypes = new ArrayList<>();
+        List<String> changedDeviceTypes = new ArrayList<>();
         try {
             //HashMap<Integer, Integer> map = policyDAO.getUpdatedPolicyIdandDeviceTypeId();
             List<Policy> updatedPolicies = new ArrayList<>();

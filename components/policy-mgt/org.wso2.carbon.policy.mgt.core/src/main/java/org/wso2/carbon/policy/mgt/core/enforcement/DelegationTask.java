@@ -54,7 +54,7 @@ public class DelegationTask implements Task {
 
         try {
             PolicyManager policyManager = new PolicyManagerImpl();
-            List<DeviceType> deviceTypes = policyManager.applyChangesMadeToPolicies();
+            List<String> deviceTypes = policyManager.applyChangesMadeToPolicies();
 
             PolicyCacheManagerImpl.getInstance().rePopulateCache();
 
@@ -65,9 +65,9 @@ public class DelegationTask implements Task {
                 DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance()
                         .getDeviceManagementService();
                 List<Device> devices = new ArrayList<>();
-                for (DeviceType deviceType : deviceTypes) {
+                for (String deviceType : deviceTypes) {
                     try {
-                        devices.addAll(service.getAllDevices(deviceType.getName()));
+                        devices.addAll(service.getAllDevices(deviceType));
                     } catch (DeviceManagementException e) {
                         throw new PolicyManagementException("Error occurred while taking the devices", e);
                     }

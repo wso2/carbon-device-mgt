@@ -20,15 +20,20 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.carbon.device.mgt.common.Device;
 
-public class BasePaginatedResult {
+import java.util.ArrayList;
+import java.util.List;
+
+public class DeviceTypeList {
 
     private int count;
     private String next;
     private String previous;
+    private List<String> deviceTypes = new ArrayList<>();
 
     /**
-     * Number of Resources returned.
+     * Number of Devices Types returned.
      */
     @ApiModelProperty(value = "Number of resources returned.")
     @JsonProperty("count")
@@ -68,5 +73,29 @@ public class BasePaginatedResult {
     public void setPrevious(String previous) {
         this.previous = previous;
     }
+
+    @ApiModelProperty(value = "List of device types returned")
+    @JsonProperty("devicesTypes")
+    public List<String> getList() {
+        return deviceTypes;
+    }
+
+    public void setList(List<String> deviceTypes) {
+        this.deviceTypes = deviceTypes;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");
+
+        sb.append("  count: ").append(getCount()).append(",\n");
+        sb.append("  next: ").append(getNext()).append(",\n");
+        sb.append("  previous: ").append(getPrevious()).append(",\n");
+        sb.append("  deviceTypes: [").append(deviceTypes).append("\n");
+        sb.append("]}\n");
+        return sb.toString();
+    }
+
 
 }

@@ -76,7 +76,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     }
 
     @PUT
-    @Path("{id}/mark-checked")
+    @Path("/{id}/mark-checked")
     public Response updateNotificationStatus(
             @PathParam("id") int id) {
         String msg;

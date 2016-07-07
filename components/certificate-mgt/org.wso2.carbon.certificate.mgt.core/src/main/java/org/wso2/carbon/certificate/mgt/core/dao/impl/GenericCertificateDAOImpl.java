@@ -67,10 +67,9 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                     serialNumber = String.valueOf(certificate.getCertificate().getSerialNumber());
                 }
                 byte[] bytes = Serializer.serialize(certificate.getCertificate());
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 
                 stmt.setString(1, serialNumber);
-                stmt.setObject(2, byteArrayInputStream);
+                stmt.setBytes(2, bytes);
                 stmt.setInt(3, certificate.getTenantId());
                 stmt.setString(4, username);
                 stmt.addBatch();
@@ -102,7 +101,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
             stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
 
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 certificateResponse = new CertificateResponse();
                 byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setCertificate(certificateBytes);
@@ -110,7 +109,6 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
                 certificateResponse.setUsername(resultSet.getString("USERNAME"));
                 CertificateGenerator.extractCertificateDetails(certificateBytes, certificateResponse);
-                break;
             }
         } catch (SQLException e) {
             String errorMsg =

@@ -59,13 +59,25 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test
-    public void testMonitorDao() throws PolicyManagementException, DeviceManagementException {
+    public void testMonitorDao() {
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
 
-        List<Policy> policies = policyManagerService.getPolicies(ANDROID);
-        List<Device> devices = service.getAllDevices(ANDROID);
+        List<Policy> policies = null;
+        List<Device> devices = null;
+        try {
+            policies = policyManagerService.getPolicies(ANDROID);
+            devices = service.getAllDevices(ANDROID);
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while retrieving the list of policies defined against the device type '" +
+                    ANDROID + "'", e);
+            Assert.fail();
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while retrieving the list of devices pertaining to the type '" +
+                    ANDROID + "'", e);
+            Assert.fail();
+        }
 
         for (Policy policy : policies) {
             log.debug("Policy Name : " + policy.getPolicyName());

@@ -26,14 +26,18 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceTypeManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@Path("/admin/device-types")
 public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementService {
 
     private static Log log = LogFactory.getLog(DeviceTypeManagementServiceImpl.class);
 
+    @GET
     @Override
     public Response getDeviceTypes(@HeaderParam("If-Modified-Since") String ifModifiedSince) {
         List<String> deviceTypes;

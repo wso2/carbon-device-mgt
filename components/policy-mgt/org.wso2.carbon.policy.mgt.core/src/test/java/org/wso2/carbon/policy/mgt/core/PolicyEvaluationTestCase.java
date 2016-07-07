@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.policy.mgt.core;
 
+import junit.framework.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
@@ -54,18 +55,37 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test
-    public void activatePolicies() throws PolicyManagementException, TaskException {
+    public void activatePolicies() {
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
-        PolicyAdministratorPoint administratorPoint = policyManagerService.getPAP();
+        PolicyAdministratorPoint administratorPoint = null;
+        try {
+            administratorPoint = policyManagerService.getPAP();
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while loading the policy administration point", e);
+            Assert.fail();
+        }
 
-        List<Policy> policies = policyManagerService.getPolicies(ANDROID);
+        List<Policy> policies = null;
+        try {
+            policies = policyManagerService.getPolicies(ANDROID);
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while retrieving the list of policies defined against the device type '" +
+                    ANDROID + "'", e);
+            Assert.fail();
+        }
 
         for (Policy policy : policies) {
             log.debug("Policy status : " + policy.getPolicyName() + "  - " + policy.isActive() + " - " + policy
                     .isUpdated() + " Policy id : " + policy.getId());
 
             if (!policy.isActive()) {
-                administratorPoint.activatePolicy(policy.getId());
+                try {
+                    administratorPoint.activatePolicy(policy.getId());
+                } catch (PolicyManagementException e) {
+                    log.error("Error occurred while activating the policy, which carries the id '" +
+                            policy.getId() + "'", e);
+                    Assert.fail();
+                }
             }
         }
         // This cannot be called due to task service cannot be started from the

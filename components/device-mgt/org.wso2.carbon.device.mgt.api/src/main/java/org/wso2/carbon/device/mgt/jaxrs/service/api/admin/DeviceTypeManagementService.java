@@ -28,7 +28,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Device Type Management", version = "1.0.0", context = "/devicemgt_admin/configuration", tags = {"devicemgt_admin"})
+@API(name = "Device Type Management", version = "1.0.0", context = "/admin/device-types", tags = {"devicemgt_admin"})
 
 @Path("/admin/device-types")
 @Api(value = "Device Type Management", description = "This API corresponds to all tasks related to device " +

@@ -33,17 +33,17 @@ public class Profile implements Serializable {
     private int profileId;
     private String profileName;
     private int tenantId;
-    private DeviceType deviceType;
+    private String deviceType;
     private Timestamp createdDate;
     private Timestamp updatedDate;
 //    private List<Feature> featuresList;     // Features included in the policies.
     private List<ProfileFeature> profileFeaturesList;     // Features included in the policies.
 
-    public DeviceType getDeviceType() {
+    public String getDeviceType() {
         return deviceType;
     }
 
-    public void setDeviceType(DeviceType deviceType) {
+    public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
     }
     @XmlElement

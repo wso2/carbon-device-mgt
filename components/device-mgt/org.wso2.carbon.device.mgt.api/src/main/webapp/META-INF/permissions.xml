@@ -981,4 +981,13 @@
         <method>GET</method>
     </Permission>
     <!-- End of Dashboard related APIs -->
+
+    <!-- Permissions of Device Type Management related resources -->
+    <Permission>
+        <name>Get device types registered in the system</name>
+        <path>/device-mgt/admin/device-types</path>
+        <url>/admin/device-types</url>
+        <method>GET</method>
+    </Permission>
+    <!-- End of permissions of Device Type Management related resources -->
 </PermissionConfiguration>

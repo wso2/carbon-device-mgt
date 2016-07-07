@@ -52,7 +52,7 @@ public class DeviceMgtUtil {
                 new org.wso2.carbon.policy.mgt.common.ProfileFeature();
         profileFeature.setProfileId(mdmProfileFeature.getProfileId());
         profileFeature.setContent(mdmProfileFeature.getPayLoad());
-        profileFeature.setDeviceTypeId(mdmProfileFeature.getDeviceTypeId());
+        profileFeature.setDeviceType(mdmProfileFeature.getDeviceTypeId());
         profileFeature.setFeatureCode(mdmProfileFeature.getFeatureCode());
         profileFeature.setId(mdmProfileFeature.getId());
         return profileFeature;

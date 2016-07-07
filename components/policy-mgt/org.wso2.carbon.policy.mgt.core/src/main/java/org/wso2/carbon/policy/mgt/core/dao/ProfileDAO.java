@@ -85,6 +85,6 @@ public interface ProfileDAO {
      * @return retruns list of profiles.
      * @throws ProfileManagerDAOException
      */
-    List<Profile> getProfilesOfDeviceType(DeviceType deviceType) throws ProfileManagerDAOException;
+    List<Profile> getProfilesOfDeviceType(String deviceType) throws ProfileManagerDAOException;
 
 }

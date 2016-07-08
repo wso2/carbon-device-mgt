@@ -71,29 +71,29 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
-            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
+//            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
 
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             PaginationRequest request = new PaginationRequest(offset, limit);
             PaginationResult result;
             DeviceList devices = new DeviceList();
 
-            if (type != null) {
+            if (type != null && !type.isEmpty()) {
                 request.setDeviceType(type);
             }
-            if (user != null) {
+            if (user != null && !user.isEmpty()) {
                 request.setOwner(user);
             }
-            if (ownership != null) {
+            if (ownership != null && !ownership.isEmpty()) {
                 RequestValidationUtil.validateOwnershipType(ownership);
                 request.setOwnership(ownership);
             }
-            if (status != null) {
+            if (status != null && !status.isEmpty()) {
                 RequestValidationUtil.validateStatus(status);
                 request.setStatus(status);
             }
 
-            if (ifModifiedSince != null) {
+            if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
                 Date sinceDate;
                 SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
                 try {
@@ -109,7 +109,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
                             "after the timestamp provided in 'If-Modified-Since' header").build();
                 }
-            } else if (since != null) {
+            } else if (since != null && !since.isEmpty()) {
                 Date sinceDate;
                 SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
                 try {

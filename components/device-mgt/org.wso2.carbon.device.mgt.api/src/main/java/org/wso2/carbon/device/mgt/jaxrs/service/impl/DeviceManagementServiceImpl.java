@@ -62,6 +62,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Override
     public Response getDevices(
+            @QueryParam("name") String name,
             @QueryParam("type") String type,
             @QueryParam("user") String user,
             @QueryParam("roleName") String roleName,
@@ -79,6 +80,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             PaginationResult result;
             DeviceList devices = new DeviceList();
 
+            if(name != null && !name.isEmpty()){
+                request.setDeviceName(name);
+            }
             if (type != null && !type.isEmpty()) {
                 request.setDeviceType(type);
             }

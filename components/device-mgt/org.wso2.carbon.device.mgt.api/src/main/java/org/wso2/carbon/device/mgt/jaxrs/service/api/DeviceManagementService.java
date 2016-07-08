@@ -97,6 +97,11 @@ public interface DeviceManagementService {
     )
     Response getDevices(
             @ApiParam(
+                    name = "name",
+                    value = "The device name, such as shamu, bullhead or angler.",
+                    required = false)
+                    String name,
+            @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = false)

@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 
 @API(name = "User Management API", version = "1.0.0", context = "/devicemgt_admin/users", tags = {"devicemgt_admin"})
@@ -450,5 +451,43 @@ public interface UserManagementService {
                     name = "credentials",
                     value = "Credential.",
                     required = true) OldPasswordResetWrapper credentials);
+
+    @POST
+    @Path("/send-invitation")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Send invitation mail.",
+            notes = "A user is able to send invitation mail via this REST API.",
+            tags = "User Management")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Invitation mails have been sent."),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n Resource to be deleted does not exist.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n " +
+                            "Server error occurred while updating credentials of the user.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(scope = "user-invite", permissions = {"/permission/admin/device-mgt/admin/user/invite"})
+    Response inviteExistingUsersToEnrollDevice(
+            @ApiParam(
+                    name = "users",
+                    value = "List of users",
+                    required = true) List<String> usernames);
 
 }

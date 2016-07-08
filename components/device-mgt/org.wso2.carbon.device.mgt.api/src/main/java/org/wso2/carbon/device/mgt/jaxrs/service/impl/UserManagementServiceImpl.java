@@ -21,6 +21,9 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
@@ -337,6 +340,43 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response resetPassword(@PathParam("username") String username, OldPasswordResetWrapper credentials) {
         return CredentialManagementResponseBuilder.buildChangePasswordResponse(username, credentials);
     }
+
+    /**
+     * Method used to send an invitation email to a existing user to enroll a device.
+     *
+     * @param usernames Username list of the users to be invited
+     */
+    @POST
+    @Path("send-invitation")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response inviteExistingUsersToEnrollDevice(List<String> usernames) {
+        if (log.isDebugEnabled()) {
+            log.debug("Sending enrollment invitation mail to existing user.");
+        }
+        DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+        try {
+            for (String username : usernames) {
+                String recipient = getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS);
+
+                Properties props = new Properties();
+                props.setProperty("first-name", getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
+                props.setProperty("username", username);
+
+                EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
+                dms.sendEnrolmentInvitation(metaInfo);
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while inviting user to enrol their device";
+            log.error(msg, e);
+        } catch (UserStoreException e) {
+            String msg = "Error occurred while getting claim values to invite user";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+        return Response.status(Response.Status.OK).entity("Invitation mails have been sent.").build();
+    }
+
 
     private Map<String, String> buildDefaultUserClaims(String firstName, String lastName, String emailAddress) {
         Map<String, String> defaultUserClaims = new HashMap<>();

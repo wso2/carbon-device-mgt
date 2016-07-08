@@ -248,6 +248,12 @@
                             <url>/admin/users/*/credentials</url>
                             <method>POST</method>
                         </Permission>
+                        <Permission>
+                            <name>Send invitation mail</name>
+                            <path>/device-mgt/admin/users/Send-invitations</path>
+                            <url>/users/send-invitation</url>
+                            <method>POST</method>
+                        </Permission>
                         <!-- End of User related APIs -->
                 <Permission>
                     <name>Roles</name>

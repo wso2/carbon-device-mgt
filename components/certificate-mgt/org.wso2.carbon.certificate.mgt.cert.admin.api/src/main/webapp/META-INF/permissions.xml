@@ -32,28 +32,28 @@
 
     <!-- CertificateManagementAdminService related APIs -->
     <Permission>
-        <name>Save certificate</name>
-        <path>/device-mgt/admin/certificate/Save</path>
-        <url>/admin/certificates</url>
-        <method>POST</method>
-    </Permission>
-    <Permission>
-        <name>Get certificate</name>
-        <path>/device-mgt/admin/certificate/Get</path>
-        <url>/admin/certificates/*</url>
-        <method>GET</method>
-    </Permission>
-    <Permission>
-        <name>Get all certificates</name>
+        <name>View all certificates</name>
         <path>/device-mgt/admin/certificate/GetAll</path>
         <url>/admin/certificates</url>
         <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>Add certificate</name>
+        <path>/device-mgt/admin/certificate/Add</path>
+        <url>/admin/certificates</url>
+        <method>POST</method>
     </Permission>
     <Permission>
         <name>Remove certificate</name>
         <path>/device-mgt/admin/certificate/Remove</path>
         <url>/admin/certificates/*</url>
         <method>DELETE</method>
+    </Permission>
+    <Permission>
+        <name>View certificate</name>
+        <path>/device-mgt/admin/certificate/View</path>
+        <url>/admin/certificates/*</url>
+        <method>GET</method>
     </Permission>
     <!-- End of CertificateManagementAdminService related APIs -->
 </PermissionConfiguration>

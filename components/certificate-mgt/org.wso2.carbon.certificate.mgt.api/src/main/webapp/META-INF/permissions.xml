@@ -32,7 +32,7 @@
     <!-- Device related APIs -->
     <Permission>
         <name>get certificate in the database</name>
-        <path>/device-mgt/emm-admin/certificate/GetSignCSR</path>
+        <path>/device-mgt/admin/certificate/GetSignCSR</path>
         <url>/certificates/scep/signcsr</url>
         <method>POST</method>
         <scope>emm_admin</scope>

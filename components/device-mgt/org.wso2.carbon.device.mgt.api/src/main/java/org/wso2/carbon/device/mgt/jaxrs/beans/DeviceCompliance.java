@@ -24,7 +24,7 @@ import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 @ApiModel(value = "DeviceCompliance", description = "Device's policy compliance status")
 public class DeviceCompliance {
 
-    private int deviceID;
+    private String deviceID;
     private ComplianceData complianceData;
     private Long code;
 
@@ -44,11 +44,11 @@ public class DeviceCompliance {
         this.code = code;
     }
 
-    public int getDeviceID() {
+    public String getDeviceID() {
         return deviceID;
     }
 
-    public void setDeviceID(int deviceID) {
+    public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
     }
 

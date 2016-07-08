@@ -357,7 +357,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
 
         if (policy == null) {
-            deviceCompliance.setDeviceID(Integer.valueOf(id));
+            deviceCompliance.setDeviceID(id);
             deviceCompliance.setComplianceData(null);
             //deviceCompliance.setCode(0001l); //code 0001 means no compliance data related to the device
             return Response.status(Response.Status.OK).entity(deviceCompliance).build();
@@ -366,7 +366,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
                 complianceData = policyManagementService.getDeviceCompliance(
                         new DeviceIdentifier(id, type));
-                deviceCompliance.setDeviceID(Integer.valueOf(id));
+                deviceCompliance.setDeviceID(id);
                 deviceCompliance.setComplianceData(complianceData);
                 //deviceCompliance.setCode(0002l); //code 0002 means there are compliance data related to the device
                 return Response.status(Response.Status.OK).entity(deviceCompliance).build();

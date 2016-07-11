@@ -38,7 +38,9 @@ public class ProfileFeatureCreator {
             } else {
                 profileFeature.setContent(getJSON2());
             }
-            profileFeature.setDeviceTypeId(1);
+            //TODO why assigning a random number below?
+            //profileFeature.setDeviceTypeId(1);
+            profileFeature.setDeviceType("android");
             profileFeature.setFeatureCode(feature.getCode());
 
 //            profileFeature.setContent("mm");

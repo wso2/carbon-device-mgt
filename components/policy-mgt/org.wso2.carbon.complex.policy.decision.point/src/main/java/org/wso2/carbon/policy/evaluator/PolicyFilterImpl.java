@@ -36,7 +36,7 @@ public class PolicyFilterImpl implements PolicyFilter {
     @Override
     public List<Policy> extractPoliciesRelatedToRoles(List<Policy> policyList, List<String> roles) {
 
-        List<Policy> policies = new ArrayList<Policy>();
+        List<Policy> policies = new ArrayList<>();
 
         for (Policy policy : policyList) {
             List<String> roleList = policy.getRoles();
@@ -60,10 +60,10 @@ public class PolicyFilterImpl implements PolicyFilter {
      */
     @Override
     public List<Policy> extractPoliciesRelatedToDeviceType(List<Policy> policyList, String deviceType) {
-        List<Policy> policies = new ArrayList<Policy>();
+        List<Policy> policies = new ArrayList<>();
 
         for (Policy policy : policyList) {
-            if (policy.getProfile().getDeviceType().getName().equalsIgnoreCase(deviceType)) {
+            if (policy.getProfile().getDeviceType().equalsIgnoreCase(deviceType)) {
                 policies.add(policy);
             }
         }

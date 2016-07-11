@@ -68,7 +68,7 @@ public interface PolicyManager {
     void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
             throws PolicyManagementException;
 
-    List<DeviceType> applyChangesMadeToPolicies() throws PolicyManagementException;
+    List<String> applyChangesMadeToPolicies() throws PolicyManagementException;
 
     void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
 

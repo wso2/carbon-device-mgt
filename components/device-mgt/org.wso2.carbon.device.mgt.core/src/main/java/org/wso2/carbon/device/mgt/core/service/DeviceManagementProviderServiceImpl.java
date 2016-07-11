@@ -857,10 +857,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<DeviceType> getAvailableDeviceTypes() throws DeviceManagementException {
-        List<DeviceType> deviceTypesProvidedByTenant;
-        List<DeviceType> publicSharedDeviceTypesInDB;
-        List<DeviceType> deviceTypesResponse = new ArrayList<>();
+    public List<String> getAvailableDeviceTypes() throws DeviceManagementException {
+        List<String> deviceTypesProvidedByTenant;
+        List<String> publicSharedDeviceTypesInDB;
+        List<String> deviceTypesResponse = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.openConnection();
             int tenantId = this.getTenantId();
@@ -872,21 +872,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
             if (registeredTypes != null) {
                 if (deviceTypesProvidedByTenant != null) {
-                    for (DeviceType deviceType : deviceTypesProvidedByTenant) {
-                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType.getName(), tenantId);
+                    for (String deviceType : deviceTypesProvidedByTenant) {
+                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType, tenantId);
                         if (registeredTypes.get(providerKey) != null) {
                             deviceTypesResponse.add(deviceType);
-                            deviceTypeSetForTenant.add(deviceType.getName());
+                            deviceTypeSetForTenant.add(deviceType);
                         }
                     }
                 }
                 // Get the device from the public space, however if there is another device with same name then give
                 // priority to that
                 if (publicSharedDeviceTypesInDB != null) {
-                    for (DeviceType deviceType : publicSharedDeviceTypesInDB) {
-                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType.getName());
-                        if (registeredTypes.get(providerKey) != null && !deviceTypeSetForTenant.contains(
-                                deviceType.getName())) {
+                    for (String deviceType : publicSharedDeviceTypesInDB) {
+                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType);
+                        if (registeredTypes.get(providerKey) != null && !deviceTypeSetForTenant.contains(deviceType)) {
                             deviceTypesResponse.add(deviceType);
                         }
                     }

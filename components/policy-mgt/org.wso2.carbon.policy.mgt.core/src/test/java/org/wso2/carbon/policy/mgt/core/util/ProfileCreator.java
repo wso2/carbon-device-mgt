@@ -29,60 +29,40 @@ public class ProfileCreator {
 
     public static Profile getProfile(List<Feature> features) {
         Profile profile = new Profile();
-        DeviceType deviceType = new DeviceType();
-
-        deviceType.setId(1);
-        deviceType.setName("android");
-
         profile.setProfileFeaturesList(ProfileFeatureCreator.getProfileFeature(features));
         profile.setProfileName("Test Profile");
         profile.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        profile.setDeviceType(deviceType);
+        profile.setDeviceType("android");
 
         return profile;
     }
 
     public static Profile getProfile2(List<Feature> features) {
         Profile profile = new Profile();
-        DeviceType deviceType = new DeviceType();
-
-        deviceType.setId(1);
-        deviceType.setName("android");
-
         profile.setProfileFeaturesList(ProfileFeatureCreator.getProfileFeature(features));
         profile.setProfileName("Test Profile 2");
         profile.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        profile.setDeviceType(deviceType);
+        profile.setDeviceType("android");
 
         return profile;
     }
 
     public static Profile getProfile3(List<Feature> features) {
         Profile profile = new Profile();
-        DeviceType deviceType = new DeviceType();
-
-        deviceType.setId(1);
-        deviceType.setName("android");
-
         profile.setProfileFeaturesList(ProfileFeatureCreator.getProfileFeature(features));
         profile.setProfileName("Test Profile 3");
         profile.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        profile.setDeviceType(deviceType);
+        profile.setDeviceType("android");
 
         return profile;
     }
 
     public static Profile getProfile4(List<Feature> features) {
         Profile profile = new Profile();
-        DeviceType deviceType = new DeviceType();
-
-        deviceType.setId(1);
-        deviceType.setName("android");
-
         profile.setProfileFeaturesList(ProfileFeatureCreator.getProfileFeature(features));
         profile.setProfileName("Test Profile 4");
         profile.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        profile.setDeviceType(deviceType);
+        profile.setDeviceType("android");
 
         return profile;
     }
@@ -90,15 +70,10 @@ public class ProfileCreator {
 
     public static Profile getProfile5(List<Feature> features) {
         Profile profile = new Profile();
-        DeviceType deviceType = new DeviceType();
-
-        deviceType.setId(1);
-        deviceType.setName("android");
-
         profile.setProfileFeaturesList(ProfileFeatureCreator.getProfileFeature(features));
         profile.setProfileName("Test Profile 5");
         profile.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        profile.setDeviceType(deviceType);
+        profile.setDeviceType("android");
 
         return profile;
     }

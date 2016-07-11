@@ -37,7 +37,7 @@ public class ProfileFeature implements Serializable {
     private int profileId;
     @ApiModelProperty(name = "deviceTypeId", value = "The ID used to define the type of the device platform",
             required = true)
-    private int deviceTypeId;
+    private String deviceType;
     @ApiModelProperty(name = "content", value = "The list of parameters that define the policy",
             required = true)
     private Object content;
@@ -69,12 +69,12 @@ public class ProfileFeature implements Serializable {
         this.profileId = profileId;
     }
 
-    public int getDeviceTypeId() {
-        return deviceTypeId;
+    public String getDeviceTypeId() {
+        return deviceType;
     }
 
-    public void setDeviceTypeId(int deviceTypeId) {
-        this.deviceTypeId = deviceTypeId;
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 
 

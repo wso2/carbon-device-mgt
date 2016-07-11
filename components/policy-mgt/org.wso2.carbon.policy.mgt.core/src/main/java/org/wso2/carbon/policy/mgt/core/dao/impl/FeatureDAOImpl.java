@@ -66,14 +66,14 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_PROFILE_FEATURES (PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT, " +
+            String query = "INSERT INTO DM_PROFILE_FEATURES (PROFILE_ID, FEATURE_CODE, DEVICE_TYPE, CONTENT, " +
                     "TENANT_ID) VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, new String[] {"id"});
 
             for (ProfileFeature feature : features) {
                 stmt.setInt(1, profileId);
                 stmt.setString(2, feature.getFeatureCode());
-                stmt.setInt(3, feature.getDeviceTypeId());
+                stmt.setString(3, feature.getDeviceType());
                // if (conn.getMetaData().getDriverName().contains("H2")) {
                 //    stmt.setBytes(4, PolicyManagerUtil.getBytes(feature.getContent()));
                // } else {
@@ -145,10 +145,7 @@ public class FeatureDAOImpl implements FeatureDAO {
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profile.getProfileId());
             stmt.setInt(2, tenantId);
-            if (stmt.executeUpdate() > 0) {
-                return true;
-            }
-            return false;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new FeatureManagerDAOException("Error occurred while deleting the feature related to a profile.", e);
         } finally {
@@ -211,7 +208,7 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "SELECT ID, PROFILE_ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT FROM DM_PROFILE_FEATURES " +
+            String query = "SELECT ID, PROFILE_ID, FEATURE_CODE, DEVICE_TYPE, CONTENT FROM DM_PROFILE_FEATURES " +
                     "WHERE TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, tenantId);
@@ -221,7 +218,7 @@ public class FeatureDAOImpl implements FeatureDAO {
 
                 ProfileFeature profileFeature = new ProfileFeature();
                 profileFeature.setFeatureCode(resultSet.getString("FEATURE_CODE"));
-                profileFeature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
+                profileFeature.setDeviceType(resultSet.getString("DEVICE_TYPE"));
                 profileFeature.setId(resultSet.getInt("ID"));
                 profileFeature.setProfileId(resultSet.getInt("PROFILE_ID"));
 
@@ -272,9 +269,9 @@ public class FeatureDAOImpl implements FeatureDAO {
         List<Feature> featureList = new ArrayList<Feature>();
         try {
             conn = this.getConnection();
-            String query = "SELECT f.ID ID, f.NAME NAME, f.CODE CODE, f.DEVICE_TYPE_ID DEVICE_TYPE_ID," +
+            String query = "SELECT f.ID ID, f.NAME NAME, f.CODE CODE, f.DEVICE_TYPE DEVICE_TYPE," +
                     " f.EVALUATION_RULE EVALUATION_RULE FROM DM_FEATURES f INNER JOIN DM_DEVICE_TYPE d " +
-                    "ON d.ID=f.DEVICE_TYPE_ID WHERE d.NAME = ?";
+                    "ON d.ID=f.DEVICE_TYPE WHERE d.NAME = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, deviceType);
             resultSet = stmt.executeQuery();
@@ -306,7 +303,7 @@ public class FeatureDAOImpl implements FeatureDAO {
 
         try {
             conn = this.getConnection();
-            String query = "SELECT ID, FEATURE_CODE, DEVICE_TYPE_ID, CONTENT FROM DM_PROFILE_FEATURES " +
+            String query = "SELECT ID, FEATURE_CODE, DEVICE_TYPE, CONTENT FROM DM_PROFILE_FEATURES " +
                     "WHERE PROFILE_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profileId);
@@ -317,7 +314,7 @@ public class FeatureDAOImpl implements FeatureDAO {
                 ProfileFeature profileFeature = new ProfileFeature();
                 profileFeature.setId(resultSet.getInt("ID"));
                 profileFeature.setFeatureCode(resultSet.getString("FEATURE_CODE"));
-                profileFeature.setDeviceTypeId(resultSet.getInt("DEVICE_TYPE_ID"));
+                profileFeature.setDeviceType(resultSet.getString("DEVICE_TYPE"));
 
                 ByteArrayInputStream bais = null;
                 ObjectInputStream ois = null;

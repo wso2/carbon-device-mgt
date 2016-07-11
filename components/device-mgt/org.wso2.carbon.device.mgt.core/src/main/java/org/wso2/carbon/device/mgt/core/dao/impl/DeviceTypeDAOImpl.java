@@ -89,24 +89,21 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 	}
 
 	@Override
-	public List<DeviceType> getDeviceTypesByProvider(int tenantId) throws DeviceManagementDAOException {
+	public List<String> getDeviceTypesByProvider(int tenantId) throws DeviceManagementDAOException {
 		Connection conn;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		List<DeviceType> deviceTypes = new ArrayList<>();
+		List<String> deviceTypes = new ArrayList<>();
 		try {
 			conn = this.getConnection();
 			String sql =
-					"SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where PROVIDER_TENANT_ID =?";
+					"SELECT NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where PROVIDER_TENANT_ID =?";
 			stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, tenantId);
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
-				DeviceType deviceType = new DeviceType();
-				deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
-				deviceType.setName(rs.getString("DEVICE_TYPE"));
-				deviceTypes.add(deviceType);
+				deviceTypes.add(rs.getString("DEVICE_TYPE"));
 			}
 			return deviceTypes;
 		} catch (SQLException e) {
@@ -117,25 +114,22 @@ public class DeviceTypeDAOImpl implements DeviceTypeDAO {
 	}
 
 	@Override
-	public List<DeviceType> getSharedDeviceTypes() throws DeviceManagementDAOException {
+	public List<String> getSharedDeviceTypes() throws DeviceManagementDAOException {
 		Connection conn;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		List<DeviceType> deviceTypes = new ArrayList<>();
+		List<String> deviceTypes = new ArrayList<>();
 		try {
 			conn = this.getConnection();
 			String sql =
-					"SELECT ID AS DEVICE_TYPE_ID, NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where  " +
+					"SELECT NAME AS DEVICE_TYPE FROM DM_DEVICE_TYPE where  " +
 							"SHARED_WITH_ALL_TENANTS = ?";
 			stmt = conn.prepareStatement(sql);
 			stmt.setBoolean(1, true);
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
-				DeviceType deviceType = new DeviceType();
-				deviceType.setId(rs.getInt("DEVICE_TYPE_ID"));
-				deviceType.setName(rs.getString("DEVICE_TYPE"));
-				deviceTypes.add(deviceType);
+				deviceTypes.add(rs.getString("DEVICE_TYPE"));
 			}
 			return deviceTypes;
 		} catch (SQLException e) {

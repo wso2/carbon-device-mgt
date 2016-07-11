@@ -17,6 +17,7 @@
 */
 package org.wso2.carbon.policy.mgt.core;
 
+import junit.framework.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
@@ -63,10 +64,11 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
             deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType(), -1234, true);
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementDAOException("Error occurred while adding dummy device type", e);
+            log.error("Error occurred while adding dummy device type", e);
+            Assert.fail();
         } catch (TransactionManagementException e) {
-            throw new DeviceManagementDAOException("Error occurred while initiating a transaction to add dummy " +
-                    "device type", e);
+            log.error("Error occurred while initiating a transaction to add dummy device type", e);
+            Assert.fail();
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -94,10 +96,12 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
                 enrollmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
             }
         } catch (TransactionManagementException e) {
-            throw new PolicyManagementException("Error occurred while adding device enrolment", e);
+            log.error("Error occurred while adding device enrolment", e);
+            Assert.fail();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new PolicyManagementException("Error occurred while adding device information", e);
+            log.error("Error occurred while adding device information", e);
+            Assert.fail();
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -107,7 +111,9 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
         PolicyManagementDataHolder.getInstance().setDeviceManagementService(service);
 
-        log.debug("Printing device taken by calling the service layer with device type.");
+        if (log.isDebugEnabled()) {
+            log.debug("Printing device taken by calling the service layer with device type.");
+        }
         List<Device> devices3 = service.getAllDevices("android");
 
         log.debug("Device list size ...! " + devices3.size());
@@ -141,14 +147,19 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("addProfileFeatures"))
-    public void addPolicy() throws PolicyManagementException, ProfileManagementException {
+    public void addPolicy() {
 //        ProfileManager profileManager = new ProfileManagerImpl();
-        Profile profile = ProfileCreator.getProfile5(FeatureCreator.getFeatureList5());
+        try {
+            Profile profile = ProfileCreator.getProfile5(FeatureCreator.getFeatureList5());
 //        profileManager.addProfile(profile);
-        PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
-        policy = PolicyCreator.createPolicy(profile);
-        policy = pap.addPolicy(policy);
-        pap.activatePolicy(policy.getId());
+            PolicyAdministratorPoint pap = new PolicyAdministratorPointImpl();
+            policy = PolicyCreator.createPolicy(profile);
+            policy = pap.addPolicy(policy);
+            pap.activatePolicy(policy.getId());
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while adding the policy", e);
+            Assert.fail();
+        }
     }
 
     @Test(dependsOnMethods = ("addPolicy"))
@@ -205,9 +216,15 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("addNewPolicy"))
-    public void getPolicies() throws PolicyManagementException {
+    public void getPolicies() {
         PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
-        List<Policy> policyList = policyAdministratorPoint.getPolicies();
+        List<Policy> policyList = null;
+        try {
+            policyList = policyAdministratorPoint.getPolicies();
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while retrieving all the policies registered in the system", e);
+            Assert.fail();
+        }
 
         log.debug("----------All policies---------");
 
@@ -228,10 +245,16 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("getPolicies"))
-    public void getDeviceTypeRelatedPolicy() throws PolicyManagementException {
+    public void getDeviceTypeRelatedPolicy() {
 
         PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
-        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfDeviceType("android");
+        List<Policy> policyList = null;
+        try {
+            policyList = policyAdministratorPoint.getPoliciesOfDeviceType("android");
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while retrieving the list of policies configured upon the platform 'android'", e);
+            Assert.fail();
+        }
 
         log.debug("----------Device type related policy---------");
 
@@ -253,10 +276,17 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
 
     @Test(dependsOnMethods = ("getDeviceTypeRelatedPolicy"))
-    public void getUserRelatedPolicy() throws PolicyManagementException {
-
+    public void getUserRelatedPolicy() {
+        String targetUser = "Dilshan";
         PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
-        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfUser("Dilshan");
+        List<Policy> policyList = null;
+        try {
+            policyList = policyAdministratorPoint.getPoliciesOfUser(targetUser);
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while retrieving the list of policies assigned to the user '" +
+                    targetUser + "'", e);
+            Assert.fail();
+        }
 
         log.debug("----------User related policy---------");
 
@@ -277,10 +307,17 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("getDeviceTypeRelatedPolicy"))
-    public void getRoleRelatedPolicy() throws PolicyManagementException {
-
+    public void getRoleRelatedPolicy() {
+        String targetRole = "Test_ROLE_01";
         PolicyAdministratorPoint policyAdministratorPoint = new PolicyAdministratorPointImpl();
-        List<Policy> policyList = policyAdministratorPoint.getPoliciesOfRole("Test_ROLE_01");
+        List<Policy> policyList = null;
+        try {
+            policyList = policyAdministratorPoint.getPoliciesOfRole(targetRole);
+        } catch (PolicyManagementException e) {
+            log.error("Error occurred while retrieving the list of policies defined against the role '" +
+                    targetRole + "'", e);
+            Assert.fail();
+        }
 
         log.debug("----------Roles related policy---------");
 

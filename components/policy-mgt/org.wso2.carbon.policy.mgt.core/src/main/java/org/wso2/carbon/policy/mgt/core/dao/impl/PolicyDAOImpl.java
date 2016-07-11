@@ -48,25 +48,25 @@ public class PolicyDAOImpl implements PolicyDAO {
         return persistPolicy(policy);
     }
 
-    @Override
-    public Policy addPolicy(String deviceType, Policy policy) throws PolicyManagerDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        try {
-            conn = this.getConnection();
-            String query = "INSERT INTO DM_DEVICE_TYPE_POLICY (DEVICE_TYPE_ID, POLICY_ID) VALUES (?, ?)";
-            stmt = conn.prepareStatement(query);
-            stmt.setInt(1, getDeviceTypeId(deviceType));
-            stmt.setInt(2, policy.getId());
-            stmt.executeQuery();
-        } catch (SQLException e) {
-            throw new PolicyManagerDAOException("Error occurred while adding the device type policy to database.", e);
-        } finally {
-            PolicyManagementDAOUtil.cleanupResources(stmt, null);
-        }
-        return policy;
-
-    }
+//    @Override
+//    public Policy addPolicyToDeviceType(String deviceType, Policy policy) throws PolicyManagerDAOException {
+//        Connection conn;
+//        PreparedStatement stmt = null;
+//        try {
+//            conn = this.getConnection();
+//            String query = "INSERT INTO DM_DEVICE_TYPE_POLICY (DEVICE_TYPE_ID, POLICY_ID) VALUES (?, ?)";
+//            stmt = conn.prepareStatement(query);
+//            stmt.setInt(1, getDeviceTypeId(deviceType));
+//            stmt.setInt(2, policy.getId());
+//            stmt.executeQuery();
+//        } catch (SQLException e) {
+//            throw new PolicyManagerDAOException("Error occurred while adding the device type policy to database.", e);
+//        } finally {
+//            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+//        }
+//        return policy;
+//
+//    }
 
     @Override
     public Policy addPolicyToRole(List<String> rolesToAdd, Policy policy) throws PolicyManagerDAOException {
@@ -831,10 +831,10 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY_CHANGE_MGT (POLICY_ID, DEVICE_TYPE_ID, TENANT_ID) VALUES (?, ?, ?)";
+            String query = "INSERT INTO DM_POLICY_CHANGE_MGT (POLICY_ID, DEVICE_TYPE, TENANT_ID) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, policy.getId());
-            stmt.setInt(2, policy.getProfile().getDeviceType().getId());
+            stmt.setString(2, policy.getProfile().getDeviceType());
             stmt.setInt(3, tenantId);
             stmt.executeUpdate();
 
@@ -855,11 +855,11 @@ public class PolicyDAOImpl implements PolicyDAO {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
-            String query = "INSERT INTO DM_POLICY_CHANGE_MGT (POLICY_ID, DEVICE_TYPE_ID, TENANT_ID) VALUES (?, ?, ?)";
+            String query = "INSERT INTO DM_POLICY_CHANGE_MGT (POLICY_ID, DEVICE_TYPE, TENANT_ID) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(query);
             for (Policy policy : policies) {
                 stmt.setInt(1, policy.getId());
-                stmt.setInt(2, policy.getProfile().getDeviceType().getId());
+                stmt.setString(2, policy.getProfile().getDeviceType());
                 stmt.setInt(3, tenantId);
                 stmt.addBatch();
             }

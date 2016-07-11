@@ -50,12 +50,12 @@ public class ProfileDAOImpl implements ProfileDAO {
         try {
             conn = this.getConnection();
             String query = "INSERT INTO DM_PROFILE " +
-                    "(PROFILE_NAME,TENANT_ID, DEVICE_TYPE_ID, CREATED_TIME, UPDATED_TIME) VALUES (?, ?, ?, ?, ?)";
+                    "(PROFILE_NAME, TENANT_ID, DEVICE_TYPE, CREATED_TIME, UPDATED_TIME) VALUES (?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(query, new String[] {"id"});
 
             stmt.setString(1, profile.getProfileName());
             stmt.setInt(2, tenantId);
-            stmt.setLong(3, profile.getDeviceType().getId());
+            stmt.setString(3, profile.getDeviceType());
             stmt.setTimestamp(4, profile.getCreatedDate());
             stmt.setTimestamp(5, profile.getUpdatedDate());
 
@@ -95,11 +95,11 @@ public class ProfileDAOImpl implements ProfileDAO {
 
         try {
             conn = this.getConnection();
-            String query = "UPDATE DM_PROFILE SET PROFILE_NAME = ? , DEVICE_TYPE_ID = ? , UPDATED_TIME = ? " +
+            String query = "UPDATE DM_PROFILE SET PROFILE_NAME = ? , DEVICE_TYPE = ? , UPDATED_TIME = ? " +
                     "WHERE ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, profile.getProfileName());
-            stmt.setLong(2, profile.getDeviceType().getId());
+            stmt.setString(2, profile.getDeviceType());
             stmt.setTimestamp(3, profile.getUpdatedDate());
             stmt.setInt(4, profile.getProfileId());
             stmt.setInt(5, tenantId);
@@ -183,8 +183,6 @@ public class ProfileDAOImpl implements ProfileDAO {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         Profile profile = new Profile();
-        DeviceType deviceType = new DeviceType();
-
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_PROFILE WHERE ID = ?";
@@ -194,11 +192,10 @@ public class ProfileDAOImpl implements ProfileDAO {
 
             while (resultSet.next()) {
 
-                deviceType.setId(resultSet.getInt("DEVICE_TYPE_ID"));
                 profile.setProfileId(profileId);
                 profile.setProfileName(resultSet.getString("PROFILE_NAME"));
                 profile.setTenantId(resultSet.getInt("TENANT_ID"));
-                profile.setDeviceType(deviceType);
+                profile.setDeviceType(resultSet.getString("DEVICE_TYPE"));
                 profile.setCreatedDate(resultSet.getTimestamp("CREATED_TIME"));
                 profile.setUpdatedDate(resultSet.getTimestamp("UPDATED_TIME"));
             }
@@ -236,11 +233,7 @@ public class ProfileDAOImpl implements ProfileDAO {
                 profile.setTenantId(resultSet.getInt("TENANT_ID"));
                 profile.setCreatedDate(resultSet.getTimestamp("CREATED_TIME"));
                 profile.setUpdatedDate(resultSet.getTimestamp("UPDATED_TIME"));
-
-                DeviceType deviceType = new DeviceType();
-                deviceType.setId(resultSet.getInt("DEVICE_TYPE_ID"));
-
-                profile.setDeviceType(deviceType);
+                profile.setDeviceType(resultSet.getString("DEVICE_TYPE"));
 
                 profileList.add(profile);
             }
@@ -256,16 +249,16 @@ public class ProfileDAOImpl implements ProfileDAO {
     }
 
     @Override
-    public List<Profile> getProfilesOfDeviceType(DeviceType deviceType) throws ProfileManagerDAOException {
+    public List<Profile> getProfilesOfDeviceType(String deviceType) throws ProfileManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Profile> profileList = new ArrayList<>();
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_PROFILE WHERE DEVICE_TYPE_ID = ?";
+            String query = "SELECT * FROM DM_PROFILE WHERE DEVICE_TYPE = ?";
             stmt = conn.prepareStatement(query);
-            stmt.setInt(1, deviceType.getId());
+            stmt.setString(1, deviceType);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
@@ -273,7 +266,7 @@ public class ProfileDAOImpl implements ProfileDAO {
                 profile.setProfileId(resultSet.getInt("ID"));
                 profile.setProfileName(resultSet.getString("PROFILE_NAME"));
                 profile.setTenantId(resultSet.getInt("TENANT_ID"));
-                profile.setDeviceType(deviceType);
+                profile.setDeviceType(resultSet.getString("DEVICE_TYPE"));
                 profile.setCreatedDate(resultSet.getTimestamp("CREATED_TIME"));
                 profile.setUpdatedDate(resultSet.getTimestamp("UPDATED_TIME"));
 

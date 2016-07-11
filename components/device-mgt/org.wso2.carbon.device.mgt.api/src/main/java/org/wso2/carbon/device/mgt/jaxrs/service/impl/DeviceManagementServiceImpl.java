@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
@@ -30,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServ
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceCompliance;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
@@ -38,6 +40,8 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
 import javax.ws.rs.*;
@@ -58,6 +62,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Override
     public Response getDevices(
+            @QueryParam("name") String name,
             @QueryParam("type") String type,
             @QueryParam("user") String user,
             @QueryParam("roleName") String roleName,
@@ -68,29 +73,32 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
-            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
+//            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
 
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             PaginationRequest request = new PaginationRequest(offset, limit);
             PaginationResult result;
             DeviceList devices = new DeviceList();
 
-            if (type != null) {
+            if(name != null && !name.isEmpty()){
+                request.setDeviceName(name);
+            }
+            if (type != null && !type.isEmpty()) {
                 request.setDeviceType(type);
             }
-            if (user != null) {
+            if (user != null && !user.isEmpty()) {
                 request.setOwner(user);
             }
-            if (ownership != null) {
+            if (ownership != null && !ownership.isEmpty()) {
                 RequestValidationUtil.validateOwnershipType(ownership);
                 request.setOwnership(ownership);
             }
-            if (status != null) {
+            if (status != null && !status.isEmpty()) {
                 RequestValidationUtil.validateStatus(status);
                 request.setStatus(status);
             }
 
-            if (ifModifiedSince != null) {
+            if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
                 Date sinceDate;
                 SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
                 try {
@@ -106,7 +114,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
                             "after the timestamp provided in 'If-Modified-Since' header").build();
                 }
-            } else if (since != null) {
+            } else if (since != null && !since.isEmpty()) {
                 Date sinceDate;
                 SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
                 try {
@@ -140,6 +148,32 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
+
+    @GET
+    @Path("/user-devices")
+    public Response getDeviceByUser(@QueryParam("offset") int offset,
+                                    @QueryParam("limit") int limit) {
+
+        PaginationRequest request = new PaginationRequest(offset, limit);
+        PaginationResult result;
+        DeviceList devices = new DeviceList();
+
+        String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+        request.setOwner(currentUser);
+
+        try {
+            result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request);
+            devices.setList((List<Device>) result.getData());
+            devices.setCount(result.getRecordsTotal());
+            return Response.status(Response.Status.OK).entity(devices).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while fetching all enrolled devices";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
 
     @GET
     @Path("/{type}/{id}")
@@ -298,6 +332,50 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @GET
+    @Path("{type}/{id}/compliance-data")
+    public Response getComplianceDataOfDevice(@PathParam("type") String type,
+                                              @PathParam("id") String id) {
+
+        RequestValidationUtil.validateDeviceIdentifier(type, id);
+        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+        Policy policy;
+        ComplianceData complianceData = null;
+        DeviceCompliance deviceCompliance = new DeviceCompliance();
+
+        try {
+            policy = policyManagementService.getAppliedPolicyToDevice(new DeviceIdentifier(id, type));
+        } catch (PolicyManagementException e) {
+            String msg = "Error occurred while retrieving the current policy associated with the '" + type +
+                    "' device, which carries the id '" + id + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+
+        if (policy == null) {
+            deviceCompliance.setDeviceID(id);
+            deviceCompliance.setComplianceData(null);
+            //deviceCompliance.setCode(0001l); //code 0001 means no compliance data related to the device
+            return Response.status(Response.Status.OK).entity(deviceCompliance).build();
+        } else {
+            try {
+                policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+                complianceData = policyManagementService.getDeviceCompliance(
+                        new DeviceIdentifier(id, type));
+                deviceCompliance.setDeviceID(id);
+                deviceCompliance.setComplianceData(complianceData);
+                //deviceCompliance.setCode(0002l); //code 0002 means there are compliance data related to the device
+                return Response.status(Response.Status.OK).entity(deviceCompliance).build();
+            } catch (PolicyComplianceException e) {
+                String error = "Error occurred while getting the compliance data.";
+                log.error(error, e);
+                return Response.serverError().entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(error).build()).build();
+            }
         }
     }
 

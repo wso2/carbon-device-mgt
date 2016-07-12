@@ -104,6 +104,12 @@
                             <url>/admin/devices</url>
                             <method>GET</method>
                         </Permission>
+                        <Permission>
+                            <name>View device types</name>
+                            <path>/device-mgt/admin/devices/Admin-DeviceType-View﻿</path>
+                            <url>/admin/device-types</url>
+                            <method>GET</method>
+                        </Permission>
                         <!-- End of Device related APIs -->
                 <Permission>
                     <name>Policies</name>

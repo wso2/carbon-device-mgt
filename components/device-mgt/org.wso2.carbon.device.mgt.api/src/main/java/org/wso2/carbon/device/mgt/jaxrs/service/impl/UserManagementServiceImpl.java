@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.*;
 
 @Path("/users")
@@ -395,7 +396,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         String lowerCaseCharset = "abcdefghijklmnopqrstuvwxyz";
         String upperCaseCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String numericCharset = "0123456789";
-        Random randomGenerator = new Random();
+        SecureRandom randomGenerator = new SecureRandom();
         String totalCharset = lowerCaseCharset + upperCaseCharset + numericCharset;
         int totalCharsetLength = totalCharset.length();
         StringBuilder initialUserPassword = new StringBuilder();

@@ -24,6 +24,6 @@ public class OauthAuthenticatorConstants {
     public static final String BEARER_TOKEN_IDENTIFIER = "token";
     public static final String AUTHENTICATOR_NAME = "OAuthAuthenticator";
     public static final String SPLITING_CHARACTOR = " ";
-    public static String OAUTH_ENDPOINT_POSTFIX =
+    public static final String OAUTH_ENDPOINT_POSTFIX =
             "/services/OAuth2TokenValidationService.OAuth2TokenValidationServiceHttpsSoap12Endpoint/";
 }

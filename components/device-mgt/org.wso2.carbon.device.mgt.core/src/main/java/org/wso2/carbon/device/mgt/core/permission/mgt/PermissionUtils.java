@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.core.permission.mgt;
 
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -28,6 +27,7 @@ import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Registry;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -123,6 +123,7 @@ public class PermissionUtils {
 		factory.setNamespaceAware(true);
 		try {
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			return docBuilder.parse(file);
 		} catch (Exception e) {
 			throw new PermissionManagementException("Error occurred while parsing file, while converting " +

@@ -28,18 +28,18 @@ import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorization
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.PolicyManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.*;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.PolicyManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
-import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -122,7 +122,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         policy.setUsers(policyWrapper.getUsers());
         policy.setCompliance(policyWrapper.getCompliance());
         //TODO iterates the device identifiers to create the object. need to implement a proper DAO layer here.
-        List<Device> devices = null;
+        List<Device> devices = new ArrayList<Device>();
         List<DeviceIdentifier> deviceIdentifiers = policyWrapper.getDeviceIdentifiers();
         if (deviceIdentifiers != null) {
             for (DeviceIdentifier id : deviceIdentifiers) {

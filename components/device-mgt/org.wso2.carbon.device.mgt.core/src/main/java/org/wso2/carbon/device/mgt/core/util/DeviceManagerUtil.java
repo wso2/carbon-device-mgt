@@ -227,7 +227,7 @@ public final class DeviceManagerUtil {
      */
     public static int getTenantId(String tenantDomain) throws DeviceManagementException {
         try {
-            if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                 return MultitenantConstants.SUPER_TENANT_ID;
             }
             TenantManager tenantManager = DeviceManagementDataHolder.getInstance().getTenantManager();

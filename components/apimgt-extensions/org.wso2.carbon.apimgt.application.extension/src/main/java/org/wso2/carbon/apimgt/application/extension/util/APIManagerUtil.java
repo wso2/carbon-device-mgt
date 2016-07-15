@@ -37,7 +37,7 @@ public final class APIManagerUtil {
      */
     public static int getTenantId(String tenantDomain) throws APIManagerException {
         try {
-            if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                 return MultitenantConstants.SUPER_TENANT_ID;
             }
             TenantManager tenantManager = APIApplicationManagerExtensionDataHolder.getInstance().getTenantManager();

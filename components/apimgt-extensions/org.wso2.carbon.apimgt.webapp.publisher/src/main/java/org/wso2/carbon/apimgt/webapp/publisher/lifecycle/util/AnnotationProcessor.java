@@ -63,11 +63,10 @@ public class AnnotationProcessor {
     private static final String HTTP_PORT = "httpPort";
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
-
+    Class<API> apiClazz;
     private StandardContext context;
     private Method[] pathClazzMethods;
     private Class<Path> pathClazz;
-    Class<API> apiClazz;
     private ClassLoader classLoader;
     private ServletContext servletContext;
 
@@ -319,7 +318,7 @@ public class AnnotationProcessor {
      * @return
      */
     private String makeContextURLReady(String context) {
-        if (context != null && !context.equalsIgnoreCase("")) {
+        if (context != null && context.length() > 0) {
             if (context.startsWith("/")) {
                 return context;
             } else {

@@ -17,94 +17,88 @@
  * under the License.
  */
 
+var log = new Log("api/invoker-api.jag");
+
 var uri = request.getRequestURI();
 var uriMatcher = new URIMatcher(String(uri));
 
-var log = new Log("api/invoker-api.jag");
-
 var constants = require("/app/modules/constants.js");
 var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
-
-var result;
+var serviceInvokers = require("/app/modules/backend-service-invoker.js")["backendServiceInvoker"];
 
 if (uriMatcher.match("/{context}/api/invoker/execute/")) {
-    var method = request.getContent().actionMethod;
-    var targetURL = getTargetUrl(devicemgtProps.httpsURL, request.getContent().actionUrl);
-    var payload = request.getContent().actionPayload;
-    var contentType = request.getHeader(constants.CONTENT_TYPE_IDENTIFIER);
-    var acceptType = request.getHeader(constants.ACCEPT_IDENTIFIER);
-    if (method == undefined && payload == undefined) {
-        method = parse(request.getContent()).actionMethod;
-        targetURL = getTargetUrl(devicemgtProps.httpsURL, parse(request.getContent()).actionUrl);
-        payload = parse(request.getContent()).actionPayload;
+    var restAPIRequestDetails = request.getContent();
+
+    var requestMethod = restAPIRequestDetails["requestMethod"];
+    var requestURL = restAPIRequestDetails["requestURL"];
+    var requestPayload = restAPIRequestDetails["requestPayload"];
+
+    if (!requestMethod) {
+        requestMethod = parse(restAPIRequestDetails)["requestMethod"];
     }
+
+    if (!requestURL) {
+        requestURL = parse(restAPIRequestDetails)["requestURL"];
+    }
+
+    if (!requestPayload) {
+        requestPayload = parse(restAPIRequestDetails)["requestPayload"];
+    }
+
+    var restAPIEndpoint = devicemgtProps["httpsURL"] + requestURL;
+
     try {
-        switch (method) {
-            case constants.HTTP_GET:
-                var responseData = serviceInvokers.XMLHttp.get(
-                        targetURL, function (responsePayload) {
-                            response.status = 200;
-                            response.content = responsePayload;
-                        },
-                        function (responsePayload) {
-                            response.status = responsePayload.status;
-                            response.content = responsePayload.responseText;
-                        },
-                        contentType,
-                        acceptType);
+        switch (requestMethod) {
+            case constants["HTTP_GET"]:
+                serviceInvokers.XMLHttp.get(
+                    restAPIEndpoint,
+                    function (restAPIResponse) {
+                        response["status"] = restAPIResponse["status"];
+                        if (restAPIResponse["responseText"]) {
+                            response["content"] = restAPIResponse["responseText"];
+                        }
+                    }
+                );
                 break;
-            case constants.HTTP_POST:
-                var responseData = serviceInvokers.XMLHttp.post(
-                        targetURL, payload, function (responsePayload) {
-                            response.status = 200;
-                            response.content = responsePayload;
-                        },
-                        function (responsePayload) {
-                            response.status = responsePayload.status;
-                            response.content = responsePayload.responseText;
-                        },
-                        contentType,
-                        acceptType);
+            case constants["HTTP_POST"]:
+                serviceInvokers.XMLHttp.post(
+                    restAPIEndpoint,
+                    requestPayload,
+                    function (restAPIResponse) {
+                        response["status"] = restAPIResponse["status"];
+                        if (restAPIResponse["responseText"]) {
+                            response["content"] = restAPIResponse["responseText"];
+                        }
+                    }
+                );
                 break;
-            case constants.HTTP_PUT:
-                var responseData = serviceInvokers.XMLHttp.put(
-                        targetURL, payload, function (responsePayload) {
-                            response.status = 200;
-                            response.content = responsePayload;
-                        },
-                        function (responsePayload) {
-                            response.status = responsePayload.status;
-                            response.content = responsePayload.responseText;
-                        },
-                        contentType,
-                        acceptType);
+            case constants["HTTP_PUT"]:
+                serviceInvokers.XMLHttp.put(
+                    restAPIEndpoint,
+                    requestPayload,
+                    function (restAPIResponse) {
+                        response["status"] = restAPIResponse["status"];
+                        if (restAPIResponse["responseText"]) {
+                            response["content"] = restAPIResponse["responseText"];
+                        }
+                    }
+                );
                 break;
-            case constants.HTTP_DELETE:
-                var responseData = serviceInvokers.XMLHttp.delete(
-                        targetURL, function (responsePayload) {
-                            response.status = 200;
-                            response.content = responsePayload;
-                        },
-                        function (responsePayload) {
-                            response.status = responsePayload.status;
-                            response.content = responsePayload.responseText;
-                        },
-                        contentType,
-                        acceptType);
+            case constants["HTTP_DELETE"]:
+                serviceInvokers.XMLHttp.delete(
+                    restAPIEndpoint,
+                    function (restAPIResponse) {
+                        response["status"] = restAPIResponse["status"];
+                        if (restAPIResponse["responseText"]) {
+                            response["content"] = restAPIResponse["responseText"];
+                        }
+                    }
+                );
                 break;
         }
     } catch (e) {
-        log.error("Exception occurred while accessing sevices", e);
+        log.error("Exception occurred while trying to access backend " +
+            "REST API services from Jaggery API invoker layer", e);
     }
 }
-
-function getTargetUrl(serverUrl, actionUrl){
-    if(actionUrl == undefined || actionUrl.lastIndexOf("http", 0) === 0){
-        return actionUrl;
-    } else {
-        return serverUrl + actionUrl;
-    }
-}
-
 %>

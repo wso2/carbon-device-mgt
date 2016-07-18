@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 /**
  * Activity related REST-API implementation.
  */
-@API(name = "Activity Info Provider", version = "1.0.0", context = "/api-device-mgt-v1.0/activities", tags = {"devicemgt_admin"})
+@API(name = "Activity Info Provider", version = "1.0.0", context = "/api/device-mgt/v1.0/activities", tags = {"devicemgt_admin"})
 
 @Path("/activities")
 @Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example operation details " +

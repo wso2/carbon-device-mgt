@@ -46,7 +46,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/*cxf*.jar</packagingExcludes>
-                    <warName>api-certificate-mgt-v1.0</warName>
+                    <warName>api#certificate-mgt#v1.0</warName>
                 </configuration>
             </plugin>
         </plugins>
@@ -72,7 +72,7 @@
                                     <tasks>
                                         <copy todir="${basedir}/../../../repository/deployment/server/webapps" overwrite="true">
                                             <fileset dir="${basedir}/target">
-                                                <include name="api-certificate-mgt-v1.0.war"/>
+                                                <include name="api#certificate-mgt#v1.0.war"/>
                                             </fileset>
                                         </copy>
                                     </tasks>

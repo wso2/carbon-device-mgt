@@ -32,7 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Application Management Admin", version = "1.0.0", context = "/api-device-mgt-v1.0/admin/applications", tags = {"devicemgt_admin"})
+@API(name = "Application Management Admin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/applications", tags = {"devicemgt_admin"})
 
 @Path("/admin/applications")
 @Api(value = "Application Management Administrative Service", description = "This an  API intended to be used by " +

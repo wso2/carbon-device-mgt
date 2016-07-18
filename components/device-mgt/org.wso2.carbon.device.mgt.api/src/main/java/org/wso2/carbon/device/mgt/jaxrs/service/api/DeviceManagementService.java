@@ -38,7 +38,7 @@ import javax.ws.rs.core.Response;
 /**
  * Device related REST-API. This can be used to manipulated device related details.
  */
-@API(name = "Device Management", version = "1.0.0", context = "/api-device-mgt-v1.0/devices", tags = {"devicemgt_admin"})
+@API(name = "Device Management", version = "1.0.0", context = "/api/device-mgt/v1.0/devices", tags = {"devicemgt_admin"})
 
 @Path("/devices")
 @Api(value = "Device Management", description = "This API carries all device management related operations " +

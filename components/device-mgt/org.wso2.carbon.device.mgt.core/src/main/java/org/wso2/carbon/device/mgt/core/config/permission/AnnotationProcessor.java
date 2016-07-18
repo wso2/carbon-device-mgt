@@ -74,7 +74,7 @@ public class AnnotationProcessor {
      * @throws IOException
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        AnnotationDB db = new AnnotationDB();
+        ExtendedAnnotationDB db = new ExtendedAnnotationDB();
         db.addIgnoredPackages(PACKAGE_ORG_APACHE);
         db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
         db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);

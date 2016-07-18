@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 
-@API(name = "User Management", version = "1.0.0", context = "/api-device-mgt-v1.0/users", tags = {"devicemgt_admin"})
+@API(name = "User Management", version = "1.0.0", context = "/api/device-mgt/v1.0/users", tags = {"devicemgt_admin"})
 
 @Path("/users")
 @Api(value = "User Management", description = "User management related operations can be found here.")

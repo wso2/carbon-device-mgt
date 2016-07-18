@@ -115,7 +115,7 @@ public class OperationManagerImpl implements OperationManager {
                             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
                             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
                 }
-                operationMappingDAO.addOperationMapping(operationId, device.getId());
+                operationMappingDAO.addOperationMapping(operationId, device.getEnrolmentInfo().getId());
                 if (notificationStrategy != null) {
                     try {
                         notificationStrategy.execute(new NotificationContext(deviceId, operation));

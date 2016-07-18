@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 /**
  * General Tenant Configuration REST-API.
  */
-@API(name = "Configuration Management", version = "1.0.0", context = "/api-device-mgt-v1.0/configuration", tags = {"devicemgt_admin"})
+@API(name = "Configuration Management", version = "1.0.0", context = "/api/device-mgt/v1.0/configuration", tags = {"devicemgt_admin"})
 
 @Path("/configuration")
 @Api(value = "Configuration Management", description = "General Tenant Configuration management capabilities are exposed " +

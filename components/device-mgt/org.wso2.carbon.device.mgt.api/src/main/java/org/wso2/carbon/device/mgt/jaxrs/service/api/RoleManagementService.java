@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "Role Management", version = "1.0.0", context = "/api-device-mgt-v1.0/roles", tags = {"devicemgt_admin"})
+@API(name = "Role Management", version = "1.0.0", context = "/api/device-mgt/v1.0/roles", tags = {"devicemgt_admin"})
 
 @Path("/roles")
 @Api(value = "Role Management", description = "Role management related operations can be found here.")

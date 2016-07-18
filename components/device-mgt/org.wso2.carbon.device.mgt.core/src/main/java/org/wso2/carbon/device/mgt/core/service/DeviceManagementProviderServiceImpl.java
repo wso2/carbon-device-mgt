@@ -392,7 +392,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 }
             } catch (DeviceDetailsMgtDAOException e) {
                 log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
+                        "' that carries the id '" + device.getDeviceIdentifier() + "'", e);
             } catch (SQLException e) {
                 log.error("Error occurred while opening a connection to the data source", e);
             } finally {

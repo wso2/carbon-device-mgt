@@ -27,13 +27,13 @@ import java.util.Properties;
 
 public class TestDataHolder {
 
+    public final static String TEST_DEVICE_TYPE = "Test";
+    public final static Integer SUPER_TENANT_ID = -1234;
+    public final static String SUPER_TENANT_DOMAIN = "carbon.super";
+    public final static String initialDeviceIdentifier = "12345";
+    public final static String OWNER = "admin";
     public static Device initialTestDevice;
     public static DeviceType initialTestDeviceType;
-    public static String TEST_DEVICE_TYPE = "Test";
-    public static Integer SUPER_TENANT_ID = -1234;
-    public static String SUPER_TENANT_DOMAIN="carbon.super";
-    public static String initialDeviceIdentifier = "12345";
-    public static String OWNER = "admin";
 
     public static Device generateDummyDeviceData(String deviceType){
 

@@ -28,28 +28,25 @@ import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOUtil;
 import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 
 import javax.sql.DataSource;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
 public class CertificateManagerUtil {
 
-    private static final Log log = LogFactory.getLog(CertificateManagerUtil.class);
-
     public static final String GENERAL_CONFIG_RESOURCE_PATH = "general";
     public static final String MONITORING_FREQUENCY = "notifierFrequency";
+    private static final Log log = LogFactory.getLog(CertificateManagerUtil.class);
 
     public static Document convertToDocument(File file) throws CertificateManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
             DocumentBuilder docBuilder = factory.newDocumentBuilder();
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new CertificateManagementException("Error occurred while parsing file, while converting " +

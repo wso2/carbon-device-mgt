@@ -26,10 +26,9 @@ var invokerUtil = function () {
         restAPIRequestDetails["requestMethod"] = requestMethod;
         restAPIRequestDetails["requestURL"] = requestURL;
         restAPIRequestDetails["requestPayload"] = JSON.stringify(requestPayload);
-        var appContext = devicemgtProps["appContext"];
 
         var request = {
-            url: appContext + "api/invoker/execute/",
+            url: context + "/api/invoker/execute/",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(restAPIRequestDetails),

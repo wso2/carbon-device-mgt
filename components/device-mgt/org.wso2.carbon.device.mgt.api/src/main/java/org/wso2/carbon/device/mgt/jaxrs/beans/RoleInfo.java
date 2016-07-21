@@ -20,7 +20,10 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
+
+import java.util.List;
 
 @ApiModel(value = "RoleInfo", description = "Role details including permission and the users in the roles are " +
         "wrapped here.")
@@ -28,19 +31,12 @@ public class RoleInfo {
 
     @ApiModelProperty(name = "roleName", value = "The name of the role.", required = true)
     private String roleName;
-    @ApiModelProperty(name = "permissions", value = "Lists out all the permissions associated with roles.",
-            required = true, dataType = "List[java.lang.String]")
-    private String[] permissions;
+    @ApiModelProperty(name = "scopes", value = "Lists out all the scopes associated with roles.",
+            required = true, dataType = "List[Scope]")
+    private List<Scope> scopes;
     @ApiModelProperty(name = "users", value = "The list of users assigned to the selected role.",
             required = true, dataType = "List[java.lang.String]")
     private String[] users;
-    @ApiModelProperty(name = "permissionList", value = "This contain the following, " +
-            "\n resourcePath\tThe path related to the API.\n " +
-            "displayName\tThe name of the permission that is shown " +
-            "in the UI.\n" +
-            "nodeList\tLists out the nested permissions.",
-            required = true)
-    private UIPermissionNode permissionList;
 
     public String getRoleName() {
         return roleName;
@@ -50,12 +46,12 @@ public class RoleInfo {
         this.roleName = roleName;
     }
 
-    public String[] getPermissions() {
-        return permissions;
+    public List<Scope> getScopes() {
+        return scopes;
     }
 
-    public void setPermissions(String[] permissions) {
-        this.permissions = permissions;
+    public void setScopes(List<Scope> scopes) {
+        this.scopes = scopes;
     }
 
     public String[] getUsers() {
@@ -66,11 +62,4 @@ public class RoleInfo {
         this.users = users;
     }
 
-    public UIPermissionNode getPermissionList() {
-        return permissionList;
-    }
-
-    public void setPermissionList(UIPermissionNode permissionList) {
-        this.permissionList = permissionList;
-    }
 }

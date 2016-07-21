@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
@@ -106,16 +107,16 @@ public interface RoleManagementService {
             @QueryParam("limit") int limit);
 
     @GET
-    @Path("/{roleName}/permissions")
+    @Path("/scopes")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting permission details of a role.",
+            value = "Getting authorization scopes.",
             notes = "In an organization an individual is associated a with set of responsibilities based on their " +
-                    "role. In  EMM you are able to configure permissions based on the responsibilities carried " +
-                    "out by a role. Therefore if you wish to retrieve the permission details of a role, you can do " +
+                    "role. In  EMM you are able to configure scopes based on the responsibilities carried " +
+                    "out by a role. Therefore if you wish to retrieve the scopes details of roles, you can do " +
                     "so using this REST API.",
-            response = UIPermissionNode.class,
+            response = List.class,
             responseContainer = "List",
             tags = "Role Management"
     )
@@ -123,7 +124,7 @@ public interface RoleManagementService {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully fetched the permission list of the given role.",
+                            message = "OK. \n Successfully fetched the scopes list.",
                             response = UIPermissionNode.class,
                             responseContainer = "List",
                             responseHeaders = {
@@ -159,18 +160,62 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "role:view", roles = {"admin"})
-    Response getPermissionsOfRole(
-            @ApiParam(
-                    name = "roleName",
-                    value = "Name of the role.",
-                    required = true)
-            @PathParam("roleName") String roleName,
+    @Permission(scope = "role:scope:read", roles = {"admin"})
+    Response getScopes(
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
+
+    @PUT
+    @Path("/scopes")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Updating authorization scopes.",
+            notes = "This REST API can be used to update the associated roles of the scopes",
+            tags = "Role Management"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Scopes has been updated successfully",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "Content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests.")}),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n Scopes to be updated does not exist.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while updating the scopes.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(scope = "role:scope:write", roles = {"admin"})
+    Response updateScopes(
+            @ApiParam(
+                    name = "Scopes",
+                    value = "List of scopes to be updated",
+                    required = true) List<Scope> scopes);
 
     @GET
     @Path("/{roleName}")
@@ -375,7 +420,11 @@ public interface RoleManagementService {
                     name = "roleName",
                     value = "Name of the role to de deleted.",
                     required = true)
-            @PathParam("roleName") String roleName);
+            @PathParam("roleName") String roleName,
+            @ApiParam(
+                    name = "role",
+                    value = "Details about the role to be added.",
+                    required = true) RoleInfo role);
 
     @PUT
     @Path("/{roleName}/users")

@@ -73,7 +73,7 @@ public class ScopeManagementDAOImpl implements ScopeManagementDAO {
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
-            if (rs.next()) {
+            while (rs.next()) {
                 scope = new Scope();
                 scope.setKey(rs.getString("SCOPE_KEY"));
                 scope.setName(rs.getString("NAME"));

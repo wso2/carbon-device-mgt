@@ -20,8 +20,6 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.apimgt.api.model.Scope;
-import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class RoleInfo {
     @ApiModelProperty(name = "roleName", value = "The name of the role.", required = true)
     private String roleName;
     @ApiModelProperty(name = "scopes", value = "Lists out all the scopes associated with roles.",
-            required = true, dataType = "List[Scope]")
+            required = true, dataType = "List[org.wso2.carbon.device.mgt.jaxrs.beans.Scope]")
     private List<Scope> scopes;
     @ApiModelProperty(name = "users", value = "The list of users assigned to the selected role.",
             required = true, dataType = "List[java.lang.String]")

@@ -20,23 +20,22 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.apimgt.api.model.Scope;
-import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementException;
 import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.RoleManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
-import org.wso2.carbon.user.api.*;
-import org.wso2.carbon.user.mgt.UserRealmProxy;
-import org.wso2.carbon.user.mgt.common.UIPermissionNode;
-import org.wso2.carbon.user.mgt.common.UserAdminException;
+import org.wso2.carbon.user.api.AuthorizationManager;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -93,7 +92,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (scopeManagementService == null) {
                 log.error("Scope management service initialization is failed, hence scopes will not be retrieved");
             } else {
-                scopes = scopeManagementService.getAllScopes();
+                scopes = DeviceMgtUtil.convertAPIScopestoScopes(scopeManagementService.getAllScopes());
             }
             return Response.status(Response.Status.OK).entity(scopes).build();
         } catch (ScopeManagementException e) {
@@ -114,9 +113,9 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (scopeManagementService == null) {
                 log.error("Scope management service initialization is failed, hence scopes will not be retrieved");
             } else {
-                scopeManagementService.updateScopes(scopes);
+                scopeManagementService.updateScopes(DeviceMgtUtil.convertScopestoAPIScopes(scopes));
             }
-            return Response.status(Response.Status.OK).entity(scopes).build();
+            return Response.status(Response.Status.OK).entity("Scopes has been successfully updated").build();
         } catch (ScopeManagementException e) {
             String msg = "Error occurred while updating the scopes";
             log.error(msg, e);
@@ -226,7 +225,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 if (scopeManagementService == null) {
                     log.error("Scope management service initialization is failed, hence scopes will not be updated");
                 } else {
-                    scopeManagementService.updateScopes(roleInfo.getScopes());
+                    scopeManagementService.updateScopes(DeviceMgtUtil.convertScopestoAPIScopes(roleInfo.getScopes()));
                 }
             }
             //TODO: Need to send the updated role information in the entity back to the client
@@ -274,7 +273,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (scopeManagementService == null) {
                 log.error("Scope management service initialization is failed, hence scopes will not be updated");
             } else {
-                scopeManagementService.updateScopes(roleInfo.getScopes());
+                scopeManagementService.updateScopes(DeviceMgtUtil.convertScopestoAPIScopes(roleInfo.getScopes()));
             }
 
             return Response.status(Response.Status.OK).build();

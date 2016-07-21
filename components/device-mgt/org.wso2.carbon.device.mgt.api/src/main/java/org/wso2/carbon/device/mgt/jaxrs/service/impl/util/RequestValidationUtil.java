@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
-import org.wso2.carbon.apimgt.api.model.Scope;
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;

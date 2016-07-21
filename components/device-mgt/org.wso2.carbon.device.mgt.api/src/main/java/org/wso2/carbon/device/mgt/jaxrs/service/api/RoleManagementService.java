@@ -21,11 +21,10 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
-import org.wso2.carbon.user.mgt.common.UIPermissionNode;
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -125,7 +124,7 @@ public interface RoleManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully fetched the scopes list.",
-                            response = UIPermissionNode.class,
+                            response = List.class,
                             responseContainer = "List",
                             responseHeaders = {
                                     @ResponseHeader(

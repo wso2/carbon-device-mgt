@@ -50,6 +50,7 @@
                         <Import-Package>
                             javax.xml.bind.annotation,
                             com.fasterxml.jackson.annotation,
+                            org.wso2.carbon.apimgt.api.model,
                             io.swagger.annotations.*;resolution:=optional
                         </Import-Package>
                     </instructions>

@@ -25,11 +25,12 @@ var util = function () {
     var carbon = require('carbon');
     var constants = require("/app/modules/constants.js");
     var adminUser = devicemgtProps["adminUser"];
+    var clientName = devicemgtProps["clientName"];
 
     module.getDyanmicCredentials = function (owner) {
         var payload = {
             "callbackUrl": devicemgtProps.callBackUrl,
-            "clientName": "devicemgt",
+            "clientName": clientName,
             "tokenScope": "admin",
             "owner": adminUser,
             "applicationType": "webapp",
@@ -79,7 +80,7 @@ var util = function () {
      */
     module.getTokenWithPasswordGrantType = function (username, password, encodedClientKeys, scope) {
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer + "/token";
+        var tokenEndpoint = devicemgtProps.idPServer;
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + encodedClientKeys);
@@ -119,7 +120,7 @@ var util = function () {
         encodedExtractedAssertion = this.encode(extractedAssertion);
 
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer + "/token";
+        var tokenEndpoint = devicemgtProps.idPServer;
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + clientKeys);
@@ -140,7 +141,7 @@ var util = function () {
 
     module.refreshToken = function (tokenPair, clientData, scope) {
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer + "/token";
+        var tokenEndpoint = devicemgtProps.idPServer;
         xhr.open("POST", tokenEndpoint, false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", "Basic " + clientData);

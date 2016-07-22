@@ -330,26 +330,45 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                return '<a href="/emm/users/edit-user?username=' + data.username + '" data-username="' + data.username +
-                    '" data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link"> ' +
-                    '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
-                    '<i class="fw fw-edit fw-stack-1x"></i>' +
-                    ' </span> <span class="hidden-xs hidden-on-grid-view">Edit</span> </a>' +
-
-                    '<a href="#" data-username="' + data.username + '" data-user-id=' + data.username +
-                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.username + '\', \'' +
-                    data.username + '\')" class="btn padding-reduce-on-grid-view remove-user-link">' +
-                    '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x">' +
-                    '</i> </span> <span class="hidden-xs hidden-on-grid-view">Remove</span> </a>' +
-
-                    '<a href="#" data-username="' + data.username + '" data-user-id="' + data.username +
-                    '" data-click-event="edit-form" onclick="javascript:resetPassword(\'' + data.username +
-                    '\')" class="btn padding-reduce-on-grid-view remove-user-link"> <span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x">' +
-                    '</i> <i class="fw fw-key fw-stack-1x"></i> <span class="fw-stack fw-move-right fw-move-bottom"> ' +
-                    '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"><' +
-                    '/i> <i class="fw fw-circle fw-stack-2x"></i> <i class="fw fw-refresh fw-stack-1x fw-inverse">' + 
-                    '</i> </span> </span> <span class="hidden-xs hidden-on-grid-view">Reset</span> </a>'
+                return '<a href="/emm/users/edit-user?username=' + data.username + '" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-click-event="edit-form" ' +
+                            'class="btn padding-reduce-on-grid-view edit-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-edit fw-stack-1x"></i>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Edit</span>' +
+                        '</a>' +
+                        '<a href="#" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-user-id="' + data.username + '" ' +
+                            'data-click-event="edit-form" ' +
+                            'onclick="javascript:resetPassword(\'' + data.username + '\')" ' +
+                            'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-key fw-stack-1x"></i>' +
+                                        '<span class="fw-stack fw-move-right fw-move-bottom">' +
+                                            '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i> ' +
+                                            '<i class="fw fw-circle fw-stack-2x"></i>' +
+                                            '<i class="fw fw-refresh fw-stack-1x fw-inverse"></i> ' +
+                                        '</span>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Reset Password</span>' +
+                        '</a>' +
+                        '<a href="#" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-user-id=' + data.username + ' ' +
+                            'data-click-event="remove-form" ' +
+                            'onclick="javascript:removeUser(\'' + data.username + '\', \'' + data.username + '\')" ' +
+                            'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-delete fw-stack-1x"></i>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Remove</span> ' +
+                        '</a>'
             }
         }
 

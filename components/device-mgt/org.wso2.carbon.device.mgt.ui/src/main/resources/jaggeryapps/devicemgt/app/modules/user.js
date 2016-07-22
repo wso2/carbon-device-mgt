@@ -17,14 +17,14 @@
  */
 
 /*
- * This module contains user and roles related functionality
+ * This module contains user and roles related functionality.
  */
 var userModule = function () {
     var log = new Log("/app/modules/user.js");
 
     var constants = require("/app/modules/constants.js");
     var utility = require("/app/modules/utility.js")["utility"];
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require("/app/conf/devicemgt-props.js").config();
     var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 
     /* Initializing user manager */

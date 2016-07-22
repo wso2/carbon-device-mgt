@@ -138,9 +138,7 @@ $("a.invite-user-link").click(function () {
  * when a user clicks on "Remove" link
  * on User Listing page in WSO2 Devicemgt Console.
  */
-function removeUser(uname, uid) {
-    var username = uname;
-    var userId = uid;
+function removeUser(username) {
     var removeUserAPI = deviceMgtAPIsBasePath + "/users/" + username;
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
@@ -148,21 +146,18 @@ function removeUser(uname, uid) {
     $("a#remove-user-yes-link").click(function () {
         invokerUtil.delete(
             removeUserAPI,
+            // success callback
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
-                    $("#" + userId).remove();
-                    // get new user-list-count
-                    var newUserListCount = $(".user-list > span").length;
-                    // update user-listing-status-msg with new user-count
-                    $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
                     // update modal-content with success message
                     $(modalPopupContent).html($('#remove-user-success-content').html());
                     $("a#remove-user-success-link").click(function () {
                         hidePopup();
+                        location.reload();
                     });
                 }
             },
-            // The error callback
+            // error callback
             function (jqXHR) {
                 console.log("error in remove-user API, status code: " + jqXHR.status);
                 $(modalPopupContent).html($('#remove-user-error-content').html());
@@ -282,7 +277,7 @@ function loadUsers() {
                 firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
                 lastname: data.users[index].lastname ? data.users[index].lastname : '',
                 emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
-                DT_RowId : "role-" + data.users[index].username})
+                DT_RowId : "user-" + data.users[index].username})
         });
 
         var json = {
@@ -360,7 +355,7 @@ function loadUsers() {
 
     ];
 
-    $('#user-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null);
+    $("#user-grid").datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null);
 
     $("#loading-content").hide();
 }

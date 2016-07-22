@@ -22,7 +22,7 @@ var log = new Log("api/data-tables-invoker-api.jag");
 var uri = request.getRequestURI();
 var uriMatcher = new URIMatcher(String(uri));
 
-var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+var devicemgtProps = require("/app/conf/devicemgt-props.js").config();
 var serviceInvokers = require("/app/modules/backend-service-invoker.js")["backendServiceInvoker"];
 
 if (uriMatcher.match("/{context}/api/data-tables/invoker")) {

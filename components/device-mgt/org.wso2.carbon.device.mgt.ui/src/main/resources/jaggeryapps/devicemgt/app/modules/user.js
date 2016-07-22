@@ -32,9 +32,6 @@ var userModule = function () {
     var url = carbon.server.address("https") + "/admin/services";
     var server = new carbon.server.Server(url);
 
-    //var deviceManagementService = utility.getDeviceManagementService();
-    //var EmailMessageProperties = Packages.org.wso2.carbon.device.mgt.common.EmailMessageProperties;
-
     var publicMethods = {};
     var privateMethods = {};
 
@@ -79,58 +76,6 @@ var userModule = function () {
         }
     };
 
-    /*
-     @Deprecated
-     */
-    /**
-     * Add user to mdm-user-store.
-     *
-     * @param username Username of the user
-     * @param firstname First name of the user
-     * @param lastname Last name of the user
-     * @param emailAddress Email address of the user
-     * @param userRoles Roles assigned to the user
-     *
-     * @returns {number} HTTP Status code 201 if succeeded, 409 if user already exists
-     */
-//    publicMethods.addUser = function (username, firstname, lastname, emailAddress, userRoles) {
-//        var statusCode, carbon = require("carbon");
-//        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
-//        var utility = require("/app/modules/utility.js")["utility"];
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants["ERRORS"]["USER_NOT_FOUND"];
-//        }
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var tenantId = carbon.server.tenantId();
-//            var userManager = new carbon.user.UserManager(server, tenantId);
-//            if (userManager.userExists(username)) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("A user with name '" + username + "' already exists.");
-//                }
-//                // http status code 409 refers to - conflict.
-//                statusCode = 409;
-//            } else {
-//                var initialUserPassword = privateMethods.generateInitialUserPassword();
-//                var defaultUserClaims = privateMethods.buildDefaultUserClaims(firstname, lastname, emailAddress);
-//
-//                userManager.addUser(username, initialUserPassword, userRoles, defaultUserClaims, "default");
-//                privateMethods.inviteUserToEnroll(username, initialUserPassword);
-//                if (log.isDebugEnabled()) {
-//                    log.debug("A new user with name '" + username + "' was created.");
-//                }
-//                // http status code 201 refers to - created.
-//                statusCode = 201;
-//            }
-//            return statusCode;
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
-
     /**
      * Register user to dc-user-store.
      *
@@ -170,197 +115,6 @@ var userModule = function () {
             throw e;
         }
     };
-
-    /*
-     @Deprecated
-     */
-    /**
-     * Remove an existing user from mdm-user-store.
-     *
-     * @param username Username of the user
-     * @returns {number} HTTP Status code 200 if succeeded, 409 if the user does not exist
-     */
-//    publicMethods.removeUser = function (username) {
-//        var statusCode, carbon = require('carbon');
-//        var carbonUser = session.get(constants.USER_SESSION_KEY);
-//        var utility = require("/app/modules/utility.js").utility;
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants.ERRORS.USER_NOT_FOUND;
-//        }
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var tenantId = carbon.server.tenantId();
-//            var userManager = new carbon.user.UserManager(server, tenantId);
-//            if (userManager.userExists(username)) {
-//                userManager.removeUser(username);
-//                if (log.isDebugEnabled()) {
-//                    log.debug("An existing user with name '" + username + "' was removed.");
-//                }
-//                // http status code 200 refers to - success.
-//                statusCode = 200;
-//            } else {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("A user with name '" + username + "' does not exist to remove.");
-//                }
-//                // http status code 409 refers to - conflict.
-//                statusCode = 409;
-//            }
-//            return statusCode;
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
-
-    /*
-     @Deprecated
-     */
-    /**
-     * Private method to be used by addUser() to
-     * generate an initial user password for a user.
-     * This will be the password used by a user for his initial login to the system.
-     *
-     * @returns {string} Initial User Password
-     */
-//    privateMethods.generateInitialUserPassword = function () {
-//        var passwordLength = 6;
-//        //defining the pool of characters to be used for initial password generation
-//        var lowerCaseCharset = "abcdefghijklmnopqrstuvwxyz";
-//        var upperCaseCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//        var numericCharset = "0123456789";
-//
-//        var totalCharset = lowerCaseCharset + upperCaseCharset + numericCharset;
-//        var totalCharsetLength = totalCharset.length;
-//
-//        var initialUserPassword = "";
-//        for (var i = 0; i < passwordLength; ++i) {
-//            initialUserPassword += totalCharset.charAt(Math.floor(Math.random() * totalCharsetLength));
-//        }
-//        if (log.isDebugEnabled()) {
-//            log.debug("Initial password created for new user : " + initialUserPassword);
-//        }
-//        return String(initialUserPassword);
-//    };
-
-    /*
-     @Deprecated
-     */
-    /**
-     * Build default user claims.
-     *
-     * @param firstname First name of the user
-     * @param lastname Last name of the user
-     * @param emailAddress Email address of the user
-     *
-     * @returns {Object} Default user claims to be provided
-     */
-//    privateMethods.buildDefaultUserClaims = function (firstname, lastname, emailAddress) {
-//        var defaultUserClaims = {
-//            "http://wso2.org/claims/givenname": firstname,
-//            "http://wso2.org/claims/lastname": lastname,
-//            "http://wso2.org/claims/emailaddress": emailAddress
-//        };
-//        if (log.isDebugEnabled()) {
-//            log.debug("ClaimMap created for new user : " + stringify(defaultUserClaims));
-//        }
-//        return defaultUserClaims;
-//    };
-
-    /*
-     @Deprecated
-     */
-    /**
-     * Send an initial invitation email to a user with username/password attached
-     * for the very-first enrollment with WSO2 MDM.
-     *
-     * @param username Username of the user
-     * @param password Password of the user
-     */
-//    privateMethods.inviteUserToEnroll = function (username, password) {
-//        var carbon = require('carbon');
-//        var enrollmentURL = devicemgtProps.generalConfig.host + devicemgtProps.webAgentContext + "download-agent";
-//        var carbonUser = session.get(constants.USER_SESSION_KEY);
-//        var utility = require('/app/modules/utility.js').utility;
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants.ERRORS.USER_NOT_FOUND;
-//        }
-//        //var user = userManagementService.getUser(username, carbonUser.tenantId);
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var tenantId = carbon.server.tenantId();
-//            var userManager = new carbon.user.UserManager(server, tenantId);
-//            var emailTo = [];
-//            var user = userManager.getUser(username);
-//            emailTo[0] = privateMethods.getEmail(username, userManager);
-//            var emailMessageProperties = new EmailMessageProperties();
-//            emailMessageProperties.setMailTo(emailTo);
-//            emailMessageProperties.setFirstName(privateMethods.getFirstName(username, userManager));
-//            emailMessageProperties.setUserName(username);
-//            emailMessageProperties.setPassword(password);
-//            emailMessageProperties.setEnrolmentUrl(enrollmentURL);
-//            deviceManagementService.sendRegistrationEmail(emailMessageProperties);
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
-
-    /*
-     @Deprecated
-     */
-//    privateMethods.getEmail = function (username, userManager) {
-//        return userManager.getClaim(username, "http://wso2.org/claims/emailaddress", null)
-//    };
-
-    /*
-     @Deprecated
-     */
-//    privateMethods.getFirstName = function (username, userManager) {
-//        return userManager.getClaim(username, "http://wso2.org/claims/givenname", null)
-//    };
-
-    /*
-     @Deprecated
-     */
-//    privateMethods.getLastName = function (username, userManager) {
-//        return userManager.getClaim(username, "http://wso2.org/claims/lastname", null)
-//    };
-
-    /*
-     @Deprecated
-     */
-//    publicMethods.inviteUser = function (username) {
-//        var carbonUser = session.get(constants.USER_SESSION_KEY);
-//        var utility = require('/app/modules/utility.js').utility;
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants.ERRORS.USER_NOT_FOUND;
-//        }
-//        var enrollmentURL = devicemgtProps.generalConfig.host + devicemgtProps.webAgentContext + "download-agent";
-//
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var tenantId = carbon.server.tenantId();
-//            var userManager = new carbon.user.UserManager(server, tenantId);
-//            var user = userManager.getUser(username);
-//            var emailProperties = new EmailMessageProperties();
-//            var emailTo = [];
-//            emailTo[0] = privateMethods.getEmail(username, userManager);
-//            emailProperties.setMailTo(emailTo);
-//            //emailProperties.setFirstName(user.getFirstName());
-//            emailProperties.setFirstName(privateMethods.getFirstName(username, userManager));
-//            emailProperties.setEnrolmentUrl(enrollmentURL);
-//            deviceManagementService.sendEnrolmentInvitation(emailProperties);
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
 
     /*
      @Updated
@@ -532,9 +286,7 @@ var userModule = function () {
             utility.endTenantFlow();
         }
     };
-    /*
-     @Updated
-     */
+
     /**
      * Get role
      */
@@ -692,30 +444,6 @@ var userModule = function () {
         }
 
         return permissions;
-    };
-
-    /**
-     * Add new role with permissions.
-     *
-     * @param roleName    Name of the role
-     * @param users       List of users to assign the role
-     * @param permissions List of permissions
-     */
-    publicMethods.addRole = function (roleName, users, permissions) {
-        var carbon = require('carbon');
-        var tenantId = carbon.server.tenantId();
-        var url = carbon.server.address('https') + "/admin/services";
-        var server = new carbon.server.Server(url);
-        var userManager = new carbon.user.UserManager(server, tenantId);
-        try {
-            if (!userManager.roleExists(roleName)) {
-                userManager.addRole(roleName, users, permissions);
-            } else {
-                log.info("Role exist with name: " + roleName);
-            }
-        } catch (e) {
-            throw e;
-        }
     };
 
     publicMethods.addPermissions = function (permissionList, path, init) {

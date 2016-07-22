@@ -42,4 +42,12 @@ public interface ScopeManagementService {
      */
     List<Scope> getAllScopes() throws ScopeManagementException;
 
+    /**
+     * This method is to retrieve the roles of the given scope
+     * @param scopeKey key of the scope
+     * @return List of roles
+     * @throws ScopeManagementException
+     */
+    String getRolesOfScope(String scopeKey) throws ScopeManagementException;
+
 }

@@ -66,13 +66,32 @@ public class ScopeManagementServiceImpl implements ScopeManagementService {
             ScopeManagementDAOFactory.openConnection();
             scopes = scopeManagementDAO.getAllScopes();
         } catch (SQLException e) {
-            throw new ScopeManagementException("SQL error occurred while adding scopes to database.", e);
+            throw new ScopeManagementException("SQL error occurred while retrieving scopes from database.", e);
         } catch (ScopeManagementDAOException e) {
-            throw new ScopeManagementException("Error occurred while adding scopes to database.", e);
+            throw new ScopeManagementException("Error occurred while retrieving scopes from database.", e);
         } finally {
             ScopeManagementDAOFactory.closeConnection();
         }
         return scopes;
+    }
+
+    @Override
+    public String getRolesOfScope(String scopeKey) throws ScopeManagementException {
+        String roles;
+        if (scopeKey == null || scopeKey.isEmpty()) {
+            throw new ScopeManagementException("Scope key is null or empty");
+        }
+        try {
+            ScopeManagementDAOFactory.openConnection();
+            roles = scopeManagementDAO.getRolesOfScope(scopeKey);
+        } catch (SQLException e) {
+            throw new ScopeManagementException("SQL error occurred while retrieving roles of scope from database.", e);
+        } catch (ScopeManagementDAOException e) {
+            throw new ScopeManagementException("Error occurred while retrieving roles of scope from database.", e);
+        } finally {
+            ScopeManagementDAOFactory.closeConnection();
+        }
+        return roles;
     }
 
 }

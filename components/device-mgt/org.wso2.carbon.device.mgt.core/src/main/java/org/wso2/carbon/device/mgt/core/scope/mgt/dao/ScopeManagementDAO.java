@@ -43,4 +43,12 @@ public interface ScopeManagementDAO {
      */
     List<Scope> getAllScopes() throws ScopeManagementDAOException;
 
+    /**
+     * This method is to retrieve the roles of the given scope
+     * @param scopeKey key of the scope
+     * @return List of roles
+     * @throws ScopeManagementDAOException
+     */
+    String getRolesOfScope(String scopeKey) throws ScopeManagementDAOException;
+
 }

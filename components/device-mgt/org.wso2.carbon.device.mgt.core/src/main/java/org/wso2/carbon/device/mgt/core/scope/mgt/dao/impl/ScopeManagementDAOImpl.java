@@ -89,6 +89,31 @@ public class ScopeManagementDAOImpl implements ScopeManagementDAO {
         }
     }
 
+    @Override
+    public String getRolesOfScope(String scopeKey) throws ScopeManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String roles = null;
+
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT ROLES FROM IDN_OAUTH2_SCOPE WHERE SCOPE_KEY = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, scopeKey);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                roles = rs.getString("ROLES");
+            }
+            return roles;
+        } catch (SQLException e) {
+            throw new ScopeManagementDAOException("Error occurred while fetching the details of the scopes.", e);
+        } finally {
+            ScopeManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
     private Connection getConnection() throws SQLException {
         return ScopeManagementDAOFactory.getConnection();
     }

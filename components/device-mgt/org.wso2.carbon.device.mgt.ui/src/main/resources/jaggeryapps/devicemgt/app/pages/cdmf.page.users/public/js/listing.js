@@ -108,7 +108,7 @@ $("a.invite-user-link").click(function () {
         invokerUtil.post(
             inviteUserAPI,
             usernameList,
-            // The success callback
+            // success callback
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
                     $(modalPopupContent).html($('#invite-user-success-content').html());
@@ -117,7 +117,7 @@ $("a.invite-user-link").click(function () {
                     });
                 }
             },
-            // The error callback
+            // error callback
             function (jqXHR) {
                 console.log("error in invite-user API, status code: " + jqXHR.status);
                 $(modalPopupContent).html($('#invite-user-error-content').html());
@@ -212,7 +212,7 @@ function resetPassword(uname) {
             invokerUtil.post(
                 resetPasswordServiceURL,
                 resetPasswordFormData,
-                // The success callback
+                // success callback
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
                         $(modalPopupContent).html($('#reset-password-success-content').html());
@@ -221,7 +221,7 @@ function resetPassword(uname) {
                         });
                     }
                 },
-                // The error callback
+                // error callback
                 function (jqXHR) {
                     console.log("error in reset-password API, status code: " + jqXHR.status);
                     var payload = JSON.parse(jqXHR.responseText);
@@ -271,14 +271,19 @@ function loadUsers() {
 
         var objects = [];
 
-        $(data.users).each(function (index) {
-            objects.push({
-                username: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
-                lastname: data.users[index].lastname ? data.users[index].lastname : '',
-                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
-                DT_RowId : "user-" + data.users[index].username})
-        });
+        $(data.users).each(
+            function (index) {
+                objects.push(
+                    {
+                        username: data.users[index].username,
+                        firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
+                        lastname: data.users[index].lastname ? data.users[index].lastname : '',
+                        emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
+                        DT_RowId : "user-" + data.users[index].username
+                    }
+                )
+            }
+        );
 
         var json = {
             "recordsTotal": data.count,
@@ -349,11 +354,11 @@ function loadUsers() {
                                 '<span class="fw-stack">' +
                                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                                     '<i class="fw fw-key fw-stack-1x"></i>' +
-                                        '<span class="fw-stack fw-move-right fw-move-bottom">' +
-                                            '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i> ' +
-                                            '<i class="fw fw-circle fw-stack-2x"></i>' +
-                                            '<i class="fw fw-refresh fw-stack-1x fw-inverse"></i> ' +
-                                        '</span>' +
+                                    '<span class="fw-stack fw-move-right fw-move-bottom">' +
+                                        '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i> ' +
+                                        '<i class="fw fw-circle fw-stack-2x"></i>' +
+                                        '<i class="fw fw-refresh fw-stack-1x fw-inverse"></i> ' +
+                                    '</span>' +
                                 '</span>' +
                                 '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Reset Password</span>' +
                         '</a>' +
@@ -374,7 +379,9 @@ function loadUsers() {
 
     ];
 
-    $("#user-grid").datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null);
+    $("#user-grid").datatables_extended_serverside_paging(
+        null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null
+    );
 
     $("#loading-content").hide();
 }

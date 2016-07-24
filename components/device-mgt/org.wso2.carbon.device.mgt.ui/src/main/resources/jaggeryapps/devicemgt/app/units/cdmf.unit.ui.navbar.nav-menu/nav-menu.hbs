@@ -16,38 +16,58 @@
   under the License.
 }}
 {{#zone "navMenu-icon"}}
-    <span class="icon fw-stack"><i class="fw fw-tiles fw-stack-1x"></i></span>
+    <span class="icon fw-stack">
+        <i class="fw fw-tiles fw-stack-1x toggle-icon-up"></i>
+    </span>
 {{/zone}}
 
-{{~#zone "navMenu-items"}}
+{{#zone "navMenu-items"}}
     {{#if permissions.VIEW_DASHBOARD}}
         <li>
-            <a href="{{@app.context}}"><i class="fw fw-dashboard"></i>Admin Dashboard</a>
+            <a href="{{@app.context}}">
+                <i class="fw fw-dashboard"></i>
+                Admin Dashboard
+            </a>
         </li>
     {{/if}}
     {{#if permissions.LIST_OWN_DEVICES}}
         <li>
-            <a href="{{@app.context}}/devices"><i class="fw fw-mobile"></i>Device Management</a>
+            <a href="{{@app.context}}/devices">
+                <i class="fw fw-mobile"></i>
+                Device Management
+            </a>
         </li>
     {{/if}}
     {{#if permissions.LIST_GROUPS}}
         <li>
-            <a href="{{@app.context}}/groups"><i class="fw fw-grouping"></i>Group Management</a>
+            <a href="{{@app.context}}/groups">
+                <i class="fw fw-grouping"></i>
+                Group Management
+            </a>
         </li>
     {{/if}}
     {{#if permissions.ADD_USER}}
         <li>
-            <a href="{{@app.context}}/users"><i class="fw fw-user"></i>User Management</a>
+            <a href="{{@app.context}}/users">
+                <i class="fw fw-user"></i>
+                User Management
+            </a>
         </li>
     {{/if}}
     {{#if permissions.ADD_ROLE}}
         <li>
-            <a href="{{@app.context}}/roles"><i class="fw fw-bookmark"></i>Role Management</a>
+            <a href="{{@app.context}}/roles">
+                <i class="fw fw-bookmark"></i>
+                Role Management
+            </a>
         </li>
     {{/if}}
     {{#if permissions.ADD_POLICY}}
         <li>
-            <a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a>
+            <a href="{{@app.context}}/policies">
+                <i class="fw fw-policy"></i>
+                Policy Management
+            </a>
         </li>
     {{/if}}
     {{#if permissions.TENANT_CONFIGURATION}}

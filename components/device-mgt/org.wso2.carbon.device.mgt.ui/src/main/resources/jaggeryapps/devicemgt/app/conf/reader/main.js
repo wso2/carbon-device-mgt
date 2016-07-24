@@ -19,9 +19,9 @@
 var config = function () {
     var conf = application.get("UI_CONFIG");
     if (!conf) {
-        var pinch = require("/app/modules/pinch.min.js")["pinch"];
-        var server = require("carbon")["server"];
+        var pinch = require("/app/conf/reader/pinch.min.js")["pinch"];
         var config = require("/app/conf/config.json");
+        var server = require("carbon")["server"];
         pinch(config, /^/, function (path, key, value) {
             if ((typeof value === "string") && value.indexOf("%https.ip%") > -1) {
                 return value.replace("%https.ip%", server.address("https"));

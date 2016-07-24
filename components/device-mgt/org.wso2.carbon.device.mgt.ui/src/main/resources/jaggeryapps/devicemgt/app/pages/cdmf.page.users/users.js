@@ -29,7 +29,7 @@ function onRequest(context) {
 
     var page = {};
     var userModule = require("/app/modules/user.js")["userModule"];
-    var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();
+    require("/app/conf/reader/main.js").config();
 
     page["adminUser"] = deviceMgtProps["adminUser"];
     page["permissions"] = userModule.getUIPermissions();

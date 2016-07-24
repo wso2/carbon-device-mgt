@@ -17,7 +17,7 @@
  */
 
 var carbonModule = require("carbon");
-var devicemgtProps = require("/app/conf/devicemgt-props.js").config();
+var devicemgtProps = require("/app/conf/reader/main.js").config();
 var carbonServer = new carbonModule.server.Server({
     tenanted: true,
     url: devicemgtProps["httpsURL"] + "/admin"

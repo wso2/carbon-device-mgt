@@ -24,7 +24,7 @@
  */
 function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
-    var deviceMgtProps = require("/app/conf/devicemgt-props.js").config();
+    var deviceMgtProps = require("/app/conf/reader/main.js").config();
     var uri = request.getRequestURI();
     var uriMatcher = new URIMatcher(String(uri));
     var isMatched = uriMatcher.match("/{context}/role/edit/{rolename}");

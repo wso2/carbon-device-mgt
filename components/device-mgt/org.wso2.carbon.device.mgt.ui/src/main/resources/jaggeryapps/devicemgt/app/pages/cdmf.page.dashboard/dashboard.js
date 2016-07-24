@@ -21,7 +21,7 @@ function onRequest(context) {
     var user = session.get(constants.USER_SESSION_KEY);
     var userModule = require("/app/modules/user.js").userModule;
     var permissions = userModule.getUIPermissions();
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require("/app/conf/reader/main.js").config();
 
     if (!permissions.VIEW_DASHBOARD) {
         response.sendRedirect(constants.WEB_APP_CONTEXT + "/devices");

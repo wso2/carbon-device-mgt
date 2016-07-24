@@ -17,24 +17,25 @@
  */
 
 var config = function () {
-    var conf = application.get("UI_CONFIG");
+    var conf = application.get("UI_CONF");
     if (!conf) {
+        conf = require("/app/conf/config.json");
         var pinch = require("/app/conf/reader/pinch.min.js")["pinch"];
-        var config = require("/app/conf/config.json");
         var server = require("carbon")["server"];
-        pinch(config, /^/, function (path, key, value) {
-            if ((typeof value === "string") && value.indexOf("%https.ip%") > -1) {
-                return value.replace("%https.ip%", server.address("https"));
-            } else if ((typeof value === "string") && value.indexOf("%http.ip%") > -1) {
-                return value.replace("%http.ip%", server.address("http"));
-            } else if ((typeof value === "string") && value.indexOf("%date-year%") > -1) {
-                var year = new Date().getFullYear();
-                return value.replace("%date-year%", year);
+        pinch(conf, /^/,
+            function (path, key, value) {
+                if ((typeof value === "string") && value.indexOf("%https.ip%") > -1) {
+                    return value.replace("%https.ip%", server.address("https"));
+                } else if ((typeof value === "string") && value.indexOf("%http.ip%") > -1) {
+                    return value.replace("%http.ip%", server.address("http"));
+                } else if ((typeof value === "string") && value.indexOf("%date-year%") > -1) {
+                    var year = new Date().getFullYear();
+                    return value.replace("%date-year%", year);
+                }
+                return value;
             }
-            return  value;
-        });
-        application.put("UI_CONFIG", config);
-        conf = config;
+        );
+        application.put("UI_CONF", conf);
     }
     return conf;
 };

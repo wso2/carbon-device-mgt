@@ -1,20 +1,22 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
+var deviceMgtAPIsBasePath = "/api/device-mgt/v1.0";
 
 /**
  * Checks if provided input is valid against RegEx input.
@@ -35,10 +37,10 @@ function inputIsValid(regExp, inputString) {
 $(function () {
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({
-                                 beforeStop: function () {
-                                     var sortedIDs = $(this).sortable('toArray');
-                                 }
-                             });
+        beforeStop: function () {
+            $(this).sortable('toArray');
+        }
+    });
     $(sortableElem).disableSelection();
 });
 
@@ -46,10 +48,8 @@ var modalPopup = ".wr-modalpopup";
 var modalPopupContainer = modalPopup + " .modalpopup-container";
 var modalPopupContent = modalPopup + " .modalpopup-content";
 var body = "body";
-var isInit = true;
+//var isInit = true;
 $(".icon .text").res_text(0.2);
-
-var resetPasswordServiceURL = "/devicemgt_admin/users/reset-password";
 
 /*
  * set popup maximum height function.
@@ -80,11 +80,9 @@ function hidePopup() {
  */
 function getSelectedUsernames() {
     var usernameList = [];
-    var userList = $("#user-grid").find('> tbody > tr');
+    var userList = $("#user-grid").find('tr.DTTT_selected');
     userList.each(function () {
-        if ($(this).hasClass('DTTT_selected')) {
-            usernameList.push($(this).attr('data-username'));
-        }
+        usernameList.push($(this).data('username'));
     });
     return usernameList;
 }
@@ -96,7 +94,7 @@ function getSelectedUsernames() {
  */
 $("a.invite-user-link").click(function () {
     var usernameList = getSelectedUsernames();
-    var inviteUserAPI = "/devicemgt_admin/users/email-invitation";
+    var inviteUserAPI = deviceMgtAPIsBasePath + "/users/send-invitation";
 
     if (usernameList.length == 0) {
         $(modalPopupContent).html($("#errorUsers").html());
@@ -108,20 +106,25 @@ $("a.invite-user-link").click(function () {
 
     $("a#invite-user-yes-link").click(function () {
         invokerUtil.post(
-                inviteUserAPI,
-                usernameList,
-                function () {
+            inviteUserAPI,
+            usernameList,
+            // success callback
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200) {
                     $(modalPopupContent).html($('#invite-user-success-content').html());
                     $("a#invite-user-success-link").click(function () {
                         hidePopup();
                     });
-                },
-                function () {
-                    $(modalPopupContent).html($('#invite-user-error-content').html());
-                    $("a#invite-user-error-link").click(function () {
-                        hidePopup();
-                    });
                 }
+            },
+            // error callback
+            function (jqXHR) {
+                console.log("error in invite-user API, status code: " + jqXHR.status);
+                $(modalPopupContent).html($('#invite-user-error-content').html());
+                $("a#invite-user-error-link").click(function () {
+                    hidePopup();
+                });
+            }
         );
     });
 
@@ -135,34 +138,33 @@ $("a.invite-user-link").click(function () {
  * when a user clicks on "Remove" link
  * on User Listing page in WSO2 Devicemgt Console.
  */
-function removeUser(uname, uid) {
-    var username = uname;
-    var userid = uid;
-    var removeUserAPI = "/devicemgt_admin/users?username=" + username;
+function removeUser(username) {
+    var removeUserAPI = deviceMgtAPIsBasePath + "/users/" + username;
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
 
     $("a#remove-user-yes-link").click(function () {
         invokerUtil.delete(
-                removeUserAPI,
-                function () {
-                    $("#" + userid).remove();
-                    // get new user-list-count
-                    var newUserListCount = $(".user-list > span").length;
-                    // update user-listing-status-msg with new user-count
-                    $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
+            removeUserAPI,
+            // success callback
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200) {
                     // update modal-content with success message
                     $(modalPopupContent).html($('#remove-user-success-content').html());
                     $("a#remove-user-success-link").click(function () {
                         hidePopup();
-                    });
-                },
-                function () {
-                    $(modalPopupContent).html($('#remove-user-error-content').html());
-                    $("a#remove-user-error-link").click(function () {
-                        hidePopup();
+                        location.reload();
                     });
                 }
+            },
+            // error callback
+            function (jqXHR) {
+                console.log("error in remove-user API, status code: " + jqXHR.status);
+                $(modalPopupContent).html($('#remove-user-error-content').html());
+                $("a#remove-user-error-link").click(function () {
+                    hidePopup();
+                });
+            }
         );
     });
 
@@ -202,29 +204,30 @@ function resetPassword(uname) {
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var resetPasswordFormData = {};
-            resetPasswordFormData.username = user;
-            resetPasswordFormData.newPassword = window.btoa(unescape(encodeURIComponent(confirmedPassword)));
+            //resetPasswordFormData.username = user;
+            resetPasswordFormData.newPassword = unescape(confirmedPassword);
+
+            var resetPasswordServiceURL = deviceMgtAPIsBasePath + "/admin/users/"+ user +"/credentials";
 
             invokerUtil.post(
-                    resetPasswordServiceURL,
-                    resetPasswordFormData,
-                    function (data) {   // The success callback
-                        data = JSON.parse(data);
-                        if (data.statusCode == 201) {
-                            $(modalPopupContent).html($('#reset-password-success-content').html());
-                            $("a#reset-password-success-link").click(function () {
-                                hidePopup();
-                            });
-                        }
-                    }, function (data) {    // The error callback
-                        if (data.statusCode == 400) {
-                            $(errorMsg).text("Old password does not match with the provided value.");
-                            $(errorMsgWrapper).removeClass("hidden");
-                        } else {
-                            $(errorMsg).text("An unexpected error occurred. Please try again later.");
-                            $(errorMsgWrapper).removeClass("hidden");
-                        }
+                resetPasswordServiceURL,
+                resetPasswordFormData,
+                // success callback
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200) {
+                        $(modalPopupContent).html($('#reset-password-success-content').html());
+                        $("a#reset-password-success-link").click(function () {
+                            hidePopup();
+                        });
                     }
+                },
+                // error callback
+                function (jqXHR) {
+                    console.log("error in reset-password API, status code: " + jqXHR.status);
+                    var payload = JSON.parse(jqXHR.responseText);
+                    $(errorMsg).text(payload.message);
+                    $(errorMsgWrapper).removeClass("hidden");
+                }
             );
         }
     });
@@ -250,7 +253,7 @@ $("#search-btn").click(function () {
  * when a user clicks on the list item
  * initial mode and with out select mode.
  */
-function InitiateViewOption() {
+function initiateViewOption() {
     if ($("#can-view").val()) {
         $(location).attr('href', $(this).data("url"));
     } else {
@@ -259,73 +262,137 @@ function InitiateViewOption() {
     }
 }
 
-function loadUsers(searchParam) {
-    $("#loading-content").show();
-    var userListing = $("#user-listing");
-    var userListingSrc = userListing.attr("src");
-    $.template("user-listing", userListingSrc, function (template) {
-        var serviceURL = "/devicemgt_admin/users";
-        if (searchParam) {
-            serviceURL = serviceURL + "/view-users?username=" + searchParam;
-        }
-        var successCallback = function (data) {
-            if (!data) {
-                $('#ast-container').addClass('hidden');
-                $('#user-listing-status-msg').text('No users are available to be displayed.');
-                return;
+function loadUsers() {
+    var loadingContentIcon = "#loading-content";
+    $(loadingContentIcon).show();
+
+    var dataFilter = function (data) {
+        data = JSON.parse(data);
+
+        var objects = [];
+
+        $(data.users).each(
+            function (index) {
+                objects.push(
+                    {
+                        username: data.users[index].username,
+                        firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
+                        lastname: data.users[index].lastname ? data.users[index].lastname : '',
+                        emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
+                        DT_RowId : "user-" + data.users[index].username
+                    }
+                )
             }
-            var canRemove = $("#can-remove").val();
-            var canEdit = $("#can-edit").val();
-            var canResetPassword = $("#can-reset-password").val();
-            data = JSON.parse(data);
-            data = data.responseContent;
-            var viewModel = {};
-            viewModel.users = data;
-            for (var i = 0; i < viewModel.users.length; i++) {
-                viewModel.users[i].userid = viewModel.users[i].username.replace(/[^\w\s]/gi, '');
-                if (canRemove) {
-                    viewModel.users[i].canRemove = true;
-                }
-                if (canEdit) {
-                    viewModel.users[i].canEdit = true;
-                }
-                if (canResetPassword) {
-                    viewModel.users[i].canResetPassword = true;
-                }
-                viewModel.users[i].adminUser = $("#user-table").data("user");
-            }
-            if (data.length > 0) {
-                $('#ast-container').removeClass('hidden');
-                $('#user-listing-status-msg').text("");
-                var content = template(viewModel);
-                $("#ast-container").html(content);
-            } else {
-                $('#ast-container').addClass('hidden');
-                $('#user-listing-status-msg').text('No users are available to be displayed.');
-            }
-            $("#loading-content").hide();
-            if (isInit) {
-                $('#user-grid').datatables_extended();
-                isInit = false;
-            }
-            $(".icon .text").res_text(0.2);
-        };
-        invokerUtil.get(serviceURL,
-                        successCallback,
-                        function (message) {
-                            $('#ast-container').addClass('hidden');
-                            $('#user-listing-status-msg').text('Invalid search query. Try again with a valid search query');
-                        }
         );
-    });
+
+        var json = {
+            "recordsTotal": data.count,
+            "recordsFiltered": data.count,
+            "data": objects
+        };
+
+        return JSON.stringify(json);
+    };
+
+    var fnCreatedRow = function(nRow, aData, iDataIndex) {
+        console.log(JSON.stringify(aData));
+        $(nRow).attr('data-type', 'selectable');
+        $(nRow).attr('data-username', aData["username"]);
+    };
+
+    var columns = [
+        {
+            class: "remove-padding icon-only content-fill",
+            data: null,
+            defaultContent:
+                '<div class="thumbnail icon">' +
+                    '<i class="square-element text fw fw-user" style="font-size: 30px;"></i>' +
+                '</div>'
+        },
+        {
+            class: "fade-edge",
+            data: null,
+            render: function (data, type, row, meta) {
+                return '<h4>' + data.firstname + ' ' + data.lastname + '</h4>';
+            }
+        },
+        {
+            class: "fade-edge remove-padding-top",
+            data: null,
+            render: function (data, type, row, meta) {
+                return '<i class="fw-user"></i> ' + data.username;
+            }
+        },
+        {
+            class: "fade-edge remove-padding-top",
+            data: null,
+            render: function (data, type, row, meta) {
+                return '<a href="mailto:' + data.emailAddress + ' " class="wr-list-email"><i class="fw-mail"></i> ' +
+                    data.emailAddress + ' </a>';
+            }
+        },
+        {
+            class: "text-right content-fill text-left-on-grid-view no-wrap",
+            data: null,
+            render: function (data, type, row, meta) {
+                return '<a href="/emm/users/edit-user?username=' + data.username + '" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-click-event="edit-form" ' +
+                            'class="btn padding-reduce-on-grid-view edit-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-edit fw-stack-1x"></i>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Edit</span>' +
+                        '</a>' +
+                        '<a href="#" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-user-id="' + data.username + '" ' +
+                            'data-click-event="edit-form" ' +
+                            'onclick="javascript:resetPassword(\'' + data.username + '\')" ' +
+                            'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-key fw-stack-1x"></i>' +
+                                    '<span class="fw-stack fw-move-right fw-move-bottom">' +
+                                        '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i> ' +
+                                        '<i class="fw fw-circle fw-stack-2x"></i>' +
+                                        '<i class="fw fw-refresh fw-stack-1x fw-inverse"></i> ' +
+                                    '</span>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Reset Password</span>' +
+                        '</a>' +
+                        '<a href="#" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-user-id=' + data.username + ' ' +
+                            'data-click-event="remove-form" ' +
+                            'onclick="javascript:removeUser(\'' + data.username + '\', \'' + data.username + '\')" ' +
+                            'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-delete fw-stack-1x"></i>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Remove</span> ' +
+                        '</a>'
+            }
+        }
+
+    ];
+
+    $("#user-grid").datatables_extended_serverside_paging(
+        null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null
+    );
+
+    $("#loading-content").hide();
 }
 
 $(document).ready(function () {
     loadUsers();
 
     $(".viewEnabledIcon").click(function () {
-        InitiateViewOption();
+        initiateViewOption();
     });
+
     if (!$("#can-invite").val()) {
         $("#invite-user-button").remove();
     }

@@ -99,7 +99,7 @@ public class CommandOperationDAOImpl extends GenericOperationDAOImpl {
 
             if (rs.next()) {
                 commandOperation = new CommandOperation();
-                commandOperation.setEnabled(rs.getInt("ENABLED") != 0);
+                commandOperation.setEnabled(rs.getBoolean("ENABLED"));
             }
         } catch (SQLException e) {
             throw new OperationManagementDAOException("SQL Error occurred while retrieving the command operation " +

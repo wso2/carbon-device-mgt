@@ -6,12 +6,12 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -30,6 +30,7 @@ function inputIsValid(regExp, inputString) {
 
 var validateInline = {};
 var clearInline = {};
+var deviceMgtAPIsBasePath = "/api/device-mgt/v1.0";
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -160,37 +161,41 @@ function emailIsValid(email) {
     return regExp.test(email);
 }
 
-$("#userStore")
-        .change(function () {
-            var str = "";
-            $("select option:selected").each(function () {
-                str += $(this).text() + " ";
-            });
-            var addUserAPI = "/devicemgt_admin/roles/" + str;
+$("#userStore").change(
+    function () {
+        var str = "";
+        $("select option:selected").each(function () {
+            str += $(this).text() + " ";
+        });
+        var getRolesAPI = deviceMgtAPIsBasePath + "/roles/"+ str;
 
-            invokerUtil.get(
-                    addUserAPI,
-                    function (data) {
-                        data = JSON.parse(data);
-                        if (data.errorMessage) {
-                            $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
-                            $(errorMsgWrapper).removeClass("hidden");
-                        } else if (data["statusCode"] == 200) {
-                            $("#roles").empty();
-                            for (var i = 0; i < data.responseContent.length; i++) {
-                                var newOption = $('<option value="' + data.responseContent[i] + '">' + data.responseContent[i] + '</option>');
-                                $('#roles').append(newOption);
-                            }
-                        }
+        invokerUtil.get(
+            getRolesAPI,
+            function (data) {
+                data = JSON.parse(data);
+                if (data.errorMessage) {
+                    $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
+                    $(errorMsgWrapper).removeClass("hidden");
+                } else if (data["statusCode"] == 200) {
+                    $("#roles").empty();
+                    for (var i = 0; i < data.responseContent.length; i++) {
+                        var newOption = $('<option value="' + data.responseContent[i] + '">' + data.responseContent[i] + '</option>');
+                        $('#roles').append(newOption);
                     }
-            );
-        }).change();
+                }
+            },
+            function (jqXHR) {
+
+            }
+        );
+    }
+).change();
 
 $(document).ready(function () {
     $("#emailValidationText").hide();
     $("select.select2[multiple=multiple]").select2({
-                                                       tags: false
-                                                   });
+        tags: false
+    });
 
     /**
      * Following click function would execute
@@ -202,7 +207,7 @@ $(document).ready(function () {
         var usernameInput = $("input#username");
         var firstnameInput = $("input#firstname");
         var lastnameInput = $("input#lastname");
-        var charLimit = parseInt($("input#username").attr("limit"));
+        //var charLimit = parseInt($("input#username").attr("limit"));
         var domain = $("#userStore").val();
         var username = usernameInput.val().trim();
         var firstname = firstnameInput.val();
@@ -244,44 +249,36 @@ $(document).ready(function () {
             addUserFormData.emailAddress = emailAddress;
             addUserFormData.roles = roles;
 
-            var addUserAPI = "/devicemgt_admin/users";
+            var addUserAPI = deviceMgtAPIsBasePath + "/users";
 
             invokerUtil.post(
-                    addUserAPI,
-                    addUserFormData,
-                    function (data) {
-                        data = JSON.parse(data);
-                        if (data.errorMessage) {
-                            $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
-                            $(errorMsgWrapper).removeClass("hidden");
-                        } else if (data["statusCode"] == 201) {
-                            // Clearing user input fields.
-                            $("input#username").val("");
-                            $("input#firstname").val("");
-                            $("input#lastname").val("");
-                            $("input#email").val("");
-                            $("select#roles").select2("val", "");
-                            // Refreshing with success message
-                            $("#user-create-form").addClass("hidden");
-                            $("#user-created-msg").removeClass("hidden");
-                        } else if (data["statusCode"] == 409) {
-                            $(errorMsg).text(data["messageFromServer"]);
-                            $(errorMsgWrapper).removeClass("hidden");
-                        } else if (data["statusCode"] == 500) {
-                            $(errorMsg).text("An unexpected error occurred at backend server. Please try again later.");
-                            $(errorMsgWrapper).removeClass("hidden");
-                        }
-                    }, function (data) {
-                        data = JSON.parse(data.responseText);
-                        if (data["statusCode"] == 409) {
-                            $(errorMsg).text("User : " + username + " already exists. Pick another username.");
-                        } else if (data["statusCode"] == 500) {
-                            $(errorMsg).text("An unexpected error occurred at backend server. Please try again later.");
-                        } else {
-                            $(errorMsg).text(data.errorMessage);
-                        }
-                        $(errorMsgWrapper).removeClass("hidden");
+                addUserAPI,
+                addUserFormData,
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 201) {
+                        // Clearing user input fields.
+                        $("input#username").val("");
+                        $("input#firstname").val("");
+                        $("input#lastname").val("");
+                        $("input#email").val("");
+                        $("select#roles").select2("val", "");
+                        // Refreshing with success message
+                        $("#user-create-form").addClass("hidden");
+                        $("#user-created-msg").removeClass("hidden");
+                        generateQRCode("#user-created-msg .qr-code");
+
                     }
+                }, function (data) {
+                    var payload = JSON.parse(data.responseText);
+                    if (data.status == 409) {
+                        $(errorMsg).text("User : " + username + " already exists. Pick another username.");
+                    } else if (data.status == 500) {
+                        $(errorMsg).text("An unexpected error occurred at backend server. Please try again later.");
+                    } else {
+                        $(errorMsg).text(payload.message);
+                    }
+                    $(errorMsgWrapper).removeClass("hidden");
+                }
             );
         }
     });

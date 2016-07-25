@@ -23,20 +23,24 @@
  * @returns {*} A context object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
+    //var log = new Log("/app/pages/cdmf.page.user.create server-side js");
+
     var userModule = require("/app/modules/user.js")["userModule"];
-    var response = userModule.getRolesByUserStore("PRIMARY");
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+   
     var page = {};
-    page["charLimit"] = devicemgtProps.usernameLength;
+    var response = userModule.getRolesByUserStore();
     if (response["status"] == "success") {
         page["roles"] = response["content"];
     }
-    page["usernameJSRegEx"] = devicemgtProps.userValidationConfig.usernameJSRegEx;
-    page["usernameHelpMsg"] = devicemgtProps.userValidationConfig.usernameHelpMsg;
-    page["usernameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.usernameRegExViolationErrorMsg;
-    page["firstnameJSRegEx"] = devicemgtProps.userValidationConfig.firstnameJSRegEx;
-    page["firstnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.firstnameRegExViolationErrorMsg;
-    page["lastnameJSRegEx"] = devicemgtProps.userValidationConfig.lastnameJSRegEx;
-    page["lastnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.lastnameRegExViolationErrorMsg;
+    page["charLimit"] = devicemgtProps["usernameLength"];
+    page["usernameJSRegEx"] = devicemgtProps["userValidationConfig"]["usernameJSRegEx"];
+    page["usernameHelpMsg"] = devicemgtProps["userValidationConfig"]["usernameHelpMsg"];
+    page["usernameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["usernameRegExViolationErrorMsg"];
+    page["firstnameJSRegEx"] = devicemgtProps["userValidationConfig"]["firstnameJSRegEx"];
+    page["firstnameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["firstnameRegExViolationErrorMsg"];
+    page["lastnameJSRegEx"] = devicemgtProps["userValidationConfig"]["lastnameJSRegEx"];
+    page["lastnameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["lastnameRegExViolationErrorMsg"];
+
     return page;
 }

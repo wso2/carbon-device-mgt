@@ -17,7 +17,7 @@
  */
 
 var carbonModule = require("carbon");
-var devicemgtProps = require("/app/conf/devicemgt-props.js").config();
+var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
 var carbonServer = new carbonModule.server.Server({
     tenanted: true,
     url: devicemgtProps["httpsURL"] + "/admin"
@@ -31,4 +31,4 @@ var permissions = {
     '/permission/admin/device-mgt/user': ['ui.execute'],
     '/permission/admin/manage/api/subscribe': ['ui.execute']
 };
-userModule.addRole("internal/devicemgt-user", ["admin"], permissions);
+//userModule.addRole("internal/devicemgt-user", ["admin"], permissions);

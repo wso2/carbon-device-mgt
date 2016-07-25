@@ -22,7 +22,7 @@ deviceModule = function () {
 
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 
     var ArrayList = Packages.java.util.ArrayList;

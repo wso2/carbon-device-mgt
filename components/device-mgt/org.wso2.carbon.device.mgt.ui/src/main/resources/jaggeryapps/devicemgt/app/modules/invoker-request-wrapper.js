@@ -16,79 +16,83 @@
  * under the License.
  */
 
+/*
+ @Deprecated
+ */
+
 /**
  * This invokerRequestWrapper contains the wrappers for invoker util requests.
  */
-var invokerRequestWrapper = function () {
-
-    var constants = require("/modules/constants.js");
-    var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
-
-    var publicWrappers = [];
-
-    publicWrappers.initiate = function (method, url, payload) {
-        switch (method) {
-            case constants.HTTP_GET:
-                var response = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload["responseContent"];
-                                                               response.status = "success";
-                                                               return response;
-                                                           },
-                                                           function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload;
-                                                               response.status = "error";
-                                                               return response;
-                                                           });
-                return response;
-                break;
-            case constants.HTTP_POST:
-                var response = serviceInvokers.XMLHttp.post(url, payload, function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload["responseContent"];
-                                                               response.status = "success";
-                                                               return response;
-                                                           },
-                                                           function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload;
-                                                               response.status = "error";
-                                                               return response;
-                                                           });
-                return response;
-                break;
-            case constants.HTTP_PUT:
-                var response = serviceInvokers.XMLHttp.put(url, payload, function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload["responseContent"];
-                                                               response.status = "success";
-                                                               return response;
-                                                           },
-                                                           function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload;
-                                                               response.status = "error";
-                                                               return response;
-                                                           });
-                return response;
-                break;
-            case constants.HTTP_DELETE:
-                var response = serviceInvokers.XMLHttp.delete(url, function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload["responseContent"];
-                                                               response.status = "success";
-                                                               return response;
-                                                           },
-                                                           function (responsePayload) {
-                                                               var response = {};
-                                                               response.content = responsePayload;
-                                                               response.status = "error";
-                                                               return response;
-                                                           });
-                return response;
-                break;
-        }
-    }
-
-}();
+//var invokerRequestWrapper = function () {
+//
+//    var constants = require("/modules/constants.js");
+//    var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
+//
+//    var publicWrappers = [];
+//
+//    publicWrappers.initiate = function (method, url, payload) {
+//        switch (method) {
+//            case constants.HTTP_GET:
+//                var response = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload["responseContent"];
+//                                                               response.status = "success";
+//                                                               return response;
+//                                                           },
+//                                                           function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload;
+//                                                               response.status = "error";
+//                                                               return response;
+//                                                           });
+//                return response;
+//                break;
+//            case constants.HTTP_POST:
+//                var response = serviceInvokers.XMLHttp.post(url, payload, function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload["responseContent"];
+//                                                               response.status = "success";
+//                                                               return response;
+//                                                           },
+//                                                           function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload;
+//                                                               response.status = "error";
+//                                                               return response;
+//                                                           });
+//                return response;
+//                break;
+//            case constants.HTTP_PUT:
+//                var response = serviceInvokers.XMLHttp.put(url, payload, function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload["responseContent"];
+//                                                               response.status = "success";
+//                                                               return response;
+//                                                           },
+//                                                           function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload;
+//                                                               response.status = "error";
+//                                                               return response;
+//                                                           });
+//                return response;
+//                break;
+//            case constants.HTTP_DELETE:
+//                var response = serviceInvokers.XMLHttp.delete(url, function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload["responseContent"];
+//                                                               response.status = "success";
+//                                                               return response;
+//                                                           },
+//                                                           function (responsePayload) {
+//                                                               var response = {};
+//                                                               response.content = responsePayload;
+//                                                               response.status = "error";
+//                                                               return response;
+//                                                           });
+//                return response;
+//                break;
+//        }
+//    }
+//
+//}();

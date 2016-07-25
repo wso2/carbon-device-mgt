@@ -20,7 +20,7 @@ var apiWrapperUtil = function () {
     var module = {};
     var tokenUtil = require("/app/modules/util.js").util;
     var constants = require("/app/modules/constants.js");
-    var devicemgtProps = require("/app/conf/reader/main.js").config();
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var log = new Log("/app/modules/api-wrapper-util.js");
 
     module.refreshToken = function () {

@@ -33,7 +33,7 @@ var onFail;
             properties = {username: context.input.username, password: context.input.password};
             apiWrapperUtil.setupAccessTokenPair(constants.GRANT_TYPE_PASSWORD, properties);
         }
-        var devicemgtProps = require("/app/conf/reader/main.js").config();
+        var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
         var carbonServer = require("carbon").server;
         (new carbonServer.Server({url: devicemgtProps["adminService"]}))
                 .login(context.input.username, context.input.password);

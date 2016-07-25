@@ -24,7 +24,7 @@ var userModule = function () {
 
     var constants = require("/app/modules/constants.js");
     var utility = require("/app/modules/utility.js")["utility"];
-    var devicemgtProps = require("/app/conf/reader/main.js").config();
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/backend-service-invoker.js")["backendServiceInvoker"];
 
     /* Initializing user manager */

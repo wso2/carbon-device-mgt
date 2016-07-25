@@ -26,7 +26,7 @@ function onRequest(context) {
     //var log = new Log("/app/pages/cdmf.page.user.create server-side js");
 
     var userModule = require("/app/modules/user.js")["userModule"];
-    var devicemgtProps = require("/app/conf/reader/main.js").config();
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
    
     var page = {};
     var response = userModule.getRolesByUserStore();

@@ -30,7 +30,7 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/roles/remove")) {
         context["removePermitted"] = true;
     }
-    var deviceMgtProps = require("/app/conf/reader/main.js").config();
+    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
     context["appContext"] = deviceMgtProps.appContext;
     context["adminRole"] = deviceMgtProps.adminRole;
     return context;

@@ -22,7 +22,7 @@ var groupModule = {};
 
     var userModule = require("/app/modules/user.js").userModule;
     var constants = require('/app/modules/constants.js');
-    var devicemgtProps = require("/app/conf/reader/main.js").config();
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var utility = require("/app/modules/utility.js").utility;
     var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
 

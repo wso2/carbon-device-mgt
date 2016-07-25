@@ -16,7 +16,7 @@
  * under the License.
  */
 
-var config = function () {
+var conf = function () {
     var conf = application.get("UI_CONF");
     if (!conf) {
         conf = require("/app/conf/config.json");
@@ -38,4 +38,4 @@ var config = function () {
         application.put("UI_CONF", conf);
     }
     return conf;
-};
+}();

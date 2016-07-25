@@ -16,7 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
-var tokenCookie = apiWrapperUtil.refreshToken();
-print(tokenCookie);
+
+/*
+ @Deprecated - new
+ */
+
+// var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
+// var tokenCookie = apiWrapperUtil.refreshToken();
+// print(tokenCookie);
 %>

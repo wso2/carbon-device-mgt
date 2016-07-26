@@ -27,7 +27,7 @@ var util = function () {
     var adminUser = devicemgtProps["adminUser"];
     var clientName = devicemgtProps["clientName"];
 
-    module.getDyanmicCredentials = function (owner) {
+    module.getDynamicClientCredentials = function () {
         var payload = {
             "callbackUrl": devicemgtProps.callBackUrl,
             "clientName": clientName,

@@ -31,7 +31,7 @@ var apiWrapperUtil = function () {
             log.error("Could not set up encoded tenant based client credentials " +
                 "to session context. No username is found as input.");
         } else {
-            var dynamicClientCredentials = tokenUtil.getDyanmicClientCredentials();
+            var dynamicClientCredentials = tokenUtil.getDynamicClientCredentials();
             if (!dynamicClientCredentials) {
                 log.error("Could not set up encoded tenant based client credentials " +
                     "to session context as the server is unable to obtain dynamic client credentials.");

@@ -43,7 +43,7 @@ var backendServiceInvoker = function () {
     privateMethods.getAccessToken = function () {
         var tokenPair = parse(session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]));
         if (tokenPair) {
-            return tokenPair.accessToken;
+            return tokenPair["accessToken"];
         } else {
             return null;
         }
@@ -78,7 +78,7 @@ var backendServiceInvoker = function () {
                 });
             } else {
                 xmlHttpRequest.
-                setRequestHeader(constants["AUTHORIZATION_HEADER"], constants["BEARER_PREFIX"] + accessToken);
+                    setRequestHeader(constants["AUTHORIZATION_HEADER"], constants["BEARER_PREFIX"] + accessToken);
             }
         }
 
@@ -307,7 +307,7 @@ var backendServiceInvoker = function () {
     publicHTTPClientInvokers.get = function (url, successCallback, errorCallback) {
         var requestPayload = null;
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback, requestPayload);
+            initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback, requestPayload);
     };
 
     /**
@@ -319,7 +319,7 @@ var backendServiceInvoker = function () {
      */
     publicHTTPClientInvokers.post = function (url, payload, successCallback, errorCallback) {
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback, payload);
+            initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback, payload);
     };
 
     /**
@@ -331,7 +331,7 @@ var backendServiceInvoker = function () {
      */
     publicHTTPClientInvokers.put = function (url, payload, successCallback, errorCallback) {
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback, payload);
+            initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback, payload);
     };
 
     /**
@@ -343,7 +343,7 @@ var backendServiceInvoker = function () {
     publicHTTPClientInvokers.delete = function (url, successCallback, errorCallback) {
         var requestPayload = null;
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback, requestPayload);
+            initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback, requestPayload);
     };
 
     var publicMethods = {};

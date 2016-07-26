@@ -50,7 +50,7 @@ public class CertificateManagementDAOFactory {
         try {
             databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
         } catch (SQLException e) {
-            log.error("Error occurred while retrieving config.datasource connection", e);
+            log.error(  "Error occurred while retrieving config.datasource connection", e);
         }
     }
 
@@ -59,7 +59,7 @@ public class CertificateManagementDAOFactory {
         try {
             databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
         } catch (SQLException e) {
-            log.error("Error occurred while retrieving config.datasource connection", e);
+            log.error("Error occurred while retrieving a datasource connection", e);
         }
     }
 
@@ -72,11 +72,22 @@ public class CertificateManagementDAOFactory {
         }
         try {
             conn = dataSource.getConnection();
-            conn.setAutoCommit(false);
-            currentConnection.set(conn);
         } catch (SQLException e) {
-            throw new TransactionManagementException("Error occurred while retrieving config.datasource connection", e);
+            throw new TransactionManagementException("Error occurred while retrieving a data source connection", e);
         }
+
+        try {
+            conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            try {
+                conn.close();
+            } catch (SQLException e1) {
+                log.warn("Error occurred while closing the borrowed connection. " +
+                        "Transaction has ended pre-maturely", e1);
+            }
+            throw new TransactionManagementException("Error occurred while setting auto-commit to false", e);
+        }
+        currentConnection.set(conn);
     }
 
     public static void openConnection() throws SQLException {
@@ -111,6 +122,8 @@ public class CertificateManagementDAOFactory {
             conn.commit();
         } catch (SQLException e) {
             log.error("Error occurred while committing the transaction", e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -125,6 +138,8 @@ public class CertificateManagementDAOFactory {
             conn.rollback();
         } catch (SQLException e) {
             log.warn("Error occurred while roll-backing the transaction", e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -138,7 +153,7 @@ public class CertificateManagementDAOFactory {
         try {
             conn.close();
         } catch (SQLException e) {
-            log.warn("Error occurred while close the connection");
+            log.warn("Error occurred while close the connection", e);
         }
         currentConnection.remove();
     }

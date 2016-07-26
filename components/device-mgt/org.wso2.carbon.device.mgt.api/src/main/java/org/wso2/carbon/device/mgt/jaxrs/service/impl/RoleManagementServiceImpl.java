@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
 import org.wso2.carbon.user.api.*;
+import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.mgt.UserRealmProxy;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 import org.wso2.carbon.user.mgt.common.UserAdminException;
@@ -51,22 +52,29 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
     private static final String API_BASE_PATH = "/roles";
     private static final Log log = LogFactory.getLog(RoleManagementServiceImpl.class);
+    private static final String PRIMARY_USER_STORE = "PRIMARY";
 
     @GET
     @Override
     public Response getRoles(
             @QueryParam("filter") String filter,
-            @QueryParam("user-store") String userStoreName,
+            @QueryParam("user-store") String userStore,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         List<String> filteredRoles;
         RoleList targetRoles = new RoleList();
+
+        //if user store is null set it to primary
+        if(userStore == null || "".equals(userStore)){
+            userStore = PRIMARY_USER_STORE;
+        }
+
         try {
             //Get the total role count that matches the given filter
-            filteredRoles = getRolesFromUserStore(filter);
+            filteredRoles = getRolesFromUserStore(filter, userStore);
             targetRoles.setCount(filteredRoles.size());
 
-            filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(filter), offset, limit);
+            filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(filter, userStore), offset, limit);
             targetRoles.setList(filteredRoles);
 
             return Response.ok().entity(targetRoles).build();
@@ -343,14 +351,14 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
     }
 
-    private List<String> getRolesFromUserStore(String filter) throws UserStoreException {
-        UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+    private List<String> getRolesFromUserStore(String filter, String userStore) throws UserStoreException {
+        AbstractUserStoreManager userStoreManager = (AbstractUserStoreManager) DeviceMgtAPIUtils.getUserStoreManager();
         String[] roles;
         boolean filterRolesByName = (!((filter == null) || filter.isEmpty()));
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");
         }
-        roles = userStoreManager.getRoleNames();
+        roles = userStoreManager.getRoleNames(userStore+"/*", -1, false, true, true);
         // removing all internal roles, roles created for Service-providers and application related roles.
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {

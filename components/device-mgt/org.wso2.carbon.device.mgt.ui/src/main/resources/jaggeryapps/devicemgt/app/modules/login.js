@@ -23,20 +23,17 @@ var onFail;
     var log = new Log("/app/modules/login.js");
     var constants = require("/app/modules/constants.js");
     onSuccess = function (context) {
-        var properties;
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
         if (context.input.samlToken) {
-            properties = {samlToken: context.input.samlToken};
-            apiWrapperUtil.setupAccessTokenPair(constants.GRANT_TYPE_SAML, properties);
+            apiWrapperUtil.setupAccessTokenPairBySamlGrantType(context.input.username, context.input.samlToken);
         } else {
-            properties = {username: context.input.username, password: context.input.password};
-            apiWrapperUtil.setupAccessTokenPair(constants.GRANT_TYPE_PASSWORD, properties);
+            apiWrapperUtil.setupAccessTokenPairByPasswordGrantType(context.input.username, context.input.password);
         }
         var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
         var carbonServer = require("carbon").server;
         (new carbonServer.Server({url: devicemgtProps["adminService"]}))
-                .login(context.input.username, context.input.password);
+            .login(context.input.username, context.input.password);
     };
 
     onFail = function (error) {

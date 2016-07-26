@@ -41,7 +41,7 @@ var backendServiceInvoker = function () {
      * If the token pair s not set in the session this will send a redirect to the login page.
      */
     privateMethods.getAccessToken = function () {
-        var tokenPair = session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]);
+        var tokenPair = parse(session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]));
         if (tokenPair) {
             return tokenPair.accessToken;
         } else {

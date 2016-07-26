@@ -778,7 +778,7 @@ public class OperationManagerImpl implements OperationManager {
         } catch (DeviceManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving metadata of '" +
                     deviceId.getType() + "' device carrying the identifier '" +
-                    deviceId.getId() + "'");
+                    deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new OperationManagementException(
                     "Error occurred while opening a connection to the data source", e);

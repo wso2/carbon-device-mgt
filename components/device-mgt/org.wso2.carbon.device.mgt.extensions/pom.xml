@@ -111,6 +111,14 @@
             <groupId>org.wso2.carbon.analytics-common</groupId>
             <artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -148,7 +156,8 @@
                             javax.xml.*;resolution:=optional,
                             org.apache.commons.lang,
                             javax.ws.rs;version="0.0.0";resolution:=optional,
-                            org.scannotation
+                            org.scannotation,
+                            org.scannotation.archiveiterator
                         </Import-Package>
                     </instructions>
                 </configuration>

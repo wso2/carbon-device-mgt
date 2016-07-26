@@ -108,7 +108,7 @@ $("a.invite-user-link").click(function () {
         invokerUtil.post(
             inviteUserAPI,
             usernameList,
-            // The success callback
+            // success callback
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
                     $(modalPopupContent).html($('#invite-user-success-content').html());
@@ -117,7 +117,7 @@ $("a.invite-user-link").click(function () {
                     });
                 }
             },
-            // The error callback
+            // error callback
             function (jqXHR) {
                 console.log("error in invite-user API, status code: " + jqXHR.status);
                 $(modalPopupContent).html($('#invite-user-error-content').html());
@@ -212,7 +212,7 @@ function resetPassword(uname) {
             invokerUtil.post(
                 resetPasswordServiceURL,
                 resetPasswordFormData,
-                // The success callback
+                // success callback
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
                         $(modalPopupContent).html($('#reset-password-success-content').html());
@@ -221,7 +221,7 @@ function resetPassword(uname) {
                         });
                     }
                 },
-                // The error callback
+                // error callback
                 function (jqXHR) {
                     console.log("error in reset-password API, status code: " + jqXHR.status);
                     var payload = JSON.parse(jqXHR.responseText);
@@ -271,14 +271,19 @@ function loadUsers() {
 
         var objects = [];
 
-        $(data.users).each(function (index) {
-            objects.push({
-                username: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
-                lastname: data.users[index].lastname ? data.users[index].lastname : '',
-                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
-                DT_RowId : "user-" + data.users[index].username})
-        });
+        $(data.users).each(
+            function (index) {
+                objects.push(
+                    {
+                        username: data.users[index].username,
+                        firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
+                        lastname: data.users[index].lastname ? data.users[index].lastname : '',
+                        emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
+                        DT_RowId : "user-" + data.users[index].username
+                    }
+                )
+            }
+        );
 
         var json = {
             "recordsTotal": data.count,
@@ -330,32 +335,53 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                return '<a href="/emm/users/edit-user?username=' + data.username + '" data-username="' + data.username +
-                    '" data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link"> ' +
-                    '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
-                    '<i class="fw fw-edit fw-stack-1x"></i>' +
-                    ' </span> <span class="hidden-xs hidden-on-grid-view">Edit</span> </a>' +
-
-                    '<a href="#" data-username="' + data.username + '" data-user-id=' + data.username +
-                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.username + '\', \'' +
-                    data.username + '\')" class="btn padding-reduce-on-grid-view remove-user-link">' +
-                    '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x">' +
-                    '</i> </span> <span class="hidden-xs hidden-on-grid-view">Remove</span> </a>' +
-
-                    '<a href="#" data-username="' + data.username + '" data-user-id="' + data.username +
-                    '" data-click-event="edit-form" onclick="javascript:resetPassword(\'' + data.username +
-                    '\')" class="btn padding-reduce-on-grid-view remove-user-link"> <span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x">' +
-                    '</i> <i class="fw fw-key fw-stack-1x"></i> <span class="fw-stack fw-move-right fw-move-bottom"> ' +
-                    '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"><' +
-                    '/i> <i class="fw fw-circle fw-stack-2x"></i> <i class="fw fw-refresh fw-stack-1x fw-inverse">' + 
-                    '</i> </span> </span> <span class="hidden-xs hidden-on-grid-view">Reset</span> </a>'
+                return '<a href="/emm/users/edit-user?username=' + data.username + '" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-click-event="edit-form" ' +
+                            'class="btn padding-reduce-on-grid-view edit-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-edit fw-stack-1x"></i>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Edit</span>' +
+                        '</a>' +
+                        '<a href="#" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-user-id="' + data.username + '" ' +
+                            'data-click-event="edit-form" ' +
+                            'onclick="javascript:resetPassword(\'' + data.username + '\')" ' +
+                            'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-key fw-stack-1x"></i>' +
+                                    '<span class="fw-stack fw-move-right fw-move-bottom">' +
+                                        '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i> ' +
+                                        '<i class="fw fw-circle fw-stack-2x"></i>' +
+                                        '<i class="fw fw-refresh fw-stack-1x fw-inverse"></i> ' +
+                                    '</span>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Reset Password</span>' +
+                        '</a>' +
+                        '<a href="#" ' +
+                            'data-username="' + data.username + '" ' +
+                            'data-user-id=' + data.username + ' ' +
+                            'data-click-event="remove-form" ' +
+                            'onclick="javascript:removeUser(\'' + data.username + '\', \'' + data.username + '\')" ' +
+                            'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                                '<span class="fw-stack">' +
+                                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                                    '<i class="fw fw-delete fw-stack-1x"></i>' +
+                                '</span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Remove</span> ' +
+                        '</a>'
             }
         }
 
     ];
 
-    $("#user-grid").datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null);
+    $("#user-grid").datatables_extended_serverside_paging(
+        null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null
+    );
 
     $("#loading-content").hide();
 }

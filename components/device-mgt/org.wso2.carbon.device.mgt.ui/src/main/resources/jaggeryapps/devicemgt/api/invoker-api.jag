@@ -23,7 +23,7 @@ var uri = request.getRequestURI();
 var uriMatcher = new URIMatcher(String(uri));
 
 var constants = require("/app/modules/constants.js");
-var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
+var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
 var serviceInvokers = require("/app/modules/backend-service-invoker.js")["backendServiceInvoker"];
 
 if (uriMatcher.match("/{context}/api/invoker/execute/")) {

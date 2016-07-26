@@ -31,7 +31,7 @@ var backendServiceInvoker = function () {
     var TOKEN_EXPIRED = "Access token expired";
     var TOKEN_INVALID = "Invalid input. Access token validation failed";
 
-    var devicemgtProps = require("/app/conf/devicemgt-props.js").config();
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/user.js")["userModule"];
     var tokenUtil = require("/app/modules/api-wrapper-util.js")["apiWrapperUtil"];
@@ -41,7 +41,7 @@ var backendServiceInvoker = function () {
      * If the token pair s not set in the session this will send a redirect to the login page.
      */
     privateMethods.getAccessToken = function () {
-        var tokenPair = session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]);
+        var tokenPair = parse(session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]));
         if (tokenPair) {
             return tokenPair.accessToken;
         } else {

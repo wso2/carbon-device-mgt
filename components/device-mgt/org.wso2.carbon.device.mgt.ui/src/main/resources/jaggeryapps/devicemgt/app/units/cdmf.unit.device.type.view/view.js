@@ -30,9 +30,9 @@ function onRequest (context) {
     var userModule = require("/app/modules/user.js").userModule;
     var constants = require("/app/modules/constants.js");
     var permissions = userModule.getUIPermissions();
-    var mdmProps = require('/app/conf/devicemgt-props.js').config();
+    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
     context.permissions = permissions;
-    context["enrollmentURL"] = mdmProps.enrollmentURL;
+    context["enrollmentURL"] = deviceMgtProps.enrollmentURL;
 
     return configs;
 }

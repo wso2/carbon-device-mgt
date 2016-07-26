@@ -95,7 +95,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
             String type = null;
             if (deviceIds.size() > 0) {
-                type = deviceIds.get(0).getType();
+                type = deviceIds.get(0).getType().toLowerCase();
             }
             Activity activity =  DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
                    addOperation(type, operation, deviceIds);

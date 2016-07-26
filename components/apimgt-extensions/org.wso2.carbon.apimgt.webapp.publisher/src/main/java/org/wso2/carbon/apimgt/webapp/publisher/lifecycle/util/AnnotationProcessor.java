@@ -22,7 +22,6 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scannotation.AnnotationDB;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.apimgt.api.model.Scope;
@@ -377,7 +376,6 @@ public class AnnotationProcessor {
             PermissionUtils.addPermission(permission);
         }
     }
-
 
     /**
      * Find the URL pointing to "/WEB-INF/classes"  This method may not work in conjunction with IteratorFactory

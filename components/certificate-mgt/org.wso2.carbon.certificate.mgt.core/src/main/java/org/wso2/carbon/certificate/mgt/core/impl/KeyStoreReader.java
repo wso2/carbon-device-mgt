@@ -19,6 +19,7 @@ package org.wso2.carbon.certificate.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.certificate.mgt.core.dao.CertificateDAO;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
@@ -41,17 +42,21 @@ public class KeyStoreReader {
 
     private static final Log log = LogFactory.getLog(KeyStoreReader.class);
 
-    private KeyStore loadKeyStore(String configEntryKeyStoreType, String configEntryKeyStorePath,
-                                  String configEntryKeyStorePassword) throws KeystoreException {
+    private CertificateDAO certDao;
 
-        InputStream inputStream = null;
+    public KeyStoreReader() {
+        this.certDao = CertificateManagementDAOFactory.getCertificateDAO();
+    }
+
+    private KeyStore loadKeyStore(
+            String configEntryKeyStoreType, String configEntryKeyStorePath,
+            String configEntryKeyStorePassword) throws KeystoreException {
+        InputStream is = null;
         KeyStore keystore;
-
         try {
             keystore = KeyStore.getInstance(ConfigurationUtil.getConfigEntry(configEntryKeyStoreType));
-            inputStream = new FileInputStream(ConfigurationUtil.getConfigEntry(configEntryKeyStorePath));
-            keystore.load(inputStream, ConfigurationUtil.getConfigEntry(configEntryKeyStorePassword).toCharArray());
-
+            is = new FileInputStream(ConfigurationUtil.getConfigEntry(configEntryKeyStorePath));
+            keystore.load(is, ConfigurationUtil.getConfigEntry(configEntryKeyStorePassword).toCharArray());
         } catch (KeyStoreException e) {
             String errorMsg = "KeyStore issue occurred when loading KeyStore";
             log.error(errorMsg, e);
@@ -74,8 +79,8 @@ public class KeyStoreReader {
             throw new KeystoreException(errorMsg, e);
         } finally {
             try {
-                if (inputStream != null) {
-                    inputStream.close();
+                if (is != null) {
+                    is.close();
                 }
             } catch (IOException e) {
                 log.error("Error closing KeyStore input stream", e);
@@ -86,16 +91,12 @@ public class KeyStoreReader {
     }
 
     private synchronized void saveKeyStore(KeyStore keyStore, String configEntryKeyStorePath,
-                                  String configEntryKeyStorePassword) throws KeystoreException {
-
-        FileOutputStream outputStream = null;
-
+                                           String configEntryKeyStorePassword) throws KeystoreException {
+        FileOutputStream os = null;
         try {
-            outputStream = new FileOutputStream(
+            os = new FileOutputStream(
                     ConfigurationUtil.getConfigEntry(configEntryKeyStorePath));
-            keyStore.store(outputStream, ConfigurationUtil.getConfigEntry(configEntryKeyStorePassword).toCharArray());
-            outputStream.close();
-
+            keyStore.store(os, ConfigurationUtil.getConfigEntry(configEntryKeyStorePassword).toCharArray());
         } catch (KeyStoreException e) {
             String errorMsg = "KeyStore issue occurred when loading KeyStore";
             log.error(errorMsg, e);
@@ -118,8 +119,8 @@ public class KeyStoreReader {
             throw new KeystoreException(errorMsg, e);
         } finally {
             try {
-                if (outputStream != null) {
-                    outputStream.close();
+                if (os != null) {
+                    os.close();
                 }
             } catch (IOException e) {
                 log.error("Error closing KeyStore output stream", e);
@@ -139,10 +140,8 @@ public class KeyStoreReader {
     }
 
     public Certificate getCACertificate() throws KeystoreException {
-
         KeyStore keystore = loadCertificateKeyStore();
         Certificate caCertificate;
-
         try {
             caCertificate = keystore.getCertificate(ConfigurationUtil.getConfigEntry(ConfigurationUtil.CA_CERT_ALIAS));
         } catch (KeyStoreException e) {
@@ -188,7 +187,6 @@ public class KeyStoreReader {
     }
 
     public Certificate getRACertificate() throws KeystoreException {
-
         KeyStore keystore = loadCertificateKeyStore();
         Certificate raCertificate;
         try {
@@ -207,13 +205,11 @@ public class KeyStoreReader {
     }
 
     public Certificate getCertificateByAlias(String alias) throws KeystoreException {
-
         Certificate raCertificate = null;
         try {
             CertificateManagementDAOFactory.openConnection();
-            CertificateResponse certificateResponse = CertificateManagementDAOFactory.getCertificateDAO().
-                    retrieveCertificate(alias);
-            if(certificateResponse != null) {
+            CertificateResponse certificateResponse = certDao.retrieveCertificate(alias);
+            if (certificateResponse != null) {
                 raCertificate = (Certificate) Serializer.deserialize(certificateResponse.getCertificate());
             }
         } catch (CertificateManagementDAOException e) {
@@ -221,7 +217,7 @@ public class KeyStoreReader {
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (ClassNotFoundException | IOException e) {
-            String errorMsg = "Error when deserializing saved certificate.";
+            String errorMsg = "Error when de-serializing saved certificate.";
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (SQLException e) {
@@ -234,8 +230,7 @@ public class KeyStoreReader {
         return raCertificate;
     }
 
-    PrivateKey getRAPrivateKey() throws KeystoreException {
-
+    public PrivateKey getRAPrivateKey() throws KeystoreException {
         KeyStore keystore = loadCertificateKeyStore();
         PrivateKey raPrivateKey;
         try {
@@ -264,13 +259,11 @@ public class KeyStoreReader {
     }
 
     public CertificateResponse getCertificateBySerial(String serialNumber) throws KeystoreException {
-
         CertificateResponse certificateResponse = null;
         try {
             CertificateManagementDAOFactory.openConnection();
-            certificateResponse = CertificateManagementDAOFactory.getCertificateDAO().
-                    retrieveCertificate(serialNumber);
-            if(certificateResponse != null && certificateResponse.getCertificate() != null) {
+            certificateResponse = certDao.retrieveCertificate(serialNumber);
+            if (certificateResponse != null && certificateResponse.getCertificate() != null) {
                 Certificate certificate = (Certificate) Serializer.deserialize(certificateResponse.getCertificate());
                 if (certificate instanceof X509Certificate) {
                     X509Certificate x509cert = (X509Certificate) certificate;
@@ -278,10 +271,9 @@ public class KeyStoreReader {
                     certificateResponse.setCommonName(commonName);
                 }
             }
-
         } catch (CertificateManagementDAOException e) {
             String errorMsg = "Error when retrieving certificate from the the database for the serial number: " +
-                              serialNumber;
+                    serialNumber;
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (SQLException e) {
@@ -289,7 +281,7 @@ public class KeyStoreReader {
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (ClassNotFoundException | IOException e) {
-            String errorMsg = "Error when deserializing saved certificate.";
+            String errorMsg = "Error when de-serializing saved certificate.";
             log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } finally {

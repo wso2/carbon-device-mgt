@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util;
+package org.wso2.carbon.device.mgt.extensions.feature.mgt.util;
 
 import org.scannotation.AnnotationDB;
 import org.scannotation.archiveiterator.Filter;

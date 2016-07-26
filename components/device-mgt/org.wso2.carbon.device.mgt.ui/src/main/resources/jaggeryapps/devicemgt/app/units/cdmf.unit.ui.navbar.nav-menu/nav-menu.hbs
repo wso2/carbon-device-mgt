@@ -99,29 +99,6 @@
         </li>
     </ul>
 {{/zone}}
-
-{{#zone "navbarBelow"}}
-    <div id="qr-code-modal" data-enrollment-url="{{enrollmentURL}}" class="hidden">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
-                        Scan QR code to start enrollment
-                    </h3>
-                    <h4>
-                        Please scan the QR code using your mobile device to retrieve enrollment URL.
-                    </h4>
-
-                    <div class="panel panel-default">
-                        <div class="panel-body col-centered ">
-                            <div class="qr-code"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{{/zone}}
 {{#zone "sidePanes"}}
     <div class="sidebar-wrapper" id="right-sidebar" is-authorized="{{isAuthorizedForNotifications}}"
          data-side="right" data-width="320" data-sidebar-fixed="true" data-fixed-offset="50" data-spy="affix"
@@ -137,5 +114,4 @@
             data-image-resource="{{self.publicURL}}/images/" src="{{self.publicURL}}/templates/notifications.hbs"
             type="text/x-handlebars-template"></script>
     {{js "js/nav-menu.js"}}
-    {{js "js/jquery.qrcode.min.js"}}
 {{/zone}}

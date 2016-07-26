@@ -225,6 +225,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device locations.", e);
+        } finally{
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 

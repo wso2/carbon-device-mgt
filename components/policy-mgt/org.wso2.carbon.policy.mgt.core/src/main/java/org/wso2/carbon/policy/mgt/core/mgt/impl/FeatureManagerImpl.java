@@ -245,7 +245,7 @@ public class FeatureManagerImpl implements FeatureManager {
     @Override
     public List<ProfileFeature> getFeaturesForProfile(int profileId) throws FeatureManagementException {
         try {
-            DeviceManagementDAOFactory.openConnection();
+            PolicyManagementDAOFactory.openConnection();
             return featureDAO.getFeaturesForProfile(profileId);
         } catch (FeatureManagerDAOException e) {
             throw new FeatureManagementException("Error occurred while getting the features", e);

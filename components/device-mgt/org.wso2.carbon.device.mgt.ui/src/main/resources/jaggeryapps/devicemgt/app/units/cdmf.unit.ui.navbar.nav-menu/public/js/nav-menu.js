@@ -22,15 +22,6 @@ var modalPopup = ".wr-modalpopup",
 
 var emmAdminBasePath = "/api/device-mgt/v1.0";
 
-//function openCollapsedNav() {
-//    $(".wr-hidden-nav-toggle-btn").addClass("active");
-//    $("#hiddenNav").slideToggle("slideDown", function () {
-//        if ($(this).css("display") == "none") {
-//            $(".wr-hidden-nav-toggle-btn").removeClass("active");
-//        }
-//    });
-//}
-
 /*
  * set popup maximum height function.
  */
@@ -57,24 +48,6 @@ function hidePopup() {
     $(modalPopupContent).html("");
     $(modalPopupContent).removeClass("operation-data");
     $(modalPopup).hide();
-}
-
-/*
- * QR-code generation function.
- */
-function generateQRCode(qrCodeClass) {
-    var enrollmentURL = $("#qr-code-modal").data("enrollment-url");
-    $(qrCodeClass).qrcode({
-        text: enrollmentURL,
-        width: 200,
-        height: 200
-    });
-}
-
-function toggleEnrollment() {
-    $(".modalpopup-content").html($("#qr-code-modal").html());
-    generateQRCode(".modalpopup-content .qr-code");
-    showPopup();
 }
 
 var updateNotificationCount = function (data, textStatus, jqXHR) {

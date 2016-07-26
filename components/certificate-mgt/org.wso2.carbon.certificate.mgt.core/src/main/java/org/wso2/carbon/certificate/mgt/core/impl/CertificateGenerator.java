@@ -674,10 +674,7 @@ public class CertificateGenerator {
         } catch (TransactionManagementException e) {
             String errorMsg = "Error occurred when saving the generated certificate";
             log.error(errorMsg, e);
-            CertificateManagementDAOFactory.rollbackTransaction();
             throw new KeystoreException(errorMsg, e);
-        } finally {
-            CertificateManagementDAOFactory.closeConnection();
         }
     }
 
@@ -738,9 +735,8 @@ public class CertificateGenerator {
         } catch (IOException e) {
             throw new KeystoreException("CSR cannot be recovered.", e);
         }
-        X509Certificate signedCertificate = generateCertificateFromCSR(privateKeyCA, certificationRequest,
-                                                                       certCA.getIssuerX500Principal().getName());
-        return signedCertificate;
+        return generateCertificateFromCSR(privateKeyCA, certificationRequest,
+                certCA.getIssuerX500Principal().getName());
     }
 
     public static void extractCertificateDetails(byte[] certificateBytes, CertificateResponse certificateResponse)

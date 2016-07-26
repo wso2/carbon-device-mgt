@@ -9,8 +9,8 @@ import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.EnrollmentCertificat
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ErrorResponse;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util.RequestValidationUtil;
-import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
+import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -76,7 +76,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         try {
             certificateResponse = certificateService.searchCertificates(serialNumber);
             return Response.status(Response.Status.OK).entity(certificateResponse).build();
-        } catch (CertificateManagementDAOException e) {
+        } catch (CertificateManagementException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
             throw new UnexpectedServerErrorException(
@@ -106,7 +106,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
             certificates.setCount(result.getRecordsTotal());
             certificates.setList((List<CertificateResponse>) result.getData());
             return Response.status(Response.Status.OK).entity(certificates).build();
-        } catch (CertificateManagementDAOException e) {
+        } catch (CertificateManagementException e) {
             String msg = "Error occurred while fetching all certificates.";
             log.error(msg, e);
             throw new UnexpectedServerErrorException(
@@ -128,7 +128,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
             }
             return Response.status(Response.Status.OK).entity("Certificate that carries the serial number '" +
                     serialNumber + "' has been removed").build();
-        } catch (CertificateManagementDAOException e) {
+        } catch (CertificateManagementException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
             throw new UnexpectedServerErrorException(

@@ -17,7 +17,7 @@
  */
 
 /*
- @Deprecated
+ @Deprecated - new
  */
 
 /**

@@ -31,4 +31,4 @@ var permissions = {
     '/permission/admin/device-mgt/user': ['ui.execute'],
     '/permission/admin/manage/api/subscribe': ['ui.execute']
 };
-userModule.addRole("internal/devicemgt-user", ["admin"], permissions);
+//userModule.addRole("internal/devicemgt-user", ["admin"], permissions);

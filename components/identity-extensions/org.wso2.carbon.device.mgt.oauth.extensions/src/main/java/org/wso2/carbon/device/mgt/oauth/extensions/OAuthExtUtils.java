@@ -301,7 +301,7 @@ public class OAuthExtUtils {
                 DeviceRequestDTO deviceRequestDTO = null;
                 RequestParameter parameters[] = tokReqMsgCtx.getOauth2AccessTokenReqDTO().getRequestParameters();
                 for (RequestParameter parameter : parameters) {
-                    if (Constants.DEFAULT_DEVICE_ASSERTION.equals(parameter.getKey())) {
+                    if (OAuthConstants.DEFAULT_DEVICE_ASSERTION.equals(parameter.getKey())) {
                         String deviceJson = parameter.getValue()[0];
                         Gson gson = new Gson();
                         deviceRequestDTO = gson.fromJson(new String(Base64.decodeBase64(deviceJson)),
@@ -309,26 +309,31 @@ public class OAuthExtUtils {
                     }
                 }
                 if (deviceRequestDTO != null) {
-                    String scopeName = deviceRequestDTO.getScope();
-                    List<DeviceIdentifier> deviceIdentifiers = deviceRequestDTO.getDeviceIdentifiers();
-                    DeviceAuthorizationResult deviceAuthorizationResult = OAuthExtensionsDataHolder.getInstance()
-                            .getDeviceAccessAuthorizationService()
-                            .isUserAuthorized(deviceIdentifiers, username, getPermissions(scopeName));
-                    if (deviceAuthorizationResult != null && deviceAuthorizationResult.getAuthorizedDevices() != null) {
-                        String scopes[] = tokReqMsgCtx.getScope();
-                        String authorizedScopes[] = new String[scopes.length + deviceAuthorizationResult
-                                .getAuthorizedDevices().size()];
-                        int scopeIndex = 0;
-                        for (String scope : scopes) {
-                            authorizedScopes[scopeIndex] = scope;
-                            scopeIndex++;
+                    String requestScopes = deviceRequestDTO.getScope();
+                    String scopeNames[] = requestScopes.split(" ");
+                    for (String scopeName : scopeNames) {
+                        List<DeviceIdentifier> deviceIdentifiers = deviceRequestDTO.getDeviceIdentifiers();
+                        DeviceAuthorizationResult deviceAuthorizationResult = OAuthExtensionsDataHolder.getInstance()
+                                .getDeviceAccessAuthorizationService()
+                                .isUserAuthorized(deviceIdentifiers, username, getPermissions(scopeName));
+                        if (deviceAuthorizationResult != null &&
+                                deviceAuthorizationResult.getAuthorizedDevices() != null) {
+                            String scopes[] = tokReqMsgCtx.getScope();
+                            String authorizedScopes[] = new String[scopes.length + deviceAuthorizationResult
+                                    .getAuthorizedDevices().size()];
+                            int scopeIndex = 0;
+                            for (String scope : scopes) {
+                                authorizedScopes[scopeIndex] = scope;
+                                scopeIndex++;
+                            }
+                            for (DeviceIdentifier deviceIdentifier : deviceAuthorizationResult.getAuthorizedDevices()) {
+                                authorizedScopes[scopeIndex] =
+                                        DEFAULT_SCOPE_TAG + ":" + deviceIdentifier.getType() + ":" +
+                                                deviceIdentifier.getId() + ":" + scopeName;
+                                scopeIndex++;
+                            }
+                            tokReqMsgCtx.setScope(authorizedScopes);
                         }
-                        for (DeviceIdentifier deviceIdentifier : deviceAuthorizationResult.getAuthorizedDevices()) {
-                            authorizedScopes[scopeIndex] = DEFAULT_SCOPE_TAG + ":" + deviceIdentifier.getType() + ":" +
-                                    deviceIdentifier.getId() + ":" + scopeName;
-                            scopeIndex++;
-                        }
-                        tokReqMsgCtx.setScope(authorizedScopes);
                     }
                 }
             }  catch (DeviceAccessAuthorizationException e) {

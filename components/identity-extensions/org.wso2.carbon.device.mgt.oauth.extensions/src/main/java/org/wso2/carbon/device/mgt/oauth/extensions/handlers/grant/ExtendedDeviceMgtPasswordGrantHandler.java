@@ -18,13 +18,10 @@
 
 package org.wso2.carbon.device.mgt.oauth.extensions.handlers.grant;
 
-import com.google.gson.Gson;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.keymgt.handlers.ExtendedPasswordGrantHandler;
-import org.wso2.carbon.device.mgt.oauth.extensions.Constants;
-import org.wso2.carbon.device.mgt.oauth.extensions.DeviceRequestDTO;
+import org.wso2.carbon.device.mgt.oauth.extensions.OAuthConstants;
 import org.wso2.carbon.device.mgt.oauth.extensions.OAuthExtUtils;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.model.RequestParameter;
@@ -40,12 +37,12 @@ public class ExtendedDeviceMgtPasswordGrantHandler extends ExtendedPasswordGrant
         RequestParameter parameters[] = tokReqMsgCtx.getOauth2AccessTokenReqDTO().getRequestParameters();
         for (RequestParameter parameter : parameters) {
             switch (parameter.getKey()) {
-                case Constants.DEFAULT_USERNAME_IDENTIFIER:
+                case OAuthConstants.DEFAULT_USERNAME_IDENTIFIER:
                     String username = parameter.getValue()[0];
                     tokReqMsgCtx.getOauth2AccessTokenReqDTO().setResourceOwnerUsername(username);
                     break;
 
-                case Constants.DEFAULT_PASSWORD_IDENTIFIER:
+                case OAuthConstants.DEFAULT_PASSWORD_IDENTIFIER:
                     String password = parameter.getValue()[0];
                     tokReqMsgCtx.getOauth2AccessTokenReqDTO().setResourceOwnerPassword(password);
                     break;

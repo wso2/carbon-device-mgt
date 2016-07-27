@@ -23,7 +23,7 @@ package org.wso2.carbon.identity.jwt.client.extension.constant;
 public class JWTConstants {
 	public static final String OAUTH_EXPIRES_IN = "expires_in";
 	public static final String OAUTH_TOKEN_TYPE = "token_type";
-	public static final String JWT_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device-mgt:jwt-bearer";
+	public static final String JWT_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
 	public static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 	public static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
 	public static final String REFRESH_TOKEN_GRANT_TYPE_PARAM_NAME = "refresh_token";

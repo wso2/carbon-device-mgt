@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.oauth.extensions.validators;
 
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.validators.AbstractValidator;
-import org.wso2.carbon.device.mgt.oauth.extensions.Constants;
+import org.wso2.carbon.device.mgt.oauth.extensions.OAuthConstants;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,6 +34,5 @@ public class ExtendedDeviceJWTGrantValidator extends AbstractValidator<HttpServl
     public ExtendedDeviceJWTGrantValidator() {
         requiredParams.add(OAuth.OAUTH_GRANT_TYPE);
         requiredParams.add(OAuth.OAUTH_ASSERTION);
-        requiredParams.add(Constants.DEFAULT_DEVICE_ASSERTION);
     }
 }

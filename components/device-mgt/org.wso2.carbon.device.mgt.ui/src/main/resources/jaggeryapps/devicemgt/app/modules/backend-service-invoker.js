@@ -17,9 +17,13 @@
  */
 
 /**
- * This backendServiceInvoker contains the wrappers for back end jaggery calls.
+ * ----------------------------------------------------------------------------
+ * Following module includes invokers
+ * at Jaggery Layer for calling Backend Services, protected by OAuth Tokens.
+ * These Services include both REST and SOAP Services.
+ * ----------------------------------------------------------------------------
  */
-var backendServiceInvoker = function () {
+var invokers = function () {
     var log = new Log("/app/modules/backend-service-invoker.js");
 
     var publicXMLHTTPInvokers = {};
@@ -34,7 +38,7 @@ var backendServiceInvoker = function () {
     var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/user.js")["userModule"];
-    var tokenUtil = require("/app/modules/api-wrapper-util.js")["apiWrapperUtil"];
+    var tokenUtil = require("/app/modules/api-wrapper-util.js")["handlers"];
 
     /**
      * This method reads the token pair from the session and return the access token.

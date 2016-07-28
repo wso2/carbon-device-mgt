@@ -25,29 +25,16 @@ public class OAuthTokenValidationException extends Exception {
 
     private static final long serialVersionUID = -3151279311929070297L;
 
-    private String errorMessage;
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public OAuthTokenValidationException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
-        setErrorMessage(msg);
     }
 
     public OAuthTokenValidationException(String message, Throwable cause) {
         super(message, cause);
-        setErrorMessage(message);
     }
 
     public OAuthTokenValidationException(String msg) {
         super(msg);
-        setErrorMessage(msg);
     }
 
     public OAuthTokenValidationException() {

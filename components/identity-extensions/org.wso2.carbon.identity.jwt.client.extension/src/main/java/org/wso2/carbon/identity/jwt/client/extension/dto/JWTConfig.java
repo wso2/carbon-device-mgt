@@ -1,6 +1,7 @@
 package org.wso2.carbon.identity.jwt.client.extension.dto;
 
 import org.wso2.carbon.core.util.Utils;
+import org.wso2.carbon.identity.jwt.client.extension.constant.JWTConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class JWTConfig {
 	private static final String JKS_PASSWORD ="KeyStorePassword";
 	private static final String JKA_PRIVATE_KEY_PASSWORD = "PrivateKeyPassword";
 	private static final String TOKEN_ENDPOINT = "TokenEndpoint";
+	private static final String JWT_GRANT_TYPE_NAME = "GrantType";
 
 	/**
 	 * issuer of the JWT
@@ -70,6 +72,11 @@ public class JWTConfig {
 	private String privateKeyPassword;
 
 	/**
+	 * Jwt Grant Type Name
+	 */
+	private String jwtGrantType;
+
+	/**
 	 * @param properties load the config from the properties file.
 	 */
 	public JWTConfig(Properties properties) {
@@ -89,6 +96,8 @@ public class JWTConfig {
 		privateKeyAlias = properties.getProperty(JKS_PRIVATE_KEY_ALIAS);
 		privateKeyPassword = properties.getProperty(JKA_PRIVATE_KEY_PASSWORD);
 		tokenEndpoint = properties.getProperty(TOKEN_ENDPOINT, "");
+		jwtGrantType = properties.getProperty(JWT_GRANT_TYPE_NAME, JWTConstants.JWT_GRANT_TYPE);
+
 	}
 
 	private static List<String> getAudience(String audience){
@@ -145,5 +154,9 @@ public class JWTConfig {
 
 	public String getTokenEndpoint() {
 		return Utils.replaceSystemProperty(tokenEndpoint);
+	}
+
+	public String getJwtGrantType() {
+		return jwtGrantType;
 	}
 }

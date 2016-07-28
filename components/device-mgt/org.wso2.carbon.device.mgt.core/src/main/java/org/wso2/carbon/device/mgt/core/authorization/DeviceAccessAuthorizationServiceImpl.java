@@ -202,18 +202,13 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             throws DeviceAccessAuthorizationException {
         //Check for device ownership. If the user is the owner of the device we allow the access.
         try {
-            Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
-                    getDevice(deviceIdentifier);
-            EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
-            if (enrolmentInfo != null && username.equalsIgnoreCase(enrolmentInfo.getOwner())) {
-                return true;
-            }
+            return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                    isEnrolled(deviceIdentifier, username);
         } catch (DeviceManagementException e) {
             throw new DeviceAccessAuthorizationException("Unable to authorize the access to device : " +
                                                                  deviceIdentifier.getId() + " for the user : " +
                                                                  username, e);
         }
-        return false;
     }
 
     private boolean isAdminUser(String username, int tenantId) throws UserStoreException {

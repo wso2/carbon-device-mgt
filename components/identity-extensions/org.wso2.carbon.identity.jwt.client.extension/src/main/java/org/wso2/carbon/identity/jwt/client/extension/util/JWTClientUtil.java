@@ -116,10 +116,18 @@ public class JWTClientUtil {
 			throws RegistryException, IOException, JWTClientConfigurationException {
 		File configFile = new File(SUPERTENANT_JWT_CONFIG_LOCATION);
 		if (configFile.exists()) {
-			InputStream propertyStream = configFile.toURI().toURL().openStream();
-			Properties properties = new Properties();
-			properties.load(propertyStream);
-			jwtClientManagerService.setDefaultJWTClient(properties);
+			InputStream propertyStream = null;
+			try {
+				propertyStream = configFile.toURI().toURL().openStream();
+				Properties properties = new Properties();
+				properties.load(propertyStream);
+				jwtClientManagerService.setDefaultJWTClient(properties);
+			} finally {
+				if (propertyStream != null) {
+					propertyStream.close();
+				}
+			}
+
 		}
 	}
 

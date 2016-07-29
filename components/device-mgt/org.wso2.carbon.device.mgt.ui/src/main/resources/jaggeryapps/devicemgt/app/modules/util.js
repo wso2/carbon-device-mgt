@@ -24,10 +24,8 @@ var util = function () {
 
     var Base64 = Packages.org.apache.commons.codec.binary.Base64;
     var String = Packages.java.lang.String;
+
     var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
-
-    var adminUser = deviceMgtProps["adminUser"];
-
     var constants = require("/app/modules/constants.js");
     var carbon = require("carbon");
 
@@ -225,7 +223,7 @@ var util = function () {
                     "username - getTenantBasedClientAppCredentials(x, y)");
                 return null;
             } else {
-                var cachedTenantBasedClientAppCredentials = publicMethods.
+                var cachedTenantBasedClientAppCredentials = privateMethods.
                     getCachedTenantBasedClientAppCredentials(tenantDomain);
                 if (cachedTenantBasedClientAppCredentials) {
                     return cachedTenantBasedClientAppCredentials;
@@ -247,7 +245,7 @@ var util = function () {
                         var tenantBasedClientAppCredentials = {};
                         tenantBasedClientAppCredentials["clientId"] = responsePayload["client_id"];
                         tenantBasedClientAppCredentials["clientSecret"] = responsePayload["client_secret"];
-                        publicMethods.
+                        privateMethods.
                             setCachedTenantBasedClientAppCredentials(tenantDomain, tenantBasedClientAppCredentials);
                         return tenantBasedClientAppCredentials;
                     } else {
@@ -260,7 +258,7 @@ var util = function () {
         }
     };
 
-    publicMethods.setCachedTenantBasedClientAppCredentials = function (tenantDomain, clientCredentials) {
+    privateMethods.setCachedTenantBasedClientAppCredentials = function (tenantDomain, clientCredentials) {
         var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
         if (!cachedTenantBasedClientAppCredentialsMap) {
             cachedTenantBasedClientAppCredentialsMap = {};
@@ -271,7 +269,7 @@ var util = function () {
         }
     };
 
-    publicMethods.getCachedTenantBasedClientAppCredentials = function (tenantDomain) {
+    privateMethods.getCachedTenantBasedClientAppCredentials = function (tenantDomain) {
         var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
         if (!cachedTenantBasedClientAppCredentialsMap ||
             !cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {

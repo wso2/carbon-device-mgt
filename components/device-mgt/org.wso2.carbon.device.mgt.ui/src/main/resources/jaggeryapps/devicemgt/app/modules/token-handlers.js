@@ -38,13 +38,13 @@ var handlers = function () {
                 "client credentials to session context. No username is found as " +
                 "input - setUpEncodedTenantBasedClientCredentials(x)");
         } else {
-            var dynamicClientCredentials = tokenUtil.getDynamicClientAppCredentials();
-            if (!dynamicClientCredentials) {
+            var dynamicClientAppCredentials = tokenUtil.getDynamicClientAppCredentials();
+            if (!dynamicClientAppCredentials) {
                 throw new Error("{/app/modules/token-handlers.js} Could not set up encoded tenant based " +
                     "client credentials to session context as the server is unable to obtain " +
                     "dynamic client credentials - setUpEncodedTenantBasedClientCredentials(x)");
             } else {
-                var jwtToken = tokenUtil.getAccessTokenByJWTGrantType(dynamicClientCredentials);
+                var jwtToken = tokenUtil.getAccessTokenByJWTGrantType(dynamicClientAppCredentials);
                 if (!jwtToken) {
                     throw new Error("{/app/modules/token-handlers.js} Could not set up encoded tenant based " +
                         "client credentials to session context as the server is unable to obtain " +
@@ -141,7 +141,8 @@ var handlers = function () {
                 "token pair, encoded client credentials or both input are not found under " +
                 "session context - refreshToken()");
         } else {
-            var newAccessTokenPair = tokenUtil.refreshToken(accessTokenPair["refreshToken"], encodedClientCredentials);
+            var newAccessTokenPair = tokenUtil.
+                getNewAccessTokenByRefreshToken(accessTokenPair["refreshToken"], encodedClientCredentials);
             if (!newAccessTokenPair) {
                 log.error("{/app/modules/token-handlers.js} Error in refreshing tokens. Unable to update " +
                     "session context with new access token pair - refreshToken()");

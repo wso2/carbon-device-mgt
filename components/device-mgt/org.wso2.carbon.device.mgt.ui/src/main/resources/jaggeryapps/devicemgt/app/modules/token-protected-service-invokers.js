@@ -103,7 +103,7 @@ var invokers = function () {
 
         if (xmlHttpRequest.status == 401 && (xmlHttpRequest.responseText == TOKEN_EXPIRED ||
             xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
-            tokenUtil.refreshToken();
+            tokenUtil.refreshAccessToken();
             return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count);
         } else {
             return responseCallback(xmlHttpRequest);

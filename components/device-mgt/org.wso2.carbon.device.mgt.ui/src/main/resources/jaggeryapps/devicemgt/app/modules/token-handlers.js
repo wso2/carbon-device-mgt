@@ -132,22 +132,22 @@ var handlers = function () {
         }
     };
 
-    publicMethods.refreshToken = function () {
+    publicMethods.refreshAccessToken = function () {
         var accessTokenPair = parse(session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]));
         // accessTokenPair includes current access token as well as current refresh token
         var encodedClientCredentials = session.get(constants["ENCODED_CLIENT_KEYS_IDENTIFIER"]);
         if (!accessTokenPair || !encodedClientCredentials) {
             throw new Error("{/app/modules/token-handlers.js} Error in refreshing tokens. Either the access " +
                 "token pair, encoded client credentials or both input are not found under " +
-                "session context - refreshToken()");
+                "session context - refreshAccessToken()");
         } else {
-            var newAccessTokenPair = tokenUtil.
+            var newTokenPair = tokenUtil.
                 getNewAccessTokenByRefreshToken(accessTokenPair["refreshToken"], encodedClientCredentials);
-            if (!newAccessTokenPair) {
-                log.error("{/app/modules/token-handlers.js} Error in refreshing tokens. Unable to update " +
-                    "session context with new access token pair - refreshToken()");
+            if (!newTokenPair) {
+                log.error("{/app/modules/token-handlers.js} Error in refreshing access token. Unable to update " +
+                    "session context with new access token pair - refreshAccessToken()");
             } else {
-                session.put(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"], stringify(newAccessTokenPair));
+                session.put(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"], stringify(newTokenPair));
             }
         }
     };

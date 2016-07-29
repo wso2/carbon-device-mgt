@@ -58,28 +58,28 @@ var util = function () {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(stringify(requestPayload));
 
-        var dynamicClientCredentials = {};
+        var dynamicClientAppCredentials = {};
         if (xhr["status"] == 201 && xhr["responseText"]) {
             var responsePayload = parse(xhr["responseText"]);
-            dynamicClientCredentials["clientId"] = responsePayload["client_id"];
-            dynamicClientCredentials["clientSecret"] = responsePayload["client_secret"];
+            dynamicClientAppCredentials["clientId"] = responsePayload["client_id"];
+            dynamicClientAppCredentials["clientSecret"] = responsePayload["client_secret"];
         } else if (xhr["status"] == 400) {
             log.error("{/app/modules/util.js - getDynamicClientAppCredentials()} " +
                 "Bad request. Invalid data provided as dynamic client application properties.");
-            dynamicClientCredentials = null;
+            dynamicClientAppCredentials = null;
         } else {
             log.error("{/app/modules/util.js - getDynamicClientAppCredentials()} " +
                 "Error in retrieving dynamic client credentials.");
-            dynamicClientCredentials = null;
+            dynamicClientAppCredentials = null;
         }
         // returning dynamic client credentials
-        return dynamicClientCredentials;
+        return dynamicClientAppCredentials;
     };
 
-    publicMethods.getAccessTokenByPasswordGrantType = function (username, password, encodedClientCredentials, scopes) {
-        if (!username || !password || !encodedClientCredentials || !scopes) {
+    publicMethods.getAccessTokenByPasswordGrantType = function (username, password, encodedClientAppCredentials, scopes) {
+        if (!username || !password || !encodedClientAppCredentials || !scopes) {
             log.error("{/app/modules/util.js} Error in retrieving access token by password " +
-                "grant type. No username, password, encoded client credentials or scopes are " +
+                "grant type. No username, password, encoded client app credentials or scopes are " +
                 "found - getAccessTokenByPasswordGrantType(a, b, c, d)");
             return null;
         } else {
@@ -91,7 +91,7 @@ var util = function () {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", requestURL, false);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("Authorization", "Basic " + encodedClientCredentials);
+            xhr.setRequestHeader("Authorization", "Basic " + encodedClientAppCredentials);
             xhr.send(requestPayload);
 
             if (xhr["status"] == 200 && xhr["responseText"]) {
@@ -108,10 +108,10 @@ var util = function () {
         }
     };
 
-    publicMethods.getAccessTokenBySAMLGrantType = function (assertion, encodedClientCredentials, scopes) {
-        if (!assertion || !encodedClientCredentials || !scopes) {
+    publicMethods.getAccessTokenBySAMLGrantType = function (assertion, encodedClientAppCredentials, scopes) {
+        if (!assertion || !encodedClientAppCredentials || !scopes) {
             log.error("{/app/modules/util.js} Error in retrieving access token by saml " +
-                "grant type. No assertion, encoded client credentials or scopes are " +
+                "grant type. No assertion, encoded client app credentials or scopes are " +
                 "found - getAccessTokenBySAMLGrantType(x, y, z)");
             return null;
         } else {
@@ -143,7 +143,7 @@ var util = function () {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", requestURL, false);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.setRequestHeader("Authorization", "Basic " + encodedClientCredentials);
+                xhr.setRequestHeader("Authorization", "Basic " + encodedClientAppCredentials);
                 xhr.send(requestPayload);
 
                 if (xhr["status"] == 200 && xhr["responseText"]) {
@@ -161,10 +161,10 @@ var util = function () {
         }
     };
 
-    publicMethods.getNewAccessTokenByRefreshToken = function (refreshToken, encodedClientCredentials, scopes) {
-        if (!refreshToken || !encodedClientCredentials) {
+    publicMethods.getNewAccessTokenByRefreshToken = function (refreshToken, encodedClientAppCredentials, scopes) {
+        if (!refreshToken || !encodedClientAppCredentials) {
             log.error("{/app/modules/util.js} Error in retrieving new access token by current " +
-                "refresh token. No refresh token or encoded client credentials are " +
+                "refresh token. No refresh token or encoded client app credentials are " +
                 "found - getNewAccessTokenByRefreshToken(x, y, z)");
             return null;
         } else {
@@ -177,7 +177,7 @@ var util = function () {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", requestURL, false);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("Authorization", "Basic " + encodedClientCredentials);
+            xhr.setRequestHeader("Authorization", "Basic " + encodedClientAppCredentials);
             xhr.send(requestPayload);
 
             if (xhr["status"] == 200 && xhr["responseText"]) {
@@ -194,10 +194,10 @@ var util = function () {
         }
     };
 
-    publicMethods.getAccessTokenByJWTGrantType =  function (clientCredentials) {
-        if (!clientCredentials) {
-            log.error("{/app/modules/util.js} Error in retrieving new access token by current refresh " +
-                "token. No client credentials are found as input - getAccessTokenByJWTGrantType(x)");
+    publicMethods.getAccessTokenByJWTGrantType =  function (clientAppCredentials) {
+        if (!clientAppCredentials) {
+            log.error("{/app/modules/util.js} Error in retrieving new access token by current refresh token. " +
+                "No client app credentials are found as input - getAccessTokenByJWTGrantType(x)");
             return null;
         } else {
             var JWTClientManagerServicePackagePath =
@@ -205,15 +205,15 @@ var util = function () {
             var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
             var jwtClient = JWTClientManagerService.getJWTClient();
             // returning access token by JWT grant type
-            return jwtClient.getAccessToken(clientCredentials["clientId"], clientCredentials["clientSecret"],
+            return jwtClient.getAccessToken(clientAppCredentials["clientId"], clientAppCredentials["clientSecret"],
                 deviceMgtProps["oauthProvider"]["appRegistration"]["owner"], null)["accessToken"];
         }
     };
 
     publicMethods.getTenantBasedClientAppCredentials = function (username, jwtToken) {
         if (!username || !jwtToken) {
-            log.error("{/app/modules/util.js} Error in retrieving tenant based client application credentials. " +
-                "No username or jwt token is found as input - getTenantBasedClientAppCredentials(x, y)");
+            log.error("{/app/modules/util.js} Error in retrieving tenant based client app " +
+                "credentials. No username or jwt token is found as input - getTenantBasedClientAppCredentials(x, y)");
             return null;
         } else {
             var tenantDomain = carbon.server.tenantDomain({username: username});
@@ -258,14 +258,14 @@ var util = function () {
         }
     };
 
-    privateMethods.setCachedTenantBasedClientAppCredentials = function (tenantDomain, clientCredentials) {
+    privateMethods.setCachedTenantBasedClientAppCredentials = function (tenantDomain, clientAppCredentials) {
         var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
         if (!cachedTenantBasedClientAppCredentialsMap) {
             cachedTenantBasedClientAppCredentialsMap = {};
-            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientCredentials;
+            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientAppCredentials;
             application.put(constants["CACHED_CREDENTIALS"], cachedTenantBasedClientAppCredentialsMap);
         } else if (!cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
-            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientCredentials;
+            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientAppCredentials;
         }
     };
 

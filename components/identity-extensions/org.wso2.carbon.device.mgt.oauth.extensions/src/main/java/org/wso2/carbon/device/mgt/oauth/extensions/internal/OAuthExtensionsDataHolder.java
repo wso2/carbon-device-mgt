@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.oauth.extensions.internal;
 
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
@@ -35,7 +36,7 @@ public class OAuthExtensionsDataHolder {
     private PermissionManagerService permissionManagerService;
     private List<String> whitelistedScopes;
     private String deviceScope;
-    private DeviceManagementProviderService deviceManagementService;
+    private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
 
     private static OAuthExtensionsDataHolder thisInstance = new OAuthExtensionsDataHolder();
 
@@ -87,19 +88,15 @@ public class OAuthExtensionsDataHolder {
         this.whitelistedScopes = whitelistedScopes;
     }
 
-    public void setDeviceScope(String deviceScope) {
-        this.deviceScope = deviceScope;
-    }
-
     public String getDeviceScope() {
         return deviceScope;
     }
 
-    public DeviceManagementProviderService getDeviceManagementService() {
-        return deviceManagementService;
+    public DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
+        return deviceAccessAuthorizationService;
     }
 
-    public void setDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
-        this.deviceManagementService = deviceManagementService;
+    public void setDeviceAccessAuthorizationService(DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
+        this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
     }
 }

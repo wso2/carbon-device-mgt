@@ -16,8 +16,8 @@
   under the License.
 }}
 {{#zone "bottomJs"}}
-	{{js "js/jquery.qrcode.min.js"}}
-	<script type="text/javascript">
+    {{js "js/jquery.qrcode.min.js"}}
+    <script type="text/javascript">
         var modalPopup = '.wr-modalpopup',
                 modalPopupContainer = modalPopup + ' .modalpopup-container',
                 modalPopupContent = modalPopup + ' .modalpopup-content';
@@ -30,7 +30,6 @@
             });
         }
 
-
         /*
          * set popup maximum height function.
          */
@@ -38,14 +37,13 @@
             var maxHeight = "max-height";
             var marginTop = "margin-top";
             var body = "body";
-            $(modalPopupContent).css(maxHeight, ($(body).height() - ($(body).height()/100 * 30)));
-            $(modalPopupContainer).css(marginTop, (-($(modalPopupContainer).height()/2)));
+            $(modalPopupContainer).css(marginTop, (-($(modalPopupContainer).height() / 2)));
         }
 
         /*
          * show popup function.
          */
-        function showPopup() {
+        function showQRCodePopup() {
             $(modalPopup).show();
             setPopupMaxHeight();
         }
@@ -67,5 +65,12 @@
                 height: 200
             });
         }
-	</script>
+    </script>
+    <script type="text/javascript">
+        function toggleEnrollment(){
+            $(".modalpopup-content").html($("#qr-code-modal").html());
+            generateQRCode(".modalpopup-content .qr-code");
+            showQRCodePopup();
+        }
+    </script>
 {{/zone}}

@@ -44,6 +44,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * this class represents an implementation of Token Client which is based on JWT
@@ -63,14 +64,10 @@ public class JWTClient {
 		this.isDefaultJWTClient = isDefaultJWTClient;
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public AccessTokenInfo getAccessToken(String consumerKey, String consumerSecret, String username, String scopes)
 			throws JWTClientException {
 		List<NameValuePair> params = new ArrayList<>();
-		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, JWTConstants.JWT_GRANT_TYPE));
+		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
 		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
 		if (assertion == null) {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
@@ -80,9 +77,26 @@ public class JWTClient {
 		return getTokenInfo(params, consumerKey, consumerSecret);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public AccessTokenInfo getAccessToken(String consumerKey, String consumerSecret, String username, String scopes,
+										  Map<String, String> paramsMap)
+			throws JWTClientException {
+		List<NameValuePair> params = new ArrayList<>();
+		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
+		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+		if (assertion == null) {
+			throw new JWTClientException("JWT is not configured properly for user : " + username);
+		}
+		params.add(new BasicNameValuePair(JWTConstants.JWT_PARAM_NAME, assertion));
+		params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+		if (paramsMap != null) {
+			for (String key : paramsMap.keySet()) {
+				params.add(new BasicNameValuePair(key, paramsMap.get(key)));
+			}
+		}
+		return getTokenInfo(params, consumerKey, consumerSecret);
+	}
+
+
 	public AccessTokenInfo getAccessTokenFromRefreshToken(String refreshToken, String username, String scopes,
 														  String consumerKey, String consumerSecret)
 			throws JWTClientException {

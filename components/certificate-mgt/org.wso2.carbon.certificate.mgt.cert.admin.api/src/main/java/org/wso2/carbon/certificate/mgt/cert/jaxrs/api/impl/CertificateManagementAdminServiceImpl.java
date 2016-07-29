@@ -3,7 +3,6 @@ package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.CertificateManagementAdminService;
-import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.UnexpectedServerErrorException;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.EnrollmentCertificate;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ErrorResponse;
@@ -53,8 +52,8 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         } catch (KeystoreException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build()).build();
         }
     }
 
@@ -79,8 +78,8 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         } catch (CertificateManagementException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build()).build();
         }
     }
 
@@ -109,8 +108,8 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         } catch (CertificateManagementException e) {
             String msg = "Error occurred while fetching all certificates.";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
 
@@ -131,8 +130,9 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         } catch (CertificateManagementException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
-            throw new UnexpectedServerErrorException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build());
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
+
 }

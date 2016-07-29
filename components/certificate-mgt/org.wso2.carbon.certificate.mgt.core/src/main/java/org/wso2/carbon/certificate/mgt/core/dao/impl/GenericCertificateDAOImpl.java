@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenericCertificateDAOImpl implements CertificateDAO {
+
     private static final Log log = LogFactory.getLog(GenericCertificateDAOImpl.class);
 
     @Override
@@ -103,7 +104,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
 
             if (resultSet.next()) {
                 certificateResponse = new CertificateResponse();
-                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                byte[] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setCertificate(certificateBytes);
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
@@ -142,7 +143,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
 
             while (resultSet.next()) {
                 certificateResponse = new CertificateResponse();
-                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                byte[] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
                 certificateResponse.setUsername(resultSet.getString("USERNAME"));
@@ -181,7 +182,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
             int resultCount = 0;
             while (resultSet.next()) {
                 certificateResponse = new CertificateResponse();
-                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                byte[] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
                 certificateResponse.setUsername(resultSet.getString("USERNAME"));
@@ -193,11 +194,11 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
             paginationResult.setData(certificates);
             paginationResult.setRecordsTotal(resultCount);
         } catch (SQLException e) {
-            String errorMsg =  "SQL error occurred while retrieving the certificates.";
+            String errorMsg = "SQL error occurred while retrieving the certificates.";
             log.error(errorMsg, e);
             throw new CertificateManagementDAOException(errorMsg, e);
         } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt, resultSet);
+            CertificateManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
         return paginationResult;
     }
@@ -219,7 +220,7 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
 
             while (resultSet.next()) {
                 certificateResponse = new CertificateResponse();
-                byte [] certificateBytes = resultSet.getBytes("CERTIFICATE");
+                byte[] certificateBytes = resultSet.getBytes("CERTIFICATE");
                 certificateResponse.setSerialNumber(resultSet.getString("SERIAL_NUMBER"));
                 certificateResponse.setTenantId(resultSet.getInt("TENANT_ID"));
                 certificateResponse.setUsername(resultSet.getString("USERNAME"));
@@ -227,11 +228,11 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
                 certificates.add(certificateResponse);
             }
         } catch (SQLException e) {
-            String errorMsg =  "SQL error occurred while retrieving the certificates.";
+            String errorMsg = "SQL error occurred while retrieving the certificates.";
             log.error(errorMsg, e);
             throw new CertificateManagementDAOException(errorMsg, e);
         } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt, resultSet);
+            CertificateManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
         return certificates;
     }
@@ -246,17 +247,16 @@ public class GenericCertificateDAOImpl implements CertificateDAO {
             conn = this.getConnection();
             String query =
                     "DELETE FROM DM_DEVICE_CERTIFICATE WHERE SERIAL_NUMBER = ?" +
-                    " AND TENANT_ID = ? ";
+                            " AND TENANT_ID = ? ";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, serialNumber);
             stmt.setInt(2, tenantId);
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            String errorMsg =
-                    "Unable to get the read the certificate with serial" + serialNumber;
-            log.error(errorMsg, e);
-            throw new CertificateManagementDAOException(errorMsg, e);
+            String msg = "Unable to get the read the certificate with serial" + serialNumber;
+            log.error(msg, e);
+            throw new CertificateManagementDAOException(msg, e);
         } finally {
             CertificateManagementDAOUtil.cleanupResources(stmt, resultSet);
         }

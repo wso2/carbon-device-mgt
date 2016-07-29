@@ -17,9 +17,13 @@
  */
 
 /**
- * This backendServiceInvoker contains the wrappers for back end jaggery calls.
+ * ----------------------------------------------------------------------------
+ * Following module includes invokers
+ * at Jaggery Layer for calling Backend Services, protected by OAuth Tokens.
+ * These Services include both REST and SOAP Services.
+ * ----------------------------------------------------------------------------
  */
-var backendServiceInvoker = function () {
+var invokers = function () {
     var log = new Log("/app/modules/backend-service-invoker.js");
 
     var publicXMLHTTPInvokers = {};
@@ -34,7 +38,7 @@ var backendServiceInvoker = function () {
     var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/user.js")["userModule"];
-    var tokenUtil = require("/app/modules/api-wrapper-util.js")["apiWrapperUtil"];
+    var tokenUtil = require("/app/modules/api-wrapper-util.js")["handlers"];
 
     /**
      * This method reads the token pair from the session and return the access token.
@@ -43,7 +47,7 @@ var backendServiceInvoker = function () {
     privateMethods.getAccessToken = function () {
         var tokenPair = parse(session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]));
         if (tokenPair) {
-            return tokenPair.accessToken;
+            return tokenPair["accessToken"];
         } else {
             return null;
         }
@@ -78,7 +82,7 @@ var backendServiceInvoker = function () {
                 });
             } else {
                 xmlHttpRequest.
-                setRequestHeader(constants["AUTHORIZATION_HEADER"], constants["BEARER_PREFIX"] + accessToken);
+                    setRequestHeader(constants["AUTHORIZATION_HEADER"], constants["BEARER_PREFIX"] + accessToken);
             }
         }
 
@@ -307,7 +311,7 @@ var backendServiceInvoker = function () {
     publicHTTPClientInvokers.get = function (url, successCallback, errorCallback) {
         var requestPayload = null;
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback, requestPayload);
+            initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback, requestPayload);
     };
 
     /**
@@ -319,7 +323,7 @@ var backendServiceInvoker = function () {
      */
     publicHTTPClientInvokers.post = function (url, payload, successCallback, errorCallback) {
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback, payload);
+            initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback, payload);
     };
 
     /**
@@ -331,7 +335,7 @@ var backendServiceInvoker = function () {
      */
     publicHTTPClientInvokers.put = function (url, payload, successCallback, errorCallback) {
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback, payload);
+            initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback, payload);
     };
 
     /**
@@ -343,7 +347,7 @@ var backendServiceInvoker = function () {
     publicHTTPClientInvokers.delete = function (url, successCallback, errorCallback) {
         var requestPayload = null;
         return privateMethods.
-        initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback, requestPayload);
+            initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback, requestPayload);
     };
 
     var publicMethods = {};

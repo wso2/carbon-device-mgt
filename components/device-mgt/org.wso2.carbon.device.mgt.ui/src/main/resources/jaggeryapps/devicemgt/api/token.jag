@@ -21,7 +21,7 @@
  @Deprecated - new
  */
 
-// var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
+// var apiWrapperUtil = require("/app/modules/api-wrapper-util.js")["handlers"];
 // var tokenCookie = apiWrapperUtil.refreshToken();
 // print(tokenCookie);
 %>

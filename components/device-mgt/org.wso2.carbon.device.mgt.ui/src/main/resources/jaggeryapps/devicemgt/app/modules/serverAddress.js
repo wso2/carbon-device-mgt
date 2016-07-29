@@ -16,55 +16,59 @@
  * under the License.
  */
 
-var serverAddress = function () {
-    var log = new Log("serverAddress.js");
-    var process = require("process"),
-        host = process.getProperty('server.host'),
-        ip = process.getProperty('carbon.local.ip');
-    var publicMethods = {};
-    publicMethods.getHTTPSAddress = function () {
-        var port = process.getProperty('mgt.transport.https.proxyPort');
-        if (!port) {
-            port = process.getProperty('mgt.transport.https.port');
-        }
-        if (host === "localhost") {
-            return "https://" + ip + ":" + port;
-        } else {
-            return "https://" + host + ":" + port;
-        }
-    };
-    publicMethods.getHPPTAddress = function () {
-        var port = process.getProperty('mgt.transport.http.proxyPort');
-        if (!port) {
-            port = process.getProperty('mgt.transport.http.port');
-        }
-        if (host === "localhost") {
-            return "http://" + ip + ":" + port;
-        } else {
-            return "http://" + host + ":" + port;
-        }
-    };
-    publicMethods.getWSSAddress = function () {
-        var port = process.getProperty('mgt.transport.https.proxyPort');
-        if (!port) {
-            port = process.getProperty('mgt.transport.https.port');
-        }
-        if (host === "localhost") {
-            return "wss://" + ip + ":" + port;
-        } else {
-            return "wss://" + host + ":" + port;
-        }
-    };
-    publicMethods.getWSAddress = function () {
-        var port = process.getProperty('mgt.transport.http.proxyPort');
-        if (!port) {
-            port = process.getProperty('mgt.transport.http.port');
-        }
-        if (host === "localhost") {
-            return "ws://" + ip + ":" + port;
-        } else {
-            return "ws://" + host + ":" + port;
-        }
-    };
-    return publicMethods;
-}();
+/*
+ @Deprecated - new
+ */
+
+//var serverAddress = function () {
+//    var log = new Log("serverAddress.js");
+//    var process = require("process"),
+//        host = process.getProperty('server.host'),
+//        ip = process.getProperty('carbon.local.ip');
+//    var publicMethods = {};
+//    publicMethods.getHTTPSAddress = function () {
+//        var port = process.getProperty('mgt.transport.https.proxyPort');
+//        if (!port) {
+//            port = process.getProperty('mgt.transport.https.port');
+//        }
+//        if (host === "localhost") {
+//            return "https://" + ip + ":" + port;
+//        } else {
+//            return "https://" + host + ":" + port;
+//        }
+//    };
+//    publicMethods.getHPPTAddress = function () {
+//        var port = process.getProperty('mgt.transport.http.proxyPort');
+//        if (!port) {
+//            port = process.getProperty('mgt.transport.http.port');
+//        }
+//        if (host === "localhost") {
+//            return "http://" + ip + ":" + port;
+//        } else {
+//            return "http://" + host + ":" + port;
+//        }
+//    };
+//    publicMethods.getWSSAddress = function () {
+//        var port = process.getProperty('mgt.transport.https.proxyPort');
+//        if (!port) {
+//            port = process.getProperty('mgt.transport.https.port');
+//        }
+//        if (host === "localhost") {
+//            return "wss://" + ip + ":" + port;
+//        } else {
+//            return "wss://" + host + ":" + port;
+//        }
+//    };
+//    publicMethods.getWSAddress = function () {
+//        var port = process.getProperty('mgt.transport.http.proxyPort');
+//        if (!port) {
+//            port = process.getProperty('mgt.transport.http.port');
+//        }
+//        if (host === "localhost") {
+//            return "ws://" + ip + ":" + port;
+//        } else {
+//            return "ws://" + host + ":" + port;
+//        }
+//    };
+//    return publicMethods;
+//}();

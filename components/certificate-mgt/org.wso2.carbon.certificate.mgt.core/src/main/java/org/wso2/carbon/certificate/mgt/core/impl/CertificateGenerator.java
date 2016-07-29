@@ -308,6 +308,10 @@ public class CertificateGenerator {
     }
 
     public CertificateResponse verifyPEMSignature(X509Certificate requestCertificate) throws KeystoreException {
+        if (requestCertificate == null) {
+            throw new IllegalArgumentException("Certificate of which the signature needs to be validated cannot " +
+                    "be null");
+        }
         KeyStoreReader keyStoreReader = new KeyStoreReader();
         CertificateResponse lookUpCertificate;
 

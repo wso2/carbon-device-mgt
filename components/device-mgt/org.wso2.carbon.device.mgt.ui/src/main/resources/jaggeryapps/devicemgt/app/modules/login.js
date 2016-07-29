@@ -24,7 +24,7 @@ var onFail;
     var constants = require("/app/modules/constants.js");
     onSuccess = function (context) {
         var utility = require("/app/modules/utility.js").utility;
-        var apiWrapperUtil = require("/app/modules/api-wrapper-util.js").apiWrapperUtil;
+        var apiWrapperUtil = require("/app/modules/api-wrapper-util.js")["handlers"];
         if (context.input.samlToken) {
             apiWrapperUtil.setupAccessTokenPairBySamlGrantType(context.input.username, context.input.samlToken);
         } else {

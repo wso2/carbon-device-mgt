@@ -1,226 +1,285 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
 
 var util = function () {
     var log = new Log("/app/modules/util.js");
-    var module = {};
+
+    var privateMethods = {};
+    var publicMethods = {};
+
     var Base64 = Packages.org.apache.commons.codec.binary.Base64;
     var String = Packages.java.lang.String;
-    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
-    var carbon = require('carbon');
+    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
+
+    var adminUser = deviceMgtProps["adminUser"];
+
     var constants = require("/app/modules/constants.js");
-    var adminUser = devicemgtProps["adminUser"];
-    var clientName = devicemgtProps["clientName"];
+    var carbon = require("carbon");
 
-    module.getDynamicClientCredentials = function () {
-        var payload = {
-            "callbackUrl": devicemgtProps.callBackUrl,
-            "clientName": clientName,
-            "tokenScope": "admin",
-            "owner": adminUser,
-            "applicationType": "webapp",
-            "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer",
-            "saasApp" :true
-        };
-        var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.dynamicClientRegistrationEndPoint;
-        xhr.open("POST", tokenEndpoint, false);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(payload);
-        var clientData = {};
-        if (xhr.status == 201) {
-            var data = parse(xhr.responseText);
-            clientData.clientId = data.client_id;
-            clientData.clientSecret = data.client_secret;
-
-        } else if (xhr.status == 400) {
-            throw "Invalid client meta data";
-        } else {
-            throw "Error in obtaining client id and secret";
-        }
-        return clientData;
-    };
-
-    /**
-     * Encode the payload in Base64
-     * @param payload
-     * @returns {Packages.java.lang.String}
-     */
-    module.encode = function (payload) {
+    publicMethods.encode = function (payload) {
         return new String(Base64.encodeBase64(new String(payload).getBytes()));
-    }
+    };
 
-    module.decode = function (payload) {
+    publicMethods.decode = function (payload) {
         return new String(Base64.decodeBase64(new String(payload).getBytes()));
-    }
+    };
 
-    /**
-     * Get an AccessToken pair based on username and password
-     * @param username
-     * @param password
-     * @param clientId
-     * @param clientSecret
-     * @param scope
-     * @returns {{accessToken: "", refreshToken: ""}}
-     */
-    module.getTokenWithPasswordGrantType = function (username, password, encodedClientKeys, scope) {
+    publicMethods.getDynamicClientAppCredentials = function () {
+        // setting up dynamic client application properties
+        var dcAppProperties = {
+            "applicationType": deviceMgtProps["oauthProvider"]["appRegistration"]["appType"],
+            "clientName": deviceMgtProps["oauthProvider"]["appRegistration"]["clientName"],
+            "owner": deviceMgtProps["oauthProvider"]["appRegistration"]["owner"],
+            "tokenScope": deviceMgtProps["oauthProvider"]["appRegistration"]["tokenScope"],
+            "grantType": deviceMgtProps["oauthProvider"]["appRegistration"]["grantType"],
+            "callbackUrl": deviceMgtProps["oauthProvider"]["appRegistration"]["callbackUrl"],
+            "saasApp" : true
+        };
+        // calling dynamic client app registration service endpoint
+        var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
+            ["dynamicClientAppRegistrationServiceURL"];
+        var requestPayload = dcAppProperties;
+
         var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer;
-        xhr.open("POST", tokenEndpoint, false);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.setRequestHeader("Authorization", "Basic " + encodedClientKeys);
-        xhr.send("grant_type=password&username=" + username + "&password=" + password + "&scope=" + scope);
-        delete password, delete clientSecret, delete encodedClientKeys;
-        var tokenPair = {};
-        if (xhr.status == 200) {
-            var data = parse(xhr.responseText);
-            tokenPair.refreshToken = data.refresh_token;
-            tokenPair.accessToken = data.access_token;
-        } else if (xhr.status == 403) {
-            log.error("Error in obtaining token with Password grant type");
+        xhr.open("POST", requestURL, false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(stringify(requestPayload));
+
+        var dynamicClientCredentials = {};
+        if (xhr["status"] == 201 && xhr["responseText"]) {
+            var responsePayload = parse(xhr["responseText"]);
+            dynamicClientCredentials["clientId"] = responsePayload["client_id"];
+            dynamicClientCredentials["clientSecret"] = responsePayload["client_secret"];
+        } else if (xhr["status"] == 400) {
+            log.error("{/app/modules/util.js - getDynamicClientAppCredentials()} " +
+                "Bad request. Invalid data provided as dynamic client application properties.");
+            dynamicClientCredentials = null;
+        } else {
+            log.error("{/app/modules/util.js - getDynamicClientAppCredentials()} " +
+                "Error in retrieving dynamic client credentials.");
+            dynamicClientCredentials = null;
+        }
+        // returning dynamic client credentials
+        return dynamicClientCredentials;
+    };
+
+    publicMethods.getAccessTokenByPasswordGrantType = function (username, password, encodedClientCredentials, scopes) {
+        if (!username || !password || !encodedClientCredentials || !scopes) {
+            log.error("{/app/modules/util.js} Error in retrieving access token by password " +
+                "grant type. No username, password, encoded client credentials or scopes are " +
+                "found - getAccessTokenByPasswordGrantType(a, b, c, d)");
             return null;
         } else {
-            log.error("Error in obtaining token with Password grant type");
-            return null;
-        }
-        return tokenPair;
-    };
-    module.getTokenWithSAMLGrantType = function (assertion, clientKeys, scope) {
+            // calling oauth provider token service endpoint
+            var requestURL = deviceMgtProps["oauthProvider"]["tokenServiceURL"];
+            var requestPayload = "grant_type=password&username=" +
+                username + "&password=" + password + "&scope=" + scopes;
 
-        var assertionXML = module.decode(assertion) ;
-        var encodedExtractedAssertion;
-        var extractedAssertion;
-        //TODO: make assertion extraction with proper parsing. Since Jaggery XML parser seem to add formatting
-        //which causes signature verification to fail.
-        var assertionStartMarker = "<saml2:Assertion";
-        var assertionEndMarker = "<\/saml2:Assertion>";
-        var assertionStartIndex = assertionXML.indexOf(assertionStartMarker);
-        var assertionEndIndex = assertionXML.indexOf(assertionEndMarker);
-        if (assertionStartIndex != -1 && assertionEndIndex != -1) {
-            extractedAssertion = assertionXML.substring(assertionStartIndex, assertionEndIndex) + assertionEndMarker;
-        } else {
-            throw "Invalid SAML response. SAML response has no valid assertion string";
-        }
-
-        encodedExtractedAssertion = this.encode(extractedAssertion);
-
-        var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer;
-        xhr.open("POST", tokenEndpoint, false);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.setRequestHeader("Authorization", "Basic " + clientKeys);
-        xhr.send("grant_type=urn:ietf:params:oauth:grant-type:saml2-bearer&assertion=" +
-            encodeURIComponent(encodedExtractedAssertion) + "&scope=" + "PRODUCTION");
-        var tokenPair = {};
-        if (xhr.status == 200) {
-            var data = parse(xhr.responseText);
-            tokenPair.refreshToken = data.refresh_token;
-            tokenPair.accessToken = data.access_token;
-        } else if (xhr.status == 403) {
-            throw "Error in obtaining token with SAML extension grant type";
-        } else {
-            throw "Error in obtaining token with SAML extension grant type";
-        }
-        return tokenPair;
-    };
-
-    module.refreshToken = function (tokenPair, clientData, scope) {
-        var xhr = new XMLHttpRequest();
-        var tokenEndpoint = devicemgtProps.idPServer;
-        xhr.open("POST", tokenEndpoint, false);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.setRequestHeader("Authorization", "Basic " + clientData);
-        var url = "grant_type=refresh_token&refresh_token=" + tokenPair.refreshToken;
-        if (scope) {
-            url = url + "&scope=" + scope
-        }
-        xhr.send(url);
-        delete clientData;
-        var tokenPair = {};
-        if (xhr.status == 200) {
-            var data = parse(xhr.responseText);
-            tokenPair.refreshToken = data.refresh_token;
-            tokenPair.accessToken = data.access_token;
-        } else if (xhr.status == 400) {
-            tokenPair =  session.get(constants.ACCESS_TOKEN_PAIR_IDENTIFIER);
-        } else if (xhr.status == 403) {
-            throw "Error in obtaining token with Refresh Token  Grant Type";
-        } else {
-            throw "Error in obtaining token with  Refresh Token Type";
-        }
-        return tokenPair;
-    };
-
-    module.getTokenWithJWTGrantType =  function (clientData) {
-        var jwtService = carbon.server.osgiService('org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService');
-        var jwtClient = jwtService.getJWTClient();
-        var jwtToken = jwtClient.getAccessToken(clientData.clientId, clientData.clientSecret, adminUser, null);
-        return jwtToken;
-    };
-
-    module.getTenantBasedAppCredentials = function (uname, token) {
-        var tenantDomain = carbonModule.server.tenantDomain({
-            username: uname
-        });
-        var clientData = this.getCachedCredentials(tenantDomain);
-        if (!clientData) {
-            var applicationName = "webapp_" + tenantDomain;
             var xhr = new XMLHttpRequest();
-            var endpoint = devicemgtProps["adminService"] + "/api-application-registration/register/tenants?tenantDomain=" +
-                tenantDomain + "&applicationName=" + applicationName;
-            xhr.open("POST", endpoint, false);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("Authorization", "Bearer " + token.accessToken);
-            xhr.send();
+            xhr.open("POST", requestURL, false);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("Authorization", "Basic " + encodedClientCredentials);
+            xhr.send(requestPayload);
 
-            if (xhr.status == 201) {
-                var data = parse(xhr.responseText);
-                clientData = {};
-                clientData.clientId = data.client_id;
-                clientData.clientSecret = data.client_secret;
-                this.setTenantBasedAppCredentials(tenantDomain, clientData);
-            } else if (xhr.status == 400) {
-                throw "Invalid client meta data";
+            if (xhr["status"] == 200 && xhr["responseText"]) {
+                var responsePayload = parse(xhr["responseText"]);
+                var tokenPair = {};
+                tokenPair["accessToken"] = responsePayload["access_token"];
+                tokenPair["refreshToken"] = responsePayload["refresh_token"];
+                return tokenPair;
             } else {
-                throw "Error in obtaining client id and secret from APIM";
+                log.error("{/app/modules/util.js} Error in retrieving access token by password " +
+                    "grant type - getAccessTokenByPasswordGrantType(a, b, c, d)");
+                return null;
             }
         }
-        return clientData;
     };
 
-    module.setTenantBasedAppCredentials = function (tenantDomain, clientData) {
-        var cachedMap = application.get(constants.CACHED_CREDENTIALS);
-        if (!cachedMap) {
-            cachedMap = new Object();
-            cachedMap[tenantDomain] = clientData;
-            application.put(constants.CACHED_CREDENTIALS, cachedMap);
+    publicMethods.getAccessTokenBySAMLGrantType = function (assertion, encodedClientCredentials, scopes) {
+        if (!assertion || !encodedClientCredentials || !scopes) {
+            log.error("{/app/modules/util.js} Error in retrieving access token by saml " +
+                "grant type. No assertion, encoded client credentials or scopes are " +
+                "found - getAccessTokenBySAMLGrantType(x, y, z)");
+            return null;
         } else {
-            cachedMap[tenantDomain] = clientData;
+            var assertionXML = publicMethods.decode(assertion);
+            /*
+             TODO: make assertion extraction with proper parsing. Since Jaggery XML parser seem
+             to add formatting which causes signature verification to fail.
+             */
+            var assertionStartMarker = "<saml2:Assertion";
+            var assertionEndMarker = "<\/saml2:Assertion>";
+            var assertionStartIndex = assertionXML.indexOf(assertionStartMarker);
+            var assertionEndIndex = assertionXML.indexOf(assertionEndMarker);
+
+            var extractedAssertion;
+            if (assertionStartIndex == -1 || assertionEndIndex == -1) {
+                log.error("{/app/modules/util.js} Error in retrieving access token by saml grant type. " +
+                    "Issue in assertion format - getAccessTokenBySAMLGrantType(x, y, z)");
+                return null;
+            } else {
+                extractedAssertion = assertionXML.
+                    substring(assertionStartIndex, assertionEndIndex) + assertionEndMarker;
+                var encodedAssertion = publicMethods.encode(extractedAssertion);
+
+                // calling oauth provider token service endpoint
+                var requestURL = deviceMgtProps["oauthProvider"]["tokenServiceURL"];
+                var requestPayload = "grant_type=urn:ietf:params:oauth:grant-type:saml2-bearer&" +
+                    "assertion=" + encodeURIComponent(encodedAssertion) + "&scope=" + scopes;
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", requestURL, false);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.setRequestHeader("Authorization", "Basic " + encodedClientCredentials);
+                xhr.send(requestPayload);
+
+                if (xhr["status"] == 200 && xhr["responseText"]) {
+                    var responsePayload = parse(xhr["responseText"]);
+                    var tokenPair = {};
+                    tokenPair["accessToken"] = responsePayload["access_token"];
+                    tokenPair["refreshToken"] = responsePayload["refresh_token"];
+                    return tokenPair;
+                } else {
+                    log.error("{/app/modules/util.js} Error in retrieving access token by password " +
+                        "grant type - getAccessTokenBySAMLGrantType(x, y, z)");
+                    return null;
+                }
+            }
         }
     };
 
-    module.getCachedCredentials = function(tenantDomain) {
-        var cachedMap = application.get(constants.CACHED_CREDENTIALS);
-        if (cachedMap) {
-            return cachedMap[tenantDomain];
+    publicMethods.getNewAccessTokenByRefreshToken = function (refreshToken, encodedClientCredentials, scopes) {
+        if (!refreshToken || !encodedClientCredentials) {
+            log.error("{/app/modules/util.js} Error in retrieving new access token by current " +
+                "refresh token. No refresh token or encoded client credentials are " +
+                "found - getNewAccessTokenByRefreshToken(x, y, z)");
+            return null;
+        } else {
+            var requestURL = deviceMgtProps["oauthProvider"]["tokenServiceURL"];
+            var requestPayload = "grant_type=refresh_token&refresh_token=" + refreshToken;
+            if (scopes) {
+                requestPayload = requestPayload + "&scope=" + scopes;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", requestURL, false);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("Authorization", "Basic " + encodedClientCredentials);
+            xhr.send(requestPayload);
+
+            if (xhr["status"] == 200 && xhr["responseText"]) {
+                var responsePayload = parse(xhr["responseText"]);
+                var tokenPair = {};
+                tokenPair["accessToken"] = responsePayload["access_token"];
+                tokenPair["refreshToken"] = responsePayload["refresh_token"];
+                return tokenPair;
+            } else {
+                log.error("{/app/modules/util.js} Error in retrieving new access token by " +
+                    "current refresh token - getNewAccessTokenByRefreshToken(x, y, z)");
+                return null;
+            }
         }
-        return null;
     };
 
-    return module;
+    publicMethods.getAccessTokenByJWTGrantType =  function (clientCredentials) {
+        if (!clientCredentials) {
+            log.error("{/app/modules/util.js} Error in retrieving new access token by current refresh " +
+                "token. No client credentials are found as input - getAccessTokenByJWTGrantType(x)");
+            return null;
+        } else {
+            var JWTClientManagerServicePackagePath =
+                "org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
+            var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
+            var jwtClient = JWTClientManagerService.getJWTClient();
+            // returning access token by JWT grant type
+            return jwtClient.getAccessToken(clientCredentials["clientId"], clientCredentials["clientSecret"],
+                deviceMgtProps["oauthProvider"]["appRegistration"]["owner"], null)["accessToken"];
+        }
+    };
+
+    publicMethods.getTenantBasedClientAppCredentials = function (username, jwtToken) {
+        if (!username || !jwtToken) {
+            log.error("{/app/modules/util.js} Error in retrieving tenant based client application credentials. " +
+                "No username or jwt token is found as input - getTenantBasedClientAppCredentials(x, y)");
+            return null;
+        } else {
+            var tenantDomain = carbon.server.tenantDomain({username: username});
+            if (!tenantDomain) {
+                log.error("{/app/modules/util.js} Error in retrieving tenant based client application " +
+                    "credentials. Unable to obtain a valid tenant domain for provided " +
+                    "username - getTenantBasedClientAppCredentials(x, y)");
+                return null;
+            } else {
+                var cachedTenantBasedClientAppCredentials = publicMethods.
+                    getCachedTenantBasedClientAppCredentials(tenantDomain);
+                if (cachedTenantBasedClientAppCredentials) {
+                    return cachedTenantBasedClientAppCredentials;
+                } else {
+                    // register a tenant based client app at API Manager
+                    var applicationName = "webapp_" + tenantDomain;
+                    var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
+                        ["apiManagerClientAppRegistrationServiceURL"] +
+                        "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", requestURL, false);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    xhr.send();
+
+                    if (xhr["status"] == 201 && xhr["responseText"]) {
+                        var responsePayload = parse(xhr["responseText"]);
+                        var tenantBasedClientAppCredentials = {};
+                        tenantBasedClientAppCredentials["clientId"] = responsePayload["client_id"];
+                        tenantBasedClientAppCredentials["clientSecret"] = responsePayload["client_secret"];
+                        publicMethods.
+                            setCachedTenantBasedClientAppCredentials(tenantDomain, tenantBasedClientAppCredentials);
+                        return tenantBasedClientAppCredentials;
+                    } else {
+                        log.error("{/app/modules/util.js} Error in retrieving tenant based client " +
+                            "application credentials from API Manager - getTenantBasedClientAppCredentials(x, y)");
+                        return null;
+                    }
+                }
+            }
+        }
+    };
+
+    publicMethods.setCachedTenantBasedClientAppCredentials = function (tenantDomain, clientCredentials) {
+        var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
+        if (!cachedTenantBasedClientAppCredentialsMap) {
+            cachedTenantBasedClientAppCredentialsMap = {};
+            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientCredentials;
+            application.put(constants["CACHED_CREDENTIALS"], cachedTenantBasedClientAppCredentialsMap);
+        } else if (!cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
+            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientCredentials;
+        }
+    };
+
+    publicMethods.getCachedTenantBasedClientAppCredentials = function (tenantDomain) {
+        var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
+        if (!cachedTenantBasedClientAppCredentialsMap ||
+            !cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
+            return null;
+        } else {
+            return cachedTenantBasedClientAppCredentialsMap[tenantDomain];
+        }
+    };
+
+    return publicMethods;
 }();

@@ -21,7 +21,7 @@ var operationModule = function () {
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
-    var serviceInvokers = require("/app/modules/backend-service-invoker.js")["invokers"];;
+    var serviceInvokers = require("/app/modules/token-protected-service-invokers.js")["invokers"];;
 
     var publicMethods = {};
     var privateMethods = {};

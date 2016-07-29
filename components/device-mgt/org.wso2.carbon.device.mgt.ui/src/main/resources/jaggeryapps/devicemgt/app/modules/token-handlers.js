@@ -17,11 +17,10 @@
  */
 
 /**
- * ----------------------------------------------------------------------------
- * Following module includes invokers
- * at Jaggery Layer for calling Backend Services, protected by OAuth Tokens.
- * These Services include both REST and SOAP Services.
- * ----------------------------------------------------------------------------
+ * -----------------------------------------------------
+ * Following module includes handlers
+ * at Jaggery Layer for handling OAuth tokens.
+ * -----------------------------------------------------
  */
 var handlers = function () {
     var log = new Log("/app/modules/token-handlers.js");
@@ -39,19 +38,20 @@ var handlers = function () {
                 "client credentials to session context. No username is found as " +
                 "input - setUpEncodedTenantBasedClientCredentials(x)");
         } else {
-            var dynamicClientCredentials = tokenUtil.getDynamicClientCredentials();
+            var dynamicClientCredentials = tokenUtil.getDynamicClientAppCredentials();
             if (!dynamicClientCredentials) {
                 throw new Error("{/app/modules/token-handlers.js} Could not set up encoded tenant based " +
                     "client credentials to session context as the server is unable to obtain " +
                     "dynamic client credentials - setUpEncodedTenantBasedClientCredentials(x)");
             } else {
-                var jwtToken = tokenUtil.getTokenWithJWTGrantType(dynamicClientCredentials);
+                var jwtToken = tokenUtil.getAccessTokenByJWTGrantType(dynamicClientCredentials);
                 if (!jwtToken) {
                     throw new Error("{/app/modules/token-handlers.js} Could not set up encoded tenant based " +
                         "client credentials to session context as the server is unable to obtain " +
                         "a jwt token - setUpEncodedTenantBasedClientCredentials(x)");
                 } else {
-                    var tenantBasedClientCredentials = tokenUtil.getTenantBasedAppCredentials(username, jwtToken);
+                    var tenantBasedClientCredentials = tokenUtil.
+                        getTenantBasedClientAppCredentials(username, jwtToken);
                     if (!tenantBasedClientCredentials) {
                         throw new Error("{/app/modules/token-handlers.js} Could not set up encoded tenant " +
                             "based client credentials to session context as the server is unable " +
@@ -89,7 +89,7 @@ var handlers = function () {
                     stringOfScopes += entry + " ";
                 });
                 accessTokenPair = tokenUtil.
-                    getTokenWithPasswordGrantType(username,
+                    getAccessTokenByPasswordGrantType(username,
                     encodeURIComponent(password), encodedClientCredentials, stringOfScopes);
                 if (!accessTokenPair) {
                     throw new Error("{/app/modules/token-handlers.js} Could not set up access " +
@@ -119,7 +119,7 @@ var handlers = function () {
                 var accessTokenPair;
                 // accessTokenPair will include current access token as well as current refresh token
                 accessTokenPair = tokenUtil.
-                    getTokenWithSAMLGrantType(samlToken, encodedClientCredentials, "PRODUCTION");
+                    getAccessTokenBySAMLGrantType(samlToken, encodedClientCredentials, "PRODUCTION");
                 if (!accessTokenPair) {
                     throw new Error("{/app/modules/token-handlers.js} Could not set up access token " +
                         "pair by password grant type. Error in token " +
@@ -141,7 +141,7 @@ var handlers = function () {
                 "token pair, encoded client credentials or both input are not found under " +
                 "session context - refreshToken()");
         } else {
-            var newAccessTokenPair = tokenUtil.refreshToken(accessTokenPair, encodedClientCredentials);
+            var newAccessTokenPair = tokenUtil.refreshToken(accessTokenPair["refreshToken"], encodedClientCredentials);
             if (!newAccessTokenPair) {
                 log.error("{/app/modules/token-handlers.js} Error in refreshing tokens. Unable to update " +
                     "session context with new access token pair - refreshToken()");

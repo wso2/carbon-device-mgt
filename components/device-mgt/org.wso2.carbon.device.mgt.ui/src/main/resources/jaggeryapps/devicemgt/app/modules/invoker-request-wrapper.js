@@ -26,7 +26,7 @@
 //var invokerRequestWrapper = function () {
 //
 //    var constants = require("/modules/constants.js");
-//    var serviceInvokers = require("/modules/backend-service-invoker.js").backendServiceInvoker;
+//    var serviceInvokers = require("/modules/token-protected-service-invokers.js").backendServiceInvoker;
 //
 //    var publicWrappers = [];
 //

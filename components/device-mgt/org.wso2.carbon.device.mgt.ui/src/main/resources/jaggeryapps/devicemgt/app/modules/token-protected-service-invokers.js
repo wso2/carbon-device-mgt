@@ -24,7 +24,7 @@
  * ----------------------------------------------------------------------------
  */
 var invokers = function () {
-    var log = new Log("/app/modules/backend-service-invoker.js");
+    var log = new Log("/app/modules/token-protected-service-invokers.js");
 
     var publicXMLHTTPInvokers = {};
     var publicHTTPClientInvokers = {};
@@ -38,7 +38,7 @@ var invokers = function () {
     var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/user.js")["userModule"];
-    var tokenUtil = require("/app/modules/api-wrapper-util.js")["handlers"];
+    var tokenUtil = require("/app/modules/token-handlers.js")["handlers"];
 
     /**
      * This method reads the token pair from the session and return the access token.

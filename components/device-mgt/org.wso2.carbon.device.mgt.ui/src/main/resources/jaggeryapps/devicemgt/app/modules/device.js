@@ -23,7 +23,7 @@ deviceModule = function () {
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
-    var serviceInvokers = require("/app/modules/token-protected-service-invokers.js")["invokers"];
+    var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
     var ArrayList = Packages.java.util.ArrayList;
     var Properties = Packages.java.util.Properties;

@@ -27,8 +27,8 @@ var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
 var userModule = require("/app/modules/user.js").userModule;
 var deviceModule = require("/app/modules/device.js").deviceModule;
 var utility = require("/app/modules/utility.js").utility;
-var apiWrapperUtil = require("/app/modules/token-handlers.js")["handlers"];
-var util = require("/app/modules/util.js").util;
+var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
+var util = require("/app/modules/oauth/util.js").util;
 
 var responseProcessor = require('utils').response;
 

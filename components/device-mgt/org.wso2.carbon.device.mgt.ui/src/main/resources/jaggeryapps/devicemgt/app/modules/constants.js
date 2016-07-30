@@ -59,8 +59,8 @@ var USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT =
 
 var SOAP_VERSION = 1.2;
 var WEB_SERVICE_ADDRESSING_VERSION = 1.0;
-var ACCESS_TOKEN_PAIR_IDENTIFIER = "accessTokenPair";
-var ENCODED_CLIENT_KEYS_IDENTIFIER = "encodedClientKey";
+var TOKEN_PAIR = "tokenPair";
+var ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS = "encodedTenantBasedClientAppCredentials";
 var CONTENT_TYPE_IDENTIFIER = "Content-Type";
 var CONTENT_DISPOSITION_IDENTIFIER = "Content-Disposition";
 var APPLICATION_JSON = "application/json";

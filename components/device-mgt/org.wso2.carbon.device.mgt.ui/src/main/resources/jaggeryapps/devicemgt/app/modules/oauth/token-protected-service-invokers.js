@@ -42,10 +42,10 @@ var invokers = function () {
 
     /**
      * This method reads the token pair from the session and return the access token.
-     * If the token pair s not set in the session this will send a redirect to the login page.
+     * If the token pair is not set in the session, this will return null.
      */
     privateMethods.getAccessToken = function () {
-        var tokenPair = parse(session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]));
+        var tokenPair = parse(session.get(constants["TOKEN_PAIR"]));
         if (tokenPair) {
             return tokenPair["accessToken"];
         } else {
@@ -103,7 +103,7 @@ var invokers = function () {
 
         if (xmlHttpRequest.status == 401 && (xmlHttpRequest.responseText == TOKEN_EXPIRED ||
             xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
-            tokenUtil.refreshAccessToken();
+            tokenUtil.refreshTokenPair();
             return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count);
         } else {
             return responseCallback(xmlHttpRequest);
@@ -122,7 +122,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateXMLHttpRequest for get calls
+     * This method invokes return initiateXMLHttpRequest for get calls.
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
@@ -132,7 +132,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateXMLHttpRequest for post calls
+     * This method invokes return initiateXMLHttpRequest for post calls.
      * @param endpoint Backend REST API url.
      * @param requestPayload payload/data if exists which is needed to be send.
      * @param responseCallback a function to be called with response retrieved.
@@ -142,7 +142,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateXMLHttpRequest for put calls
+     * This method invokes return initiateXMLHttpRequest for put calls.
      * @param endpoint Backend REST API url.
      * @param requestPayload payload/data if exists which is needed to be send.
      * @param responseCallback a function to be called with response retrieved.
@@ -152,7 +152,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateXMLHttpRequest for delete calls
+     * This method invokes return initiateXMLHttpRequest for delete calls.
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
@@ -214,7 +214,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateWSRequest for soap calls
+     * This method invokes return initiateWSRequest for soap calls.
      * @param action describes particular soap action.
      * @param requestPayload SOAP request payload which is needed to be send.
      * @param endpoint service end point to be triggered.
@@ -303,7 +303,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateHTTPClientRequest for get calls
+     * This method invokes return initiateHTTPClientRequest for get calls.
      * @param url target url.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
@@ -315,7 +315,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateHTTPClientRequest for post calls
+     * This method invokes return initiateHTTPClientRequest for post calls.
      * @param url target url.
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
@@ -327,7 +327,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateHTTPClientRequest for put calls
+     * This method invokes return initiateHTTPClientRequest for put calls.
      * @param url target url.
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
@@ -339,7 +339,7 @@ var invokers = function () {
     };
 
     /**
-     * This method invokes return initiateHTTPClientRequest for delete calls
+     * This method invokes return initiateHTTPClientRequest for delete calls.
      * @param url target url.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.

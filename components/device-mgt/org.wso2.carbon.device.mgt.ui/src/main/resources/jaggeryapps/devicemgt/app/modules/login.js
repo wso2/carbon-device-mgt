@@ -26,9 +26,9 @@ var onFail;
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
         if (context.input.samlToken) {
-            apiWrapperUtil.setupAccessTokenPairBySamlGrantType(context.input.username, context.input.samlToken);
+            apiWrapperUtil.setupTokenPairBySamlGrantType(context.input.username, context.input.samlToken);
         } else {
-            apiWrapperUtil.setupAccessTokenPairByPasswordGrantType(context.input.username, context.input.password);
+            apiWrapperUtil.setupTokenPairByPasswordGrantType(context.input.username, context.input.password);
         }
         var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
         var carbonServer = require("carbon").server;

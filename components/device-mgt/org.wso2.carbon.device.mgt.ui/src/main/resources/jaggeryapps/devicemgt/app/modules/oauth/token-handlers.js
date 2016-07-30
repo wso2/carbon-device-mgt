@@ -29,125 +29,126 @@ var handlers = function () {
     var constants = require("/app/modules/constants.js");
     var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
 
-    var privateMethods = {};
     var publicMethods = {};
+    var privateMethods = {};
 
-    privateMethods.setUpEncodedTenantBasedClientAppCredentials = function (username) {
-        if (!username) {
-            throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
-                "client credentials to session context. No username is found as " +
-                "input - setUpEncodedTenantBasedClientAppCredentials(x)");
-        } else {
-            var dynamicClientAppCredentials = tokenUtil.getDynamicClientAppCredentials();
-            if (!dynamicClientAppCredentials) {
-                throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
-                    "client credentials to session context as the server is unable to obtain " +
-                    "dynamic client credentials - setUpEncodedTenantBasedClientAppCredentials(x)");
-            } else {
-                var jwtToken = tokenUtil.getAccessTokenByJWTGrantType(dynamicClientAppCredentials);
-                if (!jwtToken) {
-                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
-                        "client credentials to session context as the server is unable to obtain " +
-                        "a jwt token - setUpEncodedTenantBasedClientAppCredentials(x)");
-                } else {
-                    var tenantBasedClientCredentials = tokenUtil.
-                        getTenantBasedClientAppCredentials(username, jwtToken);
-                    if (!tenantBasedClientCredentials) {
-                        throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant " +
-                            "based client credentials to session context as the server is unable " +
-                            "to obtain such credentials - setUpEncodedTenantBasedClientAppCredentials(x)");
-                    } else {
-                        var encodedTenantBasedClientCredentials =
-                            tokenUtil.encode(tenantBasedClientCredentials["clientId"] + ":" +
-                                tenantBasedClientCredentials["clientSecret"]);
-                        // setting up encoded tenant based client credentials to session context.
-                        session.put(constants["ENCODED_CLIENT_KEYS_IDENTIFIER"], encodedTenantBasedClientCredentials);
-                    }
-                }
-            }
-        }
-    };
-
-    publicMethods.setupAccessTokenPairByPasswordGrantType = function (username, password) {
+    publicMethods.setupTokenPairByPasswordGrantType = function (username, password) {
         if (!username || !password) {
             throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
-                "password grant type. Either username, password or both are missing as " +
-                "input - setupAccessTokenPairByPasswordGrantType(x, y)");
+                "password grant type. Either username of logged in user, password or both are missing " +
+                    "as input - setupTokenPairByPasswordGrantType(x, y)");
         } else {
             privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
-            var encodedClientCredentials = session.get(constants["ENCODED_CLIENT_KEYS_IDENTIFIER"]);
-            if (!encodedClientCredentials) {
+            var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
+            if (!encodedClientAppCredentials) {
                 throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
                     "password grant type. Encoded client credentials are " +
-                    "missing - setupAccessTokenPairByPasswordGrantType(x, y)");
+                        "missing - setupTokenPairByPasswordGrantType(x, y)");
             } else {
-                var accessTokenPair;
-                // accessTokenPair will include current access token as well as current refresh token
+                var tokenPair;
+                // tokenPair will include current access token as well as current refresh token
                 var arrayOfScopes = devicemgtProps["scopes"];
                 var stringOfScopes = "";
                 arrayOfScopes.forEach(function (entry) {
                     stringOfScopes += entry + " ";
                 });
-                accessTokenPair = tokenUtil.
+                tokenPair = tokenUtil.
                     getAccessTokenByPasswordGrantType(username,
-                    encodeURIComponent(password), encodedClientCredentials, stringOfScopes);
-                if (!accessTokenPair) {
-                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access " +
+                    encodeURIComponent(password), encodedClientAppCredentials, stringOfScopes);
+                if (!tokenPair) {
+                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up " +
                         "token pair by password grant type. Error in token " +
-                        "retrieval - setupAccessTokenPairByPasswordGrantType(x, y)");
+                            "retrieval - setupTokenPairByPasswordGrantType(x, y)");
                 } else {
                     // setting up access token pair into session context as a string
-                    session.put(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"], stringify(accessTokenPair));
+                    session.put(constants["TOKEN_PAIR"], stringify(tokenPair));
                 }
             }
         }
     };
 
-    publicMethods.setupAccessTokenPairBySamlGrantType = function (username, samlToken) {
+    publicMethods.setupTokenPairBySamlGrantType = function (username, samlToken) {
         if (!username || !samlToken) {
             throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
-                "saml grant type. Either username, samlToken or both are missing as " +
-                "input - setupAccessTokenPairByPasswordGrantType(x, y)");
+                "saml grant type. Either username of logged in user, samlToken or both are missing " +
+                    "as input - setupTokenPairByPasswordGrantType(x, y)");
         } else {
             privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
-            var encodedClientCredentials = session.get(constants["ENCODED_CLIENT_KEYS_IDENTIFIER"]);
-            if (!encodedClientCredentials) {
+            var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
+            if (!encodedClientAppCredentials) {
                 throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair " +
                     "by saml grant type. Encoded client credentials are " +
-                    "missing - setupAccessTokenPairByPasswordGrantType(x, y)");
+                        "missing - setupTokenPairByPasswordGrantType(x, y)");
             } else {
-                var accessTokenPair;
+                var tokenPair;
                 // accessTokenPair will include current access token as well as current refresh token
-                accessTokenPair = tokenUtil.
-                    getAccessTokenBySAMLGrantType(samlToken, encodedClientCredentials, "PRODUCTION");
-                if (!accessTokenPair) {
-                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token " +
+                tokenPair = tokenUtil.
+                    getAccessTokenBySAMLGrantType(samlToken, encodedClientAppCredentials, "PRODUCTION");
+                if (!tokenPair) {
+                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token " +
                         "pair by password grant type. Error in token " +
-                        "retrieval - setupAccessTokenPairByPasswordGrantType(x, y)");
+                            "retrieval - setupTokenPairByPasswordGrantType(x, y)");
                 } else {
                     // setting up access token pair into session context as a string
-                    session.put(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"], stringify(accessTokenPair));
+                    session.put(constants["TOKEN_PAIR"], stringify(tokenPair));
                 }
             }
         }
     };
 
-    publicMethods.refreshAccessToken = function () {
-        var accessTokenPair = parse(session.get(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"]));
-        // accessTokenPair includes current access token as well as current refresh token
-        var encodedClientCredentials = session.get(constants["ENCODED_CLIENT_KEYS_IDENTIFIER"]);
-        if (!accessTokenPair || !encodedClientCredentials) {
-            throw new Error("{/app/modules/oauth/token-handlers.js} Error in refreshing tokens. Either the access " +
-                "token pair, encoded client credentials or both input are not found under " +
-                "session context - refreshAccessToken()");
+    publicMethods.refreshTokenPair = function () {
+        var currentTokenPair = parse(session.get(constants["TOKEN_PAIR"]));
+        // currentTokenPair includes current access token as well as current refresh token
+        var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
+        if (!currentTokenPair || !encodedClientAppCredentials) {
+            throw new Error("{/app/modules/oauth/token-handlers.js} Error in refreshing tokens. Either the " +
+                "token pair, encoded client app credentials or both input are not found under " +
+                    "session context - refreshTokenPair()");
         } else {
             var newTokenPair = tokenUtil.
-                getNewAccessTokenByRefreshToken(accessTokenPair["refreshToken"], encodedClientCredentials);
+                getNewAccessTokenByRefreshToken(currentTokenPair["refreshToken"], encodedClientAppCredentials);
             if (!newTokenPair) {
-                log.error("{/app/modules/oauth/token-handlers.js} Error in refreshing access token. Unable to update " +
-                    "session context with new access token pair - refreshAccessToken()");
+                log.error("{/app/modules/oauth/token-handlers.js} Error in refreshing token pair. " +
+                    "Unable to update session context with new access token pair - refreshTokenPair()");
             } else {
-                session.put(constants["ACCESS_TOKEN_PAIR_IDENTIFIER"], stringify(newTokenPair));
+                session.put(constants["TOKEN_PAIR"], stringify(newTokenPair));
+            }
+        }
+    };
+
+    privateMethods.setUpEncodedTenantBasedClientAppCredentials = function (username) {
+        if (!username) {
+            throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
+                "client credentials to session context. No username of logged in user is found as " +
+                    "input - setUpEncodedTenantBasedClientAppCredentials(x)");
+        } else {
+            var dynamicClientAppCredentials = tokenUtil.getDynamicClientAppCredentials();
+            if (!dynamicClientAppCredentials) {
+                throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
+                    "client credentials to session context as the server is unable to obtain " +
+                        "dynamic client credentials - setUpEncodedTenantBasedClientAppCredentials(x)");
+            } else {
+                var jwtToken = tokenUtil.getAccessTokenByJWTGrantType(dynamicClientAppCredentials);
+                if (!jwtToken) {
+                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
+                        "client credentials to session context as the server is unable to obtain " +
+                            "a jwt token - setUpEncodedTenantBasedClientAppCredentials(x)");
+                } else {
+                    var tenantBasedClientAppCredentials = tokenUtil.
+                        getTenantBasedClientAppCredentials(username, jwtToken);
+                    if (!tenantBasedClientAppCredentials) {
+                        throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant " +
+                            "based client credentials to session context as the server is unable " +
+                                "to obtain such credentials - setUpEncodedTenantBasedClientAppCredentials(x)");
+                    } else {
+                        var encodedTenantBasedClientAppCredentials =
+                            tokenUtil.encode(tenantBasedClientAppCredentials["clientId"] + ":" +
+                                tenantBasedClientAppCredentials["clientSecret"]);
+                        // setting up encoded tenant based client credentials to session context.
+                        session.put(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"],
+                            encodedTenantBasedClientAppCredentials);
+                    }
+                }
             }
         }
     };

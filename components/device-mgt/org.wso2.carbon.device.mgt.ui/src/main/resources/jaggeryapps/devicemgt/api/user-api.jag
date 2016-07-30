@@ -28,7 +28,7 @@ var userModule = require("/app/modules/user.js").userModule;
 var deviceModule = require("/app/modules/device.js").deviceModule;
 var utility = require("/app/modules/utility.js").utility;
 var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
-var util = require("/app/modules/oauth/util.js").util;
+var util = require("/app/modules/oauth/token-handler-utils.js")["utils"];
 
 var responseProcessor = require('utils').response;
 

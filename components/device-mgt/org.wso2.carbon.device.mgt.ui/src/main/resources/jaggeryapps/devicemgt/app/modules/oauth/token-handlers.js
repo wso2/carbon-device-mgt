@@ -25,7 +25,7 @@
 var handlers = function () {
     var log = new Log("/app/modules/oauth/token-handlers.js");
 
-    var tokenUtil = require("/app/modules/oauth/util.js")["util"];
+    var tokenUtil = require("/app/modules/oauth/token-handler-utils.js")["utils"];
     var constants = require("/app/modules/constants.js");
     var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
 
@@ -53,8 +53,8 @@ var handlers = function () {
                     stringOfScopes += entry + " ";
                 });
                 tokenPair = tokenUtil.
-                    getAccessTokenByPasswordGrantType(username,
-                    encodeURIComponent(password), encodedClientAppCredentials, stringOfScopes);
+                    getTokenPairByPasswordGrantType(username,
+                        encodeURIComponent(password), encodedClientAppCredentials, stringOfScopes);
                 if (!tokenPair) {
                     throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up " +
                         "token pair by password grant type. Error in token " +
@@ -83,7 +83,7 @@ var handlers = function () {
                 var tokenPair;
                 // accessTokenPair will include current access token as well as current refresh token
                 tokenPair = tokenUtil.
-                    getAccessTokenBySAMLGrantType(samlToken, encodedClientAppCredentials, "PRODUCTION");
+                    getTokenPairBySAMLGrantType(samlToken, encodedClientAppCredentials, "PRODUCTION");
                 if (!tokenPair) {
                     throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token " +
                         "pair by password grant type. Error in token " +
@@ -106,7 +106,7 @@ var handlers = function () {
                     "session context - refreshTokenPair()");
         } else {
             var newTokenPair = tokenUtil.
-                getNewAccessTokenByRefreshToken(currentTokenPair["refreshToken"], encodedClientAppCredentials);
+                getNewTokenPairByRefreshToken(currentTokenPair["refreshToken"], encodedClientAppCredentials);
             if (!newTokenPair) {
                 log.error("{/app/modules/oauth/token-handlers.js} Error in refreshing token pair. " +
                     "Unable to update session context with new access token pair - refreshTokenPair()");

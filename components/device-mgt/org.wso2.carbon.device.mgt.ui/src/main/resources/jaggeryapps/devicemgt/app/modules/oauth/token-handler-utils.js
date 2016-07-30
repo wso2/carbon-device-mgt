@@ -16,18 +16,18 @@
  * under the License.
  */
 
-var util = function () {
-    var log = new Log("/app/modules/oauth/util.js");
-
-    var privateMethods = {};
-    var publicMethods = {};
-
-    var Base64 = Packages.org.apache.commons.codec.binary.Base64;
-    var String = Packages.java.lang.String;
+var utils = function () {
+    var log = new Log("/app/modules/oauth/token-handler-utils.js");
 
     var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var carbon = require("carbon");
+
+    var Base64 = Packages.org.apache.commons.codec.binary.Base64;
+    var String = Packages.java.lang.String;
+
+    var publicMethods = {};
+    var privateMethods = {};
 
     publicMethods.encode = function (payload) {
         return new String(Base64.encodeBase64(new String(payload).getBytes()));
@@ -64,11 +64,11 @@ var util = function () {
             dynamicClientAppCredentials["clientId"] = responsePayload["client_id"];
             dynamicClientAppCredentials["clientSecret"] = responsePayload["client_secret"];
         } else if (xhr["status"] == 400) {
-            log.error("{/app/modules/oauth/util.js - getDynamicClientAppCredentials()} " +
+            log.error("{/app/modules/oauth/token-handler-utils.js - getDynamicClientAppCredentials()} " +
                 "Bad request. Invalid data provided as dynamic client application properties.");
             dynamicClientAppCredentials = null;
         } else {
-            log.error("{/app/modules/oauth/util.js - getDynamicClientAppCredentials()} " +
+            log.error("{/app/modules/oauth/token-handler-utils.js - getDynamicClientAppCredentials()} " +
                 "Error in retrieving dynamic client credentials.");
             dynamicClientAppCredentials = null;
         }
@@ -76,11 +76,11 @@ var util = function () {
         return dynamicClientAppCredentials;
     };
 
-    publicMethods.getAccessTokenByPasswordGrantType = function (username, password, encodedClientAppCredentials, scopes) {
+    publicMethods.getTokenPairByPasswordGrantType = function (username, password, encodedClientAppCredentials, scopes) {
         if (!username || !password || !encodedClientAppCredentials || !scopes) {
-            log.error("{/app/modules/oauth/util.js} Error in retrieving access token by password " +
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token by password " +
                 "grant type. No username, password, encoded client app credentials or scopes are " +
-                "found - getAccessTokenByPasswordGrantType(a, b, c, d)");
+                    "found - getTokenPairByPasswordGrantType(a, b, c, d)");
             return null;
         } else {
             // calling oauth provider token service endpoint
@@ -101,18 +101,18 @@ var util = function () {
                 tokenPair["refreshToken"] = responsePayload["refresh_token"];
                 return tokenPair;
             } else {
-                log.error("{/app/modules/oauth/util.js} Error in retrieving access token by password " +
-                    "grant type - getAccessTokenByPasswordGrantType(a, b, c, d)");
+                log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token " +
+                    "by password grant type - getTokenPairByPasswordGrantType(a, b, c, d)");
                 return null;
             }
         }
     };
 
-    publicMethods.getAccessTokenBySAMLGrantType = function (assertion, encodedClientAppCredentials, scopes) {
+    publicMethods.getTokenPairBySAMLGrantType = function (assertion, encodedClientAppCredentials, scopes) {
         if (!assertion || !encodedClientAppCredentials || !scopes) {
-            log.error("{/app/modules/oauth/util.js} Error in retrieving access token by saml " +
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token by saml " +
                 "grant type. No assertion, encoded client app credentials or scopes are " +
-                "found - getAccessTokenBySAMLGrantType(x, y, z)");
+                    "found - getTokenPairBySAMLGrantType(x, y, z)");
             return null;
         } else {
             var assertionXML = publicMethods.decode(assertion);
@@ -127,8 +127,8 @@ var util = function () {
 
             var extractedAssertion;
             if (assertionStartIndex == -1 || assertionEndIndex == -1) {
-                log.error("{/app/modules/oauth/util.js} Error in retrieving access token by saml grant type. " +
-                    "Issue in assertion format - getAccessTokenBySAMLGrantType(x, y, z)");
+                log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access " +
+                    "token by saml grant type. Issue in assertion format - getTokenPairBySAMLGrantType(x, y, z)");
                 return null;
             } else {
                 extractedAssertion = assertionXML.
@@ -153,19 +153,19 @@ var util = function () {
                     tokenPair["refreshToken"] = responsePayload["refresh_token"];
                     return tokenPair;
                 } else {
-                    log.error("{/app/modules/oauth/util.js} Error in retrieving access token by password " +
-                        "grant type - getAccessTokenBySAMLGrantType(x, y, z)");
+                    log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token " +
+                        "by password grant type - getTokenPairBySAMLGrantType(x, y, z)");
                     return null;
                 }
             }
         }
     };
 
-    publicMethods.getNewAccessTokenByRefreshToken = function (refreshToken, encodedClientAppCredentials, scopes) {
+    publicMethods.getNewTokenPairByRefreshToken = function (refreshToken, encodedClientAppCredentials, scopes) {
         if (!refreshToken || !encodedClientAppCredentials) {
-            log.error("{/app/modules/oauth/util.js} Error in retrieving new access token by current " +
-                "refresh token. No refresh token or encoded client app credentials are " +
-                "found - getNewAccessTokenByRefreshToken(x, y, z)");
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving new access token " +
+                "by current refresh token. No refresh token or encoded client app credentials are " +
+                    "found - getNewTokenPairByRefreshToken(x, y, z)");
             return null;
         } else {
             var requestURL = deviceMgtProps["oauthProvider"]["tokenServiceURL"];
@@ -187,8 +187,8 @@ var util = function () {
                 tokenPair["refreshToken"] = responsePayload["refresh_token"];
                 return tokenPair;
             } else {
-                log.error("{/app/modules/oauth/util.js} Error in retrieving new access token by " +
-                    "current refresh token - getNewAccessTokenByRefreshToken(x, y, z)");
+                log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving new access token by " +
+                    "current refresh token - getNewTokenPairByRefreshToken(x, y, z)");
                 return null;
             }
         }
@@ -196,8 +196,9 @@ var util = function () {
 
     publicMethods.getAccessTokenByJWTGrantType =  function (clientAppCredentials) {
         if (!clientAppCredentials) {
-            log.error("{/app/modules/oauth/util.js} Error in retrieving new access token by current refresh token. " +
-                "No client app credentials are found as input - getAccessTokenByJWTGrantType(x)");
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving new access token " +
+                "by current refresh token. No client app credentials are found " +
+                    "as input - getAccessTokenByJWTGrantType(x)");
             return null;
         } else {
             var JWTClientManagerServicePackagePath =
@@ -212,15 +213,16 @@ var util = function () {
 
     publicMethods.getTenantBasedClientAppCredentials = function (username, jwtToken) {
         if (!username || !jwtToken) {
-            log.error("{/app/modules/oauth/util.js} Error in retrieving tenant based client app " +
-                "credentials. No username or jwt token is found as input - getTenantBasedClientAppCredentials(x, y)");
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
+                "based client app credentials. No username or jwt token is found " +
+                    "as input - getTenantBasedClientAppCredentials(x, y)");
             return null;
         } else {
             var tenantDomain = carbon.server.tenantDomain({username: username});
             if (!tenantDomain) {
-                log.error("{/app/modules/oauth/util.js} Error in retrieving tenant based client application " +
-                    "credentials. Unable to obtain a valid tenant domain for provided " +
-                    "username - getTenantBasedClientAppCredentials(x, y)");
+                log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
+                    "based client application credentials. Unable to obtain a valid tenant domain for provided " +
+                        "username - getTenantBasedClientAppCredentials(x, y)");
                 return null;
             } else {
                 var cachedTenantBasedClientAppCredentials = privateMethods.
@@ -232,7 +234,7 @@ var util = function () {
                     var applicationName = "webapp_" + tenantDomain;
                     var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
                         ["apiManagerClientAppRegistrationServiceURL"] +
-                        "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
+                            "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
 
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", requestURL, false);
@@ -249,8 +251,9 @@ var util = function () {
                             setCachedTenantBasedClientAppCredentials(tenantDomain, tenantBasedClientAppCredentials);
                         return tenantBasedClientAppCredentials;
                     } else {
-                        log.error("{/app/modules/oauth/util.js} Error in retrieving tenant based client " +
-                            "application credentials from API Manager - getTenantBasedClientAppCredentials(x, y)");
+                        log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
+                            "based client application credentials from API " +
+                                "Manager - getTenantBasedClientAppCredentials(x, y)");
                         return null;
                     }
                 }

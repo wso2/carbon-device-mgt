@@ -119,6 +119,10 @@ public class DeviceManagementDAOFactory {
         return new DeviceTypeDAOImpl();
     }
 
+    public static DeviceTypeSensorDAO getDeviceTypeSensorDAO() {
+        return new DeviceTypeSensorDAOImpl();
+    }
+
     public static EnrollmentDAO getEnrollmentDAO() {
         return new EnrollmentDAOImpl();
     }

@@ -21,16 +21,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeSensorDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -44,7 +45,7 @@ import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -63,7 +64,7 @@ public final class DeviceManagerUtil {
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new DeviceManagementException("Error occurred while parsing file, while converting " +
-                    "to a org.w3c.dom.Document", e);
+                                                        "to a org.w3c.dom.Document", e);
         }
     }
 
@@ -77,7 +78,7 @@ public final class DeviceManagerUtil {
         DataSource dataSource = null;
         if (config == null) {
             throw new RuntimeException("Device Management Repository data source configuration is null and thus, " +
-                    "is not initialized");
+                                               "is not initialized");
         }
         JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
         if (jndiConfig != null) {
@@ -102,8 +103,8 @@ public final class DeviceManagerUtil {
     /**
      * Adds a new device type to the database if it does not exists.
      *
-     * @param typeName device type
-     * @param tenantId provider tenant Id
+     * @param typeName               device type
+     * @param tenantId               provider tenant Id
      * @param isSharedWithAllTenants is this device type shared with all tenants.
      * @return status of the operation
      */
@@ -136,6 +137,66 @@ public final class DeviceManagerUtil {
     }
 
     /**
+     * TODO: Complete the comments bro...
+     *
+     * @param deviceTypeName
+     * @param tenantId
+     * @param deviceTypeSensors
+     * @return
+     * @throws DeviceManagementException
+     */
+    public static boolean registerDeviceTypeSensors(String deviceTypeName, int tenantId,
+                                                    List<DeviceTypeSensor> deviceTypeSensors)
+            throws DeviceManagementException {
+        int deviceTypeId = -1;
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+            DeviceTypeSensorDAO deviceTypeSensorDAO = DeviceManagementDAOFactory.getDeviceTypeSensorDAO();
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
+
+            if (deviceType == null) {
+                DeviceManagementDAOFactory.rollbackTransaction();
+                String msg = "Error occurred whilst trying to register DeviceTypeSensors for " +
+                        "device-type [" + deviceTypeName + "]. No such device-type found in DB.";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
+            }
+
+            deviceTypeId = deviceType.getId();
+            for (DeviceTypeSensor deviceTypeSensor : deviceTypeSensors) {
+                DeviceTypeSensor newDeviceTypeSensor = deviceTypeSensorDAO.
+                        getDeviceTypeSensor(deviceTypeId, deviceTypeSensor.getTypeId());
+                if (newDeviceTypeSensor == null) {
+                    newDeviceTypeSensor = new DeviceTypeSensor();
+                    newDeviceTypeSensor.setName(deviceTypeSensor.getName());
+                    newDeviceTypeSensor.setDescription(deviceTypeSensor.getDescription());
+                    newDeviceTypeSensor.setSensorType(deviceTypeSensor.getSensorType());
+                    newDeviceTypeSensor.setStaticProperties(deviceTypeSensor.getStaticProperties());
+                    newDeviceTypeSensor.setStreamDefinition(deviceTypeSensor.getStreamDefinition());
+                    deviceTypeSensorDAO.addDeviceTypeSensor(deviceTypeId, deviceTypeSensor);
+                }
+            }
+            DeviceManagementDAOFactory.commitTransaction();
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred whilst registering DeviceTypeSensors for device-type with " +
+                    "Id [" + deviceTypeId + "].";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
+        } catch (TransactionManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred whilst trying to get connection to DB when registering DeviceTypeSensors " +
+                    "for device-type with Id [" + deviceTypeId + "].";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return true;
+    }
+
+    /**
      * Un-registers an existing device type from the device management metadata repository.
      *
      * @param typeName device type
@@ -159,6 +220,45 @@ public final class DeviceManagerUtil {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("SQL occurred while registering the device type '" +
                                                         typeName + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
+
+    public static boolean unregisterDeviceTypeSensors(String deviceTypeName, int tenantId)
+            throws DeviceManagementException {
+        int deviceTypeId = -1;
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+            DeviceTypeSensorDAO deviceTypeSensorDAO = DeviceManagementDAOFactory.getDeviceTypeSensorDAO();
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
+
+            if (deviceType == null) {
+                DeviceManagementDAOFactory.rollbackTransaction();
+                String msg = "Error occurred whilst trying to unregister DeviceTypeSensors for " +
+                        "device-type [" + deviceTypeName + "]. No such device-type found in DB.";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
+            }
+
+            deviceTypeId = deviceType.getId();
+            deviceTypeSensorDAO.removeDeviceTypeSensors(deviceTypeId);
+            DeviceManagementDAOFactory.commitTransaction();
+            return true;
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred whilst un-registering DeviceTypeSensors for device-type with " +
+                    "Id [" + deviceTypeId + "].";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
+        } catch (TransactionManagementException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred whilst trying to get connection to DB when un-registering DeviceTypeSensors " +
+                    "for device-type with Id [" + deviceTypeId + "].";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -196,7 +296,7 @@ public final class DeviceManagerUtil {
         int port = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
         int httpsProxyPort =
                 CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
-                        mgtConsoleTransport);
+                                                  mgtConsoleTransport);
         if (httpsProxyPort > 0) {
             port = httpsProxyPort;
         }
@@ -214,7 +314,7 @@ public final class DeviceManagerUtil {
         int port = CarbonUtils.getTransportPort(configContextService, "http");
         int httpProxyPort =
                 CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
-                        "http");
+                                                  "http");
         if (httpProxyPort > 0) {
             port = httpProxyPort;
         }

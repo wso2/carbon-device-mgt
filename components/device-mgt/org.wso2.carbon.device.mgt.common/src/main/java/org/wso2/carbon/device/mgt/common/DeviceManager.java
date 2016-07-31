@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.common;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 
 import java.util.List;
 
@@ -34,6 +35,14 @@ public interface DeviceManager {
      * @return Returns an instance of feature manager
      */
     FeatureManager getFeatureManager();
+
+    /**
+     * Method to return sensor manager implementation associated with a particular platform-specific plugin
+     * (ie:device-type).
+     *
+     * @return Returns an instance of sensor manager
+     */
+    SensorManager getSensorManager();
 
     /**
      * Method to save platform specific Configuration.
@@ -156,5 +165,4 @@ public interface DeviceManager {
      * @return Returns boolean status to enable or disable device-authentication.
      */
     boolean requireDeviceAuthorization();
-
 }

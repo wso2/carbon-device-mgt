@@ -26,6 +26,8 @@ import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
@@ -36,6 +38,7 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DeviceManagementPluginRepository implements DeviceManagerStartupListener {
@@ -53,6 +56,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
         String deviceType = provider.getType();
+        SensorManager deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
 
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         String tenantDomain = provisioningConfig.getProviderTenantDomain();
@@ -66,15 +70,24 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 if (isInited) {
                     /* Initializing Device Management Service Provider */
                     provider.init();
+                    // Register the Device-Type on the DB and then register the DeviceTypeSensors.
                     DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants);
-                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
-                                                                                           provider.getDeviceManager()
-                                                                                                   .requireDeviceAuthorization());
+
+                    // If a list of DeviceTypeSensors has been set by the DeviceManager's SensorManager then register.
+                    if (deviceTypeSensorManager != null) {
+                        List<DeviceTypeSensor> deviceTypeSensors = deviceTypeSensorManager.getDeviceTypeSensors();
+                        if (deviceTypeSensors != null && deviceTypeSensors.size() > 0) {
+                            DeviceManagerUtil.registerDeviceTypeSensors(deviceType, tenantId, deviceTypeSensors);
+                        }
+                    }
+
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(
+                            deviceType, provider.getDeviceManager().requireDeviceAuthorization());
                     registerPushNotificationStrategy(provider);
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +
-                        deviceType + "'", e);
+                                                            deviceType + "'", e);
             }
             if (isSharedWithAllTenants) {
                 DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
@@ -168,10 +181,23 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
             for (DeviceManagementService provider : providers.values()) {
                 try {
                     provider.init();
-
+                    String deviceType = provider.getType();
+                    SensorManager deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                    DeviceManagerUtil.registerDeviceType(provider.getType(), tenantId, provisioningConfig.isSharedWithAllTenants());
+
+                    // Register the Device-Type on the DB and then register the DeviceTypeSensors.
+                    DeviceManagerUtil.registerDeviceType(
+                            deviceType, tenantId, provisioningConfig.isSharedWithAllTenants());
+
+                    // If a list of DeviceTypeSensors has been set by the DeviceManager's SensorManager then register.
+                    if (deviceTypeSensorManager != null) {
+                        List<DeviceTypeSensor> deviceTypeSensors = deviceTypeSensorManager.getDeviceTypeSensors();
+                        if (deviceTypeSensors != null && deviceTypeSensors.size() > 0) {
+                            DeviceManagerUtil.registerDeviceTypeSensors(deviceType, tenantId, deviceTypeSensors);
+                        }
+                    }
+
                     registerPushNotificationStrategy(provider);
                     //TODO:
                     //This is a temporory fix.
@@ -179,12 +205,13 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     //until fix that, use following variable to enable and disable of checking user authorization.
 
                     DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(provider.getType(),
-                            provider.getDeviceManager().requireDeviceAuthorization());
+                                                                                           provider.getDeviceManager()
+                                                                                                   .requireDeviceAuthorization());
                 } catch (Throwable e) {
                     /* Throwable is caught intentionally as failure of one plugin - due to invalid start up parameters,
                         etc - should not block the initialization of other device management providers */
                     log.error("Error occurred while initializing device management provider '" +
-                            provider.getType() + "'", e);
+                                      provider.getType() + "'", e);
                 }
             }
             this.isInited = true;

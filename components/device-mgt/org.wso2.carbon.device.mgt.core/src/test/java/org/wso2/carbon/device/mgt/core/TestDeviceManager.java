@@ -19,6 +19,7 @@ import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 
 import java.util.List;
 
@@ -30,6 +31,11 @@ public class TestDeviceManager implements DeviceManager {
 
     @Override
     public FeatureManager getFeatureManager() {
+        return null;
+    }
+
+    @Override
+    public SensorManager getSensorManager() {
         return null;
     }
 

@@ -40,12 +40,14 @@
         <module>components/apimgt-extensions</module>
         <module>components/policy-mgt</module>
         <module>components/certificate-mgt</module>
+        <!--<module>components/sensor-mgt</module>-->
         <module>components/webapp-authenticator-framework</module>
         <module>components/identity-extensions</module>
         <module>components/email-sender</module>
         <module>features/device-mgt</module>
         <module>features/apimgt-extensions</module>
         <module>features/policy-mgt</module>
+        <!--<module>features/sensor-mgt</module>-->
         <module>features/webapp-authenticator-framework</module>
         <module>features/certificate-mgt</module>
         <module>features/dynamic-client-registration</module>
@@ -307,6 +309,12 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.application.extension.api</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <!--Dependency for Sensor Management Feature-->
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.sensor.mgt.core</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->

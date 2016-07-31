@@ -127,6 +127,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             devices = new ArrayList<>();
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -163,6 +164,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             devices = new ArrayList<>();
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -196,6 +198,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -231,6 +234,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -266,6 +270,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -301,6 +306,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -366,6 +372,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {

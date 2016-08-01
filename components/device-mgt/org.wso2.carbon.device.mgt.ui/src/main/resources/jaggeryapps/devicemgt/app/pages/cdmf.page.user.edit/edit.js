@@ -20,7 +20,7 @@ function onRequest(context) {
     var userModule = require("/app/modules/user.js").userModule;
     var userName = request.getParameter("username");
     var user = userModule.getUser(userName)["content"];
-    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     if (user) {
         var title;
         if (user.firstname || user.lastname) {

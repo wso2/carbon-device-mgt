@@ -35,7 +35,7 @@ var invokers = function () {
     var TOKEN_EXPIRED = "Access token expired";
     var TOKEN_INVALID = "Invalid input. Access token validation failed";
 
-    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/user.js")["userModule"];
     var tokenUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];

@@ -24,7 +24,7 @@
  */
 function onRequest(context) {
     var userModule = require("/app/modules/user.js")["userModule"];
-    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var response = userModule.getRoles();
     if (response["status"] == "success") {
         context["roles"] = response["content"];

@@ -27,7 +27,7 @@ var handlers = function () {
 
     var tokenUtil = require("/app/modules/oauth/token-handler-utils.js")["utils"];
     var constants = require("/app/modules/constants.js");
-    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
     var publicMethods = {};
     var privateMethods = {};

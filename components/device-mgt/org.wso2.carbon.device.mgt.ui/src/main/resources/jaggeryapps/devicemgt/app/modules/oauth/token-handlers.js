@@ -32,7 +32,7 @@ var handlers = function () {
     var publicMethods = {};
     var privateMethods = {};
 
-    publicMethods.setupTokenPairByPasswordGrantType = function (username, password) {
+    publicMethods["setupTokenPairByPasswordGrantType"] = function (username, password) {
         if (!username || !password) {
             throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
                 "password grant type. Either username of logged in user, password or both are missing " +
@@ -67,7 +67,7 @@ var handlers = function () {
         }
     };
 
-    publicMethods.setupTokenPairBySamlGrantType = function (username, samlToken) {
+    publicMethods["setupTokenPairBySamlGrantType"] = function (username, samlToken) {
         if (!username || !samlToken) {
             throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
                 "saml grant type. Either username of logged in user, samlToken or both are missing " +
@@ -96,7 +96,7 @@ var handlers = function () {
         }
     };
 
-    publicMethods.refreshTokenPair = function () {
+    publicMethods["refreshTokenPair"] = function () {
         var currentTokenPair = parse(session.get(constants["TOKEN_PAIR"]));
         // currentTokenPair includes current access token as well as current refresh token
         var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
@@ -116,7 +116,7 @@ var handlers = function () {
         }
     };
 
-    privateMethods.setUpEncodedTenantBasedClientAppCredentials = function (username) {
+    privateMethods["setUpEncodedTenantBasedClientAppCredentials"] = function (username) {
         if (!username) {
             throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
                 "client credentials to session context. No username of logged in user is found as " +

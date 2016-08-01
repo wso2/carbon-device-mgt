@@ -35,6 +35,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationDAO;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.util.NotificationDAOUtil;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -177,6 +178,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     public PaginationResult getAllNotifications(PaginationRequest request) throws NotificationManagementException {
         PaginationResult paginationResult = new PaginationResult();
         List<Notification> notifications = new ArrayList<>();
+        request = DeviceManagerUtil.validateNotificationListPageSize(request);
         int count =0;
         try {
             NotificationManagementDAOFactory.openConnection();
@@ -199,6 +201,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
                                                      PaginationRequest request) throws NotificationManagementException{
         PaginationResult paginationResult = new PaginationResult();
         List<Notification> notifications = new ArrayList<>();
+        request = DeviceManagerUtil.validateNotificationListPageSize(request);
         int count =0;
         try {
             NotificationManagementDAOFactory.openConnection();

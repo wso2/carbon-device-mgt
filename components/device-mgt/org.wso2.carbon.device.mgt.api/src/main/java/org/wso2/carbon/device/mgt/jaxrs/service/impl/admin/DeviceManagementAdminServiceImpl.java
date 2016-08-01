@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceManagementAdminService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.*;
@@ -50,6 +51,7 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
                                      @HeaderParam("If-Modified-Since") String ifModifiedSince,
                                      @QueryParam("offset") int offset,
                                      @QueryParam("limit") int limit) {
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         try {
             int currentTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             if (MultitenantConstants.SUPER_TENANT_ID != currentTenantId) {

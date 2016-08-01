@@ -19,22 +19,26 @@
 var utils = function () {
     var log = new Log("/app/modules/oauth/token-handler-utils.js");
 
-    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var carbon = require("carbon");
 
+    //noinspection JSUnresolvedVariable
     var Base64 = Packages.org.apache.commons.codec.binary.Base64;
+    //noinspection JSUnresolvedVariable
     var String = Packages.java.lang.String;
 
     var publicMethods = {};
     var privateMethods = {};
 
     publicMethods.encode = function (payload) {
-        return new String(Base64.encodeBase64(new String(payload).getBytes()));
+        //noinspection JSUnresolvedFunction
+        return String(Base64.encodeBase64(String(payload).getBytes()));
     };
 
     publicMethods.decode = function (payload) {
-        return new String(Base64.decodeBase64(new String(payload).getBytes()));
+        //noinspection JSUnresolvedFunction
+        return String(Base64.decodeBase64(String(payload).getBytes()));
     };
 
     publicMethods.getDynamicClientAppCredentials = function () {
@@ -117,8 +121,8 @@ var utils = function () {
         } else {
             var assertionXML = publicMethods.decode(assertion);
             /*
-             TODO: make assertion extraction with proper parsing. Since Jaggery XML parser seem
-             to add formatting which causes signature verification to fail.
+             TODO: make assertion extraction with proper parsing.
+             Since Jaggery XML parser seem to add formatting which causes signature verification to fail.
              */
             var assertionStartMarker = "<saml2:Assertion";
             var assertionEndMarker = "<\/saml2:Assertion>";
@@ -203,7 +207,9 @@ var utils = function () {
         } else {
             var JWTClientManagerServicePackagePath =
                 "org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
+            //noinspection JSUnresolvedFunction, JSUnresolvedVariable
             var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
+            //noinspection JSUnresolvedFunction
             var jwtClient = JWTClientManagerService.getJWTClient();
             // returning access token by JWT grant type
             return jwtClient.getAccessToken(clientAppCredentials["clientId"], clientAppCredentials["clientSecret"],
@@ -218,6 +224,7 @@ var utils = function () {
                     "as input - getTenantBasedClientAppCredentials(x, y)");
             return null;
         } else {
+            //noinspection JSUnresolvedFunction, JSUnresolvedVariable
             var tenantDomain = carbon.server.tenantDomain({username: username});
             if (!tenantDomain) {
                 log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +

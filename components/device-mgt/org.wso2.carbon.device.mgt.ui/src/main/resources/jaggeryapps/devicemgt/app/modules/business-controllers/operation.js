@@ -17,7 +17,7 @@
  */
 
 var operationModule = function () {
-    var log = new Log("/app/modules/operation.js");
+    var log = new Log("/app/modules/business-controllers/operation.js");
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];

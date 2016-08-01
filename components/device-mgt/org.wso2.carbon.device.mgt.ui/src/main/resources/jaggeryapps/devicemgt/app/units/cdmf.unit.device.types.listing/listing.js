@@ -23,7 +23,7 @@ function onRequest(context) {
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
 
     var viewModel = {};
-    var deviceModule = require("/app/modules/device.js").deviceModule;
+    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var utility = require("/app/modules/utility.js").utility;
     var deviceTypes = deviceModule.getDeviceTypes();
 

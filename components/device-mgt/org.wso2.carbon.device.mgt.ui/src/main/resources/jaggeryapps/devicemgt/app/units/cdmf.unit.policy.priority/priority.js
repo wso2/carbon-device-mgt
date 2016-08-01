@@ -27,7 +27,7 @@ function onRequest(context) {
             return options.fn(this);
         }
     });
-    var policyModule = require("/app/modules/policy.js")["policyModule"];
+    var policyModule = require("/app/modules/business-controllers/group.js")["groupModule"];
     var response = policyModule.getAllPolicies();
     if (response["status"] == "success") {
         var policyListToView = response["content"];

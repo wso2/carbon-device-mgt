@@ -17,7 +17,7 @@
  */
 
 function onRequest(context) {
-    var userModule = require("/app/modules/user.js").userModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var userName = request.getParameter("username");
     var user = userModule.getUser(userName)["content"];
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];

@@ -26,7 +26,7 @@ var deviceModule = require("/app/modules/device.js").deviceModule;
 var utility = require("/app/modules/utility.js").utility;
 var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
 var userModule = require("/app/modules/user.js").userModule;
-var serviceInvokers = require("/app/modules/backend-service-invoker.js")["invokers"];
+var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
 var user = session.get(constants.USER_SESSION_KEY);
 var result;

@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>certificate-mgt</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Certificate Management Core</name>
     <description>WSO2 Carbon - Certificate Management Core</description>
@@ -56,7 +56,7 @@
                             org.osgi.service.component,
                             org.apache.commons.logging,
                             javax.security.auth.x500,
-                            javax.xml.parsers,
+                            javax.xml.*,
                             org.apache.commons.codec.binary,
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,

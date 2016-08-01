@@ -36,11 +36,11 @@ import org.apache.http.util.EntityUtils;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
-import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
 import org.wso2.carbon.identity.jwt.client.extension.dto.JWTConfig;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientConfigurationException;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.identity.jwt.client.extension.internal.JWTClientExtensionDataHolder;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -48,24 +48,15 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 
 /**
  * This is the utility class that is used for JWT Client.
@@ -125,10 +116,18 @@ public class JWTClientUtil {
 			throws RegistryException, IOException, JWTClientConfigurationException {
 		File configFile = new File(SUPERTENANT_JWT_CONFIG_LOCATION);
 		if (configFile.exists()) {
-			InputStream propertyStream = configFile.toURI().toURL().openStream();
-			Properties properties = new Properties();
-			properties.load(propertyStream);
-			jwtClientManagerService.setDefaultJWTClient(properties);
+			InputStream propertyStream = null;
+			try {
+				propertyStream = configFile.toURI().toURL().openStream();
+				Properties properties = new Properties();
+				properties.load(propertyStream);
+				jwtClientManagerService.setDefaultJWTClient(properties);
+			} finally {
+				if (propertyStream != null) {
+					propertyStream.close();
+				}
+			}
+
 		}
 	}
 
@@ -210,7 +209,7 @@ public class JWTClientUtil {
 			long nbf = currentTimeMillis + jwtConfig.getValidityPeriodFromCurrentTime() * 60 * 1000;
 			String jti = jwtConfig.getJti();
 			if (jti == null) {
-				String defaultTokenId = currentTimeMillis + "" + new Random().nextInt();
+				String defaultTokenId = currentTimeMillis + "" + new SecureRandom().nextInt();
 				jti = defaultTokenId;
 			}
 			List<String> aud = jwtConfig.getAudiences();

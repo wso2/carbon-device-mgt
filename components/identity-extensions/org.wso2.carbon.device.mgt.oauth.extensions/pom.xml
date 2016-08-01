@@ -22,13 +22,13 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>identity-extensions</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.oauth.extensions</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - OAuth Extensions</name>
     <url>http://wso2.org</url>
@@ -49,6 +49,10 @@
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.keymgt</artifactId>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple.wso2</groupId>
@@ -95,40 +99,41 @@
                             org.wso2.carbon.device.mgt.*,
                             org.wso2.carbon.identity.application.common.model,
                             org.wso2.carbon.identity.oauth.callback,
-                            org.wso2.carbon.identity.oauth.common,
                             org.wso2.carbon.identity.oauth2,
                             org.wso2.carbon.identity.oauth2.model,
                             org.wso2.carbon.identity.oauth2.validators,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.service,
-                            org.wso2.carbon.identity.application.common.model,
-                            org.wso2.carbon.identity.application.authentication.framework.model,
                             org.wso2.carbon.user.core.tenant,
                             org.json.simple,
                             javax.cache,
-                            javax.xml.namespace,
-                            org.apache.axiom.om,
                             org.wso2.carbon.apimgt.api,
                             org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.apimgt.impl.dao,
                             org.wso2.carbon.apimgt.impl.utils,
-                            org.wso2.carbon.identity.application.common.cache,
                             org.wso2.carbon.identity.core.util,
                             org.wso2.carbon.identity.oauth2.dto,
                             org.wso2.carbon.identity.oauth2.token,
-                            org.wso2.carbon.identity.oauth2.token.handlers.grant,
-                            org.wso2.carbon.user.core,
-                            org.wso2.carbon.user.core.config,
-                            org.wso2.carbon.user.core.util,
+                            org.apache.oltu.oauth2.common.validators,
                             org.wso2.carbon.utils,
                             org.wso2.carbon.context,
                             org.wso2.carbon.identity.oauth.cache,
                             org.wso2.carbon.identity.oauth.config,
                             org.wso2.carbon.identity.oauth2.dao,
                             org.wso2.carbon.utils.multitenancy,
-                            org.wso2.carbon.base,
                             org.wso2.carbon.identity.oauth2.grant.jwt.*,
-                            org.wso2.carbon.device.mgt.core.*
+                            org.wso2.carbon.device.mgt.core.*,
+                            javax.xml.bind,
+                            javax.xml.bind.annotation,
+                            javax.xml.parsers,
+                            org.w3c.dom,
+                            org.wso2.carbon.apimgt.keymgt,
+                            org.wso2.carbon.apimgt.keymgt.handlers,
+                            com.google.gson,
+                            org.apache.commons.codec.binary,
+                            org.wso2.carbon.identity.application.authentication.framework.model,
+                            org.apache.oltu.oauth2.common,
+                            org.wso2.carbon.base
                         </Import-Package>
                     </instructions>
                 </configuration>

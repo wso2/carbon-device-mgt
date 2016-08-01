@@ -18,7 +18,7 @@
 package org.wso2.carbon.certificate.mgt.core.service;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOException;
+import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
@@ -47,8 +47,8 @@ public interface CertificateManagementService {
 
     byte[] getPKIMessageSCEP(InputStream inputStream) throws KeystoreException;
 
-    X509Certificate generateCertificateFromCSR(PrivateKey privateKey, PKCS10CertificationRequest request,
-                                               String issueSubject) throws KeystoreException;
+    X509Certificate generateCertificateFromCSR(
+            PrivateKey privateKey, PKCS10CertificationRequest request, String issueSubject) throws KeystoreException;
 
     Certificate getCertificateByAlias(String alias) throws KeystoreException;
 
@@ -71,13 +71,14 @@ public interface CertificateManagementService {
 
     public X509Certificate pemToX509Certificate(String pem) throws KeystoreException;
 
-    public CertificateResponse retrieveCertificate(String serialNumber) throws CertificateManagementDAOException;
+    public CertificateResponse retrieveCertificate(String serialNumber) throws CertificateManagementException;
 
-    public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementDAOException;
+    public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementException;
 
-    boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException;
+    boolean removeCertificate(String serialNumber) throws CertificateManagementException;
 
-    public List<CertificateResponse> getCertificates() throws CertificateManagementDAOException;
+    public List<CertificateResponse> getCertificates() throws CertificateManagementException;
 
-    public List<CertificateResponse> searchCertificates(String serialNumber) throws CertificateManagementDAOException;
+    public List<CertificateResponse> searchCertificates(String serialNumber) throws CertificateManagementException;
+
 }

@@ -38,11 +38,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -80,14 +83,13 @@ public class AnnotationProcessor {
      * Scan the context for classes with annotations
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        AnnotationDB db = new AnnotationDB();
+        ExtendedAnnotationDB db = new ExtendedAnnotationDB();
         db.addIgnoredPackages(PACKAGE_ORG_APACHE);
         db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
         db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
-        URL[] libPath = WarUrlFinder.findWebInfLibClasspaths(servletContext);
-        URL classPath = WarUrlFinder.findWebInfClassesPath(servletContext);
-        URL[] urls = (URL[]) ArrayUtils.add(libPath, libPath.length, classPath);
-        db.scanArchives(urls);
+
+        URL classPath = findWebInfClassesPath(servletContext);
+        db.scanArchives(classPath);
 
         //Returns a list of classes with given Annotation
         return db.getAnnotationIndex().get(className);
@@ -274,6 +276,30 @@ public class AnnotationProcessor {
                 return ((String[]) methodHandler.invoke(annotation, method, null))[0];
             default:
                 return null;
+        }
+    }
+
+    /**
+     * Find the URL pointing to "/WEB-INF/classes"  This method may not work in conjunction with IteratorFactory
+     * if your servlet container does not extract the /WEB-INF/classes into a real file-based directory
+     *
+     * @param servletContext
+     * @return null if cannot determin /WEB-INF/classes
+     */
+    public static URL findWebInfClassesPath(ServletContext servletContext)
+    {
+        String path = servletContext.getRealPath("/WEB-INF/classes");
+        if (path == null) return null;
+        File fp = new File(path);
+        if (fp.exists() == false) return null;
+        try
+        {
+            URI uri = fp.toURI();
+            return uri.toURL();
+        }
+        catch (MalformedURLException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 }

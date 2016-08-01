@@ -5,6 +5,8 @@
         <classes>
             <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateGeneratorTestSuite"/>
             <class name="org.wso2.carbon.certificate.mgt.core.util.CommonUtil"/>
+            <class name="org.wso2.carbon.certificate.mgt.core.impl.CertificateGeneratorTests"/>
+            <class name="org.wso2.carbon.certificate.mgt.core.impl.KeyGeneratorTests"/>
         </classes>
     </test>
 </suite>

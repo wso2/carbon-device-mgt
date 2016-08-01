@@ -25,6 +25,7 @@ import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOExceptio
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
+import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
 import org.wso2.carbon.certificate.mgt.core.impl.KeyStoreReader;
@@ -51,7 +52,6 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
     }
 
     public static CertificateManagementServiceImpl getInstance() {
-
         if (certificateManagementServiceImpl == null) {
             certificateManagementServiceImpl = new CertificateManagementServiceImpl();
             keyStoreReader = new KeyStoreReader();
@@ -106,7 +106,8 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         return certificateGenerator.verifyPEMSignature(requestCertificate);
     }
 
-    @Override public CertificateResponse verifySubjectDN(String requestDN) throws KeystoreException {
+    @Override
+    public CertificateResponse verifySubjectDN(String requestDN) throws KeystoreException {
         return certificateGenerator.verifyCertificateDN(requestDN);
     }
 
@@ -135,39 +136,47 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
         return certificateGenerator.pemToX509Certificate(pem);
     }
 
-    public CertificateResponse retrieveCertificate(String serialNumber)
-            throws CertificateManagementDAOException {
+    public CertificateResponse retrieveCertificate(String serialNumber) throws CertificateManagementException {
         CertificateDAO certificateDAO;
         try {
             CertificateManagementDAOFactory.openConnection();
             certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
             return certificateDAO.retrieveCertificate(serialNumber);
         } catch (SQLException e) {
-            String errorMsg = "Error when opening connection";
-            log.error(errorMsg, e);
-            throw new CertificateManagementDAOException(errorMsg, e);
+            String msg = "Error occurred while opening a connection to the underlying data source";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
+        } catch (CertificateManagementDAOException e) {
+            String msg = "Error occurred while looking up for the certificate carrying the serial number '" +
+                    serialNumber + "' in the underlying certificate repository";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
         } finally {
             CertificateManagementDAOFactory.closeConnection();
         }
     }
 
-    public PaginationResult getAllCertificates(PaginationRequest request)
-            throws CertificateManagementDAOException {
+    public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementException {
         try {
             CertificateManagementDAOFactory.openConnection();
             CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
             return certificateDAO.getAllCertificates(request);
         } catch (SQLException e) {
-            String errorMsg = "Error when opening connection";
-            log.error(errorMsg, e);
-            throw new CertificateManagementDAOException(errorMsg, e);
+            String msg = "Error occurred while opening a connection to the underlying data source";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
+        } catch (CertificateManagementDAOException e) {
+            String msg = "Error occurred while looking up for the list of certificates managed in the underlying " +
+                    "certificate repository";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
         } finally {
             CertificateManagementDAOFactory.closeConnection();
         }
     }
 
     @Override
-    public boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException {
+    public boolean removeCertificate(String serialNumber) throws CertificateManagementException {
         try {
             CertificateManagementDAOFactory.beginTransaction();
             CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
@@ -175,38 +184,53 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
             CertificateManagementDAOFactory.commitTransaction();
             return status;
         } catch (TransactionManagementException e) {
-            String errorMsg = "Error when deleting";
-            log.error(errorMsg, e);
-            throw new CertificateManagementDAOException(errorMsg, e);
+            String msg = "Error occurred while removing certificate carrying serial number '" + serialNumber + "'";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
+        } catch (CertificateManagementDAOException e) {
+            CertificateManagementDAOFactory.rollbackTransaction();
+            String msg = "Error occurred while removing the certificate carrying serial number '" + serialNumber +
+                    "' from the certificate repository";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
+        }
+    }
+
+    @Override
+    public List<CertificateResponse> getCertificates() throws CertificateManagementException {
+        try {
+            CertificateManagementDAOFactory.openConnection();
+            CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
+            return certificateDAO.getAllCertificates();
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the underlying data source";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
+        } catch (CertificateManagementDAOException e) {
+            String msg = "Error occurred while looking up for the list of certificates managed in the " +
+                    "underlying certificate repository";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
         } finally {
             CertificateManagementDAOFactory.closeConnection();
         }
     }
 
     @Override
-    public List<CertificateResponse> getCertificates() throws CertificateManagementDAOException {
-        try {
-            CertificateManagementDAOFactory.openConnection();
-            CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
-            return certificateDAO.getAllCertificates();
-        } catch (SQLException e) {
-            String errorMsg = "Error when opening connection";
-            log.error(errorMsg, e);
-            throw new CertificateManagementDAOException(errorMsg, e);
-        } finally {
-            CertificateManagementDAOFactory.closeConnection();
-        }
-    }
-
-    @Override public List<CertificateResponse> searchCertificates(String serialNumber) throws CertificateManagementDAOException {
+    public List<CertificateResponse> searchCertificates(String serialNumber) throws CertificateManagementException {
         try {
             CertificateManagementDAOFactory.openConnection();
             CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
             return certificateDAO.searchCertificate(serialNumber);
         } catch (SQLException e) {
-            String errorMsg = "Error when opening connection";
-            log.error(errorMsg, e);
-            throw new CertificateManagementDAOException(errorMsg, e);
+            String msg = "Error occurred while opening a connection to the underlying data source";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
+        } catch (CertificateManagementDAOException e) {
+            String msg = "Error occurred while searching for the list of certificates carrying the serial number '" +
+                    serialNumber + "' in the underlying certificate repository";
+            log.error(msg, e);
+            throw new CertificateManagementException(msg, e);
         } finally {
             CertificateManagementDAOFactory.closeConnection();
         }

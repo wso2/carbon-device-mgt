@@ -15,7 +15,7 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{unit "cdmf.unit.ui.title" pageTitle="User Management"}}
+{{unit "cdmf.unit.ui.title" pageTitle="User Management | Add User"}}
 
 {{#zone "breadcrumbs"}}
     <li>
@@ -50,8 +50,8 @@
                             <div id="user-create-error-msg" class="alert alert-danger hidden" role="alert">
                                 <i class="icon fw fw-error"></i><span></span>
                             </div>
-                            <label class="wr-input-label" title="List of available secondary user stores">
-                                User Stores
+                            <label class="wr-input-label" title="Select the domain of the user store from the drop-down given below. The domain of the default user store is PRIMARY">
+                                User Store Domain
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
                             </label>
                             <div class="wr-input-control">
@@ -96,12 +96,10 @@
                             <div id="emailField" class=" form-group wr-input-control">
                                 <input type="email" id="emailAddress" class="form-control"/>
                                 <span class="glyphicon glyphicon-remove form-control-feedback hidden emailError"></span>
-                                <label class=" hidden error email-required" for="summary">This field is
-                                                                                          required.</label>
+                                <label class=" hidden error email-required" for="summary">This field is required.</label>
                                 <label class=" hidden error email-invalid" for="summary">Invalid Email Address.</label>
                             </div>
-                            <label class="wr-input-label"
-                                   title="Optional field that can have 0-to-many roles for the user">
+                            <label class="wr-input-label" title="Optional field that can have 0-to-many roles for the user">
                                 User Roles
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
                             </label>
@@ -123,7 +121,6 @@
                     <p class="page-sub-title">User was added successfully.</p>
                     <br>
                     An invitation mail will be sent to this user to initiate device enrollment.
-
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="qr-code col-lg-5 col-md-6 col-centered"></div>
@@ -132,8 +129,7 @@
                     <br>Please click <b>"Add Another User"</b>, if you wish to add another user or click
                     <b>"View User List"</b> to complete the process and go back to the user list.
                     <hr/>
-                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/users'">View User List
-                    </button>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/users'">View User List</button>
                     <a href="{{@app.context}}/user/add" class="cu-btn-inner">
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>

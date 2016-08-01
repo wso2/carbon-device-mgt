@@ -20,8 +20,8 @@ var operationModule = function () {
     var log = new Log("/app/modules/operation.js");
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
-    var devicemgtProps = require('/app/conf/devicemgt-props.js').config();
-    var serviceInvokers = require("/app/modules/backend-service-invoker.js").backendServiceInvoker;
+    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+    var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
     var publicMethods = {};
     var privateMethods = {};

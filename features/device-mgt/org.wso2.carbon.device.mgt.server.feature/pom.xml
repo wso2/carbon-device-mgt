@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt-feature</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.server.feature</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management Server Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required for Back-end Device Management functionality
@@ -49,10 +49,10 @@
             <artifactId>org.wso2.carbon.device.mgt.api.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.commons</groupId>
-            <artifactId>org.wso2.carbon.email.verification</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.carbon.commons</groupId>-->
+            <!--<artifactId>org.wso2.carbon.email.verification</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -114,9 +114,9 @@
                                 <bundleDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
                                 </bundleDef>
-                                <bundleDef>
-                                    org.wso2.carbon.commons:org.wso2.carbon.email.verification
-                                </bundleDef>
+                                <!--<bundleDef>-->
+                                    <!--org.wso2.carbon.commons:org.wso2.carbon.email.verification-->
+                                <!--</bundleDef>-->
                                 <bundleDef>
                                     org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${carbon.identity.version}
                                 </bundleDef>

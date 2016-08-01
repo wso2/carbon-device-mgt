@@ -15,10 +15,7 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{#zone "bottomJs"}}
-    {{js "js/js.cookie.js"}}
-    {{js "js/invoker-lib.js"}}
-
+{{#zone "content"}}
     <div id="error-msg" class="hide">
         <div class="content">
             <div class="row">
@@ -34,4 +31,11 @@
             </div>
         </div>
     </div>
+{{/zone}}
+{{#zone "bottomJs"}}
+    <script type="text/javascript">
+        var context = "{{@app.context}}"
+    </script>
+    {{js "js/js.cookie.js"}}
+    {{js "js/invoker-lib.js"}}
 {{/zone}}

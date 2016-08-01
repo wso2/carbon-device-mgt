@@ -162,7 +162,6 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             deviceDetailsDAO.addDeviceLocation(deviceLocation);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
-            DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Transactional error occurred while adding the device location " +
                     "information.", e);
         } catch (DeviceDetailsMgtDAOException e) {
@@ -172,6 +171,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while getting the device information.", e);
         } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while updating the last updated timestamp of " +
                     "the device", e);
         } finally {
@@ -225,6 +225,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device locations.", e);
+        } finally{
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 

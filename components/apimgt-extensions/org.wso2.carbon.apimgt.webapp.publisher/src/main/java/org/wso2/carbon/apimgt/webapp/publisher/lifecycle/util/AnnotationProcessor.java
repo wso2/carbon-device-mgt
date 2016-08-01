@@ -36,11 +36,14 @@ import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementExcept
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -85,16 +88,13 @@ public class AnnotationProcessor {
      * @throws IOException
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        AnnotationDB db = new AnnotationDB();
+        ExtendedAnnotationDB db = new ExtendedAnnotationDB();
         db.addIgnoredPackages(PACKAGE_ORG_APACHE);
         db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
         db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
 
-        URL[] libPath = WarUrlFinder.findWebInfLibClasspaths(servletContext);
-        URL classPath = WarUrlFinder.findWebInfClassesPath(servletContext);
-        URL[] urls = (URL[]) ArrayUtils.add(libPath, libPath.length, classPath);
-
-        db.scanArchives(urls);
+        URL classPath = findWebInfClassesPath(servletContext);
+        db.scanArchives(classPath);
 
         //Returns a list of classes with given Annotation
         return db.getAnnotationIndex().get(className);
@@ -384,6 +384,30 @@ public class AnnotationProcessor {
     private void addPermission(String[] permissions) throws PermissionManagementException {
         for (String permission : permissions) {
             PermissionUtils.addPermission(permission);
+        }
+    }
+
+    /**
+     * Find the URL pointing to "/WEB-INF/classes"  This method may not work in conjunction with IteratorFactory
+     * if your servlet container does not extract the /WEB-INF/classes into a real file-based directory
+     *
+     * @param servletContext
+     * @return null if cannot determin /WEB-INF/classes
+     */
+    public static URL findWebInfClassesPath(ServletContext servletContext)
+    {
+        String path = servletContext.getRealPath("/WEB-INF/classes");
+        if (path == null) return null;
+        File fp = new File(path);
+        if (fp.exists() == false) return null;
+        try
+        {
+            URI uri = fp.toURI();
+            return uri.toURL();
+        }
+        catch (MalformedURLException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 

@@ -21,6 +21,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
 import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,22 +50,19 @@ public class ConfigurationUtil {
 	public static final String POST_BODY_CA_CAPS = "POSTPKIOperation\nSHA-1\nDES3\n";
 	public static final String DES_EDE = "DESede";
 	public static final String CONF_LOCATION = "conf.location";
-    private static final String CARBON_HOME = "carbon.home";
-    private static final String CERTIFICATE_CONFIG_XML = "certificate-config.xml";
-    private static final String CARBON_HOME_ENTRY = "${carbon.home}";
     public static final String DEFAULT_PRINCIPAL = "O=WSO2, OU=Mobile, C=LK";
     public static final String RSA_PRIVATE_KEY_BEGIN_TEXT = "-----BEGIN RSA PRIVATE KEY-----\n";
     public static final String RSA_PRIVATE_KEY_END_TEXT = "-----END RSA PRIVATE KEY-----";
     public static final String EMPTY_TEXT = "";
 	public static final int RSA_KEY_LENGTH = 1024;
 	public static final long MILLI_SECONDS = 1000L * 60 * 60 * 24;
-
-
-	private static ConfigurationUtil configurationUtil;
+	private static final String CARBON_HOME = "carbon.home";
+	private static final String CERTIFICATE_CONFIG_XML = "certificate-config.xml";
+	private static final String CARBON_HOME_ENTRY = "${carbon.home}";
 	private static final String[] certificateConfigEntryNames = { CA_CERT_ALIAS, RA_CERT_ALIAS,
 			CERTIFICATE_KEYSTORE, PATH_CERTIFICATE_KEYSTORE, CERTIFICATE_KEYSTORE_PASSWORD,
 			KEYSTORE_CA_CERT_PRIV_PASSWORD, KEYSTORE_RA_CERT_PRIV_PASSWORD };
-
+	private static ConfigurationUtil configurationUtil;
 	private static Map<String, String> configMap;
 
 	private static Map<String, String> readCertificateConfigurations() throws KeystoreException {
@@ -79,6 +78,7 @@ public class ConfigurationUtil {
 			try {
 				File fXmlFile = new File(certConfLocation);
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+				documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 				document = documentBuilder.parse(fXmlFile);
 			} catch (ParserConfigurationException e) {

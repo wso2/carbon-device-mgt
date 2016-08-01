@@ -27,14 +27,14 @@
     </li>
     <li>
         <a href="{{@app.context}}/users">
-            Users
+            USERS
         </a>
     </li>
 {{/zone}}
 
 {{#zone "navbarActions"}}
     <li>
-        <a href="{{@app.context}}/user/add" class="cu-btn">
+        <a href="{{@app.context}}/user/add">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
                 <i class="fw fw-ring fw-stack-2x"></i>
@@ -298,15 +298,13 @@
                         Enter new password
                         <br><br>
                         <div>
-                            <input type="password" class="form-control modal-input operationDataKeys" id="new-password"
-                                   data-key="message"/>
+                            <input type="password" class="form-control modal-input operationDataKeys" id="new-password" data-key="message"/>
                         </div>
                         <br>
                         Retype new password
                         <br><br>
                         <div>
-                            <input type="password" class="form-control modal-input operationDataKeys"
-                                   id="confirmed-password" data-key="message"/>
+                            <input type="password" class="form-control modal-input operationDataKeys" id="confirmed-password" data-key="message"/>
                         </div>
                         <br>
                     </h4>
@@ -338,6 +336,7 @@
             </div>
         </div>
     </div>
+
 {{/zone}}
 {{#zone "common-navigation"}}
     <!--Later add the navigation menu from here-->

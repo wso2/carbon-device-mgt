@@ -24,8 +24,12 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.oauth.extensions.config.DeviceMgtScopesConfig;
+import org.wso2.carbon.device.mgt.oauth.extensions.config.DeviceMgtScopesConfigurationFailedException;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -54,12 +58,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setPermissionManagerService"
  * unbind="unsetPermissionManagerService"
- * @scr.reference name="org.wso2.carbon.device.manager"
- * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
+ * @scr.reference name="org.wso2.carbon.device.authorization"
+ * interface="org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService"
  * cardinality="1..1"
  * policy="dynamic"
- * bind="setDeviceManagementService"
- * unbind="unsetDeviceManagementService"
+ * bind="setDeviceAccessAuthorizationService"
+ * unbind="unsetDeviceAccessAuthorizationService"
  */
 public class OAuthExtensionServiceComponent {
 
@@ -67,8 +71,6 @@ public class OAuthExtensionServiceComponent {
     private static final String REPOSITORY = "repository";
     private static final String CONFIGURATION = "conf";
     private static final String APIM_CONF_FILE = "api-manager.xml";
-    private static final String API_KEY_MANGER_DEVICE_SCOPE = "APIKeyValidator.DeviceScope";
-    private static final String CDMF_DEVICE_SCOPE_PREFIX = "cdmf_";
 
 
     @SuppressWarnings("unused")
@@ -77,6 +79,8 @@ public class OAuthExtensionServiceComponent {
             log.debug("Starting OAuthExtensionBundle");
         }
         try {
+            DeviceMgtScopesConfig.init();
+
             APIManagerConfiguration configuration = new APIManagerConfiguration();
             String filePath = new StringBuilder().
                     append(CarbonUtils.getCarbonHome()).
@@ -102,18 +106,10 @@ public class OAuthExtensionServiceComponent {
             }
 
             OAuthExtensionsDataHolder.getInstance().setWhitelistedScopes(whiteList);
-
-            // Read device scope(Specific to CDMF) from Configuration.
-            String deviceScope = configuration.getFirstProperty(API_KEY_MANGER_DEVICE_SCOPE);
-
-            if (deviceScope == null) {
-                deviceScope = CDMF_DEVICE_SCOPE_PREFIX;
-            }
-
-            OAuthExtensionsDataHolder.getInstance().setDeviceScope(deviceScope);
-
         } catch (APIManagementException e) {
-            log.error("Error occurred while loading APIM configurations", e);
+            log.error("Error occurred while loading DeviceMgtConfig configurations", e);
+        } catch (DeviceMgtScopesConfigurationFailedException e) {
+            log.error("Failed to initialize device scope configuration.", e);
         }
     }
 
@@ -198,24 +194,24 @@ public class OAuthExtensionServiceComponent {
 
     /**
      *  Set DeviceManagementProviderService
-     * @param deviceManagerService  An instance of PermissionManagerService
+     * @param deviceAccessAuthorizationService  An instance of deviceAccessAuthorizationService
      */
-    protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {
+    protected void setDeviceAccessAuthorizationService(DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Device Management Service");
         }
-        OAuthExtensionsDataHolder.getInstance().setDeviceManagementService(deviceManagerService);
+        OAuthExtensionsDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
     }
 
     /**
      * unset DeviceManagementProviderService
-     * @param deviceManagementService  An instance of PermissionManagerService
+     * @param deviceAccessAuthorizationService  An instance of deviceAccessAuthorizationService
      */
-    protected void unsetDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
+    protected void unsetDeviceAccessAuthorizationService(DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
         if (log.isDebugEnabled()) {
             log.debug("Removing Device Management Service");
         }
-        OAuthExtensionsDataHolder.getInstance().setDeviceManagementService(null);
+        OAuthExtensionsDataHolder.getInstance().setDeviceAccessAuthorizationService(null);
     }
 
 }

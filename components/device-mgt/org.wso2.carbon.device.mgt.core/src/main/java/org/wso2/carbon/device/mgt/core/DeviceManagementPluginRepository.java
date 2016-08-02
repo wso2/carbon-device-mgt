@@ -164,14 +164,15 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     @Override
     public void notifyObserver() {
+        String deviceTypeName;
         synchronized (providers) {
             for (DeviceManagementService provider : providers.values()) {
                 try {
                     provider.init();
-
+                    deviceTypeName = provider.getType().toLowerCase();
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                    DeviceManagerUtil.registerDeviceType(provider.getType(), tenantId, provisioningConfig.isSharedWithAllTenants());
+                    DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId, provisioningConfig.isSharedWithAllTenants());
                     registerPushNotificationStrategy(provider);
                     //TODO:
                     //This is a temporory fix.

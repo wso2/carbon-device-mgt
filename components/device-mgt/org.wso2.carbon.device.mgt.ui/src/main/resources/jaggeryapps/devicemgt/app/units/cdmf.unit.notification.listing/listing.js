@@ -17,7 +17,7 @@
  */
 
 function onRequest(context){
-    var userModule = require("/app/modules/user.js").userModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var constants = require("/app/modules/constants.js");
     var permissions = [];
     if(userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/notifications/list")){

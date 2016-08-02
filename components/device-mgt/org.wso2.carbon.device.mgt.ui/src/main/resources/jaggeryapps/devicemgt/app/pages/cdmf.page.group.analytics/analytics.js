@@ -18,7 +18,7 @@
 
 function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
-    var groupModule = require("/app/modules/group.js").groupModule;
+    var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
     var groupName = context.uriParams.name;
     var groupOwner = context.uriParams.owner;
     var devices = groupModule.getGroupDevices(groupName, groupOwner).data;

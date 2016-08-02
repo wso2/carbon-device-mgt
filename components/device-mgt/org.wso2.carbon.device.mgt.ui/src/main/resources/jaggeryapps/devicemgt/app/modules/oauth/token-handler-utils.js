@@ -19,25 +19,29 @@
 var utils = function () {
     var log = new Log("/app/modules/oauth/token-handler-utils.js");
 
-    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var carbon = require("carbon");
 
+    //noinspection JSUnresolvedVariable
     var Base64 = Packages.org.apache.commons.codec.binary.Base64;
+    //noinspection JSUnresolvedVariable
     var String = Packages.java.lang.String;
 
     var publicMethods = {};
     var privateMethods = {};
 
-    publicMethods.encode = function (payload) {
-        return new String(Base64.encodeBase64(new String(payload).getBytes()));
+    publicMethods["encode"] = function (payload) {
+        //noinspection JSUnresolvedFunction
+        return String(Base64.encodeBase64(String(payload).getBytes()));
     };
 
-    publicMethods.decode = function (payload) {
-        return new String(Base64.decodeBase64(new String(payload).getBytes()));
+    publicMethods["decode"] = function (payload) {
+        //noinspection JSUnresolvedFunction
+        return String(Base64.decodeBase64(String(payload).getBytes()));
     };
 
-    publicMethods.getDynamicClientAppCredentials = function () {
+    publicMethods["getDynamicClientAppCredentials"] = function () {
         // setting up dynamic client application properties
         var dcAppProperties = {
             "applicationType": deviceMgtProps["oauthProvider"]["appRegistration"]["appType"],
@@ -76,7 +80,79 @@ var utils = function () {
         return dynamicClientAppCredentials;
     };
 
-    publicMethods.getTokenPairByPasswordGrantType = function (username, password, encodedClientAppCredentials, scopes) {
+    publicMethods["getTenantBasedClientAppCredentials"] = function (username, jwtToken) {
+        if (!username || !jwtToken) {
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
+                "based client app credentials. No username or jwt token is found " +
+                "as input - getTenantBasedClientAppCredentials(x, y)");
+            return null;
+        } else {
+            //noinspection JSUnresolvedFunction, JSUnresolvedVariable
+            var tenantDomain = carbon.server.tenantDomain({username: username});
+            if (!tenantDomain) {
+                log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
+                    "based client application credentials. Unable to obtain a valid tenant domain for provided " +
+                    "username - getTenantBasedClientAppCredentials(x, y)");
+                return null;
+            } else {
+                var cachedTenantBasedClientAppCredentials = privateMethods.
+                    getCachedTenantBasedClientAppCredentials(tenantDomain);
+                if (cachedTenantBasedClientAppCredentials) {
+                    return cachedTenantBasedClientAppCredentials;
+                } else {
+                    // register a tenant based client app at API Manager
+                    var applicationName = "webapp_" + tenantDomain;
+                    var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
+                        ["apiManagerClientAppRegistrationServiceURL"] +
+                        "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", requestURL, false);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    xhr.send();
+
+                    if (xhr["status"] == 201 && xhr["responseText"]) {
+                        var responsePayload = parse(xhr["responseText"]);
+                        var tenantBasedClientAppCredentials = {};
+                        tenantBasedClientAppCredentials["clientId"] = responsePayload["client_id"];
+                        tenantBasedClientAppCredentials["clientSecret"] = responsePayload["client_secret"];
+                        privateMethods.
+                            setCachedTenantBasedClientAppCredentials(tenantDomain, tenantBasedClientAppCredentials);
+                        return tenantBasedClientAppCredentials;
+                    } else {
+                        log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
+                            "based client application credentials from API " +
+                            "Manager - getTenantBasedClientAppCredentials(x, y)");
+                        return null;
+                    }
+                }
+            }
+        }
+    };
+
+    privateMethods["setCachedTenantBasedClientAppCredentials"] = function (tenantDomain, clientAppCredentials) {
+        var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
+        if (!cachedTenantBasedClientAppCredentialsMap) {
+            cachedTenantBasedClientAppCredentialsMap = {};
+            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientAppCredentials;
+            application.put(constants["CACHED_CREDENTIALS"], cachedTenantBasedClientAppCredentialsMap);
+        } else if (!cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
+            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientAppCredentials;
+        }
+    };
+
+    privateMethods["getCachedTenantBasedClientAppCredentials"] = function (tenantDomain) {
+        var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
+        if (!cachedTenantBasedClientAppCredentialsMap ||
+            !cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
+            return null;
+        } else {
+            return cachedTenantBasedClientAppCredentialsMap[tenantDomain];
+        }
+    };
+
+    publicMethods["getTokenPairByPasswordGrantType"] = function (username, password, encodedClientAppCredentials, scopes) {
         if (!username || !password || !encodedClientAppCredentials || !scopes) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token by password " +
                 "grant type. No username, password, encoded client app credentials or scopes are " +
@@ -108,7 +184,7 @@ var utils = function () {
         }
     };
 
-    publicMethods.getTokenPairBySAMLGrantType = function (assertion, encodedClientAppCredentials, scopes) {
+    publicMethods["getTokenPairBySAMLGrantType"] = function (assertion, encodedClientAppCredentials, scopes) {
         if (!assertion || !encodedClientAppCredentials || !scopes) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token by saml " +
                 "grant type. No assertion, encoded client app credentials or scopes are " +
@@ -117,8 +193,8 @@ var utils = function () {
         } else {
             var assertionXML = publicMethods.decode(assertion);
             /*
-             TODO: make assertion extraction with proper parsing. Since Jaggery XML parser seem
-             to add formatting which causes signature verification to fail.
+             TODO: make assertion extraction with proper parsing.
+             Since Jaggery XML parser seem to add formatting which causes signature verification to fail.
              */
             var assertionStartMarker = "<saml2:Assertion";
             var assertionEndMarker = "<\/saml2:Assertion>";
@@ -161,7 +237,7 @@ var utils = function () {
         }
     };
 
-    publicMethods.getNewTokenPairByRefreshToken = function (refreshToken, encodedClientAppCredentials, scopes) {
+    publicMethods["getNewTokenPairByRefreshToken"] = function (refreshToken, encodedClientAppCredentials, scopes) {
         if (!refreshToken || !encodedClientAppCredentials) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving new access token " +
                 "by current refresh token. No refresh token or encoded client app credentials are " +
@@ -194,7 +270,7 @@ var utils = function () {
         }
     };
 
-    publicMethods.getAccessTokenByJWTGrantType =  function (clientAppCredentials) {
+    publicMethods["getAccessTokenByJWTGrantType"] =  function (clientAppCredentials) {
         if (!clientAppCredentials) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving new access token " +
                 "by current refresh token. No client app credentials are found " +
@@ -203,82 +279,13 @@ var utils = function () {
         } else {
             var JWTClientManagerServicePackagePath =
                 "org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
+            //noinspection JSUnresolvedFunction, JSUnresolvedVariable
             var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
+            //noinspection JSUnresolvedFunction
             var jwtClient = JWTClientManagerService.getJWTClient();
             // returning access token by JWT grant type
             return jwtClient.getAccessToken(clientAppCredentials["clientId"], clientAppCredentials["clientSecret"],
                 deviceMgtProps["oauthProvider"]["appRegistration"]["owner"], null)["accessToken"];
-        }
-    };
-
-    publicMethods.getTenantBasedClientAppCredentials = function (username, jwtToken) {
-        if (!username || !jwtToken) {
-            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
-                "based client app credentials. No username or jwt token is found " +
-                    "as input - getTenantBasedClientAppCredentials(x, y)");
-            return null;
-        } else {
-            var tenantDomain = carbon.server.tenantDomain({username: username});
-            if (!tenantDomain) {
-                log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
-                    "based client application credentials. Unable to obtain a valid tenant domain for provided " +
-                        "username - getTenantBasedClientAppCredentials(x, y)");
-                return null;
-            } else {
-                var cachedTenantBasedClientAppCredentials = privateMethods.
-                    getCachedTenantBasedClientAppCredentials(tenantDomain);
-                if (cachedTenantBasedClientAppCredentials) {
-                    return cachedTenantBasedClientAppCredentials;
-                } else {
-                    // register a tenant based client app at API Manager
-                    var applicationName = "webapp_" + tenantDomain;
-                    var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
-                        ["apiManagerClientAppRegistrationServiceURL"] +
-                            "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
-
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("POST", requestURL, false);
-                    xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
-                    xhr.send();
-
-                    if (xhr["status"] == 201 && xhr["responseText"]) {
-                        var responsePayload = parse(xhr["responseText"]);
-                        var tenantBasedClientAppCredentials = {};
-                        tenantBasedClientAppCredentials["clientId"] = responsePayload["client_id"];
-                        tenantBasedClientAppCredentials["clientSecret"] = responsePayload["client_secret"];
-                        privateMethods.
-                            setCachedTenantBasedClientAppCredentials(tenantDomain, tenantBasedClientAppCredentials);
-                        return tenantBasedClientAppCredentials;
-                    } else {
-                        log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
-                            "based client application credentials from API " +
-                                "Manager - getTenantBasedClientAppCredentials(x, y)");
-                        return null;
-                    }
-                }
-            }
-        }
-    };
-
-    privateMethods.setCachedTenantBasedClientAppCredentials = function (tenantDomain, clientAppCredentials) {
-        var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
-        if (!cachedTenantBasedClientAppCredentialsMap) {
-            cachedTenantBasedClientAppCredentialsMap = {};
-            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientAppCredentials;
-            application.put(constants["CACHED_CREDENTIALS"], cachedTenantBasedClientAppCredentialsMap);
-        } else if (!cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
-            cachedTenantBasedClientAppCredentialsMap[tenantDomain] = clientAppCredentials;
-        }
-    };
-
-    privateMethods.getCachedTenantBasedClientAppCredentials = function (tenantDomain) {
-        var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
-        if (!cachedTenantBasedClientAppCredentialsMap ||
-            !cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
-            return null;
-        } else {
-            return cachedTenantBasedClientAppCredentialsMap[tenantDomain];
         }
     };
 

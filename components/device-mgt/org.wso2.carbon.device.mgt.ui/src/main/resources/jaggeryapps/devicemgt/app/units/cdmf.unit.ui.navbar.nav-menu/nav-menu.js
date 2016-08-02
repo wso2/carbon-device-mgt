@@ -27,8 +27,8 @@ function onRequest(context) {
             return options.fn(this);
         }
     });
-    var userModule = require("/app/modules/user.js")["userModule"];
-    var mdmProps = require('/app/conf/reader/main.js')["conf"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
     var uiPermissions = userModule.getUIPermissions();
     context["permissions"] = uiPermissions;

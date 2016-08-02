@@ -61,6 +61,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             @QueryParam("user-store") String userStore,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         List<String> filteredRoles;
         RoleList targetRoles = new RoleList();
 

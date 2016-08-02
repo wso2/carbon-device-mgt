@@ -18,11 +18,11 @@
 
 var deviceModule;
 deviceModule = function () {
-    var log = new Log("/app/modules/device.js");
+    var log = new Log("/app/modules/business-controllers/device.js");
 
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
-    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
 //    var ArrayList = Packages.java.util.ArrayList;
@@ -261,7 +261,7 @@ deviceModule = function () {
     publicMethods.getDevicesCount = function () {
         var carbonUser = session.get(constants.USER_SESSION_KEY);
         if (carbonUser) {
-            var userModule = require("/app/modules/user.js").userModule;
+            var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
             var uiPermissions = userModule.getUIPermissions();
             var url;
             if (uiPermissions.LIST_DEVICES) {

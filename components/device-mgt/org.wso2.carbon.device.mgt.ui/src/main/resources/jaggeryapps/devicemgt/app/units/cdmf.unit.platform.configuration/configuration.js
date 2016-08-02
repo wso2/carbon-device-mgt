@@ -17,8 +17,8 @@
  */
 
 function onRequest(context) {
-    var utility = require("/app/modules/device.js").utility;
-    var deviceModule = require("/app/modules/device.js").deviceModule;
+    var utility = require("/app/modules/utility.js").utility;
+    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     //get all device types
     var data = deviceModule.getDeviceTypes();
     var deviceTypesArray = [];

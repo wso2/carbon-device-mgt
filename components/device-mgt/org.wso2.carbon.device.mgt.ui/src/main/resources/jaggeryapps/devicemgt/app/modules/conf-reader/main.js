@@ -17,16 +17,18 @@
  */
 
 var conf = function () {
-    var conf = application.get("UI_CONF");
+    var conf = application.get("CONF");
     if (!conf) {
         conf = require("/app/conf/config.json");
-        var pinch = require("/app/conf/reader/pinch.min.js")["pinch"];
+        var pinch = require("/app/modules/conf-reader/pinch.min.js")["pinch"];
         var server = require("carbon")["server"];
         pinch(conf, /^/,
             function (path, key, value) {
                 if ((typeof value === "string") && value.indexOf("%https.ip%") > -1) {
+                    //noinspection JSUnresolvedFunction
                     return value.replace("%https.ip%", server.address("https"));
                 } else if ((typeof value === "string") && value.indexOf("%http.ip%") > -1) {
+                    //noinspection JSUnresolvedFunction
                     return value.replace("%http.ip%", server.address("http"));
                 } else if ((typeof value === "string") && value.indexOf("%date-year%") > -1) {
                     var year = new Date().getFullYear();
@@ -35,7 +37,7 @@ var conf = function () {
                 return value;
             }
         );
-        application.put("UI_CONF", conf);
+        application.put("CONF", conf);
     }
     return conf;
 }();

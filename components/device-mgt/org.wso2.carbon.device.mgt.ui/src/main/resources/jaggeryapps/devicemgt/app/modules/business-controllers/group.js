@@ -18,11 +18,11 @@
 
 var groupModule = {};
 (function (groupModule) {
-    var log = new Log("/app/modules/group.js");
+    var log = new Log("/app/modules/business-controllers/group.js");
 
-    var userModule = require("/app/modules/user.js").userModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var constants = require('/app/modules/constants.js');
-    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var utility = require("/app/modules/utility.js").utility;
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 

@@ -28,8 +28,8 @@ function onRequest(context) {
         }
     });
     var page = {};
-    var policyModule = require("/app/modules/policy.js")["policyModule"];
-    var userModule = require("/app/modules/user.js")["userModule"];
+    var policyModule = require("/app/modules/business-controllers/group.js")["groupModule"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var response = policyModule.getAllPolicies();
     if (response["status"] == "success") {
         var policyListToView = response["content"];

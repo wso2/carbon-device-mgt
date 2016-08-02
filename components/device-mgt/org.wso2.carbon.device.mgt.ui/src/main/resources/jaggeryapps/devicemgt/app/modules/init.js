@@ -17,14 +17,14 @@
  */
 
 var carbonModule = require("carbon");
-var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var carbonServer = new carbonModule.server.Server({
     tenanted: true,
     url: devicemgtProps["httpsURL"] + "/admin"
 });
 application.put("carbonServer", carbonServer);
 
-var userModule = require("/app/modules/user.js")["userModule"];
+var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
 var utility = require("/app/modules/utility.js")["utility"];
 
 var permissions = {

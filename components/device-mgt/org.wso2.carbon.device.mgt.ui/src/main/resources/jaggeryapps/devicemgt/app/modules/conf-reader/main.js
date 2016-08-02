@@ -37,6 +37,12 @@ var conf = function () {
                 return value;
             }
         );
+        if (conf.generalConfig.host) {
+            //TODO: Move enrollment URL into app-conf.json
+            var enrollmentHost = conf.generalConfig.host.replace(/https:\/\/localhost(:\d+)?/, conf.httpsURL).replace(
+                /http:\/\/localhost(:\d+)?/, conf.httpURL);
+            conf.enrollmentUrl = enrollmentHost + conf.enrollmentDir;
+        }
         application.put("CONF", conf);
     }
     return conf;

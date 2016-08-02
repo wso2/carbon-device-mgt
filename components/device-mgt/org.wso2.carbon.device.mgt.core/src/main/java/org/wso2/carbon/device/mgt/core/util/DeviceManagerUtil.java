@@ -21,10 +21,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
@@ -241,4 +242,79 @@ public final class DeviceManagerUtil {
         }
     }
 
+    public static int validateActivityListPageSize(int limit) throws OperationManagementException {
+        if (limit == 0) {
+            DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                    getDeviceManagementConfig();
+            if (deviceManagementConfig != null) {
+                return deviceManagementConfig.getPaginationConfiguration().getActivityListPageSize();
+            } else {
+                throw new OperationManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                    "cdm-config.xml file.");
+            }
+        }
+        return limit;
+    }
+
+    public static PaginationRequest validateOperationListPageSize(PaginationRequest paginationRequest) throws
+                                                                                          OperationManagementException {
+        if (paginationRequest.getRowCount() == 0) {
+            DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                    getDeviceManagementConfig();
+            if (deviceManagementConfig != null) {
+                paginationRequest.setRowCount(deviceManagementConfig.getPaginationConfiguration().
+                        getOperationListPageSize());
+            } else {
+                throw new OperationManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                    "cdm-config.xml file.");
+            }
+        }
+        return paginationRequest;
+    }
+
+    public static PaginationRequest validateNotificationListPageSize(PaginationRequest paginationRequest) throws
+                                                                                       NotificationManagementException {
+        if (paginationRequest.getRowCount() == 0) {
+            DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                    getDeviceManagementConfig();
+            if (deviceManagementConfig != null) {
+                paginationRequest.setRowCount(deviceManagementConfig.getPaginationConfiguration().
+                        getNotificationListPageSize());
+            } else {
+                throw new NotificationManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                          "cdm-config.xml file.");
+            }
+        }
+        return paginationRequest;
+    }
+
+    public static PaginationRequest validateDeviceListPageSize(PaginationRequest paginationRequest) throws
+                                                                                             DeviceManagementException {
+        if (paginationRequest.getRowCount() == 0) {
+            DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                    getDeviceManagementConfig();
+            if (deviceManagementConfig != null) {
+                paginationRequest.setRowCount(deviceManagementConfig.getPaginationConfiguration().
+                        getDeviceListPageSize());
+            } else {
+                throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                    "cdm-config.xml file.");
+            }
+        }
+        return paginationRequest;
+    }
+
+    public static int validateDeviceListPageSize(int limit) throws DeviceManagementException {
+        if (limit == 0) {
+            DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                    getDeviceManagementConfig();
+            if (deviceManagementConfig != null) {
+                return deviceManagementConfig.getPaginationConfiguration().getDeviceListPageSize();
+            } else {
+                throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                    "cdm-config.xml file.");
+            }
+        }
+        return limit;
+    }
 }

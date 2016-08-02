@@ -102,7 +102,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
         Connection conn;
         PreparedStatement stmt = null;
         try {
-            String sql = "DELETE DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
+            String sql = "DELETE FROM DM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_ID = ? AND " +
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
 
             conn = this.getConnection();
@@ -114,7 +114,7 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
                 stmt.execute();
             }
         } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while adding device application mapping", e);
+            throw new DeviceManagementDAOException("Error occurred while removing device application mapping", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }

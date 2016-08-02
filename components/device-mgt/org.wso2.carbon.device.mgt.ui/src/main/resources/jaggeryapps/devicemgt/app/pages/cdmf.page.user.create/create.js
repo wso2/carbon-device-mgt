@@ -25,7 +25,7 @@
 function onRequest(context) {
     //var log = new Log("/app/pages/cdmf.page.user.create server-side js");
 
-    var userModule = require("/app/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
    
     var page = {};

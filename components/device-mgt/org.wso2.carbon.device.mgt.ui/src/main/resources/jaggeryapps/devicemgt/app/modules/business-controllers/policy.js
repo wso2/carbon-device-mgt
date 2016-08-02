@@ -21,7 +21,7 @@
  */
 var policyModule;
 policyModule = function () {
-    var log = new Log("/app/modules/policy.js");
+    var log = new Log("/app/modules/business-controllers/policy.js");
 
     var constants = require('/app/modules/constants.js');
     var utility = require("/app/modules/utility.js")["utility"];

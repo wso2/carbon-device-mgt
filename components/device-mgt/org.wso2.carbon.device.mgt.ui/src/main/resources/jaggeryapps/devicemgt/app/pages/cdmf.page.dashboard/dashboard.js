@@ -19,7 +19,7 @@
 function onRequest(context) {
     var constants = require("/app/modules/constants.js");
     var user = session.get(constants.USER_SESSION_KEY);
-    var userModule = require("/app/modules/user.js").userModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var permissions = userModule.getUIPermissions();
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
@@ -31,9 +31,9 @@ function onRequest(context) {
     var page = {};
     page.permissions = permissions;
     page.enrollmentURL = devicemgtProps.enrollmentURL;
-    var deviceModule = require("/app/modules/device.js").deviceModule;
-    var groupModule = require("/app/modules/group.js").groupModule;
-    var policyModule = require("/app/modules/policy.js").policyModule;
+    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
+    var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
+    var policyModule = require("/app/modules/business-controllers/policy.js")["policyModule"];
 
     page.device_count = deviceModule.getDevicesCount();
     page.group_count = groupModule.getGroupCount();

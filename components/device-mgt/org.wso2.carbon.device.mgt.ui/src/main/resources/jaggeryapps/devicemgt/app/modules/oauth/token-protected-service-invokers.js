@@ -37,7 +37,7 @@ var invokers = function () {
 
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var constants = require("/app/modules/constants.js");
-    var userModule = require("/app/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var tokenUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
 
     /**

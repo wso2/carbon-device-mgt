@@ -24,7 +24,7 @@ var carbonServer = new carbonModule.server.Server({
 });
 application.put("carbonServer", carbonServer);
 
-var userModule = require("/app/modules/user.js")["userModule"];
+var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
 var utility = require("/app/modules/utility.js")["utility"];
 
 var permissions = {

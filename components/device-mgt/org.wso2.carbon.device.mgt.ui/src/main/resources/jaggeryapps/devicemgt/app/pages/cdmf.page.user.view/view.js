@@ -17,7 +17,7 @@
  */
 
 function onRequest(context) {
-    var userModule = require("/app/modules/user.js").userModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var username = request.getParameter("username");
     var user = userModule.getUser(username)["content"];
     var userModule = require("/app/modules/user.js")["userModule"];
@@ -38,7 +38,7 @@ function onRequest(context) {
         if (response["status"] == "success") {
             userRoles = response["content"];
         }
-        var deviceModule = require("/app/modules/device.js").deviceModule;
+        var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
         devices = deviceModule.getDevices(userName);
     }
     return {"user": user, "userRoles": userRoles, "devices": devices};

@@ -61,6 +61,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             @QueryParam("user-store") String userStore,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         List<String> filteredRoles;
         RoleList targetRoles = new RoleList();
 
@@ -133,11 +134,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         UIPermissionNode[] deviceMgtPermissions = new UIPermissionNode[2];
 
         for (UIPermissionNode permissionNode : rolePermissions.getNodeList()) {
-            if (permissionNode.getResourcePath().equals("/permission/admin")) {
+            if ("/permission/admin".equals(permissionNode.getResourcePath())) {
                 for (UIPermissionNode node : permissionNode.getNodeList()) {
-                    if (node.getResourcePath().equals("/permission/admin/device-mgt")) {
+                    if ("/permission/admin/device-mgt".equals(node.getResourcePath())) {
                         deviceMgtPermissions[0] = node;
-                    } else if (node.getResourcePath().equals("/permission/admin/login")) {
+                    } else if ("/permission/admin/login".equals(node.getResourcePath())) {
                         deviceMgtPermissions[1] = node;
                     }
                 }

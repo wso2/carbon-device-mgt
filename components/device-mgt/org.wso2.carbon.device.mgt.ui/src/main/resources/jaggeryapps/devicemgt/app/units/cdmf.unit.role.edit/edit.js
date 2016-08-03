@@ -23,8 +23,8 @@
  * @returns {*} A context object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
-    var userModule = require("/app/modules/user.js")["userModule"];
-    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var uri = request.getRequestURI();
     var uriMatcher = new URIMatcher(String(uri));
     var isMatched = uriMatcher.match("/{context}/role/edit/{rolename}");

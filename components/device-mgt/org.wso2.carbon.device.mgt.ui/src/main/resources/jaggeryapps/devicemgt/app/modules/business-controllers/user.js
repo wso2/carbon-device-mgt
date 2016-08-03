@@ -20,11 +20,11 @@
  * This module contains user and roles related functionality.
  */
 var userModule = function () {
-    var log = new Log("/app/modules/user.js");
+    var log = new Log("/app/modules/business-controllers/user.js");
 
     var constants = require("/app/modules/constants.js");
     var utility = require("/app/modules/utility.js")["utility"];
-    var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
     /* Initializing user manager */

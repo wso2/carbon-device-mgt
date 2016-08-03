@@ -473,8 +473,8 @@ public class PolicyDAOImpl implements PolicyDAO {
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_POLICY_CHANGE_MGT WHERE TENANT_ID = ?";
-            stmt.setInt(1, tenantId);
             stmt = conn.prepareStatement(query);
+            stmt.setInt(1, tenantId);
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
@@ -1302,11 +1302,7 @@ public class PolicyDAOImpl implements PolicyDAO {
             if (log.isDebugEnabled()) {
                 log.debug("Policy (" + policyId + ") delete from database.");
             }
-            if (deleted > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return deleted > 0;
         } catch (SQLException e) {
             throw new PolicyManagerDAOException("Unable to delete the policy (" + policyId + ") from database", e);
         } finally {
@@ -1584,7 +1580,7 @@ public class PolicyDAOImpl implements PolicyDAO {
                 byte[] contentBytes;
 
                 try {
-                    contentBytes = (byte[]) resultSet.getBytes("POLICY_CONTENT");
+                    contentBytes = resultSet.getBytes("POLICY_CONTENT");
                     bais = new ByteArrayInputStream(contentBytes);
                     ois = new ObjectInputStream(bais);
                     policy = (Policy) ois.readObject();

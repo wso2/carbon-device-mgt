@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
@@ -55,7 +56,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getType();
+        String deviceType = provider.getType().toLowerCase();
         SensorManager deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
 
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
@@ -100,7 +101,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceTypeName = provider.getType();
+        String deviceTypeName = provider.getType().toLowerCase();
         DeviceTypeIdentifier deviceTypeIdentifier;
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         if (provisioningConfig.isSharedWithAllTenants()) {
@@ -116,10 +117,10 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public DeviceManagementService getDeviceManagementService(String type, int tenantId) {
         //Priority need to be given to the tenant before public.
-        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(type, tenantId);
+        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(type.toLowerCase(), tenantId);
         DeviceManagementService provider = providers.get(deviceTypeIdentifier);
         if (provider == null) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(type);
+            deviceTypeIdentifier = new DeviceTypeIdentifier(type.toLowerCase());
             provider = providers.get(deviceTypeIdentifier);
         }
         return provider;
@@ -166,10 +167,10 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public OperationManager getOperationManager(String deviceType, int tenantId) {
         //Priority need to be given to the tenant before public.
-        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType, tenantId);
+        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType.toLowerCase(), tenantId);
         OperationManager operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
         if (operationManager == null) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
+            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType.toLowerCase());
             operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
         }
         return operationManager;
@@ -177,24 +178,25 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     @Override
     public void notifyObserver() {
+        String deviceTypeName;
         synchronized (providers) {
             for (DeviceManagementService provider : providers.values()) {
                 try {
                     provider.init();
-                    String deviceType = provider.getType();
+                    deviceTypeName = provider.getType().toLowerCase();
                     SensorManager deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
 
                     // Register the Device-Type on the DB and then register the DeviceTypeSensors.
                     DeviceManagerUtil.registerDeviceType(
-                            deviceType, tenantId, provisioningConfig.isSharedWithAllTenants());
+                            deviceTypeName, tenantId, provisioningConfig.isSharedWithAllTenants());
 
                     // If a list of DeviceTypeSensors has been set by the DeviceManager's SensorManager then register.
                     if (deviceTypeSensorManager != null) {
                         List<DeviceTypeSensor> deviceTypeSensors = deviceTypeSensorManager.getDeviceTypeSensors();
                         if (deviceTypeSensors != null && deviceTypeSensors.size() > 0) {
-                            DeviceManagerUtil.registerDeviceTypeSensors(deviceType, tenantId, deviceTypeSensors);
+                            DeviceManagerUtil.registerDeviceTypeSensors(deviceTypeName, tenantId, deviceTypeSensors);
                         }
                     }
 

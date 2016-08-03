@@ -17,7 +17,7 @@
  */
 
 function onRequest(context) {
-    var userModule = require("/app/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var response = userModule.getUsers();
     var users = {};
     context["permissions"] = userModule.getUIPermissions();
@@ -30,7 +30,7 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/roles/remove")) {
         context["removePermitted"] = true;
     }
-    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     context["appContext"] = deviceMgtProps.appContext;
     context["adminRole"] = deviceMgtProps.adminRole;
     return context;

@@ -60,6 +60,10 @@ public class DeviceDataPublisher {
     private static Map<String, DataPublisher> dataPublisherMap;
     private static DeviceDataPublisher deviceDataPublisher;
 
+    public DeviceDataPublisher() {
+        dataPublisherMap = new ConcurrentHashMap<>();
+    }
+
     public static DeviceDataPublisher getInstance() {
         if (deviceDataPublisher == null) {
             synchronized (DeviceDataPublisher.class) {
@@ -69,10 +73,6 @@ public class DeviceDataPublisher {
             }
         }
         return deviceDataPublisher;
-    }
-
-    public DeviceDataPublisher() {
-        dataPublisherMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -95,7 +95,7 @@ public class DeviceDataPublisher {
             String analyticsServerUrlGroups = analyticsConfig.getReceiverServerUrl();
             String analyticsServerUsername = analyticsConfig.getAdminUsername();
             String analyticsServerPassword = analyticsConfig.getAdminPassword();
-            if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                 int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
                 String userInfo[] = getAnalyticsServerUserInfo(tenantId);
                 if (userInfo != null) {

@@ -67,25 +67,25 @@ public class FeatureFilterImpl implements FeatureFilter {
         for (FeatureRules rule : featureRulesList) {
             String ruleName = rule.getEvaluationCriteria();
             String featureName = rule.getName();
-            if (ruleName.equalsIgnoreCase(Constants.DENY_OVERRIDES)) {
+            if (Constants.DENY_OVERRIDES.equalsIgnoreCase(ruleName)) {
                 getDenyOverridesFeatures(featureName, featureList, effectiveFeatureList);
             }
-            if (ruleName.equalsIgnoreCase(Constants.PERMIT_OVERRIDES)) {
+            if (Constants.PERMIT_OVERRIDES.equalsIgnoreCase(ruleName)) {
                 getPermitOverridesFeatures(featureName, featureList, effectiveFeatureList);
             }
-            if (ruleName.equalsIgnoreCase(Constants.FIRST_APPLICABLE)) {
+            if (Constants.FIRST_APPLICABLE.equalsIgnoreCase(ruleName)) {
                 getFirstApplicableFeatures(featureName, featureList, effectiveFeatureList);
             }
-            if (ruleName.equalsIgnoreCase(Constants.LAST_APPLICABLE)) {
+            if (Constants.LAST_APPLICABLE.equalsIgnoreCase(ruleName)) {
                 getLastApplicableFeatures(featureName, featureList, effectiveFeatureList);
             }
-            if (ruleName.equalsIgnoreCase(Constants.ALL_APPLICABLE)) {
+            if (Constants.ALL_APPLICABLE.equalsIgnoreCase(ruleName)) {
                 getAllApplicableFeatures(featureName, featureList, effectiveFeatureList);
             }
-            if (ruleName.equalsIgnoreCase(Constants.HIGHEST_APPLICABLE)) {
+            if (Constants.HIGHEST_APPLICABLE.equalsIgnoreCase(ruleName)) {
                 getHighestApplicableFeatures(featureName, featureList, effectiveFeatureList);
             }
-            if (ruleName.equalsIgnoreCase(Constants.LOWEST_APPLICABLE)) {
+            if (Constants.LOWEST_APPLICABLE.equalsIgnoreCase(ruleName)) {
                 getLowestApplicableFeatures(featureName, featureList, effectiveFeatureList);
             }
         }

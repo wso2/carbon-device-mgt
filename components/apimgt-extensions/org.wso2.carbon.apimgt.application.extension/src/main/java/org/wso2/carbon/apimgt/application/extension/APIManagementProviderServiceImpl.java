@@ -23,12 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
 import org.wso2.carbon.apimgt.api.APIConsumer;
 import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.api.model.API;
-import org.wso2.carbon.apimgt.api.model.APIIdentifier;
-import org.wso2.carbon.apimgt.api.model.APIKey;
-import org.wso2.carbon.apimgt.api.model.Application;
-import org.wso2.carbon.apimgt.api.model.SubscribedAPI;
-import org.wso2.carbon.apimgt.api.model.Subscriber;
+import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.application.extension.constants.ApiApplicationConstants;
 import org.wso2.carbon.apimgt.application.extension.dto.ApiApplicationKey;
 import org.wso2.carbon.apimgt.application.extension.exception.APIManagerException;
@@ -415,7 +410,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             int applicationId = createApplication(apiConsumer, apiApplicationName, username, groupId);
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             Set<API> userVisibleAPIs = apiConsumer.getAllPublishedAPIs(tenantDomain);
-            if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                 userVisibleAPIs.addAll(apiConsumer.getAllPublishedAPIs(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
             }
             Subscriber subscriber = apiConsumer.getSubscriber(username);
@@ -443,7 +438,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
         try {
             APIConsumer apiConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
             loginInfoJsonObj.put("user", username);
-            if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                 loginInfoJsonObj.put("isSuperTenant", true);
             } else {
                 loginInfoJsonObj.put("isSuperTenant", false);

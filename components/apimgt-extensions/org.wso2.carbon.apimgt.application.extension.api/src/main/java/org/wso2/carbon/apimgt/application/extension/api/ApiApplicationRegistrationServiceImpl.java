@@ -22,13 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
+import org.wso2.carbon.apimgt.application.extension.api.util.APIUtil;
 import org.wso2.carbon.apimgt.application.extension.api.util.RegistrationProfile;
 import org.wso2.carbon.apimgt.application.extension.constants.ApiApplicationConstants;
 import org.wso2.carbon.apimgt.application.extension.dto.ApiApplicationKey;
 import org.wso2.carbon.apimgt.application.extension.exception.APIManagerException;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.apimgt.application.extension.api.util.APIUtil;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import javax.ws.rs.DELETE;
@@ -46,7 +46,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
     public Response register(@QueryParam("tenantDomain") String tenantDomain,
                              @QueryParam("applicationName") String applicationName) {
         String authenticatedTenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        if (!authenticatedTenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+        if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(authenticatedTenantDomain)) {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
         try {

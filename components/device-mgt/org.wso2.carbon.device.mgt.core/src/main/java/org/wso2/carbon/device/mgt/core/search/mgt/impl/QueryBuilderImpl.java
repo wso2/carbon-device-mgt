@@ -47,8 +47,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         Condition locCondition = new Condition();
 
         if (conditions.size() == 1) {
-
-            if (conditions.get(0).getKey().equalsIgnoreCase(Constants.LOCATION)) {
+            if (Constants.LOCATION.equalsIgnoreCase(conditions.get(0).getKey())) {
                 locCondition = conditions.get(0);
             } else if (Utils.checkDeviceDetailsColumns(conditions.get(0).getKey()) ||
                     Utils.checkDeviceLocationColumns(conditions.get(0).getKey())) {
@@ -58,7 +57,7 @@ public class QueryBuilderImpl implements QueryBuilder {
             }
         } else {
             for (Condition con : conditions) {
-                if (con.getKey().equalsIgnoreCase(Constants.LOCATION)) {
+                if (Constants.LOCATION.equalsIgnoreCase(con.getKey())) {
                     locCondition = con;
                 } else if (Utils.checkDeviceDetailsColumns(con.getKey()) ||
                         Utils.checkDeviceLocationColumns(con.getKey())) {

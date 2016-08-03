@@ -81,7 +81,7 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         long timestamp = 0;
         boolean isIfModifiedSinceSet = false;
         boolean isSinceSet = false;
-
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
             Date ifSinceDate;
             SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");

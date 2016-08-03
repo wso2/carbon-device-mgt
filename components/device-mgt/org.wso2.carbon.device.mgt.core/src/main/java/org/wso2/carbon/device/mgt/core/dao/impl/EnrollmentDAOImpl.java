@@ -129,7 +129,7 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         int status = -1;
         try {
             conn = this.getConnection();
-            String sql = "DELETE DM_ENROLMENT WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?";
+            String sql = "DELETE FROM DM_ENROLMENT WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql, new String[] {"id"});
             stmt.setInt(1, deviceId);
             stmt.setString(2, currentOwner);

@@ -74,7 +74,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("limit") int limit) {
         try {
 //            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
-
+            RequestValidationUtil.validatePaginationParameters(offset, limit);
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             PaginationRequest request = new PaginationRequest(offset, limit);
             PaginationResult result;
@@ -154,6 +154,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     public Response getDeviceByUser(@QueryParam("offset") int offset,
                                     @QueryParam("limit") int limit) {
 
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
         PaginationResult result;
         DeviceList devices = new DeviceList();
@@ -292,6 +293,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         OperationList operationsList = new OperationList();
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
         PaginationResult result;
         DeviceManagementProviderService dms;

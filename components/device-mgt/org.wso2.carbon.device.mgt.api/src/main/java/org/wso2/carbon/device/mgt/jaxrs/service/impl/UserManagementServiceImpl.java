@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
@@ -264,6 +265,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             log.debug("Getting the list of users with all user-related information");
         }
         List<BasicUserInfo> userList, offsetList;
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter);
         int appliedLimit = (limit <= 0) ? -1 : (limit + offset);
 

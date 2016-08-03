@@ -50,6 +50,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
 
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
         PaginationResult result;
 

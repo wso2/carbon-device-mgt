@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
+package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
 
 @API(name = "Device Type Management", version = "1.0.0", context = "/admin/device-types", tags = {"devicemgt_admin"})
 
-@Path("/admin/device-types")
+@Path("/device-types")
 @Api(value = "Device Type Management", description = "This API corresponds to all tasks related to device " +
         "type management")
 @Produces(MediaType.APPLICATION_JSON)

@@ -41,7 +41,7 @@ $(document).ready(function () {
     }
 
     invokerUtil.get(
-            "/devicemgt_admin/configuration",
+            "/api/device-mgt/v1.0/configuration",
             function (data) {
                 data = JSON.parse(data);
                 if (data && data.configuration) {
@@ -85,13 +85,13 @@ $(document).ready(function () {
             configList.push(monitorFrequency);
             addConfigFormData.configuration = configList;
 
-            var addConfigAPI = "/devicemgt_admin/configuration";
-            invokerUtil.post(
+            var addConfigAPI = "/api/device-mgt/v1.0/configuration";
+            invokerUtil.put(
                     addConfigAPI,
                     addConfigFormData,
-                    function (data) {
-                        data = JSON.parse(data);
-                        if (data.statusCode == responseCodes["SUCCESS"]) {
+                    function (data, textStatus, jqXHR) {
+                        data = jqXHR.status;
+                        if (data == 200) {
                             $("#config-save-form").addClass("hidden");
                             $("#record-created-msg").removeClass("hidden");
                         } else if (data == 500) {
@@ -118,3 +118,12 @@ $(document).ready(function () {
         }
     });
 });
+
+// Start of HTML embedded invoke methods
+var showAdvanceOperation = function (operation, button) {
+    $(button).addClass('selected');
+    $(button).siblings().removeClass('selected');
+    var hiddenOperation = ".wr-hidden-operations-content > div";
+    $(hiddenOperation + '[data-operation="' + operation + '"]').show();
+    $(hiddenOperation + '[data-operation="' + operation + '"]').siblings().hide();
+};

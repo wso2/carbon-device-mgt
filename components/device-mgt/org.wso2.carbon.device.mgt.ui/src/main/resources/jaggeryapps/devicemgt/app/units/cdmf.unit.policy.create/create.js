@@ -21,11 +21,11 @@ function onRequest(context) {
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
 
     var utility = require("/app/modules/utility.js").utility;
-    var userModule = require("/app/modules/user.js")["userModule"];
+    var deviceModule = require("/app/modules/device.js").deviceModule;
 
     var types = {};
     types["types"] = [];
-    var typesListResponse = userModule.getPlatforms();
+    var typesListResponse = deviceModule.getDeviceTypes();
     if (typesListResponse["status"] == "success") {
         for (var type in typesListResponse["content"]) {
             var deviceType = typesListResponse["content"][type]["name"];

@@ -38,6 +38,32 @@ deviceModule = function () {
 
     var deviceCloudService = devicemgtProps["httpsURL"] + "/common/device_manager";
 
+    /**
+     * Only GET method is implemented for now since there are no other type of methods used this method.
+     * @param url - URL to call the backend without the host
+     * @param method - HTTP Method (GET, POST)
+     * @returns An object with 'status': 'success'|'error', 'content': {}
+     */
+    privateMethods.callBackend = function (url, method) {
+        if (constants["HTTP_GET"] == method) {
+            return serviceInvokers.XMLHttp.get(url,
+                function (backendResponse) {
+                    var response = {};
+                    response.content = backendResponse.responseText;
+                    if (backendResponse.status == 200) {
+                        response.status = "success";
+                    } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
+                        backendResponse.status == 404 || backendResponse.status == 500) {
+                        response.status = "error";
+                    }
+                    return response;
+                }
+            );
+        } else {
+            log.error("Runtime error : This method only support HTTP GET requests.");
+        }
+    };
+
     privateMethods.validateAndReturn = function (value) {
         return (value == undefined || value == null) ? constants.UNSPECIFIED : value;
     };
@@ -289,16 +315,12 @@ deviceModule = function () {
     };
 
     publicMethods.getDeviceTypes = function () {
-        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/types";
-        return serviceInvokers.XMLHttp.get(
-                url, function (responsePayload) {
-                    return responsePayload;
-                },
-                function (responsePayload) {
-                    log.error(responsePayload);
-                    return -1;
-                }
-        );
+        var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
+        var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+        if (response.status == "success") {
+            response.content = parse(response.content);
+        }
+        return response;
     };
 
     //Old methods

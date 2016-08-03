@@ -50,21 +50,24 @@ function onRequest(context) {
         if (deviceCount > 0) {
             page.deviceCount = deviceCount;
             var utility = require("/app/modules/utility.js").utility;
-            var data = deviceModule.getDeviceTypes();
+            var typesListResponse = deviceModule.getDeviceTypes();
             var deviceTypes = [];
-            if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var config = utility.getDeviceTypeConfig(data[i].name);
-                    if (!config){
-                        continue;
+            if (typesListResponse["status"] == "success") {
+                var data = typesListResponse["content"];
+                if (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var config = utility.getDeviceTypeConfig(data[i].name);
+                        if (!config) {
+                            continue;
+                        }
+                        var deviceType = config.deviceType;
+                        deviceTypes.push({
+                            "type": data[i].name,
+                            "category": deviceType.category,
+                            "label": deviceType.label,
+                            "thumb": utility.getDeviceThumb(data[i].name)
+                        });
                     }
-                    var deviceType = config.deviceType;
-                    deviceTypes.push({
-                        "type": data[i].name,
-                        "category": deviceType.category,
-                        "label": deviceType.label,
-                        "thumb": utility.getDeviceThumb(data[i].name)
-                    });
                 }
             }
             page.deviceTypes = stringify(deviceTypes);

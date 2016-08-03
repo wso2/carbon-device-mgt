@@ -18,7 +18,7 @@
 
 var WEB_APP_TITLE = "WSO2 CDM";
 var WEB_APP_CONTEXT = "/devicemgt";
-var ADMIN_SERVICE_CONTEXT = "/devicemgt_admin";
+var ADMIN_SERVICE_CONTEXT = "/api/device-mgt/v1.0";
 var USER_SESSION_KEY = "_UUF_USER";
 var UNSPECIFIED = "Unspecified";
 var httpURL = "httpURL";

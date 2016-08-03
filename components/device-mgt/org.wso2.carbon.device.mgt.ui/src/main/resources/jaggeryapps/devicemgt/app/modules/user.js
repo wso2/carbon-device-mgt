@@ -263,29 +263,30 @@ var userModule = function () {
 
     /**
      * Get Platforms.
+     * @deprecated moved this device module under getDeviceTypes.
      */
     //TODO Move this piece of logic out of user.js to somewhere else appropriate.
-    publicMethods.getPlatforms = function () {
-        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
-        var utility = require("/app/modules/utility.js")["utility"];
-        if (!carbonUser) {
-            log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
-        }
-        try {
-            utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/admin/device-types";
-            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
-            if (response.status == "success") {
-                response.content = parse(response.content);
-            }
-            return response;
-        } catch (e) {
-            throw e;
-        } finally {
-            utility.endTenantFlow();
-        }
-    };
+    //publicMethods.getPlatforms = function () {
+    //    var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+    //    var utility = require("/app/modules/utility.js")["utility"];
+    //    if (!carbonUser) {
+    //        log.error("User object was not found in the session");
+    //        throw constants["ERRORS"]["USER_NOT_FOUND"];
+    //    }
+    //    try {
+    //        utility.startTenantFlow(carbonUser);
+    //        var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
+    //        var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+    //        if (response.status == "success") {
+    //            response.content = parse(response.content);
+    //        }
+    //        return response;
+    //    } catch (e) {
+    //        throw e;
+    //    } finally {
+    //        utility.endTenantFlow();
+    //    }
+    //};
 
     /**
      * Get role

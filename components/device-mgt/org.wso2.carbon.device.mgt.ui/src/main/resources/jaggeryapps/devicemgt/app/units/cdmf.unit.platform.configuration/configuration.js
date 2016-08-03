@@ -20,15 +20,22 @@ function onRequest(context) {
     var utility = require("/app/modules/device.js").utility;
     var deviceModule = require("/app/modules/device.js").deviceModule;
     //get all device types
-    var data = deviceModule.getDeviceTypes();
     var deviceTypesArray = [];
-    if (data) {
-        for (var i = 0; i < data.length; i++) {
-            var deviceTypeName = data[i].name;
-            var configUnitName = utility.getTenantedDeviceUnitName(deviceTypeName, "platform.configuration");
-            if(configUnitName) {
-                var deviceTypeConfig = utility.getDeviceTypeConfig(deviceTypeName);
-                deviceTypesArray.push({name: deviceTypeName, label:deviceTypeConfig.deviceType.label, unitName : configUnitName});
+    var typesListResponse = deviceModule.getDeviceTypes();
+    if (typesListResponse["status"] == "success") {
+        var data = typesListResponse["content"].deviceTypes;
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                var deviceTypeName = data[i];
+                var configUnitName = utility.getTenantedDeviceUnitName(deviceTypeName, "platform.configuration");
+                if (configUnitName) {
+                    var deviceTypeConfig = utility.getDeviceTypeConfig(deviceTypeName);
+                    deviceTypesArray.push({
+                        name: deviceTypeName,
+                        label: deviceTypeConfig.deviceType.label,
+                        unitName: configUnitName
+                    });
+                }
             }
         }
     }

@@ -129,7 +129,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             if (rs.next()) {
                 device = DeviceManagementDAOUtil.loadMatchingDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while listing devices for type " +
@@ -164,7 +163,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             if (rs.next()) {
                 device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while listing devices for type " +
@@ -195,7 +193,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             if (rs.next()) {
                 device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 deviceHashMap.put(rs.getInt("TENANT_ID"), device);
             }
         } catch (SQLException e) {
@@ -228,7 +225,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             if (rs.next()) {
                 device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving device for id " +
@@ -260,7 +256,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             devices = new ArrayList<>();
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -294,7 +289,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             devices = new ArrayList<>();
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -326,7 +320,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -846,7 +839,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
 
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {
@@ -910,7 +902,6 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             while (rs.next()) {
                 Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                device = DeviceManagementDAOUtil.loadDeviceSensors(device);
                 devices.add(device);
             }
         } catch (SQLException e) {

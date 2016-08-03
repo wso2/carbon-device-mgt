@@ -232,38 +232,4 @@ public final class DeviceManagementDAOUtil {
         deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
         return deviceInfo;
     }
-
-    public static Device loadDeviceSensors(Device device) throws DeviceManagementDAOException {
-        List<Sensor> deviceSensorList;
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        DeviceManagementProviderService deviceManagementProviderService =
-                (DeviceManagementProviderService) ctx.getOSGiService(DeviceManagementProviderService.class, null);
-
-        if (deviceManagementProviderService == null) {
-            String msg = "Device Management service has not been initialized.";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-
-        SensorManager sensorManager;
-        try {
-            sensorManager = deviceManagementProviderService.getSensorManager(device.getType());
-            if (sensorManager == null) {
-                log.warn("No SensorManager implementation found for [" + device.getType() + "]. " +
-                                 "Hence, skipped loading Sensors of device [" + device.getName() + "] " +
-                                 "with Id [" + device.getDeviceIdentifier() + "]");
-                return device;
-            }
-            deviceSensorList = sensorManager.getSensors(device.getDeviceIdentifier());
-            device.setSensors(deviceSensorList);
-
-        } catch (DeviceManagementException e) {
-            String msg =
-                    "An error occurred whilst trying to access the SensorManager implementation of the " +
-                            "device-type [" + device.getType() + "]";
-            log.error(msg);
-            throw new DeviceManagementDAOException(msg, e);
-        }
-        return device;
-    }
 }

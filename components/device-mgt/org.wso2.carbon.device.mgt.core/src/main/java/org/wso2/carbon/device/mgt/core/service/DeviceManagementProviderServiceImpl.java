@@ -39,8 +39,10 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.Sensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.dao.DeviceTypeSensorTransactionObject;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
@@ -48,6 +50,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeSensorDAO;
 import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
@@ -72,10 +75,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
-        PluginInitializationListener {
+                                                            PluginInitializationListener {
 
     private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
     private DeviceDAO deviceDAO;
+    private DeviceTypeSensorDAO deviceTypeSensorDAO;
     private DeviceDetailsDAO deviceInfoDAO;
     private DeviceTypeDAO deviceTypeDAO;
     private EnrollmentDAO enrollmentDAO;
@@ -92,6 +96,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private void initDataAccessObjects() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.deviceTypeSensorDAO = DeviceManagementDAOFactory.getDeviceTypeSensorDAO();
         this.deviceInfoDAO = DeviceManagementDAOFactory.getDeviceDetailsDAO();
         this.applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
@@ -102,7 +107,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException {
         DeviceManager dms =
                 pluginRepository.getDeviceManagementService(configuration.getType(),
-                        this.getTenantId()).getDeviceManager();
+                                                            this.getTenantId()).getDeviceManager();
         return dms.saveConfiguration(configuration);
     }
 
@@ -118,7 +123,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (dms == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device type '" + deviceType + "' does not have an associated device management " +
-                        "plugin registered within the framework. Therefore, not attempting getConfiguration method");
+                                  "plugin registered within the framework. Therefore, not attempting getConfiguration" +
+                                  " method");
             }
             return null;
         }
@@ -131,7 +137,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
-                        "Therefore, not attempting method 'getFeatureManager'");
+                                  "Therefore, not attempting method 'getFeatureManager'");
             }
             return null;
         }
@@ -149,6 +155,74 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return null;
         }
         return deviceManager.getSensorManager();
+    }
+
+    @Override
+    public List<DeviceTypeSensor> getAssociatedSensorsForDeviceType(String deviceTypeName)
+            throws DeviceManagementException {
+        List<DeviceTypeSensorTransactionObject> deviceTypeSensorTransactionObjects;
+        List<DeviceTypeSensor> deviceTypeSensors = new ArrayList<>();
+        int tenantId = this.getTenantId();
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
+            if (deviceType == null) {
+                String msg = "There are no Device-Types registered by the name: [" + deviceTypeName + "] for the " +
+                        "current tenant [" + tenantId + "]";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
+            }
+
+            deviceTypeSensorTransactionObjects = this.deviceTypeSensorDAO.getDeviceTypeSensors(deviceType.getId());
+            for (DeviceTypeSensorTransactionObject dTypeSensorTObject : deviceTypeSensorTransactionObjects) {
+                deviceTypeSensors.add(dTypeSensorTObject.getDeviceTypeSensor());
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while retrieving DeviceTypeSensor list corresponding to Device-Type [" +
+                            deviceTypeName + "] on tenant with Id [" + tenantId + "]", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while opening a connection to the data source in order to fetch the " +
+                            "DeviceTypeSensors of Device-Type [" + deviceTypeName + "]", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceTypeSensors;
+    }
+
+    @Override
+    public boolean updateDeviceTypeSensor(String deviceTypeName, DeviceTypeSensor deviceTypeSensor)
+            throws DeviceManagementException {
+        int tenantId = this.getTenantId();
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
+            if (deviceType == null) {
+                String msg = "There are no Device-Types registered by the name: [" + deviceTypeName + "] for the " +
+                        "current tenant [" + tenantId + "]";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
+            }
+
+            this.deviceTypeSensorDAO.updateDeviceTypeSensor(deviceType.getId(), deviceTypeSensor);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException(
+                    "Error occurred updating DeviceTypeSensor [" + deviceTypeSensor.getUniqueSensorName() + "] " +
+                            "corresponding to Device-Type [" + deviceTypeName + "] on tenant with " +
+                            "Id [" + tenantId + "]", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while opening a connection to the data source in order to update the " +
+                            "DeviceTypeSensor [" + deviceTypeSensor.getUniqueSensorName() + "] of " +
+                            "Device-Type [" + deviceTypeName + "]", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        return true;
     }
 
     @Override
@@ -257,7 +331,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                         }
                     } catch (DeviceManagementDAOException e) {
                         DeviceManagementDAOFactory.rollbackTransaction();
-                        throw new DeviceManagementException("Error occurred while adding enrolment related metadata", e);
+                        throw new DeviceManagementException("Error occurred while adding enrolment related metadata",
+                                                            e);
                     } catch (TransactionManagementException e) {
                         throw new DeviceManagementException("Error occurred while initiating transaction", e);
                     } finally {
@@ -276,7 +351,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } catch (DeviceManagementDAOException e) {
                 DeviceManagementDAOFactory.rollbackTransaction();
                 throw new DeviceManagementException("Error occurred while adding metadata of '" + device.getType() +
-                        "' device carrying the identifier '" + device.getDeviceIdentifier() + "'", e);
+                                                            "' device carrying the identifier '" +
+                                                            device.getDeviceIdentifier() + "'", e);
             } catch (TransactionManagementException e) {
                 throw new DeviceManagementException("Error occurred while initiating transaction", e);
             } finally {
@@ -285,9 +361,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
             if (log.isDebugEnabled()) {
                 log.debug("An enrolment is successfully created with the id '" + enrolmentId + "' associated with " +
-                        "the device identified by key '" + device.getDeviceIdentifier() + "', which belongs to " +
-                        "platform '" + device.getType() + " upon the user '" +
-                        device.getEnrolmentInfo().getOwner() + "'");
+                                  "the device identified by key '" + device.getDeviceIdentifier() +
+                                  "', which belongs to " +
+                                  "platform '" + device.getType() + " upon the user '" +
+                                  device.getEnrolmentInfo().getOwner() + "'");
             }
             status = true;
         }
@@ -303,7 +380,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                        "Therefore, not attempting method 'modifyEnrolment'");
+                                  "Therefore, not attempting method 'modifyEnrolment'");
             }
             return false;
         }
@@ -496,7 +573,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 }
             } catch (DeviceDetailsMgtDAOException e) {
                 log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'", e);
+                                  "' that carries the id '" + device.getDeviceIdentifier() + "'", e);
             } catch (SQLException e) {
                 log.error("Error occurred while opening a connection to the data source", e);
             } finally {
@@ -531,6 +608,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
+            }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
             }
             devices.add(device);
         }
@@ -599,6 +683,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
             }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
+            }
             devices.add(device);
         }
         return devices;
@@ -657,6 +748,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
+            }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
             }
             devices.add(device);
         }
@@ -733,6 +831,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
             }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
+            }
             devices.add(device);
         }
         paginationResult.setData(devices);
@@ -756,7 +861,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving all devices of type '" +
-                    deviceType + "' that are being managed within the scope of current tenant", e);
+                                                        deviceType +
+                                                        "' that are being managed within the scope of current tenant",
+                                                e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -810,6 +917,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
             }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
+            }
             devices.add(device);
         }
         return devices;
@@ -819,11 +933,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+                   new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
-                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
+                   new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
-                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
+                   new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
             EmailContext ctx =
                     new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-enrollment", params),
@@ -838,17 +952,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+                   new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.USERNAME,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("username")));
+                   new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("username")));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.PASSWORD,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("password")));
+                   new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("password")));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.DOMAIN,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("domain")));
+                   new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("domain")));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
-                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
+                   new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
-                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
+                   new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
             EmailContext ctx =
                     new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-registration", params),
@@ -906,6 +1020,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.setFeatures(pluginSpecificInfo.getFeatures());
             device.setProperties(pluginSpecificInfo.getProperties());
         }
+
+        // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+        // corresponding to its DeviceManager.
+        List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+        if (deviceSensorList != null) {
+            device.setSensors(deviceSensorList);
+        }
         return device;
     }
 
@@ -956,6 +1077,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (pluginSpecificInfo != null) {
             device.setFeatures(pluginSpecificInfo.getFeatures());
             device.setProperties(pluginSpecificInfo.getProperties());
+        }
+
+        // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+        // corresponding to its DeviceManager.
+        List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+        if (deviceSensorList != null) {
+            device.setSensors(deviceSensorList);
         }
         return device;
     }
@@ -1269,6 +1397,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
             }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
+            }
             devices.add(device);
         }
         return devices;
@@ -1343,6 +1478,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
             }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
+            }
             devices.add(device);
         }
         result.setData(devices);
@@ -1405,11 +1547,19 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
 
-            Device dmsDevice = this.getDeviceManager(device.getType()).
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            Device dmsDevice = deviceManager.getDevice(
+                    new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
+            }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
             }
             devices.add(device);
         }
@@ -1475,11 +1625,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     DeviceManagementDAOFactory.closeConnection();
                 }
 
-                Device dmsDevice = this.getDeviceManager(device.getType()).
-                        getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                DeviceManager deviceManager = this.getDeviceManager(device.getType());
+                Device dmsDevice = deviceManager.getDevice(
+                        new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
                 if (dmsDevice != null) {
                     device.setFeatures(dmsDevice.getFeatures());
                     device.setProperties(dmsDevice.getProperties());
+                }
+
+                // Updating the retrieved device with the Sensor information related to it (if any) via the
+                // SensorManager
+                // corresponding to its DeviceManager.
+                List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+                if (deviceSensorList != null) {
+                    device.setSensors(deviceSensorList);
                 }
                 devices.add(device);
             }
@@ -1564,12 +1723,22 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
 
-            Device dmsDevice = this.getDeviceManager(device.getType()).
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            Device dmsDevice = deviceManager.getDevice(
+                    new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
             }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
+            }
+
+
             devices.add(device);
         }
         return devices;
@@ -1629,12 +1798,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
 
-            Device dmsDevice = this.getDeviceManager(device.getType()).
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            Device dmsDevice = deviceManager.getDevice(
+                    new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
             }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
+            }
+
             devices.add(device);
         }
         result.setData(devices);
@@ -1726,11 +1904,19 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
 
-            Device dmsDevice = this.getDeviceManager(device.getType()).
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            Device dmsDevice = deviceManager.getDevice(
+                    new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
+            }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
             }
             devices.add(device);
         }
@@ -1791,11 +1977,19 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.closeConnection();
             }
 
-            Device dmsDevice = this.getDeviceManager(device.getType()).
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            DeviceManager deviceManager = this.getDeviceManager(device.getType());
+            Device dmsDevice = deviceManager.getDevice(
+                    new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (dmsDevice != null) {
                 device.setFeatures(dmsDevice.getFeatures());
                 device.setProperties(dmsDevice.getProperties());
+            }
+
+            // Updating the retrieved device with the Sensor information related to it (if any) via the SensorManager
+            // corresponding to its DeviceManager.
+            List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
+            if (deviceSensorList != null) {
+                device.setSensors(deviceSensorList);
             }
             devices.add(device);
         }
@@ -1828,7 +2022,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
 //    private int getTenantId(String tenantDomain) throws DeviceManagementException {
 //        RealmService realmService =
-//                (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(RealmService.class, null);
+//                (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(RealmService
+// .class, null);
 //        if (realmService == null) {
 //            throw new IllegalStateException("");
 //        }
@@ -1851,6 +2046,33 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return null;
         }
         return deviceManagementService.getDeviceManager();
+    }
+
+    /**
+     * This method retrieves all the sensors attached to a specific device instance using the DeviceManager interface
+     * of the specific device's Device-Type. Checks for the implementation of the SensorManager and if it exists
+     * retrieves all the device sensors.
+     *
+     * @param deviceManager The DeviceManager implementation specific to the Device-Type of the device in concern.
+     * @param device        The device of which, the sensors are to be fetched.
+     * @return A list of all the sensors attached to the specific device.
+     * @throws DeviceManagementException If an error occurs during the attempt to fetch the Sensor list via the
+     *                                   DeviceManager's SensorManager implementation.
+     */
+    private List<Sensor> getDeviceSensorList(DeviceManager deviceManager, Device device)
+            throws DeviceManagementException {
+        String deviceIdentifier = device.getDeviceIdentifier();
+        SensorManager sensorManager = deviceManager.getSensorManager();
+        if (sensorManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("SensorManager implementation associated to the DeviceManager of the device type " +
+                                  "[" + device.getType() + "] is null. " +
+                                  "Hence, skipping any attempt to fetch device specific sensor information for " +
+                                  "device with Id [" + deviceIdentifier + "]");
+            }
+            return null;
+        }
+        return sensorManager.getSensors(deviceIdentifier);
     }
 
 }

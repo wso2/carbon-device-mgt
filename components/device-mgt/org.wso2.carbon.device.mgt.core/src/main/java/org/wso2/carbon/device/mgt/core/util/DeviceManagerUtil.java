@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.dao.DeviceTypeSensorTransactionObject;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
@@ -167,16 +168,21 @@ public final class DeviceManagerUtil {
 
             deviceTypeId = deviceType.getId();
             for (DeviceTypeSensor deviceTypeSensor : deviceTypeSensors) {
-                DeviceTypeSensor newDeviceTypeSensor = deviceTypeSensorDAO.
-                        getDeviceTypeSensor(deviceTypeId, deviceTypeSensor.getTypeId());
-                if (newDeviceTypeSensor == null) {
-                    newDeviceTypeSensor = new DeviceTypeSensor();
-                    newDeviceTypeSensor.setName(deviceTypeSensor.getName());
-                    newDeviceTypeSensor.setDescription(deviceTypeSensor.getDescription());
-                    newDeviceTypeSensor.setSensorType(deviceTypeSensor.getSensorType());
-                    newDeviceTypeSensor.setStaticProperties(deviceTypeSensor.getStaticProperties());
-                    newDeviceTypeSensor.setStreamDefinition(deviceTypeSensor.getStreamDefinition());
-                    deviceTypeSensorDAO.addDeviceTypeSensor(deviceTypeId, deviceTypeSensor);
+                String deviceTypeSensorName = deviceTypeSensor.getUniqueSensorName();
+                if (deviceTypeSensorName == null || deviceTypeSensorName.equals("")) {
+                    String msg = "Each DeviceTypeSensor should have a unique name for it to be registered. " +
+                            "Found a NULL or Empty value for the DeviceTypeSensor Name.";
+                    log.error(msg);
+                    throw new DeviceManagementException(msg);
+                }
+
+                DeviceTypeSensorTransactionObject deviceTypeSensorTransactionObject = deviceTypeSensorDAO.
+                        getDeviceTypeSensor(deviceTypeId, deviceTypeSensorName);
+                if (deviceTypeSensorTransactionObject == null) {
+                    deviceTypeSensorTransactionObject = new DeviceTypeSensorTransactionObject();
+                    deviceTypeSensorTransactionObject.setDeviceTypeId(deviceTypeId);
+                    deviceTypeSensorTransactionObject.setDeviceTypeSensor(deviceTypeSensor);
+                    deviceTypeSensorDAO.addDeviceTypeSensor(deviceTypeSensorTransactionObject);
                 }
             }
             DeviceManagementDAOFactory.commitTransaction();

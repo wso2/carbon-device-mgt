@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DeviceTypeSensor implements Serializable {
-    private int typeId;
-    private String name;
+    private static final long serialVersionUID = -3151279311229073200L;
+
+    private String uniqueSensorName;
     private SensorType sensorType;
     private String description;
     private Map<String, Object> staticProperties;
@@ -47,20 +48,12 @@ public class DeviceTypeSensor implements Serializable {
         this.streamDefinition = sensorType.getStreamDefinition();
     }
 
-    public int getTypeId() {
-        return typeId;
+    public String getUniqueSensorName() {
+        return uniqueSensorName;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setUniqueSensorName(String uniqueSensorName) {
+        this.uniqueSensorName = uniqueSensorName;
     }
 
     public SensorType getSensorType() {
@@ -182,16 +175,5 @@ public class DeviceTypeSensor implements Serializable {
                     SensorStreamDefinitionConstants.STREAM_DEF_PAYLOAD_TAG, newPayloadProperty);
             streamDefinition = streamDefinition + "," + payloadDataDefinition;
         }
-    }
-
-
-    public static class DAOConstants {
-        public static final String SENSOR_ID = "SENSOR_ID";
-        public static final String SENSOR_NAME = "SENSOR_NAME";
-        public static final String DEVICE_TYPE_ID = "DEVICE_TYPE_ID";
-        public static final String DESCRIPTION = "DESCRIPTION";
-        public static final String SENSOR_TYPE = "SENSOR_TYPE";
-        public static final String STATIC_PROPERTIES = "STATIC_PROPERTIES";
-        public static final String STREAM_DEFINITION = "STREAM_DEFINITION";
     }
 }

@@ -19,6 +19,8 @@
 package org.wso2.carbon.device.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.dao.DeviceTypeSensorTransactionObject;
+
 import java.util.List;
 
 /**
@@ -26,19 +28,25 @@ import java.util.List;
  */
 public interface DeviceTypeSensorDAO {
 
-    void addDeviceTypeSensor(int deviceTypeId, DeviceTypeSensor deviceTypeSensor) throws DeviceManagementDAOException;
+    void addDeviceTypeSensor(DeviceTypeSensorTransactionObject deviceTypeSensorTransactionObject)
+            throws DeviceManagementDAOException;
 
-    void updateDeviceTypeSensor(int deviceTypeId, DeviceTypeSensor deviceTypeSensor) throws DeviceManagementDAOException;
+    void updateDeviceTypeSensor(DeviceTypeSensorTransactionObject deviceTypeSensorTransactionObject)
+            throws DeviceManagementDAOException;
 
-    List<DeviceTypeSensor> getDeviceTypeSensors(int deviceTypeId) throws DeviceManagementDAOException;
+    void updateDeviceTypeSensor(int deviceTypeId, DeviceTypeSensor deviceTypeSensor)
+            throws DeviceManagementDAOException;
 
-    DeviceTypeSensor getDeviceTypeSensor(int deviceTypeId, String sensorName) throws DeviceManagementDAOException;
+    DeviceTypeSensorTransactionObject getDeviceTypeSensor(int deviceTypeId, String deviceTypeSensorName)
+            throws DeviceManagementDAOException;
 
-    DeviceTypeSensor getDeviceTypeSensor(int deviceTypeId, int sensorId) throws DeviceManagementDAOException;
+    DeviceTypeSensorTransactionObject getDeviceTypeSensor(int deviceTypeSensorId) throws DeviceManagementDAOException;
 
-    void removeDeviceTypeSensor(int deviceTypeId, String sensorName) throws DeviceManagementDAOException;
+    List<DeviceTypeSensorTransactionObject> getDeviceTypeSensors(int deviceTypeId) throws DeviceManagementDAOException;
 
-    void removeDeviceTypeSensor(int deviceTypeId, int sensorId) throws DeviceManagementDAOException;
+    void removeDeviceTypeSensor(int deviceTypeId, String deviceTypeSensorName) throws DeviceManagementDAOException;
+
+    void removeDeviceTypeSensor(int deviceTypeSensorId) throws DeviceManagementDAOException;
 
     void removeDeviceTypeSensors(int deviceTypeId) throws DeviceManagementDAOException;
 }

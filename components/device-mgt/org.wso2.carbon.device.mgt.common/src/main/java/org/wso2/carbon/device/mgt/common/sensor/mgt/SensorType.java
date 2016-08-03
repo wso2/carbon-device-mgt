@@ -28,6 +28,8 @@ import java.util.Map;
  * "CAMERA" but may in itself have separate properties.
  */
 public class SensorType implements Serializable {
+    private static final long serialVersionUID = -3151279311229073230L;
+
     private String typeID;
     private String typeName;
     private String typeTAG;

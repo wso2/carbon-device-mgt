@@ -21,23 +21,19 @@ package org.wso2.carbon.device.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
-import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorType;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.dao.DeviceTypeSensorTransactionObject;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeSensorDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,33 +45,17 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
     public void addDeviceTypeSensor(DeviceTypeSensorTransactionObject deviceTypeSensorTransactionObject)
             throws DeviceManagementDAOException {
         Connection conn;
+        ResultSet rs;
         PreparedStatement stmt = null;
 
+        int deviceTypeSensorId;
         int deviceTypeId = deviceTypeSensorTransactionObject.getDeviceTypeId();
         DeviceTypeSensor deviceTypeSensor = deviceTypeSensorTransactionObject.getDeviceTypeSensor();
         String deviceTypeSensorName = deviceTypeSensor.getUniqueSensorName();
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream;
-        byte[] sensorTypeAsBytes;
-        byte[] sensorPropertiesAsBytes;
-        ByteArrayInputStream sensorTypeByteStream;
-        ByteArrayInputStream sensorPropertiesByteStream;
+        String deviceTypeSensorTypeTAG = deviceTypeSensor.getSensorTypeTAG();
+        Map<String, String> deviceTypeSensorProperties = deviceTypeSensor.getStaticProperties();
 
         try {
-            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            // Write byte stream of the SensorType Object of this DeviceType Sensor.
-            objectOutputStream.writeObject(deviceTypeSensor.getSensorType());
-            sensorTypeAsBytes = byteArrayOutputStream.toByteArray();
-            sensorTypeByteStream = new ByteArrayInputStream(sensorTypeAsBytes);
-            // Flush the ByteStream plus the ObjectStreams before reuse.
-            byteArrayOutputStream.flush();
-            objectOutputStream.flush();
-            // Write byte stream of the properties HashMap Object of this DeviceType Sensor
-            objectOutputStream.writeObject(deviceTypeSensor.getStaticProperties());
-            sensorPropertiesAsBytes = byteArrayOutputStream.toByteArray();
-            sensorPropertiesByteStream = new ByteArrayInputStream(sensorPropertiesAsBytes);
-
             conn = this.getConnection();
             String insertDBQuery =
                     "INSERT INTO DM_DEVICE_TYPE_SENSOR (" +
@@ -83,33 +63,39 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
                             "DEVICE_TYPE_ID," +
                             "DESCRIPTION," +
                             "SENSOR_TYPE," +
-                            "STATIC_PROPERTIES," +
                             "STREAM_DEFINITION) " +
-                            "VALUES (?,?,?,?,?,?)";
+                            "VALUES (?,?,?,?,?)";
 
-            stmt = conn.prepareStatement(insertDBQuery);
+            stmt = conn.prepareStatement(insertDBQuery, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, deviceTypeSensorName);
             stmt.setInt(2, deviceTypeId);
             stmt.setString(3, deviceTypeSensor.getDescription());
-            stmt.setBinaryStream(4, sensorTypeByteStream, sensorTypeAsBytes.length);
-            stmt.setBinaryStream(5, sensorPropertiesByteStream, sensorPropertiesAsBytes.length);
-            stmt.setString(6, deviceTypeSensor.getStreamDefinition());
+            stmt.setString(4, deviceTypeSensorTypeTAG);
+            stmt.setString(5, deviceTypeSensor.getStreamDefinition());
             int rows = stmt.executeUpdate();
 
-            if (rows > 0 && log.isDebugEnabled()) {
-                log.debug(
-                        "Details of DeviceTypeSensor [" + deviceTypeSensorName + "] of " +
-                                "DeviceType with Id [" + deviceTypeId + "] was added successfully.");
+            if (rows > 0) {
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "Details of DeviceTypeSensor [" + deviceTypeSensorName + "] of " +
+                                    "DeviceType with Id [" + deviceTypeId + "] was added successfully.");
+                }
+
+                rs = stmt.getGeneratedKeys();
+                rs.next();
+                deviceTypeSensorId = rs.getInt(1);
+
+                if (deviceTypeSensorProperties != null &&
+                        !addDeviceTypeSensorProperties(deviceTypeSensorId, deviceTypeSensorProperties)) {
+                    String msg = "Error occurred whilst adding Properties of the registered new DeviceTypeSensor " +
+                            "[" + deviceTypeSensorName + "] whose Id is [" + deviceTypeSensorId + "]";
+                    log.error(msg);
+                    throw new DeviceManagementDAOException(msg);
+                }
             }
         } catch (SQLException e) {
             String msg = "Error occurred whilst registering a new DeviceTypeSensor [" + deviceTypeSensorName +
                     "] for the DeviceType with Id [" + deviceTypeId + "]";
-            log.error(msg, e);
-            throw new DeviceManagementDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred whilst trying to get the byte streams of the " +
-                    "'sensorType' Object and 'staticProperties' HashMap of the " +
-                    "DeviceTypeSensor [" + deviceTypeSensorName + "] to store as BLOBs in the DB";
             log.error(msg, e);
             throw new DeviceManagementDAOException(msg, e);
         } finally {
@@ -127,61 +113,45 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
         int deviceTypeSensorId = deviceTypeSensorTransactionObject.getDeviceTypeSensorId();
         DeviceTypeSensor deviceTypeSensor = deviceTypeSensorTransactionObject.getDeviceTypeSensor();
         String deviceTypeSensorName = deviceTypeSensor.getUniqueSensorName();
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream;
-        byte[] sensorTypeAsBytes;
-        byte[] sensorPropertiesAsBytes;
-        ByteArrayInputStream sensorTypeByteStream;
-        ByteArrayInputStream sensorPropertiesByteStream;
+        String deviceTypeSensorTypeTAG = deviceTypeSensor.getSensorTypeTAG();
+        Map<String, String> deviceTypeSensorProperties = deviceTypeSensor.getStaticProperties();
 
         try {
-            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            // Write byte stream of the SensorType Object of this DeviceType Sensor.
-            objectOutputStream.writeObject(deviceTypeSensor.getSensorType());
-            sensorTypeAsBytes = byteArrayOutputStream.toByteArray();
-            sensorTypeByteStream = new ByteArrayInputStream(sensorTypeAsBytes);
-            // Flush the ByteStream plus the ObjectStreams before reuse.
-            byteArrayOutputStream.flush();
-            objectOutputStream.flush();
-            // Write byte stream of the properties HashMap Object of this DeviceType Sensor
-            objectOutputStream.writeObject(deviceTypeSensor.getStaticProperties());
-            sensorPropertiesAsBytes = byteArrayOutputStream.toByteArray();
-            sensorPropertiesByteStream = new ByteArrayInputStream(sensorPropertiesAsBytes);
-
             conn = this.getConnection();
             String updateDBQuery =
                     "UPDATE DM_DEVICE_TYPE_SENSOR SET " +
                             "SENSOR_NAME = ?," +
                             "DESCRIPTION = ?," +
                             "SENSOR_TYPE = ?," +
-                            "STATIC_PROPERTIES = ?," +
                             "STREAM_DEFINITION = ? " +
                             "WHERE SENSOR_ID = ?";
 
             stmt = conn.prepareStatement(updateDBQuery);
             stmt.setString(1, deviceTypeSensorName);
             stmt.setString(2, deviceTypeSensor.getDescription());
-            stmt.setBinaryStream(3, sensorTypeByteStream, sensorTypeAsBytes.length);
-            stmt.setBinaryStream(4, sensorPropertiesByteStream, sensorPropertiesAsBytes.length);
-            stmt.setString(5, deviceTypeSensor.getStreamDefinition());
-            stmt.setInt(6, deviceTypeSensorId);
+            stmt.setString(3, deviceTypeSensorTypeTAG);
+            stmt.setString(4, deviceTypeSensor.getStreamDefinition());
+            stmt.setInt(5, deviceTypeSensorId);
             int rows = stmt.executeUpdate();
 
-            if (rows > 0 && log.isDebugEnabled()) {
-                log.debug(
-                        "Details of DeviceTypeSensor [" + deviceTypeSensorName + "] of " +
-                                "DeviceType with Id [" + deviceTypeId + "] was updated successfully.");
+            if (rows > 0) {
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "Details of DeviceTypeSensor [" + deviceTypeSensorName + "] of " +
+                                    "DeviceType with Id [" + deviceTypeId + "] was updated successfully.");
+                }
+
+                if (deviceTypeSensorProperties != null &&
+                        !addDeviceTypeSensorProperties(deviceTypeSensorId, deviceTypeSensorProperties)) {
+                    String msg = "Error occurred whilst adding Properties of the registered new DeviceTypeSensor " +
+                            "[" + deviceTypeSensorName + "] whose Id is [" + deviceTypeSensorId + "]";
+                    log.error(msg);
+                    throw new DeviceManagementDAOException(msg);
+                }
             }
         } catch (SQLException e) {
             String msg = "Error occurred whilst registering a new DeviceTypeSensor [" + deviceTypeSensorName +
                     "] for the DeviceType with Id [" + deviceTypeId + "]";
-            log.error(msg, e);
-            throw new DeviceManagementDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred whilst trying to get the byte streams of the " +
-                    "'sensorType' Object and 'staticProperties' HashMap of the " +
-                    "DeviceTypeSensor [" + deviceTypeSensorName + "] to store as BLOBs in the DB";
             log.error(msg, e);
             throw new DeviceManagementDAOException(msg, e);
         } finally {
@@ -194,61 +164,61 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
             throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
+        ResultSet resultSet;
 
+        int deviceTypeSensorId = -1;
         String deviceTypeSensorName = deviceTypeSensor.getUniqueSensorName();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream;
-        byte[] sensorTypeAsBytes;
-        byte[] sensorPropertiesAsBytes;
-        ByteArrayInputStream sensorTypeByteStream;
-        ByteArrayInputStream sensorPropertiesByteStream;
+        String deviceTypeSensorTypeTAG = deviceTypeSensor.getSensorTypeTAG();
+        Map<String, String> deviceTypeSensorProperties = deviceTypeSensor.getStaticProperties();
 
         try {
-            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            // Write byte stream of the SensorType Object of this DeviceType Sensor.
-            objectOutputStream.writeObject(deviceTypeSensor.getSensorType());
-            sensorTypeAsBytes = byteArrayOutputStream.toByteArray();
-            sensorTypeByteStream = new ByteArrayInputStream(sensorTypeAsBytes);
-            // Flush the ByteStream plus the ObjectStreams before reuse.
-            byteArrayOutputStream.flush();
-            objectOutputStream.flush();
-            // Write byte stream of the properties HashMap Object of this DeviceType Sensor
-            objectOutputStream.writeObject(deviceTypeSensor.getStaticProperties());
-            sensorPropertiesAsBytes = byteArrayOutputStream.toByteArray();
-            sensorPropertiesByteStream = new ByteArrayInputStream(sensorPropertiesAsBytes);
-
             conn = this.getConnection();
+            String selectDBQuery =
+                    "SELECT SENSOR_ID " +
+                            "FROM DM_DEVICE_TYPE_SENSOR " +
+                            "WHERE DEVICE_TYPE_ID = ? AND SENSOR_NAME = ?";
+
+            stmt = conn.prepareStatement(selectDBQuery);
+            stmt.setInt(1, deviceTypeId);
+            stmt.setString(2, deviceTypeSensorName);
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                deviceTypeSensorId = resultSet.getInt(DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_ID);
+            }
+            stmt.close();
+
             String updateDBQuery =
                     "UPDATE DM_DEVICE_TYPE_SENSOR SET " +
                             "DESCRIPTION = ?," +
                             "SENSOR_TYPE = ?," +
-                            "STATIC_PROPERTIES = ?," +
                             "STREAM_DEFINITION = ? " +
                             "WHERE DEVICE_TYPE_ID = ? AND SENSOR_NAME = ?";
 
             stmt = conn.prepareStatement(updateDBQuery);
             stmt.setString(1, deviceTypeSensor.getDescription());
-            stmt.setBinaryStream(2, sensorTypeByteStream, sensorTypeAsBytes.length);
-            stmt.setBinaryStream(3, sensorPropertiesByteStream, sensorPropertiesAsBytes.length);
-            stmt.setString(4, deviceTypeSensor.getStreamDefinition());
-            stmt.setInt(5, deviceTypeId);
-            stmt.setString(6, deviceTypeSensorName);
+            stmt.setString(2, deviceTypeSensorTypeTAG);
+            stmt.setString(3, deviceTypeSensor.getStreamDefinition());
+            stmt.setInt(4, deviceTypeId);
+            stmt.setString(5, deviceTypeSensorName);
             int rows = stmt.executeUpdate();
 
-            if (rows > 0 && log.isDebugEnabled()) {
-                log.debug(
-                        "Details of DeviceTypeSensor [" + deviceTypeSensorName + "] of " +
-                                "DeviceType with Id [" + deviceTypeId + "] was updated successfully.");
+            if (rows > 0) {
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "Details of DeviceTypeSensor [" + deviceTypeSensorName + "] of " +
+                                    "DeviceType with Id [" + deviceTypeId + "] was updated successfully.");
+                }
+
+                if (!addDeviceTypeSensorProperties(deviceTypeSensorId, deviceTypeSensorProperties)) {
+                    String msg = "Error occurred whilst adding Properties of the registered new DeviceTypeSensor " +
+                            "[" + deviceTypeSensorName + "] whose Id is [" + deviceTypeSensorId + "]";
+                    log.error(msg);
+                    throw new DeviceManagementDAOException(msg);
+                }
             }
         } catch (SQLException e) {
             String msg = "Error occurred whilst registering a new DeviceTypeSensor [" + deviceTypeSensorName +
                     "] for the DeviceType with Id [" + deviceTypeId + "]";
-            log.error(msg, e);
-            throw new DeviceManagementDAOException(msg, e);
-        } catch (IOException e) {
-            String msg = "Error occurred whilst trying to get the byte streams of the " +
-                    "'sensorType' Object and 'staticProperties' HashMap of the " +
-                    "DeviceTypeSensor [" + deviceTypeSensorName + "] to store as BLOBs in the DB";
             log.error(msg, e);
             throw new DeviceManagementDAOException(msg, e);
         } finally {
@@ -267,13 +237,11 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
         try {
             conn = this.getConnection();
             String selectDBQuery =
-                    "SELECT " +
-                            "SENSOR_ID AS SENSOR_ID, " +
-                            "SENSOR_NAME AS SENSOR_NAME, " +
-                            "DESCRIPTION AS DESCRIPTION, " +
-                            "SENSOR_TYPE AS SENSOR_TYPE, " +
-                            "STATIC_PROPERTIES AS STATIC_PROPERTIES, " +
-                            "STREAM_DEFINITION AS STREAM_DEFINITION " +
+                    "SELECT  SENSOR_ID, " +
+                            "SENSOR_NAME, " +
+                            "DESCRIPTION, " +
+                            "SENSOR_TYPE, " +
+                            "STREAM_DEFINITION " +
                             "FROM DM_DEVICE_TYPE_SENSOR " +
                             "WHERE DEVICE_TYPE_ID = ?";
             stmt = conn.prepareStatement(selectDBQuery);
@@ -281,35 +249,24 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                SensorType sensorType = null;
-                Map<String, Object> staticProperties = null;
                 String deviceTypeSensorName = resultSet.getString(
                         DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_NAME);
+                String deviceTypeSensorTypeTAG = resultSet.getString(
+                        DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_TYPE);
                 int deviceTypeSensorId = resultSet.getInt(DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_ID);
-
-                try {
-                    // Read the BLOB of SensorType Object from DB as bytes.
-                    sensorType = (SensorType) deSerializeBlobData(resultSet.getObject(
-                            DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_TYPE), SensorType.class);
-                    // Read the BLOB of Static-Properties Map from DB as bytes.
-                    staticProperties = (Map<String, Object>) deSerializeBlobData(resultSet.getObject(
-                            DeviceTypeSensorTransactionObject.DAOConstants.STATIC_PROPERTIES), Map.class);
-                } catch (ClassNotFoundException | IOException e) {
-                    String msg = "An error occurred whilst trying to cast the BLOB data of DeviceTypeSensor " +
-                            "[" + deviceTypeSensorName + "] of device-type with id [" + deviceTypeId + "]";
-                    log.error(msg, e);
-                    throw new DeviceManagementDAOException(msg, e);
-                }
+                Map<String, String> staticProperties = getDeviceTypeSensorProperties(deviceTypeSensorId);
 
                 DeviceTypeSensor deviceTypeSensor = new DeviceTypeSensor();
                 deviceTypeSensor.setUniqueSensorName(deviceTypeSensorName);
-                deviceTypeSensor.setDescription(resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.DESCRIPTION));
-                deviceTypeSensor.setSensorType(sensorType);
+                deviceTypeSensor.setDescription(
+                        resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.DESCRIPTION));
+                deviceTypeSensor.setSensorTypeTAG(deviceTypeSensorTypeTAG);
                 deviceTypeSensor.setStaticProperties(staticProperties);
                 deviceTypeSensor.setStreamDefinition(
                         resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.STREAM_DEFINITION));
 
-                DeviceTypeSensorTransactionObject deviceTypeSensorTransactionObject = new DeviceTypeSensorTransactionObject(deviceTypeSensor);
+                DeviceTypeSensorTransactionObject deviceTypeSensorTransactionObject =
+                        new DeviceTypeSensorTransactionObject(deviceTypeSensor);
                 deviceTypeSensorTransactionObject.setDeviceTypeSensorId(deviceTypeSensorId);
                 deviceTypeSensorTransactionObject.setDeviceTypeId(deviceTypeId);
                 deviceTypeSensorTransactionObjects.add(deviceTypeSensorTransactionObject);
@@ -338,12 +295,10 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
         try {
             conn = this.getConnection();
             String selectDBQuery =
-                    "SELECT " +
-                            "SENSOR_ID AS SENSOR_ID, " +
-                            "DESCRIPTION AS DESCRIPTION, " +
-                            "SENSOR_TYPE AS SENSOR_TYPE, " +
-                            "STATIC_PROPERTIES AS STATIC_PROPERTIES, " +
-                            "STREAM_DEFINITION AS STREAM_DEFINITION " +
+                    "SELECT  SENSOR_ID, " +
+                            "DESCRIPTION, " +
+                            "SENSOR_TYPE, " +
+                            "STREAM_DEFINITION " +
                             "FROM DM_DEVICE_TYPE_SENSOR " +
                             "WHERE DEVICE_TYPE_ID = ? AND SENSOR_NAME = ?";
             stmt = conn.prepareStatement(selectDBQuery);
@@ -352,29 +307,17 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                SensorType sensorType;
-                Map<String, Object> staticProperties;
-                int deviceTypeSensorId = resultSet.getInt(DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_ID);
-
-                try {
-                    // Read the BLOB of SensorType Object from DB as bytes.
-                    sensorType = (SensorType) deSerializeBlobData(resultSet.getObject(
-                            DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_TYPE), SensorType.class);
-                    // Read the BLOB of Static-Properties Map from DB as bytes.
-                    staticProperties = (Map<String, Object>) deSerializeBlobData(resultSet.getObject(
-                            DeviceTypeSensorTransactionObject.DAOConstants.STATIC_PROPERTIES), Map.class);
-                } catch (ClassNotFoundException | IOException e) {
-                    String msg = "An error occurred whilst trying to cast the BLOB data of DeviceTypeSensor " +
-                            "[" + sensorName + "] of device-type with id [" + deviceTypeId + "]";
-                    log.error(msg, e);
-                    throw new DeviceManagementDAOException(msg, e);
-                }
+                String deviceTypeSensorTypeTAG = resultSet.getString(
+                        DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_TYPE);
+                int deviceTypeSensorId = resultSet.getInt(
+                        DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_ID);
+                Map<String, String> staticProperties = getDeviceTypeSensorProperties(deviceTypeSensorId);
 
                 DeviceTypeSensor deviceTypeSensor = new DeviceTypeSensor();
                 deviceTypeSensor.setUniqueSensorName(sensorName);
                 deviceTypeSensor.setDescription(
                         resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.DESCRIPTION));
-                deviceTypeSensor.setSensorType(sensorType);
+                deviceTypeSensor.setSensorTypeTAG(deviceTypeSensorTypeTAG);
                 deviceTypeSensor.setStaticProperties(staticProperties);
                 deviceTypeSensor.setStreamDefinition(
                         resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.STREAM_DEFINITION));
@@ -406,13 +349,11 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
         try {
             conn = this.getConnection();
             String selectDBQuery =
-                    "SELECT " +
-                            "SENSOR_NAME AS SENSOR_NAME, " +
-                            "DEVICE_TYPE_ID AS DEVICE_TYPE_ID, " +
-                            "DESCRIPTION AS DESCRIPTION, " +
-                            "SENSOR_TYPE AS SENSOR_TYPE, " +
-                            "STATIC_PROPERTIES AS STATIC_PROPERTIES, " +
-                            "STREAM_DEFINITION AS STREAM_DEFINITION " +
+                    "SELECT  SENSOR_NAME, " +
+                            "DEVICE_TYPE_ID, " +
+                            "DESCRIPTION, " +
+                            "SENSOR_TYPE, " +
+                            "STREAM_DEFINITION " +
                             "FROM DM_DEVICE_TYPE_SENSOR " +
                             "WHERE SENSOR_ID = ?";
             stmt = conn.prepareStatement(selectDBQuery);
@@ -420,29 +361,17 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                SensorType sensorType;
-                Map<String, Object> staticProperties;
                 String sensorName = resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_NAME);
+                String deviceTypeSensorTypeTAG = resultSet.getString(
+                        DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_TYPE);
                 int deviceTypeId = resultSet.getInt(DeviceTypeSensorTransactionObject.DAOConstants.DEVICE_TYPE_ID);
-
-                try {
-                    // Read the BLOB of SensorType Object from DB as bytes.
-                    sensorType = (SensorType) deSerializeBlobData(resultSet.getObject(
-                            DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_TYPE), SensorType.class);
-                    // Read the BLOB of Static-Properties Map from DB as bytes.
-                    staticProperties = (Map<String, Object>) deSerializeBlobData(resultSet.getObject(
-                            DeviceTypeSensorTransactionObject.DAOConstants.STATIC_PROPERTIES), Map.class);
-                } catch (ClassNotFoundException | IOException e) {
-                    throw new DeviceManagementDAOException(
-                            "An error occurred whilst trying to cast the BLOB data of DeviceTypeSensor " +
-                                    "[" + sensorName + "] of with id [" + deviceTypeSensorId + "]", e);
-                }
+                Map<String, String> staticProperties = getDeviceTypeSensorProperties(deviceTypeSensorId);
 
                 DeviceTypeSensor deviceTypeSensor = new DeviceTypeSensor();
                 deviceTypeSensor.setUniqueSensorName(sensorName);
                 deviceTypeSensor.setDescription(resultSet.getString(
                         DeviceTypeSensorTransactionObject.DAOConstants.DESCRIPTION));
-                deviceTypeSensor.setSensorType(sensorType);
+                deviceTypeSensor.setSensorTypeTAG(deviceTypeSensorTypeTAG);
                 deviceTypeSensor.setStaticProperties(staticProperties);
                 deviceTypeSensor.setStreamDefinition(
                         resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.STREAM_DEFINITION));
@@ -450,7 +379,6 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
                 deviceTypeSensorTransactionObject = new DeviceTypeSensorTransactionObject(deviceTypeSensor);
                 deviceTypeSensorTransactionObject.setDeviceTypeSensorId(deviceTypeSensorId);
                 deviceTypeSensorTransactionObject.setDeviceTypeId(deviceTypeId);
-
             }
 
             return deviceTypeSensorTransactionObject;
@@ -468,10 +396,27 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
     public void removeDeviceTypeSensor(int deviceTypeId, String sensorName) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
+        ResultSet resultSet;
+        int deviceTypeSensorId = -1;
+
         try {
             conn = this.getConnection();
+            String selectDBQuery =
+                    "SELECT  SENSOR_ID " +
+                            "FROM DM_DEVICE_TYPE_SENSOR " +
+                            "WHERE DEVICE_TYPE_ID = ? AND SENSOR_NAME = ?";
+
+            stmt = conn.prepareStatement(selectDBQuery);
+            stmt.setInt(1, deviceTypeId);
+            stmt.setString(2, sensorName);
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                deviceTypeSensorId = resultSet.getInt(DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_ID);
+            }
+            stmt.close();
+
             String deleteDBQuery =
-                    "DELETE FROM DM_DEVICE_TYPE_SENSOR WHERE DEVICE_ID = ? AND SENSOR_NAME = ?";
+                    "DELETE FROM DM_DEVICE_TYPE_SENSOR WHERE DEVICE_TYPE_ID = ? AND SENSOR_NAME = ?";
             stmt = conn.prepareStatement(deleteDBQuery);
             stmt.setInt(1, deviceTypeId);
             stmt.setString(2, sensorName);
@@ -480,6 +425,13 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
                 if (log.isDebugEnabled()) {
                     log.debug("DeviceTypeSensor [" + sensorName + "] of device-type with Id [" + deviceTypeId + "] " +
                                       "has been deleted successfully.");
+                }
+
+                if (!removeDeviceTypeSensorProperties(deviceTypeSensorId)) {
+                    String msg = "Error occurred whilst deleting Properties of the DeviceTypeSensor with " +
+                            "Id [" + deviceTypeSensorId + "]";
+                    log.error(msg);
+                    throw new DeviceManagementDAOException(msg);
                 }
             }
         } catch (SQLException e) {
@@ -503,9 +455,17 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
             stmt = conn.prepareStatement(deleteDBQuery);
             stmt.setInt(1, deviceTypeSensorId);
             int rows = stmt.executeUpdate();
+
             if (rows > 0) {
                 if (log.isDebugEnabled()) {
                     log.debug("DeviceTypeSensor with Id [" + deviceTypeSensorId + "] has been deleted successfully.");
+                }
+
+                if (!removeDeviceTypeSensorProperties(deviceTypeSensorId)) {
+                    String msg = "Error occurred whilst deleting Properties of the DeviceTypeSensor with " +
+                            "Id [" + deviceTypeSensorId + "]";
+                    log.error(msg);
+                    throw new DeviceManagementDAOException(msg);
                 }
             }
         } catch (SQLException e) {
@@ -522,10 +482,32 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
     public void removeDeviceTypeSensors(int deviceTypeId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
+        ResultSet resultSet;
+        int deviceTypeSensorId;
+
         try {
             conn = this.getConnection();
+            String selectDBQuery =
+                    "SELECT SENSOR_ID " +
+                            "FROM DM_DEVICE_TYPE_SENSOR " +
+                            "WHERE DEVICE_TYPE_ID = ?";
+
+            stmt = conn.prepareStatement(selectDBQuery);
+            stmt.setInt(1, deviceTypeId);
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                deviceTypeSensorId = resultSet.getInt(DeviceTypeSensorTransactionObject.DAOConstants.SENSOR_ID);
+                if (!removeDeviceTypeSensorProperties(deviceTypeSensorId)) {
+                    String msg = "Error occurred whilst deleting Properties of the DeviceTypeSensor with " +
+                            "Id [" + deviceTypeSensorId + "] of DeviceType with Id [" + deviceTypeId + "]";
+                    log.error(msg);
+                    throw new DeviceManagementDAOException(msg);
+                }
+            }
+            stmt.close();
+
             String deleteDBQuery =
-                    "DELETE FROM DM_DEVICE_TYPE_SENSOR WHERE DEVICE_ID = ?";
+                    "DELETE FROM DM_DEVICE_TYPE_SENSOR WHERE DEVICE_TYPE_ID = ?";
             stmt = conn.prepareStatement(deleteDBQuery);
             stmt.setInt(1, deviceTypeId);
             int rows = stmt.executeUpdate();
@@ -554,22 +536,109 @@ public class DeviceTypeSensorDAOImpl implements DeviceTypeSensorDAO {
     }
 
     /**
-     * @param blobObjectFromDB
-     * @param blobClass
+     * @param deviceTypeSensorId
+     * @param deviceTypeSensorProperties
      * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws DeviceManagementDAOException
      */
-    private Object deSerializeBlobData(Object blobObjectFromDB, Class blobClass)
-            throws IOException, ClassNotFoundException {
-        Object dataObjectFromDB = null;
+    private boolean addDeviceTypeSensorProperties(int deviceTypeSensorId,
+                                                  Map<String, String> deviceTypeSensorProperties)
+            throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            for (String property : deviceTypeSensorProperties.keySet()) {
+                String value = deviceTypeSensorProperties.get(property);
 
-        byte[] blobByteArray = (byte[]) blobObjectFromDB;
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(blobByteArray);
-        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-        if (blobClass.isInstance(objectInputStream.readObject())) {
-            dataObjectFromDB = objectInputStream.readObject();
+                conn = this.getConnection();
+                String insertDBQuery =
+                        "INSERT INTO DM_DEVICE_TYPE_SENSOR_STATIC_PROPERTIES (" +
+                                "SENSOR_ID," +
+                                "PROPERTY_KEY," +
+                                "PROPERTY_VALUE) " +
+                                "VALUES (?,?,?)";
+
+                stmt = conn.prepareStatement(insertDBQuery);
+                stmt.setInt(1, deviceTypeSensorId);
+                stmt.setString(2, property);
+                stmt.setString(3, value);
+                int rows = stmt.executeUpdate();
+
+                if (rows > 0 && log.isDebugEnabled()) {
+                    log.debug("Properties of DeviceTypeSensor with Id [" + deviceTypeSensorId + "] " +
+                                      "was added successfully.");
+                }
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred whilst adding properties (after adding the sensor) of a new " +
+                    "DeviceTypeSensor whose is Id [" + deviceTypeSensorId + "].";
+            log.error(msg, e);
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
-        return dataObjectFromDB;
+        return true;
+    }
+
+
+    private Map<String, String> getDeviceTypeSensorProperties(int deviceTypeSensorId)
+            throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        Map<String, String> deviceTypeSensorProperties = new HashMap<>();
+
+        try {
+            conn = this.getConnection();
+            String selectDBQuery =
+                    "SELECT PROPERTY_KEY, " +
+                            "PROPERTY_VALUE " +
+                            "FROM DM_DEVICE_TYPE_SENSOR_STATIC_PROPERTIES " +
+                            "WHERE SENSOR_ID = ?";
+            stmt = conn.prepareStatement(selectDBQuery);
+            stmt.setInt(1, deviceTypeSensorId);
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                String propertyKey = resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.PROPERTY_KEY);
+                String propertyVal = resultSet.getString(DeviceTypeSensorTransactionObject.DAOConstants.PROPERTY_VALUE);
+                deviceTypeSensorProperties.put(propertyKey, propertyVal);
+            }
+        } catch (SQLException e) {
+            String msg = "A SQL error occurred whilst trying to get the properties of DeviceTypeSensor with " +
+                    "ID [" + deviceTypeSensorId + "].";
+            log.error(msg, e);
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
+        return deviceTypeSensorProperties;
+    }
+
+    private boolean removeDeviceTypeSensorProperties(int deviceTypeSensorId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = this.getConnection();
+            String deleteDBQuery =
+                    "DELETE FROM DM_DEVICE_TYPE_SENSOR_STATIC_PROPERTIES WHERE SENSOR_ID = ?";
+            stmt = conn.prepareStatement(deleteDBQuery);
+            stmt.setInt(1, deviceTypeSensorId);
+            int rows = stmt.executeUpdate();
+
+            if (rows > 0 && log.isDebugEnabled()) {
+                log.debug("Properties of DeviceTypeSensor with Id [" + deviceTypeSensorId + "] " +
+                                  "was deleted successfully.");
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred whilst removing properties (after removing the sensor) of the " +
+                    "DeviceTypeSensor whose is Id [" + deviceTypeSensorId + "].";
+            log.error(msg, e);
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return true;
     }
 }

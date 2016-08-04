@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.common.sensor.mgt;
 
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.dao.SensorTransactionObject;
 
 import java.util.List;
 
@@ -32,7 +33,6 @@ public interface SensorManager {
      */
 
     /**
-     *
      * @throws DeviceManagementException
      */
     void initDeviceTypeSensors() throws DeviceManagementException;
@@ -45,26 +45,23 @@ public interface SensorManager {
      * itself. These methods are ideally used during the time of instantiating a new device of the given Device-Type.
      */
 
-    /**
-     *
-     * @param deviceId
-     * @param sensor
-     * @return
-     * @throws DeviceManagementException
-     */
-    boolean addSensor(String deviceId, Sensor sensor) throws DeviceManagementException;
 
-    boolean addSensors(String deviceId, List<Sensor> sensors) throws DeviceManagementException;
+    boolean addSensor(SensorTransactionObject sensorTObject) throws DeviceManagementException;
 
-    boolean updateSensor(String deviceId, Sensor sensor) throws DeviceManagementException;
+    boolean addSensors(String deviceIdentifier, List<SensorTransactionObject> sensorTObjects)
+            throws DeviceManagementException;
 
-    boolean updateSensors(String deviceId, List<Sensor> sensors) throws DeviceManagementException;
+    boolean updateSensor(SensorTransactionObject sensorTObject) throws DeviceManagementException;
 
-    Sensor getSensor(String deviceId, String sensorId) throws DeviceManagementException;
+    boolean updateSensors(String deviceIdentifier, List<SensorTransactionObject> sensorTObjects)
+            throws DeviceManagementException;
 
-    List<Sensor> getSensors(String deviceId) throws DeviceManagementException;
+    SensorTransactionObject getSensor(String deviceIdentifier, String sensorIdentifier)
+            throws DeviceManagementException;
 
-    boolean removeSensor(String deviceId, String sensorId) throws DeviceManagementException;
+    List<SensorTransactionObject> getSensors(String deviceIdentifier) throws DeviceManagementException;
 
-    boolean removeSensors(String deviceId) throws DeviceManagementException;
+    boolean removeSensor(String deviceIdentifier, String sensorIdentifier) throws DeviceManagementException;
+
+    boolean removeSensors(String deviceIdentifier) throws DeviceManagementException;
 }

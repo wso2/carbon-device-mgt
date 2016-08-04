@@ -26,9 +26,9 @@ public class DeviceTypeSensor implements Serializable {
     private static final long serialVersionUID = -3151279311229073200L;
 
     private String uniqueSensorName;
-    private SensorType sensorType;
+    private String sensorTypeTAG;
     private String description;
-    private Map<String, Object> staticProperties;
+    private Map<String, String> staticProperties;
     private String streamDefinition;
 
     public DeviceTypeSensor() {
@@ -40,12 +40,11 @@ public class DeviceTypeSensor implements Serializable {
      * sensors (ex: Camera, GPS, Distance & etc) does this Sensor belong to. By default the stream-definition & the
      * properties of the SensorType are inherited.
      *
-     * @param sensorType The SensorType of the Sensor to be created.
+     * @param sensorTypeTAG The SensorType of the Sensor to be created.
      */
-    public DeviceTypeSensor(SensorType sensorType) {
-        this.sensorType = sensorType;
-        this.staticProperties = sensorType.getTypeProperties();
-        this.streamDefinition = sensorType.getStreamDefinition();
+    public DeviceTypeSensor(String sensorTypeTAG, String streamDefinition) {
+        this.sensorTypeTAG = sensorTypeTAG;
+        this.streamDefinition = streamDefinition;
     }
 
     public String getUniqueSensorName() {
@@ -56,12 +55,12 @@ public class DeviceTypeSensor implements Serializable {
         this.uniqueSensorName = uniqueSensorName;
     }
 
-    public SensorType getSensorType() {
-        return sensorType;
+    public String getSensorTypeTAG() {
+        return sensorTypeTAG;
     }
 
-    public void setSensorType(SensorType sensorType) {
-        this.sensorType = sensorType;
+    public void setSensorTypeTAG(String sensorTypeTAG) {
+        this.sensorTypeTAG = sensorTypeTAG;
     }
 
     public String getDescription() {
@@ -72,11 +71,11 @@ public class DeviceTypeSensor implements Serializable {
         this.description = description;
     }
 
-    public Map<String, Object> getStaticProperties() {
+    public Map<String, String> getStaticProperties() {
             return staticProperties;
     }
 
-    public void setStaticProperties(Map<String, Object> staticProperties) {
+    public void setStaticProperties(Map<String, String> staticProperties) {
         this.staticProperties = staticProperties;
     }
 
@@ -89,27 +88,12 @@ public class DeviceTypeSensor implements Serializable {
     }
 
     /**
-     *
-     * @return
-     */
-    public Map<String, Object> getAllProperties() {
-        if (this.staticProperties.keySet().equals(this.sensorType.getTypeProperties().keySet())) {
-            return staticProperties;
-        } else {
-            Map<String, Object> aggregatedProperties = new HashMap<>();
-            aggregatedProperties.putAll(staticProperties);
-            aggregatedProperties.putAll(this.sensorType.getTypeProperties());
-            return aggregatedProperties;
-        }
-    }
-
-    /**
      * Adds a new static property relevant to the specific DeviceTypeSensor object.
      *
      * @param staticProperty The static property key to be added.
      * @param value    The value of the above newly added static-property.
      */
-    public void addStaticProperty(String staticProperty, Object value) {
+    public void addStaticProperty(String staticProperty, String value) {
         this.staticProperties.put(staticProperty, value);
     }
 

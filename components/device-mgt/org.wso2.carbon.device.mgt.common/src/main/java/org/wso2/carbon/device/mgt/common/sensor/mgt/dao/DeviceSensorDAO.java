@@ -23,19 +23,19 @@ import org.wso2.carbon.device.mgt.common.sensor.mgt.Sensor;
 import java.util.List;
 
 public interface DeviceSensorDAO {
-    boolean addSensor(Sensor sensor) throws DeviceSensorDAOException;
+    boolean addSensor(SensorTransactionObject sensorTransactionObject) throws DeviceSensorDAOException;
 
-    boolean updateSensor(Sensor sensor) throws DeviceSensorDAOException;
+    boolean updateSensor(SensorTransactionObject sensorTransactionObject) throws DeviceSensorDAOException;
 
-    Sensor getSensor(String deviceId, String sensorId) throws DeviceSensorDAOException;
+    SensorTransactionObject getSensor(String deviceIdentifier, String sensorIdentifier) throws DeviceSensorDAOException;
 
-    Sensor getSensor(String sensorId) throws DeviceSensorDAOException;
+    SensorTransactionObject getSensor(String sensorIdentifier) throws DeviceSensorDAOException;
 
-    List<Sensor> getSensors(String deviceId) throws DeviceSensorDAOException;
+    List<SensorTransactionObject> getSensors(String deviceIdentifier) throws DeviceSensorDAOException;
 
-    boolean removeSensor(String deviceId, String sensorId) throws DeviceSensorDAOException;
+    boolean removeSensor(String deviceIdentifier, String sensorIdentifier) throws DeviceSensorDAOException;
 
-    boolean removeSensor(String sensorId) throws DeviceSensorDAOException;
+    boolean removeSensor(String sensorIdentifier) throws DeviceSensorDAOException;
 
-    boolean removeSensors(String deviceId) throws DeviceSensorDAOException;
+    boolean removeSensors(String deviceIdentifier) throws DeviceSensorDAOException;
 }

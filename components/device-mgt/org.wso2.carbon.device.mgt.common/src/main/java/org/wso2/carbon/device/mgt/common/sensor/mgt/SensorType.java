@@ -135,7 +135,7 @@ public class SensorType implements Serializable {
         String correlationDataDefinition = "";
         String payloadDataDefinition = "";
 
-        if (metaData.size() > 0) {
+        if (metaData != null && metaData.size() > 0) {
             for (String metaInfoName : metaData.keySet()) {
                 String metaInfoType = metaData.get(metaInfoName);
                 String nameTypePair = String.format(
@@ -146,7 +146,7 @@ public class SensorType implements Serializable {
             metaDataDefinition = String.format(SensorStreamDefinitionConstants.STREAM_DEF_META_TAG, metaNameTypePairs);
         }
 
-        if (correlationData.size() > 0) {
+        if (correlationData != null && correlationData.size() > 0) {
             for (String correlationInfoName : correlationData.keySet()) {
                 String correlationInfoType = correlationData.get(correlationInfoName);
                 String nameTypePair = String.format(
@@ -159,7 +159,7 @@ public class SensorType implements Serializable {
                     SensorStreamDefinitionConstants.STREAM_DEF_CORRELATION_TAG, correlationNameTypePairs);
         }
 
-        if (payloadData.size() > 0) {
+        if (payloadData != null && payloadData.size() > 0) {
             for (String payloadInfoName : payloadData.keySet()) {
                 String payloadInfoType = payloadData.get(payloadInfoName);
                 String nameTypePair = String.format(
@@ -192,7 +192,7 @@ public class SensorType implements Serializable {
             streamDefinition += payloadDataDefinition;
         }
 
-        if (streamDefinition.charAt(streamDefinition.length()) == ',') {
+        if (streamDefinition.charAt(streamDefinition.length() - 1) == ',') {
             streamDefinition = streamDefinition.substring(0, streamDefinition.length() - 1);
         }
     }

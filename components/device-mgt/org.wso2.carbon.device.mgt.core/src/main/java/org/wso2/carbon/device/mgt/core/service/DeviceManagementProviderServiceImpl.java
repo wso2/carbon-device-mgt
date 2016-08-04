@@ -43,6 +43,7 @@ import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.Sensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.dao.DeviceTypeSensorTransactionObject;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.dao.SensorTransactionObject;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
@@ -65,6 +66,8 @@ import org.wso2.carbon.email.sender.core.EmailSendingFailedException;
 import org.wso2.carbon.email.sender.core.TypedValue;
 import org.wso2.carbon.user.api.UserStoreException;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,6 +76,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
                                                             PluginInitializationListener {
@@ -158,74 +162,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<DeviceTypeSensor> getAssociatedSensorsForDeviceType(String deviceTypeName)
-            throws DeviceManagementException {
-        List<DeviceTypeSensorTransactionObject> deviceTypeSensorTransactionObjects;
-        List<DeviceTypeSensor> deviceTypeSensors = new ArrayList<>();
-        int tenantId = this.getTenantId();
-
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
-            if (deviceType == null) {
-                String msg = "There are no Device-Types registered by the name: [" + deviceTypeName + "] for the " +
-                        "current tenant [" + tenantId + "]";
-                log.error(msg);
-                throw new DeviceManagementException(msg);
-            }
-
-            deviceTypeSensorTransactionObjects = this.deviceTypeSensorDAO.getDeviceTypeSensors(deviceType.getId());
-            for (DeviceTypeSensorTransactionObject dTypeSensorTObject : deviceTypeSensorTransactionObjects) {
-                deviceTypeSensors.add(dTypeSensorTObject.getDeviceTypeSensor());
-            }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException(
-                    "Error occurred while retrieving DeviceTypeSensor list corresponding to Device-Type [" +
-                            deviceTypeName + "] on tenant with Id [" + tenantId + "]", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException(
-                    "Error occurred while opening a connection to the data source in order to fetch the " +
-                            "DeviceTypeSensors of Device-Type [" + deviceTypeName + "]", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-        return deviceTypeSensors;
-    }
-
-    @Override
-    public boolean updateDeviceTypeSensor(String deviceTypeName, DeviceTypeSensor deviceTypeSensor)
-            throws DeviceManagementException {
-        int tenantId = this.getTenantId();
-
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
-            if (deviceType == null) {
-                String msg = "There are no Device-Types registered by the name: [" + deviceTypeName + "] for the " +
-                        "current tenant [" + tenantId + "]";
-                log.error(msg);
-                throw new DeviceManagementException(msg);
-            }
-
-            this.deviceTypeSensorDAO.updateDeviceTypeSensor(deviceType.getId(), deviceTypeSensor);
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException(
-                    "Error occurred updating DeviceTypeSensor [" + deviceTypeSensor.getUniqueSensorName() + "] " +
-                            "corresponding to Device-Type [" + deviceTypeName + "] on tenant with " +
-                            "Id [" + tenantId + "]", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException(
-                    "Error occurred while opening a connection to the data source in order to update the " +
-                            "DeviceTypeSensor [" + deviceTypeSensor.getUniqueSensorName() + "] of " +
-                            "Device-Type [" + deviceTypeName + "]", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-
-        return true;
-    }
-
-    @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
         boolean status = false;
 
@@ -247,8 +183,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         // Register sensors of new device in the Device-Type Plugin DB Tables
         SensorManager sensorManager = deviceManager.getSensorManager();
         boolean registrationStatus;
+        List<Sensor> deviceSensorList = device.getSensors();
         if (sensorManager == null) {
-            if (device.getSensors() != null && device.getSensors().size() > 0) {
+            if (deviceSensorList != null && deviceSensorList.size() > 0) {
                 String msg = "Cannot enroll new [" + deviceType + "] device [" + deviceName + "] " +
                         "with Id [" + deviceUUID + "]. Device contains sensors but there is no " +
                         "SensorManager Implemented in plugin for [" + deviceType + "] device-type";
@@ -262,7 +199,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                                   "Hence, not attempting to register sensors.");
             }
         } else {
-            registrationStatus = sensorManager.addSensors(deviceUUID, device.getSensors());
+            List<SensorTransactionObject> sensorTObjects = new ArrayList<>();
+            if(deviceSensorList != null && deviceSensorList.size() > 0) {
+                for (Sensor sensor : deviceSensorList) {
+                    String sensorIdentifier = sensor.getSensorIdentifier();
+                    SensorTransactionObject sensorTObject = new SensorTransactionObject(
+                            sensorIdentifier, deviceIdentifier.getId());
+                    sensorTObject.setSensorTypeUniqueName(sensor.getDeviceTypeSensor().getUniqueSensorName());
+                    sensorTObject.setDynamicProperties(sensor.getDynamicProperties());
+                    sensorTObjects.add(sensorTObject);
+                }
+            } else {
+                log.warn("No device specific sensor definitions were passed with the new Device to be enrolled. " +
+                                 "Hence, registering DeviceTypeSensors specific to the DeviceType of the given " +
+                                 "device with random UUIDs.");
+                List<DeviceTypeSensor> deviceTypeSensors = getAssociatedSensorsForDeviceType(device.getType());
+                for (DeviceTypeSensor deviceTypeSensor : deviceTypeSensors) {
+                    UUID uuid = UUID.randomUUID();
+                    long l = ByteBuffer.wrap(uuid.toString().getBytes(StandardCharsets.UTF_8)).getLong();
+                    String sensorIdentifier =  Long.toString(l, Character.MAX_RADIX);
+                    SensorTransactionObject sensorTObject = new SensorTransactionObject(
+                            sensorIdentifier, deviceIdentifier.getId());
+                    sensorTObject.setSensorTypeUniqueName(deviceTypeSensor.getUniqueSensorName());
+                    sensorTObject.setDynamicProperties(null);
+                    sensorTObjects.add(sensorTObject);
+                }
+            }
+
+            registrationStatus = sensorManager.addSensors(deviceUUID, sensorTObjects);
             if (!registrationStatus) {
                 String msg = "Registering sensors for device [" + deviceName + "] of type [" + deviceType + "] " +
                         "with Id [" + deviceUUID + "] failed.";
@@ -1326,9 +1290,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException {
+    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset)
+            throws OperationManagementException {
         limit = DeviceManagerUtil.validateActivityListPageSize(limit);
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getActivitiesUpdatedAfter(timestamp, limit, offset);
+        return DeviceManagementDataHolder.getInstance().getOperationManager().getActivitiesUpdatedAfter(timestamp,
+                                                                                                        limit, offset);
     }
 
     @Override
@@ -2055,6 +2021,109 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return deviceManagementService.getDeviceManager();
     }
 
+
+    @Override
+    public List<DeviceTypeSensor> getAssociatedSensorsForDeviceType(String deviceTypeName)
+            throws DeviceManagementException {
+        List<DeviceTypeSensorTransactionObject> deviceTypeSensorTransactionObjects;
+        List<DeviceTypeSensor> deviceTypeSensors = new ArrayList<>();
+        int tenantId = this.getTenantId();
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
+            if (deviceType == null) {
+                String msg = "There are no Device-Types registered by the name: [" + deviceTypeName + "] for the " +
+                        "current tenant [" + tenantId + "]";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
+            }
+
+            deviceTypeSensorTransactionObjects = this.deviceTypeSensorDAO.getDeviceTypeSensors(deviceType.getId());
+            for (DeviceTypeSensorTransactionObject dTypeSensorTObject : deviceTypeSensorTransactionObjects) {
+                deviceTypeSensors.add(dTypeSensorTObject.getDeviceTypeSensor());
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while retrieving DeviceTypeSensor list corresponding to Device-Type [" +
+                            deviceTypeName + "] on tenant with Id [" + tenantId + "]", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while opening a connection to the data source in order to fetch the " +
+                            "DeviceTypeSensors of Device-Type [" + deviceTypeName + "]", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceTypeSensors;
+    }
+
+    @Override
+    public DeviceTypeSensor getDeviceTypeSensorByUniqueName(String deviceTypeName, String sensorTypeUniqueName)
+            throws DeviceManagementException {
+        DeviceTypeSensorTransactionObject deviceTypeSensorTransactionObject;
+        int tenantId = this.getTenantId();
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
+            if (deviceType == null) {
+                String msg = "There are no Device-Types registered by the name: [" + deviceTypeName + "] for the " +
+                        "current tenant [" + tenantId + "]";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
+            }
+
+            deviceTypeSensorTransactionObject = this.deviceTypeSensorDAO.getDeviceTypeSensor(deviceType.getId(),
+                                                                                             sensorTypeUniqueName);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while retrieving DeviceTypeSensor list corresponding to Device-Type [" +
+                            deviceTypeName + "] on tenant with Id [" + tenantId + "]", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while opening a connection to the data source in order to fetch the " +
+                            "DeviceTypeSensors of Device-Type [" + deviceTypeName + "]", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceTypeSensorTransactionObject.getDeviceTypeSensor();
+    }
+
+
+    @Override
+    public boolean updateDeviceTypeSensor(String deviceTypeName, DeviceTypeSensor deviceTypeSensor)
+            throws DeviceManagementException {
+        int tenantId = this.getTenantId();
+
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceType deviceType = deviceTypeDAO.getDeviceType(deviceTypeName, tenantId);
+            if (deviceType == null) {
+                String msg = "There are no Device-Types registered by the name: [" + deviceTypeName + "] for the " +
+                        "current tenant [" + tenantId + "]";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
+            }
+
+            this.deviceTypeSensorDAO.updateDeviceTypeSensor(deviceType.getId(), deviceTypeSensor);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException(
+                    "Error occurred updating DeviceTypeSensor [" + deviceTypeSensor.getUniqueSensorName() + "] " +
+                            "corresponding to Device-Type [" + deviceTypeName + "] on tenant with " +
+                            "Id [" + tenantId + "]", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while opening a connection to the data source in order to update the " +
+                            "DeviceTypeSensor [" + deviceTypeSensor.getUniqueSensorName() + "] of " +
+                            "Device-Type [" + deviceTypeName + "]", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        return true;
+    }
+
+
     /**
      * This method retrieves all the sensors attached to a specific device instance using the DeviceManager interface
      * of the specific device's Device-Type. Checks for the implementation of the SensorManager and if it exists
@@ -2068,8 +2137,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     private List<Sensor> getDeviceSensorList(DeviceManager deviceManager, Device device)
             throws DeviceManagementException {
+        List<Sensor> deviceSensors = new ArrayList<>();
+
         String deviceIdentifier = device.getDeviceIdentifier();
+        String deviceTypeName = device.getType();
         SensorManager sensorManager = deviceManager.getSensorManager();
+
         if (sensorManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("SensorManager implementation associated to the DeviceManager of the device type " +
@@ -2079,7 +2152,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
             return null;
         }
-        return sensorManager.getSensors(deviceIdentifier);
+        List<SensorTransactionObject> sensorTObjects = sensorManager.getSensors(deviceIdentifier);
+        for (SensorTransactionObject sensorTObject : sensorTObjects) {
+            String sensorTypeUniqueName = sensorTObject.getSensorTypeUniqueName();
+            String sensorIdentifier = sensorTObject.getSensorIdentifier();
+            String deviceIdOfSensor = sensorTObject.getDeviceIdentifier();
+            DeviceTypeSensor deviceTypeSensor = this.getDeviceTypeSensorByUniqueName(deviceTypeName,
+                                                                                     sensorTypeUniqueName);
+            Sensor sensor = new Sensor(sensorIdentifier, deviceIdOfSensor, deviceTypeSensor);
+            deviceSensors.add(sensor);
+        }
+        return deviceSensors;
     }
 
 }

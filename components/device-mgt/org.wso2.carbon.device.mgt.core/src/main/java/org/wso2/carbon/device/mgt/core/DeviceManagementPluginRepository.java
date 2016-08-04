@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -57,7 +58,11 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
         String deviceType = provider.getType().toLowerCase();
-        SensorManager deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
+        DeviceManager deviceManager = provider.getDeviceManager();
+        SensorManager deviceTypeSensorManager = null;
+        if (deviceManager != null) {
+            deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
+        }
 
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         String tenantDomain = provisioningConfig.getProviderTenantDomain();

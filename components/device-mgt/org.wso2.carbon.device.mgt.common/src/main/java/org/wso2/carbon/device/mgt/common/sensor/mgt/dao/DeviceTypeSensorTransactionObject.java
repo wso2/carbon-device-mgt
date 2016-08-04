@@ -84,7 +84,9 @@ public class DeviceTypeSensorTransactionObject implements Serializable {
         public static final String DEVICE_TYPE_ID = "DEVICE_TYPE_ID";
         public static final String DESCRIPTION = "DESCRIPTION";
         public static final String SENSOR_TYPE = "SENSOR_TYPE";
-        public static final String STATIC_PROPERTIES = "STATIC_PROPERTIES";
         public static final String STREAM_DEFINITION = "STREAM_DEFINITION";
+        public static final String PROPERTY_KEY = "PROPERTY_KEY";
+        public static final String PROPERTY_VALUE = "PROPERTY_VALUE";
+        public static final String SENSOR_PROPERTY_ID = "SENSOR_PROPERTY_ID";
     }
 }

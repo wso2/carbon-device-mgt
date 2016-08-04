@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.Sensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 
 import java.util.List;
@@ -79,23 +80,6 @@ public interface DeviceManagementProviderService {
      * given deviceType.
      */
     SensorManager getSensorManager(String deviceType) throws DeviceManagementException;
-
-    /**
-     *
-     * @param deviceTypeName
-     * @return
-     * @throws DeviceManagementException
-     */
-    List<DeviceTypeSensor> getAssociatedSensorsForDeviceType(String deviceTypeName) throws DeviceManagementException;
-
-    /**
-     *
-     * @param deviceTypeName
-     * @param deviceTypeSensor
-     * @return
-     * @throws DeviceManagementException
-     */
-    boolean updateDeviceTypeSensor(String deviceTypeName, DeviceTypeSensor deviceTypeSensor) throws DeviceManagementException;
 
     /**
      * Proxy method to get the tenant configuration of a given platform.
@@ -288,4 +272,24 @@ public interface DeviceManagementProviderService {
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
+
+    /**
+     *
+     * @param deviceTypeName
+     * @return
+     * @throws DeviceManagementException
+     */
+    List<DeviceTypeSensor> getAssociatedSensorsForDeviceType(String deviceTypeName) throws DeviceManagementException;
+
+    DeviceTypeSensor getDeviceTypeSensorByUniqueName(String deviceTypeName, String sensorTypeUniqueName) throws DeviceManagementException;
+
+    /**
+     *
+     * @param deviceTypeName
+     * @param deviceTypeSensor
+     * @return
+     * @throws DeviceManagementException
+     */
+    boolean updateDeviceTypeSensor(String deviceTypeName, DeviceTypeSensor deviceTypeSensor) throws DeviceManagementException;
+
 }

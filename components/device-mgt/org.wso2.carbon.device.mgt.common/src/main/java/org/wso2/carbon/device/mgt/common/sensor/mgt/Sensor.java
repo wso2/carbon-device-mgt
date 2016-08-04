@@ -32,7 +32,7 @@ public class Sensor implements Serializable {
     private String sensorIdentifier;
     private String deviceIdentifier;
     private DeviceTypeSensor deviceTypeSensor;
-    private Map<String, Object> dynamicProperties;
+    private Map<String, String> dynamicProperties;
 
     public Sensor() {
 
@@ -58,7 +58,7 @@ public class Sensor implements Serializable {
     }
 
     public Sensor(String sensorIdentifier, String deviceIdentifier, DeviceTypeSensor deviceTypeSensor,
-                  Map<String, Object> dynamicProperties) {
+                  Map<String, String> dynamicProperties) {
         this.sensorIdentifier = sensorIdentifier;
         this.deviceIdentifier = deviceIdentifier;
         this.deviceTypeSensor = deviceTypeSensor;
@@ -89,19 +89,19 @@ public class Sensor implements Serializable {
         this.deviceTypeSensor = deviceTypeSensor;
     }
 
-    public Map<String, Object> getDynamicProperties() {
+    public Map<String, String> getDynamicProperties() {
         return dynamicProperties;
     }
 
-    public void setDynamicProperties(Map<String, Object> dynamicProperties) {
+    public void setDynamicProperties(Map<String, String> dynamicProperties) {
         this.dynamicProperties = dynamicProperties;
     }
 
-    public Map<String, Object> getStaticProperties() {
+    public Map<String, String> getStaticProperties() {
         return this.deviceTypeSensor.getStaticProperties();
     }
 
-    public void setStaticProperties(Map<String, Object> staticProperties) {
+    public void setStaticProperties(Map<String, String> staticProperties) {
         this.deviceTypeSensor.setStaticProperties(staticProperties);
     }
 
@@ -115,27 +115,15 @@ public class Sensor implements Serializable {
         return aggregatedProperties;
     }
 
-    public Map<String, Object> getAllProperties() {
-        Map<String, Object> aggregatedProperties = new HashMap<>();
-        aggregatedProperties.putAll(this.deviceTypeSensor.getAllProperties());
-        aggregatedProperties.putAll(this.dynamicProperties);
-        return aggregatedProperties;
-    }
-
     /**
      * Adds a new property relevant to the specific Sensor object.
      *
      * @param dynamicProperty The property key to be added.
      * @param value           The value of the above newly added property.
      */
-    public void addDynamicProperty(String dynamicProperty, Object value) {
+    public void addDynamicProperty(String dynamicProperty, String value) {
         this.dynamicProperties.put(dynamicProperty, value);
     }
 
-    public static class DAOConstants {
-        public static final String SENSOR_ID = "SENSOR_ID";
-        public static final String DEVICE_ID = "DEVICE_ID";
-        public static final String DEVICE_TYPE_SENSOR = "DEVICE_TYPE_SENSOR";
-        public static final String DYNAMIC_PROPERTIES = "DYNAMIC_PROPERTIES";
-    }
+
 }

@@ -105,7 +105,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 ctx = tokenizer.nextToken();
             }
         }
-        return (ctx.equalsIgnoreCase("carbon") || ctx.equalsIgnoreCase("services"));
+        return ("carbon".equalsIgnoreCase(ctx) || "services".equalsIgnoreCase(ctx));
     }
 
     private boolean isNonSecuredEndPoint(Request request) {
@@ -132,10 +132,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 }
             }
         }
-        if (nonSecuredEndpoints.containsKey(uri)) {
-            return true;
-        }
-        return false;
+        return nonSecuredEndpoints.containsKey(uri);
     }
 
     private void processRequest(Request request, Response response, CompositeValve compositeValve,

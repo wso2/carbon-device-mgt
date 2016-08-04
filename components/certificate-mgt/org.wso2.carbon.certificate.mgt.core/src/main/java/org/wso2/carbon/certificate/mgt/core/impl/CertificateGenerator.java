@@ -46,14 +46,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.Store;
-import org.jscep.message.CertRep;
-import org.jscep.message.MessageDecodingException;
-import org.jscep.message.MessageEncodingException;
-import org.jscep.message.PkcsPkiEnvelopeDecoder;
-import org.jscep.message.PkcsPkiEnvelopeEncoder;
-import org.jscep.message.PkiMessage;
-import org.jscep.message.PkiMessageDecoder;
-import org.jscep.message.PkiMessageEncoder;
+import org.jscep.message.*;
 import org.jscep.transaction.FailInfo;
 import org.jscep.transaction.Nonce;
 import org.jscep.transaction.TransactionId;
@@ -72,31 +65,11 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -107,6 +80,46 @@ import java.util.List;
 public class CertificateGenerator {
 
     private static final Log log = LogFactory.getLog(CertificateGenerator.class);
+
+    public static String getCommonName(X509Certificate requestCertificate) {
+        String distinguishedName = requestCertificate.getSubjectDN().getName();
+        if (distinguishedName != null && !distinguishedName.isEmpty()) {
+            String[] dnSplits = distinguishedName.split(",");
+            for (String dnSplit : dnSplits) {
+                if (dnSplit.contains("CN=")) {
+                    String[] cnSplits = dnSplit.split("=");
+                    if (cnSplits[1] != null) {
+                        return cnSplits[1];
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void extractCertificateDetails(byte[] certificateBytes, CertificateResponse certificateResponse)
+            throws CertificateManagementDAOException {
+        try {
+            if (certificateBytes != null) {
+                java.security.cert.Certificate x509Certificate =
+                        (java.security.cert.Certificate) Serializer.deserialize(certificateBytes);
+                if (x509Certificate instanceof X509Certificate) {
+                    X509Certificate certificate = (X509Certificate) x509Certificate;
+                    certificateResponse.setNotAfter(certificate.getNotAfter().getTime());
+                    certificateResponse.setNotBefore(certificate.getNotBefore().getTime());
+                    certificateResponse.setCertificateserial(certificate.getSerialNumber());
+                    certificateResponse.setIssuer(certificate.getIssuerDN().getName());
+                    certificateResponse.setSubject(certificate.getSubjectDN().getName());
+                    certificateResponse.setCertificateVersion(certificate.getVersion());
+                }
+            }
+        } catch (ClassNotFoundException | IOException e) {
+            String errorMsg = "Error while deserializing the certificate.";
+            log.error(errorMsg, e);
+            throw new CertificateManagementDAOException(errorMsg, e);
+        }
+
+    }
 
     public List<X509Certificate> getRootCertificates(byte[] ca, byte[] ra) throws KeystoreException {
 
@@ -333,22 +346,6 @@ public class CertificateGenerator {
         return lookUpCertificate;
     }
 
-    public static String getCommonName(X509Certificate requestCertificate) {
-        String distinguishedName = requestCertificate.getSubjectDN().getName();
-        if (distinguishedName != null && !distinguishedName.isEmpty()) {
-            String[] dnSplits = distinguishedName.split(",");
-            for (String dnSplit : dnSplits) {
-                if (dnSplit.contains("CN=")) {
-                    String[] cnSplits = dnSplit.split("=");
-                    if (cnSplits[1] != null) {
-                        return cnSplits[1];
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     public X509Certificate pemToX509Certificate(String pem)
             throws KeystoreException {
         InputStream inputStream = null;
@@ -399,7 +396,7 @@ public class CertificateGenerator {
                     Certificate lookUpCertificate = keyStoreReader.getCertificateByAlias(
                             reqCert.getSerialNumber().toString());
 
-                    if (lookUpCertificate != null && (lookUpCertificate instanceof X509Certificate)) {
+                    if (lookUpCertificate instanceof X509Certificate) {
                         return (X509Certificate) lookUpCertificate;
                     }
                 }
@@ -682,7 +679,6 @@ public class CertificateGenerator {
         }
     }
 
-
     public String extractChallengeToken(X509Certificate certificate) {
 
         byte[] challengePassword = certificate.getExtensionValue(
@@ -741,29 +737,5 @@ public class CertificateGenerator {
         }
         return generateCertificateFromCSR(privateKeyCA, certificationRequest,
                 certCA.getIssuerX500Principal().getName());
-    }
-
-    public static void extractCertificateDetails(byte[] certificateBytes, CertificateResponse certificateResponse)
-            throws CertificateManagementDAOException {
-        try {
-            if (certificateBytes != null) {
-                java.security.cert.Certificate x509Certificate =
-                        (java.security.cert.Certificate) Serializer.deserialize(certificateBytes);
-                if (x509Certificate instanceof X509Certificate) {
-                    X509Certificate certificate = (X509Certificate) x509Certificate;
-                    certificateResponse.setNotAfter(certificate.getNotAfter().getTime());
-                    certificateResponse.setNotBefore(certificate.getNotBefore().getTime());
-                    certificateResponse.setCertificateserial(certificate.getSerialNumber());
-                    certificateResponse.setIssuer(certificate.getIssuerDN().getName());
-                    certificateResponse.setSubject(certificate.getSubjectDN().getName());
-                    certificateResponse.setCertificateVersion(certificate.getVersion());
-                }
-            }
-        } catch (ClassNotFoundException | IOException e) {
-            String errorMsg = "Error while deserializing the certificate.";
-            log.error(errorMsg, e);
-            throw new CertificateManagementDAOException(errorMsg, e);
-        }
-
     }
 }

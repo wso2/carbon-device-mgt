@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Implementation of NotificationDAO which includes the methods to do CRUD operations on notification.
  */
-public class NotificationDAOImpl implements NotificationDAO {
+public abstract class NotificationDAOImpl implements NotificationDAO {
 
     @Override
     public int addNotification(int deviceId, int tenantId,
@@ -175,45 +175,6 @@ public class NotificationDAOImpl implements NotificationDAO {
         }
         return notifications;
     }
-
-    @Override
-    public List<Notification> getAllNotifications(PaginationRequest request, int tenantId) throws NotificationManagementException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Notification> notifications = null;
-        try {
-            conn = NotificationManagementDAOFactory.getConnection();
-            String sql =
-                    "SELECT n1.NOTIFICATION_ID, n1.DEVICE_ID, n1.OPERATION_ID, n1.STATUS, n1.DESCRIPTION," +
-                            " d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT " +
-                            "NOTIFICATION_ID, DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE " +
-                            "TENANT_ID = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID AND TENANT_ID = ?";
-
-            sql = sql + " LIMIT ?,?";
-
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, tenantId);
-            stmt.setInt(2, tenantId);
-            int paramIdx = 3;
-
-            stmt.setInt(paramIdx++, request.getStartIndex());
-            stmt.setInt(paramIdx, request.getRowCount());
-
-            rs = stmt.executeQuery();
-            notifications = new ArrayList<>();
-            while (rs.next()) {
-                notifications.add(this.getNotification(rs));
-            }
-        } catch (SQLException e) {
-            throw new NotificationManagementException(
-                    "Error occurred while retrieving information of all notifications", e);
-        } finally {
-            NotificationDAOUtil.cleanupResources(stmt, rs);
-        }
-        return notifications;
-    }
-
 
     @Override
     public int getNotificationCount(int tenantId) throws NotificationManagementException {

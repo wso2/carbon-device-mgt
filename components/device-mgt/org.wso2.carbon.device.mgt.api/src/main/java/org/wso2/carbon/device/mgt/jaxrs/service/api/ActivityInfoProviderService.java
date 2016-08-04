@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -91,7 +91,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "activity:view", roles = {"admin"})
+    @Scope(key = "activity:read", name = "View Activities", description = "")
     Response getActivity(
             @ApiParam(
                     name = "id",
@@ -150,7 +150,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "activity:view", roles = {"admin"})
+    @Scope(key = "activity:read", name = "View Activities", description = "")
     Response getActivities(
             @ApiParam(
                     name = "since",

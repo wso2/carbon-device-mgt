@@ -28,18 +28,24 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Permission {
+public @interface Scope {
+
+    /**
+     * Represents the scope key which should be unique.
+     * @return Returns scope key.
+     */
+    String key();
 
     /**
      * Represents the scope name.
      * @return Returns scope name.
      */
-    String scope();
+    String name();
 
     /**
-     * Represents the associated permissions.
-     * @return Returns list of permissions.
+     * Represents the scope description.
+     * @return Returns scope description.
      */
-    String[] roles();
+    String description();
 
 }

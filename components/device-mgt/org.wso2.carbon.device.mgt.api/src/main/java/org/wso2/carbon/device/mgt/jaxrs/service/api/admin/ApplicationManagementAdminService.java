@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -74,7 +74,7 @@ public interface ApplicationManagementAdminService {
                             "a given set of devices.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "application:install", roles = {"admin"})
+    @Scope(key = "application:manage", name = "Install/Uninstall applications", description = "")
     Response installApplication(
             @ApiParam(
                     name = "applicationWrapper",
@@ -113,7 +113,7 @@ public interface ApplicationManagementAdminService {
                             "a given set of devices.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "application:uninstall", roles = {"admin"})
+    @Scope(key = "application:manage", name = "Install/Uninstall applications", description = "")
     Response uninstallApplication(
             @ApiParam(
                     name = "applicationWrapper",

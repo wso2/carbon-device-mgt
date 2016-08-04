@@ -23,13 +23,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
-import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionConfiguration;
-import org.wso2.carbon.apimgt.webapp.publisher.config.PermissionManagementException;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -242,15 +238,9 @@ public class AnnotationProcessor {
                         Annotation producesAnno = method.getAnnotation(producesClass);
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
                     }
-                    if (annotations[i].annotationType().getName().equals(Permission.class.getName())) {
-                        PermissionConfiguration permissionConf = this.getPermission(method);
-                        if (permissionConf != null) {
-                            Scope scope = new Scope();
-                            scope.setKey(permissionConf.getScopeName());
-                            scope.setDescription(permissionConf.getScopeName());
-                            scope.setName(permissionConf.getScopeName());
-                            String roles = StringUtils.join(permissionConf.getRoles(), ",");
-                            scope.setRoles(roles);
+                    if (annotations[i].annotationType().getName().equals(org.wso2.carbon.apimgt.annotations.api.Scope.class.getName())) {
+                        org.wso2.carbon.apimgt.api.model.Scope scope = this.getScope(method);
+                        if (scope != null) {
                             resource.setScope(scope);
                         }
                     }
@@ -348,33 +338,30 @@ public class AnnotationProcessor {
         return ((String[]) methodHandler.invoke(annotation, method, null));
     }
 
-    private PermissionConfiguration getPermission(Method currentMethod) throws Throwable {
-        Class<Permission> permissionClass = (Class<Permission>) classLoader.loadClass(Permission.class.getName());
-        Annotation permissionAnnotation = currentMethod.getAnnotation(permissionClass);
-        if (permissionClass != null) {
-            Method[] permissionClassMethods = permissionClass.getMethods();
-            PermissionConfiguration permissionConf = new PermissionConfiguration();
+    private org.wso2.carbon.apimgt.api.model.Scope getScope(Method currentMethod) throws Throwable {
+        Class<org.wso2.carbon.apimgt.annotations.api.Scope> scopeClass =
+                (Class<org.wso2.carbon.apimgt.annotations.api.Scope>) classLoader.
+                        loadClass(org.wso2.carbon.apimgt.annotations.api.Scope.class.getName());
+        Annotation permissionAnnotation = currentMethod.getAnnotation(scopeClass);
+        if (scopeClass != null) {
+            Method[] permissionClassMethods = scopeClass.getMethods();
+            org.wso2.carbon.apimgt.api.model.Scope scope = new org.wso2.carbon.apimgt.api.model.Scope();
             for (Method method : permissionClassMethods) {
                 switch (method.getName()) {
-                    case "scope":
-                        permissionConf.setScopeName(invokeMethod(method, permissionAnnotation, STRING));
+                    case "key":
+                        scope.setKey(invokeMethod(method, permissionAnnotation, STRING));
                         break;
-                    case "roles":
-                        String roles[] = invokeMethod(method, permissionAnnotation);
-                        this.addPermission(roles);
-                        permissionConf.setRoles(roles);
+                    case "name":
+                        scope.setName(invokeMethod(method, permissionAnnotation, STRING));
+                        break;
+                    case "description":
+                        scope.setDescription(invokeMethod(method, permissionAnnotation, STRING));
                         break;
                 }
             }
-            return permissionConf;
+            return scope;
         }
         return null;
-    }
-
-    private void addPermission(String[] permissions) throws PermissionManagementException {
-        for (String permission : permissions) {
-            PermissionUtils.addPermission(permission);
-        }
     }
 
     /**

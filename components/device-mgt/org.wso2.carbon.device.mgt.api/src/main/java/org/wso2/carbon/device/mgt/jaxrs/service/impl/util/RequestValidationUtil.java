@@ -314,6 +314,14 @@ public class RequestValidationUtil {
         }
     }
 
+    public static void validateScopes(List<Scope> scopes) {
+        if (scopes == null || scopes.isEmpty()) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Scope details of the request body" +
+                            " is incorrect or empty").build());
+        }
+    }
+
     public static void validatePaginationParameters(int offset, int limit) {
         if (offset < 0) {
             throw new InputValidationException(

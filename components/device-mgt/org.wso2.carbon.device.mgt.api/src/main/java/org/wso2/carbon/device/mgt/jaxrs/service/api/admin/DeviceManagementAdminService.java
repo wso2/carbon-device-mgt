@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
@@ -84,7 +84,7 @@ public interface DeviceManagementAdminService {
                     message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "device:view", roles = {"admin"})
+    @Scope(key = "device:admin:read", name = "View Devices", description = "")
     Response getDevicesByName(
             @ApiParam(
                     name = "name",

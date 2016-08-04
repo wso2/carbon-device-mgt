@@ -20,11 +20,13 @@ package org.wso2.carbon.device.mgt.core.notification.mgt.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.mgt.core.notification.mgt.dao.impl.NotificationDAOImpl;
+import org.wso2.carbon.device.mgt.core.notification.mgt.dao.impl.*;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.util.NotificationDAOUtil;
 
 import javax.sql.DataSource;
@@ -39,20 +41,47 @@ import java.util.List;
 public class NotificationManagementDAOFactory {
 
 	private static DataSource dataSource;
+	private static String databaseEngine;
 	private static final Log log = LogFactory.getLog(NotificationManagementDAOFactory.class);
 	private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
 	public static NotificationDAO getNotificationDAO() {
-		return new NotificationDAOImpl();
+		if (databaseEngine != null) {
+			switch (databaseEngine) {
+				case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+					return new OracleNotificationDAOImpl();
+				case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+					return new SQLServerNotificationDAOImpl();
+				case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+					return new PostgreSQLNotificationDAOImpl();
+				case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
+				case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+					return new GenericNotificationDAOImpl();
+				default:
+					throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+			}
+		}
+		throw new IllegalStateException("Database engine has not initialized properly.");
 	}
 
 	public static void init(DataSourceConfig config) {
 		dataSource = resolveDataSource(config);
+		try {
+			databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+		} catch (SQLException e) {
+			log.error("Error occurred while retrieving config.datasource connection", e);
+		}
 	}
 
 	public static void init(DataSource dtSource) {
 		dataSource = dtSource;
+		try {
+			databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+		} catch (SQLException e) {
+			log.error("Error occurred while retrieving config.datasource connection", e);
+		}
 	}
+
 
 	public static void beginTransaction() throws TransactionManagementException {
 		Connection conn = currentConnection.get();

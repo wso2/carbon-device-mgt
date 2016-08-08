@@ -62,6 +62,10 @@ public class PermissionManagerServiceImpl implements PermissionManagerService {
     public Permission getPermission(Properties properties) throws PermissionManagementException {
         String url = (String) properties.get(URL_PROPERTY);
         String httpMethod = (String) properties.get(HTTP_METHOD_PROPERTY);
+
+        if (url == null || url.isEmpty() || httpMethod == null || httpMethod.isEmpty()) {
+            throw new PermissionManagementException("Resource URI/HTTP method is empty");
+        }
         return permissionTree.getPermission(url, httpMethod);
     }
 }

@@ -19,10 +19,10 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -317,13 +317,19 @@ public class RequestValidationUtil {
         if (offset < 0) {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter offset is s " +
-                                                                                      "negative value.").build());
+                            "negative value.").build());
         }
         if (limit < 0) {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter limit is a " +
-                                                                                      "negative value.").build());
+                            "negative value.").build());
         }
+        if (limit - offset > 100) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request results list should" +
+                            " be less than or equal 100 values.").build());
+        }
+
     }
 
 }

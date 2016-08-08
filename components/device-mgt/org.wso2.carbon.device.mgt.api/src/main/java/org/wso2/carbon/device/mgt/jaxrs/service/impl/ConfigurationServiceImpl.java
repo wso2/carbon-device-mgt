@@ -26,7 +26,6 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.ConfigurationManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.MDMAppConstants;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;

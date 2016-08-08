@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.jaxrs.service.api.ActivityInfoProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -47,7 +48,8 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
     @GET
     @Override
     @Path("/{id}")
-    public Response getActivity(@PathParam("id") String id,
+    public Response getActivity(@PathParam("id")
+                                @Size(max = 45) String id,
                                 @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         Activity activity;
         DeviceManagementProviderService dmService;

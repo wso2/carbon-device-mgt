@@ -23,6 +23,7 @@ import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -88,12 +89,16 @@ public interface DeviceManagementAdminService {
                     name = "name",
                     value = "Name of the device.",
                     required = true)
-            @QueryParam("name") String name,
+            @QueryParam("name")
+            @Size(max = 45)
+            String name,
             @ApiParam(
                     name = "type",
                     value = "Type of the device.",
                     required = true)
-            @QueryParam("type") String type,
+            @QueryParam("type")
+            @Size(min = 2, max = 45)
+            String type,
             @ApiParam(
                     name = "tenant-domain",
                     value = "Name of the tenant.",

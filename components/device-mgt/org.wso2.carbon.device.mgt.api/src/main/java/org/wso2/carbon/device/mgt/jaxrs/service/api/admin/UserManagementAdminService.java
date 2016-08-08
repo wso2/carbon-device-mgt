@@ -23,6 +23,7 @@ import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -70,7 +71,9 @@ public interface UserManagementAdminService {
                     name = "username",
                     value = "Username of the user.",
                     required = true)
-            @PathParam("username") String username,
+            @PathParam("username")
+            @Size(max = 45)
+            String username,
             @ApiParam(
                     name = "credentials",
                     value = "Credential.",

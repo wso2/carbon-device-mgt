@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -100,7 +101,9 @@ public interface ActivityInfoProviderService {
                     name = "id",
                     value = "Activity id of the operation/activity to be retrieved.",
                     required = true)
-            @PathParam("id") String id,
+            @PathParam("id")
+            @Size(max = 45)
+            String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",

@@ -63,7 +63,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             throws DeviceAccessAuthorizationException {
         int tenantId = this.getTenantId();
         if (username == null || username.isEmpty()) {
-            return false;
+            return !DeviceManagementDataHolder.getInstance().requireDeviceAuthorization(deviceIdentifier.getType());
         }
         //check for admin and ownership permissions
         if (isAdminOrDeviceOwner(username, tenantId, deviceIdentifier)) {

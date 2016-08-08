@@ -34,7 +34,7 @@ public class ErrorResponse {
     private String moreInfo = null;
     private List<ErrorListItem> errorItems = new ArrayList<>();
 
-    private ErrorResponse() {
+    public ErrorResponse() {
     }
 
     @JsonProperty(value = "code")

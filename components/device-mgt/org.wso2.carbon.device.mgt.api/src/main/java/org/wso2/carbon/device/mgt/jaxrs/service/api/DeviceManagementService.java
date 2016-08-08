@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -97,62 +98,68 @@ public interface DeviceManagementService {
                     name = "name",
                     value = "The device name, such as shamu, bullhead or angler.",
                     required = false)
-                    String name,
+            @Size(max = 45)
+            String name,
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
                     required = false)
             @QueryParam("type")
-                    String type,
+            @Size(max = 45)
+            String type,
             @ApiParam(
                     name = "user",
                     value = "Username of owner of the devices.",
                     required = false)
             @QueryParam("user")
-                    String user,
+            @Size(max = 45)
+            String user,
             @ApiParam(
                     name = "roleName",
                     value = "Role name of the devices to be fetched.",
                     required = false)
             @QueryParam("roleName")
-                    String roleName,
+            @Size(max = 45)
+            String roleName,
             @ApiParam(
                     name = "ownership",
                     allowableValues = "BYOD, COPE",
                     value = "Ownership of the devices to be fetched registered under.",
                     required = false)
             @QueryParam("ownership")
-                    String ownership,
+            @Size(max = 45)
+            String ownership,
             @ApiParam(
                     name = "status",
                     value = "Enrollment status of devices to be fetched.",
                     required = false)
             @QueryParam("status")
-                    String status,
+            @Size(max = 45)
+            String status,
             @ApiParam(
                     name = "since",
                     value = "Last modified timestamp",
                     required = false)
             @QueryParam("since")
-                    String since,
+            String since,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Timestamp of the last modified date",
                     required = false)
             @HeaderParam("If-Modified-Since")
-                    String timestamp,
+            String timestamp,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
             @QueryParam("offset")
-                    int offset,
+            int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
             @QueryParam("limit")
-                    int limit);
+            int limit);
 
 
     @GET
@@ -207,19 +214,21 @@ public interface DeviceManagementService {
                     value = "The device type, such as ios, android or windows.",
                     required = true)
             @PathParam("type")
-                    String type,
+            @Size(max = 45)
+            String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
             @PathParam("id")
-                    String id,
+            @Size(max = 45)
+            String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
             @HeaderParam("If-Modified-Since")
-                    String ifModifiedSince);
+            String ifModifiedSince);
 
     @GET
     @Path("/{type}/{id}/features")
@@ -287,19 +296,21 @@ public interface DeviceManagementService {
                     value = "The device type, such as ios, android or windows.",
                     required = true)
             @PathParam("type")
-                    String type,
+            @Size(max = 45)
+            String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
             @PathParam("id")
-                    String id,
+            @Size(max = 45)
+            String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
             @HeaderParam("If-Modified-Since")
-                    String ifModifiedSince);
+            String ifModifiedSince);
 
     @POST
     @Path("/search-devices")
@@ -361,18 +372,18 @@ public interface DeviceManagementService {
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
             @QueryParam("offset")
-                    int offset,
+            int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
             @QueryParam("limit")
-                    int limit,
+            int limit,
             @ApiParam(
                     name = "searchContext",
                     value = "List of search conditions.",
                     required = true)
-                    SearchContext searchContext);
+            SearchContext searchContext);
 
     @GET
     @Path("/{type}/{id}/applications")
@@ -434,36 +445,39 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             })
     @Scope(key = "device:view", name = "View Devices", description = "")
+
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.", required = true)
             @PathParam("type")
-                    String type,
+            @Size(max = 45)
+            String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
             @PathParam("id")
-                    String id,
+            @Size(max = 45)
+            String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
             @HeaderParam("If-Modified-Since")
-                    String ifModifiedSince,
+            String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
             @QueryParam("offset")
-                    int offset,
+            int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
             @QueryParam("limit")
-                    int limit);
+            int limit);
 
 
     @GET
@@ -534,32 +548,34 @@ public interface DeviceManagementService {
                     value = "The device type, such as ios, android or windows.",
                     required = true)
             @PathParam("type")
-                    String type,
+            @Size(max = 45)
+            String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.",
                     required = true)
             @PathParam("id")
-                    String id,
+            @Size(max = 45)
+            String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time "
                             + "specified",
                     required = false)
             @HeaderParam("If-Modified-Since")
-                    String ifModifiedSince,
+            String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
                     required = false)
             @QueryParam("offset")
-                    int offset,
+            int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
                     required = false)
             @QueryParam("limit")
-                    int limit);
+            int limit);
 
     @GET
     @Path("/{type}/{id}/effective-policy")
@@ -630,21 +646,22 @@ public interface DeviceManagementService {
                     value = "The device type, such as ios, android or windows.",
                     required = true)
             @PathParam("type")
-                    String type,
+            @Size(max = 45)
+            String type,
             @ApiParam(
                     name = "id",
                     value = "Device Identifier",
                     required = true)
             @PathParam("id")
-                    String id,
+            @Size(max = 45)
+            String id,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time "
                             + "specified",
                     required = false)
             @HeaderParam("If-Modified-Since")
-                    String ifModifiedSince);
-
+            String ifModifiedSince);
 
 
     @GET
@@ -681,10 +698,13 @@ public interface DeviceManagementService {
                     value = "The device type, such as ios, android or windows.",
                     required = true)
             @PathParam("type")
-                    String type,
+            @Size(max = 45)
+            String type,
             @ApiParam(
                     name = "id",
                     value = "Device Identifier",
                     required = true)
-            @PathParam("id") String id);
+            @PathParam("id")
+            @Size(max = 45)
+            String id);
 }

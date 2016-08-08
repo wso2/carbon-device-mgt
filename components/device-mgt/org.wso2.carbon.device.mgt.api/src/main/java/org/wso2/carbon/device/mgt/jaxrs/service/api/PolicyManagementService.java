@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
 import org.wso2.carbon.policy.mgt.common.Policy;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -105,7 +106,7 @@ public interface PolicyManagementService {
                     name = "policy",
                     value = "Policy details related to the operation.",
                     required = true)
-                    PolicyWrapper policy);
+                    @Valid PolicyWrapper policy);
 
     @GET
     @ApiOperation(
@@ -295,7 +296,7 @@ public interface PolicyManagementService {
                     name = "policy",
                     value = "Policy details related to the operation.",
                     required = true)
-                    PolicyWrapper policy);
+                    @Valid PolicyWrapper policy);
 
     @POST
     @Path("/remove-policy")

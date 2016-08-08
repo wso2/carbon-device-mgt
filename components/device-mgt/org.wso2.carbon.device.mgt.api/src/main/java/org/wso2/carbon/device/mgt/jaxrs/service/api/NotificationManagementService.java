@@ -25,6 +25,8 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -95,7 +97,7 @@ public interface NotificationManagementService {
                     value = "Status of the notification.",
                     allowableValues = "NEW, CHECKED",
                     required = false)
-            @QueryParam("status")
+            @QueryParam("status") @Size(max = 45)
                     String status,
             @ApiParam(
                     name = "If-Modified-Since",
@@ -146,6 +148,6 @@ public interface NotificationManagementService {
                     name = "id",
                     value = "Notification ID.",
                     required = true)
-            @PathParam("id")
+            @PathParam("id") @Max(45)
                     int id);
 }

@@ -65,6 +65,13 @@ public class JWTAuthenticator implements WebappAuthenticator {
     private static final Map<String, PublicKey> publicKeyHolder = new HashMap<>();
     private Properties properties;
 
+    private static void loadTenantRegistry(int tenantId) throws RegistryException {
+        TenantRegistryLoader tenantRegistryLoader = AuthenticatorFrameworkDataHolder.getInstance().
+                getTenantRegistryLoader();
+        AuthenticatorFrameworkDataHolder.getInstance().getTenantIndexingLoader().loadTenantIndex(tenantId);
+        tenantRegistryLoader.loadTenantRegistry(tenantId);
+    }
+
     @Override
     public void init() {
 
@@ -73,10 +80,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
     @Override
     public boolean canHandle(Request request) {
         String authorizationHeader = request.getHeader(JWTAuthenticator.JWT_ASSERTION_HEADER);
-        if ((authorizationHeader != null) && !authorizationHeader.isEmpty()) {
-            return true;
-        }
-        return false;
+        return (authorizationHeader != null) && !authorizationHeader.isEmpty();
     }
 
     @Override
@@ -106,7 +110,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
             if (publicKey == null) {
                 loadTenantRegistry(tenantId);
                 KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(tenantId);
-                if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                     String defaultPublicKey = properties.getProperty("DefaultPublicKey");
                     if (defaultPublicKey != null && !defaultPublicKey.isEmpty()) {
                         boolean isDefaultPublicKey = Boolean.parseBoolean(defaultPublicKey);
@@ -182,13 +186,13 @@ public class JWTAuthenticator implements WebappAuthenticator {
     }
 
     @Override
-    public void setProperties(Properties properties) {
-        this.properties = properties;
+    public Properties getProperties() {
+        return properties;
     }
 
     @Override
-    public Properties getProperties() {
-        return properties;
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 
     @Override
@@ -197,12 +201,5 @@ public class JWTAuthenticator implements WebappAuthenticator {
             return null;
         }
         return this.properties.getProperty(name);
-    }
-
-    private static void loadTenantRegistry(int tenantId) throws RegistryException {
-        TenantRegistryLoader tenantRegistryLoader = AuthenticatorFrameworkDataHolder.getInstance().
-                getTenantRegistryLoader();
-        AuthenticatorFrameworkDataHolder.getInstance().getTenantIndexingLoader().loadTenantIndex(tenantId);
-        tenantRegistryLoader.loadTenantRegistry(tenantId);
     }
 }

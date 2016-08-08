@@ -39,10 +39,10 @@ import java.util.*;
 
 public class APIPublisherUtil {
 
-    private static final Log log = LogFactory.getLog(APIPublisherUtil.class);
-    private static final String DEFAULT_API_VERSION = "1.0.0";
     public static final String API_VERSION_PARAM = "{version}";
     public static final String API_PUBLISH_ENVIRONMENT = "Production and Sandbox";
+    private static final Log log = LogFactory.getLog(APIPublisherUtil.class);
+    private static final String DEFAULT_API_VERSION = "1.0.0";
     private static final String API_CONFIG_DEFAULT_VERSION = "1.0.0";
     private static final String PARAM_MANAGED_API_ENDPOINT = "managed-api-endpoint";
     private static final String PARAM_MANAGED_API_OWNER = "managed-api-owner";
@@ -247,7 +247,7 @@ public class APIPublisherUtil {
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
         apiConfig.setTenantDomain(tenantDomain);
         String contextTemplate = context + "/" + APIConstants.VERSION_PLACEHOLDER;
-        if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+        if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
             contextTemplate = context + "/t/" + tenantDomain + "/" + APIConstants.VERSION_PLACEHOLDER;
         }
         apiConfig.setContextTemplate(contextTemplate);

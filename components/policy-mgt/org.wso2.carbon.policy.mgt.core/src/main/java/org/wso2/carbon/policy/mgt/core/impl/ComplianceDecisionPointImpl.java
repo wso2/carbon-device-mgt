@@ -253,7 +253,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
         Policy policy = complianceData.getPolicy();
         String compliance = this.getNoneComplianceRule(policy);
 
-        if (compliance.equals("")) {
+        if ("".equals(compliance)) {
             String msg = "Compliance rule is empty for the policy " + policy.getPolicyName() + ". Therefore " +
                     "Monitoring Engine cannot run.";
             throw new PolicyComplianceException(msg);

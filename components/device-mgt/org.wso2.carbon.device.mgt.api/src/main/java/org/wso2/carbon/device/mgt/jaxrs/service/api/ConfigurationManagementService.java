@@ -81,7 +81,7 @@ public interface ConfigurationManagementService {
                             "platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "configuration:read", name = "View Configurations", description = "")
+    @Scope(key = "configuration:view", name = "View Configurations", description = "")
     Response getConfiguration(
             @ApiParam(
                     name = "If-Modified-Since",

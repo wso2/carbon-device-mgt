@@ -78,7 +78,7 @@ public interface DeviceTypeManagementService {
                             response = ErrorResponse.class)
             }
     )
-    @Scope(key = "device-type:admin:read", name = "View device types", description = "")
+    @Scope(key = "device-type:admin:view", name = "View device types", description = "")
     Response getDeviceTypes(
             @ApiParam(
                     name = "If-Modified-Since",

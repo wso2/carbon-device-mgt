@@ -91,7 +91,7 @@ public interface DeviceManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getDevices(
             @ApiParam(
                     name = "name",
@@ -200,7 +200,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getDevice(
             @ApiParam(
                     name = "type",
@@ -280,7 +280,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving feature list of the device.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getFeaturesOfDevice(
             @ApiParam(
                     name = "type",
@@ -354,7 +354,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while enrolling the device.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response searchDevices(
             @ApiParam(
                     name = "offset",
@@ -433,7 +433,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving installed application list of the device.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
@@ -527,7 +527,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving operation list scheduled for the device.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getDeviceOperations(
             @ApiParam(
                     name = "type",
@@ -623,7 +623,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             }
     )
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getEffectivePolicyOfDevice(
             @ApiParam(
                     name = "type",
@@ -674,7 +674,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             }
     )
-    @Scope(key = "device:read", name = "View Devices", description = "")
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getComplianceDataOfDevice(
             @ApiParam(
                     name = "type",

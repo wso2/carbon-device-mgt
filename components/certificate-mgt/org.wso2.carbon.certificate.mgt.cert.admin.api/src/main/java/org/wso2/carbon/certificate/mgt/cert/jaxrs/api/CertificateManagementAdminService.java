@@ -77,7 +77,7 @@ public interface CertificateManagementAdminService {
                             message = "Internal Server Error. \n Server error occurred while adding certificates.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "certificate:write", name = "Add certificates", description = "")
+    @Scope(key = "certificate:manage", name = "Add certificates", description = "")
     Response addCertificate(
             @ApiParam(
                     name = "enrollmentCertificates",
@@ -135,7 +135,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving information requested certificate.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "certificate:read", name = "View certificates", description = "")
+    @Scope(key = "certificate:view", name = "View certificates", description = "")
     Response getCertificate(
             @ApiParam(name = "serialNumber",
                     value = "Provide the serial number of the certificate that you wish to get the details of",
@@ -207,7 +207,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving all certificates enrolled in the system.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "certificate:read", name = "View certificates", description = "")
+    @Scope(key = "certificate:view", name = "View certificates", description = "")
     Response getAllCertificates(
             @ApiParam(
                     name = "offset",
@@ -250,7 +250,7 @@ public interface CertificateManagementAdminService {
                     message = "Internal Server Error. \n " +
                             "Server error occurred while removing the certificate.",
                     response = ErrorResponse.class)})
-    @Scope(key = "certificate:write", name = "Add certificates", description = "")
+    @Scope(key = "certificate:manage", name = "Add certificates", description = "")
     Response removeCertificate(
             @ApiParam(
                     name = "serialNumber",

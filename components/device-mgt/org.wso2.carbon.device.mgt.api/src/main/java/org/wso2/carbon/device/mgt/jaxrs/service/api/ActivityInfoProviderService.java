@@ -91,7 +91,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "activity:read", name = "View Activities", description = "")
+    @Scope(key = "activity:view", name = "View Activities", description = "")
     Response getActivity(
             @ApiParam(
                     name = "id",
@@ -150,7 +150,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "activity:read", name = "View Activities", description = "")
+    @Scope(key = "activity:view", name = "View Activities", description = "")
     Response getActivities(
             @ApiParam(
                     name = "since",

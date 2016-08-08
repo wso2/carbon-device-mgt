@@ -99,7 +99,7 @@ public interface PolicyManagementService {
                                     "Server error occurred while adding a new policy.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "policy:write", name = "Add policies", description = "")
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response addPolicy(
             @ApiParam(
                     name = "policy",
@@ -153,7 +153,7 @@ public interface PolicyManagementService {
                                     "policies."),
                             response = ErrorResponse.class)
             })
-    @Scope(key = "policy:read", name = "Views policies", description = "")
+    @Scope(key = "policy:view", name = "Views policies", description = "")
     Response getPolicies(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -219,7 +219,7 @@ public interface PolicyManagementService {
                                     "policy.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "policy:read", name = "View policies", description = "")
+    @Scope(key = "policy:view", name = "View policies", description = "")
     Response getPolicy(
             @ApiParam(
                     name = "id",
@@ -283,7 +283,7 @@ public interface PolicyManagementService {
                                     "Server error occurred while updating the policy.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "policy:write", name = "Add policies", description = "")
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response updatePolicy(
             @ApiParam(
                     name = "id",
@@ -329,7 +329,7 @@ public interface PolicyManagementService {
                                     "Server error occurred while bulk removing policies.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "policy:write", name = "Add policies", description = "")
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response removePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -365,7 +365,7 @@ public interface PolicyManagementService {
                             message = "ErrorResponse in activating policies.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "policy:write", name = "Add policies", description = "")
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response activatePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -401,7 +401,7 @@ public interface PolicyManagementService {
                     message = "ErrorResponse in deactivating policies.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "policy:write", name = "Add policies", description = "")
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response deactivatePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -434,7 +434,7 @@ public interface PolicyManagementService {
                     message = "ErrorResponse in deactivating policies.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "policy:write", name = "Add policies", description = "")
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response applyChanges();
 
 
@@ -463,7 +463,7 @@ public interface PolicyManagementService {
                     message = "Exception in updating policy priorities.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "policy:write", name = "Add policies", description = "")
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response updatePolicyPriorities(
             @ApiParam(
                     name = "priorityUpdatedPolicies",

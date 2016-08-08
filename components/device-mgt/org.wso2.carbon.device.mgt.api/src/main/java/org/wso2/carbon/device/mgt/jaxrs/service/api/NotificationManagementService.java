@@ -88,7 +88,7 @@ public interface NotificationManagementService {
                                     "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "notification:read", name = "View and manage notifications", description = "")
+    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
     Response getNotifications(
             @ApiParam(
                     name = "status",
@@ -140,7 +140,7 @@ public interface NotificationManagementService {
                             message = "Error occurred while updating notification status.")
             }
     )
-    @Scope(key = "notification:read", name = "View and manage notifications", description = "")
+    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
     Response updateNotificationStatus(
             @ApiParam(
                     name = "id",

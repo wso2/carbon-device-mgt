@@ -83,7 +83,7 @@ public interface UserManagementService {
                             message = "Internal Server Error. \n Server error occurred while adding a new user.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "user:write", name = "Add users", description = "")
+    @Scope(key = "user:manage", name = "Add users", description = "")
     Response addUser(
             @ApiParam(
                     name = "user",
@@ -135,7 +135,7 @@ public interface UserManagementService {
                             " fetching the requested user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:read", name = "View users", description = "")
+    @Scope(key = "user:view", name = "View users", description = "")
     Response getUser(
             @ApiParam(
                     name = "username",
@@ -192,7 +192,7 @@ public interface UserManagementService {
                             "Server error occurred while updating the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:write", name = "Add users", description = "")
+    @Scope(key = "user:manage", name = "Add users", description = "")
     Response updateUser(
             @ApiParam(
                     name = "username",
@@ -227,7 +227,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class
             )
     })
-    @Scope(key = "user:write", name = "Add users", description = "")
+    @Scope(key = "user:manage", name = "Add users", description = "")
     Response removeUser(
             @ApiParam(name = "username", value = "Username of the user to be deleted.", required = true)
             @PathParam("username") String username);
@@ -276,7 +276,7 @@ public interface UserManagementService {
                             " assigned to the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:read", name = "View users", description = "")
+    @Scope(key = "user:view", name = "View users", description = "")
     Response getRolesOfUser(
             @ApiParam(name = "username", value = "Username of the user.", required = true)
             @PathParam("username") String username);
@@ -319,7 +319,7 @@ public interface UserManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the user list.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:read", name = "View users", description = "")
+    @Scope(key = "user:view", name = "View users", description = "")
     Response getUsers(
             @ApiParam(
                     name = "filter",
@@ -386,7 +386,7 @@ public interface UserManagementService {
                             "list that matches the given filter.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:read", name = "View users", description = "")
+    @Scope(key = "user:view", name = "View users", description = "")
     Response getUserNames(
             @ApiParam(
                     name = "filter",
@@ -440,7 +440,7 @@ public interface UserManagementService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:read", name = "View users", description = "")
+    @Scope(key = "user:view", name = "View users", description = "")
     Response resetPassword(
             @ApiParam(
                     name = "username",
@@ -483,7 +483,7 @@ public interface UserManagementService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:write", name = "Add users", description = "")
+    @Scope(key = "user:manage", name = "Add users", description = "")
     Response inviteExistingUsersToEnrollDevice(
             @ApiParam(
                     name = "users",

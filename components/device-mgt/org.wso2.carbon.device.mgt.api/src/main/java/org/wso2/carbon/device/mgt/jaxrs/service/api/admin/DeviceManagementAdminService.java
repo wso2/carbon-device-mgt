@@ -84,7 +84,7 @@ public interface DeviceManagementAdminService {
                     message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "device:admin:read", name = "View Devices", description = "")
+    @Scope(key = "device:admin:view", name = "View Devices", description = "")
     Response getDevicesByName(
             @ApiParam(
                     name = "name",

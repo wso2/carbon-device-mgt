@@ -76,7 +76,7 @@ public interface RoleManagementService {
                             message = "Internal Server Error. \n Server error occurred while fetching requested list of roles.",
                             response = ErrorResponse.class)
             })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:read", name = "View roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
     Response getRoles(
             @ApiParam(
                     name = "filter",
@@ -158,7 +158,7 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
                             response = ErrorResponse.class)
             })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:read", name = "View roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
     Response getScopes(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -208,7 +208,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while updating the scopes.",
                     response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:add", name = "Add roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response updateScopes(
             @ApiParam(
                     name = "Scopes",
@@ -265,7 +265,7 @@ public interface RoleManagementService {
                                     "requested role.",
                             response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:read", name = "View roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
     Response getRole(
             @ApiParam(
                     name = "roleName",
@@ -325,7 +325,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:add", name = "Add roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response addRole(
             @ApiParam(
                     name = "role",
@@ -375,7 +375,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:add", name = "Add roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response updateRole(
             @ApiParam(
                     name = "roleName",
@@ -412,7 +412,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:add", name = "Add roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
@@ -474,7 +474,7 @@ public interface RoleManagementService {
                                     "Server error occurred while updating the user list of the role.",
                             response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:add", name = "Add roles", description = "")
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",

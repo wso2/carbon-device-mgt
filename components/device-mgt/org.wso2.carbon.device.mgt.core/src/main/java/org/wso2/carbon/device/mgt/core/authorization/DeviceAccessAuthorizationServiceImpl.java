@@ -243,9 +243,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     }
 
     private boolean addAdminPermissionToRegistry() throws PermissionManagementException {
-        Permission permission = new Permission();
-        permission.setPath(PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION));
-        return PermissionUtils.putPermission(permission);
+        return PermissionUtils.putPermission(PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION));
     }
 
     private Map<String, String> getOwnershipOfDevices(List<Device> devices) {

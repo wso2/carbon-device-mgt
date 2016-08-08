@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.util;
 
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorListItem;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ProfileFeature;
@@ -62,6 +63,34 @@ public class DeviceMgtUtil {
         profileFeature.setId(mdmProfileFeature.getId());
         return profileFeature;
 
+    }
+
+    public static List<Scope> convertScopestoAPIScopes(List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> scopes) {
+        List<Scope> convertedScopes = new ArrayList<>();
+        Scope convertedScope;
+        for (org.wso2.carbon.device.mgt.jaxrs.beans.Scope scope : scopes) {
+            convertedScope = new Scope();
+            convertedScope.setKey(scope.getKey());
+            convertedScope.setName(scope.getName());
+            convertedScope.setDescription(scope.getDescription());
+            convertedScope.setRoles(scope.getRoles());
+            convertedScopes.add(convertedScope);
+        }
+        return convertedScopes;
+    }
+
+    public static List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> convertAPIScopestoScopes(List<Scope> scopes) {
+        List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> convertedScopes = new ArrayList<>();
+        org.wso2.carbon.device.mgt.jaxrs.beans.Scope convertedScope;
+        for (Scope scope : scopes) {
+            convertedScope = new org.wso2.carbon.device.mgt.jaxrs.beans.Scope();
+            convertedScope.setKey(scope.getKey());
+            convertedScope.setName(scope.getName());
+            convertedScope.setDescription(scope.getDescription());
+            convertedScope.setRoles(scope.getRoles());
+            convertedScopes.add(convertedScope);
+        }
+        return convertedScopes;
     }
 
     /**

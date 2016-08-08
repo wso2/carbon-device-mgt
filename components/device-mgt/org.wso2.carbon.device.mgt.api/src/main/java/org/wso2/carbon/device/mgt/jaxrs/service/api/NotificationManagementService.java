@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
 /**
  * Notifications related REST-API.
  */
-@API(name = "Device Notification Management API", version = "1.0.0", context = "/devicemgt_admin/notifications",
+@API(name = "Device Notification Management", version = "1.0.0", context = "/api/device-mgt/v1.0/notifications",
         tags = {"devicemgt_admin"})
 @Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
@@ -89,14 +89,8 @@ public interface NotificationManagementService {
                             message = "Internal Server Error. " +
                                     "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "device-notification-view",
-            permissions = {
-            "/permission/admin/device-mgt/admin/notifications/view",
-            "/permission/admin/device-mgt/user/notifications/view" }
-    )
+            })
+    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
     Response getNotifications(
             @ApiParam(
                     name = "status",
@@ -148,10 +142,7 @@ public interface NotificationManagementService {
                             message = "Error occurred while updating notification status.")
             }
     )
-    @Permission(
-            scope = "",
-            permissions = { "" }
-    )
+    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
     Response updateNotificationStatus(
             @ApiParam(
                     name = "id",

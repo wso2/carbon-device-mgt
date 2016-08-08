@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response;
 /**
  * Activity related REST-API implementation.
  */
-@API(name = "Activities", version = "1.0.0", context = "/devicemgt_admin/activities", tags = {"devicemgt_admin"})
+@API(name = "Activity Info Provider", version = "1.0.0", context = "/api/device-mgt/v1.0/activities", tags = {"devicemgt_admin"})
 
 @Path("/activities")
 @Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example operation details " +
@@ -92,10 +92,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(
-            scope = "activity-view",
-            permissions = {"/permission/admin/device-mgt/admin/activities/view"}
-    )
+    @Scope(key = "activity:view", name = "View Activities", description = "")
     Response getActivity(
             @ApiParam(
                     name = "id",
@@ -156,10 +153,7 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(
-            scope = "activity-view",
-            permissions = {"/permission/admin/device-mgt/admin/activities/view"}
-    )
+    @Scope(key = "activity:view", name = "View Activities", description = "")
     Response getActivities(
             @ApiParam(
                     name = "since",

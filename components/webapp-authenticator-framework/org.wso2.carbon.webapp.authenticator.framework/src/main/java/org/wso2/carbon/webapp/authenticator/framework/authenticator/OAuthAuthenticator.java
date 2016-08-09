@@ -129,7 +129,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
                 if (resource == null || resource.isEmpty()) {
                     authenticationInfo.setStatus(Status.FAILURE);
-                    authenticationInfo.setMessage("Requested resource does not exist");
+                    authenticationInfo.setMessage("Authorization failed. Requested API resource does not exist");
                     return authenticationInfo;
                 }
 

@@ -83,3 +83,4 @@ var HTTP_CONFLICT = 409;
 var HTTP_CREATED = 201;
 
 var CACHED_CREDENTIALS = "tenantBasedCredentials";
+var ALLOWED_SCOPES = "scopes";

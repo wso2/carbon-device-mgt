@@ -29,33 +29,41 @@
  * For ex: $(this) means jQuery(this) and S.fn.x means jQuery.fn.x
  */
 
- $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilter,
-                                                        columns, fnCreatedRow, fnDrawCallback) {
+$.fn.datatables_extended_serverside_paging = function (settings , url, dataFilter,
+                                                       columns, fnCreatedRow, fnDrawCallback, options) {
     var elem = $(this);
 
     // EMM related function
-    if (initiateViewOption) {
-        $(".viewEnabledIcon").bind("click", initiateViewOption);
+    if (InitiateViewOption) {
+        $(".viewEnabledIcon").bind("click", InitiateViewOption);
     }
     //--- End of EMM related codes
 
     $(elem).DataTable(
         $.extend({},{
             serverSide: true,
+            processing: false,
+            searching: true,
+            ordering:  false,
+            filter: false,
             bSortCellsTop: true,
             ajax : {
                 url: "/emm/api/data-tables/invoker",
                 data : function (params) {
-                    var filter = "";
                     var i;
+                    var searchParams = {};
                     for (i = 0; i < params.columns.length; i++) {
-                        // console.log(i);
-                        filter += "&" + params.columns[i].data + "=" + params.columns[i].search.value;
+                        searchParams[params.columns[i].data] = encodeURIComponent(params.columns[i].search.value);
                     }
-                    // console.log(filter);
+                    if(options) {
+                        searchParams[options.searchKey] = encodeURIComponent(params.search.value);
+                    }
+                    params.filter = JSON.stringify(searchParams);
                     params.offset = params.start;
                     params.limit = params.length;
-                    params.filter = filter;
+                    // if(params.search.value){
+                    //     params.filter = params.search.value;
+                    // }
                     params.url = url;
                 },
                 dataFilter: dataFilter
@@ -64,15 +72,15 @@
             responsive: false,
             autoWidth: false,
             dom:'<"dataTablesTop"' +
-                'f' +
-                '<"dataTables_toolbar">' +
-                '>' +
-                'rt' +
-                '<"dataTablesBottom"' +
-                'lip' +
-                '>',
+            'f' +
+            '<"dataTables_toolbar">' +
+            '>' +
+            'rt' +
+            '<"dataTablesBottom"' +
+            'lip' +
+            '>',
             language: {
-                searchPlaceholder: 'Search by Role name',
+                searchPlaceholder: options.placeholder,
                 search: ''
             },
             fnCreatedRow: fnCreatedRow,
@@ -216,7 +224,7 @@
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
                         // EMM related function
-                        $(".viewEnabledIcon").bind("click", initiateViewOption);
+                        $(".viewEnabledIcon").bind("click", InitiateViewOption);
                         //--- End of EMM related codes
                     }
                 });

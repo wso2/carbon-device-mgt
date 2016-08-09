@@ -139,6 +139,3 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
     }
 
 }
-
-//return Response.status(Response.Status.NOT_FOUND).entity("No certificate is found with the given " +
-//        "serial number '" + serialNumber + "'");

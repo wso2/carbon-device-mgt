@@ -20,13 +20,13 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
-import org.wso2.carbon.device.mgt.jaxrs.NotificationContext;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
 /**
  * Notifications related REST-API.
  */
-@API(name = "Device Notification Management API", version = "1.0.0", context = "/devicemgt_admin/notifications",
+@API(name = "Device Notification Management", version = "1.0.0", context = "/api/device-mgt/v1.0/notifications",
         tags = {"devicemgt_admin"})
 @Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
@@ -89,21 +89,15 @@ public interface NotificationManagementService {
                             message = "Internal Server Error. " +
                                     "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "device-notification-view",
-            permissions = {
-            "/permission/admin/device-mgt/admin/notifications/view",
-            "/permission/admin/device-mgt/user/notifications/view" }
-    )
+            })
+    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
     Response getNotifications(
             @ApiParam(
                     name = "status",
                     value = "Status of the notification.",
                     allowableValues = "NEW, CHECKED",
                     required = false)
-            @QueryParam("status")
+            @QueryParam("status") @Size(max = 45)
                     String status,
             @ApiParam(
                     name = "If-Modified-Since",
@@ -148,15 +142,12 @@ public interface NotificationManagementService {
                             message = "Error occurred while updating notification status.")
             }
     )
-    @Permission(
-            scope = "",
-            permissions = { "" }
-    )
+    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
     Response updateNotificationStatus(
             @ApiParam(
                     name = "id",
                     value = "Notification ID.",
                     required = true)
-            @PathParam("id")
+            @PathParam("id") @Max(45)
                     int id);
 }

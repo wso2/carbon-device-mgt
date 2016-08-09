@@ -39,84 +39,82 @@ import java.util.StringTokenizer;
  */
 public class PermissionUtils {
 
-	public static final String ADMIN_PERMISSION_REGISTRY_PATH = "/permission/admin";
-	public static final String PERMISSION_PROPERTY_NAME = "name";
+    public static final String ADMIN_PERMISSION_REGISTRY_PATH = "/permission/admin";
+    public static final String PERMISSION_PROPERTY_NAME = "name";
 
-	public static Registry getGovernanceRegistry() throws PermissionManagementException {
-		try {
-			int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-			return DeviceManagementDataHolder.getInstance().getRegistryService()
-			                                       .getGovernanceSystemRegistry(
-					                                       tenantId);
-		} catch (RegistryException e) {
-			throw new PermissionManagementException(
-					"Error in retrieving governance registry instance: " +
-					e.getMessage(), e);
-		}
-	}
+    public static Registry getGovernanceRegistry() throws PermissionManagementException {
+        try {
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            return DeviceManagementDataHolder.getInstance().getRegistryService()
+                    .getGovernanceSystemRegistry(
+                            tenantId);
+        } catch (RegistryException e) {
+            throw new PermissionManagementException(
+                    "Error in retrieving governance registry instance: " +
+                            e.getMessage(), e);
+        }
+    }
 
-	public static String getAbsolutePermissionPath(String permissionPath) {
-		return PermissionUtils.ADMIN_PERMISSION_REGISTRY_PATH + permissionPath;
-	}
+    public static String getAbsolutePermissionPath(String permissionPath) {
+        return PermissionUtils.ADMIN_PERMISSION_REGISTRY_PATH + permissionPath;
+    }
 
     public static String getAbsoluteContextPathOfAPI(String contextPath, String version, String url) {
-        if((version != null) && !version.isEmpty()) {
-          return contextPath + "/" + version + url;
+        if ((version != null) && !version.isEmpty()) {
+            return contextPath + "/" + version + url;
         }
         return contextPath + url;
     }
 
-	public static Permission getPermission(String path) throws PermissionManagementException {
-		try {
-			Resource resource = PermissionUtils.getGovernanceRegistry().get(path);
-			Permission permission = new Permission();
-			permission.setName(resource.getProperty(PERMISSION_PROPERTY_NAME));
-			permission.setPath(resource.getPath());
-			return permission;
-		} catch (RegistryException e) {
-			throw new PermissionManagementException("Error in retrieving registry resource : " +
-			                                         e.getMessage(), e);
-		}
-	}
-
-	public static boolean putPermission(Permission permission)
-			throws PermissionManagementException {
-		boolean status;
-		try {
-			StringTokenizer tokenizer = new StringTokenizer(permission.getPath(), "/");
-			String lastToken = "", currentToken, tempPath;
-			while(tokenizer.hasMoreTokens()) {
-				currentToken = tokenizer.nextToken();
-				tempPath = lastToken + "/" + currentToken;
-				if(!checkResourceExists(tempPath)) {
+    //	public static Permission getPermission(String path) throws PermissionManagementException {
+//		try {
+//			Resource resource = PermissionUtils.getGovernanceRegistry().get(path);
+//			Permission permission = new Permission();
+//			permission.setName(resource.getProperty(PERMISSION_PROPERTY_NAME));
+//			permission.setPath(resource.getPath());
+//			return permission;
+//		} catch (RegistryException e) {
+//			throw new PermissionManagementException("Error in retrieving registry resource : " +
+//			                                         e.getMessage(), e);
+//		}
+//	}
+//
+    public static boolean putPermission(String permissionPath)
+            throws PermissionManagementException {
+        boolean status;
+        try {
+            StringTokenizer tokenizer = new StringTokenizer(permissionPath, "/");
+            String lastToken = "", currentToken, tempPath;
+            while (tokenizer.hasMoreTokens()) {
+                currentToken = tokenizer.nextToken();
+                tempPath = lastToken + "/" + currentToken;
+                if (!checkResourceExists(tempPath)) {
                     createRegistryCollection(tempPath, currentToken);
-				}
-				lastToken = tempPath;
-			}
-			status = true;
-		} catch (RegistryException e) {
-			throw new PermissionManagementException(
-					"Error occurred while persisting permission : " +
-					permission.getName(), e);
-		}
-		return status;
-	}
+                }
+                lastToken = tempPath;
+            }
+            status = true;
+        } catch (RegistryException e) {
+            throw new PermissionManagementException("Error occurred while persisting permission", e);
+        }
+        return status;
+    }
 
-	public static void createRegistryCollection(String path, String resourceName)
-			throws PermissionManagementException,
-			       RegistryException {
-		Resource resource = PermissionUtils.getGovernanceRegistry().newCollection();
-		resource.addProperty(PERMISSION_PROPERTY_NAME, resourceName);
-		PermissionUtils.getGovernanceRegistry().beginTransaction();
-		PermissionUtils.getGovernanceRegistry().put(path, resource);
-		PermissionUtils.getGovernanceRegistry().commitTransaction();
-	}
+    public static void createRegistryCollection(String path, String resourceName)
+            throws PermissionManagementException,
+            RegistryException {
+        Resource resource = PermissionUtils.getGovernanceRegistry().newCollection();
+        resource.addProperty(PERMISSION_PROPERTY_NAME, resourceName);
+        PermissionUtils.getGovernanceRegistry().beginTransaction();
+        PermissionUtils.getGovernanceRegistry().put(path, resource);
+        PermissionUtils.getGovernanceRegistry().commitTransaction();
+    }
 
-	public static boolean checkResourceExists(String path)
-			throws PermissionManagementException,
-			       org.wso2.carbon.registry.core.exceptions.RegistryException {
-		return PermissionUtils.getGovernanceRegistry().resourceExists(path);
-	}
+    public static boolean checkResourceExists(String path)
+            throws PermissionManagementException,
+            org.wso2.carbon.registry.core.exceptions.RegistryException {
+        return PermissionUtils.getGovernanceRegistry().resourceExists(path);
+    }
 
 	public static Document convertToDocument(File file) throws PermissionManagementException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

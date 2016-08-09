@@ -20,14 +20,16 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "DeviceManagementAdmin", version = "1.0.0", context = "/devicemgt_admin/applications",
+@API(name = "Device Management Admin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/devices",
         tags = {"devicemgt_admin"})
 @Path("/admin/devices")
 @Api(value = "Device Management Administrative Service", description = "This an  API intended to be used by " +
@@ -83,17 +85,22 @@ public interface DeviceManagementAdminService {
                     message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
+    @Scope(key = "device:admin:view", name = "View Devices", description = "")
     Response getDevicesByName(
             @ApiParam(
                     name = "name",
                     value = "Name of the device.",
                     required = true)
-            @QueryParam("name") String name,
+            @QueryParam("name")
+            @Size(max = 45)
+            String name,
             @ApiParam(
                     name = "type",
                     value = "Type of the device.",
                     required = true)
-            @QueryParam("type") String type,
+            @QueryParam("type")
+            @Size(min = 2, max = 45)
+            String type,
             @ApiParam(
                     name = "tenant-domain",
                     value = "Name of the tenant.",

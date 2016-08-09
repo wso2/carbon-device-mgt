@@ -42,56 +42,7 @@ public class PermissionAuthorizer {
 
     public WebappAuthenticator.Status authorize(Request request, Response response) {
 
-        String requestUri = request.getRequestURI();
-        String requestMethod = request.getMethod();
-
-        if (requestUri == null || requestUri.isEmpty() || requestMethod == null || requestMethod.isEmpty()) {
-            return WebappAuthenticator.Status.CONTINUE;
-        }
-
-        PermissionManagerServiceImpl registryBasedPermissionManager = PermissionManagerServiceImpl.getInstance();
-        Properties properties = new Properties();
-        properties.put("",requestUri);
-        properties.put("",requestMethod);
-        Permission requestPermission = null;
-        try {
-            requestPermission = registryBasedPermissionManager.getPermission(properties);
-        } catch (PermissionManagementException e) {
-            log.error(
-                    "Error occurred while fetching the permission for URI : " + Encode.forJava(requestUri) + " ," +
-                    " METHOD : " + requestMethod + ", msg = " + e.getMessage());
-        }
-
-        if (requestPermission == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Permission to request '" + Encode.forJava(requestUri) + "' is not defined in the configuration");
-            }
-            return WebappAuthenticator.Status.FAILURE;
-        }
-
-        String permissionString = requestPermission.getPath();
-
-        // This is added temporarily until authentication works.
-        // TODO remove below line.
-        String username = "admin";
-        // TODO uncomment this once the authentication works.
-        //String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
-
-        boolean isUserAuthorized;
-        try {
-            isUserAuthorized = CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getAuthorizationManager().isUserAuthorized(username, permissionString,
-                    Constants.PermissionMethod.READ);
-        } catch (UserStoreException e) {
-            log.error("Error occurred while retrieving user store. " + e.getMessage());
-            return WebappAuthenticator.Status.FAILURE;
-        }
-
-        if (isUserAuthorized) {
-            return WebappAuthenticator.Status.SUCCESS;
-        } else {
-            return WebappAuthenticator.Status.FAILURE;
-        }
+        return WebappAuthenticator.Status.SUCCESS;
     }
 
 }

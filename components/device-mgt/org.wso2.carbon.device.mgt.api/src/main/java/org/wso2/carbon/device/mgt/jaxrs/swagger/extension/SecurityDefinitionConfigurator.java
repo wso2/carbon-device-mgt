@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SwaggerDefinition(
-        basePath = "/api/device-mgt/v1.0",
+        basePath = "/api-device-mgt-v1.0",
         host = "localhost:9443"
 )
 public class SecurityDefinitionConfigurator implements ReaderListener {

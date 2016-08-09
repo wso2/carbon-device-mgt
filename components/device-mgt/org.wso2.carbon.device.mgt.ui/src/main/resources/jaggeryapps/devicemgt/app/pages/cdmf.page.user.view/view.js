@@ -20,7 +20,6 @@ function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var username = request.getParameter("username");
     var user = userModule.getUser(username)["content"];
-    var userModule = require("/app/modules/user.js")["userModule"];
 
     var userName = request.getParameter("username");
 

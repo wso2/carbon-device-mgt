@@ -1082,10 +1082,6 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
-                        <artifactId>cxf-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.cxf</groupId>
                         <artifactId>cxf-rt-core</artifactId>
                     </exclusion>
                     <exclusion>
@@ -1113,10 +1109,6 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
-                        <artifactId>cxf-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.cxf</groupId>
                         <artifactId>cxf-rt-core</artifactId>
                     </exclusion>
                 </exclusions>
@@ -1140,12 +1132,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http</artifactId>
                 <version>${cxf.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.cxf</groupId>
-                        <artifactId>cxf-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
@@ -1521,6 +1507,11 @@
                 <artifactId>encoder</artifactId>
                 <version>${owasp.encoder.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -1891,6 +1882,8 @@
         <identity.jwt.extension.version>1.0.2</identity.jwt.extension.version>
         <jackson-annotations.version>2.7.4</jackson-annotations.version>
         <owasp.encoder.version>1.2.0.wso2v1</owasp.encoder.version>
+
+        <hibernate-validator.version>5.0.2.Final</hibernate-validator.version>
     </properties>
 
 </project>

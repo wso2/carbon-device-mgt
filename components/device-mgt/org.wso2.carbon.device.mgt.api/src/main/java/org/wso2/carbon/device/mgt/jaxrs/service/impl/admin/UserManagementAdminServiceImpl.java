@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.UserManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,7 +35,9 @@ public class UserManagementAdminServiceImpl implements UserManagementAdminServic
     @POST
     @Path("/{username}/credentials")
     @Override
-    public Response resetUserPassword(@PathParam("username") String user, PasswordResetWrapper credentials) {
+    public Response resetUserPassword(@PathParam("username")
+                                      @Size(max = 45)
+                                          String user, PasswordResetWrapper credentials) {
         return CredentialManagementResponseBuilder.buildResetPasswordResponse(user, credentials);
     }
 

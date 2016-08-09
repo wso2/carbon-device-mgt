@@ -122,11 +122,14 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         try {
             boolean status = certificateService.removeCertificate(serialNumber);
             if (!status) {
-                Response.status(Response.Status.NOT_FOUND).entity("No certificate is found with the given " +
-                        "serial number '" + serialNumber + "'");
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        "No certificate is found with the given " +
+                                "serial number '" + serialNumber + "'").build();
+            } else {
+                return Response.status(Response.Status.OK).entity(
+                        "Certificate that carries the serial number '" +
+                                serialNumber + "' has been removed").build();
             }
-            return Response.status(Response.Status.OK).entity("Certificate that carries the serial number '" +
-                    serialNumber + "' has been removed").build();
         } catch (CertificateManagementException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate";
             log.error(msg, e);
@@ -136,3 +139,6 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
     }
 
 }
+
+//return Response.status(Response.Status.NOT_FOUND).entity("No certificate is found with the given " +
+//        "serial number '" + serialNumber + "'");

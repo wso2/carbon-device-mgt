@@ -367,25 +367,30 @@ public class GenericOperationDAOImpl implements OperationDAO {
 //                sql = sql + " OFFSET ?";
 //            }
 
-            String sql = "SELECT dte.ENROLMENT_ID, oor.OPERATION_ID, oor.OP_RES_ID, oor.OPERATION_TYPE, " +
-                    "oor.OPERATION_CODE, oor.OPERATION_RESPONSE, oor.CREATED_TIMESTAMP, dte.DEVICE_TYPE, dte.DEVICE_IDENTIFICATION, " +
-                    "oor.RECEIVED_TIMESTAMP, eom.UPDATED_TIMESTAMP, eom.STATUS FROM (SELECT d.DEVICE_IDENTIFICATION, " +
-                    "t.NAME AS DEVICE_TYPE, e.ID AS ENROLMENT_ID FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE t " +
-                    "ON d.DEVICE_TYPE_ID = t.ID INNER JOIN DM_ENROLMENT e ON d.ID = e.DEVICE_ID WHERE " +
-                    "e.TENANT_ID = ?) dte INNER JOIN (SELECT o.ID AS OPERATION_ID, o.TYPE AS OPERATION_TYPE, " +
-                    "o.OPERATION_CODE, r.ID AS OP_RES_ID, r.OPERATION_RESPONSE, o.CREATED_TIMESTAMP, r.RECEIVED_TIMESTAMP, " +
-                    "r.ENROLMENT_ID FROM DM_OPERATION o INNER JOIN DM_DEVICE_OPERATION_RESPONSE r ON " +
-                    "o.ID = r.OPERATION_ID) oor ON oor.ENROLMENT_ID=dte.ENROLMENT_ID LEFT OUTER JOIN " +
-                    "(SELECT ENROLMENT_ID, OPERATION_ID, STATUS, UPDATED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING " +
-                    "WHERE UPDATED_TIMESTAMP > ? LIMIT ? OFFSET ?) eom ON eom.ENROLMENT_ID=oor.ENROLMENT_ID AND " +
-                    "oor.OPERATION_ID=eom.OPERATION_ID ORDER BY oor.OPERATION_ID";
+            String sql = "SELECT eom.ENROLMENT_ID, eom.OPERATION_ID, eom.STATUS, eom.UPDATED_TIMESTAMP, " +
+                    "foor.OPERATION_ID, foor.DEVICE_TYPE, foor.OPERATION_CODE, foor.OPERATION_TYPE, foor.OP_RES_ID, " +
+                    "foor.OPERATION_RESPONSE, foor.RECEIVED_TIMESTAMP, foor.DEVICE_IDENTIFICATION, " +
+                    "foor.ENROLMENT_ID FROM (SELECT ENROLMENT_ID, OPERATION_ID, STATUS, UPDATED_TIMESTAMP FROM " +
+                    "DM_ENROLMENT_OP_MAPPING WHERE UPDATED_TIMESTAMP > ? LIMIT ? OFFSET ?) eom LEFT OUTER JOIN (SELECT oor.OPERATION_ID, " +
+                    "det.DEVICE_TYPE, oor.OPERATION_CODE, oor.OPERATION_RESPONSE, oor.RECEIVED_TIMESTAMP, " +
+                    "oor.OP_RES_ID, oor.OPERATION_TYPE, det.DEVICE_IDENTIFICATION, det.ENROLMENT_ID FROM " +
+                    "(SELECT d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE, e.ID AS ENROLMENT_ID FROM DM_DEVICE d " +
+                    "INNER JOIN DM_DEVICE_TYPE t ON d.DEVICE_TYPE_ID = t.ID INNER JOIN DM_ENROLMENT e ON " +
+                    "d.ID = e.DEVICE_ID WHERE e.TENANT_ID = ?) det INNER JOIN (SELECT o.ID AS OPERATION_ID, " +
+                    "o.TYPE AS OPERATION_TYPE, o.OPERATION_CODE, r.OPERATION_RESPONSE, r.ID AS OP_RES_ID, " +
+                    "r.LATEST_RECEIVED_TIMESTAMP AS RECEIVED_TIMESTAMP, r.ENROLMENT_ID FROM DM_OPERATION o " +
+                    "INNER JOIN (SELECT ID, ENROLMENT_ID, OPERATION_ID, OPERATION_RESPONSE, " +
+                    "MAX(RECEIVED_TIMESTAMP) LATEST_RECEIVED_TIMESTAMP FROM DM_DEVICE_OPERATION_RESPONSE GROUP BY " +
+                    "ENROLMENT_ID, OPERATION_ID) r ON o.ID = r.OPERATION_ID) oor ON " +
+                    "det.ENROLMENT_ID = oor.ENROLMENT_ID) foor ON eom.ENROLMENT_ID=foor.ENROLMENT_ID AND " +
+                    "eom.OPERATION_ID = foor.OPERATION_ID ORDER BY eom.OPERATION_ID ASC;";
 
             stmt = conn.prepareStatement(sql);
 
-            stmt.setInt(1, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-            stmt.setLong(2, timestamp);
-            stmt.setInt(3, limit);
-            stmt.setInt(4, offset);
+            stmt.setLong(1, timestamp);
+            stmt.setInt(2, limit);
+            stmt.setInt(3, offset);
+            stmt.setInt(4, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
 
             rs = stmt.executeQuery();
 

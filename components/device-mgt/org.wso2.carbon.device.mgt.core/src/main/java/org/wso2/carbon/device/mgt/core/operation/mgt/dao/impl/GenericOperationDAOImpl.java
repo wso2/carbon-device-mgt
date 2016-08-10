@@ -368,12 +368,12 @@ public class GenericOperationDAOImpl implements OperationDAO {
 //            }
 
             String sql = "SELECT dte.ENROLMENT_ID, oor.OPERATION_ID, oor.OP_RES_ID, oor.OPERATION_TYPE, " +
-                    "oor.OPERATION_CODE, oor.OPERATION_RESPONSE, dte.DEVICE_TYPE, dte.DEVICE_IDENTIFICATION, " +
+                    "oor.OPERATION_CODE, oor.OPERATION_RESPONSE, oor.CREATED_TIMESTAMP dte.DEVICE_TYPE, dte.DEVICE_IDENTIFICATION, " +
                     "oor.RECEIVED_TIMESTAMP, eom.UPDATED_TIMESTAMP, eom.STATUS FROM (SELECT d.DEVICE_IDENTIFICATION, " +
                     "t.NAME AS DEVICE_TYPE, e.ID AS ENROLMENT_ID FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE t " +
                     "ON d.DEVICE_TYPE_ID = t.ID INNER JOIN DM_ENROLMENT e ON d.ID = e.DEVICE_ID WHERE " +
                     "e.TENANT_ID = ?) dte INNER JOIN (SELECT o.ID AS OPERATION_ID, o.TYPE AS OPERATION_TYPE, " +
-                    "o.OPERATION_CODE, r.ID AS OP_RES_ID, r.OPERATION_RESPONSE, r.RECEIVED_TIMESTAMP, " +
+                    "o.OPERATION_CODE, r.ID AS OP_RES_ID, r.OPERATION_RESPONSE, o.CREATED_TIMESTAMP, r.RECEIVED_TIMESTAMP, " +
                     "r.ENROLMENT_ID FROM DM_OPERATION o INNER JOIN DM_DEVICE_OPERATION_RESPONSE r ON " +
                     "o.ID = r.OPERATION_ID) oor ON oor.ENROLMENT_ID=dte.ENROLMENT_ID LEFT OUTER JOIN " +
                     "(SELECT ENROLMENT_ID, OPERATION_ID, STATUS, UPDATED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING " +
@@ -387,14 +387,6 @@ public class GenericOperationDAOImpl implements OperationDAO {
             stmt.setInt(3, limit);
             stmt.setInt(4, offset);
 
-            int increment = 2;
-
-            if (limit > 0) {
-                stmt.setInt(++increment, limit);
-            }
-            if (offset > 0) {
-                stmt.setInt(++increment, offset);
-            }
             rs = stmt.executeQuery();
 
             int operationId = 0;
@@ -419,7 +411,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
-                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE_NAME"));
+                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
                     activityStatus.setDeviceIdentifier(deviceIdentifier);
 
                     activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));

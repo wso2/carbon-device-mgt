@@ -39,18 +39,26 @@ if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
 
     for (var key in allParams) {
         if (allParams.hasOwnProperty(key)) {
-            if (key == "limit" || key == "offset" || key == "filter") {
+            if(key == "limit" || key == "offset"){
                 targetURL = appendQueryParam(targetURL, key, allParams[key]);
+            }
+            if(key == "filter"){
+                if(allParams[key]){
+                    var searchPayload = JSON.parse(allParams[key]);
+                    for (var key in searchPayload) {
+                        targetURL = appendQueryParam(targetURL, key, searchPayload[key]);
+                    }
+                }
             }
         }
     }
 
     serviceInvokers.XMLHttp.get(
-        targetURL,
-        // response callback
-        function (backendResponse) {
-            response["status"] = backendResponse["status"];
-            response["content"] =  backendResponse["responseText"];
-        }
+            targetURL,
+            // response callback
+            function (backendResponse) {
+                response["status"] = backendResponse["status"];
+                response["content"] =  backendResponse["responseText"];
+            }
     );
 }

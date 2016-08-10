@@ -172,10 +172,11 @@ var utils = function () {
 
             if (xhr["status"] == 200 && xhr["responseText"]) {
                 var responsePayload = parse(xhr["responseText"]);
-                var tokenPair = {};
-                tokenPair["accessToken"] = responsePayload["access_token"];
-                tokenPair["refreshToken"] = responsePayload["refresh_token"];
-                return tokenPair;
+                var tokenData = {};
+                tokenData["accessToken"] = responsePayload["access_token"];
+                tokenData["refreshToken"] = responsePayload["refresh_token"];
+                tokenData["scopes"] = responsePayload["scope"];
+                return tokenData;
             } else {
                 log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token " +
                     "by password grant type - getTokenPairByPasswordGrantType(a, b, c, d)");
@@ -224,10 +225,11 @@ var utils = function () {
 
                 if (xhr["status"] == 200 && xhr["responseText"]) {
                     var responsePayload = parse(xhr["responseText"]);
-                    var tokenPair = {};
-                    tokenPair["accessToken"] = responsePayload["access_token"];
-                    tokenPair["refreshToken"] = responsePayload["refresh_token"];
-                    return tokenPair;
+                    var tokenData = {};
+                    tokenData["accessToken"] = responsePayload["access_token"];
+                    tokenData["refreshToken"] = responsePayload["refresh_token"];
+                    tokenData["scopes"] = responsePayload["scope"];
+                    return tokenData;
                 } else {
                     log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token " +
                         "by password grant type - getTokenPairBySAMLGrantType(x, y, z)");

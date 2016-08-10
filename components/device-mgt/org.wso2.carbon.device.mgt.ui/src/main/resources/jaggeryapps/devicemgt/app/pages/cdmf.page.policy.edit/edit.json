@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
-  "uri": "/policy/edit",
+    "uri": "/policy/edit",
     "layout": "cdmf.layout.default"
 }

@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.internal;
 
+import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
@@ -55,6 +56,16 @@ public class DeviceManagementDataHolder {
     private TaskService taskService;
     private EmailSenderService emailSenderService;
     private PushNotificationProviderRepository pushNotificationProviderRepository;
+
+    public APIManagerConfiguration getApiManagerConfiguration() {
+        return apiManagerConfiguration;
+    }
+
+    public void setApiManagerConfiguration(APIManagerConfiguration apiManagerConfiguration) {
+        this.apiManagerConfiguration = apiManagerConfiguration;
+    }
+
+    private APIManagerConfiguration apiManagerConfiguration;
 
     private DeviceManagementDataHolder() {}
 

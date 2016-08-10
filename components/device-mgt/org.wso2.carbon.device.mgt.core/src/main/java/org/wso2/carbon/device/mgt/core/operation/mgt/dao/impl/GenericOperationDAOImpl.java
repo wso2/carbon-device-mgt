@@ -346,37 +346,53 @@ public class GenericOperationDAOImpl implements OperationDAO {
         List<Activity> activities = new ArrayList<>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT eom.ENROLMENT_ID, eom.OPERATION_ID, eom.ID AS EOM_MAPPING_ID, dor.ID AS OP_RES_ID,\n" +
-                    "de.DEVICE_ID, d.DEVICE_IDENTIFICATION, \n" +
-                    "d.DEVICE_TYPE_ID, dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, \n" +
-                    "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, dor.OPERATION_RESPONSE, \n" +
-                    "dor.RECEIVED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING AS eom \n" +
-                    "INNER JOIN DM_OPERATION AS op ON op.ID=eom.OPERATION_ID\n" +
-                    "INNER JOIN DM_ENROLMENT AS de ON de.ID=eom.ENROLMENT_ID\n" +
-                    "INNER JOIN DM_DEVICE AS d ON d.ID=de.DEVICE_ID \n" +
-                    "INNER JOIN DM_DEVICE_TYPE AS dt ON dt.ID=d.DEVICE_TYPE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE AS dor ON dor.ENROLMENT_ID=de.id \n" +
-                    "AND dor.OPERATION_ID=eom.OPERATION_ID\n" +
-                    "WHERE eom.UPDATED_TIMESTAMP > ? AND de.TENANT_ID = ? ORDER BY eom.OPERATION_ID";
+//            String sql = "SELECT eom.ENROLMENT_ID, eom.OPERATION_ID, eom.ID AS EOM_MAPPING_ID, dor.ID AS OP_RES_ID,\n" +
+//                    "de.DEVICE_ID, d.DEVICE_IDENTIFICATION, \n" +
+//                    "d.DEVICE_TYPE_ID, dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, \n" +
+//                    "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, dor.OPERATION_RESPONSE, \n" +
+//                    "dor.RECEIVED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING AS eom \n" +
+//                    "INNER JOIN DM_OPERATION AS op ON op.ID=eom.OPERATION_ID\n" +
+//                    "INNER JOIN DM_ENROLMENT AS de ON de.ID=eom.ENROLMENT_ID\n" +
+//                    "INNER JOIN DM_DEVICE AS d ON d.ID=de.DEVICE_ID \n" +
+//                    "INNER JOIN DM_DEVICE_TYPE AS dt ON dt.ID=d.DEVICE_TYPE_ID\n" +
+//                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE AS dor ON dor.ENROLMENT_ID=de.id \n" +
+//                    "AND dor.OPERATION_ID=eom.OPERATION_ID\n" +
+//                    "WHERE eom.UPDATED_TIMESTAMP > ? AND de.TENANT_ID = ? ORDER BY eom.OPERATION_ID";
+//
+//            if(limit > 0) {
+//                sql = sql + " LIMIT ?";
+//            }
+//
+//            if(offset > 0) {
+//                sql = sql + " OFFSET ?";
+//            }
 
-            if(limit > 0) {
-                sql = sql + " LIMIT ?";
-            }
-
-            if(offset > 0) {
-                sql = sql + " OFFSET ?";
-            }
+            String sql = "SELECT dte.ENROLMENT_ID, oor.OPERATION_ID, oor.OP_RES_ID, oor.OPERATION_TYPE, " +
+                    "oor.OPERATION_CODE, oor.OPERATION_RESPONSE, dte.DEVICE_TYPE, dte.DEVICE_IDENTIFICATION, " +
+                    "oor.RECEIVED_TIMESTAMP, eom.UPDATED_TIMESTAMP, eom.STATUS FROM (SELECT d.DEVICE_IDENTIFICATION, " +
+                    "t.NAME AS DEVICE_TYPE, e.ID AS ENROLMENT_ID FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE t " +
+                    "ON d.DEVICE_TYPE_ID = t.ID INNER JOIN DM_ENROLMENT e ON d.ID = e.DEVICE_ID WHERE " +
+                    "e.TENANT_ID = ?) dte INNER JOIN (SELECT o.ID AS OPERATION_ID, o.TYPE AS OPERATION_TYPE, " +
+                    "o.OPERATION_CODE, r.ID AS OP_RES_ID, r.OPERATION_RESPONSE, r.RECEIVED_TIMESTAMP, " +
+                    "r.ENROLMENT_ID FROM DM_OPERATION o INNER JOIN DM_DEVICE_OPERATION_RESPONSE r ON " +
+                    "o.ID = r.OPERATION_ID) oor ON oor.ENROLMENT_ID=dte.ENROLMENT_ID LEFT OUTER JOIN " +
+                    "(SELECT ENROLMENT_ID, OPERATION_ID, STATUS, UPDATED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING " +
+                    "WHERE UPDATED_TIMESTAMP > ? LIMIT ? OFFSET ?) eom ON eom.ENROLMENT_ID=oor.ENROLMENT_ID AND " +
+                    "oor.OPERATION_ID=eom.OPERATION_ID ORDER BY oor.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, timestamp);
-            stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+
+            stmt.setInt(1, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            stmt.setLong(2, timestamp);
+            stmt.setInt(3, limit);
+            stmt.setInt(4, offset);
 
             int increment = 2;
 
-            if(limit > 0) {
+            if (limit > 0) {
                 stmt.setInt(++increment, limit);
             }
-            if(offset > 0) {
+            if (offset > 0) {
                 stmt.setInt(++increment, offset);
             }
             rs = stmt.executeQuery();
@@ -434,7 +450,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
-                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE_NAME"));
+                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
                     activityStatus.setDeviceIdentifier(deviceIdentifier);
 
                     activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));
@@ -454,7 +470,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     enrolmentId = rs.getInt("ENROLMENT_ID");
                 }
 
-                if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")){
+                if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")) {
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         activityStatus.getResponses().add(this.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
@@ -487,7 +503,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             stmt.setLong(1, timestamp);
             stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
             rs = stmt.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt("COUNT");
             }
         } catch (SQLException e) {

@@ -368,7 +368,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 //            }
 
             String sql = "SELECT dte.ENROLMENT_ID, oor.OPERATION_ID, oor.OP_RES_ID, oor.OPERATION_TYPE, " +
-                    "oor.OPERATION_CODE, oor.OPERATION_RESPONSE, oor.CREATED_TIMESTAMP dte.DEVICE_TYPE, dte.DEVICE_IDENTIFICATION, " +
+                    "oor.OPERATION_CODE, oor.OPERATION_RESPONSE, oor.CREATED_TIMESTAMP, dte.DEVICE_TYPE, dte.DEVICE_IDENTIFICATION, " +
                     "oor.RECEIVED_TIMESTAMP, eom.UPDATED_TIMESTAMP, eom.STATUS FROM (SELECT d.DEVICE_IDENTIFICATION, " +
                     "t.NAME AS DEVICE_TYPE, e.ID AS ENROLMENT_ID FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE t " +
                     "ON d.DEVICE_TYPE_ID = t.ID INNER JOIN DM_ENROLMENT e ON d.ID = e.DEVICE_ID WHERE " +

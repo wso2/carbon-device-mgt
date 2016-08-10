@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * You may obtain a copy of the License at
+ * you may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -36,17 +36,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class holds the generic implementation of CertificateDAO which can be used to support ANSI db syntax for pagination
- * queries.
+ * This class holds the oracle sql implementation of CertificateDAO which can be used to support Oracle specific
+ * db syntax.
  */
-public class GenericCertificateDAOImpl extends AbstractCertificateDAOImpl {
+public class OracleCertificateDAOImpl extends AbstractCertificateDAOImpl {
 
-    private static final Log log = LogFactory.getLog(GenericCertificateDAOImpl.class);
-
-
-    private Connection getConnection() throws SQLException {
-        return CertificateManagementDAOFactory.getConnection();
-    }
+    private static final Log log = LogFactory.getLog(OracleCertificateDAOImpl.class);
 
     @Override
     public PaginationResult getAllCertificates(int rowNum, int limit) throws CertificateManagementDAOException {
@@ -59,7 +54,7 @@ public class GenericCertificateDAOImpl extends AbstractCertificateDAOImpl {
         try {
             Connection conn = this.getConnection();
             String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME FROM "
-                         + "DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? ORDER BY ID DESC LIMIT ?,?";
+                         + "DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? ORDER BY ID DESC WHERE OFFSET >= ? AND ROWNUM <= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, rowNum);
@@ -88,5 +83,9 @@ public class GenericCertificateDAOImpl extends AbstractCertificateDAOImpl {
             CertificateManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
         return paginationResult;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return CertificateManagementDAOFactory.getConnection();
     }
 }

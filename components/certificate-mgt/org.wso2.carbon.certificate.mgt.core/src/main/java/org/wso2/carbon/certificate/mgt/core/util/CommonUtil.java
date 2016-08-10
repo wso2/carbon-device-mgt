@@ -28,7 +28,6 @@ public class CommonUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);
         calendar.add(Calendar.DATE, -2);
-
         return calendar.getTime();
     }
 
@@ -37,7 +36,6 @@ public class CommonUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);
         calendar.add(Calendar.YEAR, 100);
-
         return calendar.getTime();
     }
 

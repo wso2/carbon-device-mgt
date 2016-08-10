@@ -23,9 +23,13 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.certificate.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.certificate.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.certificate.mgt.core.dao.impl.GenericCertificateDAOImpl;
-import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.certificate.mgt.core.dao.impl.OracleCertificateDAOImpl;
+import org.wso2.carbon.certificate.mgt.core.dao.impl.PostgreSQLCertificateDAOImpl;
+import org.wso2.carbon.certificate.mgt.core.dao.impl.SQLServerCertificateDAOImpl;
+import org.wso2.carbon.certificate.mgt.core.exception.IllegalTransactionStateException;
+import org.wso2.carbon.certificate.mgt.core.exception.TransactionManagementException;
+import org.wso2.carbon.certificate.mgt.core.exception.UnsupportedDatabaseEngineException;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,9 +49,23 @@ public class CertificateManagementDAOFactory {
         CONNECTION_NOT_BORROWED, CONNECTION_BORROWED, CONNECTION_CLOSED
     }
 
-
     public static CertificateDAO getCertificateDAO() {
-        return new GenericCertificateDAOImpl();
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case CertificateManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                    return new OracleCertificateDAOImpl();
+                case CertificateManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+                    return new SQLServerCertificateDAOImpl();
+                case CertificateManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                    return new PostgreSQLCertificateDAOImpl();
+                case CertificateManagementConstants.DataBaseTypes.DB_TYPE_H2:
+                case CertificateManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new GenericCertificateDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
     public static void init(DataSourceConfig config) {
@@ -72,8 +90,8 @@ public class CertificateManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
-                    "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
-                    "transaction is already active is a sign of improper transaction handling");
+                                                       "this particular thread. Therefore, calling 'beginTransaction/openConnection' while another " +
+                                                       "transaction is already active is a sign of improper transaction handling");
         }
         try {
             conn = dataSource.getConnection();

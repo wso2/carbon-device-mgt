@@ -16,8 +16,8 @@
  * under the License.
  */
 
-//function onRequest(context) {
-//    var utility = require("/app/modules/utility.js")["utility"];
-//    var deviceType = request.getParameter("type");
-//    return {"deviceTypePolicyView": utility.getTenantedDeviceUnitName(deviceType, "policy-view")};
-//}
+function onRequest(context) {
+    var utility = require("/app/modules/utility.js")["utility"];
+    var deviceType = request.getParameter("type");
+    return {"deviceTypePolicyView": utility.getTenantedDeviceUnitName(deviceType, "policy-view")};
+}

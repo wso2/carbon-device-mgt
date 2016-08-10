@@ -40,11 +40,9 @@ public class EnrolmentInfo implements Serializable {
     @ApiModelProperty(name = "id", value = "ID of the device in the WSO2 EMM device information database.",
                       required = true)
     private int id;
-    @ApiModelProperty(name = "device", value = "Enrolled device.", required = true)
-    private Device device;
-    @ApiModelProperty(name = "dateOfEnrolment", value = "Date of the device enrollment.", required = true )
+    @ApiModelProperty(name = "dateOfEnrolment", value = "Date of the device enrollment. This value is not necessary.", required = false )
     private Long dateOfEnrolment;
-    @ApiModelProperty(name = "dateOfLastUpdate", value = "Date of the device's last update.", required = true )
+    @ApiModelProperty(name = "dateOfLastUpdate", value = "Date of the device's last update. This value is not necessary.", required = false )
     private Long dateOfLastUpdate;
     @ApiModelProperty(name = "ownership", value = "Defines the ownership details. The ownership type can be any of the" +
                                                   " following values.\n" +
@@ -60,8 +58,7 @@ public class EnrolmentInfo implements Serializable {
     public EnrolmentInfo() {
     }
 
-    public EnrolmentInfo(Device device, String owner, OwnerShip ownership, Status status) {
-        this.device = device;
+    public EnrolmentInfo(String owner, OwnerShip ownership, Status status) {
         this.owner = owner;
         this.ownership = ownership;
         this.status = status;
@@ -113,14 +110,6 @@ public class EnrolmentInfo implements Serializable {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public Device getDevice() {
-        return device;
-    }
-
-    public void setDevice(Device device) {
-        this.device = device;
     }
 
     @Override

@@ -41,7 +41,7 @@ public class EnrolmentPersistenceTests extends BaseDeviceManagementTest {
 
         /* Initializing source enrolment configuration bean to be tested */
         EnrolmentInfo source =
-                new EnrolmentInfo(null, owner, EnrolmentInfo.OwnerShip.BYOD,
+                new EnrolmentInfo(owner, EnrolmentInfo.OwnerShip.BYOD,
                         EnrolmentInfo.Status.CREATED);
 
         /* Adding dummy enrolment configuration to the device management metadata store */

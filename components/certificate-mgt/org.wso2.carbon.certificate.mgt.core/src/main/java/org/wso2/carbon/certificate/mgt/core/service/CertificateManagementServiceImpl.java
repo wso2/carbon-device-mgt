@@ -27,12 +27,11 @@ import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
 import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
+import org.wso2.carbon.certificate.mgt.core.exception.TransactionManagementException;
 import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
 import org.wso2.carbon.certificate.mgt.core.impl.KeyStoreReader;
-import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateManagerUtil;
 
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -81,7 +80,7 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
     }
 
     public byte[] getCACapsSCEP() {
-        return ConfigurationUtil.POST_BODY_CA_CAPS.getBytes();
+        return CertificateManagementConstants.POST_BODY_CA_CAPS.getBytes();
     }
 
     public byte[] getPKIMessageSCEP(InputStream inputStream) throws KeystoreException {
@@ -144,30 +143,29 @@ public class CertificateManagementServiceImpl implements CertificateManagementSe
             return certificateDAO.retrieveCertificate(serialNumber);
         } catch (SQLException e) {
             String msg = "Error occurred while opening a connection to the underlying data source";
-            log.error(msg, e);
             throw new CertificateManagementException(msg, e);
         } catch (CertificateManagementDAOException e) {
             String msg = "Error occurred while looking up for the certificate carrying the serial number '" +
                     serialNumber + "' in the underlying certificate repository";
-            log.error(msg, e);
             throw new CertificateManagementException(msg, e);
         } finally {
             CertificateManagementDAOFactory.closeConnection();
         }
     }
 
-    public PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementException {
+    @Override
+    public PaginationResult getAllCertificates(int rowNum, int limit) throws CertificateManagementException {
         try {
             CertificateManagementDAOFactory.openConnection();
             CertificateDAO certificateDAO = CertificateManagementDAOFactory.getCertificateDAO();
-            return certificateDAO.getAllCertificates(request);
+            return certificateDAO.getAllCertificates(rowNum, CertificateManagerUtil.validateCertificateListPageSize(limit));
         } catch (SQLException e) {
             String msg = "Error occurred while opening a connection to the underlying data source";
             log.error(msg, e);
             throw new CertificateManagementException(msg, e);
         } catch (CertificateManagementDAOException e) {
             String msg = "Error occurred while looking up for the list of certificates managed in the underlying " +
-                    "certificate repository";
+                         "certificate repository";
             log.error(msg, e);
             throw new CertificateManagementException(msg, e);
         } finally {

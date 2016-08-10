@@ -34,11 +34,11 @@ import java.io.File;
  */
 public class CertificateConfigurationManager {
 
-    private CertificateManagementConfig currentPolicyConfig;
+    private CertificateManagementConfig certificateManagementConfig;
     private static CertificateConfigurationManager certificateConfigurationManager;
 
-    private final String deviceMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath() + File.separator +
-                                                  CertificateManagementConstants.DEVICE_CONFIG_XML_NAME;
+    private final String certMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath() + File.separator +
+                                                CertificateManagementConstants.CERTIFICATE_CONFIG_XML_FILE;
 
     public static CertificateConfigurationManager getInstance() {
         if (certificateConfigurationManager == null) {
@@ -53,24 +53,36 @@ public class CertificateConfigurationManager {
 
     public synchronized void initConfig() throws CertificateManagementException {
         try {
-            File deviceMgtConfig = new File(deviceMgtConfigXMLPath);
-            Document doc = CertificateManagerUtil.convertToDocument(deviceMgtConfig);
+            File certMgtConfig = new File(certMgtConfigXMLPath);
+            Document doc = CertificateManagerUtil.convertToDocument(certMgtConfig);
 
-            /* Un-marshaling Device Management configuration */
+            /* Un-marshaling Certificate Management configuration */
             JAXBContext rssContext = JAXBContext.newInstance(CertificateManagementConfig.class);
             Unmarshaller unmarshaller = rssContext.createUnmarshaller();
-            this.currentPolicyConfig = (CertificateManagementConfig) unmarshaller.unmarshal(doc);
+            this.certificateManagementConfig = (CertificateManagementConfig) unmarshaller.unmarshal(doc);
         } catch (Exception e) {
-            throw new CertificateManagementException("Error occurred while initializing device config", e);
+            throw new CertificateManagementException("Error occurred while initializing certificate config", e);
         }
     }
 
-    public CertificateManagementConfig getPolicyManagementConfig() {
-        return currentPolicyConfig;
+    public CertificateManagementConfig getCertificateManagementConfig() throws CertificateManagementException {
+        if (certificateManagementConfig == null) {
+            initConfig();
+        }
+        return certificateManagementConfig;
     }
 
-    public DataSourceConfig getDataSourceConfig() {
-        return currentPolicyConfig.getCertificateManagementRepository().getDataSourceConfig();
+    public DataSourceConfig getDataSourceConfig() throws CertificateManagementException {
+        if (certificateManagementConfig == null) {
+            initConfig();
+        }
+        return certificateManagementConfig.getCertificateManagementRepository().getDataSourceConfig();
     }
 
+    public CertificateKeystoreConfig getCertificateKeyStoreConfig() throws CertificateManagementException {
+        if (certificateManagementConfig == null) {
+            initConfig();
+        }
+        return certificateManagementConfig.getCertificateKeystoreConfig();
+    }
 }

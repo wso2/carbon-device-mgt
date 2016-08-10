@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.common;
+package org.wso2.carbon.certificate.mgt.core.service;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,7 +41,7 @@ public class PaginationResult implements Serializable {
     @ApiModelProperty(name = "draw", value = "The draw counter that this object is a response to, from the draw parameter sent as part of the data request", required = true)
     private int draw;
 
-    @ApiModelProperty(name = "data", value = "This holds the database records that matches given criteria", required = true)
+    @ApiModelProperty(name = "data", value = "This holds the db records that matches given criteria", required = true)
     private List<?> data;
 
     public int getRecordsTotal() {

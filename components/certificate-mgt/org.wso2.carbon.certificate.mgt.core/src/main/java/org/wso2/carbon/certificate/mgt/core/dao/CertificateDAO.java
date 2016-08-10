@@ -20,8 +20,7 @@ package org.wso2.carbon.certificate.mgt.core.dao;
 
 import org.wso2.carbon.certificate.mgt.core.bean.Certificate;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.certificate.mgt.core.service.PaginationResult;
 
 import java.util.List;
 
@@ -55,12 +54,13 @@ public interface CertificateDAO {
     /**
      * Get all the certificates in a paginated manner.
      *
-     * @param request Request mentioning pagination details such as length and stating index.
+     * @param rowNum Stating index of the paginated result.
+     * @param limit Number of records to return.
      * @return Pagination result with data and the count of results.
      * @throws CertificateManagementDAOException
      *
      */
-    PaginationResult getAllCertificates(PaginationRequest request) throws CertificateManagementDAOException;
+    PaginationResult getAllCertificates(int rowNum, int limit) throws CertificateManagementDAOException;
 
     /**
      * Get all the certificates.
@@ -69,7 +69,7 @@ public interface CertificateDAO {
      * @throws CertificateManagementDAOException
      *
      */
-    public List<CertificateResponse> getAllCertificates() throws CertificateManagementDAOException;
+    List<CertificateResponse> getAllCertificates() throws CertificateManagementDAOException;
 
     /**
      * Delete a certificate identified by a serial number()
@@ -79,6 +79,6 @@ public interface CertificateDAO {
      */
     boolean removeCertificate(String serialNumber) throws CertificateManagementDAOException;
 
-    public List<CertificateResponse> searchCertificate(String serialNumber) throws CertificateManagementDAOException;
+    List<CertificateResponse> searchCertificate(String serialNumber) throws CertificateManagementDAOException;
 
 }

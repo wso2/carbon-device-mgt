@@ -185,7 +185,7 @@ public class DeviceManagementServiceComponent {
 
             /* If -Dsetup option enabled then create device management database schema */
             String setupOption =
-                    System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
+                    System.getProperty(DeviceManagementConstants.Common.SETUP_PROPERTY);
             if (setupOption != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("-Dsetup is enabled. Device management repository schema initialization is about to " +

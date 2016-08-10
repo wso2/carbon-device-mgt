@@ -27,12 +27,12 @@ import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import javax.ws.rs.core.MediaType;
 
 /**
- * DMAPIUtils class provides utility function used by CDM REST-API classes.
+ * CertificateMgtAPIUtils class provides utility functions used by Certificate Mgt REST-API classes.
  */
-public class DeviceMgtAPIUtils {
+public class CertificateMgtAPIUtils {
 
     public static final MediaType DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_JSON_TYPE;
-    private static Log log = LogFactory.getLog(DeviceMgtAPIUtils.class);
+    private static Log log = LogFactory.getLog(CertificateMgtAPIUtils.class);
 
     public static CertificateManagementService getCertificateManagementService() {
 

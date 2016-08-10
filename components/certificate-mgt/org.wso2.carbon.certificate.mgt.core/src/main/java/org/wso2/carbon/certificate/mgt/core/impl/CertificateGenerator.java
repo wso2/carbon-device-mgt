@@ -57,11 +57,11 @@ import org.wso2.carbon.certificate.mgt.core.dto.CAStatus;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.dto.SCEPResponse;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
+import org.wso2.carbon.certificate.mgt.core.exception.TransactionManagementException;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
 import org.wso2.carbon.certificate.mgt.core.util.CommonUtil;
-import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
 import org.wso2.carbon.certificate.mgt.core.util.Serializer;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
@@ -115,7 +115,6 @@ public class CertificateGenerator {
             }
         } catch (ClassNotFoundException | IOException e) {
             String errorMsg = "Error while deserializing the certificate.";
-            log.error(errorMsg, e);
             throw new CertificateManagementDAOException(errorMsg, e);
         }
 
@@ -136,7 +135,7 @@ public class CertificateGenerator {
         InputStream raInputStream = null;
 
         try {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance(ConfigurationUtil.X_509);
+            CertificateFactory certificateFactory = CertificateFactory.getInstance(CertificateManagementConstants.X_509);
             caInputStream = new ByteArrayInputStream(ca);
             raInputStream = new ByteArrayInputStream(ra);
 
@@ -147,7 +146,6 @@ public class CertificateGenerator {
             certificateList.add(raCert);
         } catch (CertificateException e) {
             String errorMsg = "Error occurred while fetching root certificates";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } finally {
             if (caInputStream != null) {
@@ -180,19 +178,19 @@ public class CertificateGenerator {
 
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
-                    ConfigurationUtil.RSA, ConfigurationUtil.PROVIDER);
-            keyPairGenerator.initialize(ConfigurationUtil.RSA_KEY_LENGTH, new SecureRandom());
+                    CertificateManagementConstants.RSA, CertificateManagementConstants.PROVIDER);
+            keyPairGenerator.initialize(CertificateManagementConstants.RSA_KEY_LENGTH, new SecureRandom());
             KeyPair pair = keyPairGenerator.generateKeyPair();
-            X500Principal principal = new X500Principal(ConfigurationUtil.DEFAULT_PRINCIPAL);
+            X500Principal principal = new X500Principal(CertificateManagementConstants.DEFAULT_PRINCIPAL);
 
             X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(
                     principal, CommonUtil.generateSerialNumber(), validityBeginDate, validityEndDate,
                     principal, pair.getPublic());
-            ContentSigner contentSigner = new JcaContentSignerBuilder(ConfigurationUtil.SHA256_RSA)
-                    .setProvider(ConfigurationUtil.PROVIDER).build(
+            ContentSigner contentSigner = new JcaContentSignerBuilder(CertificateManagementConstants.SHA256_RSA)
+                    .setProvider(CertificateManagementConstants.PROVIDER).build(
                             pair.getPrivate());
             X509Certificate certificate = new JcaX509CertificateConverter()
-                    .setProvider(ConfigurationUtil.PROVIDER).getCertificate(
+                    .setProvider(CertificateManagementConstants.PROVIDER).getCertificate(
                             certificateBuilder.build(contentSigner));
 
             // cert.checkValidity();
@@ -210,35 +208,27 @@ public class CertificateGenerator {
             return certificate;
         } catch (NoSuchAlgorithmException e) {
             String errorMsg = "No such algorithm found when generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (NoSuchProviderException e) {
             String errorMsg = "No such provider found when generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (OperatorCreationException e) {
             String errorMsg = "Issue in operator creation when generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CertificateExpiredException e) {
             String errorMsg = "Certificate expired after generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CertificateNotYetValidException e) {
             String errorMsg = "Certificate not yet valid when generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CertificateException e) {
             String errorMsg = "Certificate issue occurred when generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (InvalidKeyException e) {
             String errorMsg = "Invalid key used when generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (SignatureException e) {
             String errorMsg = "Signature related issue occurred when generating certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
@@ -257,7 +247,7 @@ public class CertificateGenerator {
             X509Certificate certRA = (X509Certificate) keyStoreReader.getRACertificate();
             X509Certificate certCA = (X509Certificate) keyStoreReader.getCACertificate();
 
-            CertificateFactory certificateFactory = CertificateFactory.getInstance(ConfigurationUtil.X_509);
+            CertificateFactory certificateFactory = CertificateFactory.getInstance(CertificateManagementConstants.X_509);
             X509CertificateHolder holder = reqCerts.iterator().next();
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(holder.getEncoded());
             X509Certificate reqCert = (X509Certificate) certificateFactory.generateCertificate(byteArrayInputStream);
@@ -286,7 +276,7 @@ public class CertificateGenerator {
                 certRep = new CertRep(transId, senderNonce, recipientNonce, messageData);
             }
 
-            PkcsPkiEnvelopeEncoder envEncoder = new PkcsPkiEnvelopeEncoder(reqCert, ConfigurationUtil.DES_EDE);
+            PkcsPkiEnvelopeEncoder envEncoder = new PkcsPkiEnvelopeEncoder(reqCert, CertificateManagementConstants.DES_EDE);
             PkiMessageEncoder encoder = new PkiMessageEncoder(privateKeyRA, certRA, envEncoder);
             CMSSignedData cmsSignedData = encoder.encode(certRep);
 
@@ -294,23 +284,18 @@ public class CertificateGenerator {
 
         } catch (CertificateException e) {
             String errorMsg = "Certificate issue occurred when generating getPKIMessage";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (MessageEncodingException e) {
             String errorMsg = "Message encoding issue occurred when generating getPKIMessage";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (IOException e) {
             String errorMsg = "Input output issue occurred when generating getPKIMessage";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (MessageDecodingException e) {
             String errorMsg = "Message decoding issue occurred when generating getPKIMessage";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CMSException e) {
             String errorMsg = "CMS issue occurred when generating getPKIMessage";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
@@ -386,7 +371,7 @@ public class CertificateGenerator {
             Collection<X509CertificateHolder> reqCerts = reqStore.getMatches(null);
 
             if (reqCerts != null && reqCerts.size() > 0) {
-                CertificateFactory certificateFactory = CertificateFactory.getInstance(ConfigurationUtil.X_509);
+                CertificateFactory certificateFactory = CertificateFactory.getInstance(CertificateManagementConstants.X_509);
                 X509CertificateHolder holder = reqCerts.iterator().next();
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(holder.getEncoded());
                 X509Certificate reqCert = (X509Certificate) certificateFactory.
@@ -404,15 +389,12 @@ public class CertificateGenerator {
             }
         } catch (CMSException e) {
             String errorMsg = "CMSException when decoding certificate signature";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (IOException e) {
             String errorMsg = "IOException when decoding certificate signature";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CertificateException e) {
             String errorMsg = "CertificateException when decoding certificate signature";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
 
@@ -428,7 +410,7 @@ public class CertificateGenerator {
         Date validityBeginDate = commonUtil.getValidityStartDate();
         Date validityEndDate = commonUtil.getValidityEndDate();
 
-        X500Name certSubject = new X500Name(ConfigurationUtil.DEFAULT_PRINCIPAL);
+        X500Name certSubject = new X500Name(CertificateManagementConstants.DEFAULT_PRINCIPAL);
         //X500Name certSubject = request.getSubject();
 
         Attribute attributes[] = request.getAttributes();
@@ -487,10 +469,10 @@ public class CertificateGenerator {
                 }
             }
 
-            sigGen = new JcaContentSignerBuilder(ConfigurationUtil.SHA256_RSA)
-                    .setProvider(ConfigurationUtil.PROVIDER).build(privateKey);
+            sigGen = new JcaContentSignerBuilder(CertificateManagementConstants.SHA256_RSA)
+                    .setProvider(CertificateManagementConstants.PROVIDER).build(privateKey);
             issuedCert = new JcaX509CertificateConverter().setProvider(
-                    ConfigurationUtil.PROVIDER).getCertificate(
+                    CertificateManagementConstants.PROVIDER).getCertificate(
                     certificateBuilder.build(sigGen));
             org.wso2.carbon.certificate.mgt.core.bean.Certificate certificate =
                     new org.wso2.carbon.certificate.mgt.core.bean.Certificate();
@@ -501,15 +483,12 @@ public class CertificateGenerator {
             saveCertInKeyStore(certificates);
         } catch (CertIOException e) {
             String errorMsg = "Certificate Input output issue occurred when generating generateCertificateFromCSR";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (OperatorCreationException e) {
             String errorMsg = "Operator creation issue occurred when generating generateCertificateFromCSR";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CertificateException e) {
             String errorMsg = "Certificate issue occurred when generating generateCertificateFromCSR";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
 
@@ -540,11 +519,9 @@ public class CertificateGenerator {
             return generator.generate(new CMSAbsentContent());
         } catch (CertificateEncodingException e) {
             String errorMsg = "Certificate encoding issue occurred when generating getMessageData";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CMSException e) {
             String errorMsg = "Message decoding issue occurred when generating getMessageData";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
@@ -563,30 +540,26 @@ public class CertificateGenerator {
 
             String temp = new String(keyBytes);
             String privateKeyPEM = temp.replace(
-                    ConfigurationUtil.RSA_PRIVATE_KEY_BEGIN_TEXT, ConfigurationUtil.EMPTY_TEXT);
+                    CertificateManagementConstants.RSA_PRIVATE_KEY_BEGIN_TEXT, CertificateManagementConstants.EMPTY_TEXT);
             privateKeyPEM = privateKeyPEM
-                    .replace(ConfigurationUtil.RSA_PRIVATE_KEY_END_TEXT, ConfigurationUtil.EMPTY_TEXT);
+                    .replace(CertificateManagementConstants.RSA_PRIVATE_KEY_END_TEXT, CertificateManagementConstants.EMPTY_TEXT);
 
             byte[] decoded = Base64.decodeBase64(privateKeyPEM);
             PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(decoded);
-            KeyFactory keyFactory = KeyFactory.getInstance(ConfigurationUtil.RSA);
+            KeyFactory keyFactory = KeyFactory.getInstance(CertificateManagementConstants.RSA);
 
             return keyFactory.generatePrivate(encodedKeySpec);
         } catch (FileNotFoundException e) {
             String errorMsg = "Private key file not found in getSignerKey";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (IOException e) {
             String errorMsg = "Input output issue in getSignerKey";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (NoSuchAlgorithmException e) {
             String errorMsg = "Algorithm not not found in getSignerKey";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (InvalidKeySpecException e) {
             String errorMsg = "Invalid key found in getSignerKey";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
@@ -595,18 +568,16 @@ public class CertificateGenerator {
 
         X509Certificate certificate;
         try {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance(ConfigurationUtil.X_509);
+            CertificateFactory certificateFactory = CertificateFactory.getInstance(CertificateManagementConstants.X_509);
             certificate = (X509Certificate) certificateFactory.generateCertificate(
                     new FileInputStream(signerCertificatePath));
 
             return certificate;
         } catch (CertificateException e) {
             String errorMsg = "Certificate related issue occurred in getSigner";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (FileNotFoundException e) {
             String errorMsg = "Signer certificate path not found in getSigner";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
@@ -642,15 +613,12 @@ public class CertificateGenerator {
             return scepResponse;
         } catch (CertificateEncodingException e) {
             String errorMsg = "Certificate encoding issue occurred in getCACert";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (CMSException e) {
             String errorMsg = "CMS issue occurred in getCACert";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         } catch (IOException e) {
             String errorMsg = "Input output issue occurred in getCACert";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }
@@ -669,12 +637,10 @@ public class CertificateGenerator {
             CertificateManagementDAOFactory.commitTransaction();
         } catch (CertificateManagementDAOException e) {
             String errorMsg = "Error occurred when saving the generated certificate";
-            log.error(errorMsg, e);
             CertificateManagementDAOFactory.rollbackTransaction();
             throw new KeystoreException(errorMsg, e);
         } catch (TransactionManagementException e) {
             String errorMsg = "Error occurred when saving the generated certificate";
-            log.error(errorMsg, e);
             throw new KeystoreException(errorMsg, e);
         }
     }

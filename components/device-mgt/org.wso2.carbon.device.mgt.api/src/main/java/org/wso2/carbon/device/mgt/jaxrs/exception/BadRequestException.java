@@ -16,30 +16,19 @@
  * under the License.
  */
 
-package org.wso2.carbon.apimgt.webapp.publisher.config;
+package org.wso2.carbon.device.mgt.jaxrs.exception;
+
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 /**
- * This class represents the information related to permissions.
+ * Custom exception class for wrapping BadRequest related exceptions.
  */
-public class PermissionConfiguration {
+public class BadRequestException extends WebApplicationException {
 
-    private String scopeName;
-    private String[] permissions;
-
-    public String getScopeName() {
-        return scopeName;
+    public BadRequestException(ErrorResponse error) {
+        super(Response.status(Response.Status.BAD_REQUEST).entity(error).build());
     }
-
-    public void setScopeName(String scope) {
-        this.scopeName = scope;
-    }
-
-    public String[] getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(String[] permissions) {
-        this.permissions = permissions;
-    }
-
 }

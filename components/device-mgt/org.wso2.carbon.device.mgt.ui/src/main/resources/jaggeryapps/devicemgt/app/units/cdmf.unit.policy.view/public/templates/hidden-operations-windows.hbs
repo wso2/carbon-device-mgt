@@ -73,7 +73,7 @@
                 <div id="passcode-policy-heading" class="panel-heading" role="tab">
                     <h2 class="sub-title panel-title">
                         Passcode Policy
-                        <label id="passcode-policy-lbl" class="wr-input-control switch" data-toggle="collapse" data-target="#passcode-policy-body">
+                        <label id="passcode-policy-lbl" class="wr-input-control switch hidden" data-toggle="collapse" data-target="#passcode-policy-body">
                             <input type="checkbox" />
                             <span class="helper"></span>
                             <span class="text"></span>
@@ -94,7 +94,7 @@
 
                     <div class="wr-input-control">
                         <label class="wr-input-control checkbox">
-                            <input id="passcode-policy-allow-simple" type="checkbox" class="form-control operationDataKeys" data-key="passcodePolicyAllowSimple" checked="checked" />
+                            <input id="passcode-policy-allow-simple" type="checkbox" class="form-control operationDataKeys" data-key="passcodePolicyAllowSimple" checked="checked" disabled/>
                             <span class="helper" title="Permit the use of repeating, ascending and descending character sequences">
                                 &nbsp;&nbsp;&nbsp;Allow simple value
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
@@ -104,7 +104,7 @@
 
                     <div class="wr-input-control">
                         <label class="wr-input-control checkbox">
-                            <input id="passcode-policy-require-alphanumeric" type="checkbox" class="form-control operationDataKeys" data-key="passcodePolicyRequireAlphanumeric" checked="checked" />
+                            <input id="passcode-policy-require-alphanumeric" type="checkbox" class="form-control operationDataKeys" data-key="passcodePolicyRequireAlphanumeric" checked="checked" disabled/>
                             <span class="helper" title="Require passcode to contain both letters and numbers">
                                 &nbsp;&nbsp;&nbsp;Require alphanumeric value
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
@@ -119,10 +119,13 @@
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
                             </span>
                         </label>
-                        <select id="passcode-policy-min-length" class="form-control operationDataKeys" data-key="passcodePolicyMinLength" data-default="0">
+                        <select id="passcode-policy-min-length" class="form-control operationDataKeys" data-key="passcodePolicyMinLength" data-default="0" disabled>
                             <option value="" selected="selected">
                                 None
                             </option>
+                            <option value="1">01</option>
+                            <option value="2">02</option>
+                            <option value="3">03</option>
                             <option value="4">04</option>
                             <option value="5">05</option>
                             <option value="6">06</option>
@@ -135,9 +138,6 @@
                             <option value="13">13</option>
                             <option value="14">14</option>
                             <option value="15">15</option>
-                            <option value="16">16</option>
-                            <option value="17">17</option>
-                            <option value="18">18</option>
                         </select>
                     </div>
 
@@ -148,7 +148,7 @@
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
                             </span>
                         </label>
-                        <select id="passcode-policy-min-complex-chars" class="form-control operationDataKeys" data-key="passcodePolicyMinComplexChars" data-default="0">
+                        <select id="passcode-policy-min-complex-chars" class="form-control operationDataKeys" data-key="passcodePolicyMinComplexChars" data-default="0" disabled>
                             <option value="" selected="selected">
                                 None
                             </option>
@@ -169,7 +169,7 @@
                             <br>
                             ( Should be in between 1-to-730 days or none )
                         </label>
-                        <input id="passcode-policy-max-passcode-age-in-days" type="text" class="form-control operationDataKeys" data-key="passcodePolicyMaxPasscodeAgeInDays" maxlength="3" placeholder="[ Requires Number Input ]">
+                        <input id="passcode-policy-max-passcode-age-in-days" type="text" class="form-control operationDataKeys" data-key="passcodePolicyMaxPasscodeAgeInDays" maxlength="3" placeholder="[ Requires Number Input ]" disabled>
                     </div>
 
                     <div class="wr-input-control">
@@ -181,7 +181,7 @@
                             <br>
                             ( Should be in between 1-to-50 passcodes or none )
                         </label>
-                        <input id="passcode-policy-passcode-history" type="text" class="form-control operationDataKeys" data-key="passcodePolicyPasscodeHistory" maxlength="2" placeholder="[ Requires Number Input ]">
+                        <input id="passcode-policy-passcode-history" type="text" class="form-control operationDataKeys" data-key="passcodePolicyPasscodeHistory" maxlength="2" placeholder="[ Requires Number Input ]" disabled>
                     </div>
 
                     <div class="wr-input-control">
@@ -191,7 +191,7 @@
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
                             </span>
                         </label>
-                        <select id="passcode-policy-max-failed-attempts" class="form-control operationDataKeys" data-key="passcodePolicyMaxFailedAttempts" data-default="0">
+                        <select id="passcode-policy-max-failed-attempts" class="form-control operationDataKeys" data-key="passcodePolicyMaxFailedAttempts" data-default="0" disabled>
                             <option value="" selected="selected">
                                 None
                             </option>
@@ -216,7 +216,7 @@
                 <div id="camera-heading" class="panel-heading" role="tab">
                     <h2 class="sub-title panel-title">
                         Restrictions on Camera
-                        <label class="wr-input-control switch" data-toggle="collapse" data-target="#camera-body">
+                        <label class="wr-input-control switch hidden" data-toggle="collapse" data-target="#camera-body">
                             <input type="checkbox" />
                             <span class="helper"></span>
                             <span class="text"></span>
@@ -238,7 +238,7 @@
                     <br>
                     <div class="wr-input-control">
                         <label class="wr-input-control checkbox">
-                            <input id="camera-enabled" type="checkbox" class="operationDataKeys" data-key="cameraEnabled" checked="checked" />
+                            <input id="camera-enabled" type="checkbox" class="operationDataKeys" data-key="cameraEnabled" checked="checked" disabled/>
                             <span class="helper" title="Having this checked would enable Usage of phone camera in the device.">
                                 &nbsp;&nbsp;&nbsp;Allow use of camera
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
@@ -257,7 +257,7 @@
                 <div id="encrypt-storage-heading" class="panel-heading" role="tab">
                     <h2 class="sub-title panel-title">
                         Encryption Settings
-                        <label class="wr-input-control switch" data-toggle="collapse" data-target="#encrypt-storage-body">
+                        <label class="wr-input-control switch hidden" data-toggle="collapse" data-target="#encrypt-storage-body">
                             <input type="checkbox" />
                             <span class="helper"></span>
                             <span class="text"></span>
@@ -279,7 +279,7 @@
                     <br>
                     <div class="wr-input-control">
                         <label class="wr-input-control checkbox">
-                            <input id="encrypt-storage-enabled" type="checkbox" class="operationDataKeys" data-key="encryptStorageEnabled" checked="checked" />
+                            <input id="encrypt-storage-enabled" type="checkbox" class="operationDataKeys" data-key="encryptStorageEnabled" checked="checked" disabled/>
                             <span class="helper" title="Having this checked would enable Storage-encryption in the device">
                                 &nbsp;&nbsp;&nbsp;Enable storage-encryption
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
@@ -291,13 +291,14 @@
             </div>
         </div>
         <!-- /encrypt-storage -->
+
         <!--app-restriction-->
         <div class="wr-hidden-operation" data-operation="app-restriction">
             <div class="panel panel-default operation-data" data-operation="app-restriction" data-operation-code="APP-RESTRICTION">
                 <div id="app-restriction-heading" class="panel-heading" role="tab">
                     <h2 class="sub-title panel-title">
                         Application Restriction Settings
-                        <label class="wr-input-control switch" data-toggle="collapse" data-target="#app-restriction-body">
+                        <label class="wr-input-control switch hidden" data-toggle="collapse" data-target="#app-restriction-body">
                             <input type="checkbox" />
                             <span class="helper"></span>
                             <span class="text"></span>
@@ -314,14 +315,14 @@
                         <i class="icon fw fw-error"></i><span></span>
                     </div>
 
-                    <select id="app-restriction-type" class="form-control operationDataKeys" data-key="restrictionType">
+                    <select id="app-restriction-type" class="form-control operationDataKeys" data-key="restrictionType" disabled>
                         <option value="" selected="selected">
                             None
                         </option>
                         <option value="black-list">Black List</option>
                         <option value="white-list">White List</option>
                     </select>
-
+                    <br>
                     <div class="wr-input-control">
                         <label class="wr-input-label" for="restricted-applications">
                             Restricted Application List
@@ -329,7 +330,8 @@
                                 <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
                             </span>
                             <br>
-                            <a href="#restricted-applications-grid" class="grid-input-add" data-click-event="add-form">
+                            <br>
+                            <a href="#restricted-applications-grid" class="grid-input-add hidden" data-click-event="add-form">
                                 <span class="icon fw-stack">
                                     <i class="fw fw-add fw-stack-1x"></i>
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -363,13 +365,13 @@
                                         <span class="index"></span>
                                     </td>
                                     <td data-title="App Name">
-                                        <input type="text" class="form-control grid-input-text" data-child-key="appName" maxlength="100" data-default="" placeholder="[ Application Name or Description ]" />
+                                        <input type="text" class="form-control grid-input-text" data-child-key="appName" maxlength="100" data-default="" placeholder="[ Application Name or Description ]" disabled/>
                                     </td>
                                     <td data-title="Package Name">
-                                        <input type="text" class="form-control grid-input-text" data-child-key="packageName" maxlength="100" data-default="" placeholder="[ Package Name of Application ]" />
+                                        <input type="text" class="form-control grid-input-text" data-child-key="packageName" maxlength="100" data-default="" placeholder="[ Package Name of Application ]" disabled/>
                                     </td>
                                     <td>
-                                            <span class="list-group-item-actions">
+                                            <span class="list-group-item-actions hidden">
                                                 <a href="#restricted-applications-grid" class="grid-input-remove" data-click-event="remove-form">
                                                     <span class="fw-stack helper" title="Remove Entry">
                                                         <i class="fw fw-ring fw-stack-2x"></i>

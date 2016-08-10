@@ -54,9 +54,6 @@ public class PermissionTree {
             tempRoot = addPermissionNode(tempRoot, tempChild);
         }
         tempRoot.addPermission(permission.getMethod(), permission); //setting permission to the vertex
-        if (log.isDebugEnabled()) {
-            log.debug("Added permission '" + permission.getName() + "'");
-        }
     }
 
     /**

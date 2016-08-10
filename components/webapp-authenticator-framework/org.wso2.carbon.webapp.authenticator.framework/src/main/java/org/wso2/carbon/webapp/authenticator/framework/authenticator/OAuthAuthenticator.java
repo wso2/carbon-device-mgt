@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
+import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
@@ -105,7 +106,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
         String context = tokenizer.nextToken();
-        if ((context == null) || ("".equals(context))) {
+        if ((context == null) || (context.isEmpty())) {
             authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
         }
         String apiVersion = tokenizer.nextToken();
@@ -120,7 +121,17 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             } else {
                 String bearerToken = getBearerToken(request);
 
-                String resource = requestUri + ":" + requestMethod;
+                int urlParamIndex = requestUri.indexOf('?');
+                if(urlParamIndex > 0) {
+                    requestUri = requestUri.substring(0, urlParamIndex);
+                }
+                String resource = Utils.getResourceUri(requestUri, requestMethod);
+
+                if (resource == null || resource.isEmpty()) {
+                    authenticationInfo.setStatus(Status.FAILURE);
+                    authenticationInfo.setMessage("Authorization failed. Requested API resource does not exist");
+                    return authenticationInfo;
+                }
 
                 OAuthValidationResponse oAuthValidationResponse =
                         this.tokenValidator.validateToken(bearerToken, resource);
@@ -142,6 +153,8 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             log.error("Failed to authenticate the incoming request", e);
         } catch (OAuthTokenValidationException e) {
             log.error("Failed to authenticate the incoming request due to oauth token validation error.", e);
+        } catch (PermissionManagementException e) {
+            log.error("Failed to authenticate the incoming request due to error in permission initialization", e);
         }
         return authenticationInfo;
     }

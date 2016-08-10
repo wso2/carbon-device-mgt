@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceManagementAdminS
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -45,8 +46,8 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
 
     @Override
     @GET
-    public Response getDevicesByName(@QueryParam("name") String name,
-                                     @QueryParam("type") String type,
+    public Response getDevicesByName(@QueryParam("name") @Size(max = 45) String name,
+                                     @QueryParam("type") @Size(min = 2, max = 45) String type,
                                      @QueryParam("tenant-domain") String tenantDomain,
                                      @HeaderParam("If-Modified-Since") String ifModifiedSince,
                                      @QueryParam("offset") int offset,

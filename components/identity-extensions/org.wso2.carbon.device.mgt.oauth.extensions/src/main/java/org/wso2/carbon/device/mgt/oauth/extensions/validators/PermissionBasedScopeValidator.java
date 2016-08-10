@@ -87,11 +87,11 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
                     if (userStore != null) {
                         status = userRealm.getAuthorizationManager()
-                                .isUserAuthorized(userStore + "/" + username, permission.getPath(),
+                                .isUserAuthorized(userStore + "/" + username, permission.getUrl(),
                                                   PermissionMethod.UI_EXECUTE);
                     } else {
                         status = userRealm.getAuthorizationManager()
-                                .isUserAuthorized(username, permission.getPath(), PermissionMethod.UI_EXECUTE);
+                                .isUserAuthorized(username, permission.getUrl(), PermissionMethod.UI_EXECUTE);
                     }
                 }
             }

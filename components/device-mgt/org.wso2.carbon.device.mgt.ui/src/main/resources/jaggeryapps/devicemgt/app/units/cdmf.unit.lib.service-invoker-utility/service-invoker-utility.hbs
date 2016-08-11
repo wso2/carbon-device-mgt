@@ -32,10 +32,12 @@
         </div>
     </div>
 {{/zone}}
-{{#zone "bottomJs"}}
+{{#zone "topJs"}}
     <script type="text/javascript">
         var context = "{{@app.context}}"
     </script>
+{{/zone}}
+{{#zone "bottomJs"}}
     {{js "js/js.cookie.js"}}
     {{js "js/invoker-lib.js"}}
 {{/zone}}

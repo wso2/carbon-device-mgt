@@ -22,7 +22,7 @@ deviceModule = function () {
 
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
-    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
 //    var ArrayList = Packages.java.util.ArrayList;
@@ -32,6 +32,8 @@ deviceModule = function () {
 //    var SimpleOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.SimpleOperation;
 //    var ConfigOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
 //    var CommandOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
+
+    var deviceManagementService = utility.getDeviceManagementService();
 
     var publicMethods = {};
     var privateMethods = {};
@@ -215,18 +217,20 @@ deviceModule = function () {
         var utility = require('/app/modules/utility.js')["utility"];
         try {
             utility.startTenantFlow(carbonUser);
-
-            var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/view?type=" + deviceType + "&id=" + deviceId;
+            //var url = mdmProps["httpsURL"] + "/mdm-admin/devices/view?type=" + deviceType + "&id=" + deviceId;
+            var url = mdmProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId;
             return serviceInvokers.XMLHttp.get(
-                url, function (responsePayload) {
-                    var device = responsePayload.responseContent;
-                    if (device) {
+                url,
+                function (backendResponse) {
+                    var response = {};
+                    if (backendResponse.status == 200 && backendResponse.responseText) {
+                        response["status"] = "success";
+                        var device = parse(backendResponse.responseText);
                         var propertiesList = device["properties"];
                         var properties = {};
-                        if (propertiesList){
-                            for (var i = 0; i < propertiesList.length; i++) {
-                                properties[propertiesList[i]["name"]] = propertiesList[i]["value"];
-                            }
+                        for (var i = 0; i < propertiesList.length; i++) {
+                            properties[propertiesList[i]["name"]] =
+                                propertiesList[i]["value"];
                         }
                         var deviceObject = {};
                         deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
@@ -241,13 +245,12 @@ deviceModule = function () {
                             properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
                         }
                         deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
-                        return deviceObject;
+                        response["content"] = deviceObject;
+                        return response;
+                    } else {
+                        response["status"] = "error";
+                        return response;
                     }
-                },
-                function (responsePayload) {
-                    var response = {};
-                    response["status"] = "error";
-                    return response;
                 }
             );
         } catch (e) {
@@ -310,9 +313,9 @@ deviceModule = function () {
         var url;
         var license;
         if (deviceType == "windows") {
-            url = devicemgtProps["httpURL"] + "/mdm-windows-agent/services/device/license";
+            url = mdmProps["httpURL"] + "/mdm-windows-agent/services/device/license";
         } else if (deviceType == "ios") {
-            url = devicemgtProps["httpsURL"] + "/ios-enrollment/license/";
+            url = mdmProps["httpsURL"] + "/ios-enrollment/license/";
         }
 
         if (url != null && url != undefined) {

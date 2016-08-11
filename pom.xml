@@ -1032,32 +1032,32 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.base</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.core</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${identity.inbound.auth.oauth.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${identity.inbound.auth.oauth.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.application.common</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
@@ -1184,7 +1184,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.wso2.carbon.identity</groupId>
@@ -1243,7 +1243,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.sso.saml</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${identity.inbound.auth.saml.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.json-simple.wso2</groupId>
@@ -1450,7 +1450,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.user.mgt</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -1735,7 +1735,7 @@
 
     <properties>
         <testng.version>6.1.1</testng.version>
-        <carbon.kernel.version>4.4.3</carbon.kernel.version>
+        <carbon.kernel.version>4.4.7</carbon.kernel.version>
         <carbon.kernel.version.range>[4.4.0, 5.0.0)</carbon.kernel.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <maven-buildnumber-plugin.version>1.3</maven-buildnumber-plugin.version>
@@ -1775,16 +1775,18 @@
         <tomcat.jdbc.pooling.version>7.0.34.wso2v2</tomcat.jdbc.pooling.version>
 
         <!-- Carbon Deployment -->
-        <carbon.deployment.version>4.6.0</carbon.deployment.version>
+        <carbon.deployment.version>4.7.0</carbon.deployment.version>
 
         <!-- Carbon Identity -->
-        <carbon.identity.version>5.0.7</carbon.identity.version>
+        <carbon.identity.framework.version>5.2.0</carbon.identity.framework.version>
+        <identity.inbound.auth.oauth.version>5.1.2</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.saml.version>5.1.1</identity.inbound.auth.saml.version>
 
         <!-- Carbon Multi-tenancy -->
-        <carbon.multitenancy.version>4.5.0</carbon.multitenancy.version>
+        <carbon.multitenancy.version>4.6.0</carbon.multitenancy.version>
 
         <!-- Carbon Governance -->
-        <carbon.governance.version>4.5.8</carbon.governance.version>
+        <carbon.governance.version>4.6.4</carbon.governance.version>
 
         <!-- Axiom -->
         <axiom.version>1.2.11-wso2v11</axiom.version>
@@ -1801,15 +1803,15 @@
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>5.0.4</carbon.api.mgt.version>
-        <carbon.api.mgt.version.range>(5.0.0,6.0.0]</carbon.api.mgt.version.range>
+        <carbon.api.mgt.version>6.0.4</carbon.api.mgt.version>
+        <carbon.api.mgt.version.range>(5.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->
         <carbon.analytics.common.version>5.0.11</carbon.analytics.common.version>
         <carbon.analytics.common.version.range>[5.0.11,6.0.0)</carbon.analytics.common.version.range>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.4.8</carbon.registry.version>
+        <carbon.registry.version>4.6.0</carbon.registry.version>
         <carbon.registry.imp.pkg.version.range>[4.4.8, 5.0.0)</carbon.registry.imp.pkg.version.range>
 
         <!--CXF properties-->

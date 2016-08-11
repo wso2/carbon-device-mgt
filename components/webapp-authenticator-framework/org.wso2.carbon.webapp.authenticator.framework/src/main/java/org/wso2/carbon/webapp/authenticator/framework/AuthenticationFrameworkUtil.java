@@ -57,7 +57,7 @@ public class AuthenticationFrameworkUtil {
         }
         APITokenValidator tokenValidator = new APITokenValidator();
         APIKeyValidationInfoDTO apiKeyValidationDTO = tokenValidator.validateKey(context, version, accessToken,
-                requiredAuthenticationLevel, clientDomain);
+                requiredAuthenticationLevel);
         if (apiKeyValidationDTO.isAuthorized()) {
             String username = apiKeyValidationDTO.getEndUserName();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);

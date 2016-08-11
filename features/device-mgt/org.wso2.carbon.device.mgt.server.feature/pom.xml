@@ -118,7 +118,7 @@
                                     <!--org.wso2.carbon.commons:org.wso2.carbon.email.verification-->
                                 <!--</bundleDef>-->
                                 <bundleDef>
-                                    org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${carbon.identity.version}
+                                    org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${identity.inbound.auth.oauth.version}
                                 </bundleDef>
                                 <bundleDef>
                                     com.fasterxml.jackson.core:jackson-annotations:${jackson-annotations.version}

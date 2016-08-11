@@ -150,6 +150,9 @@ public class Application implements Serializable {
         if (applicationIdentifier != null ? !applicationIdentifier.equals(that.applicationIdentifier) : that.applicationIdentifier != null) {
             return false;
         }
+        if (version != null ? !version.equals(that.version) : that.version != null) {
+            return false;
+        }
         return true;
     }
 

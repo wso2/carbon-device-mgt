@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
-  "uri": "/policy/priority",
+    "uri": "/policy/priority",
     "layout": "cdmf.layout.default"
 }

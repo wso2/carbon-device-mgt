@@ -239,8 +239,7 @@ var userModule = function () {
      * Get User Roles from user store (Internal roles not included).
      * @returns {object} a response object with status and content on success.
      */
-    publicMethods.getRolesByUserStore = function () {
-        var ROLE_LIMIT = devicemgtProps["pageSize"];
+    publicMethods.getRolesByUserStore = function (userStore) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
         if (!carbonUser) {
@@ -249,7 +248,8 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/roles?limit=" + ROLE_LIMIT;
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                "/roles?user-store=" + userStore + "&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;

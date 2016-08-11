@@ -31,11 +31,9 @@
             </div>
         </div>
     </div>
+    <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
 {{/zone}}
 {{#zone "bottomJs"}}
-    <script type="text/javascript">
-        var context = "{{@app.context}}"
-    </script>
     {{js "js/js.cookie.js"}}
     {{js "js/invoker-lib.js"}}
 {{/zone}}

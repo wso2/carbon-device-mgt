@@ -30,9 +30,13 @@ function onRequest(context) {
                 var configUnitName = utility.getTenantedDeviceUnitName(deviceTypeName, "platform.configuration");
                 if (configUnitName) {
                     var deviceTypeConfig = utility.getDeviceTypeConfig(deviceTypeName);
+                    var deviceTypeLabel = deviceTypeName;
+                    if (deviceTypeConfig) {
+                        deviceTypeLabel = deviceTypeConfig.deviceType.label;
+                    }
                     deviceTypesArray.push({
                         name: deviceTypeName,
-                        label: deviceTypeConfig.deviceType.label,
+                        label: deviceTypeLabel,
                         unitName: configUnitName
                     });
                 }

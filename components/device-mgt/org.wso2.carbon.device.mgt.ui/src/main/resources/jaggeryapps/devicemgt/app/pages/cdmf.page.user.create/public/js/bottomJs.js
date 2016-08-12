@@ -161,6 +161,18 @@ function emailIsValid(email) {
     return regExp.test(email);
 }
 
+/*
+ * QR-code generation function.
+ */
+function generateQRCode(qrCodeClass) {
+    var enrollmentURL = $("#qr-code-modal").data("enrollment-url");
+    $(qrCodeClass).qrcode({
+        text: enrollmentURL,
+        width: 200,
+        height: 200
+    });
+}
+
 $("#userStore").change(
     function () {
         var str = "";

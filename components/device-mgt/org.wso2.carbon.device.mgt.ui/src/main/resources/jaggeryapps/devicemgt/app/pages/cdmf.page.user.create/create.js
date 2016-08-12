@@ -39,6 +39,7 @@ function onRequest() {
     page["firstnameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["firstnameRegExViolationErrorMsg"];
     page["lastnameJSRegEx"] = devicemgtProps["userValidationConfig"]["lastnameJSRegEx"];
     page["lastnameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["lastnameRegExViolationErrorMsg"];
+    page["enrollmentURL"] = devicemgtProps["generalConfig"]["host"] + devicemgtProps["enrollmentDir"];
 
     return page;
 }

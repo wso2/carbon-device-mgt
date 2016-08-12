@@ -115,13 +115,6 @@ public interface DeviceManagementService {
             @Size(max = 45)
             String user,
             @ApiParam(
-                    name = "roleName",
-                    value = "Role name of the devices to be fetched.",
-                    required = false)
-            @QueryParam("roleName")
-            @Size(max = 45)
-            String roleName,
-            @ApiParam(
                     name = "ownership",
                     allowableValues = "BYOD, COPE",
                     value = "Ownership of the devices to be fetched registered under.",

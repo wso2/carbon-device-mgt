@@ -6,6 +6,7 @@
  * @returns {boolean} Returns true if input matches RegEx
  */
 function inputIsValid(regExp, inputString) {
+    regExp = new RegExp(regExp);
     return regExp.test(inputString);
 }
 

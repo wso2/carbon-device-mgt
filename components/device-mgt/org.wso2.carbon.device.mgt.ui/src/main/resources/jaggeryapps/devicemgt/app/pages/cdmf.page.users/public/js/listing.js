@@ -264,12 +264,12 @@ function loadUsers(searchParam) {
         };
 
         return JSON.stringify( json );
-    }
+    };
 
     var fnCreatedRow = function( nRow, aData, iDataIndex ) {
         $(nRow).attr('data-type', 'selectable');
-        $(nRow).attr('data-username', aData["username"]);
-    }
+        $(nRow).attr('data-username', aData["filter"]);
+    };
 
     var columns = [
         {

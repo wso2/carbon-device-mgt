@@ -368,19 +368,6 @@ public class GenericOperationDAOImpl implements OperationDAO {
 //                sql = sql + " OFFSET ?";
 //            }
 
-            String sql = "SELECT dte.ENROLMENT_ID, oor.OPERATION_ID, oor.OP_RES_ID, oor.OPERATION_TYPE, " +
-                    "oor.OPERATION_CODE, oor.OPERATION_RESPONSE, dte.DEVICE_TYPE, dte.DEVICE_IDENTIFICATION, " +
-                    "oor.RECEIVED_TIMESTAMP, eom.UPDATED_TIMESTAMP, eom.STATUS FROM (SELECT d.DEVICE_IDENTIFICATION, " +
-                    "t.NAME AS DEVICE_TYPE, e.ID AS ENROLMENT_ID FROM DM_DEVICE d INNER JOIN DM_DEVICE_TYPE t " +
-                    "ON d.DEVICE_TYPE_ID = t.ID INNER JOIN DM_ENROLMENT e ON d.ID = e.DEVICE_ID WHERE " +
-                    "e.TENANT_ID = ?) dte INNER JOIN (SELECT o.ID AS OPERATION_ID, o.TYPE AS OPERATION_TYPE, " +
-                    "o.OPERATION_CODE, r.ID AS OP_RES_ID, r.OPERATION_RESPONSE, r.RECEIVED_TIMESTAMP, " +
-                    "r.ENROLMENT_ID FROM DM_OPERATION o INNER JOIN DM_DEVICE_OPERATION_RESPONSE r ON " +
-                    "o.ID = r.OPERATION_ID) oor ON oor.ENROLMENT_ID=dte.ENROLMENT_ID LEFT OUTER JOIN " +
-                    "(SELECT ENROLMENT_ID, OPERATION_ID, STATUS, UPDATED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING " +
-                    "WHERE UPDATED_TIMESTAMP > ? LIMIT ? OFFSET ?) eom ON eom.ENROLMENT_ID=oor.ENROLMENT_ID AND " +
-                    "oor.OPERATION_ID=eom.OPERATION_ID ORDER BY oor.OPERATION_ID";
-
             String sql = "SELECT feom.ENROLMENT_ID, feom.OPERATION_ID, feom.CREATED_TIMESTAMP, o.TYPE AS OPERATION_TYPE, " +
                     "o.OPERATION_CODE, orsp.OPERATION_RESPONSE, orsp.LATEST_RECEIVED_TIMESTAMP AS RECEIVED_TIMESTAMP, " +
                     "orsp.ID AS OP_RES_ID, feom.STATUS, feom.UPDATED_TIMESTAMP, feom.DEVICE_IDENTIFICATION, " +
